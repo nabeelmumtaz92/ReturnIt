@@ -3,21 +3,62 @@ import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Truck, Star, MapPin, Clock, Package, CreditCard } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Image carousel data
+  const deliveryImages = [
+    {
+      url: "https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      alt: "Woman receiving package from courier"
+    },
+    {
+      url: "/attached_assets/Delivery Driver- Box in Car_1754856749497.jpeg",
+      alt: "Delivery driver with box in car"
+    },
+    {
+      url: "/attached_assets/Delivery Driver- Handoff_1754856749519.jpeg", 
+      alt: "Delivery driver handing off package"
+    },
+    {
+      url: "/attached_assets/Delivery Driver- outside_1754856749521.jpeg",
+      alt: "Delivery driver outside"
+    },
+    {
+      url: "/attached_assets/Delivery Driver Receiving Box_1754856749524.jpeg",
+      alt: "Delivery driver receiving box"
+    }
+  ];
+
+  // Auto-rotate images every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % deliveryImages.length);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [deliveryImages.length]);
 
   return (
     <div className="min-h-screen">
       {/* DoorDash-style Hero Section with Real Stock Photo */}
       <div className="relative h-screen overflow-hidden">
         
-        {/* Background Stock Photo */}
+        {/* Background Image Carousel */}
         <div className="absolute inset-0">
           <img 
-            src="https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600" 
-            alt="Woman receiving package from courier" 
-            className="w-full h-full object-cover"
+            src={deliveryImages[currentImageIndex].url}
+            alt={deliveryImages[currentImageIndex].alt}
+            className="w-full h-full object-cover transition-opacity duration-1000"
+            onError={(e) => {
+              // Fallback to first image if current fails to load
+              if (currentImageIndex !== 0) {
+                setCurrentImageIndex(0);
+              }
+            }}
           />
           {/* Orange overlay to match brand */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-600/80 via-red-500/70 to-orange-500/80"></div>
@@ -30,11 +71,13 @@ export default function Welcome() {
             {/* Left side - Main content */}
             <div className="text-white space-y-8">
               <div className="flex items-center gap-3 mb-6">
-                <img 
-                  src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
-                  alt="Returnly Logo" 
-                  className="h-16 w-auto"
-                />
+                <div className="h-16 w-16 bg-amber-700 rounded-lg flex items-center justify-center border-2 border-amber-800">
+                  <div className="text-white font-bold text-2xl">R</div>
+                </div>
+                <div className="text-white">
+                  <div className="text-2xl font-bold">Returnly</div>
+                  <div className="text-sm text-orange-200">Return Delivery Service</div>
+                </div>
               </div>
               
               <div className="space-y-4">
