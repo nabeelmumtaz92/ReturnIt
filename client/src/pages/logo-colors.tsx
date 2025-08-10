@@ -7,10 +7,11 @@ export default function LogoColors() {
   const cacheBuster = Date.now();
 
   const colorOptions = [
-    { name: "Current Orange", file: "logo-orange.png", description: "Current orange text on orange background" },
-    { name: "Gold", file: "logo-gold.png", description: "Luxurious gold text - premium look" },
-    { name: "White", file: "logo-white.png", description: "Clean white text - maximum contrast" },
     { name: "Steel Blue", file: "logo-blue.png", description: "Professional blue text - trustworthy" },
+    { name: "Cardboard Brown", file: "logo-cardboard.png", description: "Natural cardboard brown - matches shipping theme" },
+    { name: "White", file: "logo-white.png", description: "Clean white text - maximum contrast" },
+    { name: "Gold", file: "logo-gold.png", description: "Luxurious gold text - premium look" },
+    { name: "Current Orange", file: "logo-orange.png", description: "Current orange text on orange background" },
     { name: "Crimson Red", file: "logo-red.png", description: "Bold red text - energetic" },
     { name: "Lime Green", file: "logo-green.png", description: "Fresh green text - eco-friendly" },
     { name: "Purple", file: "logo-purple.png", description: "Sophisticated purple text - premium" },
