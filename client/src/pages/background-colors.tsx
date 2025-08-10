@@ -56,8 +56,8 @@ export default function BackgroundColors() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Background Colors for Cardboard Logo</h1>
-          <p className="text-xl text-gray-600 mb-6">Pick a background that makes your cardboard brown text pop</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Background Colors for Deep Cardboard Logo</h1>
+          <p className="text-xl text-gray-600 mb-6">Pick a background that makes your Deep Cardboard brown text pop</p>
           <div className="flex gap-4 justify-center mb-8">
             <Button 
               onClick={() => setLocation('/welcome')}
@@ -83,13 +83,13 @@ export default function BackgroundColors() {
               {/* Preview background with cardboard logo */}
               <div className={`bg-gradient-to-r ${option.gradient} h-48 flex items-center justify-center relative`}>
                 <img 
-                  src="/logo-cardboard-dark.png"
-                  alt="Cardboard logo preview"
+                  src="/logo-cardboard-deep.png"
+                  alt="Deep Cardboard logo preview"
                   className="h-20 w-auto"
                 />
                 <div className="absolute top-2 left-2">
                   <span className="text-white/80 text-xs bg-black/20 px-2 py-1 rounded">
-                    Cardboard Logo Preview
+                    Deep Cardboard Logo
                   </span>
                 </div>
               </div>
@@ -116,9 +116,9 @@ export default function BackgroundColors() {
 
         <div className="text-center mt-12">
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Each background is tested with your darker cardboard logo. The best combinations provide strong contrast
+            Each background is tested with your Deep Cardboard logo. The best combinations provide strong contrast
             while maintaining the warm, professional shipping aesthetic. 
-            <strong> Sage Green</strong> and <strong>Deep Blue</strong> are particularly stunning with cardboard brown.
+            <strong> Sage Green</strong> and <strong>Deep Blue</strong> are particularly stunning with Deep Cardboard brown.
           </p>
         </div>
       </div>
