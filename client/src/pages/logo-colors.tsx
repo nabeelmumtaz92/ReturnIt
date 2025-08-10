@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 
 export default function LogoColors() {
   const [, setLocation] = useLocation();
+  // Add timestamp to force image reload
+  const cacheBuster = Date.now();
 
   const colorOptions = [
     { name: "Current Orange", file: "logo-orange.png", description: "Current orange text on orange background" },
@@ -46,7 +48,7 @@ export default function LogoColors() {
               {/* Preview against orange background (like your hero) */}
               <div className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-500 h-40 flex items-center justify-center">
                 <img 
-                  src={`/${option.file}`}
+                  src={`/${option.file}?v=${cacheBuster}`}
                   alt={`${option.name} logo`}
                   className="h-16 w-auto"
                   onLoad={() => console.log(`Loaded: ${option.file}`)}
@@ -61,7 +63,7 @@ export default function LogoColors() {
               {/* Preview against light background (like your welcome section) */}
               <div className="bg-orange-50 h-32 flex items-center justify-center border-b">
                 <img 
-                  src={`/${option.file}`}
+                  src={`/${option.file}?v=${cacheBuster}`}
                   alt={`${option.name} logo`}
                   className="h-12 w-auto"
                   onError={(e) => {
