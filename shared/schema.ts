@@ -1,43 +1,47 @@
-import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Users table for authentication
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   username: text("username").notNull().unique(),
+  email: text("email").notNull().unique(),
   password: text("password").notNull(),
-  name: text("name").notNull(),
-  isDriver: integer("is_driver").default(0),
+  isDriver: boolean("is_driver").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Orders table for return tracking
 export const orders = pgTable("orders", {
-  id: varchar("id").primaryKey(),
-  status: text("status").notNull().default("created"),
-  createdAt: timestamp("created_at").defaultNow(),
-  customerName: text("customer_name").notNull(),
+  id: text("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  status: text("status").notNull().default("created"), // created, assigned, picked_up, dropped_off, refunded
   pickupAddress: text("pickup_address").notNull(),
   retailer: text("retailer").notNull(),
-  notes: text("notes"),
-  price: integer("price").notNull(),
+  itemDescription: text("item_description").notNull(),
+  price: text("price").notNull().default("$3.99"),
+  driverId: integer("driver_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  name: true,
-  isDriver: true,
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-export const insertOrderSchema = createInsertSchema(orders).pick({
-  customerName: true,
-  pickupAddress: true,
-  retailer: true,
-  notes: true,
-  price: true,
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
+// Types
 export type User = typeof users.$inferSelect;
-export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Order = typeof orders.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;

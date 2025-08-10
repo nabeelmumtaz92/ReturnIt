@@ -2,12 +2,39 @@ import { useLocation } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Truck, Star, MapPin, Clock, Package, CreditCard } from 'lucide-react';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuth } from "@/hooks/useAuth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/auth/logout', 'POST', {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      toast({
+        title: "Goodbye!",
+        description: "You have been signed out successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
 
   // Image carousel data
   const deliveryImages = [
@@ -94,10 +121,10 @@ export default function Welcome() {
                 <Button 
                   size="lg"
                   className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
-                  onClick={() => setLocation('/book-pickup')}
-                  data-testid="button-book-pickup-hero"
+                  onClick={() => setLocation(isAuthenticated ? '/book-pickup' : '/login')}
+                  data-testid="button-start-return-hero"
                 >
-                  Book Return Pickup
+                  {isAuthenticated ? 'Book Pickup' : 'Start Return'}
                 </Button>
                 <Button 
                   size="lg"
@@ -121,7 +148,7 @@ export default function Welcome() {
                   <div className="text-amber-700 text-sm sm:text-base">Partner stores</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">$7.99</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">$3.99</div>
                   <div className="text-amber-700 text-sm sm:text-base">Starting price</div>
                 </div>
               </div>
@@ -192,7 +219,7 @@ export default function Welcome() {
           <div className="flex justify-center items-center gap-8 mb-8 flex-wrap text-gray-700">
             <span className="flex items-center gap-2 text-lg">
               <CreditCard className="w-5 h-5 text-orange-600" />
-              From $7.99
+              From $3.99
             </span>
             <span className="flex items-center gap-2 text-lg">
               <Clock className="w-5 h-5 text-orange-600" />
@@ -207,16 +234,16 @@ export default function Welcome() {
             <Button 
               size="lg"
               className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-10 py-4 h-auto"
-              onClick={() => setLocation('/book-pickup')}
-              data-testid="button-book-pickup"
+              onClick={() => setLocation(isAuthenticated ? '/book-pickup' : '/login')}
+              data-testid="button-start-return"
             >
-              Start Return 📦
+              {isAuthenticated ? 'Book Pickup' : 'Start Return'} 📦
             </Button>
             <Button 
               size="lg"
               variant="outline" 
               className="border-2 border-orange-600 text-orange-600 hover:bg-orange-50 font-bold text-xl px-10 py-4 h-auto"
-              onClick={() => setLocation('/order-status/DEMO01')}
+              onClick={() => setLocation(isAuthenticated ? '/order-status/DEMO01' : '/login')}
               data-testid="button-track-order"
             >
               Track Order

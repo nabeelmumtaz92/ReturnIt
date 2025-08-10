@@ -1,39 +1,55 @@
 import { type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
-import { randomUUID } from "crypto";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getOrder(id: string): Promise<Order | undefined>;
+  getUserOrders(userId: number): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private users: Map<number, User>;
   private orders: Map<string, Order>;
+  private nextUserId: number = 1;
 
   constructor() {
     this.users = new Map();
     this.orders = new Map();
     
-    // Initialize with demo order
+    // Initialize with demo user and order
+    const demoUser: User = {
+      id: 1,
+      username: 'demo',
+      email: 'demo@returnly.com',
+      password: 'demo123', // In production, this would be hashed
+      isDriver: false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(1, demoUser);
+    
     const demoOrder: Order = {
       id: 'DEMO01',
+      userId: 1,
       status: 'created',
-      createdAt: new Date(Date.now() - 20 * 60 * 1000),
-      customerName: 'Jordan',
       pickupAddress: '500 Market St, Apt 2C',
       retailer: 'Target',
-      notes: 'QR code in email',
-      price: 15
+      itemDescription: 'Nike Shoes - Wrong Size',
+      price: '$3.99',
+      driverId: null,
+      createdAt: new Date(Date.now() - 20 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 20 * 60 * 1000)
     };
     this.orders.set('DEMO01', demoOrder);
+    this.nextUserId = 2;
   }
 
-  async getUser(id: string): Promise<User | undefined> {
+  async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
 
@@ -43,15 +59,31 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.email === email,
+    );
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
+    const id = this.nextUserId++;
+    const user: User = { 
+      ...insertUser, 
+      id,
+      isDriver: insertUser.isDriver ?? false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
     this.users.set(id, user);
     return user;
   }
 
   async getOrder(id: string): Promise<Order | undefined> {
     return this.orders.get(id);
+  }
+
+  async getUserOrders(userId: number): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.userId === userId);
   }
 
   async getAllOrders(): Promise<Order[]> {
@@ -64,7 +96,10 @@ export class MemStorage implements IStorage {
       ...insertOrder,
       id,
       status: 'created',
+      price: insertOrder.price ?? '$3.99',
+      driverId: insertOrder.driverId ?? null,
       createdAt: new Date(),
+      updatedAt: new Date()
     };
     this.orders.set(id, order);
     return order;

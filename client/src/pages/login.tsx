@@ -1,80 +1,277 @@
-import { useState } from 'react';
-import { useLocation } from 'wouter';
-import { Screen } from '@/components/screen';
-import { Header } from '@/components/header';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useApp } from '@/store/use-app';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { useLocation } from "wouter";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const signIn = useApp((s) => s.signIn);
-  const [name, setName] = useState('');
-  const [asDriver, setAsDriver] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const handleLogin = () => {
-    if (!name.trim()) return;
-    if (asDriver) {
-      // Redirect drivers to download the mobile app
-      alert('Drivers should download the Returnly Driver mobile app to accept jobs and manage deliveries.');
+  // Login form state
+  const [loginData, setLoginData] = useState({
+    username: '',
+    password: ''
+  });
+
+  // Register form state
+  const [registerData, setRegisterData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (data: { username: string; password: string }) => {
+      return await apiRequest('/api/auth/login', 'POST', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      toast({
+        title: "Welcome back!",
+        description: "You have successfully signed in.",
+      });
+      setLocation('/');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Sign in failed",
+        description: error.message || "Invalid credentials",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (data: { username: string; email: string; password: string }) => {
+      return await apiRequest('/api/auth/register', 'POST', data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      toast({
+        title: "Welcome to Returnly!",
+        description: "Your account has been created successfully.",
+      });
+      setLocation('/');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Registration failed",
+        description: error.message || "Please try again",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginData.username || !loginData.password) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
       return;
     }
-    signIn(name, asDriver);
-    setLocation('/book-pickup');
+    loginMutation.mutate(loginData);
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!registerData.username || !registerData.email || !registerData.password) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (registerData.password !== registerData.confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please ensure both passwords are the same",
+        variant: "destructive",
+      });
+      return;
+    }
+    registerMutation.mutate({
+      username: registerData.username,
+      email: registerData.email,
+      password: registerData.password
+    });
   };
 
   return (
-    <Screen>
-      <Header 
-        title="Welcome back" 
-        subtitle="Sign in to continue" 
-      />
-      
-      <Card className="brand-card">
-        <CardContent className="p-4">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Your name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                className="brand-input"
-                data-testid="input-name"
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <Button
-                className={asDriver ? "brand-button-contained flex-1" : "brand-button-outlined flex-1"}
-                onClick={() => setAsDriver(true)}
-                data-testid="button-driver-toggle"
-              >
-                I'm a Driver
-              </Button>
-              <Button
-                className={!asDriver ? "brand-button-contained flex-1" : "brand-button-outlined flex-1"}
-                onClick={() => setAsDriver(false)}
-                data-testid="button-customer-toggle"
-              >
-                I'm a Customer
-              </Button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <img 
+            src="/logo-cardboard-deep.png" 
+            alt="Returnly Logo" 
+            className="h-16 w-auto mx-auto mb-4"
+          />
+          <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>
+          <p className="text-amber-700">Return delivery made effortless</p>
+        </div>
 
-            <Button
-              className="brand-button-contained w-full"
-              disabled={!name.trim()}
-              onClick={handleLogin}
-              data-testid="button-continue"
-            >
-              Continue
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </Screen>
+        <Tabs defaultValue="login" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login" data-testid="tab-login">Sign In</TabsTrigger>
+            <TabsTrigger value="register" data-testid="tab-register">Sign Up</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sign In</CardTitle>
+                <CardDescription>
+                  Enter your credentials to access your account
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleLogin}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-username">Username</Label>
+                    <Input
+                      id="login-username"
+                      data-testid="input-login-username"
+                      value={loginData.username}
+                      onChange={(e) => setLoginData(prev => ({...prev, username: e.target.value}))}
+                      placeholder="Enter your username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Password</Label>
+                    <Input
+                      id="login-password"
+                      data-testid="input-login-password"
+                      type="password"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
+                      placeholder="Enter your password"
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-2">
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-amber-800 hover:bg-amber-900"
+                    disabled={loginMutation.isPending}
+                    data-testid="button-login-submit"
+                  >
+                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setLocation('/')}
+                    data-testid="button-back-home"
+                  >
+                    Back to Home
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="register">
+            <Card>
+              <CardHeader>
+                <CardTitle>Sign Up</CardTitle>
+                <CardDescription>
+                  Create your account to start using Returnly
+                </CardDescription>
+              </CardHeader>
+              <form onSubmit={handleRegister}>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-username">Username</Label>
+                    <Input
+                      id="register-username"
+                      data-testid="input-register-username"
+                      value={registerData.username}
+                      onChange={(e) => setRegisterData(prev => ({...prev, username: e.target.value}))}
+                      placeholder="Choose a username"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      data-testid="input-register-email"
+                      type="email"
+                      value={registerData.email}
+                      onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Password</Label>
+                    <Input
+                      id="register-password"
+                      data-testid="input-register-password"
+                      type="password"
+                      value={registerData.password}
+                      onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
+                      placeholder="Create a password"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-confirm">Confirm Password</Label>
+                    <Input
+                      id="register-confirm"
+                      data-testid="input-register-confirm"
+                      type="password"
+                      value={registerData.confirmPassword}
+                      onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
+                      placeholder="Confirm your password"
+                    />
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-2">
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-amber-800 hover:bg-amber-900"
+                    disabled={registerMutation.isPending}
+                    data-testid="button-register-submit"
+                  >
+                    {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full" 
+                    onClick={() => setLocation('/')}
+                    data-testid="button-back-home-register"
+                  >
+                    Back to Home
+                  </Button>
+                </CardFooter>
+              </form>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        {/* Demo account info */}
+        <div className="mt-6 p-4 bg-amber-100 rounded-lg border border-amber-200">
+          <h3 className="font-semibold text-amber-800 mb-2">Demo Account</h3>
+          <p className="text-sm text-amber-700 mb-2">
+            Try the demo account: <strong>demo</strong> / <strong>demo123</strong>
+          </p>
+          <p className="text-xs text-amber-600">
+            The demo account has sample orders for testing.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }

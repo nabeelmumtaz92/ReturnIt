@@ -1,102 +1,209 @@
-import { useLocation } from 'wouter';
-import { format } from 'date-fns';
-import { Screen } from '@/components/screen';
-import { Header } from '@/components/header';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { useApp } from '@/store/use-app';
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin } from "lucide-react";
 
-export default function OrderStatus() {
-  const [location, setLocation] = useLocation();
-  const orders = useApp((s) => s.orders);
-  const updateOrder = useApp((s) => s.updateOrder);
+interface OrderStatusProps {
+  orderId: string;
+}
 
-  // Extract order ID from URL
-  const orderId = location.split('/').pop();
-  const order = orderId ? orders[orderId] : undefined;
+export default function OrderStatus({ orderId }: OrderStatusProps) {
+  const [, setLocation] = useLocation();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
 
-  if (!order) {
-    return (
-      <Screen>
-        <Header title="Order not found" />
-        <Button 
-          className="brand-button-contained"
-          onClick={() => setLocation('/book-pickup')}
-          data-testid="button-back-to-booking"
-        >
-          Back to booking
-        </Button>
-      </Screen>
-    );
-  }
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Please sign in",
+        description: "You need to sign in to view order status",
+        variant: "destructive",
+      });
+      setLocation('/login');
+    }
+  }, [isAuthenticated, isLoading, setLocation, toast]);
 
-  const steps = ['created', 'assigned', 'picked_up', 'dropped_off', 'refunded'];
-  const currentIndex = steps.indexOf(order.status);
+  const { data: order, isLoading: orderLoading, error } = useQuery({
+    queryKey: ['/api/orders', orderId],
+    enabled: isAuthenticated && !!orderId,
+  });
 
-  const formatDate = (date: Date | number) => {
-    const dateObj = typeof date === 'number' ? new Date(date) : date;
-    return format(dateObj, 'MMM d, h:mma');
-  };
-
-  const handleAdvanceStatus = () => {
-    if (currentIndex < steps.length - 1) {
-      updateOrder(order.id, { status: steps[currentIndex + 1] });
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'created': return 'bg-blue-100 text-blue-800';
+      case 'assigned': return 'bg-yellow-100 text-yellow-800';
+      case 'picked_up': return 'bg-orange-100 text-orange-800';
+      case 'dropped_off': return 'bg-green-100 text-green-800';
+      case 'refunded': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
-  return (
-    <Screen>
-      <Header 
-        title={`Order #${order.id}`}
-        subtitle={`Created ${formatDate(order.createdAt)}`}
-      />
-      
-      <Card className="brand-card">
-        <CardContent className="p-4">
-          <h2 className="text-lg font-bold text-foreground mb-1">
-            {order.retailer}
-          </h2>
-          <p className="text-muted-foreground mb-4">
-            {order.pickupAddress}
-          </p>
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'created': return <Clock className="h-4 w-4" />;
+      case 'assigned': return <Truck className="h-4 w-4" />;
+      case 'picked_up': return <Package className="h-4 w-4" />;
+      case 'dropped_off': return <CheckCircle className="h-4 w-4" />;
+      case 'refunded': return <CheckCircle className="h-4 w-4" />;
+      default: return <Clock className="h-4 w-4" />;
+    }
+  };
 
-          <Separator className="my-4" />
+  const getStatusDescription = (status: string) => {
+    switch (status) {
+      case 'created': return 'Your pickup request has been received and is waiting to be assigned to a driver.';
+      case 'assigned': return 'A driver has been assigned to your pickup. They will arrive soon.';
+      case 'picked_up': return 'Your item has been picked up and is on its way to the retailer.';
+      case 'dropped_off': return 'Your item has been successfully returned to the retailer.';
+      case 'refunded': return 'Your return has been processed and refunded.';
+      default: return 'Status unknown.';
+    }
+  };
 
-          <p className="text-foreground font-medium mb-3">Status</p>
-          
-          <div className="flex flex-wrap gap-2 mb-4">
-            {steps.map((step, idx) => (
-              <span
-                key={step}
-                className={`brand-chip ${idx <= currentIndex ? 'brand-chip-selected' : ''}`}
-                data-testid={`status-${step}`}
-              >
-                {step.replace('_', ' ')}
-              </span>
-            ))}
-          </div>
+  if (isLoading || orderLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
+        <div className="text-center">
+          <img 
+            src="/logo-cardboard-deep.png" 
+            alt="Returnly Logo" 
+            className="h-16 w-auto mx-auto mb-4 animate-pulse"
+          />
+          <p className="text-amber-800">Loading order details...</p>
+        </div>
+      </div>
+    );
+  }
 
-          {currentIndex < steps.length - 1 && (
-            <Button
-              variant="outline"
-              className="brand-button-outlined w-full mb-2"
-              onClick={handleAdvanceStatus}
-              data-testid="button-advance-status"
-            >
-              Advance (demo)
+  if (!isAuthenticated) {
+    return null; // Will redirect via useEffect
+  }
+
+  if (error || !order) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle className="text-red-600">Order Not Found</CardTitle>
+            <CardDescription>
+              The order you're looking for doesn't exist or you don't have permission to view it.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => setLocation('/')} className="w-full">
+              Return Home
             </Button>
-          )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-          <Button
-            className="brand-button-contained w-full"
-            onClick={() => setLocation('/')}
-            data-testid="button-done"
-          >
-            Done
-          </Button>
-        </CardContent>
-      </Card>
-    </Screen>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100">
+      {/* Header */}
+      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation('/')}
+              className="text-amber-800 hover:text-amber-900"
+              data-testid="button-back-home"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <img 
+              src="/logo-cardboard-deep.png" 
+              alt="Returnly Logo" 
+              className="h-8 w-auto"
+            />
+            <span className="text-xl font-bold text-amber-900">Order Status</span>
+          </div>
+          <div className="text-amber-800 text-sm">
+            Welcome, {user?.username}
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        <Card className="bg-white/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between text-amber-900">
+              <span>Order #{order.id}</span>
+              <Badge className={getStatusColor(order.status)}>
+                {getStatusIcon(order.status)}
+                <span className="ml-2 capitalize">{order.status.replace('_', ' ')}</span>
+              </Badge>
+            </CardTitle>
+            <CardDescription>
+              Created on {new Date(order.createdAt).toLocaleDateString()}
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="space-y-6">
+            {/* Status Description */}
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <p className="text-amber-900">
+                {getStatusDescription(order.status)}
+              </p>
+            </div>
+
+            {/* Order Details */}
+            <div className="grid gap-4">
+              <div className="flex items-start space-x-3">
+                <MapPin className="h-5 w-5 text-amber-700 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-amber-900">Pickup Address</h4>
+                  <p className="text-amber-700">{order.pickupAddress}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <Package className="h-5 w-5 text-amber-700 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-amber-900">Return Details</h4>
+                  <p className="text-amber-700">
+                    <strong>Retailer:</strong> {order.retailer}
+                  </p>
+                  <p className="text-amber-700">
+                    <strong>Item:</strong> {order.itemDescription}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <Truck className="h-5 w-5 text-amber-700 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-amber-900">Service Cost</h4>
+                  <p className="text-amber-700 font-bold">{order.price}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div className="pt-4">
+              <Button
+                onClick={() => setLocation('/book-pickup')}
+                className="w-full bg-amber-800 hover:bg-amber-900 text-white"
+                data-testid="button-book-another"
+              >
+                Book Another Pickup
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
