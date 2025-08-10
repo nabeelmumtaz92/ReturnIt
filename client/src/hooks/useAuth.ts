@@ -5,15 +5,16 @@ export function useAuth() {
     queryKey: ["/api/auth/me"],
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
+    gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
+    refetchOnMount: true, // Only fetch once on mount
     refetchInterval: false,
+    refetchOnReconnect: false,
   });
 
   return {
     user,
-    isLoading,
+    isLoading: isLoading && !error, // Don't show loading if there's an error
     isAuthenticated: !!user,
     error,
   };

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin } from "lucide-react";
 

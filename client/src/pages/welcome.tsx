@@ -4,14 +4,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
