@@ -1,0 +1,157 @@
+# Returnly — Figma Step-by-Step Build Guide
+
+## 0) File Setup (5 min)
+1) New file → name: **Returnly – App & Site**
+2) Create pages:
+   - 00 Cover
+   - 01 Tokens
+   - 02 Components
+   - 03 Customer App
+   - 04 Driver App
+   - 05 Website
+   - 06 Prototype
+   - 99 Handoff
+
+## 1) Tokens with Figma Variables (15–20 min)
+Create 4 variable collections on **01 Tokens**:
+
+**colors**
+- brand.cardboard = `#D2B48C`
+- brand.offWhite  = `#F8F7F4`
+- brand.barcode   = `#1A1A1A`
+- brand.tape      = `#7B5E3B`
+- brand.accent    = `#FF8C42`
+- brand.success   = `#2E7D32`
+
+**type** (Inter; Poppins for headlines optional)
+- type.h1: 28/34, weight 800
+- type.h2: 22/28, weight 700
+- type.body: 16/24, weight 400
+- type.caption: 13/18, weight 400
+
+**radii**
+- radius.card = 12
+- radius.control = 10
+- radius.pill = 999
+
+**space** (8pt system)
+- space.4, 8, 12, 16, 20, 24, 32
+
+> Tip: use variables everywhere (fills, strokes, text styles, corner radius).
+
+## 2) Styles (5 min)
+- Make **Color Styles** bound to variables (e.g., `Fill/Brand/Accent` → brand.accent).
+- Make **Text Styles** bound to `type.*` (e.g., `Type/H1`, `Type/Body`).
+
+## 3) Frames & Grids (5 min)
+- Add device frames: **iPhone 13 (390×844)** and **Pixel 7 (411×915)**.
+- Optional grid: 4 columns, margin 20, gutter 12 for tidy spacing.
+
+## 4) Components (Auto Layout + Variants) (35–45 min)
+Create on **02 Components** with Auto Layout (Shift+A), padding via space.*:
+
+**Button**
+- Padding 14/18; radius `radius.control`
+- Variants: `primary` (bg brand.accent, text white), `secondary` (bg brand.cardboard), `outline` (stroke brand.cardboard)
+- States: `default | hover | pressed | disabled`
+- Props: `label (text)`, `icon (boolean)`
+
+**Text Input**
+- Label (caption), field (body), helper/error
+- Variants: `default | focused | error`, `single | multiline`
+- Optional left icon prop
+
+**Card**
+- bg brand.offWhite, 1px stroke brand.cardboard, radius `radius.card`, padding 16
+
+**Chip (Status Pill)**
+- radius `radius.pill`, padding 6/12
+- Variants: `selected | unselected`
+
+**App Bar**
+- Title centered; optional back and action
+- Variants: `default | back | action | both`
+
+**Stepper (Order Status)**
+- 5 chips: Created → Assigned → Picked up → Dropped off → Completed
+- Selected state highlights chip
+
+**Order Card (Customer)**
+- Title: Retailer
+- Sub: Address
+- Status chips row
+- Actions: “Advance (demo)”, “Done”
+
+**Job Card (Driver)**
+- Title: `#{ID} • Retailer`
+- Sub: Address
+- Actions: Accept → Picked Up → Dropped Off
+
+**Toast/Snackbar**
+- Small card overlay for confirmations/errors
+
+## 5) Screens (assemble from components) (45–60 min)
+
+### 03 Customer App
+- **Welcome**: Logo mark (box outline), H1, subcopy, CTAs (primary “Book Pickup”, outline “Sign in”), “Want to earn?” card
+- **Login**: Name input, role toggles (Driver/Customer), Continue
+- **Book Pickup (Order Intake v1)**:
+  - Required: Name, Phone, Address (+ Apt), City/State/Zip
+  - Retailer, Return method (segmented: Store / UPS / FedEx / USPS)
+  - Item description
+  - Package size (S/M/L) as chips
+  - Pickup window (ASAP / select slot)
+  - CTA: **Pay & Create Order**
+- **Order Status**:
+  - Retailer + address card
+  - Stepper chips (Created → Completed)
+  - Secondary: Advance (demo)
+
+### 04 Driver App (same brand, action-first)
+- **Job Queue**: Job Cards; filters (Nearby / High Pay)
+- **Job Detail**: pickup addr, retailer, big action row (Accept → Picked Up → Dropped Off), space for proof photo
+- **Earnings**: Today / Week / Month totals
+- **Profile**: Availability toggle, vehicle info, support link
+
+### 05 Website (matching DS)
+- **Home**: header (logo + nav), hero with phone mock, CTAs
+- **How it works**: 3 cards (Book → Hand-off → Refund)
+- **Pricing**: flat vs distance examples
+- **Become a driver**: benefits + simple form
+
+## 6) Prototype (10–15 min)
+- On **06 Prototype**, link buttons:
+  - Welcome → Book Pickup
+  - Login (role) → destination
+  - Book Pickup → Order Status
+- Use **Smart Animate, 300ms, Ease out**
+- Toasts: “Open overlay” interaction
+
+## 7) Accessibility & Tap Targets (10 min)
+- Contrast: text on offWhite = brand.barcode (AA)
+- Min target size 44×44
+- Don’t use color alone for state (selected chip = fill + stroke change)
+
+## 8) Handoff (10 min)
+- **Token map** showing variable ↔ code names:
+  - brand.cardboard ↔ `colors.cardboard`
+  - brand.offWhite ↔ `colors.offWhite`
+  - brand.barcode ↔ `colors.barcode`
+  - radius.card ↔ `radii.card`
+  - space.16 ↔ `spacing[3]` (document the index mapping)
+- Export rules: icons **SVG**, images **PNG**; logo **SVG**
+- Naming: `cmp/Button/Primary`, `cmp/Input/Text`, `screen/Customer/BookPickup`
+
+## 9) Definition of Done
+- [ ] Variables for all colors/typography/radii/spacing
+- [ ] Buttons, Inputs, Cards, Chips, App Bar = components with variants
+- [ ] 4 Customer + 3 Driver + Website Home screens assembled
+- [ ] Prototype links working
+- [ ] Handoff page includes token map + export rules
+- [ ] Looks good on iPhone 13 & Pixel 7 frames
+
+## Optional Plugins
+- Autoflow (quick flow arrows)
+- Iconify (icons)
+- Content Reel (fake content)
+- Tokens Studio (export tokens JSON later)

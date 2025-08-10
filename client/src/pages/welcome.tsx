@@ -202,7 +202,7 @@ export default function Welcome() {
       {/* Footer */}
       <Card className="brand-card border-t-2 border-gray-200">
         <CardContent className="p-4">
-          <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
+          <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground flex-wrap">
             <button 
               onClick={() => setLocation('/login')}
               className="hover:text-primary transition-colors"
@@ -216,6 +216,13 @@ export default function Welcome() {
             <span>•</span>
             <button className="hover:text-primary transition-colors">
               About Us
+            </button>
+            <span>•</span>
+            <button 
+              onClick={() => setLocation('/design-system-demo')}
+              className="hover:text-primary transition-colors font-medium"
+            >
+              Design System
             </button>
           </div>
         </CardContent>
