@@ -70,11 +70,11 @@ export default function Welcome() {
             
             {/* Left side - Main content */}
             <div className="text-white space-y-8">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex justify-center mb-8">
                 <img 
                   src="/logo-transparent.png" 
                   alt="Returnly Logo" 
-                  className="h-24 w-auto"
+                  className="h-32 w-auto"
                 />
               </div>
               
@@ -145,15 +145,15 @@ export default function Welcome() {
           />
         </div>
         <div className="relative px-8 lg:px-16 text-center">
-          <div className="flex items-center justify-center mb-6">
+          <div className="flex flex-col items-center justify-center mb-8">
             <img 
               src="/logo-transparent.png" 
               alt="Returnly Logo" 
-              className="h-20 w-auto mr-4"
+              className="h-40 w-auto mb-6"
             />
             <div>
-              <div className="text-3xl font-bold text-gray-800">Welcome to Returnly</div>
-              <div className="text-lg text-gray-600">Return Delivery Service</div>
+              <div className="text-4xl font-bold text-gray-800 mb-2">Welcome to Returnly</div>
+              <div className="text-xl text-gray-600">Return Delivery Service</div>
             </div>
           </div>
         </div>

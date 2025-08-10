@@ -20,7 +20,7 @@ Preferred communication style: Simple, everyday language.
 - Removed all Card components and container borders for seamless sectioned layout
 - Created 7 distinct full-width sections with unique background images and gradients
 - Enlarged favicon to 1024x1024px - the absolute maximum size browsers support
-- Fixed logo display issues by creating transparent PNG version and increasing size (h-24 in hero, h-20 in welcome section)
+- Fixed logo display issues by creating transparent PNG version and centering like DoorDash (h-32 in hero, h-40 in welcome section - 5x original size)
 - Enlarged favicon "R" letter to 240px font size for maximum visibility
 - Maintained horizontal sectioning without visible lines or borders
 - Applied authentic stock photography to each section (packages, delivery, retail, drivers)
