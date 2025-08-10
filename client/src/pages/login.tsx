@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,16 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [activeTab, setActiveTab] = useState("login");
+
+  // Check URL params for tab selection
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tab = urlParams.get('tab');
+    if (tab === 'register') {
+      setActiveTab('register');
+    }
+  }, []);
 
   // Login form state
   const [loginData, setLoginData] = useState({
@@ -122,7 +132,7 @@ export default function Login() {
           <p className="text-amber-700">Return delivery made effortless</p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login" data-testid="tab-login">Sign In</TabsTrigger>
             <TabsTrigger value="register" data-testid="tab-register">Sign Up</TabsTrigger>

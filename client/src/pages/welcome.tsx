@@ -2,7 +2,7 @@ import { useLocation } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User } from 'lucide-react';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -118,23 +118,62 @@ export default function Welcome() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg"
-                  className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
-                  onClick={() => setLocation(isAuthenticated ? '/book-pickup' : '/login')}
-                  data-testid="button-start-return-hero"
-                >
-                  {isAuthenticated ? 'Book Pickup' : 'Start Return'}
-                </Button>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
-                  onClick={() => setLocation('/login')}
-                  data-testid="button-sign-in-hero"
-                >
-                  Sign In
-                </Button>
+                {isAuthenticated ? (
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button 
+                      size="lg"
+                      className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
+                      onClick={() => setLocation('/book-pickup')}
+                      data-testid="button-book-pickup-hero"
+                    >
+                      Book Pickup
+                    </Button>
+                    {user?.isDriver && (
+                      <Button 
+                        size="lg"
+                        variant="outline"
+                        className="border-blue-800 text-blue-800 hover:bg-blue-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
+                        onClick={() => setLocation('/driver-portal')}
+                        data-testid="button-driver-portal-hero"
+                      >
+                        <Truck className="h-5 w-5 mr-2" />
+                        Driver Portal
+                      </Button>
+                    )}
+                    {user?.isAdmin && (
+                      <Button 
+                        size="lg"
+                        variant="outline"
+                        className="border-red-800 text-red-800 hover:bg-red-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
+                        onClick={() => setLocation('/admin-dashboard')}
+                        data-testid="button-admin-dashboard-hero"
+                      >
+                        <Shield className="h-5 w-5 mr-2" />
+                        Admin Dashboard
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Button 
+                      size="lg"
+                      className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
+                      onClick={() => setLocation('/login')}
+                      data-testid="button-sign-in-hero"
+                    >
+                      Sign In
+                    </Button>
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
+                      onClick={() => setLocation('/login?tab=register')}
+                      data-testid="button-sign-up-hero"
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
               </div>
 
               {/* Quick stats */}

@@ -366,8 +366,16 @@ export class MemStorage implements IStorage {
   async createPromoCode(insertPromoCode: InsertPromoCode): Promise<PromoCode> {
     const promoCode: PromoCode = {
       id: this.nextPromoId++,
-      ...insertPromoCode,
+      code: insertPromoCode.code,
+      description: insertPromoCode.description || null,
+      discountType: insertPromoCode.discountType,
+      discountValue: insertPromoCode.discountValue,
+      minOrderValue: insertPromoCode.minOrderValue ?? null,
+      maxUses: insertPromoCode.maxUses ?? null,
       currentUses: 0,
+      isActive: insertPromoCode.isActive ?? true,
+      validFrom: insertPromoCode.validFrom ?? new Date(),
+      validUntil: insertPromoCode.validUntil ?? null,
       createdAt: new Date()
     };
     this.promoCodes.set(insertPromoCode.code, promoCode);
@@ -385,7 +393,7 @@ export class MemStorage implements IStorage {
       return { valid: false };
     }
     
-    if (promo.maxUses && promo.currentUses >= promo.maxUses) {
+    if (promo.maxUses && (promo.currentUses ?? 0) >= promo.maxUses) {
       return { valid: false };
     }
     
@@ -404,7 +412,14 @@ export class MemStorage implements IStorage {
   async createDriverEarning(insertEarning: InsertDriverEarning): Promise<DriverEarning> {
     const earning: DriverEarning = {
       id: this.nextEarningId++,
-      ...insertEarning,
+      driverId: insertEarning.driverId,
+      orderId: insertEarning.orderId,
+      baseEarning: insertEarning.baseEarning,
+      tipEarning: insertEarning.tipEarning ?? null,
+      bonusEarning: insertEarning.bonusEarning ?? null,
+      totalEarning: insertEarning.totalEarning,
+      status: insertEarning.status ?? 'pending',
+      paidAt: insertEarning.paidAt ?? null,
       createdAt: new Date()
     };
     this.driverEarnings.set(earning.id, earning);
@@ -419,7 +434,13 @@ export class MemStorage implements IStorage {
   async createNotification(insertNotification: InsertNotification): Promise<Notification> {
     const notification: Notification = {
       id: this.nextNotificationId++,
-      ...insertNotification,
+      userId: insertNotification.userId,
+      type: insertNotification.type,
+      title: insertNotification.title,
+      message: insertNotification.message,
+      data: insertNotification.data ?? {},
+      isRead: insertNotification.isRead ?? false,
+      channel: insertNotification.channel ?? 'app',
       createdAt: new Date()
     };
     this.notifications.set(notification.id, notification);
@@ -438,7 +459,9 @@ export class MemStorage implements IStorage {
   async recordAnalytics(insertAnalytics: InsertAnalytics): Promise<Analytics> {
     const analytics: Analytics = {
       id: this.nextAnalyticsId++,
-      ...insertAnalytics,
+      metric: insertAnalytics.metric,
+      value: insertAnalytics.value,
+      dimensions: insertAnalytics.dimensions ?? {},
       timestamp: insertAnalytics.timestamp || new Date()
     };
     this.analytics.set(`${analytics.metric}-${analytics.id}`, analytics);
@@ -457,6 +480,107 @@ export class MemStorage implements IStorage {
     
     return results.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
+
+  // Additional required methods
+  async getAllOrders(): Promise<Order[]> {
+    return Array.from(this.orders.values());
+  }
+
+  async getAllDrivers(): Promise<User[]> {
+    return Array.from(this.users.values()).filter(user => user.isDriver);
+  }
+
+  async getOrdersByDriver(driverId: string): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
+  }
+
+  async getDriverOrders(driverId: string): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
+  }
 }
 
 export const storage = new MemStorage();
+
+// Initialize demo data
+(async () => {
+  // Create demo users
+  await storage.createUser({
+    username: "demo",
+    email: "demo@returnly.com",
+    password: "demo123",
+    firstName: "Demo",
+    lastName: "User"
+  });
+
+  await storage.createUser({
+    username: "driver1",
+    email: "driver@returnly.com", 
+    password: "driver123",
+    firstName: "John",
+    lastName: "Driver",
+    isDriver: true
+  });
+
+  await storage.createUser({
+    username: "admin",
+    email: "admin@returnly.com",
+    password: "admin123", 
+    firstName: "Admin",
+    lastName: "User",
+    isAdmin: true
+  });
+
+  // Create demo orders
+  const demoOrder1 = await storage.createOrder({
+    userId: "1",
+    pickupAddress: "123 Main St, San Francisco, CA 94105",
+    retailer: "Target",
+    itemDescription: "Smart TV - Wrong size ordered",
+    returnReason: "size_issue",
+    basePrice: 3.99,
+    tip: 2.00,
+    totalPrice: 5.99,
+    priority: "standard"
+  });
+
+  const demoOrder2 = await storage.createOrder({
+    userId: "1", 
+    pickupAddress: "456 Oak Ave, San Francisco, CA 94102",
+    retailer: "Best Buy",
+    itemDescription: "Laptop - Defective screen",
+    returnReason: "defective",
+    basePrice: 3.99,
+    tip: 5.00,
+    totalPrice: 8.99,
+    priority: "urgent",
+    isFragile: true
+  });
+
+  // Create demo promo codes
+  await storage.createPromoCode({
+    code: "RETURN50",
+    description: "50% off your first return",
+    discountType: "percentage",
+    discountValue: 50,
+    maxUses: 100
+  });
+
+  await storage.createPromoCode({
+    code: "BUNDLE25", 
+    description: "$2.50 off orders over $5",
+    discountType: "fixed",
+    discountValue: 2.50,
+    minOrderValue: 5.00,
+    maxUses: 50
+  });
+
+  await storage.createPromoCode({
+    code: "FREESHIP",
+    description: "Free delivery on any order",
+    discountType: "free_delivery",
+    discountValue: 3.99,
+    maxUses: 25
+  });
+
+  console.log("Demo data initialized successfully");
+})();

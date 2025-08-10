@@ -9,6 +9,8 @@ import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
 import OrderStatus from "@/pages/order-status";
+import DriverPortal from "@/pages/driver-portal";
+import AdminDashboard from "@/pages/admin-dashboard";
 import DesignSystemDemo from "@/pages/design-system-demo";
 import MobileAppDemo from "@/pages/mobile-app-demo";
 import LogoColors from "@/pages/logo-colors";
@@ -40,6 +42,8 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
       <Route path="/order-status/:orderId" component={OrderStatus} />
+      <Route path="/driver-portal" component={DriverPortal} />
+      <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/design-system-demo" component={DesignSystemDemo} />
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
       <Route path="/logo-colors" component={LogoColors} />

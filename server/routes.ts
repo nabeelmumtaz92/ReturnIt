@@ -405,6 +405,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver routes
+  app.get("/api/driver/orders/available", async (req, res) => {
+    try {
+      const orders = await storage.getOrdersByStatus("created");
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch available orders" });
+    }
+  });
+
+  app.get("/api/driver/orders", async (req, res) => {
+    try {
+      const driverId = (req.session as any).user?.id;
+      const orders = await storage.getOrdersByDriver(driverId);
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch driver orders" });
+    }
+  });
+
+  app.post("/api/driver/orders/:orderId/accept", async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const driverId = (req.session as any).user?.id;
+      
+      const order = await storage.updateOrder(orderId, { 
+        driverId, 
+        status: "assigned",
+        assignedAt: new Date()
+      });
+      
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to accept order" });
+    }
+  });
+
+  app.get("/api/driver/earnings", async (req, res) => {
+    try {
+      const driverId = (req.session as any).user?.id;
+      const earnings = await storage.getDriverEarnings(driverId);
+      res.json(earnings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch earnings" });
+    }
+  });
+
+  app.patch("/api/driver/status", async (req, res) => {
+    try {
+      const userId = (req.session as any).user?.id;
+      const { isOnline, currentLocation } = req.body;
+      
+      const user = await storage.updateUser(userId, { 
+        isOnline,
+        currentLocation: currentLocation || null
+      });
+      
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update driver status" });
+    }
+  });
+
+  // Admin routes  
+  app.get("/api/admin/orders", async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  app.get("/api/admin/drivers", async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const drivers = await storage.getAllDrivers();
+      res.json(drivers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch drivers" });
+    }
+  });
+
+  app.post("/api/admin/promo", async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const validatedData = insertPromoCodeSchema.parse(req.body);
+      const promoCode = await storage.createPromoCode(validatedData);
+      res.status(201).json(promoCode);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid promo code data" });
+    }
+  });
+
+  // Promo code validation endpoint
+  app.post("/api/promo/validate", async (req, res) => {
+    try {
+      const { code, orderValue } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ message: "Promo code required" });
+      }
+      
+      const validation = await storage.validatePromoCode(code, orderValue || 0);
+      res.json(validation);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to validate promo code" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
