@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 250">
+  <!-- Background with cardboard theme -->
+  <rect width="200" height="250" fill="#F8F7F4" stroke="#D2B48C" stroke-width="2"/>
+  
+  <!-- Title -->
+  <text x="100" y="25" text-anchor="middle" fill="#1A1A1A" font-family="system-ui" font-size="16" font-weight="bold">Returnly Mobile App</text>
+  
+  <!-- QR Code placeholder (simplified pattern) -->
+  <g transform="translate(50, 40)">
+    <rect width="100" height="100" fill="#F8F7F4" stroke="#1A1A1A" stroke-width="1"/>
+    
+    <!-- Corner squares -->
+    <rect x="10" y="10" width="20" height="20" fill="#1A1A1A"/>
+    <rect x="70" y="10" width="20" height="20" fill="#1A1A1A"/>
+    <rect x="10" y="70" width="20" height="20" fill="#1A1A1A"/>
+    
+    <!-- Pattern -->
+    <rect x="40" y="20" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="50" y="20" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="30" y="40" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="60" y="40" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="45" y="60" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="25" y="50" width="5" height="5" fill="#1A1A1A"/>
+    <rect x="75" y="60" width="5" height="5" fill="#1A1A1A"/>
+    
+    <!-- Center pattern -->
+    <rect x="45" y="45" width="10" height="10" fill="#1A1A1A"/>
+  </g>
+  
+  <!-- Instructions -->
+  <text x="100" y="170" text-anchor="middle" fill="#7B5E3B" font-family="system-ui" font-size="12">Scan with phone camera or</text>
+  <text x="100" y="190" text-anchor="middle" fill="#FF8C42" font-family="system-ui" font-size="12" font-weight="bold">Visit: [Your Replit Preview URL]</text>
+  
+  <!-- Mobile testing note -->
+  <text x="100" y="220" text-anchor="middle" fill="#7B5E3B" font-family="system-ui" font-size="10">Open in mobile browser or Expo Go</text>
+</svg>
