@@ -72,7 +72,7 @@ export default function Welcome() {
             <div className="text-white space-y-8">
               <div className="flex items-center gap-3 mb-6">
                 <img 
-                  src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+                  src="/logo.png" 
                   alt="Returnly Logo" 
                   className="h-16 w-auto"
                 />
@@ -147,7 +147,7 @@ export default function Welcome() {
         <div className="relative px-8 lg:px-16 text-center">
           <div className="flex items-center justify-center mb-6">
             <img 
-              src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+              src="/logo.png" 
               alt="Returnly Logo" 
               className="h-16 w-auto mr-4"
             />
