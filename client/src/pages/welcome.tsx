@@ -8,58 +8,158 @@ export default function Welcome() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen relative">
-      {/* Realistic Background Scene - Person handing package to delivery driver */}
-      <div className="absolute inset-0">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50"></div>
+    <div className="min-h-screen">
+      {/* DoorDash-style Hero Section */}
+      <div className="relative h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 overflow-hidden">
         
-        {/* Realistic Delivery Scene - Person handing box to delivery driver */}
-        <div className="absolute bottom-0 right-0 w-full h-full opacity-30 overflow-hidden">
-          {/* Customer figure */}
-          <div className="absolute bottom-32 right-80">
-            <div className="w-16 h-20 bg-blue-600 rounded-t-full relative">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-pink-200 rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-12 bg-blue-700 rounded-full transform rotate-12"></div>
-              <div className="absolute bottom-0 right-0 w-4 h-12 bg-blue-700 rounded-full transform -rotate-12"></div>
+        {/* Hero Content */}
+        <div className="relative z-20 h-full flex items-center">
+          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
+            
+            {/* Left side - Main content */}
+            <div className="text-white space-y-8">
+              <div className="flex items-center gap-3 mb-6">
+                <img 
+                  src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+                  alt="Returnly Logo" 
+                  className="h-16 w-auto"
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+                  Returns made
+                  <br />
+                  <span className="text-yellow-200">effortless</span>
+                </h1>
+                <p className="text-xl lg:text-2xl text-orange-100 font-medium">
+                  We pick up your returns and deliver them back to the store. 
+                  Zero trips, zero hassle.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button 
+                  size="lg"
+                  className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 h-auto"
+                  onClick={() => setLocation('/book-pickup')}
+                  data-testid="button-book-pickup-hero"
+                >
+                  Book Return Pickup
+                </Button>
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="border-white text-white hover:bg-white hover:text-orange-600 font-bold text-lg px-8 py-4 h-auto"
+                  onClick={() => setLocation('/login')}
+                  data-testid="button-sign-in-hero"
+                >
+                  Sign In
+                </Button>
+              </div>
+
+              {/* Quick stats */}
+              <div className="flex flex-wrap gap-8 pt-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold">2hr</div>
+                  <div className="text-orange-200 text-sm">Average pickup</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">500+</div>
+                  <div className="text-orange-200 text-sm">Partner stores</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold">$7.99</div>
+                  <div className="text-orange-200 text-sm">Starting price</div>
+                </div>
+              </div>
             </div>
-            <div className="w-6 h-16 bg-blue-800 mt-1"></div>
-          </div>
-          
-          {/* Package being handed over */}
-          <div className="absolute bottom-40 right-64">
-            <div className="w-8 h-6 bg-amber-700 rounded-sm"></div>
-          </div>
-          
-          {/* Delivery driver figure */}
-          <div className="absolute bottom-32 right-48">
-            <div className="w-16 h-20 bg-orange-500 rounded-t-full relative">
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-pink-200 rounded-full"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-12 bg-orange-600 rounded-full transform rotate-12"></div>
-              <div className="absolute bottom-0 right-0 w-4 h-12 bg-orange-600 rounded-full transform -rotate-12"></div>
-            </div>
-            <div className="w-6 h-16 bg-orange-700 mt-1"></div>
-          </div>
-          
-          {/* Delivery truck */}
-          <div className="absolute bottom-20 right-20">
-            <div className="w-24 h-12 bg-white border-2 border-gray-400 rounded relative">
-              <div className="absolute left-0 w-8 h-8 bg-gray-300 rounded-l"></div>
-              <div className="absolute bottom-0 left-2 w-3 h-3 bg-black rounded-full"></div>
-              <div className="absolute bottom-0 right-2 w-3 h-3 bg-black rounded-full"></div>
-              <div className="absolute top-1 right-2 text-xs font-bold text-orange-600">RETURNLY</div>
+
+            {/* Right side - Realistic delivery scene */}
+            <div className="hidden lg:block relative h-full">
+              <div className="absolute inset-0 flex items-center justify-center">
+                
+                {/* Main delivery scene */}
+                <div className="relative w-full h-96">
+                  
+                  {/* Customer - person handing package */}
+                  <div className="absolute left-20 bottom-20">
+                    <div className="relative">
+                      {/* Head */}
+                      <div className="w-16 h-16 bg-pink-300 rounded-full mb-2"></div>
+                      {/* Body */}
+                      <div className="w-20 h-32 bg-blue-600 rounded-lg relative">
+                        {/* Arms reaching out */}
+                        <div className="absolute -right-8 top-8 w-12 h-4 bg-blue-700 rounded-full transform rotate-45"></div>
+                        <div className="absolute -left-2 top-8 w-12 h-4 bg-blue-700 rounded-full transform -rotate-45"></div>
+                      </div>
+                      {/* Legs */}
+                      <div className="flex gap-2 mt-1">
+                        <div className="w-8 h-20 bg-blue-800 rounded-lg"></div>
+                        <div className="w-8 h-20 bg-blue-800 rounded-lg"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Package being exchanged */}
+                  <div className="absolute left-40 bottom-32 z-10">
+                    <div className="w-12 h-8 bg-amber-700 rounded-sm shadow-lg transform rotate-12 border-2 border-amber-800">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-8 h-1 bg-amber-900"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Delivery driver - Returnly uniform */}
+                  <div className="absolute right-20 bottom-20">
+                    <div className="relative">
+                      {/* Head */}
+                      <div className="w-16 h-16 bg-pink-200 rounded-full mb-2"></div>
+                      {/* Body - Returnly orange uniform */}
+                      <div className="w-20 h-32 bg-orange-600 rounded-lg relative">
+                        {/* Returnly logo on chest */}
+                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs font-bold text-white">R</div>
+                        {/* Arms reaching to receive */}
+                        <div className="absolute -left-6 top-8 w-12 h-4 bg-orange-700 rounded-full transform -rotate-45"></div>
+                        <div className="absolute -right-2 top-8 w-12 h-4 bg-orange-700 rounded-full transform rotate-45"></div>
+                      </div>
+                      {/* Legs */}
+                      <div className="flex gap-2 mt-1">
+                        <div className="w-8 h-20 bg-orange-800 rounded-lg"></div>
+                        <div className="w-8 h-20 bg-orange-800 rounded-lg"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Delivery truck in background */}
+                  <div className="absolute right-4 bottom-4">
+                    <div className="w-32 h-16 bg-white rounded-lg border-4 border-gray-300 relative shadow-xl">
+                      {/* Cab */}
+                      <div className="absolute left-0 top-0 w-12 h-full bg-gray-200 rounded-l-lg"></div>
+                      {/* Wheels */}
+                      <div className="absolute bottom-0 left-3 w-4 h-4 bg-black rounded-full"></div>
+                      <div className="absolute bottom-0 right-3 w-4 h-4 bg-black rounded-full"></div>
+                      {/* Returnly branding */}
+                      <div className="absolute top-2 right-2 text-orange-600 font-bold text-sm">RETURNLY</div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 opacity-20" style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(123,94,59,0.3) 1px, transparent 0)`,
-          backgroundSize: '20px 20px'
-        }}></div>
+
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 z-10">
+          {/* Floating packages */}
+          <div className="absolute top-20 right-10 w-8 h-6 bg-amber-600 rounded-sm opacity-20 transform rotate-12 animate-pulse"></div>
+          <div className="absolute top-40 left-10 w-6 h-4 bg-amber-500 rounded-sm opacity-20 transform -rotate-12 animate-pulse delay-75"></div>
+          <div className="absolute bottom-40 left-20 w-10 h-8 bg-amber-700 rounded-sm opacity-20 transform rotate-6 animate-pulse delay-150"></div>
+        </div>
       </div>
-      
-      <div className="relative max-w-4xl mx-auto px-4 py-6 space-y-6">
+
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Header with Real Logo */}
         <Card className="bg-white/90 backdrop-blur-sm border shadow-lg">
           <CardContent className="p-6 text-center">
