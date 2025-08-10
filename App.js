@@ -75,52 +75,146 @@ const WelcomeScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
+      {/* Hero Section */}
       <View style={styles.header}>
         <Text style={styles.title}>Returnly</Text>
         <Text style={styles.subtitle}>
-          Reverse delivery for returns, exchanges, and donations.
+          Your returns delivered. Zero hassle.
         </Text>
       </View>
 
+      {/* Promotional Banner */}
+      <View style={styles.promoBanner}>
+        <Text style={styles.promoText}>🎉 Limited Time: 50% OFF First Return</Text>
+        <Text style={styles.promoCode}>Use code: RETURN50</Text>
+      </View>
+
+      {/* Main CTA */}
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Make returns effortless</Text>
+        <Text style={styles.cardTitle}>Book Your Return Pickup</Text>
         <Text style={styles.cardSubtitle}>
-          Schedule a pickup, hand off your item, and we'll return it for you.
+          From $7.99 • Pick up in 2 hours • 500+ retail partners
         </Text>
         <View style={styles.buttonRow}>
           <TouchableOpacity 
             style={[styles.button, styles.primaryButton]}
             onPress={() => navigate(screens.BOOK_PICKUP)}
           >
-            <Text style={styles.primaryButtonText}>Book a Pickup</Text>
+            <Text style={styles.primaryButtonText}>Start Return 📦</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.button, styles.secondaryButton]}
-            onPress={() => navigate(screens.LOGIN)}
+            onPress={() => navigate(screens.ORDER_STATUS)}
           >
-            <Text style={styles.secondaryButtonText}>Sign in</Text>
+            <Text style={styles.secondaryButtonText}>Track Order</Text>
           </TouchableOpacity>
         </View>
       </View>
 
+      {/* Customer Reviews */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>⭐ What Our Customers Say</Text>
+        <View style={styles.reviewContainer}>
+          <View style={styles.review}>
+            <Text style={styles.reviewStars}>⭐⭐⭐⭐⭐</Text>
+            <Text style={styles.reviewText}>
+              "Saved me 2 hours at the mall! Driver was super friendly."
+            </Text>
+            <Text style={styles.reviewAuthor}>— Sarah M., San Francisco</Text>
+          </View>
+          <View style={styles.review}>
+            <Text style={styles.reviewStars}>⭐⭐⭐⭐⭐</Text>
+            <Text style={styles.reviewText}>
+              "Perfect for busy parents. Returned 3 packages while kids napped."
+            </Text>
+            <Text style={styles.reviewAuthor}>— Mike D., Austin</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* How It Works */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>📋 How Returnly Works</Text>
+        <View style={styles.stepContainer}>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>1</Text>
+            <Text style={styles.stepText}>Book pickup online or in app</Text>
+          </View>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>2</Text>
+            <Text style={styles.stepText}>Hand package to our driver</Text>
+          </View>
+          <View style={styles.step}>
+            <Text style={styles.stepNumber}>3</Text>
+            <Text style={styles.stepText}>We handle the return for you</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Retail Partners */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>🏪 Trusted Retail Partners</Text>
+        <View style={styles.retailGrid}>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>Target</Text></View>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>Best Buy</Text></View>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>Macy's</Text></View>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>REI</Text></View>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>Nike</Text></View>
+          <View style={styles.retailLogo}><Text style={styles.retailText}>+495 more</Text></View>
+        </View>
+      </View>
+
+      {/* Current Deals */}
+      <View style={styles.card}>
+        <Text style={styles.sectionTitle}>💰 Current Deals</Text>
+        <View style={styles.dealContainer}>
+          <View style={styles.deal}>
+            <Text style={styles.dealTitle}>Bundle Returns</Text>
+            <Text style={styles.dealDesc}>Return 3+ items, save 25%</Text>
+            <Text style={styles.dealCode}>BUNDLE25</Text>
+          </View>
+          <View style={styles.deal}>
+            <Text style={styles.dealTitle}>Student Discount</Text>
+            <Text style={styles.dealDesc}>15% off with .edu email</Text>
+            <Text style={styles.dealCode}>STUDENT15</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Driver Section */}
       <View style={styles.card}>
         <View style={styles.driverCardContent}>
           <View style={styles.iconContainer}>
             <Text style={styles.icon}>🚚</Text>
           </View>
           <View style={styles.driverTextContainer}>
-            <Text style={styles.cardTitle}>Want to earn as a driver?</Text>
+            <Text style={styles.cardTitle}>Earn as a Returnly Driver</Text>
             <Text style={styles.cardSubtitle}>
-              Download the Returnly Driver app to start accepting pickup jobs.
+              $18-25/hour • Flexible schedule • Weekly pay
             </Text>
           </View>
           <TouchableOpacity 
             style={styles.downloadButton}
-            onPress={() => Alert.alert('Coming Soon', 'Driver app coming soon to App Store & Google Play!')}
+            onPress={() => Alert.alert('Driver Portal', 'Coming soon to App Store & Google Play!\n\nEarn up to $25/hour with flexible scheduling.')}
           >
-            <Text style={styles.secondaryButtonText}>Download App</Text>
+            <Text style={styles.primaryButtonText}>Apply Now</Text>
           </TouchableOpacity>
         </View>
+      </View>
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <TouchableOpacity onPress={() => navigate(screens.LOGIN)}>
+          <Text style={styles.footerLink}>Sign In</Text>
+        </TouchableOpacity>
+        <Text style={styles.footerSeparator}>•</Text>
+        <TouchableOpacity>
+          <Text style={styles.footerLink}>Help Center</Text>
+        </TouchableOpacity>
+        <Text style={styles.footerSeparator}>•</Text>
+        <TouchableOpacity>
+          <Text style={styles.footerLink}>About Us</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -561,40 +655,54 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.offWhite,
-    paddingHorizontal: 18,
-    paddingTop: Platform.OS === 'web' ? 24 : 50,
+    paddingHorizontal: Platform.OS === 'web' ? '5%' : 18,
+    paddingTop: Platform.OS === 'web' ? 40 : 50,
+    maxWidth: Platform.OS === 'web' ? 1200 : '100%',
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    marginBottom: 24,
+    marginBottom: Platform.OS === 'web' ? 40 : 24,
+    alignItems: Platform.OS === 'web' ? 'center' : 'flex-start',
+    paddingBottom: Platform.OS === 'web' ? 20 : 0,
+    borderBottomWidth: Platform.OS === 'web' ? 1 : 0,
+    borderBottomColor: colors.cardboard,
   },
   title: {
     color: colors.barcodeBlack,
     fontWeight: '800',
-    fontSize: 32,
+    fontSize: Platform.OS === 'web' ? 48 : 32,
     fontFamily: Platform.select({
       ios: 'System',
       android: 'Roboto',
+      web: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
       default: 'system-ui',
     }),
+    textAlign: Platform.OS === 'web' ? 'center' : 'left',
   },
   subtitle: {
     color: colors.tapeBrown,
-    marginTop: 8,
-    fontSize: 16,
-    lineHeight: 22,
+    marginTop: Platform.OS === 'web' ? 12 : 8,
+    fontSize: Platform.OS === 'web' ? 20 : 16,
+    lineHeight: Platform.OS === 'web' ? 28 : 22,
+    textAlign: Platform.OS === 'web' ? 'center' : 'left',
+    maxWidth: Platform.OS === 'web' ? 600 : '100%',
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
+    borderRadius: Platform.OS === 'web' ? 16 : 12,
+    padding: Platform.OS === 'web' ? 32 : 20,
+    marginBottom: Platform.OS === 'web' ? 24 : 16,
     borderWidth: 1,
     borderColor: colors.cardboard,
     shadowColor: colors.cardboard,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: Platform.OS === 'web' ? 8 : 2 },
+    shadowOpacity: Platform.OS === 'web' ? 0.1 : 0.2,
+    shadowRadius: Platform.OS === 'web' ? 16 : 4,
+    elevation: Platform.OS === 'web' ? 8 : 3,
+    maxWidth: Platform.OS === 'web' ? 800 : '100%',
+    alignSelf: 'center',
+    width: '100%',
   },
   cardTitle: {
     color: colors.barcodeBlack,
@@ -609,16 +717,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   buttonRow: {
-    flexDirection: 'row',
-    gap: 12,
+    flexDirection: Platform.OS === 'web' ? 'row' : 'row',
+    gap: Platform.OS === 'web' ? 16 : 12,
     flexWrap: 'wrap',
+    justifyContent: Platform.OS === 'web' ? 'center' : 'flex-start',
+    marginTop: Platform.OS === 'web' ? 8 : 0,
   },
   button: {
-    flex: 1,
-    minWidth: 120,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
+    flex: Platform.OS === 'web' ? 0 : 1,
+    minWidth: Platform.OS === 'web' ? 180 : 120,
+    paddingVertical: Platform.OS === 'web' ? 16 : 12,
+    paddingHorizontal: Platform.OS === 'web' ? 32 : 16,
+    borderRadius: Platform.OS === 'web' ? 16 : 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -628,7 +738,8 @@ const styles = StyleSheet.create({
   primaryButtonText: {
     color: '#FFFFFF',
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: Platform.OS === 'web' ? 18 : 16,
+    letterSpacing: Platform.OS === 'web' ? 0.5 : 0,
   },
   secondaryButton: {
     backgroundColor: colors.cardboard,
@@ -638,7 +749,8 @@ const styles = StyleSheet.create({
   secondaryButtonText: {
     color: colors.barcodeBlack,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: Platform.OS === 'web' ? 18 : 16,
+    letterSpacing: Platform.OS === 'web' ? 0.5 : 0,
   },
   driverCardContent: {
     flexDirection: 'row',
@@ -669,23 +781,24 @@ const styles = StyleSheet.create({
   },
   // Login Screen Styles
   inputContainer: {
-    marginBottom: 16,
+    marginBottom: Platform.OS === 'web' ? 24 : 16,
   },
   label: {
     color: colors.barcodeBlack,
-    marginBottom: 8,
+    marginBottom: Platform.OS === 'web' ? 12 : 8,
     fontWeight: '600',
-    fontSize: 16,
+    fontSize: Platform.OS === 'web' ? 18 : 16,
   },
   input: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
+    borderWidth: Platform.OS === 'web' ? 2 : 1,
     borderColor: colors.cardboard,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    fontSize: 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    paddingHorizontal: Platform.OS === 'web' ? 20 : 12,
+    paddingVertical: Platform.OS === 'web' ? 16 : 12,
+    fontSize: Platform.OS === 'web' ? 18 : 16,
     color: colors.barcodeBlack,
+    transition: Platform.OS === 'web' ? 'border-color 0.2s ease' : 'none',
   },
   textArea: {
     minHeight: 80,
@@ -857,9 +970,13 @@ const styles = StyleSheet.create({
   sectionHeader: {
     color: colors.barcodeBlack,
     fontWeight: '700',
-    fontSize: 18,
-    marginBottom: 16,
-    marginTop: 8,
+    fontSize: Platform.OS === 'web' ? 24 : 18,
+    marginBottom: Platform.OS === 'web' ? 24 : 16,
+    marginTop: Platform.OS === 'web' ? 16 : 8,
+    textAlign: Platform.OS === 'web' ? 'center' : 'left',
+    borderBottomWidth: Platform.OS === 'web' ? 2 : 0,
+    borderBottomColor: colors.cardboard,
+    paddingBottom: Platform.OS === 'web' ? 12 : 0,
   },
   inputError: {
     borderColor: '#E74C3C',
@@ -874,25 +991,28 @@ const styles = StyleSheet.create({
   pickerContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: Platform.OS === 'web' ? 12 : 8,
+    justifyContent: Platform.OS === 'web' ? 'center' : 'flex-start',
   },
   pickerOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    minWidth: 80,
+    paddingVertical: Platform.OS === 'web' ? 12 : 8,
+    paddingHorizontal: Platform.OS === 'web' ? 24 : 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    borderWidth: Platform.OS === 'web' ? 2 : 1,
+    minWidth: Platform.OS === 'web' ? 100 : 80,
     alignItems: 'center',
+    transition: Platform.OS === 'web' ? 'all 0.2s ease' : 'none',
   },
   pickerOptionWide: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
+    paddingVertical: Platform.OS === 'web' ? 12 : 8,
+    paddingHorizontal: Platform.OS === 'web' ? 24 : 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    borderWidth: Platform.OS === 'web' ? 2 : 1,
     flex: 1,
-    minWidth: '45%',
+    minWidth: Platform.OS === 'web' ? '48%' : '45%',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: Platform.OS === 'web' ? 12 : 8,
+    transition: Platform.OS === 'web' ? 'all 0.2s ease' : 'none',
   },
   pickerSelected: {
     backgroundColor: colors.accentOrange,
@@ -946,5 +1066,174 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     fontWeight: '600',
+  },
+  // Website-like promotional styles
+  promoBanner: {
+    backgroundColor: colors.accentOrange,
+    paddingVertical: Platform.OS === 'web' ? 20 : 16,
+    paddingHorizontal: Platform.OS === 'web' ? 32 : 20,
+    borderRadius: Platform.OS === 'web' ? 16 : 12,
+    marginBottom: Platform.OS === 'web' ? 24 : 16,
+    alignItems: 'center',
+    shadowColor: colors.accentOrange,
+    shadowOffset: { width: 0, height: Platform.OS === 'web' ? 4 : 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: Platform.OS === 'web' ? 8 : 4,
+    elevation: 4,
+  },
+  promoText: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: Platform.OS === 'web' ? 20 : 16,
+    textAlign: 'center',
+    marginBottom: 4,
+  },
+  promoCode: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  sectionTitle: {
+    color: colors.barcodeBlack,
+    fontWeight: '700',
+    fontSize: Platform.OS === 'web' ? 22 : 18,
+    marginBottom: Platform.OS === 'web' ? 20 : 16,
+    textAlign: Platform.OS === 'web' ? 'center' : 'left',
+  },
+  reviewContainer: {
+    gap: Platform.OS === 'web' ? 16 : 12,
+  },
+  review: {
+    backgroundColor: colors.offWhite,
+    padding: Platform.OS === 'web' ? 20 : 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.accentGreen,
+  },
+  reviewStars: {
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    marginBottom: 8,
+  },
+  reviewText: {
+    color: colors.barcodeBlack,
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    fontStyle: 'italic',
+    lineHeight: Platform.OS === 'web' ? 22 : 20,
+    marginBottom: 8,
+  },
+  reviewAuthor: {
+    color: colors.tapeBrown,
+    fontSize: Platform.OS === 'web' ? 14 : 12,
+    fontWeight: '600',
+  },
+  stepContainer: {
+    gap: Platform.OS === 'web' ? 20 : 16,
+  },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.offWhite,
+    padding: Platform.OS === 'web' ? 20 : 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    gap: Platform.OS === 'web' ? 16 : 12,
+  },
+  stepNumber: {
+    backgroundColor: colors.accentOrange,
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: Platform.OS === 'web' ? 18 : 16,
+    width: Platform.OS === 'web' ? 36 : 32,
+    height: Platform.OS === 'web' ? 36 : 32,
+    borderRadius: Platform.OS === 'web' ? 18 : 16,
+    textAlign: 'center',
+    lineHeight: Platform.OS === 'web' ? 36 : 32,
+  },
+  stepText: {
+    color: colors.barcodeBlack,
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    fontWeight: '500',
+    flex: 1,
+  },
+  retailGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Platform.OS === 'web' ? 12 : 8,
+    justifyContent: 'space-between',
+  },
+  retailLogo: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: colors.cardboard,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    paddingVertical: Platform.OS === 'web' ? 16 : 12,
+    paddingHorizontal: Platform.OS === 'web' ? 20 : 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: Platform.OS === 'web' ? 120 : 100,
+    flex: Platform.OS === 'web' ? 0 : 1,
+  },
+  retailText: {
+    color: colors.barcodeBlack,
+    fontWeight: '600',
+    fontSize: Platform.OS === 'web' ? 14 : 12,
+    textAlign: 'center',
+  },
+  dealContainer: {
+    flexDirection: Platform.OS === 'web' ? 'row' : 'column',
+    gap: Platform.OS === 'web' ? 16 : 12,
+  },
+  deal: {
+    backgroundColor: colors.offWhite,
+    padding: Platform.OS === 'web' ? 20 : 16,
+    borderRadius: Platform.OS === 'web' ? 12 : 8,
+    borderWidth: 2,
+    borderColor: colors.accentGreen,
+    flex: Platform.OS === 'web' ? 1 : 0,
+    alignItems: 'center',
+  },
+  dealTitle: {
+    color: colors.barcodeBlack,
+    fontWeight: '700',
+    fontSize: Platform.OS === 'web' ? 18 : 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  dealDesc: {
+    color: colors.tapeBrown,
+    fontSize: Platform.OS === 'web' ? 14 : 12,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  dealCode: {
+    backgroundColor: colors.accentGreen,
+    color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: Platform.OS === 'web' ? 14 : 12,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  footer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: Platform.OS === 'web' ? 40 : 32,
+    gap: Platform.OS === 'web' ? 16 : 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.cardboard,
+    marginTop: Platform.OS === 'web' ? 24 : 16,
+  },
+  footerLink: {
+    color: colors.tapeBrown,
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    fontWeight: '500',
+  },
+  footerSeparator: {
+    color: colors.cardboard,
+    fontSize: Platform.OS === 'web' ? 16 : 14,
   },
 });
