@@ -66,7 +66,7 @@ export default function Welcome() {
         
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
+          <div className="w-full px-8 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
             
             {/* Left side - Main content */}
             <div className="text-white space-y-8">
@@ -137,7 +137,7 @@ export default function Welcome() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+      <div className="w-full px-8 lg:px-16 py-6 space-y-6">
         {/* Header with Real Logo */}
         <Card className="bg-white/90 backdrop-blur-sm border shadow-lg">
           <CardContent className="p-6 text-center">
