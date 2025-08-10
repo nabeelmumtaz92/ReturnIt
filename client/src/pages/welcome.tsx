@@ -74,7 +74,7 @@ export default function Welcome() {
                 <img 
                   src="/logo-orange.png" 
                   alt="Returnly Logo" 
-                  className="h-32 sm:h-36 md:h-40 lg:h-48 xl:h-56 2xl:h-64 w-auto"
+                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto"
                 />
               </div>
               
@@ -149,7 +149,7 @@ export default function Welcome() {
             <img 
               src="/logo-orange.png" 
               alt="Returnly Logo" 
-              className="h-24 sm:h-28 md:h-32 lg:h-40 xl:h-44 w-auto mb-6 lg:mb-8"
+              className="h-20 sm:h-24 md:h-28 lg:h-36 xl:h-40 w-auto mb-6 lg:mb-8"
             />
             <div>
               <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">Welcome to Returnly</div>
