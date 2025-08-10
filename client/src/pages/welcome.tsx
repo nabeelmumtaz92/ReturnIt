@@ -46,23 +46,23 @@ export default function Welcome() {
       <Card className="brand-card">
         <CardContent className="p-4 flex items-center">
           <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
-               style={{ backgroundColor: 'rgba(110, 44, 47, 0.2)' }}>
-            <Truck className="w-5 h-5 text-foreground" />
+               style={{ backgroundColor: 'rgba(255, 140, 66, 0.2)' }}>
+            <Truck className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">Want to earn?</h3>
+            <h3 className="text-lg font-semibold text-foreground">Want to earn as a driver?</h3>
             <p className="text-muted-foreground text-sm">
-              Drivers accept return jobs and get paid fast.
+              Download the Returnly Driver app to start accepting pickup jobs.
             </p>
           </div>
           <Button 
             variant="outline" 
             size="sm"
             className="brand-button-outlined text-sm px-4 py-2"
-            onClick={() => setLocation('/driver-portal')}
-            data-testid="button-open-driver"
+            onClick={() => window.open('https://apps.apple.com/app/returnly-driver', '_blank')}
+            data-testid="button-download-driver-app"
           >
-            Open Driver
+            Download App
           </Button>
         </CardContent>
       </Card>

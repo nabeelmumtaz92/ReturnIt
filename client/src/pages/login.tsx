@@ -16,8 +16,13 @@ export default function Login() {
 
   const handleLogin = () => {
     if (!name.trim()) return;
+    if (asDriver) {
+      // Redirect drivers to download the mobile app
+      alert('Drivers should download the Returnly Driver mobile app to accept jobs and manage deliveries.');
+      return;
+    }
     signIn(name, asDriver);
-    setLocation(asDriver ? '/driver-portal' : '/book-pickup');
+    setLocation('/book-pickup');
   };
 
   return (

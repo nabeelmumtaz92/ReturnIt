@@ -2,12 +2,12 @@
 
 Returnly is a reverse delivery service platform that facilitates returns, exchanges, and donations by handling the pickup and return process for customers. The platform connects customers who need items returned with drivers who can handle the delivery. The system consists of:
 
-- **Customer Mobile App**: For booking pickups, tracking returns, and managing orders
-- **Driver Mobile App**: For accepting jobs, managing deliveries, and updating order status  
-- **Web Dashboard**: Unified web interface for both customers and drivers (current implementation)
-- **Backend API**: Shared Node.js/Express backend serving both mobile apps and web interface
+- **Customer Website**: Primary web interface for booking pickups, tracking returns, and managing orders (current implementation)
+- **Customer Mobile App**: Mobile version of the customer experience with additional features like photo upload
+- **Driver Mobile App**: Dedicated mobile app for drivers to accept jobs, navigate, and update order status
+- **Backend API**: Shared Node.js/Express backend serving all customer and driver interfaces
 
-The current web application serves as both a prototype and admin dashboard, with the mobile apps being the primary user interfaces in production.
+The current web application is the main customer-facing interface, designed with a cardboard/shipping theme to create a friendly, approachable experience for people booking returns.
 
 # User Preferences
 
@@ -50,25 +50,27 @@ Preferred communication style: Simple, everyday language.
 - **Touch-Friendly**: Optimized for mobile interactions and gestures
 - **Cardboard Theme**: Custom shipping/logistics-inspired theme with warm tan, orange, and brown colors for accessibility and brand consistency
 
-### Customer Mobile App Features
+### Customer Website Features (Current Implementation)
 - Book return pickups with address and retailer selection
 - Real-time order tracking and status updates
-- Photo upload for return items (planned)
-- Push notifications for driver updates
-- Order history and receipts
+- User-friendly cardboard/shipping theme
+- Mobile-responsive design for phone and tablet use
+- Order history and management
 
-### Driver Mobile App Features  
-- View and accept available pickup jobs
-- GPS navigation to customer locations
-- Update order status (picked up, delivered)
-- Earnings tracking and payment history
-- Driver ratings and performance metrics
+### Customer Mobile App Features (Future)
+- Native mobile experience with enhanced UX
+- Camera integration for photographing return items
+- Push notifications for real-time updates
+- Location services for accurate pickup addresses
+- Offline capabilities for poor connectivity areas
 
-### Web Dashboard (Current Implementation)
-- Unified interface for testing both customer and driver workflows
-- Administrative functions and order management
-- Analytics and reporting capabilities
-- Customer support tools
+### Driver Mobile App Features (Separate Platform)
+- View and accept available pickup jobs in real-time
+- GPS navigation and route optimization
+- Update order status with location tracking
+- Earnings dashboard and payment history
+- Driver ratings, performance metrics, and feedback system
+- Background location services for accurate ETAs
 
 # External Dependencies
 
