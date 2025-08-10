@@ -1,0 +1,56 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Cardboard gradient -->
+    <linearGradient id="cardboardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B7355;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#64564C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#46362D;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow gradient -->
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#46362D;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#2D1B14;stop-opacity:0.6" />
+    </linearGradient>
+    
+    <!-- Tape gradient -->
+    <linearGradient id="tapeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#D4A574;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8956A;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main box shape -->
+  <g transform="translate(25,25)">
+    <!-- Box body -->
+    <rect x="0" y="20" width="150" height="130" fill="url(#cardboardGradient)" stroke="#46362D" stroke-width="2" rx="8"/>
+    
+    <!-- Box top flap -->
+    <polygon points="0,20 20,0 130,0 150,20" fill="url(#cardboardGradient)" stroke="#46362D" stroke-width="2"/>
+    
+    <!-- Box side -->
+    <polygon points="150,20 170,0 170,130 150,150" fill="url(#shadowGradient)" stroke="#46362D" stroke-width="2"/>
+    
+    <!-- Tape strips -->
+    <rect x="70" y="0" width="10" height="150" fill="url(#tapeGradient)" opacity="0.8"/>
+    <rect x="0" y="65" width="150" height="8" fill="url(#tapeGradient)" opacity="0.8"/>
+    
+    <!-- Company name on the box -->
+    <text x="75" y="95" font-family="Arial, sans-serif" font-size="20" font-weight="bold" 
+          text-anchor="middle" fill="#2D1B14" opacity="0.9">
+      Returnly
+    </text>
+    
+    <!-- Subtle address lines to look like shipping label -->
+    <line x1="15" y1="110" x2="135" y2="110" stroke="#46362D" stroke-width="1" opacity="0.4"/>
+    <line x1="15" y1="120" x2="100" y2="120" stroke="#46362D" stroke-width="1" opacity="0.4"/>
+    <line x1="15" y1="130" x2="120" y2="130" stroke="#46362D" stroke-width="1" opacity="0.4"/>
+    
+    <!-- Small "R" in corner as secondary branding -->
+    <circle cx="25" cy="40" r="12" fill="#2D1B14" opacity="0.1"/>
+    <text x="25" y="46" font-family="Arial, sans-serif" font-size="14" font-weight="bold" 
+          text-anchor="middle" fill="#2D1B14" opacity="0.6">
+      R
+    </text>
+  </g>
+</svg>
