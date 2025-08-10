@@ -15,14 +15,14 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
-**August 10, 2025 (Latest)** - Implemented DoorDash-style hero with authentic stock photography:
-- Created full-screen hero section matching DoorDash's layout and impact
-- Integrated real stock photo from Pexels showing woman receiving package from courier
-- Applied orange-red brand overlay to maintain consistent branding
-- Simplified favicon to plain brown box (no lines or details)
-- Split hero layout: compelling content left, authentic delivery photo background
-- Added professional call-to-action buttons and key service statistics
-- Maintained "Returns made effortless" as primary value proposition
+**August 10, 2025 (Latest)** - Removed all container borders and added image carousel with full-width layout:
+- Added image carousel cycling through 5 delivery photos (4 user-provided + 1 stock photo) every 4 seconds
+- Removed all Card components and container borders for seamless sectioned layout
+- Created 7 distinct full-width sections with unique background images and gradients
+- Enlarged favicon to 128x128px matching Google/DoorDash industry standards
+- Fixed logo display issues with custom Returnly logo design
+- Maintained horizontal sectioning without visible lines or borders
+- Applied authentic stock photography to each section (packages, delivery, retail, drivers)
 
 **August 10, 2025** - Implemented comprehensive Figma design system with mobile-first responsive components:
 - Built complete design token system matching Figma guide specifications (colors, typography, spacing, radii)

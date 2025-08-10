@@ -137,242 +137,275 @@ export default function Welcome() {
         </div>
       </div>
 
-      <div className="w-full px-8 lg:px-16 py-6 space-y-6">
-        {/* Header with Real Logo */}
-        <Card className="bg-white/90 backdrop-blur-sm border shadow-lg">
-          <CardContent className="p-6 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <img 
-                src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
-                alt="Returnly Logo" 
-                className="h-12 w-auto"
-              />
+      {/* Section 1: Welcome Message - No borders, with background image */}
+      <div className="w-full py-12 bg-gradient-to-r from-gray-50 to-blue-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src="https://images.pexels.com/photos/6994108/pexels-photo-6994108.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Packages on porch"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16 text-center">
+          <div className="flex items-center justify-center mb-6">
+            <div className="h-16 w-16 bg-amber-700 rounded-lg flex items-center justify-center border-2 border-amber-800 mr-4">
+              <div className="text-white font-bold text-2xl">R</div>
             </div>
-            <p className="text-lg text-muted-foreground">
-              Return Delivery Service - Your returns delivered. Zero hassle.
-            </p>
-          </CardContent>
-        </Card>
+            <div>
+              <div className="text-3xl font-bold text-gray-800">Welcome to Returnly</div>
+              <div className="text-lg text-gray-600">Return Delivery Service</div>
+            </div>
+          </div>
+        </div>
+      </div>
       
-      {/* Promotional Banner */}
-      <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white mb-4">
-        <CardContent className="p-6 text-center">
-          <div className="text-xl font-bold mb-2">🎉 Limited Time: 50% OFF First Return</div>
-          <div className="bg-white/20 inline-block px-3 py-1 rounded-lg font-semibold">
+      {/* Section 2: Promotional Banner - No borders, with background image */}
+      <div className="w-full py-12 bg-gradient-to-r from-orange-500 to-red-500 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-30">
+          <img 
+            src="https://images.pexels.com/photos/6667682/pexels-photo-6667682.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Delivery man giving packages"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16 text-center">
+          <div className="text-3xl font-bold mb-4">🎉 Limited Time: 50% OFF First Return</div>
+          <div className="bg-white/20 inline-block px-6 py-3 rounded-lg font-bold text-xl">
             Use code: RETURN50
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
       
-      {/* Main CTA */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+      {/* Section 3: Main CTA - No borders, with background image */}
+      <div className="w-full py-16 bg-gradient-to-r from-white to-gray-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-15">
+          <img 
+            src="https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Person handing over boxes"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16 max-w-4xl mx-auto">
+          <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">
             Book Your Return Pickup
           </h2>
-          <p className="text-muted-foreground mb-4 flex items-center gap-4 flex-wrap">
-            <span className="flex items-center gap-1">
-              <CreditCard className="w-4 h-4" />
+          <div className="flex justify-center items-center gap-8 mb-8 flex-wrap text-gray-700">
+            <span className="flex items-center gap-2 text-lg">
+              <CreditCard className="w-5 h-5 text-orange-600" />
               From $7.99
             </span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
+            <span className="flex items-center gap-2 text-lg">
+              <Clock className="w-5 h-5 text-orange-600" />
               Pick up in 2 hours
             </span>
-            <span className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
+            <span className="flex items-center gap-2 text-lg">
+              <MapPin className="w-5 h-5 text-orange-600" />
               500+ retail partners
             </span>
-          </p>
-          <div className="flex gap-3 flex-wrap">
+          </div>
+          <div className="flex gap-4 justify-center flex-wrap">
             <Button 
-              className="brand-button-contained text-lg px-6 py-3" 
+              size="lg"
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-10 py-4 h-auto"
               onClick={() => setLocation('/book-pickup')}
               data-testid="button-book-pickup"
             >
               Start Return 📦
             </Button>
             <Button 
+              size="lg"
               variant="outline" 
-              className="brand-button-outlined px-6 py-3"
+              className="border-2 border-orange-600 text-orange-600 hover:bg-orange-50 font-bold text-xl px-10 py-4 h-auto"
               onClick={() => setLocation('/order-status/DEMO01')}
               data-testid="button-track-order"
             >
               Track Order
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Customer Reviews */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-bold text-foreground mb-4 text-center flex items-center justify-center gap-2">
-            <Star className="w-5 h-5 text-yellow-500" />
+      
+      {/* Section 4: Customer Reviews - No borders, with background image */}
+      <div className="w-full py-16 bg-gradient-to-r from-blue-50 to-indigo-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src="https://images.pexels.com/photos/6869055/pexels-photo-6869055.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Woman receiving delivered items"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16">
+          <h3 className="text-4xl font-bold text-gray-800 mb-12 text-center">
             What Our Customers Say
-          </h2>
-          <div className="space-y-4">
-            <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-green-500">
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-                ))}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-center shadow-lg">
+              <div className="flex justify-center text-yellow-500 text-2xl mb-4">
+                {'★'.repeat(5)}
               </div>
-              <p className="text-sm italic mb-2">
-                "Saved me 2 hours at the mall! Driver was super friendly."
+              <p className="text-gray-700 italic text-lg mb-4">
+                "Returnly saved me so much time! No more driving to stores to return items."
               </p>
-              <p className="text-xs text-muted-foreground font-medium">
-                — Sarah M., San Francisco
-              </p>
+              <p className="font-semibold text-gray-800">- Sarah M.</p>
             </div>
-            <div className="bg-muted/50 p-4 rounded-lg border-l-4 border-green-500">
-              <div className="flex items-center mb-2">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-500 fill-current" />
-                ))}
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-center shadow-lg">
+              <div className="flex justify-center text-yellow-500 text-2xl mb-4">
+                {'★'.repeat(5)}
               </div>
-              <p className="text-sm italic mb-2">
-                "Perfect for busy parents. Returned 3 packages while kids napped."
+              <p className="text-gray-700 italic text-lg mb-4">
+                "Super convenient and the driver was professional and friendly."
               </p>
-              <p className="text-xs text-muted-foreground font-medium">
-                — Mike D., Austin
+              <p className="font-semibold text-gray-800">- Mike R.</p>
+            </div>
+            <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 text-center shadow-lg">
+              <div className="flex justify-center text-yellow-500 text-2xl mb-4">
+                {'★'.repeat(5)}
+              </div>
+              <p className="text-gray-700 italic text-lg mb-4">
+                "Best $8 I've ever spent. Will definitely use again!"
               </p>
+              <p className="font-semibold text-gray-800">- Jennifer L.</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* How It Works */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-bold text-foreground mb-4 text-center">
-            📋 How Returnly Works
-          </h2>
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 bg-muted/50 p-4 rounded-lg">
-              <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
+      {/* Section 5: How It Works - No borders, with background image */}
+      <div className="w-full py-16 bg-gradient-to-r from-green-50 to-emerald-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-25">
+          <img 
+            src="https://images.pexels.com/photos/4393426/pexels-photo-4393426.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Person organizing packages"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16 max-w-4xl mx-auto">
+          <h3 className="text-4xl font-bold text-gray-800 mb-12 text-center">
+            How Returnly Works
+          </h3>
+          <div className="space-y-6">
+            <div className="flex items-center gap-6 bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+              <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 1
               </div>
-              <span className="font-medium">Book pickup online or in app</span>
+              <span className="text-xl font-medium text-gray-800">Book pickup online or in app</span>
             </div>
-            <div className="flex items-center gap-4 bg-muted/50 p-4 rounded-lg">
-              <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
+            <div className="flex items-center gap-6 bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+              <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 2
               </div>
-              <span className="font-medium">Hand package to our driver</span>
+              <span className="text-xl font-medium text-gray-800">Hand package to our driver</span>
             </div>
-            <div className="flex items-center gap-4 bg-muted/50 p-4 rounded-lg">
-              <div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
+            <div className="flex items-center gap-6 bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+              <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 3
               </div>
-              <span className="font-medium">We handle the return for you</span>
+              <span className="text-xl font-medium text-gray-800">We handle the return for you</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Retail Partners */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-bold text-foreground mb-4 text-center">
-            🏪 Trusted Retail Partners
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
+      {/* Section 6: Retail Partners - No borders, with background image */}
+      <div className="w-full py-16 bg-gradient-to-r from-purple-50 to-pink-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src="https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Shopping bags and retail"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16">
+          <h3 className="text-4xl font-bold text-gray-800 mb-12 text-center">
+            Trusted Retail Partners
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-4xl mx-auto">
             {['Target', 'Best Buy', "Macy's", 'REI', 'Nike', '+495 more'].map((retailer) => (
               <div 
                 key={retailer}
-                className="bg-white border border-gray-200 rounded-lg p-3 text-center font-semibold text-sm"
+                className="bg-white/90 backdrop-blur-sm rounded-lg p-4 text-center font-bold text-gray-800 shadow-md"
               >
                 {retailer}
               </div>
             ))}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Current Deals */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6">
-          <h2 className="text-xl font-bold text-foreground mb-4 text-center">
-            💰 Current Deals
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="bg-muted/50 p-4 rounded-lg border-2 border-green-500 text-center">
-              <h3 className="font-bold text-lg mb-2">Bundle Returns</h3>
-              <p className="text-sm text-muted-foreground mb-2">Return 3+ items, save 25%</p>
-              <div className="bg-green-500 text-white px-3 py-1 rounded font-bold text-sm">
-                BUNDLE25
-              </div>
+      {/* Section 7: Driver Section - No borders, with background image */}
+      <div className="w-full py-16 bg-gradient-to-r from-yellow-50 to-amber-100 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-25">
+          <img 
+            src="https://images.pexels.com/photos/4393558/pexels-photo-4393558.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Delivery driver with van"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16 max-w-4xl mx-auto">
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-6">
+            <div className="w-16 h-16 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
+              <Truck className="w-8 h-8 text-white" />
             </div>
-            <div className="bg-muted/50 p-4 rounded-lg border-2 border-green-500 text-center">
-              <h3 className="font-bold text-lg mb-2">Student Discount</h3>
-              <p className="text-sm text-muted-foreground mb-2">15% off with .edu email</p>
-              <div className="bg-green-500 text-white px-3 py-1 rounded font-bold text-sm">
-                STUDENT15
-              </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Earn as a Returnly Driver</h3>
+              <p className="text-gray-700 text-lg">
+                $18-25/hour • Flexible schedule • Weekly pay
+              </p>
             </div>
+            <Button 
+              size="lg"
+              className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-8 py-4 h-auto"
+              onClick={() => alert('Driver Portal\n\nComing soon to App Store & Google Play!\n\nEarn up to $25/hour with flexible scheduling.')}
+              data-testid="button-apply-driver"
+            >
+              Apply Now
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Driver Section */}
-      <Card className="brand-card mb-6">
-        <CardContent className="p-6 flex items-center">
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mr-4"
-               style={{ backgroundColor: 'rgba(255, 140, 66, 0.2)' }}>
-            <Truck className="w-6 h-6 text-primary" />
+      {/* Footer Section - No borders, with background image */}
+      <div className="w-full py-12 bg-gradient-to-r from-gray-800 to-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <img 
+            src="https://images.pexels.com/photos/586744/pexels-photo-586744.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Modern office building"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="relative px-8 lg:px-16">
+          <div className="flex justify-center items-center gap-6 text-white flex-wrap">
+            <button 
+              onClick={() => setLocation('/login')}
+              className="hover:text-orange-300 transition-colors text-lg"
+            >
+              Sign In
+            </button>
+            <span className="text-gray-500">•</span>
+            <button className="hover:text-orange-300 transition-colors text-lg">
+              Help Center
+            </button>
+            <span className="text-gray-500">•</span>
+            <button className="hover:text-orange-300 transition-colors text-lg">
+              About Us
+            </button>
+            <span className="text-gray-500">•</span>
+            <button 
+              onClick={() => setLocation('/design-system-demo')}
+              className="hover:text-orange-300 transition-colors font-medium text-lg"
+            >
+              Design System
+            </button>
+            <span className="text-gray-500">•</span>
+            <button 
+              onClick={() => setLocation('/mobile-app-demo')}
+              className="hover:text-orange-300 transition-colors font-medium text-lg"
+            >
+              Mobile App
+            </button>
           </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground">Earn as a Returnly Driver</h3>
-            <p className="text-muted-foreground text-sm mb-1">
-              $18-25/hour • Flexible schedule • Weekly pay
-            </p>
-          </div>
-          <Button 
-            className="brand-button-contained"
-            onClick={() => alert('Driver Portal\n\nComing soon to App Store & Google Play!\n\nEarn up to $25/hour with flexible scheduling.')}
-            data-testid="button-apply-driver"
-          >
-            Apply Now
-          </Button>
-        </CardContent>
-      </Card>
-
-        {/* Footer */}
-        <Card className="bg-white/60 backdrop-blur-sm border shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground flex-wrap">
-              <button 
-                onClick={() => setLocation('/login')}
-                className="hover:text-primary transition-colors"
-              >
-                Sign In
-              </button>
-              <span>•</span>
-              <button className="hover:text-primary transition-colors">
-                Help Center
-              </button>
-              <span>•</span>
-              <button className="hover:text-primary transition-colors">
-                About Us
-              </button>
-              <span>•</span>
-              <button 
-                onClick={() => setLocation('/design-system-demo')}
-                className="hover:text-primary transition-colors font-medium"
-              >
-                Design System
-              </button>
-              <span>•</span>
-              <button 
-                onClick={() => setLocation('/mobile-app-demo')}
-                className="hover:text-primary transition-colors font-medium"
-              >
-                Mobile App
-              </button>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
     </div>
   );
