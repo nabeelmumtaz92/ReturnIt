@@ -71,13 +71,11 @@ export default function Welcome() {
             {/* Left side - Main content */}
             <div className="text-white space-y-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-16 w-16 bg-amber-700 rounded-lg flex items-center justify-center border-2 border-amber-800">
-                  <div className="text-white font-bold text-2xl">R</div>
-                </div>
-                <div className="text-white">
-                  <div className="text-2xl font-bold">Returnly</div>
-                  <div className="text-sm text-orange-200">Return Delivery Service</div>
-                </div>
+                <img 
+                  src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+                  alt="Returnly Logo" 
+                  className="h-16 w-auto"
+                />
               </div>
               
               <div className="space-y-4">
@@ -148,9 +146,11 @@ export default function Welcome() {
         </div>
         <div className="relative px-8 lg:px-16 text-center">
           <div className="flex items-center justify-center mb-6">
-            <div className="h-16 w-16 bg-amber-700 rounded-lg flex items-center justify-center border-2 border-amber-800 mr-4">
-              <div className="text-white font-bold text-2xl">R</div>
-            </div>
+            <img 
+              src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+              alt="Returnly Logo" 
+              className="h-16 w-auto mr-4"
+            />
             <div>
               <div className="text-3xl font-bold text-gray-800">Welcome to Returnly</div>
               <div className="text-lg text-gray-600">Return Delivery Service</div>

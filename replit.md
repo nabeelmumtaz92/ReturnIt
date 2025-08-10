@@ -20,7 +20,8 @@ Preferred communication style: Simple, everyday language.
 - Removed all Card components and container borders for seamless sectioned layout
 - Created 7 distinct full-width sections with unique background images and gradients
 - Enlarged favicon to 512x512px for ultra maximum visibility and clarity
-- Fixed logo display issues with custom Returnly logo design
+- Fixed logo display issues by using user's uploaded Returnly logo throughout the site
+- Enlarged favicon "R" letter to 240px font size for maximum visibility
 - Maintained horizontal sectioning without visible lines or borders
 - Applied authentic stock photography to each section (packages, delivery, retail, drivers)
 

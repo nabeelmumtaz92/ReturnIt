@@ -3,5 +3,5 @@
   <rect x="64" y="128" width="384" height="256" fill="#8B4513" stroke="#D2B48C" stroke-width="8" rx="24"/>
   <rect x="96" y="160" width="320" height="192" fill="#D2B48C" rx="16"/>
   <!-- Add "R" letter for better recognition -->
-  <text x="256" y="290" font-family="Arial, sans-serif" font-size="160" font-weight="bold" text-anchor="middle" fill="#8B4513">R</text>
+  <text x="256" y="320" font-family="Arial, sans-serif" font-size="240" font-weight="bold" text-anchor="middle" fill="#8B4513">R</text>
 </svg>
