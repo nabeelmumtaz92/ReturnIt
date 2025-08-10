@@ -4,8 +4,8 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/design-system";
-import { useAuth } from "@/hooks/useAuth";
-import Welcome from "@/pages/welcome";
+// import { useAuth } from "@/hooks/useAuth";
+import WelcomeSimple from "@/pages/welcome-simple";
 import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
 import OrderStatus from "@/pages/order-status";
@@ -16,26 +16,9 @@ import BackgroundColors from "@/pages/background-colors";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { user, isLoading } = useAuth();
-  
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
-        <div className="text-center">
-          <img 
-            src="/logo-cardboard-deep.png" 
-            alt="Returnly Logo" 
-            className="h-16 w-auto mx-auto mb-4 animate-pulse"
-          />
-          <p className="text-amber-800">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <Switch>
-      <Route path="/" component={Welcome} />
+      <Route path="/" component={WelcomeSimple} />
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
       <Route path="/order-status/:orderId" component={OrderStatus} />
