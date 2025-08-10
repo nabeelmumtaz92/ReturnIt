@@ -25,9 +25,13 @@ export default function MobileAppDemo() {
     <AppScreen>
       {/* Mobile Welcome Screen */}
       <FlexStack gap="lg" align="center" className="py-8">
-        {/* Logo */}
-        <div className="w-20 h-20 border-2 border-[#D2B48C] rounded-[12px] flex items-center justify-center bg-[#FF8C42]">
-          <Package2 className="h-10 w-10 text-white" />
+        {/* Real Logo */}
+        <div className="w-20 h-20 flex items-center justify-center">
+          <img 
+            src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+            alt="Returnly Logo" 
+            className="h-16 w-auto"
+          />
         </div>
         
         {/* Hero Text */}
@@ -293,7 +297,7 @@ export default function MobileAppDemo() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8F7F4] relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 relative">
       {/* Back to Design System */}
       <div className="fixed top-4 left-4 z-50">
         <Button 

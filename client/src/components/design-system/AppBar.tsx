@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { ChevronLeft, MoreHorizontal } from 'lucide-react';
 
 const appBarVariants = cva(
-  "flex items-center justify-between w-full h-14 px-4 bg-[#F8F7F4] border-b border-[#D2B48C]",
+  "flex items-center justify-between w-full h-14 px-4 bg-white/80 backdrop-blur-sm border-b border-[#D2B48C]",
   {
     variants: {
       variant: {

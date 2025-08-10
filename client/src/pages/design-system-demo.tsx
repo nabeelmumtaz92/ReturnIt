@@ -29,7 +29,7 @@ export default function DesignSystemDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F7F4]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       <AppBar 
         title="Design System Demo" 
         showBack 

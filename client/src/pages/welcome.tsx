@@ -1,6 +1,5 @@
 import { useLocation } from 'wouter';
 import { Screen } from '@/components/screen';
-import { Header } from '@/components/header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Truck, Star, MapPin, Clock, Package, CreditCard } from 'lucide-react';
@@ -9,11 +8,24 @@ export default function Welcome() {
   const [, setLocation] = useLocation();
 
   return (
-    <Screen>
-      <Header 
-        title="Returnly" 
-        subtitle="Your returns delivered. Zero hassle." 
-      />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
+      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        
+        {/* Header with Real Logo */}
+        <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+          <CardContent className="p-6 text-center">
+            <div className="flex items-center justify-center mb-4">
+              <img 
+                src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+                alt="Returnly Logo" 
+                className="h-12 w-auto"
+              />
+            </div>
+            <p className="text-lg text-muted-foreground">
+              Return Delivery Service - Your returns delivered. Zero hassle.
+            </p>
+          </CardContent>
+        </Card>
       
       {/* Promotional Banner */}
       <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white mb-4">
@@ -199,41 +211,42 @@ export default function Welcome() {
         </CardContent>
       </Card>
 
-      {/* Footer */}
-      <Card className="brand-card border-t-2 border-gray-200">
-        <CardContent className="p-4">
-          <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground flex-wrap">
-            <button 
-              onClick={() => setLocation('/login')}
-              className="hover:text-primary transition-colors"
-            >
-              Sign In
-            </button>
-            <span>•</span>
-            <button className="hover:text-primary transition-colors">
-              Help Center
-            </button>
-            <span>•</span>
-            <button className="hover:text-primary transition-colors">
-              About Us
-            </button>
-            <span>•</span>
-            <button 
-              onClick={() => setLocation('/design-system-demo')}
-              className="hover:text-primary transition-colors font-medium"
-            >
-              Design System
-            </button>
-            <span>•</span>
-            <button 
-              onClick={() => setLocation('/mobile-app-demo')}
-              className="hover:text-primary transition-colors font-medium"
-            >
-              Mobile App
-            </button>
-          </div>
-        </CardContent>
-      </Card>
-    </Screen>
+        {/* Footer */}
+        <Card className="bg-white/60 backdrop-blur-sm border shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground flex-wrap">
+              <button 
+                onClick={() => setLocation('/login')}
+                className="hover:text-primary transition-colors"
+              >
+                Sign In
+              </button>
+              <span>•</span>
+              <button className="hover:text-primary transition-colors">
+                Help Center
+              </button>
+              <span>•</span>
+              <button className="hover:text-primary transition-colors">
+                About Us
+              </button>
+              <span>•</span>
+              <button 
+                onClick={() => setLocation('/design-system-demo')}
+                className="hover:text-primary transition-colors font-medium"
+              >
+                Design System
+              </button>
+              <span>•</span>
+              <button 
+                onClick={() => setLocation('/mobile-app-demo')}
+                className="hover:text-primary transition-colors font-medium"
+              >
+                Mobile App
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
