@@ -1,0 +1,313 @@
+import * as React from 'react';
+import { useState } from 'react';
+import { View, StyleSheet, Platform } from 'react-native';
+import { NavigationContainer, DefaultTheme as NavDefaultTheme } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as Paper from 'react-native-paper';
+import dayjs from 'dayjs';
+import { create } from 'zustand';
+
+// ---- Brand (deep maroon/brown) ----
+const Brand = {
+  primary: '#6E2C2F',
+  primaryDark: '#4A1D1F',
+  accent: '#A47551',
+  bg: '#12100E',
+  surface: '#1E1B19',
+  text: '#F5EDE6',
+  muted: '#A09288',
+};
+
+const PaperTheme = {
+  ...Paper.MD3LightTheme,
+  colors: {
+    ...Paper.MD3LightTheme.colors,
+    primary: Brand.primary,
+    secondary: Brand.accent,
+    background: Brand.bg,
+    surface: Brand.surface,
+    onSurface: Brand.text
+  },
+  roundness: 14
+};
+
+const NavTheme = {
+  ...NavDefaultTheme,
+  colors: { ...NavDefaultTheme.colors, background: Brand.bg, card: Brand.surface, text: Brand.text }
+};
+
+// ---- Store (Zustand) ----
+const useApp = create((set) => ({
+  user: null,
+  orders: {
+    DEMO01: {
+      id: 'DEMO01',
+      status: 'created',
+      createdAt: Date.now() - 20 * 60 * 1000,
+      customerName: 'Jordan',
+      pickupAddress: '500 Market St, Apt 2C',
+      retailer: 'Target',
+      notes: 'QR code in email',
+      price: 15
+    },
+  },
+  createOrder: (o) => {
+    const id = Math.random().toString(36).slice(2, 8).toUpperCase();
+    const order = { id, status: 'created', createdAt: Date.now(), ...o };
+    set((s) => ({ orders: { ...s.orders, [id]: order } }));
+    return id;
+  },
+  updateOrder: (id, patch) => set((s) => ({ orders: { ...s.orders, [id]: { ...s.orders[id], ...patch } } })),
+  signIn: (name, asDriver) => set({ user: { id: 'u_' + Date.now(), name, isDriver: !!asDriver } }),
+  signOut: () => set({ user: null }),
+}));
+
+const Stack = createNativeStackNavigator();
+
+function Screen({ children }) {
+  return (
+    <View style={{ flex: 1, paddingHorizontal: 18, paddingTop: Platform.OS === 'web' ? 24 : 12, backgroundColor: Brand.bg }}>
+      {children}
+    </View>
+  );
+}
+
+function Header({ title, subtitle }) {
+  return (
+    <View style={{ marginBottom: 18 }}>
+      <Paper.Text variant="headlineLarge" style={{ color: Brand.text, fontWeight: '800' }}>{title}</Paper.Text>
+      {subtitle ? <Paper.Text style={{ color: Brand.muted, marginTop: 6 }}>{subtitle}</Paper.Text> : null}
+    </View>
+  );
+}
+
+function Card({ children, style }) {
+  return (
+    <Paper.Surface style={[styles.card, style]} elevation={3}>
+      {children}
+    </Paper.Surface>
+  );
+}
+
+// ---- Screens ----
+function WelcomeScreen({ navigation }) {
+  return (
+    <Screen>
+      <Header title="Returnly" subtitle="Reverse delivery for returns, exchanges, and donations." />
+      <Card>
+        <Paper.Card.Content>
+          <Paper.Text variant="titleLarge" style={styles.cardTitle}>Make returns effortless</Paper.Text>
+          <Paper.Text style={styles.cardSub}>
+            Schedule a pickup, hand off your item, and we’ll return it for you.
+          </Paper.Text>
+          <View style={{ flexDirection: 'row', marginTop: 16, gap: 8 }}>
+            <Paper.Button mode="contained" onPress={() => navigation.navigate('BookPickup')}>Book a Pickup</Paper.Button>
+            <Paper.Button mode="outlined" onPress={() => navigation.navigate('Login')}>Sign in</Paper.Button>
+          </View>
+        </Paper.Card.Content>
+      </Card>
+
+      <Card style={{ marginTop: 14 }}>
+        <Paper.Card.Content style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Paper.Avatar.Icon size={40} icon="truck-delivery" />
+          <View style={{ flex: 1, marginLeft: 12 }}>
+            <Paper.Text variant="titleMedium" style={{ color: Brand.text }}>Want to earn?</Paper.Text>
+            <Paper.Text style={styles.cardSub}>Drivers accept return jobs and get paid fast.</Paper.Text>
+          </View>
+          <Paper.Button compact onPress={() => navigation.navigate('DriverPortal')}>Open Driver</Paper.Button>
+        </Paper.Card.Content>
+      </Card>
+    </Screen>
+  );
+}
+
+function LoginScreen({ navigation }) {
+  const signIn = useApp((s) => s.signIn);
+  const [name, setName] = useState('');
+  const [asDriver, setAsDriver] = useState(false);
+
+  return (
+    <Screen>
+      <Header title="Welcome back" subtitle="Sign in to continue" />
+      <Card>
+        <Paper.Card.Content>
+          <Paper.TextInput label="Your name" value={name} onChangeText={setName} mode="outlined" style={{ marginBottom: 12 }} />
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Paper.Button mode={asDriver ? 'contained' : 'outlined'} onPress={() => setAsDriver(true)}>I’m a Driver</Paper.Button>
+            <Paper.Button mode={!asDriver ? 'contained' : 'outlined'} onPress={() => setAsDriver(false)}>I’m a Customer</Paper.Button>
+          </View>
+          <Paper.Button
+            style={{ marginTop: 16 }}
+            mode="contained"
+            disabled={!name}
+            onPress={() => {
+              signIn(name, asDriver);
+              navigation.replace(asDriver ? 'DriverPortal' : 'BookPickup');
+            }}
+          >
+            Continue
+          </Paper.Button>
+        </Paper.Card.Content>
+      </Card>
+    </Screen>
+  );
+}
+
+function BookPickupScreen({ navigation }) {
+  const createOrder = useApp((s) => s.createOrder);
+  const user = useApp((s) => s.user);
+
+  const [name, setName] = useState(user?.name ?? '');
+  const [pickupAddress, setPickupAddress] = useState('123 Main St');
+  const [retailer, setRetailer] = useState('Target');
+  const [notes, setNotes] = useState('');
+  const [price] = useState(15);
+
+  return (
+    <Screen>
+      <Header title="Book a pickup" subtitle="We’ll handle the return for you" />
+      <Card>
+        <Paper.Card.Content>
+          <Paper.TextInput label="Your name" value={name} onChangeText={setName} mode="outlined" style={{ marginBottom: 10 }} />
+          <Paper.TextInput label="Pickup address" value={pickupAddress} onChangeText={setPickupAddress} mode="outlined" style={{ marginBottom: 10 }} />
+          <Paper.TextInput label="Retailer" value={retailer} onChangeText={setRetailer} mode="outlined" style={{ marginBottom: 10 }} />
+          <Paper.TextInput label="Notes" value={notes} onChangeText={setNotes} mode="outlined" multiline style={{ marginBottom: 10 }} />
+          <Paper.Divider style={{ marginVertical: 8 }} />
+          <Paper.Text variant="titleMedium" style={{ marginBottom: 8 }}>Estimated price: ${price}</Paper.Text>
+          <Paper.Button
+            mode="contained"
+            onPress={() => {
+              const id = createOrder({ customerName: name, pickupAddress, retailer, notes, price });
+              navigation.replace('OrderStatus', { orderId: id });
+            }}
+          >
+            Pay & Create Order (mock)
+          </Paper.Button>
+        </Paper.Card.Content>
+      </Card>
+    </Screen>
+  );
+}
+
+function OrderStatusScreen({ route, navigation }) {
+  const { orderId } = route.params || {};
+  const order = useApp((s) => (orderId ? s.orders[orderId] : undefined));
+  const updateOrder = useApp((s) => s.updateOrder);
+
+  if (!order) {
+    return (
+      <Screen>
+        <Header title="Order not found" />
+        <Paper.Button onPress={() => navigation.replace('BookPickup')}>Back to booking</Paper.Button>
+      </Screen>
+    );
+  }
+
+  const steps = ['created', 'assigned', 'picked_up', 'dropped_off', 'refunded'];
+  const currentIndex = steps.indexOf(order.status);
+
+  return (
+    <Screen>
+      <Header title={`Order #${order.id}`} subtitle={`Created ${dayjs(order.createdAt).format('MMM D, h:mma')}`} />
+      <Card>
+        <Paper.Card.Content>
+          <Paper.Text variant="titleMedium" style={styles.cardTitle}>{order.retailer}</Paper.Text>
+          <Paper.Text style={styles.cardSub}>{order.pickupAddress}</Paper.Text>
+          <Paper.Divider style={{ marginVertical: 12 }} />
+          <Paper.Text style={{ color: Brand.text, marginBottom: 8 }}>Status</Paper.Text>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+            {steps.map((s, idx) => (
+              <Paper.Chip key={s} selected={idx <= currentIndex}>{s.replace('_', ' ')}</Paper.Chip>
+            ))}
+          </View>
+          {currentIndex < steps.length - 1 && (
+            <Paper.Button mode="outlined" onPress={() => updateOrder(order.id, { status: steps[currentIndex + 1] })}>
+              Advance (demo)
+            </Paper.Button>
+          )}
+          <Paper.Button mode="contained" style={{ marginTop: 8 }} onPress={() => navigation.navigate('Welcome')}>Done</Paper.Button>
+        </Paper.Card.Content>
+      </Card>
+    </Screen>
+  );
+}
+
+function DriverPortalScreen() {
+  const orders = useApp((s) => s.orders);
+  const updateOrder = useApp((s) => s.updateOrder);
+  const openJobs = Object.values(orders).filter((o) => o.status === 'created' || o.status === 'assigned');
+
+  return (
+    <Screen>
+      <Header title="Driver Portal" subtitle="Accept jobs and get paid fast" />
+      {openJobs.length === 0 ? (
+        <EmptyState title="No open jobs" subtitle="New return pickups will appear here." />
+      ) : (
+        openJobs.map((o) => (
+          <Card key={o.id} style={{ marginBottom: 12 }}>
+            <Paper.Card.Content>
+              <Paper.Text variant="titleMedium" style={styles.cardTitle}>#{o.id} • {o.retailer}</Paper.Text>
+              <Paper.Text style={styles.cardSub}>{o.pickupAddress}</Paper.Text>
+              <View style={{ flexDirection: 'row', marginTop: 10, gap: 8 }}>
+                {o.status === 'created' && (
+                  <Paper.Button onPress={() => updateOrder(o.id, { status: 'assigned' })}>Accept</Paper.Button>
+                )}
+                {o.status === 'assigned' && (
+                  <>
+                    <Paper.Button mode="outlined" onPress={() => updateOrder(o.id, { status: 'picked_up' })}>Picked Up</Paper.Button>
+                    <Paper.Button mode="contained" onPress={() => updateOrder(o.id, { status: 'dropped_off' })}>Dropped Off</Paper.Button>
+                  </>
+                )}
+              </View>
+            </Paper.Card.Content>
+          </Card>
+        ))
+      )}
+    </Screen>
+  );
+}
+
+function EmptyState({ title, subtitle }) {
+  return (
+    <View style={{ alignItems: 'center', padding: 24 }}>
+      <Paper.Avatar.Icon icon="tray" size={64} style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
+      <Paper.Text variant="titleMedium" style={{ marginTop: 10 }}>{title}</Paper.Text>
+      {subtitle ? <Paper.Text style={{ color: Brand.muted, marginTop: 6, textAlign: 'center' }}>{subtitle}</Paper.Text> : null}
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <Paper.Provider theme={PaperTheme}>
+      <NavigationContainer theme={NavTheme}>
+        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="BookPickup" component={BookPickupScreen} />
+          <Stack.Screen name="OrderStatus" component={OrderStatusScreen} />
+          <Stack.Screen name="DriverPortal" component={DriverPortalScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Paper.Provider>
+  );
+}
+
+function View({ children, style }) {
+  // small helper to avoid importing from 'react-native' twice
+  const { View: RNView } = require('react-native');
+  return <RNView style={style}>{children}</RNView>;
+}
+
+const styles = StyleSheet.create({
+  card: {
+    backgroundColor: Brand.surface,
+    borderRadius: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: '#2a2522'
+  },
+  cardTitle: { color: Brand.text, fontWeight: '700' },
+  cardSub: { color: Brand.muted, marginTop: 6 },
+});
