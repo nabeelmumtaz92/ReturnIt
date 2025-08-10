@@ -72,9 +72,9 @@ export default function Welcome() {
             <div className="text-white space-y-8">
               <div className="flex items-center gap-3 mb-6">
                 <img 
-                  src="/logo.png" 
+                  src="/logo-transparent.png" 
                   alt="Returnly Logo" 
-                  className="h-16 w-auto"
+                  className="h-24 w-auto"
                 />
               </div>
               
@@ -147,9 +147,9 @@ export default function Welcome() {
         <div className="relative px-8 lg:px-16 text-center">
           <div className="flex items-center justify-center mb-6">
             <img 
-              src="/logo.png" 
+              src="/logo-transparent.png" 
               alt="Returnly Logo" 
-              className="h-16 w-auto mr-4"
+              className="h-20 w-auto mr-4"
             />
             <div>
               <div className="text-3xl font-bold text-gray-800">Welcome to Returnly</div>
