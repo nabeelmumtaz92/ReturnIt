@@ -5,15 +5,15 @@ export default function LogoColors() {
   const [, setLocation] = useLocation();
 
   const colorOptions = [
-    { name: "Current Orange", file: "logo-orange.png", description: "Current warm orange-brown" },
-    { name: "Gold", file: "logo-gold.png", description: "Luxurious gold - pops against brown/orange" },
-    { name: "White", file: "logo-white.png", description: "Clean white - classic contrast" },
-    { name: "Steel Blue", file: "logo-blue.png", description: "Professional blue - complementary to orange" },
-    { name: "Crimson Red", file: "logo-red.png", description: "Bold red - high impact" },
-    { name: "Lime Green", file: "logo-green.png", description: "Fresh green - vibrant contrast" },
-    { name: "Purple", file: "logo-purple.png", description: "Sophisticated violet - modern" },
-    { name: "Hot Pink", file: "logo-pink.png", description: "Bold pink - trendy pop" },
-    { name: "Turquoise", file: "logo-cyan.png", description: "Cool turquoise - fresh contrast" }
+    { name: "Current Orange", file: "logo-orange.png", description: "Current orange text on orange background" },
+    { name: "Gold", file: "logo-gold.png", description: "Luxurious gold text - premium look" },
+    { name: "White", file: "logo-white.png", description: "Clean white text - maximum contrast" },
+    { name: "Steel Blue", file: "logo-blue.png", description: "Professional blue text - trustworthy" },
+    { name: "Crimson Red", file: "logo-red.png", description: "Bold red text - energetic" },
+    { name: "Lime Green", file: "logo-green.png", description: "Fresh green text - eco-friendly" },
+    { name: "Purple", file: "logo-purple.png", description: "Sophisticated purple text - premium" },
+    { name: "Hot Pink", file: "logo-pink.png", description: "Bold pink text - modern pop" },
+    { name: "Turquoise", file: "logo-cyan.png", description: "Cool turquoise text - refreshing" }
   ];
 
   const handleColorSelect = (filename: string, colorName: string) => {
@@ -26,8 +26,8 @@ export default function LogoColors() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Logo Color</h1>
-          <p className="text-xl text-gray-600 mb-6">Pick a color that pops against your website's theme</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Logo Text Color</h1>
+          <p className="text-xl text-gray-600 mb-6">Pick a color for the "Returnly" letters that pops against the orange background</p>
           <Button 
             onClick={() => setLocation('/welcome')}
             variant="outline"
@@ -81,7 +81,8 @@ export default function LogoColors() {
 
         <div className="text-center mt-12">
           <p className="text-gray-600">
-            Each color is shown on both your orange hero background and light welcome section.
+            Each text color is shown on your orange hero background and light welcome section.<br/>
+            The orange background theme stays the same - only the "Returnly" text color changes.
           </p>
         </div>
       </div>
