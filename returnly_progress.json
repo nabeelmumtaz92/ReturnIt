@@ -1,0 +1,29 @@
+{
+  "phases": [
+    { "id": 1, "task": "Branding locked", "status": "done" },
+    { "id": 2, "task": "Dev env ready (Expo + RN Web, Expo Go)", "status": "done" },
+    { "id": 3, "task": "Style kit added (tokens.js, styleKit.js)", "status": "todo" },
+
+    { "id": 4, "task": "Base navigation (customer app)", "status": "done" },
+    { "id": 5, "task": "Screen shells styled (customer)", "status": "done" },
+
+    { "id": 51, "task": "Order Intake: required fields + validation", "status": "in_progress" },
+    { "id": 52, "task": "Order Intake: uploads + extras", "status": "todo" },
+
+    { "id": 6, "task": "Figma polish + token sync", "status": "todo" },
+    { "id": 7, "task": "Implement Figma spacing/typography", "status": "todo" },
+
+    { "id": 8, "task": "Zustand store (users/orders)", "status": "done" },
+    { "id": 9, "task": "Mock flows (create→assign→picked_up→dropped_off→completed)", "status": "done" },
+    { "id": 10, "task": "Payments stub (Stripe test mode)", "status": "todo" },
+
+    { "id": 11, "task": "Next.js site w/ shared tokens", "status": "todo" },
+    { "id": 12, "task": "Become a Driver page + waitlist", "status": "todo" },
+
+    { "id": 13, "task": "Driver app screens (Queue/Detail/Earnings/Profile)", "status": "todo" },
+    { "id": 14, "task": "Driver UX (big actions, photo proof, maps)", "status": "todo" },
+
+    { "id": 15, "task": "Backend (Supabase/Firebase) auth+orders+realtime", "status": "todo" },
+    { "id": 16, "task": "Push notifications + pilot", "status": "todo" }
+  ]
+}
