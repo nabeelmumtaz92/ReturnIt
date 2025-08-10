@@ -1,54 +1,204 @@
-import { type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
+import { 
+  type User, type InsertUser, type Order, type InsertOrder,
+  type PromoCode, type InsertPromoCode, type DriverEarning, type InsertDriverEarning,
+  type Notification, type InsertNotification, type Analytics, type InsertAnalytics,
+  OrderStatus
+} from "@shared/schema";
 
 export interface IStorage {
+  // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
+  getDrivers(isOnline?: boolean): Promise<User[]>;
+  
+  // Order operations
   getOrder(id: string): Promise<Order | undefined>;
   getUserOrders(userId: number): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
+  getDriverOrders(driverId: number): Promise<Order[]>;
+  getAvailableOrders(): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
+  
+  // Promo code operations
+  getPromoCode(code: string): Promise<PromoCode | undefined>;
+  createPromoCode(promoCode: InsertPromoCode): Promise<PromoCode>;
+  validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }>;
+  
+  // Driver earnings
+  getDriverEarnings(driverId: number): Promise<DriverEarning[]>;
+  createDriverEarning(earning: InsertDriverEarning): Promise<DriverEarning>;
+  
+  // Notifications
+  getUserNotifications(userId: number): Promise<Notification[]>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  markNotificationRead(id: number): Promise<void>;
+  
+  // Analytics
+  recordAnalytics(analytics: InsertAnalytics): Promise<Analytics>;
+  getAnalytics(metric: string, from?: Date, to?: Date): Promise<Analytics[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private orders: Map<string, Order>;
+  private promoCodes: Map<string, PromoCode>;
+  private driverEarnings: Map<number, DriverEarning>;
+  private notifications: Map<number, Notification>;
+  private analytics: Map<string, Analytics>;
   private nextUserId: number = 1;
+  private nextNotificationId: number = 1;
+  private nextEarningId: number = 1;
+  private nextPromoId: number = 1;
+  private nextAnalyticsId: number = 1;
 
   constructor() {
     this.users = new Map();
     this.orders = new Map();
+    this.promoCodes = new Map();
+    this.driverEarnings = new Map();
+    this.notifications = new Map();
+    this.analytics = new Map();
     
-    // Initialize with demo user and order
+    // Initialize with comprehensive demo data
     const demoUser: User = {
       id: 1,
       username: 'demo',
       email: 'demo@returnly.com',
-      password: 'demo123', // In production, this would be hashed
+      password: 'demo123',
+      firstName: 'Demo',
+      lastName: 'User',
+      phone: '+1-555-0123',
       isDriver: false,
+      isAdmin: false,
+      isActive: true,
+      profileImage: null,
+      preferences: {},
+      addresses: [],
+      paymentMethods: [],
+      driverLicense: null,
+      vehicleInfo: null,
+      bankInfo: null,
+      driverRating: 5.0,
+      totalEarnings: 0,
+      completedDeliveries: 0,
+      isOnline: false,
+      currentLocation: null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
     this.users.set(1, demoUser);
     
+    // Demo driver
+    const demoDriver: User = {
+      id: 2,
+      username: 'demodriver',
+      email: 'driver@returnly.com',
+      password: 'driver123',
+      firstName: 'Demo',
+      lastName: 'Driver',
+      phone: '+1-555-0124',
+      isDriver: true,
+      isAdmin: false,
+      isActive: true,
+      profileImage: null,
+      preferences: {},
+      addresses: [],
+      paymentMethods: [],
+      driverLicense: 'DL12345678',
+      vehicleInfo: { make: 'Toyota', model: 'Camry', year: 2020, licensePlate: 'ABC123' },
+      bankInfo: { accountNumber: '****1234', routingNumber: '021000021' },
+      driverRating: 4.8,
+      totalEarnings: 2450.50,
+      completedDeliveries: 127,
+      isOnline: true,
+      currentLocation: { lat: 37.7749, lng: -122.4194 },
+      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      updatedAt: new Date()
+    };
+    this.users.set(2, demoDriver);
+    
     const demoOrder: Order = {
       id: 'DEMO01',
       userId: 1,
-      status: 'created',
-      pickupAddress: '500 Market St, Apt 2C',
+      status: OrderStatus.PICKED_UP,
+      trackingNumber: 'RTN001',
+      pickupAddress: '500 Market St, Apt 2C, San Francisco, CA 94105',
+      pickupCoordinates: { lat: 37.7879, lng: -122.3961 },
+      pickupInstructions: 'Ring doorbell, building entrance on Market St',
+      pickupWindow: { start: '2024-01-15T10:00:00Z', end: '2024-01-15T14:00:00Z' },
+      scheduledPickupTime: new Date('2024-01-15T12:00:00Z'),
+      actualPickupTime: new Date('2024-01-15T12:15:00Z'),
       retailer: 'Target',
-      itemDescription: 'Nike Shoes - Wrong Size',
-      price: '$3.99',
-      driverId: null,
-      createdAt: new Date(Date.now() - 20 * 60 * 1000),
-      updatedAt: new Date(Date.now() - 20 * 60 * 1000)
+      returnAddress: '1955 Mission St, San Francisco, CA 94103',
+      returnCoordinates: { lat: 37.7693, lng: -122.4178 },
+      itemDescription: 'Nike Air Max 270 - Size 10 - Black/White',
+      itemCategory: 'Footwear',
+      itemPhotos: ['/api/uploads/demo-shoes-1.jpg'],
+      returnReason: 'Wrong size ordered',
+      originalOrderNumber: 'TARGET123456789',
+      basePrice: 3.99,
+      surcharges: [],
+      discountCode: 'RETURN50',
+      discountAmount: 1.99,
+      totalPrice: 2.00,
+      tip: 2.50,
+      driverId: 2,
+      driverAssignedAt: new Date('2024-01-15T11:30:00Z'),
+      estimatedDeliveryTime: new Date('2024-01-15T15:00:00Z'),
+      actualDeliveryTime: null,
+      statusHistory: [
+        { status: 'created', timestamp: '2024-01-15T09:00:00Z', note: 'Order created' },
+        { status: 'confirmed', timestamp: '2024-01-15T09:05:00Z', note: 'Payment confirmed' },
+        { status: 'assigned', timestamp: '2024-01-15T11:30:00Z', note: 'Driver assigned' },
+        { status: 'picked_up', timestamp: '2024-01-15T12:15:00Z', note: 'Package picked up' }
+      ],
+      customerNotes: 'Please handle with care - shoes are in original box',
+      driverNotes: 'Customer was ready, easy pickup',
+      adminNotes: null,
+      notifications: [],
+      customerRating: null,
+      driverRating: null,
+      customerFeedback: null,
+      driverFeedback: null,
+      priority: 'standard',
+      isFragile: false,
+      requiresSignature: false,
+      insuranceValue: null,
+      createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000)
     };
     this.orders.set('DEMO01', demoOrder);
-    this.nextUserId = 2;
+    
+    // Demo promo codes
+    const promoCodes = [
+      { code: 'RETURN50', description: '50% off your first return', discountType: 'percentage', discountValue: 50, minOrderValue: 0 },
+      { code: 'BUNDLE25', description: '$2.50 off multiple items', discountType: 'fixed', discountValue: 2.50, minOrderValue: 5.00 },
+      { code: 'STUDENT15', description: '15% student discount', discountType: 'percentage', discountValue: 15, minOrderValue: 0 },
+      { code: 'FREESHIP', description: 'Free delivery', discountType: 'free_delivery', discountValue: 3.99, minOrderValue: 0 }
+    ];
+    
+    promoCodes.forEach(promo => {
+      const promoCode: PromoCode = {
+        id: this.nextPromoId++,
+        ...promo,
+        maxUses: promo.code === 'RETURN50' ? 1000 : 500,
+        currentUses: Math.floor(Math.random() * 100),
+        isActive: true,
+        validFrom: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+      };
+      this.promoCodes.set(promo.code, promoCode);
+    });
+    
+    this.nextUserId = 3;
   }
 
+  // User operations
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
@@ -68,9 +218,28 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.nextUserId++;
     const user: User = { 
-      ...insertUser, 
       id,
+      username: insertUser.username,
+      email: insertUser.email,
+      password: insertUser.password,
+      firstName: insertUser.firstName || null,
+      lastName: insertUser.lastName || null,
+      phone: insertUser.phone || null,
       isDriver: insertUser.isDriver ?? false,
+      isAdmin: insertUser.isAdmin ?? false,
+      isActive: insertUser.isActive ?? true,
+      profileImage: insertUser.profileImage || null,
+      preferences: insertUser.preferences || {},
+      addresses: insertUser.addresses || [],
+      paymentMethods: insertUser.paymentMethods || [],
+      driverLicense: insertUser.driverLicense || null,
+      vehicleInfo: insertUser.vehicleInfo || null,
+      bankInfo: insertUser.bankInfo || null,
+      driverRating: insertUser.driverRating ?? 5.0,
+      totalEarnings: insertUser.totalEarnings ?? 0,
+      completedDeliveries: insertUser.completedDeliveries ?? 0,
+      isOnline: insertUser.isOnline ?? false,
+      currentLocation: insertUser.currentLocation || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -78,6 +247,24 @@ export class MemStorage implements IStorage {
     return user;
   }
 
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    
+    const updatedUser = { ...user, ...updates, updatedAt: new Date() };
+    this.users.set(id, updatedUser);
+    return updatedUser;
+  }
+
+  async getDrivers(isOnline?: boolean): Promise<User[]> {
+    const drivers = Array.from(this.users.values()).filter(user => user.isDriver);
+    if (isOnline !== undefined) {
+      return drivers.filter(driver => driver.isOnline === isOnline);
+    }
+    return drivers;
+  }
+
+  // Order operations
   async getOrder(id: string): Promise<Order | undefined> {
     return this.orders.get(id);
   }
@@ -90,14 +277,62 @@ export class MemStorage implements IStorage {
     return Array.from(this.orders.values());
   }
 
+  async getDriverOrders(driverId: number): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
+  }
+
+  async getAvailableOrders(): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => 
+      order.status === OrderStatus.CREATED && !order.driverId
+    );
+  }
+
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = Math.random().toString(36).slice(2, 8).toUpperCase();
+    const trackingNumber = `RTN${Date.now().toString().slice(-6)}`;
+    
     const order: Order = {
-      ...insertOrder,
       id,
-      status: 'created',
-      price: insertOrder.price ?? '$3.99',
-      driverId: insertOrder.driverId ?? null,
+      trackingNumber,
+      userId: insertOrder.userId,
+      status: OrderStatus.CREATED,
+      pickupAddress: insertOrder.pickupAddress,
+      pickupCoordinates: insertOrder.pickupCoordinates || null,
+      pickupInstructions: insertOrder.pickupInstructions || null,
+      pickupWindow: insertOrder.pickupWindow || null,
+      scheduledPickupTime: insertOrder.scheduledPickupTime || null,
+      actualPickupTime: insertOrder.actualPickupTime || null,
+      retailer: insertOrder.retailer,
+      returnAddress: insertOrder.returnAddress || null,
+      returnCoordinates: insertOrder.returnCoordinates || null,
+      itemDescription: insertOrder.itemDescription,
+      itemCategory: insertOrder.itemCategory || null,
+      itemPhotos: insertOrder.itemPhotos || [],
+      returnReason: insertOrder.returnReason || null,
+      originalOrderNumber: insertOrder.originalOrderNumber || null,
+      basePrice: insertOrder.basePrice ?? 3.99,
+      surcharges: insertOrder.surcharges || [],
+      discountCode: insertOrder.discountCode || null,
+      discountAmount: insertOrder.discountAmount ?? 0,
+      totalPrice: insertOrder.totalPrice ?? 3.99,
+      tip: insertOrder.tip ?? 0,
+      driverId: insertOrder.driverId || null,
+      driverAssignedAt: insertOrder.driverAssignedAt || null,
+      estimatedDeliveryTime: insertOrder.estimatedDeliveryTime || null,
+      actualDeliveryTime: insertOrder.actualDeliveryTime || null,
+      statusHistory: [{ status: OrderStatus.CREATED, timestamp: new Date().toISOString(), note: 'Order created' }],
+      customerNotes: insertOrder.customerNotes || null,
+      driverNotes: insertOrder.driverNotes || null,
+      adminNotes: insertOrder.adminNotes || null,
+      notifications: insertOrder.notifications || [],
+      customerRating: insertOrder.customerRating || null,
+      driverRating: insertOrder.driverRating || null,
+      customerFeedback: insertOrder.customerFeedback || null,
+      driverFeedback: insertOrder.driverFeedback || null,
+      priority: insertOrder.priority || 'standard',
+      isFragile: insertOrder.isFragile ?? false,
+      requiresSignature: insertOrder.requiresSignature ?? false,
+      insuranceValue: insertOrder.insuranceValue || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -109,9 +344,118 @@ export class MemStorage implements IStorage {
     const order = this.orders.get(id);
     if (!order) return undefined;
     
-    const updatedOrder = { ...order, ...updates };
+    const updatedOrder = { ...order, ...updates, updatedAt: new Date() };
+    
+    // Update status history if status changed
+    if (updates.status && updates.status !== order.status) {
+      updatedOrder.statusHistory = [
+        ...(order.statusHistory || []),
+        { status: updates.status, timestamp: new Date().toISOString(), note: `Status updated to ${updates.status}` }
+      ];
+    }
+    
     this.orders.set(id, updatedOrder);
     return updatedOrder;
+  }
+
+  // Promo code operations
+  async getPromoCode(code: string): Promise<PromoCode | undefined> {
+    return this.promoCodes.get(code);
+  }
+
+  async createPromoCode(insertPromoCode: InsertPromoCode): Promise<PromoCode> {
+    const promoCode: PromoCode = {
+      id: this.nextPromoId++,
+      ...insertPromoCode,
+      currentUses: 0,
+      createdAt: new Date()
+    };
+    this.promoCodes.set(insertPromoCode.code, promoCode);
+    return promoCode;
+  }
+
+  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }> {
+    const promo = this.promoCodes.get(code);
+    if (!promo || !promo.isActive) {
+      return { valid: false };
+    }
+    
+    const now = new Date();
+    if (promo.validUntil && now > promo.validUntil) {
+      return { valid: false };
+    }
+    
+    if (promo.maxUses && promo.currentUses >= promo.maxUses) {
+      return { valid: false };
+    }
+    
+    return {
+      valid: true,
+      discount: promo.discountValue,
+      type: promo.discountType
+    };
+  }
+
+  // Driver earnings
+  async getDriverEarnings(driverId: number): Promise<DriverEarning[]> {
+    return Array.from(this.driverEarnings.values()).filter(earning => earning.driverId === driverId);
+  }
+
+  async createDriverEarning(insertEarning: InsertDriverEarning): Promise<DriverEarning> {
+    const earning: DriverEarning = {
+      id: this.nextEarningId++,
+      ...insertEarning,
+      createdAt: new Date()
+    };
+    this.driverEarnings.set(earning.id, earning);
+    return earning;
+  }
+
+  // Notifications
+  async getUserNotifications(userId: number): Promise<Notification[]> {
+    return Array.from(this.notifications.values()).filter(notif => notif.userId === userId);
+  }
+
+  async createNotification(insertNotification: InsertNotification): Promise<Notification> {
+    const notification: Notification = {
+      id: this.nextNotificationId++,
+      ...insertNotification,
+      createdAt: new Date()
+    };
+    this.notifications.set(notification.id, notification);
+    return notification;
+  }
+
+  async markNotificationRead(id: number): Promise<void> {
+    const notification = this.notifications.get(id);
+    if (notification) {
+      notification.isRead = true;
+      this.notifications.set(id, notification);
+    }
+  }
+
+  // Analytics
+  async recordAnalytics(insertAnalytics: InsertAnalytics): Promise<Analytics> {
+    const analytics: Analytics = {
+      id: this.nextAnalyticsId++,
+      ...insertAnalytics,
+      timestamp: insertAnalytics.timestamp || new Date()
+    };
+    this.analytics.set(`${analytics.metric}-${analytics.id}`, analytics);
+    return analytics;
+  }
+
+  async getAnalytics(metric: string, from?: Date, to?: Date): Promise<Analytics[]> {
+    let results = Array.from(this.analytics.values()).filter(a => a.metric === metric);
+    
+    if (from) {
+      results = results.filter(a => a.timestamp >= from);
+    }
+    if (to) {
+      results = results.filter(a => a.timestamp <= to);
+    }
+    
+    return results.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
   }
 }
 
