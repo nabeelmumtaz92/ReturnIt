@@ -37,7 +37,7 @@ export default function Login() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Enter your name"
-                className="bg-input border-border"
+                className="brand-input"
                 data-testid="input-name"
               />
             </div>

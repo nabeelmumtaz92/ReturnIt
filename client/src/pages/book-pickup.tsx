@@ -50,7 +50,7 @@ export default function BookPickup() {
                 id="customer-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="bg-input border-border"
+                className="brand-input"
                 data-testid="input-customer-name"
               />
             </div>
@@ -61,7 +61,7 @@ export default function BookPickup() {
                 id="pickup-address"
                 value={pickupAddress}
                 onChange={(e) => setPickupAddress(e.target.value)}
-                className="bg-input border-border"
+                className="brand-input"
                 data-testid="input-pickup-address"
               />
             </div>
@@ -72,7 +72,7 @@ export default function BookPickup() {
                 id="retailer"
                 value={retailer}
                 onChange={(e) => setRetailer(e.target.value)}
-                className="bg-input border-border"
+                className="brand-input"
                 data-testid="input-retailer"
               />
             </div>
@@ -83,7 +83,7 @@ export default function BookPickup() {
                 id="notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="bg-input border-border"
+                className="brand-input"
                 rows={3}
                 data-testid="input-notes"
               />

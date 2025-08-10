@@ -11,7 +11,7 @@ Preferred communication style: Simple, everyday language.
 ## Frontend Architecture
 - **Framework**: React 18 with TypeScript using Vite as the build tool
 - **UI Components**: Shadcn/ui component library with Radix UI primitives for accessibility
-- **Styling**: Tailwind CSS with a custom dark theme featuring maroon/brown brand colors
+- **Styling**: Tailwind CSS with a custom cardboard/shipping theme featuring tan, orange, and brown brand colors
 - **State Management**: Zustand for global state management, React Query for server state
 - **Routing**: Wouter for client-side routing
 - **Form Handling**: React Hook Form with Zod validation
@@ -41,7 +41,7 @@ Preferred communication style: Simple, everyday language.
 ## Mobile-First Design
 - **Responsive Design**: Mobile-first approach with progressive enhancement
 - **Touch-Friendly**: Optimized for mobile interactions and gestures
-- **Dark Theme**: Custom brand-focused dark theme with accessibility considerations
+- **Cardboard Theme**: Custom shipping/logistics-inspired theme with warm tan, orange, and brown colors for accessibility and brand consistency
 
 # External Dependencies
 

@@ -4,74 +4,82 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(20, 14.3%, 4.1%);
-  --foreground: hsl(33, 20%, 95.5%);
-  --card: hsl(22, 13%, 11%);
-  --card-foreground: hsl(33, 20%, 95.5%);
-  --popover: hsl(22, 13%, 11%);
-  --popover-foreground: hsl(33, 20%, 95.5%);
-  --primary: hsl(356, 46%, 31%);
-  --primary-foreground: hsl(33, 20%, 95.5%);
-  --secondary: hsl(27, 33%, 49%);
-  --secondary-foreground: hsl(33, 20%, 95.5%);
-  --muted: hsl(25, 12%, 54%);
-  --muted-foreground: hsl(25, 12%, 54%);
-  --accent: hsl(22, 13%, 11%);
-  --accent-foreground: hsl(33, 20%, 95.5%);
-  --destructive: hsl(356, 46%, 31%);
-  --destructive-foreground: hsl(33, 20%, 95.5%);
-  --border: hsl(24, 9%, 16%);
-  --input: hsl(22, 13%, 11%);
-  --ring: hsl(356, 46%, 31%);
-  --chart-1: hsl(356, 46%, 31%);
-  --chart-2: hsl(159.7826, 100%, 36.0784%);
-  --chart-3: hsl(42.0290, 92.8251%, 56.2745%);
-  --chart-4: hsl(147.1429, 78.5047%, 41.9608%);
-  --chart-5: hsl(341.4894, 75.2000%, 50.9804%);
-  --sidebar: hsl(22, 13%, 11%);
-  --sidebar-foreground: hsl(33, 20%, 95.5%);
-  --sidebar-primary: hsl(356, 46%, 31%);
-  --sidebar-primary-foreground: hsl(33, 20%, 95.5%);
-  --sidebar-accent: hsl(22, 13%, 11%);
-  --sidebar-accent-foreground: hsl(33, 20%, 95.5%);
-  --sidebar-border: hsl(24, 9%, 16%);
-  --sidebar-ring: hsl(356, 46%, 31%);
+  --background: hsl(45, 42%, 96%);
+  --foreground: hsl(210, 7%, 10%);
+  --card: hsl(45, 42%, 96%);
+  --card-foreground: hsl(210, 7%, 10%);
+  --popover: hsl(45, 42%, 96%);
+  --popover-foreground: hsl(210, 7%, 10%);
+  --primary: hsl(20, 100%, 63%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(39, 39%, 70%);
+  --secondary-foreground: hsl(210, 7%, 10%);
+  --muted: hsl(30, 32%, 39%);
+  --muted-foreground: hsl(30, 32%, 39%);
+  --accent: hsl(39, 39%, 70%);
+  --accent-foreground: hsl(210, 7%, 10%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(39, 39%, 70%);
+  --input: hsl(0, 0%, 100%);
+  --ring: hsl(20, 100%, 63%);
+  --chart-1: hsl(20, 100%, 63%);
+  --chart-2: hsl(123, 43%, 32%);
+  --chart-3: hsl(39, 39%, 70%);
+  --chart-4: hsl(30, 32%, 39%);
+  --chart-5: hsl(210, 7%, 10%);
+  --sidebar: hsl(45, 42%, 96%);
+  --sidebar-foreground: hsl(210, 7%, 10%);
+  --sidebar-primary: hsl(20, 100%, 63%);
+  --sidebar-primary-foreground: hsl(0, 0%, 100%);
+  --sidebar-accent: hsl(39, 39%, 70%);
+  --sidebar-accent-foreground: hsl(210, 7%, 10%);
+  --sidebar-border: hsl(39, 39%, 70%);
+  --sidebar-ring: hsl(20, 100%, 63%);
   --font-sans: Inter, system-ui, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
-  --radius: 0.875rem;
+  --radius: 0.625rem;
   
-  /* Brand specific colors */
-  --brand-primary: hsl(356, 46%, 31%);
-  --brand-primary-dark: hsl(356, 46%, 21%);
-  --brand-accent: hsl(27, 33%, 49%);
-  --brand-bg: hsl(20, 14.3%, 4.1%);
-  --brand-surface: hsl(22, 13%, 11%);
-  --brand-text: hsl(33, 20%, 95.5%);
-  --brand-muted: hsl(25, 12%, 54%);
-  --brand-border: hsl(24, 9%, 16%);
+  /* Brand specific colors - Cardboard Theme */
+  --brand-cardboard: hsl(39, 39%, 70%);
+  --brand-off-white: hsl(45, 42%, 96%);
+  --brand-barcode-black: hsl(210, 7%, 10%);
+  --brand-tape-brown: hsl(30, 32%, 39%);
+  --brand-accent-orange: hsl(20, 100%, 63%);
+  --brand-accent-green: hsl(123, 43%, 32%);
+  
+  /* Mapped brand variables */
+  --brand-primary: hsl(20, 100%, 63%);
+  --brand-primary-dark: hsl(20, 100%, 53%);
+  --brand-accent: hsl(39, 39%, 70%);
+  --brand-bg: hsl(45, 42%, 96%);
+  --brand-surface: hsl(0, 0%, 100%);
+  --brand-text: hsl(210, 7%, 10%);
+  --brand-muted: hsl(30, 32%, 39%);
+  --brand-border: hsl(39, 39%, 70%);
 }
 
 .dark {
-  --background: hsl(20, 14.3%, 4.1%);
-  --foreground: hsl(33, 20%, 95.5%);
-  --card: hsl(22, 13%, 11%);
-  --card-foreground: hsl(33, 20%, 95.5%);
-  --popover: hsl(22, 13%, 11%);
-  --popover-foreground: hsl(33, 20%, 95.5%);
-  --primary: hsl(356, 46%, 31%);
-  --primary-foreground: hsl(33, 20%, 95.5%);
-  --secondary: hsl(27, 33%, 49%);
-  --secondary-foreground: hsl(33, 20%, 95.5%);
-  --muted: hsl(25, 12%, 54%);
-  --muted-foreground: hsl(25, 12%, 54%);
-  --accent: hsl(22, 13%, 11%);
-  --accent-foreground: hsl(33, 20%, 95.5%);
-  --destructive: hsl(356, 46%, 31%);
-  --destructive-foreground: hsl(33, 20%, 95.5%);
-  --border: hsl(24, 9%, 16%);
-  --input: hsl(22, 13%, 11%);
-  --ring: hsl(356, 46%, 31%);
+  --background: hsl(30, 32%, 15%);
+  --foreground: hsl(45, 42%, 96%);
+  --card: hsl(30, 32%, 18%);
+  --card-foreground: hsl(45, 42%, 96%);
+  --popover: hsl(30, 32%, 18%);
+  --popover-foreground: hsl(45, 42%, 96%);
+  --primary: hsl(20, 100%, 63%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(30, 32%, 39%);
+  --secondary-foreground: hsl(45, 42%, 96%);
+  --muted: hsl(39, 39%, 50%);
+  --muted-foreground: hsl(39, 39%, 50%);
+  --accent: hsl(30, 32%, 18%);
+  --accent-foreground: hsl(45, 42%, 96%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --border: hsl(30, 32%, 30%);
+  --input: hsl(30, 32%, 18%);
+  --ring: hsl(20, 100%, 63%);
 }
 
 @layer base {
@@ -84,52 +92,72 @@
     background: var(--brand-bg);
     color: var(--brand-text);
     font-family: var(--font-sans);
+    min-height: 100vh;
   }
 }
 
 @layer components {
   .brand-card {
-    @apply bg-card border border-border rounded-2xl p-4;
+    @apply rounded-xl p-4;
     background: var(--brand-surface);
-    border-color: var(--brand-border);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--brand-cardboard);
+    box-shadow: 0 2px 8px rgba(210, 180, 140, 0.2);
   }
 
   .brand-button-contained {
-    @apply px-6 py-3 rounded-2xl font-semibold transition-all duration-200;
-    background: var(--brand-primary);
-    color: var(--brand-text);
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200;
+    background: var(--brand-accent-orange);
+    color: white;
+    border: none;
   }
 
   .brand-button-contained:hover {
     background: var(--brand-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
   }
 
   .brand-button-contained:disabled {
     @apply opacity-50 cursor-not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   .brand-button-outlined {
-    @apply px-6 py-3 rounded-2xl font-semibold border transition-all duration-200;
-    background: transparent;
-    color: var(--brand-primary);
-    border-color: var(--brand-primary);
+    @apply px-6 py-3 rounded-xl font-semibold border transition-all duration-200;
+    background: var(--brand-cardboard);
+    color: var(--brand-barcode-black);
+    border-color: var(--brand-tape-brown);
   }
 
   .brand-button-outlined:hover {
-    background: rgba(110, 44, 47, 0.1);
+    background: var(--brand-tape-brown);
+    color: var(--brand-off-white);
+    transform: translateY(-1px);
   }
 
   .brand-chip {
-    @apply px-3 py-1.5 rounded-2xl text-sm font-medium border;
-    background: rgba(160, 146, 136, 0.2);
-    color: var(--brand-muted);
-    border-color: rgba(160, 146, 136, 0.3);
+    @apply px-3 py-1.5 rounded-xl text-sm font-medium border;
+    background: rgba(210, 180, 140, 0.2);
+    color: var(--brand-tape-brown);
+    border-color: var(--brand-cardboard);
   }
 
   .brand-chip-selected {
-    background: rgba(110, 44, 47, 0.3);
-    color: var(--brand-primary);
-    border-color: var(--brand-primary);
+    background: var(--brand-accent-orange);
+    color: white;
+    border-color: var(--brand-accent-orange);
+  }
+
+  .brand-input {
+    @apply rounded-xl border px-3 py-2;
+    background: white;
+    border-color: var(--brand-cardboard);
+    color: var(--brand-barcode-black);
+  }
+
+  .brand-input:focus {
+    border-color: var(--brand-accent-orange);
+    box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
   }
 }
