@@ -17,9 +17,9 @@ export default function LogoColors() {
   ];
 
   const handleColorSelect = (filename: string, colorName: string) => {
-    // This would update the logo in the actual site
-    console.log(`Selected ${colorName} (${filename})`);
-    alert(`${colorName} selected! This is a preview - would you like me to apply this color?`);
+    // Copy to clipboard for easy reference
+    navigator.clipboard.writeText(filename).catch(() => {});
+    alert(`${colorName} selected! Filename: ${filename}\n\nTell me to apply this color and I'll update your website.`);
   };
 
   return (
@@ -49,8 +49,11 @@ export default function LogoColors() {
                   src={`/${option.file}`}
                   alt={`${option.name} logo`}
                   className="h-16 w-auto"
+                  onLoad={() => console.log(`Loaded: ${option.file}`)}
                   onError={(e) => {
                     console.error(`Failed to load ${option.file}`);
+                    e.currentTarget.style.border = "2px solid red";
+                    e.currentTarget.alt = `Error loading ${option.name}`;
                   }}
                 />
               </div>
@@ -61,6 +64,11 @@ export default function LogoColors() {
                   src={`/${option.file}`}
                   alt={`${option.name} logo`}
                   className="h-12 w-auto"
+                  onError={(e) => {
+                    console.error(`Failed to load ${option.file} in light section`);
+                    e.currentTarget.style.border = "2px solid red";
+                    e.currentTarget.alt = `Error: ${option.name}`;
+                  }}
                 />
               </div>
 
