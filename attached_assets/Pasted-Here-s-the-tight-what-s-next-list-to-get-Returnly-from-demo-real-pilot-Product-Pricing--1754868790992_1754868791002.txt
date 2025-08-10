@@ -1,0 +1,48 @@
+Here’s the tight “what’s next” list to get Returnly from demo → real pilot:
+
+# Product & Pricing
+
+* Finalize pricing: base \$3.99 + size add‑ons (S/M/L/XL), rush fee, multi‑item.
+* Lock **order form** fields: phone, size selector, return method, pickup window.
+* Define **refund/cancellation** rules (late cancel fee? driver no‑show? mis-sized box?).
+
+# Driver Side
+
+* Driver **onboarding**: ID verification + background check (e.g., Stripe Identity / Checkr).
+* **Payouts**: Stripe Connect accounts, weekly payout + optional instant cash‑out.
+* In‑app **photo proof** (pickup & drop-off), signature or receipt upload.
+
+# Ops & Safety
+
+* **SOPs**: lost/damaged item policy, prohibited items list, reattempt flow.
+* **Insurance**: general liability + contingent cargo (even modest coverage to start).
+* **Support**: in‑app chat/email, response SLAs, escalation playbook.
+
+# Legal & Compliance
+
+* **Terms of Service** (customer & driver), **Privacy Policy**, **Service area** boundaries.
+* **Independent contractor** agreement for drivers; tax (1099) handling.
+
+# Tech Plumbing
+
+* **Geocoding & routing** (Google/Mapbox) for distance/ETAs.
+* **Notifications**: push + SMS (status changes, driver ETA).
+* **Analytics**: track CAC, completion rate, on‑time %, NPS, avg time per return.
+* **Fraud controls**: card 3DS, address checks, driver photo match.
+
+# Go‑to‑Market (zero‑\$)
+
+* Launch **pilot zip codes** only (start small).
+* Create **FAQ** + “How it works” page for trust.
+* Collect **testimonials** and photos from first 10–20 jobs.
+
+# Admin Tools
+
+* Lightweight **ops dashboard** (web): live jobs, reassign, refund, manual payouts.
+* **Content** controls: edit pricing, fee toggles, blackout dates.
+
+# App Store Prep (when ready)
+
+* App name, tagline, screenshots (from your Figma), privacy labels, testflight/beta.
+
+If you want, I can take any one of these and draft the exact specs (e.g., driver onboarding flow with screens + copy), or spin up a minimal ops dashboard you can run alongside Replit. What do you want to tackle first?

@@ -44,10 +44,11 @@ export default function BookPickup() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
 
   const createOrderMutation = useMutation({
-    mutationFn: async (data: typeof formData) => {
-      return await apiRequest('/api/orders', 'POST', data);
+    mutationFn: async (data: any) => {
+      const response = await apiRequest('/api/orders', 'POST', data);
+      return response.json();
     },
-    onSuccess: (order) => {
+    onSuccess: (order: any) => {
       toast({
         title: "Pickup booked!",
         description: `Your pickup has been scheduled. Order ID: ${order.id}`,
@@ -159,7 +160,7 @@ export default function BookPickup() {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleDetailsSubmit}>
             <CardContent className="space-y-6">
               {/* Pickup Address */}
               <div className="space-y-2">
