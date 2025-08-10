@@ -19,7 +19,7 @@ Preferred communication style: Simple, everyday language.
 - Added image carousel cycling through 5 delivery photos (4 user-provided + 1 stock photo) every 4 seconds
 - Removed all Card components and container borders for seamless sectioned layout
 - Created 7 distinct full-width sections with unique background images and gradients
-- Enlarged favicon to 512x512px for ultra maximum visibility and clarity
+- Enlarged favicon to 1024x1024px - the absolute maximum size browsers support
 - Fixed logo display issues by using user's uploaded Returnly logo throughout the site
 - Enlarged favicon "R" letter to 240px font size for maximum visibility
 - Maintained horizontal sectioning without visible lines or borders
