@@ -2,12 +2,12 @@
 
 Returnly is a reverse delivery service platform that facilitates returns, exchanges, and donations by handling the pickup and return process for customers. The platform connects customers who need items returned with drivers who can handle the delivery. The system consists of:
 
-- **Customer Website**: Primary web interface for booking pickups, tracking returns, and managing orders (current implementation)
-- **Customer Mobile App**: Mobile version of the customer experience with additional features like photo upload
+- **Customer Website**: Primary web interface for booking pickups, tracking returns, and managing orders
+- **Customer Mobile App**: React Native version compatible with Expo Go for mobile experience (current implementation)
 - **Driver Mobile App**: Dedicated mobile app for drivers to accept jobs, navigate, and update order status
 - **Backend API**: Shared Node.js/Express backend serving all customer and driver interfaces
 
-The current web application is the main customer-facing interface, designed with a cardboard/shipping theme to create a friendly, approachable experience for people booking returns.
+The current implementation is a React Native app designed to work with Expo Go, featuring the same cardboard/shipping theme and functionality as the web version. The app includes 4 main screens: Welcome, Login, Book Pickup, and Order Status, with full order management capabilities.
 
 # User Preferences
 
