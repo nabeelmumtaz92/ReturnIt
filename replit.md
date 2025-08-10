@@ -15,13 +15,14 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes
 
-**August 10, 2025 (Latest)** - Enhanced branding with realistic backgrounds and professional favicon:
-- Created cardboard brown box favicon for browser tab matching brand theme
-- Updated HTML title to "Returnly: Return Delivery Service" for SEO and branding
-- Replaced flat cardboard backgrounds with realistic gradient scenes
-- Added subtle delivery scene illustration (person → cardboard box → delivery truck)
-- Enhanced cards with glass-morphism effects (translucent backgrounds with backdrop blur)
-- Improved visual depth with better shadows and layering throughout the design
+**August 10, 2025 (Latest)** - Implemented DoorDash-style hero with authentic stock photography:
+- Created full-screen hero section matching DoorDash's layout and impact
+- Integrated real stock photo from Pexels showing woman receiving package from courier
+- Applied orange-red brand overlay to maintain consistent branding
+- Simplified favicon to plain brown box (no lines or details)
+- Split hero layout: compelling content left, authentic delivery photo background
+- Added professional call-to-action buttons and key service statistics
+- Maintained "Returns made effortless" as primary value proposition
 
 **August 10, 2025** - Implemented comprehensive Figma design system with mobile-first responsive components:
 - Built complete design token system matching Figma guide specifications (colors, typography, spacing, radii)

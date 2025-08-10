@@ -9,8 +9,19 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen">
-      {/* DoorDash-style Hero Section */}
-      <div className="relative h-screen bg-gradient-to-br from-orange-400 via-orange-500 to-red-500 overflow-hidden">
+      {/* DoorDash-style Hero Section with Real Stock Photo */}
+      <div className="relative h-screen overflow-hidden">
+        
+        {/* Background Stock Photo */}
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600" 
+            alt="Woman receiving package from courier" 
+            className="w-full h-full object-cover"
+          />
+          {/* Orange overlay to match brand */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-600/80 via-red-500/70 to-orange-500/80"></div>
+        </div>
         
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
@@ -75,87 +86,11 @@ export default function Welcome() {
               </div>
             </div>
 
-            {/* Right side - Realistic delivery scene */}
+            {/* Right side - Let the real photo show through */}
             <div className="hidden lg:block relative h-full">
-              <div className="absolute inset-0 flex items-center justify-center">
-                
-                {/* Main delivery scene */}
-                <div className="relative w-full h-96">
-                  
-                  {/* Customer - person handing package */}
-                  <div className="absolute left-20 bottom-20">
-                    <div className="relative">
-                      {/* Head */}
-                      <div className="w-16 h-16 bg-pink-300 rounded-full mb-2"></div>
-                      {/* Body */}
-                      <div className="w-20 h-32 bg-blue-600 rounded-lg relative">
-                        {/* Arms reaching out */}
-                        <div className="absolute -right-8 top-8 w-12 h-4 bg-blue-700 rounded-full transform rotate-45"></div>
-                        <div className="absolute -left-2 top-8 w-12 h-4 bg-blue-700 rounded-full transform -rotate-45"></div>
-                      </div>
-                      {/* Legs */}
-                      <div className="flex gap-2 mt-1">
-                        <div className="w-8 h-20 bg-blue-800 rounded-lg"></div>
-                        <div className="w-8 h-20 bg-blue-800 rounded-lg"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Package being exchanged */}
-                  <div className="absolute left-40 bottom-32 z-10">
-                    <div className="w-12 h-8 bg-amber-700 rounded-sm shadow-lg transform rotate-12 border-2 border-amber-800">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-8 h-1 bg-amber-900"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Delivery driver - Returnly uniform */}
-                  <div className="absolute right-20 bottom-20">
-                    <div className="relative">
-                      {/* Head */}
-                      <div className="w-16 h-16 bg-pink-200 rounded-full mb-2"></div>
-                      {/* Body - Returnly orange uniform */}
-                      <div className="w-20 h-32 bg-orange-600 rounded-lg relative">
-                        {/* Returnly logo on chest */}
-                        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 text-xs font-bold text-white">R</div>
-                        {/* Arms reaching to receive */}
-                        <div className="absolute -left-6 top-8 w-12 h-4 bg-orange-700 rounded-full transform -rotate-45"></div>
-                        <div className="absolute -right-2 top-8 w-12 h-4 bg-orange-700 rounded-full transform rotate-45"></div>
-                      </div>
-                      {/* Legs */}
-                      <div className="flex gap-2 mt-1">
-                        <div className="w-8 h-20 bg-orange-800 rounded-lg"></div>
-                        <div className="w-8 h-20 bg-orange-800 rounded-lg"></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Delivery truck in background */}
-                  <div className="absolute right-4 bottom-4">
-                    <div className="w-32 h-16 bg-white rounded-lg border-4 border-gray-300 relative shadow-xl">
-                      {/* Cab */}
-                      <div className="absolute left-0 top-0 w-12 h-full bg-gray-200 rounded-l-lg"></div>
-                      {/* Wheels */}
-                      <div className="absolute bottom-0 left-3 w-4 h-4 bg-black rounded-full"></div>
-                      <div className="absolute bottom-0 right-3 w-4 h-4 bg-black rounded-full"></div>
-                      {/* Returnly branding */}
-                      <div className="absolute top-2 right-2 text-orange-600 font-bold text-sm">RETURNLY</div>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
+              {/* Empty space to showcase the real photo behind */}
             </div>
           </div>
-        </div>
-
-        {/* Background decorative elements */}
-        <div className="absolute inset-0 z-10">
-          {/* Floating packages */}
-          <div className="absolute top-20 right-10 w-8 h-6 bg-amber-600 rounded-sm opacity-20 transform rotate-12 animate-pulse"></div>
-          <div className="absolute top-40 left-10 w-6 h-4 bg-amber-500 rounded-sm opacity-20 transform -rotate-12 animate-pulse delay-75"></div>
-          <div className="absolute bottom-40 left-20 w-10 h-8 bg-amber-700 rounded-sm opacity-20 transform rotate-6 animate-pulse delay-150"></div>
         </div>
       </div>
 
