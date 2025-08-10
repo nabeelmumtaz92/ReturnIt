@@ -7,17 +7,14 @@ export default function LogoColors() {
   const cacheBuster = Date.now();
 
   const colorOptions = [
-    { name: "Dark Cardboard", file: "logo-cardboard-dark.png", description: "Rich darker cardboard brown - premium shipping" },
-    { name: "Steel Blue", file: "logo-blue.png", description: "Professional blue text - trustworthy" },
-    { name: "Cardboard Brown", file: "logo-cardboard.png", description: "Natural cardboard brown - matches shipping theme" },
-    { name: "White", file: "logo-white.png", description: "Clean white text - maximum contrast" },
-    { name: "Gold", file: "logo-gold.png", description: "Luxurious gold text - premium look" },
-    { name: "Current Orange", file: "logo-orange.png", description: "Current orange text on orange background" },
-    { name: "Crimson Red", file: "logo-red.png", description: "Bold red text - energetic" },
-    { name: "Lime Green", file: "logo-green.png", description: "Fresh green text - eco-friendly" },
-    { name: "Purple", file: "logo-purple.png", description: "Sophisticated purple text - premium" },
-    { name: "Hot Pink", file: "logo-pink.png", description: "Bold pink text - modern pop" },
-    { name: "Turquoise", file: "logo-cyan.png", description: "Cool turquoise text - refreshing" }
+    { name: "Light Cardboard", file: "logo-cardboard-light.png", description: "Light natural cardboard - subtle and warm" },
+    { name: "Medium Light", file: "logo-cardboard-medium-light.png", description: "Medium light brown - gentle contrast" },
+    { name: "Medium Cardboard", file: "logo-cardboard-medium.png", description: "Classic cardboard brown - balanced tone" },
+    { name: "Medium Dark", file: "logo-cardboard-medium-dark.png", description: "Medium dark brown - good readability" },
+    { name: "Dark Cardboard", file: "logo-cardboard-dark.png", description: "Rich dark cardboard - your current favorite" },
+    { name: "Darker Cardboard", file: "logo-cardboard-darker.png", description: "Deeper brown - premium shipping feel" },
+    { name: "Deep Cardboard", file: "logo-cardboard-deep.png", description: "Deep rich brown - sophisticated" },
+    { name: "Darkest Cardboard", file: "logo-cardboard-darkest.png", description: "Darkest brown - maximum contrast" }
   ];
 
   const handleColorSelect = (filename: string, colorName: string) => {
@@ -30,8 +27,8 @@ export default function LogoColors() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Logo Text Color</h1>
-          <p className="text-xl text-gray-600 mb-6">Pick a color for the "Returnly" letters that pops against the orange background</p>
+          <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Cardboard Brown Shade</h1>
+          <p className="text-xl text-gray-600 mb-6">Find the perfect shade of cardboard brown for your "Returnly" logo</p>
           <Button 
             onClick={() => setLocation('/welcome')}
             variant="outline"
@@ -93,8 +90,8 @@ export default function LogoColors() {
 
         <div className="text-center mt-12">
           <p className="text-gray-600">
-            Each text color is shown on your orange hero background and light welcome section.<br/>
-            The orange background theme stays the same - only the "Returnly" text color changes.
+            8 shades of cardboard brown from light to darkest. Each shown on your orange background and light section.<br/>
+            Find the perfect brown shade that matches your shipping theme vision.
           </p>
         </div>
       </div>
