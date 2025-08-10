@@ -15,9 +15,13 @@ export default function Welcome() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50"></div>
         
         {/* Delivery scene illustration */}
-        <div className="absolute bottom-0 right-0 w-full h-full opacity-10 overflow-hidden">
+        <div className="absolute bottom-0 right-0 w-full h-full opacity-15 overflow-hidden">
           <div className="absolute bottom-20 right-40 text-6xl">👤</div>
-          <div className="absolute bottom-20 right-60 text-4xl">📦</div>
+          <div className="absolute bottom-20 right-60 text-4xl">
+            <div className="w-12 h-12 bg-amber-700 border-2 border-amber-900 rounded-sm flex items-center justify-center">
+              <div className="w-6 h-1 bg-amber-900"></div>
+            </div>
+          </div>
           <div className="absolute bottom-20 right-80 text-6xl">🚛</div>
           <div className="absolute bottom-16 right-20 text-2xl opacity-50">→</div>
         </div>
