@@ -66,31 +66,31 @@ export default function Welcome() {
         
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
-          <div className="w-full px-8 lg:px-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center h-full">
+          <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto">
             
             {/* Left side - Main content */}
-            <div className="text-white space-y-8">
-              <div className="flex justify-center mb-8">
+            <div className="text-white space-y-6 lg:space-y-8 text-center">
+              <div className="flex justify-center mb-6 lg:mb-8">
                 <img 
                   src="/logo-transparent.png" 
                   alt="Returnly Logo" 
-                  className="h-32 w-auto"
+                  className="h-40 sm:h-48 md:h-56 lg:h-64 xl:h-80 2xl:h-96 w-auto"
                 />
               </div>
               
-              <div className="space-y-4">
-                <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
+              <div className="space-y-4 lg:space-y-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight">
                   Returns made
                   <br />
                   <span className="text-yellow-200">effortless</span>
                 </h1>
-                <p className="text-xl lg:text-2xl text-orange-100 font-medium">
+                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-orange-100 font-medium max-w-4xl mx-auto px-4">
                   We pick up your returns and deliver them back to the store. 
                   Zero trips, zero hassle.
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg"
                   className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 h-auto"
@@ -111,18 +111,18 @@ export default function Welcome() {
               </div>
 
               {/* Quick stats */}
-              <div className="flex flex-wrap gap-8 pt-4">
+              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 pt-4">
                 <div className="text-center">
-                  <div className="text-2xl font-bold">2hr</div>
-                  <div className="text-orange-200 text-sm">Average pickup</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">2hr</div>
+                  <div className="text-orange-200 text-sm sm:text-base">Average pickup</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">500+</div>
-                  <div className="text-orange-200 text-sm">Partner stores</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">500+</div>
+                  <div className="text-orange-200 text-sm sm:text-base">Partner stores</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold">$7.99</div>
-                  <div className="text-orange-200 text-sm">Starting price</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">$7.99</div>
+                  <div className="text-orange-200 text-sm sm:text-base">Starting price</div>
                 </div>
               </div>
             </div>
@@ -144,16 +144,16 @@ export default function Welcome() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative px-8 lg:px-16 text-center">
-          <div className="flex flex-col items-center justify-center mb-8">
+        <div className="relative px-4 sm:px-8 lg:px-16 text-center">
+          <div className="flex flex-col items-center justify-center mb-8 lg:mb-12">
             <img 
               src="/logo-transparent.png" 
               alt="Returnly Logo" 
-              className="h-40 w-auto mb-6"
+              className="h-32 sm:h-40 md:h-48 lg:h-56 xl:h-64 w-auto mb-6 lg:mb-8"
             />
             <div>
-              <div className="text-4xl font-bold text-gray-800 mb-2">Welcome to Returnly</div>
-              <div className="text-xl text-gray-600">Return Delivery Service</div>
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">Welcome to Returnly</div>
+              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">Return Delivery Service</div>
             </div>
           </div>
         </div>
