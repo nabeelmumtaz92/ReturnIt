@@ -5,12 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Package, CreditCard } from "lucide-react";
+import PaymentMethods from "@/components/PaymentMethods";
 
 export default function BookPickup() {
   const [, setLocation] = useLocation();
@@ -37,6 +39,10 @@ export default function BookPickup() {
     notes: ''
   });
 
+  const [currentStep, setCurrentStep] = useState<'details' | 'payment'>('details');
+  const [totalAmount, setTotalAmount] = useState(3.99);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+
   const createOrderMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
       return await apiRequest('/api/orders', 'POST', data);
@@ -57,7 +63,7 @@ export default function BookPickup() {
     }
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.pickupAddress || !formData.retailer || !formData.itemDescription) {
@@ -69,7 +75,20 @@ export default function BookPickup() {
       return;
     }
 
-    createOrderMutation.mutate(formData);
+    setCurrentStep('payment');
+  };
+
+  const handlePaymentSelect = (method: string, details?: any) => {
+    setSelectedPaymentMethod(method);
+    
+    const orderData = {
+      ...formData,
+      paymentMethod: method,
+      paymentDetails: details,
+      totalAmount
+    };
+
+    createOrderMutation.mutate(orderData);
   };
 
   const handleInputChange = (field: string, value: string) => {

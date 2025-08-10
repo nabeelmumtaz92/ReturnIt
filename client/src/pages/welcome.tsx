@@ -140,7 +140,7 @@ export default function Welcome() {
                         Driver Portal
                       </Button>
                     )}
-                    {user?.isAdmin && (
+                    {user && (user as any).isAdmin && (
                       <Button 
                         size="lg"
                         variant="outline"
@@ -172,15 +172,7 @@ export default function Welcome() {
                     >
                       Sign Up
                     </Button>
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="border-amber-600 text-amber-700 hover:bg-amber-50 font-bold text-lg px-8 py-4 h-auto"
-                      onClick={() => setLocation('/about')}
-                      data-testid="button-about-hero"
-                    >
-                      About Us
-                    </Button>
+
                   </>
                 )}
               </div>
@@ -473,7 +465,11 @@ export default function Welcome() {
               Help Center
             </button>
             <span className="text-gray-500">•</span>
-            <button className="hover:text-orange-300 transition-colors text-lg">
+            <button 
+              onClick={() => setLocation('/about')}
+              className="hover:text-orange-300 transition-colors text-lg"
+              data-testid="button-footer-about"
+            >
               About Us
             </button>
             <span className="text-gray-500">•</span>

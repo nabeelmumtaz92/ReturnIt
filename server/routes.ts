@@ -1,6 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import session from "express-session";
+import passport from "./auth/strategies";
+import bcrypt from "bcrypt";
+import { z } from "zod";
 import { 
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
   insertNotificationSchema, OrderStatus 
@@ -29,6 +33,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }));
 
+  // Initialize Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Passport serialization
+  passport.serializeUser((user: any, done) => {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(async (id: number, done) => {
+    try {
+      const user = await storage.getUser(id);
+      done(null, user);
+    } catch (error) {
+      done(error);
+    }
+  });
+
   // Auth routes
   app.post("/api/auth/register", async (req, res) => {
     try {
@@ -42,8 +64,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ message: "User already exists" });
       }
 
-      // Create user (password should be hashed in production)
-      const user = await storage.createUser(validatedData);
+      // Create user with hashed password
+      const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+      const user = await storage.createUser({
+        ...validatedData,
+        password: hashedPassword
+      });
       
       // Log user in
       (req.session as any).user = { id: user.id, username: user.username, isDriver: user.isDriver };
@@ -69,7 +95,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.getUserByUsername(username);
       
-      if (!user || user.password !== password) { // In production, compare hashed passwords
+      if (!user || !await bcrypt.compare(password, user.password)) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
@@ -98,6 +124,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json((req.session as any).user);
     } else {
       res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
+  // Social Authentication Routes
+  
+  // Google Auth
+  app.get('/api/auth/google', passport.authenticate('google', { 
+    scope: ['profile', 'email'] 
+  }));
+
+  app.get('/api/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    (req, res) => {
+      res.redirect('/');
+    }
+  );
+
+  // Facebook Auth
+  app.get('/api/auth/facebook', passport.authenticate('facebook', { 
+    scope: ['email'] 
+  }));
+
+  app.get('/api/auth/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    (req, res) => {
+      res.redirect('/');
+    }
+  );
+
+  // Apple Auth (Web-based)
+  app.get('/api/auth/apple', (req, res) => {
+    // For web-based Apple Sign-In, redirect to Apple's authorization URL
+    const appleAuthUrl = `https://appleid.apple.com/auth/authorize?client_id=com.returnly.web&redirect_uri=${encodeURIComponent('http://localhost:5000/api/auth/apple/callback')}&response_type=code&scope=email%20name&response_mode=form_post`;
+    res.redirect(appleAuthUrl);
+  });
+
+  app.post('/api/auth/apple/callback', async (req, res) => {
+    // Handle Apple Sign-In callback
+    try {
+      const { code, id_token, user } = req.body;
+      
+      if (!code && !id_token) {
+        return res.redirect('/login?error=apple_auth_failed');
+      }
+
+      // In a full implementation, you would verify the id_token with Apple's public key
+      res.redirect('/?apple_auth=success');
+    } catch (error) {
+      console.error('Apple auth error:', error);
+      res.redirect('/login?error=apple_auth_failed');
     }
   });
   // Get user's orders (protected)

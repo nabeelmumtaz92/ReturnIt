@@ -4,10 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { Mail, Lock, User, Phone } from "lucide-react";
+import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -118,6 +121,37 @@ export default function Login() {
     });
   };
 
+  // Social authentication handlers
+  const handleGoogleAuth = () => {
+    window.location.href = '/api/auth/google';
+  };
+
+  const handleAppleAuth = () => {
+    window.location.href = '/api/auth/apple';
+  };
+
+  const handleFacebookAuth = () => {
+    window.location.href = '/api/auth/facebook';
+  };
+
+  const SocialButton = ({ provider, icon: Icon, onClick, color }: {
+    provider: string;
+    icon: React.ComponentType<{ className?: string }>;
+    onClick: () => void;
+    color: string;
+  }) => (
+    <Button
+      type="button"
+      variant="outline"
+      className={`w-full flex items-center justify-center gap-3 h-12 border-2 hover:${color} transition-colors`}
+      onClick={onClick}
+      data-testid={`button-${provider.toLowerCase()}-auth`}
+    >
+      <Icon className="h-5 w-5" />
+      Continue with {provider}
+    </Button>
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
@@ -170,15 +204,45 @@ export default function Login() {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="flex flex-col space-y-2">
+                <CardFooter className="flex flex-col space-y-4">
                   <Button 
                     type="submit" 
-                    className="w-full bg-amber-800 hover:bg-amber-900"
+                    className="w-full bg-amber-800 hover:bg-amber-900 h-12"
                     disabled={loginMutation.isPending}
                     data-testid="button-login-submit"
                   >
-                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                    <Mail className="h-4 w-4 mr-2" />
+                    {loginMutation.isPending ? "Signing in..." : "Sign In with Email"}
                   </Button>
+                  
+                  <div className="relative">
+                    <Separator />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="bg-white px-2 text-xs text-gray-500">OR CONTINUE WITH</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <SocialButton 
+                      provider="Google" 
+                      icon={SiGoogle} 
+                      onClick={handleGoogleAuth}
+                      color="bg-red-50"
+                    />
+                    <SocialButton 
+                      provider="Apple" 
+                      icon={SiApple} 
+                      onClick={handleAppleAuth}
+                      color="bg-gray-50"
+                    />
+                    <SocialButton 
+                      provider="Facebook" 
+                      icon={SiFacebook} 
+                      onClick={handleFacebookAuth}
+                      color="bg-blue-50"
+                    />
+                  </div>
+                  
                   <Button 
                     type="button" 
                     variant="outline" 
@@ -247,15 +311,45 @@ export default function Login() {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="flex flex-col space-y-2">
+                <CardFooter className="flex flex-col space-y-4">
                   <Button 
                     type="submit" 
-                    className="w-full bg-amber-800 hover:bg-amber-900"
+                    className="w-full bg-amber-800 hover:bg-amber-900 h-12"
                     disabled={registerMutation.isPending}
                     data-testid="button-register-submit"
                   >
-                    {registerMutation.isPending ? "Creating account..." : "Create Account"}
+                    <User className="h-4 w-4 mr-2" />
+                    {registerMutation.isPending ? "Creating account..." : "Create Account with Email"}
                   </Button>
+                  
+                  <div className="relative">
+                    <Separator />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="bg-white px-2 text-xs text-gray-500">OR SIGN UP WITH</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <SocialButton 
+                      provider="Google" 
+                      icon={SiGoogle} 
+                      onClick={handleGoogleAuth}
+                      color="bg-red-50"
+                    />
+                    <SocialButton 
+                      provider="Apple" 
+                      icon={SiApple} 
+                      onClick={handleAppleAuth}
+                      color="bg-gray-50"
+                    />
+                    <SocialButton 
+                      provider="Facebook" 
+                      icon={SiFacebook} 
+                      onClick={handleFacebookAuth}
+                      color="bg-blue-50"
+                    />
+                  </div>
+                  
                   <Button 
                     type="button" 
                     variant="outline" 
