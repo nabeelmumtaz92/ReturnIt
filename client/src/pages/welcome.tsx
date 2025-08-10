@@ -8,11 +8,30 @@ export default function Welcome() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50">
-      <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen relative">
+      {/* Realistic Background Scene - Person handing package to delivery driver */}
+      <div className="absolute inset-0">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50"></div>
         
+        {/* Delivery scene illustration */}
+        <div className="absolute bottom-0 right-0 w-full h-full opacity-10 overflow-hidden">
+          <div className="absolute bottom-20 right-40 text-6xl">👤</div>
+          <div className="absolute bottom-20 right-60 text-4xl">📦</div>
+          <div className="absolute bottom-20 right-80 text-6xl">🚛</div>
+          <div className="absolute bottom-16 right-20 text-2xl opacity-50">→</div>
+        </div>
+        
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 opacity-20" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(123,94,59,0.3) 1px, transparent 0)`,
+          backgroundSize: '20px 20px'
+        }}></div>
+      </div>
+      
+      <div className="relative max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Header with Real Logo */}
-        <Card className="bg-white/80 backdrop-blur-sm border shadow-sm">
+        <Card className="bg-white/90 backdrop-blur-sm border shadow-lg">
           <CardContent className="p-6 text-center">
             <div className="flex items-center justify-center mb-4">
               <img 
