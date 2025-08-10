@@ -60,8 +60,8 @@ export default function Welcome() {
               }
             }}
           />
-          {/* Orange overlay to match brand */}
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-600/80 via-red-500/70 to-orange-500/80"></div>
+          {/* Warm beige overlay to match cardboard theme */}
+          <div className="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-100 to-orange-100"></div>
         </div>
         
         {/* Hero Content */}
@@ -69,7 +69,7 @@ export default function Welcome() {
           <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto">
             
             {/* Left side - Main content */}
-            <div className="text-white space-y-6 lg:space-y-8 text-center">
+            <div className="text-amber-900 space-y-6 lg:space-y-8 text-center">
               <div className="flex justify-center mb-6 lg:mb-8">
                 <img 
                   src="/logo-cardboard-deep.png" 
@@ -82,9 +82,9 @@ export default function Welcome() {
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight">
                   Returns made
                   <br />
-                  <span className="text-yellow-200">effortless</span>
+                  <span className="text-amber-700">effortless</span>
                 </h1>
-                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-orange-100 font-medium max-w-4xl mx-auto px-4">
+                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-amber-800 font-medium max-w-4xl mx-auto px-4">
                   We pick up your returns and deliver them back to the store. 
                   Zero trips, zero hassle.
                 </p>
@@ -93,7 +93,7 @@ export default function Welcome() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg"
-                  className="bg-white text-orange-600 hover:bg-orange-50 font-bold text-lg px-8 py-4 h-auto"
+                  className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
                   onClick={() => setLocation('/book-pickup')}
                   data-testid="button-book-pickup-hero"
                 >
@@ -102,7 +102,7 @@ export default function Welcome() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-orange-600 font-bold text-lg px-8 py-4 h-auto"
+                  className="border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
                   onClick={() => setLocation('/login')}
                   data-testid="button-sign-in-hero"
                 >
@@ -114,15 +114,15 @@ export default function Welcome() {
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 pt-4">
                 <div className="text-center">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold">2hr</div>
-                  <div className="text-orange-200 text-sm sm:text-base">Average pickup</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Average pickup</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold">500+</div>
-                  <div className="text-orange-200 text-sm sm:text-base">Partner stores</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Partner stores</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold">$7.99</div>
-                  <div className="text-orange-200 text-sm sm:text-base">Starting price</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Starting price</div>
                 </div>
               </div>
             </div>
