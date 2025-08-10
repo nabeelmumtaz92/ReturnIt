@@ -97,12 +97,15 @@ export default function Welcome() {
             
             {/* Left side - Main content */}
             <div className="text-amber-900 space-y-6 lg:space-y-8 text-center">
-              <div className="flex justify-center mb-6 lg:mb-8">
+              <div className="flex flex-col items-center mb-6 lg:mb-8">
                 <img 
                   src="/logo-cardboard-deep.png" 
                   alt="Returnly Logo" 
-                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto"
+                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto mb-4"
                 />
+                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-amber-900 tracking-wider">
+                  RETURNLY
+                </h2>
               </div>
               
               <div className="space-y-4 lg:space-y-6">
@@ -375,7 +378,7 @@ export default function Welcome() {
               <Truck className="w-8 h-8 text-white" />
             </div>
             <div className="flex-1 text-center md:text-left">
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">Earn as a Returnly Driver</h3>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">Earn as a <span className="text-orange-600">Returnly</span> Driver</h3>
               <p className="text-gray-700 text-lg">
                 $18-25/hour • Flexible schedule • Weekly pay
               </p>
@@ -402,6 +405,17 @@ export default function Welcome() {
           />
         </div>
         <div className="relative px-8 lg:px-16">
+          <div className="text-center mb-8">
+            <div className="flex flex-col items-center gap-4">
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-12 w-auto"
+              />
+              <h3 className="text-3xl font-bold text-white tracking-wider">RETURNLY</h3>
+              <p className="text-gray-300 text-lg">Return Delivery Service</p>
+            </div>
+          </div>
           <div className="flex justify-center items-center gap-6 text-white flex-wrap">
             <button 
               onClick={() => setLocation('/login')}
