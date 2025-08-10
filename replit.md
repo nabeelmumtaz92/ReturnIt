@@ -1,6 +1,13 @@
 # Overview
 
-Returnly is a reverse delivery service web application that facilitates returns, exchanges, and donations by handling the pickup and return process for customers. The platform connects customers who need items returned with drivers who can handle the delivery. The application features a modern React frontend with a Node.js/Express backend, using a PostgreSQL database for data persistence.
+Returnly is a reverse delivery service platform that facilitates returns, exchanges, and donations by handling the pickup and return process for customers. The platform connects customers who need items returned with drivers who can handle the delivery. The system consists of:
+
+- **Customer Mobile App**: For booking pickups, tracking returns, and managing orders
+- **Driver Mobile App**: For accepting jobs, managing deliveries, and updating order status  
+- **Web Dashboard**: Unified web interface for both customers and drivers (current implementation)
+- **Backend API**: Shared Node.js/Express backend serving both mobile apps and web interface
+
+The current web application serves as both a prototype and admin dashboard, with the mobile apps being the primary user interfaces in production.
 
 # User Preferences
 
@@ -38,10 +45,30 @@ Preferred communication style: Simple, everyday language.
 - **Role-Based Access**: Driver vs customer role differentiation
 - **Session Management**: Server-side session storage with PostgreSQL
 
-## Mobile-First Design
+## Mobile-First Design & App Architecture
 - **Responsive Design**: Mobile-first approach with progressive enhancement
 - **Touch-Friendly**: Optimized for mobile interactions and gestures
 - **Cardboard Theme**: Custom shipping/logistics-inspired theme with warm tan, orange, and brown colors for accessibility and brand consistency
+
+### Customer Mobile App Features
+- Book return pickups with address and retailer selection
+- Real-time order tracking and status updates
+- Photo upload for return items (planned)
+- Push notifications for driver updates
+- Order history and receipts
+
+### Driver Mobile App Features  
+- View and accept available pickup jobs
+- GPS navigation to customer locations
+- Update order status (picked up, delivered)
+- Earnings tracking and payment history
+- Driver ratings and performance metrics
+
+### Web Dashboard (Current Implementation)
+- Unified interface for testing both customer and driver workflows
+- Administrative functions and order management
+- Analytics and reporting capabilities
+- Customer support tools
 
 # External Dependencies
 
