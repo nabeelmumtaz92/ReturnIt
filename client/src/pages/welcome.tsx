@@ -14,16 +14,42 @@ export default function Welcome() {
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-orange-50"></div>
         
-        {/* Delivery scene illustration */}
-        <div className="absolute bottom-0 right-0 w-full h-full opacity-15 overflow-hidden">
-          <div className="absolute bottom-20 right-40 text-6xl">👤</div>
-          <div className="absolute bottom-20 right-60 text-4xl">
-            <div className="w-12 h-12 bg-amber-700 border-2 border-amber-900 rounded-sm flex items-center justify-center">
-              <div className="w-6 h-1 bg-amber-900"></div>
+        {/* Realistic Delivery Scene - Person handing box to delivery driver */}
+        <div className="absolute bottom-0 right-0 w-full h-full opacity-30 overflow-hidden">
+          {/* Customer figure */}
+          <div className="absolute bottom-32 right-80">
+            <div className="w-16 h-20 bg-blue-600 rounded-t-full relative">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-pink-200 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-12 bg-blue-700 rounded-full transform rotate-12"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-12 bg-blue-700 rounded-full transform -rotate-12"></div>
+            </div>
+            <div className="w-6 h-16 bg-blue-800 mt-1"></div>
+          </div>
+          
+          {/* Package being handed over */}
+          <div className="absolute bottom-40 right-64">
+            <div className="w-8 h-6 bg-amber-700 rounded-sm"></div>
+          </div>
+          
+          {/* Delivery driver figure */}
+          <div className="absolute bottom-32 right-48">
+            <div className="w-16 h-20 bg-orange-500 rounded-t-full relative">
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-pink-200 rounded-full"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-12 bg-orange-600 rounded-full transform rotate-12"></div>
+              <div className="absolute bottom-0 right-0 w-4 h-12 bg-orange-600 rounded-full transform -rotate-12"></div>
+            </div>
+            <div className="w-6 h-16 bg-orange-700 mt-1"></div>
+          </div>
+          
+          {/* Delivery truck */}
+          <div className="absolute bottom-20 right-20">
+            <div className="w-24 h-12 bg-white border-2 border-gray-400 rounded relative">
+              <div className="absolute left-0 w-8 h-8 bg-gray-300 rounded-l"></div>
+              <div className="absolute bottom-0 left-2 w-3 h-3 bg-black rounded-full"></div>
+              <div className="absolute bottom-0 right-2 w-3 h-3 bg-black rounded-full"></div>
+              <div className="absolute top-1 right-2 text-xs font-bold text-orange-600">RETURNLY</div>
             </div>
           </div>
-          <div className="absolute bottom-20 right-80 text-6xl">🚛</div>
-          <div className="absolute bottom-16 right-20 text-2xl opacity-50">→</div>
         </div>
         
         {/* Subtle pattern overlay */}
