@@ -205,20 +205,52 @@ const BookPickupScreen = () => {
     user: s.user 
   }));
 
-  const [name, setName] = useState(user?.name ?? '');
-  const [pickupAddress, setPickupAddress] = useState('123 Main St');
-  const [retailer, setRetailer] = useState('Target');
+  // Required fields
+  const [fullName, setFullName] = useState(user?.name ?? '');
+  const [phone, setPhone] = useState('');
+  const [pickupAddress, setPickupAddress] = useState('');
+  const [retailer, setRetailer] = useState('');
+  const [returnMethod, setReturnMethod] = useState('store');
+  const [packageSize, setPackageSize] = useState('M');
+  const [timeSlot, setTimeSlot] = useState('ASAP');
+  
+  // Optional fields
   const [notes, setNotes] = useState('');
+  const [hasReceipt, setHasReceipt] = useState(false);
+  const [hasPackagePhoto, setHasPackagePhoto] = useState(false);
+  
+  // Form validation
+  const [errors, setErrors] = useState({});
+  
   const price = 15;
 
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!fullName.trim()) newErrors.fullName = 'Full name is required';
+    if (!phone.trim()) newErrors.phone = 'Phone number is required';
+    else if (!/^\+?[\d\s\-\(\)]+$/.test(phone.trim())) newErrors.phone = 'Invalid phone format';
+    if (!pickupAddress.trim()) newErrors.pickupAddress = 'Pickup address is required';
+    if (!retailer.trim()) newErrors.retailer = 'Retailer is required';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCreateOrder = () => {
-    if (!name.trim() || !pickupAddress.trim() || !retailer.trim()) return;
+    if (!validateForm()) return;
     
     const id = createOrder({
-      customerName: name,
+      customerName: fullName,
+      phone,
       pickupAddress,
       retailer,
+      returnMethod,
+      packageSize,
+      timeSlot,
       notes,
+      hasReceipt,
+      hasPackagePhoto,
       price
     });
     navigate(screens.ORDER_STATUS, { currentOrderId: id });
@@ -232,45 +264,162 @@ const BookPickupScreen = () => {
       </View>
 
       <View style={styles.card}>
+        {/* Required Fields */}
+        <Text style={styles.sectionHeader}>Required Information</Text>
+        
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Your name</Text>
+          <Text style={styles.label}>Full name *</Text>
           <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
+            style={[styles.input, errors.fullName && styles.inputError]}
+            value={fullName}
+            onChangeText={setFullName}
+            placeholder="Enter your full name"
             placeholderTextColor={colors.tapeBrown}
           />
+          {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Pickup address</Text>
+          <Text style={styles.label}>Phone number *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.phone && styles.inputError]}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="+1 (555) 123-4567"
+            placeholderTextColor={colors.tapeBrown}
+            keyboardType="phone-pad"
+          />
+          {errors.phone && <Text style={styles.errorText}>{errors.phone}</Text>}
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Pickup address *</Text>
+          <TextInput
+            style={[styles.input, errors.pickupAddress && styles.inputError]}
             value={pickupAddress}
             onChangeText={setPickupAddress}
+            placeholder="123 Main St, Apt 2C, City, State 12345"
             placeholderTextColor={colors.tapeBrown}
           />
+          {errors.pickupAddress && <Text style={styles.errorText}>{errors.pickupAddress}</Text>}
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Retailer</Text>
+          <Text style={styles.label}>Retailer *</Text>
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.retailer && styles.inputError]}
             value={retailer}
             onChangeText={setRetailer}
+            placeholder="Target, Amazon, Best Buy, etc."
             placeholderTextColor={colors.tapeBrown}
           />
+          {errors.retailer && <Text style={styles.errorText}>{errors.retailer}</Text>}
+        </View>
+
+        {/* Return Method */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Return method *</Text>
+          <View style={styles.pickerContainer}>
+            {['store', 'UPS', 'FedEx', 'USPS'].map((method) => (
+              <TouchableOpacity
+                key={method}
+                style={[
+                  styles.pickerOption,
+                  returnMethod === method ? styles.pickerSelected : styles.pickerUnselected
+                ]}
+                onPress={() => setReturnMethod(method)}
+              >
+                <Text style={returnMethod === method ? styles.pickerSelectedText : styles.pickerUnselectedText}>
+                  {method}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Package Size */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Package size *</Text>
+          <View style={styles.pickerContainer}>
+            {[
+              { value: 'S', label: 'Small' },
+              { value: 'M', label: 'Medium' },
+              { value: 'L', label: 'Large' }
+            ].map((size) => (
+              <TouchableOpacity
+                key={size.value}
+                style={[
+                  styles.pickerOption,
+                  packageSize === size.value ? styles.pickerSelected : styles.pickerUnselected
+                ]}
+                onPress={() => setPackageSize(size.value)}
+              >
+                <Text style={packageSize === size.value ? styles.pickerSelectedText : styles.pickerUnselectedText}>
+                  {size.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Time Slot */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Pickup window *</Text>
+          <View style={styles.pickerContainer}>
+            {['ASAP', 'Morning (9AM-12PM)', 'Afternoon (12PM-5PM)', 'Evening (5PM-8PM)'].map((slot) => (
+              <TouchableOpacity
+                key={slot}
+                style={[
+                  styles.pickerOptionWide,
+                  timeSlot === slot ? styles.pickerSelected : styles.pickerUnselected
+                ]}
+                onPress={() => setTimeSlot(slot)}
+              >
+                <Text style={timeSlot === slot ? styles.pickerSelectedText : styles.pickerUnselectedText}>
+                  {slot}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.divider} />
+
+        {/* Optional Fields */}
+        <Text style={styles.sectionHeader}>Optional</Text>
+
+        {/* Upload Options */}
+        <View style={styles.uploadContainer}>
+          <TouchableOpacity
+            style={[styles.uploadOption, hasReceipt && styles.uploadSelected]}
+            onPress={() => setHasReceipt(!hasReceipt)}
+          >
+            <Text style={styles.uploadIcon}>📄</Text>
+            <Text style={hasReceipt ? styles.uploadSelectedText : styles.uploadText}>
+              Receipt uploaded
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.uploadOption, hasPackagePhoto && styles.uploadSelected]}
+            onPress={() => setHasPackagePhoto(!hasPackagePhoto)}
+          >
+            <Text style={styles.uploadIcon}>📷</Text>
+            <Text style={hasPackagePhoto ? styles.uploadSelectedText : styles.uploadText}>
+              Package photo
+            </Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Notes</Text>
+          <Text style={styles.label}>Special instructions</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={notes}
             onChangeText={setNotes}
             multiline
             numberOfLines={3}
-            placeholder="Special instructions, QR codes, etc."
+            placeholder="Gate code, fragile items, specific location, etc."
             placeholderTextColor={colors.tapeBrown}
           />
         </View>
@@ -280,8 +429,8 @@ const BookPickupScreen = () => {
         <Text style={styles.priceText}>Estimated price: ${price}</Text>
 
         <TouchableOpacity
-          style={[styles.createButton, (!name.trim() || !pickupAddress.trim() || !retailer.trim()) && styles.disabledButton]}
-          disabled={!name.trim() || !pickupAddress.trim() || !retailer.trim()}
+          style={[styles.createButton, (!fullName.trim() || !phone.trim() || !pickupAddress.trim() || !retailer.trim()) && styles.disabledButton]}
+          disabled={!fullName.trim() || !phone.trim() || !pickupAddress.trim() || !retailer.trim()}
           onPress={handleCreateOrder}
         >
           <Text style={styles.createButtonText}>Pay & Create Order (mock)</Text>
@@ -703,5 +852,99 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: '600',
     fontSize: 16,
+  },
+  // Enhanced Form Styles
+  sectionHeader: {
+    color: colors.barcodeBlack,
+    fontWeight: '700',
+    fontSize: 18,
+    marginBottom: 16,
+    marginTop: 8,
+  },
+  inputError: {
+    borderColor: '#E74C3C',
+    borderWidth: 2,
+  },
+  errorText: {
+    color: '#E74C3C',
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  pickerOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  pickerOptionWide: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    flex: 1,
+    minWidth: '45%',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  pickerSelected: {
+    backgroundColor: colors.accentOrange,
+    borderColor: colors.accentOrange,
+  },
+  pickerUnselected: {
+    backgroundColor: colors.cardboard,
+    borderColor: colors.tapeBrown,
+  },
+  pickerSelectedText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  pickerUnselectedText: {
+    color: colors.barcodeBlack,
+    fontWeight: '500',
+    fontSize: 14,
+  },
+  uploadContainer: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 16,
+  },
+  uploadOption: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.cardboard,
+    backgroundColor: colors.cardboard + '33',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  uploadSelected: {
+    backgroundColor: colors.accentOrange + '33',
+    borderColor: colors.accentOrange,
+  },
+  uploadIcon: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  uploadText: {
+    color: colors.tapeBrown,
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  uploadSelectedText: {
+    color: colors.accentOrange,
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '600',
   },
 });

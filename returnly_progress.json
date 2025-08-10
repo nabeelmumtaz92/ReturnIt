@@ -7,8 +7,8 @@
     { "id": 4, "task": "Base navigation (customer app)", "status": "done" },
     { "id": 5, "task": "Screen shells styled (customer)", "status": "done" },
 
-    { "id": 51, "task": "Order Intake: required fields + validation", "status": "in_progress" },
-    { "id": 52, "task": "Order Intake: uploads + extras", "status": "todo" },
+    { "id": 51, "task": "Order Intake: required fields + validation", "status": "done" },
+    { "id": 52, "task": "Order Intake: uploads + extras", "status": "done" },
 
     { "id": 6, "task": "Figma polish + token sync", "status": "todo" },
     { "id": 7, "task": "Implement Figma spacing/typography", "status": "todo" },

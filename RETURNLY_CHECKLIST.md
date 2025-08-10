@@ -11,21 +11,21 @@
 
 ### 5.1 Order Intake (Customer) — REQUIRED FIELDS
 - [x] Name
-- [ ] Phone (E.164)
+- [x] Phone (E.164)
 - [x] Pickup address (addr, apt, city, state, zip)
 - [x] Retailer / store name
-- [ ] Return method (store | UPS | FedEx | USPS)
+- [x] Return method (store | UPS | FedEx | USPS)
 - [ ] Item description
-- [ ] Package size (S | M | L)
-- [ ] Pickup window (ASAP | time slot)
+- [x] Package size (S | M | L)
+- [x] Pickup window (ASAP | time slot)
 - [ ] Payment method (stub)
-- [ ] Validation for required fields
+- [x] Validation for required fields
 
 ### 5.2 Order Intake — OPTIONAL
-- [ ] Upload receipt image/PDF
+- [x] Upload receipt image/PDF
 - [ ] Upload return label
-- [ ] Package photo
-- [ ] Special instructions (gate code, fragile)
+- [x] Package photo
+- [x] Special instructions (gate code, fragile)
 - [ ] Tip
 - [ ] Promo code
 
