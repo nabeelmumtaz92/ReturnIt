@@ -528,6 +528,181 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe Connect Payment Workflow Routes
+  app.post("/api/orders/:orderId/payment/process", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Calculate 70/30 split
+      const totalAmount = order.totalPrice || 0;
+      const driverEarning = totalAmount * 0.7; // 70% to driver
+      const returnlyFee = totalAmount * 0.3; // 30% to platform
+      
+      // Calculate bonuses if driver is assigned
+      let bonuses = 0;
+      if (order.driverId) {
+        const driverIdInt = parseInt(order.driverId.toString());
+        const driver = await storage.getUser(driverIdInt);
+        if (driver) {
+          bonuses = await storage.calculateOrderBonuses(order, driver);
+        }
+      }
+
+      // Update order with payment details
+      const updatedOrder = await storage.updateOrder(orderId, {
+        paymentStatus: "completed",
+        customerPaid: totalAmount,
+        driverEarning: driverEarning + bonuses,
+        returnlyFee: returnlyFee,
+        sizeBonusAmount: order.packageSize === 'large' ? 5.0 : 0,
+        peakSeasonBonus: (new Date().getMonth() >= 10 || new Date().getMonth() <= 0) ? 2.0 : 0
+      });
+
+      res.json({
+        message: "Payment processed successfully",
+        order: updatedOrder,
+        breakdown: {
+          total: totalAmount,
+          driverEarning: driverEarning + bonuses,
+          returnlyFee: returnlyFee,
+          bonuses: bonuses
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Payment processing failed" });
+    }
+  });
+
+  // Driver payout management
+  app.post("/api/driver/payout/instant", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { orderIds, feeAmount = 1.00 } = req.body;
+      
+      // Get pending earnings for specified orders
+      const driverOrders = await storage.getDriverOrders(driverId.toString());
+      const pendingOrders = driverOrders.filter(order => 
+        orderIds.includes(order.id) && order.paymentStatus === 'completed' && order.driverPayoutStatus === 'pending'
+      );
+
+      if (pendingOrders.length === 0) {
+        return res.status(400).json({ message: "No eligible orders for instant payout" });
+      }
+
+      const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverEarning || 0), 0);
+      const netAmount = totalEarnings - feeAmount;
+
+      // Create payout record
+      const payout = await storage.createDriverPayout({
+        driverId,
+        payoutType: "instant",
+        totalAmount: totalEarnings,
+        feeAmount,
+        netAmount,
+        orderIds: pendingOrders.map(o => o.id),
+        taxYear: new Date().getFullYear(),
+        status: "completed"
+      });
+
+      // Update orders to mark as paid
+      for (const order of pendingOrders) {
+        await storage.updateOrder(order.id, { driverPayoutStatus: "instant_paid" });
+      }
+
+      res.json({
+        message: "Instant payout processed",
+        payout,
+        netAmount,
+        feeAmount
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Instant payout failed" });
+    }
+  });
+
+  app.get("/api/driver/payouts", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const payouts = await storage.getDriverPayouts(driverId);
+      res.json(payouts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch payouts" });
+    }
+  });
+
+  // Driver incentives management
+  app.get("/api/driver/incentives", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const incentives = await storage.getDriverIncentives(driverId);
+      res.json(incentives);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch incentives" });
+    }
+  });
+
+  app.post("/api/admin/incentives", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Validate incentive data would go here
+      const incentive = await storage.createDriverIncentive(req.body);
+      res.status(201).json(incentive);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create incentive" });
+    }
+  });
+
+  // Business information endpoints
+  app.get("/api/business-info", async (req, res) => {
+    try {
+      const businessInfo = await storage.getBusinessInfo();
+      res.json(businessInfo);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch business information" });
+    }
+  });
+
+  app.patch("/api/admin/business-info", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const updatedInfo = await storage.updateBusinessInfo(req.body);
+      res.json(updatedInfo);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update business information" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

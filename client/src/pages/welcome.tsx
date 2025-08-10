@@ -172,6 +172,15 @@ export default function Welcome() {
                     >
                       Sign Up
                     </Button>
+                    <Button 
+                      size="lg"
+                      variant="outline"
+                      className="border-amber-600 text-amber-700 hover:bg-amber-50 font-bold text-lg px-8 py-4 h-auto"
+                      onClick={() => setLocation('/about')}
+                      data-testid="button-about-hero"
+                    >
+                      About Us
+                    </Button>
                   </>
                 )}
               </div>

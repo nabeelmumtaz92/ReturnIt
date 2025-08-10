@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone } from "lucide-react";
+import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard } from "lucide-react";
 import { Order, User } from "@shared/schema";
 
 export default function DriverPortal() {
@@ -174,6 +174,20 @@ export default function DriverPortal() {
                 </div>
                 <Clock className="h-8 w-8 text-amber-500" />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white shadow-lg border-amber-200 cursor-pointer hover:shadow-xl transition-shadow">
+            <CardContent className="p-6">
+              <a href="/driver-payments" className="block">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-600">Payment Center</p>
+                    <p className="text-lg font-bold text-blue-700">Instant Pay</p>
+                  </div>
+                  <CreditCard className="h-8 w-8 text-blue-500" />
+                </div>
+              </a>
             </CardContent>
           </Card>
 

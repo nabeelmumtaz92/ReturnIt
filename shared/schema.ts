@@ -27,6 +27,12 @@ export const users = pgTable("users", {
   completedDeliveries: integer("completed_deliveries").default(0),
   isOnline: boolean("is_online").default(false),
   currentLocation: jsonb("current_location"),
+  
+  // Stripe Connect fields for drivers
+  stripeConnectAccountId: text("stripe_connect_account_id"),
+  stripeOnboardingComplete: boolean("stripe_onboarding_complete").default(false),
+  paymentPreference: text("payment_preference").default("weekly"), // weekly, instant
+  instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -63,6 +69,18 @@ export const orders = pgTable("orders", {
   discountAmount: real("discount_amount").default(0),
   totalPrice: real("total_price"),
   tip: real("tip").default(0),
+  
+  // Stripe Connect payment fields
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripeChargeId: text("stripe_charge_id"),
+  paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded
+  customerPaid: real("customer_paid"),
+  driverEarning: real("driver_earning"), // 70% of total
+  returnlyFee: real("returnly_fee"), // 30% of total
+  sizeBonusAmount: real("size_bonus_amount").default(0),
+  peakSeasonBonus: real("peak_season_bonus").default(0),
+  multiStopBonus: real("multi_stop_bonus").default(0),
+  driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid
   
   // Driver assignment
   driverId: integer("driver_id").references(() => users.id),
@@ -145,6 +163,59 @@ export const analytics = pgTable("analytics", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+// Driver payouts table for Stripe Connect payments
+export const driverPayouts = pgTable("driver_payouts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  payoutType: text("payout_type").notNull(), // weekly, instant
+  totalAmount: real("total_amount").notNull(),
+  feeAmount: real("fee_amount").default(0), // Fee for instant payouts
+  netAmount: real("net_amount").notNull(),
+  stripeTransferId: text("stripe_transfer_id"),
+  status: text("status").default("pending"), // pending, completed, failed
+  orderIds: jsonb("order_ids").default([]), // Array of order IDs included
+  taxYear: integer("tax_year").notNull(),
+  form1099Generated: boolean("form_1099_generated").default(false),
+  form1099Url: text("form_1099_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Incentives and bonuses tracking
+export const driverIncentives = pgTable("driver_incentives", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id),
+  incentiveType: text("incentive_type").notNull(), // size_bonus, peak_season, multi_stop, referral
+  description: text("description").notNull(),
+  amount: real("amount").notNull(),
+  isActive: boolean("is_active").default(true),
+  qualificationCriteria: jsonb("qualification_criteria").default({}),
+  packageSize: text("package_size"), // for size bonuses
+  multiStopCount: integer("multi_stop_count"), // for multi-stop bonuses
+  peakSeasonMultiplier: real("peak_season_multiplier"), // for peak season
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  earnedAt: timestamp("earned_at"),
+});
+
+// Business information and contact details
+export const businessInfo = pgTable("business_info", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyName: text("company_name").default("Returnly"),
+  tagline: text("tagline").default("Making Returns Effortless"),
+  description: text("description"),
+  headquarters: text("headquarters").default("St. Louis, MO"),
+  supportEmail: text("support_email").default("support@returnly.com"),
+  supportPhone: text("support_phone").default("(555) 123-4567"),
+  businessHours: text("business_hours").default("Mon–Sat, 8 AM – 8 PM CST"),
+  instagramHandle: text("instagram_handle").default("@ReturnlyApp"),
+  facebookUrl: text("facebook_url").default("facebook.com/Returnly"),
+  twitterHandle: text("twitter_handle").default("@Returnly"),
+  missionStatement: text("mission_statement"),
+  foundingStory: text("founding_story"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas with validation
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -187,6 +258,21 @@ export const insertAnalyticsSchema = createInsertSchema(analytics).omit({
   id: true,
 });
 
+export const insertDriverPayoutSchema = createInsertSchema(driverPayouts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDriverIncentiveSchema = createInsertSchema(driverIncentives).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertBusinessInfoSchema = createInsertSchema(businessInfo).omit({
+  id: true,
+  updatedAt: true,
+});
+
 // Enhanced types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -200,6 +286,12 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Analytics = typeof analytics.$inferSelect;
 export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
+export type DriverPayout = typeof driverPayouts.$inferSelect;
+export type InsertDriverPayout = z.infer<typeof insertDriverPayoutSchema>;
+export type DriverIncentive = typeof driverIncentives.$inferSelect;
+export type InsertDriverIncentive = z.infer<typeof insertDriverIncentiveSchema>;
+export type BusinessInfo = typeof businessInfo.$inferSelect;
+export type InsertBusinessInfo = z.infer<typeof insertBusinessInfoSchema>;
 
 // Status enums for type safety
 export const OrderStatus = {

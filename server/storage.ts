@@ -2,6 +2,8 @@ import {
   type User, type InsertUser, type Order, type InsertOrder,
   type PromoCode, type InsertPromoCode, type DriverEarning, type InsertDriverEarning,
   type Notification, type InsertNotification, type Analytics, type InsertAnalytics,
+  type DriverPayout, type InsertDriverPayout, type DriverIncentive, type InsertDriverIncentive,
+  type BusinessInfo, type InsertBusinessInfo,
   OrderStatus
 } from "@shared/schema";
 
@@ -40,6 +42,20 @@ export interface IStorage {
   // Analytics
   recordAnalytics(analytics: InsertAnalytics): Promise<Analytics>;
   getAnalytics(metric: string, from?: Date, to?: Date): Promise<Analytics[]>;
+  
+  // Driver payouts and Stripe Connect
+  createDriverPayout(payout: InsertDriverPayout): Promise<DriverPayout>;
+  getDriverPayouts(driverId: number): Promise<DriverPayout[]>;
+  updateDriverPayout(id: number, updates: Partial<DriverPayout>): Promise<DriverPayout | undefined>;
+  
+  // Driver incentives and bonuses
+  createDriverIncentive(incentive: InsertDriverIncentive): Promise<DriverIncentive>;
+  getDriverIncentives(driverId: number): Promise<DriverIncentive[]>;
+  calculateOrderBonuses(order: Order, driver: User): Promise<number>;
+  
+  // Business information
+  getBusinessInfo(): Promise<BusinessInfo | undefined>;
+  updateBusinessInfo(info: InsertBusinessInfo): Promise<BusinessInfo>;
 }
 
 export class MemStorage implements IStorage {
@@ -49,11 +65,16 @@ export class MemStorage implements IStorage {
   private driverEarnings: Map<number, DriverEarning>;
   private notifications: Map<number, Notification>;
   private analytics: Map<string, Analytics>;
+  private driverPayouts: Map<number, DriverPayout>;
+  private driverIncentives: Map<number, DriverIncentive>;
+  private businessInfo: BusinessInfo | undefined;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
   private nextPromoId: number = 1;
   private nextAnalyticsId: number = 1;
+  private nextPayoutId: number = 1;
+  private nextIncentiveId: number = 1;
 
   constructor() {
     this.users = new Map();
@@ -62,6 +83,8 @@ export class MemStorage implements IStorage {
     this.driverEarnings = new Map();
     this.notifications = new Map();
     this.analytics = new Map();
+    this.driverPayouts = new Map();
+    this.driverIncentives = new Map();
     
     // Initialize with comprehensive demo data
     const demoUser: User = {
@@ -496,6 +519,133 @@ export class MemStorage implements IStorage {
 
   async getDriverOrders(driverId: string): Promise<Order[]> {
     return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
+  }
+
+  // Driver payouts and Stripe Connect methods
+  async createDriverPayout(insertPayout: InsertDriverPayout): Promise<DriverPayout> {
+    const payout: DriverPayout = {
+      id: this.nextPayoutId++,
+      driverId: insertPayout.driverId,
+      payoutType: insertPayout.payoutType,
+      totalAmount: insertPayout.totalAmount,
+      feeAmount: insertPayout.feeAmount || 0,
+      netAmount: insertPayout.netAmount,
+      stripeTransferId: insertPayout.stripeTransferId || null,
+      status: insertPayout.status || "pending",
+      orderIds: insertPayout.orderIds || [],
+      taxYear: insertPayout.taxYear,
+      form1099Generated: insertPayout.form1099Generated || false,
+      form1099Url: insertPayout.form1099Url || null,
+      createdAt: new Date(),
+      completedAt: insertPayout.completedAt || null
+    };
+    this.driverPayouts.set(payout.id, payout);
+    return payout;
+  }
+
+  async getDriverPayouts(driverId: number): Promise<DriverPayout[]> {
+    return Array.from(this.driverPayouts.values()).filter(payout => payout.driverId === driverId);
+  }
+
+  async updateDriverPayout(id: number, updates: Partial<DriverPayout>): Promise<DriverPayout | undefined> {
+    const payout = this.driverPayouts.get(id);
+    if (!payout) return undefined;
+    
+    const updatedPayout = { ...payout, ...updates };
+    this.driverPayouts.set(id, updatedPayout);
+    return updatedPayout;
+  }
+
+  // Driver incentives and bonuses methods
+  async createDriverIncentive(insertIncentive: InsertDriverIncentive): Promise<DriverIncentive> {
+    const incentive: DriverIncentive = {
+      id: this.nextIncentiveId++,
+      driverId: insertIncentive.driverId,
+      orderId: insertIncentive.orderId || null,
+      incentiveType: insertIncentive.incentiveType,
+      description: insertIncentive.description,
+      amount: insertIncentive.amount,
+      isActive: insertIncentive.isActive !== false,
+      qualificationCriteria: insertIncentive.qualificationCriteria || {},
+      packageSize: insertIncentive.packageSize || null,
+      multiStopCount: insertIncentive.multiStopCount || null,
+      peakSeasonMultiplier: insertIncentive.peakSeasonMultiplier || null,
+      createdAt: new Date(),
+      earnedAt: insertIncentive.earnedAt || null
+    };
+    this.driverIncentives.set(incentive.id, incentive);
+    return incentive;
+  }
+
+  async getDriverIncentives(driverId: number): Promise<DriverIncentive[]> {
+    return Array.from(this.driverIncentives.values()).filter(incentive => incentive.driverId === driverId);
+  }
+
+  async calculateOrderBonuses(order: Order, driver: User): Promise<number> {
+    let totalBonus = 0;
+
+    // Size-based bonus for Large packages
+    if (order.packageSize === 'large') {
+      totalBonus += 5.00; // $5 bonus for large packages
+    }
+
+    // Peak season bonus (November-January)
+    const currentMonth = new Date().getMonth();
+    if (currentMonth >= 10 || currentMonth <= 0) { // Nov, Dec, Jan
+      totalBonus += 2.00; // $2 peak season bonus
+    }
+
+    // Multi-stop bonus calculation would need order context
+    // For now, assuming single pickup per order
+
+    return totalBonus;
+  }
+
+  // Business information methods
+  async getBusinessInfo(): Promise<BusinessInfo | undefined> {
+    if (!this.businessInfo) {
+      // Initialize with default business info
+      this.businessInfo = {
+        id: 1,
+        companyName: "Returnly",
+        tagline: "Making Returns Effortless",
+        description: "At Returnly, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
+        headquarters: "St. Louis, MO",
+        supportEmail: "support@returnly.com",
+        supportPhone: "(555) 123-4567",
+        businessHours: "Mon–Sat, 8 AM – 8 PM CST",
+        instagramHandle: "@ReturnlyApp",
+        facebookUrl: "facebook.com/Returnly",
+        twitterHandle: "@Returnly",
+        missionStatement: "Founded with the mission to save you time and effort, Returnly partners with local drivers to ensure every return is handled quickly, safely, and securely. Whether it's a small package or a bulky box, we've got you covered.",
+        foundingStory: "Founded in 2024 in St. Louis, Missouri, Returnly was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way.",
+        updatedAt: new Date()
+      };
+    }
+    return this.businessInfo;
+  }
+
+  async updateBusinessInfo(info: InsertBusinessInfo): Promise<BusinessInfo> {
+    const currentInfo = await this.getBusinessInfo();
+    
+    this.businessInfo = {
+      id: currentInfo?.id || 1,
+      companyName: info.companyName || currentInfo?.companyName || "Returnly",
+      tagline: info.tagline || currentInfo?.tagline || "Making Returns Effortless",
+      description: info.description || currentInfo?.description || "",
+      headquarters: info.headquarters || currentInfo?.headquarters || "St. Louis, MO",
+      supportEmail: info.supportEmail || currentInfo?.supportEmail || "support@returnly.com",
+      supportPhone: info.supportPhone || currentInfo?.supportPhone || "(555) 123-4567",
+      businessHours: info.businessHours || currentInfo?.businessHours || "Mon–Sat, 8 AM – 8 PM CST",
+      instagramHandle: info.instagramHandle || currentInfo?.instagramHandle || "@ReturnlyApp",
+      facebookUrl: info.facebookUrl || currentInfo?.facebookUrl || "facebook.com/Returnly",
+      twitterHandle: info.twitterHandle || currentInfo?.twitterHandle || "@Returnly",
+      missionStatement: info.missionStatement || currentInfo?.missionStatement || "",
+      foundingStory: info.foundingStory || currentInfo?.foundingStory || "",
+      updatedAt: new Date()
+    };
+    
+    return this.businessInfo;
   }
 }
 
