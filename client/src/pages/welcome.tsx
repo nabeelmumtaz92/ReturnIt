@@ -97,15 +97,12 @@ export default function Welcome() {
             
             {/* Left side - Main content */}
             <div className="text-amber-900 space-y-6 lg:space-y-8 text-center">
-              <div className="flex flex-col items-center mb-6 lg:mb-8">
+              <div className="flex justify-center mb-6 lg:mb-8">
                 <img 
                   src="/logo-cardboard-deep.png" 
                   alt="Returnly Logo" 
-                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto mb-4"
+                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto"
                 />
-                <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold text-amber-900 tracking-wider">
-                  RETURNLY
-                </h2>
               </div>
               
               <div className="space-y-4 lg:space-y-6">
