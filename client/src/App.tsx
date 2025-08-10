@@ -9,6 +9,7 @@ import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
 import OrderStatus from "@/pages/order-status";
 import DesignSystemDemo from "@/pages/design-system-demo";
+import MobileAppDemo from "@/pages/mobile-app-demo";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/book-pickup" component={BookPickup} />
       <Route path="/order-status/:orderId" component={OrderStatus} />
       <Route path="/design-system-demo" component={DesignSystemDemo} />
+      <Route path="/mobile-app-demo" component={MobileAppDemo} />
       <Route component={NotFound} />
     </Switch>
   );

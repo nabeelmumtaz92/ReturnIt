@@ -224,6 +224,13 @@ export default function Welcome() {
             >
               Design System
             </button>
+            <span>•</span>
+            <button 
+              onClick={() => setLocation('/mobile-app-demo')}
+              className="hover:text-primary transition-colors font-medium"
+            >
+              Mobile App
+            </button>
           </div>
         </CardContent>
       </Card>

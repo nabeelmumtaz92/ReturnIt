@@ -230,6 +230,32 @@ export default function DesignSystemDemo() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Mobile App Demo */}
+        <Card className="bg-gradient-to-r from-[#FF8C42] to-[#e07530] text-white border-none">
+          <CardContent className="p-6">
+            <CardTitle className="mb-4 text-white">📱 Mobile-First Experience</CardTitle>
+            <p className="text-white/90 mb-4">
+              See how the design system works in a mobile-first app experience with responsive layouts and touch-friendly interactions.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button 
+                variant="secondary" 
+                onClick={() => window.location.href = '/mobile-app-demo'}
+                className="bg-white text-[#FF8C42] hover:bg-gray-50"
+              >
+                View Mobile App Demo
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => window.location.href = '/'}
+                className="border-white text-white hover:bg-white/10"
+              >
+                Back to Main Site
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
