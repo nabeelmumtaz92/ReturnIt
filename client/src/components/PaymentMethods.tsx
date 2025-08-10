@@ -13,9 +13,10 @@ interface PaymentMethodsProps {
   onPaymentSelect: (method: string, details?: any) => void;
   amount: number;
   currency?: string;
+  isLoading?: boolean;
 }
 
-export default function PaymentMethods({ onPaymentSelect, amount, currency = "USD" }: PaymentMethodsProps) {
+export default function PaymentMethods({ onPaymentSelect, amount, currency = "USD", isLoading = false }: PaymentMethodsProps) {
   const [selectedMethod, setSelectedMethod] = useState<string>("");
   const [cardDetails, setCardDetails] = useState({
     number: "",
@@ -153,9 +154,10 @@ export default function PaymentMethods({ onPaymentSelect, amount, currency = "US
           <Button 
             onClick={handleCardPayment}
             className="w-full bg-amber-800 hover:bg-amber-900"
+            disabled={isLoading || !cardDetails.number || !cardDetails.expiry || !cardDetails.cvv || !cardDetails.name}
             data-testid="button-pay-card"
           >
-            Pay with Card - ${amount.toFixed(2)}
+            {isLoading ? "Processing..." : `Pay with Card - $${amount.toFixed(2)}`}
           </Button>
         </CardContent>
       </Card>
@@ -182,6 +184,7 @@ export default function PaymentMethods({ onPaymentSelect, amount, currency = "US
                   selectedMethod === method.id ? 'ring-2 ring-amber-500' : ''
                 }`}
                 onClick={() => handleDigitalWalletPayment(method.id)}
+                disabled={isLoading}
                 data-testid={`button-pay-${method.id}`}
               >
                 <div className="flex items-center gap-3">

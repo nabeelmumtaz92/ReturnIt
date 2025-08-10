@@ -176,6 +176,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.redirect('/login?error=apple_auth_failed');
     }
   });
+
+  // Payment Processing Routes
+  
+  // Create Stripe payment intent
+  app.post('/api/payments/stripe/create-intent', isAuthenticated, async (req, res) => {
+    try {
+      const { amount, payment_method_types = ['card'] } = req.body;
+      
+      // In a real implementation, you would use Stripe SDK here
+      const mockPaymentIntent = {
+        id: 'pi_' + Math.random().toString(36).substr(2, 9),
+        client_secret: 'pi_test_' + Math.random().toString(36).substr(2, 20),
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: 'usd',
+        status: 'requires_payment_method'
+      };
+
+      res.json(mockPaymentIntent);
+    } catch (error) {
+      console.error('Stripe payment intent error:', error);
+      res.status(500).json({ message: 'Failed to create payment intent' });
+    }
+  });
+
+  // Process PayPal payment
+  app.post('/api/payments/paypal/create-order', isAuthenticated, async (req, res) => {
+    try {
+      const { amount } = req.body;
+      
+      // In a real implementation, you would use PayPal SDK here
+      const mockPayPalOrder = {
+        id: 'paypal_' + Math.random().toString(36).substr(2, 9),
+        status: 'CREATED',
+        amount: {
+          currency_code: 'USD',
+          value: amount.toFixed(2)
+        },
+        links: [
+          {
+            href: `https://api.sandbox.paypal.com/v2/checkout/orders/paypal_${Math.random().toString(36).substr(2, 9)}`,
+            rel: 'approve',
+            method: 'GET'
+          }
+        ]
+      };
+
+      res.json(mockPayPalOrder);
+    } catch (error) {
+      console.error('PayPal payment error:', error);
+      res.status(500).json({ message: 'Failed to create PayPal order' });
+    }
+  });
+
+  // Apple Pay payment processing
+  app.post('/api/payments/apple-pay/process', isAuthenticated, async (req, res) => {
+    try {
+      const { paymentData, amount } = req.body;
+      
+      // In a real implementation, you would validate the Apple Pay payment token
+      const mockApplePayResponse = {
+        transactionId: 'apple_' + Math.random().toString(36).substr(2, 9),
+        status: 'success',
+        amount: amount
+      };
+
+      res.json(mockApplePayResponse);
+    } catch (error) {
+      console.error('Apple Pay processing error:', error);
+      res.status(500).json({ message: 'Failed to process Apple Pay payment' });
+    }
+  });
+
+  // Google Pay payment processing
+  app.post('/api/payments/google-pay/process', isAuthenticated, async (req, res) => {
+    try {
+      const { paymentData, amount } = req.body;
+      
+      // In a real implementation, you would validate the Google Pay payment token
+      const mockGooglePayResponse = {
+        transactionId: 'google_' + Math.random().toString(36).substr(2, 9),
+        status: 'success',
+        amount: amount
+      };
+
+      res.json(mockGooglePayResponse);
+    } catch (error) {
+      console.error('Google Pay processing error:', error);
+      res.status(500).json({ message: 'Failed to process Google Pay payment' });
+    }
+  });
   // Get user's orders (protected)
   app.get("/api/orders", isAuthenticated, async (req, res) => {
     try {
