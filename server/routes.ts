@@ -9,7 +9,6 @@ import {
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
   insertNotificationSchema, OrderStatus 
 } from "@shared/schema";
-import session from "express-session";
 
 // Simple session-based authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -72,13 +71,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Log user in
-      (req.session as any).user = { id: user.id, username: user.username, isDriver: user.isDriver };
+      (req.session as any).user = { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver };
       
       res.status(201).json({ 
-        id: user.id, 
-        username: user.username, 
-        email: user.email,
-        isDriver: user.isDriver 
+        message: "Registration successful",
+        user: { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver }
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid registration data" });
@@ -100,13 +97,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Log user in
-      (req.session as any).user = { id: user.id, username: user.username, isDriver: user.isDriver };
+      (req.session as any).user = { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver };
       
       res.json({ 
-        id: user.id, 
-        username: user.username, 
-        email: user.email,
-        isDriver: user.isDriver 
+        message: "Login successful",
+        user: { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver }
       });
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
