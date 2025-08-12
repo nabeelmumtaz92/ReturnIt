@@ -2,9 +2,10 @@ import { useLocation, Link } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, HeadphonesIcon } from 'lucide-react';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, HeadphonesIcon, CheckCircle, DollarSign, Zap, Phone, ArrowRight } from 'lucide-react';
 import SupportChat from '@/components/SupportChat';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState, useEffect } from 'react';
@@ -473,7 +474,8 @@ export default function Welcome() {
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative px-8 lg:px-16 max-w-4xl mx-auto">
+        <div className="relative px-8 lg:px-16 max-w-6xl mx-auto space-y-6">
+          {/* Main driver CTA */}
           <div className="bg-white/90 backdrop-blur-sm rounded-xl p-8 shadow-lg flex flex-col md:flex-row items-center gap-6">
             <div className="w-16 h-16 rounded-full bg-orange-600 flex items-center justify-center flex-shrink-0">
               <Truck className="w-8 h-8 text-white" />
@@ -481,17 +483,91 @@ export default function Welcome() {
             <div className="flex-1 text-center md:text-left">
               <h3 className="text-2xl font-bold text-gray-800 mb-2">Earn as a <span className="text-orange-600">Returnly</span> Driver</h3>
               <p className="text-gray-700 text-lg">
-                $18-25/hour • Flexible schedule • Weekly pay
+                $18-25/hour • Flexible schedule • Instant pay available
               </p>
             </div>
-            <Button 
-              size="lg"
-              className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-8 py-4 h-auto"
-              onClick={() => alert('Driver Portal\n\nComing soon to App Store & Google Play!\n\nEarn up to $25/hour with flexible scheduling.')}
-              data-testid="button-apply-driver"
-            >
-              Apply Now
-            </Button>
+            <Link href="/driver-onboarding">
+              <Button 
+                size="lg"
+                className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-8 py-4 h-auto"
+                data-testid="button-apply-driver"
+              >
+                Apply Now
+              </Button>
+            </Link>
+          </div>
+
+          {/* Professional Training Ad */}
+          <div className="bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <Badge className="bg-yellow-400 text-yellow-900 font-bold">NEW DRIVERS</Badge>
+                  <div className="bg-white/20 rounded-full p-1">
+                    <Star className="h-4 w-4" />
+                  </div>
+                </div>
+                <h4 className="text-xl font-bold mb-2">Complete Professional Training in 10 Minutes</h4>
+                <p className="text-green-100 mb-3">
+                  Get started with our comprehensive driver tutorial covering payment structure, 
+                  safety guidelines, and professional pickup procedures.
+                </p>
+                <div className="flex flex-wrap gap-4 text-sm">
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    <span>Learn earning structure</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    <span>App training & navigation</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    <span>Safety protocols</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-center">
+                <div className="bg-white/10 rounded-lg p-3 mb-3">
+                  <div className="text-2xl font-bold text-yellow-300">10 min</div>
+                  <div className="text-xs text-green-200">training time</div>
+                </div>
+                <Link href="/driver-tutorial">
+                  <Button className="bg-white text-green-700 hover:bg-green-50 font-semibold text-sm" data-testid="button-start-training-ad">
+                    Start Training
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Benefits Ad */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-lg p-4 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-white/20 rounded-full p-2">
+                  <Zap className="h-5 w-5" />
+                </div>
+                <h5 className="font-bold">Instant Payouts</h5>
+              </div>
+              <p className="text-blue-100 text-sm mb-2">
+                Cash out earnings immediately after each delivery. No waiting for weekly checks!
+              </p>
+              <div className="text-xs text-blue-200">Available 24/7</div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-600 to-pink-700 rounded-lg p-4 text-white">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="bg-white/20 rounded-full p-2">
+                  <Phone className="h-5 w-5" />
+                </div>
+                <h5 className="font-bold">24/7 Driver Support</h5>
+              </div>
+              <p className="text-purple-100 text-sm mb-2">
+                Dedicated support team available around the clock for assistance and safety.
+              </p>
+              <div className="text-xs text-purple-200">(314) 555-0199</div>
+            </div>
           </div>
         </div>
       </div>
