@@ -100,6 +100,14 @@ const DEFAULT_CONFIG: PaymentConfig = {
   smallOrderThreshold: 8.00
 };
 
+// Function to determine item size based on value
+export function getItemSizeByValue(itemValue: number): string {
+  if (itemValue < 25) return 'S';       // Under $25 = Small
+  if (itemValue < 100) return 'M';      // $25-$99 = Medium  
+  if (itemValue < 300) return 'L';      // $100-$299 = Large
+  return 'XL';                          // $300+ = Extra Large
+}
+
 export function calculatePayment(
   routeInfo: RouteInfo,
   itemSize: string = 'M',

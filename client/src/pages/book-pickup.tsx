@@ -65,6 +65,7 @@ export default function BookPickup() {
     // Item details
     itemSize: 'M',
     numberOfItems: 1,
+    itemValue: '',
     // Preferred time slot
     preferredTimeSlot: '',
     // Instructions
@@ -105,13 +106,21 @@ export default function BookPickup() {
     'Other'
   ];
 
-  // Item sizes with correct pricing per requirements
+  // Item sizes based on value ranges
   const itemSizes = [
-    { size: 'S', label: 'Small', description: 'Books, jewelry, small electronics', basePrice: 3.99, upcharge: 0 },
-    { size: 'M', label: 'Medium', description: 'Clothing, shoes, small home goods', basePrice: 3.99, upcharge: 0 },
-    { size: 'L', label: 'Large', description: 'Small appliances, multiple items', basePrice: 3.99, upcharge: 2.00 },
-    { size: 'XL', label: 'Extra Large', description: 'Large electronics, furniture pieces', basePrice: 3.99, upcharge: 4.00 }
+    { size: 'S', label: 'Small', description: 'Under $25 (jewelry, books, small items)', basePrice: 3.99, upcharge: 0, valueRange: 'Under $25' },
+    { size: 'M', label: 'Medium', description: '$25-$99 (clothing, shoes, electronics)', basePrice: 3.99, upcharge: 0, valueRange: '$25-$99' },
+    { size: 'L', label: 'Large', description: '$100-$299 (appliances, multiple items)', basePrice: 3.99, upcharge: 2.00, valueRange: '$100-$299' },
+    { size: 'XL', label: 'Extra Large', description: '$300+ (furniture, large electronics)', basePrice: 3.99, upcharge: 4.00, valueRange: '$300+' }
   ];
+
+  // Function to determine size based on item value
+  const getItemSizeByValue = (value: number): string => {
+    if (value < 25) return 'S';
+    if (value < 100) return 'M';  
+    if (value < 300) return 'L';
+    return 'XL';
+  };
 
   // Return reasons dropdown options
   const returnReasons = [
@@ -185,6 +194,17 @@ export default function BookPickup() {
     setFormData(prev => ({ ...prev, retailer, retailerQuery: retailer }));
     setShowRetailerDropdown(false);
   };
+
+  // Auto-update item size when value changes
+  useEffect(() => {
+    const value = parseFloat(formData.itemValue);
+    if (!isNaN(value) && value > 0) {
+      const autoSize = getItemSizeByValue(value);
+      if (autoSize !== formData.itemSize) {
+        setFormData(prev => ({ ...prev, itemSize: autoSize }));
+      }
+    }
+  }, [formData.itemValue]);
 
   // Update total when form data changes
   useEffect(() => {
@@ -594,29 +614,56 @@ export default function BookPickup() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="itemSize" className="text-amber-800 font-medium">
-                      Item Size *
+                    <Label htmlFor="itemValue" className="text-amber-800 font-medium">
+                      Item Value *
                     </Label>
-                    <Select
-                      value={formData.itemSize}
-                      onValueChange={(value) => handleInputChange('itemSize', value)}
-                      required
-                    >
-                      <SelectTrigger data-testid="select-item-size">
-                        <SelectValue placeholder="Select item size" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {itemSizes.map((item) => (
-                          <SelectItem key={item.size} value={item.size}>
-                            <div className="flex flex-col">
-                              <span className="font-medium">{item.label}</span>
-                              <span className="text-xs text-gray-500">{item.description}</span>
-                              {item.upcharge > 0 && <span className="text-xs text-amber-600">+${item.upcharge.toFixed(2)}</span>}
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-800">$</span>
+                      <Input
+                        id="itemValue"
+                        type="number"
+                        placeholder="0.00"
+                        value={formData.itemValue}
+                        onChange={(e) => handleInputChange('itemValue', e.target.value)}
+                        className="bg-white/80 border-amber-300 focus:border-amber-500 pl-8"
+                        required
+                        min="0"
+                        step="0.01"
+                        data-testid="input-item-value"
+                      />
+                    </div>
+                    <p className="text-xs text-amber-600 mt-1">Original purchase price of the item</p>
+                  </div>
+                  
+                  <div>
+                    <Label className="text-amber-800 font-medium">
+                      Auto-Detected Size Category
+                    </Label>
+                    <div className="p-3 bg-amber-50/60 border border-amber-300 rounded-md">
+                      {(() => {
+                        const value = parseFloat(formData.itemValue);
+                        if (isNaN(value) || value <= 0) {
+                          return <span className="text-amber-600 text-sm">Enter item value to see category</span>;
+                        }
+                        
+                        const detectedSize = getItemSizeByValue(value);
+                        const sizeInfo = itemSizes.find(s => s.size === detectedSize);
+                        
+                        return (
+                          <div className="space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-amber-800">{sizeInfo?.label}</span>
+                              {sizeInfo?.upcharge && sizeInfo.upcharge > 0 && (
+                                <span className="text-xs bg-amber-200 text-amber-800 px-2 py-1 rounded">
+                                  +${sizeInfo.upcharge.toFixed(2)}
+                                </span>
+                              )}
                             </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                            <span className="text-xs text-amber-600">{sizeInfo?.valueRange}</span>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                   
                   <div>
