@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
-import { Screen } from '@/components/screen';
+// Removed Screen import for proper desktop responsiveness
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -180,24 +180,22 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <Screen>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
-          <Card className="w-full max-w-md">
-            <CardHeader>
-              <CardTitle className="text-center text-amber-900">Admin Access Required</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center">
-              <p className="text-amber-700 mb-4">Please sign in to access the admin dashboard.</p>
-              <Button 
-                onClick={() => setLocation('/login')}
-                className="bg-amber-700 hover:bg-amber-800 text-white"
-              >
-                Sign In
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </Screen>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
+        <Card className="w-full max-w-md mx-4">
+          <CardHeader>
+            <CardTitle className="text-center text-amber-900">Admin Access Required</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center">
+            <p className="text-amber-700 mb-4">Please sign in to access the admin dashboard.</p>
+            <Button 
+              onClick={() => setLocation('/login')}
+              className="bg-amber-700 hover:bg-amber-800 text-white"
+            >
+              Sign In
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -252,8 +250,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Screen>
-      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
         
         {/* Header */}
         <div className="bg-white shadow-sm border-b border-amber-200">
@@ -293,7 +290,7 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="p-4 sm:p-6">
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Key Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -653,6 +650,5 @@ export default function AdminDashboard() {
           context={supportContext}
         />
       </div>
-    </Screen>
   );
 }
