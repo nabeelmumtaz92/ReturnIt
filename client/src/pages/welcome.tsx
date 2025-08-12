@@ -101,7 +101,7 @@ export default function Welcome() {
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight">
                   Returns made
                   <br />
-                  <span className="text-amber-700">effortless</span>
+                  <span className="text-amber-700">easy</span>
                 </h1>
                 <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-amber-800 font-medium max-w-4xl mx-auto px-4">
                   We pick up your returns and deliver them back to the store. 
