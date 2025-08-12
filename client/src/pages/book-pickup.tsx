@@ -17,6 +17,7 @@ import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
 import RoutePreview from "@/components/RoutePreview";
+import { PaymentBreakdown } from "@/components/PaymentBreakdown";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 
 // Import delivery images
@@ -765,81 +766,35 @@ export default function BookPickup() {
                 />
               )}
 
-              {/* Dynamic Pricing - Route-based or fallback to item-based */}
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <div className="space-y-2">
-                  {routeInfo ? (
-                    <>
+              {/* Financial Breakdown */}
+              {formData.itemValue && parseFloat(formData.itemValue) > 0 && (
+                <div className="space-y-4">
+                  <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                    <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-amber-800">Distance-based fare ({routeInfo.distance}):</span>
-                        <span className="text-amber-900 font-medium">
-                          ${calculatedFare.toFixed(2)}
+                        <span className="text-amber-900 font-semibold text-lg">Returnly Service Fee:</span>
+                        <span className="text-amber-900 font-bold text-xl" data-testid="text-total-amount">
+                          ${totalAmount.toFixed(2)}
                         </span>
                       </div>
-                      
-                      {formData.numberOfItems > 1 && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-amber-800">Additional items ({formData.numberOfItems - 1} × $1.00):</span>
-                          <span className="text-amber-900 font-medium">+${((formData.numberOfItems - 1) * 1.00).toFixed(2)}</span>
-                        </div>
+                      {routeInfo && (
+                        <p className="text-xs text-amber-600">
+                          ETA: {routeInfo.duration} • Fare locked at booking
+                        </p>
                       )}
-                    </>
-                  ) : (
-                    <>
-                      <div className="flex justify-between items-center">
-                        <span className="text-amber-800">Base service fee:</span>
-                        <span className="text-amber-900 font-medium">$3.99</span>
-                      </div>
-                      
-                      {(() => {
-                        const selectedSize = itemSizes.find(item => item.size === formData.itemSize);
-                        return selectedSize?.upcharge && selectedSize.upcharge > 0 ? (
-                          <div className="flex justify-between items-center">
-                            <span className="text-amber-800">{selectedSize.label} item upcharge:</span>
-                            <span className="text-amber-900 font-medium">+${selectedSize.upcharge.toFixed(2)}</span>
-                          </div>
-                        ) : null;
-                      })()}
-                      
-                      {formData.numberOfItems > 1 && (
-                        <div className="flex justify-between items-center">
-                          <span className="text-amber-800">Additional items ({formData.numberOfItems - 1} × $1.00):</span>
-                          <span className="text-amber-900 font-medium">+${((formData.numberOfItems - 1) * 1.00).toFixed(2)}</span>
-                        </div>
-                      )}
-                      
-                      {(() => {
-                        const selectedSize = itemSizes.find(item => item.size === formData.itemSize);
-                        const basePrice = selectedSize?.basePrice || 3.99;
-                        const sizeUpcharge = selectedSize?.upcharge || 0;
-                        const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
-                        const currentSubtotal = basePrice + sizeUpcharge + multiItemFee;
-                        
-                        return currentSubtotal < 8.00 ? (
-                          <div className="flex justify-between items-center">
-                            <span className="text-amber-800">Small order fee (under $8):</span>
-                            <span className="text-amber-900 font-medium">+$2.00</span>
-                          </div>
-                        ) : null;
-                      })()}
-                    </>
-                  )}
-                  
-                  <hr className="border-amber-300" />
-                  <div className="flex justify-between items-center">
-                    <span className="text-amber-900 font-semibold text-lg">Total:</span>
-                    <span className="text-amber-900 font-bold text-xl" data-testid="text-total-amount">
-                      ${totalAmount.toFixed(2)}
-                    </span>
+                    </div>
                   </div>
-                  
-                  {routeInfo && (
-                    <p className="text-xs text-amber-600 mt-2">
-                      ETA: {routeInfo.duration} • Fare locked at booking
-                    </p>
-                  )}
+
+                  {/* Import and use the comprehensive breakdown component */}
+                  <PaymentBreakdown
+                    itemValue={parseFloat(formData.itemValue) || 0}
+                    numberOfItems={formData.numberOfItems}
+                    routeInfo={routeInfo}
+                    isRush={false}
+                    tip={0}
+                  />
                 </div>
-              </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4">
