@@ -131,16 +131,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
     (req, res) => {
+      console.log('Google callback - req.user:', req.user);
       // Set up session for authenticated user
       if (req.user) {
-        (req.session as any).user = { 
+        const userData = {
           id: (req.user as any).id, 
           email: (req.user as any).email, 
-          phone: (req.user as any).phone || '', 
+          phone: (req.user as any).phone || null, 
           isDriver: (req.user as any).isDriver || false 
         };
+        (req.session as any).user = userData;
+        console.log('Session user set:', userData);
         res.redirect('/?auth=success');
       } else {
+        console.log('Google callback - no user found');
         res.redirect('/login?error=auth_failed');
       }
     }

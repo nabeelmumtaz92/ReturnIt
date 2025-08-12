@@ -54,6 +54,19 @@ Preferred communication style: Simple, everyday language.
 ## App Store Preparation
 - App name, tagline, screenshots, privacy labels, TestFlight/beta testing
 
+# Google OAuth Setup Required
+
+**Critical Issue**: Google OAuth is configured for localhost but needs Replit domain. 
+
+**Action Needed**:
+1. Go to [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Edit your OAuth 2.0 Client ID
+3. In "Authorized redirect URIs", add: `https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev/api/auth/google/callback`
+4. Remove the localhost callback URL (Google no longer allows localhost)
+5. Save changes
+
+**Current Issue**: Google OAuth policy violation due to localhost callback URL configuration.
+
 # Recent Changes
 
 **August 12, 2025 (Latest)** - Enhanced with sophisticated white/beige UI design and comprehensive production features:
