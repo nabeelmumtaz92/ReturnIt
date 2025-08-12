@@ -70,24 +70,42 @@ export const orders = pgTable("orders", {
   boxSize: text("box_size").notNull(), // S, M, L, XL
   numberOfBoxes: integer("number_of_boxes").default(1).notNull(),
   
-  // Pricing and payments
-  basePrice: real("base_price").default(3.99),
-  sizeUpcharge: real("size_upcharge").default(0), // Additional cost for larger boxes
-  multiBoxFee: real("multi_box_fee").default(0), // Fee for multiple boxes
+  // Pricing breakdown
+  basePrice: real("base_price").default(3.99), // Minimum service fee
+  distanceFee: real("distance_fee").default(0), // $0.50 per mile
+  timeFee: real("time_fee").default(0), // $12/hour estimated time
+  sizeUpcharge: real("size_upcharge").default(0), // L: +$2, XL: +$4
+  multiBoxFee: real("multi_box_fee").default(0), // $1.50 per additional box
+  serviceFee: real("service_fee").default(0), // 15% of subtotal
+  
+  // Optional fees and discounts
+  rushFee: real("rush_fee").default(0), // Same-day pickup +$3
   surcharges: jsonb("surcharges").default([]),
   discountCode: text("discount_code"),
   discountAmount: real("discount_amount").default(0),
-  totalPrice: real("total_price"),
   tip: real("tip").default(0),
+  totalPrice: real("total_price"),
+  
+  // Payment breakdown
+  customerPaid: real("customer_paid"),
+  driverBasePay: real("driver_base_pay").default(0), // $3 minimum per delivery
+  driverDistancePay: real("driver_distance_pay").default(0), // $0.35 per mile
+  driverTimePay: real("driver_time_pay").default(0), // $8/hour
+  driverSizeBonus: real("driver_size_bonus").default(0), // L: +$1, XL: +$2
+  driverTip: real("driver_tip").default(0), // 100% of customer tip
+  driverTotalEarning: real("driver_total_earning").default(0),
+  
+  // Company revenue
+  companyServiceFee: real("company_service_fee").default(0), // 15% service fee
+  companyBaseFeeShare: real("company_base_fee_share").default(0), // $0.99 from base price
+  companyDistanceFeeShare: real("company_distance_fee_share").default(0), // $0.15 per mile
+  companyTimeFeeShare: real("company_time_fee_share").default(0), // $4/hour
+  companyTotalRevenue: real("company_total_revenue").default(0),
   
   // Stripe Connect payment fields
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
   paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded
-  customerPaid: real("customer_paid"),
-  driverEarning: real("driver_earning"), // 70% of total
-  returnlyFee: real("returnly_fee"), // 30% of total
-  sizeBonusAmount: real("size_bonus_amount").default(0),
   peakSeasonBonus: real("peak_season_bonus").default(0),
   multiStopBonus: real("multi_stop_bonus").default(0),
   driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid

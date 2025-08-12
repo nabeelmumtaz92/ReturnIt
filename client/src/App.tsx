@@ -12,6 +12,7 @@ import OrderStatus from "@/pages/order-status";
 import Checkout from "@/pages/checkout";
 import DriverPortal from "@/pages/driver-portal";
 import DriverPayments from "@/pages/driver-payments";
+import PaymentStructure from "@/pages/payment-structure";
 import AdminDashboard from "@/pages/admin-dashboard";
 import DriverOnboarding from "@/pages/driver-onboarding";
 import About from "@/pages/about";
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/about" component={About} />
       <Route path="/design-system-demo" component={DesignSystemDemo} />
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
