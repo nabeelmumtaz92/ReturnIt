@@ -43,8 +43,9 @@ export default function BookPickup() {
     retailer: '',
     retailerQuery: '',
     // Item details
-    itemCategory: '',
+    itemCategories: [] as string[], // Changed to array for multiple selection
     itemDescription: '',
+    estimatedWeight: '',
     // Box details
     boxSize: 'M',
     numberOfBoxes: 1,
@@ -146,8 +147,12 @@ export default function BookPickup() {
     e.preventDefault();
     
     // Validate required fields
-    const required = ['streetAddress', 'city', 'state', 'zipCode', 'retailer', 'itemCategory'];
+    const required = ['streetAddress', 'city', 'state', 'zipCode', 'retailer'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (formData.itemCategories.length === 0) {
+      missing.push('itemCategories');
+    }
     
     if (missing.length > 0) {
       toast({
@@ -165,7 +170,17 @@ export default function BookPickup() {
     setSelectedPaymentMethod(method);
     
     const orderData = {
-      ...formData,
+      streetAddress: formData.streetAddress,
+      city: formData.city,
+      state: formData.state,
+      zipCode: formData.zipCode,
+      retailer: formData.retailer,
+      itemCategory: formData.itemCategories.join(', '), // Convert array to comma-separated string
+      itemDescription: formData.itemDescription,
+      estimatedWeight: formData.estimatedWeight,
+      boxSize: formData.boxSize,
+      numberOfBoxes: formData.numberOfBoxes,
+      notes: formData.notes,
       paymentMethod: method,
       paymentDetails: details,
       totalAmount
@@ -178,6 +193,16 @@ export default function BookPickup() {
     setFormData(prev => ({
       ...prev,
       [field]: field === 'numberOfBoxes' ? parseInt(value as string) : value
+    }));
+  };
+
+  // Handle multiple item category selection
+  const handleCategoryToggle = (category: string) => {
+    setFormData(prev => ({
+      ...prev,
+      itemCategories: prev.itemCategories.includes(category)
+        ? prev.itemCategories.filter(c => c !== category)
+        : [...prev.itemCategories, category]
     }));
   };
 
@@ -238,7 +263,7 @@ export default function BookPickup() {
               Schedule Return Pickup
             </CardTitle>
             <CardDescription>
-              Fill out the details below to schedule your return pickup. Base price: $3.99
+              Fill out the details below to schedule your return pickup
             </CardDescription>
           </CardHeader>
           
@@ -367,24 +392,21 @@ export default function BookPickup() {
                 )}
               </div>
 
-              {/* Item Category Checkboxes */}
+              {/* Item Categories - Multiple Selection */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 mb-3">
                   <Package className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Item Category</Label>
+                  <Label className="text-amber-800 font-semibold text-lg">Item Categories</Label>
                 </div>
+                <p className="text-sm text-amber-700 mb-3">Select all categories that apply to your return items *</p>
                 
                 <div className="grid grid-cols-2 gap-3">
                   {itemCategories.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
                       <Checkbox
                         id={`category-${category}`}
-                        checked={formData.itemCategory === category}
-                        onCheckedChange={(checked) => {
-                          if (checked) {
-                            handleInputChange('itemCategory', category);
-                          }
-                        }}
+                        checked={formData.itemCategories.includes(category)}
+                        onCheckedChange={() => handleCategoryToggle(category)}
                         data-testid={`checkbox-category-${category.toLowerCase().replace(/\s+/g, '-')}`}
                       />
                       <Label
@@ -396,6 +418,30 @@ export default function BookPickup() {
                     </div>
                   ))}
                 </div>
+                
+                {formData.itemCategories.length > 0 && (
+                  <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 rounded">
+                    <span>Selected:</span>
+                    <span className="font-medium">{formData.itemCategories.join(', ')}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Estimated Weight */}
+              <div className="space-y-2">
+                <Label htmlFor="estimatedWeight" className="text-amber-800 font-medium">
+                  Estimated Weight (optional)
+                </Label>
+                <Input
+                  id="estimatedWeight"
+                  type="text"
+                  placeholder="e.g., 2 lbs, 5 lbs, 10+ lbs"
+                  value={formData.estimatedWeight}
+                  onChange={(e) => handleInputChange('estimatedWeight', e.target.value)}
+                  className="bg-white/80 border-amber-300 focus:border-amber-500"
+                  data-testid="input-estimated-weight"
+                />
+                <p className="text-xs text-amber-600">Help our drivers prepare for pickup</p>
               </div>
 
               {/* Item Description */}
@@ -420,6 +466,7 @@ export default function BookPickup() {
                   <Package className="h-5 w-5 text-amber-600" />
                   <Label className="text-amber-800 font-semibold text-lg">Box Details</Label>
                 </div>
+                <p className="text-sm text-amber-700 mb-3">Please use dropdown to describe the size of the box</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -497,7 +544,7 @@ export default function BookPickup() {
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-amber-800">Base pickup service:</span>
+                    <span className="text-amber-800">Service fee:</span>
                     <span className="text-amber-900 font-medium">$3.99</span>
                   </div>
                   

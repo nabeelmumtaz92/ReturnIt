@@ -332,6 +332,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         retailer,
         itemCategory,
         itemDescription,
+        estimatedWeight,
         boxSize,
         numberOfBoxes,
         notes,
@@ -365,6 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         retailer,
         itemCategory,
         itemDescription,
+        estimatedWeight,
         
         // Box details
         boxSize,

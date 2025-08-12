@@ -61,6 +61,7 @@ export const orders = pgTable("orders", {
   returnCoordinates: jsonb("return_coordinates"),
   itemCategory: text("item_category").notNull(), // Electronics, Clothing, Home & Garden, Beauty & Health, Books & Media, Other
   itemDescription: text("item_description"),
+  estimatedWeight: text("estimated_weight"), // Optional weight estimate for logistics
   itemPhotos: jsonb("item_photos").default([]),
   returnReason: text("return_reason"),
   originalOrderNumber: text("original_order_number"),
