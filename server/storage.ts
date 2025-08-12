@@ -10,7 +10,6 @@ import {
 export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
@@ -89,7 +88,6 @@ export class MemStorage implements IStorage {
     // Initialize with comprehensive demo data
     const demoUser: User = {
       id: 1,
-      username: 'demo',
       email: 'demo@returnly.com',
       password: 'demo123',
       firstName: 'Demo',
@@ -118,7 +116,6 @@ export class MemStorage implements IStorage {
     // Demo driver
     const demoDriver: User = {
       id: 2,
-      username: 'demodriver',
       email: 'driver@returnly.com',
       password: 'driver123',
       firstName: 'Demo',
@@ -226,12 +223,6 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
-  }
-
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
       (user) => user.email === email,
@@ -242,7 +233,6 @@ export class MemStorage implements IStorage {
     const id = this.nextUserId++;
     const user: User = { 
       id,
-      username: insertUser.username,
       email: insertUser.email,
       password: insertUser.password,
       firstName: insertUser.firstName || null,

@@ -29,20 +29,20 @@ export default function Login() {
 
   // Login form state
   const [loginData, setLoginData] = useState({
-    username: '',
+    email: '',
     password: ''
   });
 
   // Register form state
   const [registerData, setRegisterData] = useState({
-    username: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: ''
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (data: { username: string; password: string }) => {
+    mutationFn: async (data: { email: string; password: string }) => {
       return await apiRequest('/api/auth/login', 'POST', data);
     },
     onSuccess: () => {
@@ -63,7 +63,7 @@ export default function Login() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { username: string; email: string; password: string }) => {
+    mutationFn: async (data: { email: string; phone: string; password: string }) => {
       return await apiRequest('/api/auth/register', 'POST', data);
     },
     onSuccess: () => {
@@ -85,7 +85,7 @@ export default function Login() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginData.username || !loginData.password) {
+    if (!loginData.email || !loginData.password) {
       toast({
         title: "Missing fields",
         description: "Please fill in all fields",
@@ -98,7 +98,7 @@ export default function Login() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!registerData.username || !registerData.email || !registerData.password) {
+    if (!registerData.email || !registerData.phone || !registerData.password) {
       toast({
         title: "Missing fields",
         description: "Please fill in all fields",
@@ -115,8 +115,8 @@ export default function Login() {
       return;
     }
     registerMutation.mutate({
-      username: registerData.username,
       email: registerData.email,
+      phone: registerData.phone,
       password: registerData.password
     });
   };
@@ -195,17 +195,18 @@ export default function Login() {
               <form onSubmit={handleLogin}>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="login-username" className="text-amber-800 font-medium">Username</Label>
+                    <Label htmlFor="login-email" className="text-amber-800 font-medium">Email Address</Label>
                     <div className="relative">
                       <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
                         <div className="flex items-center space-x-3">
-                          <User className="h-5 w-5 text-amber-600" />
+                          <Mail className="h-5 w-5 text-amber-600" />
                           <Input
-                            id="login-username"
-                            data-testid="input-login-username"
-                            value={loginData.username}
-                            onChange={(e) => setLoginData(prev => ({...prev, username: e.target.value}))}
-                            placeholder="Enter your username"
+                            id="login-email"
+                            data-testid="input-login-email"
+                            type="email"
+                            value={loginData.email}
+                            onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+                            placeholder="Enter your email address"
                             className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
                           />
                         </div>
@@ -240,7 +241,7 @@ export default function Login() {
                     data-testid="button-login-submit"
                   >
                     <Mail className="h-4 w-4 mr-2" />
-                    {loginMutation.isPending ? "Signing in..." : "Sign In with Email"}
+                    {loginMutation.isPending ? "Signing in..." : "Sign In"}
                   </Button>
                   
                   <div className="flex items-center my-8">
@@ -297,24 +298,6 @@ export default function Login() {
               <form onSubmit={handleRegister}>
                 <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="register-username" className="text-amber-800 font-medium">Username</Label>
-                    <div className="relative">
-                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
-                        <div className="flex items-center space-x-3">
-                          <User className="h-5 w-5 text-amber-600" />
-                          <Input
-                            id="register-username"
-                            data-testid="input-register-username"
-                            value={registerData.username}
-                            onChange={(e) => setRegisterData(prev => ({...prev, username: e.target.value}))}
-                            placeholder="Choose a username"
-                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="register-email" className="text-amber-800 font-medium">Email Address</Label>
                     <div className="relative">
                       <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
@@ -327,6 +310,25 @@ export default function Login() {
                             value={registerData.email}
                             onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
                             placeholder="Enter your email address"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-phone" className="text-amber-800 font-medium">Phone Number</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <Phone className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-phone"
+                            data-testid="input-register-phone"
+                            type="tel"
+                            value={registerData.phone}
+                            onChange={(e) => setRegisterData(prev => ({...prev, phone: e.target.value}))}
+                            placeholder="Enter your phone number"
                             className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
                           />
                         </div>
@@ -379,8 +381,8 @@ export default function Login() {
                     disabled={registerMutation.isPending}
                     data-testid="button-register-submit"
                   >
-                    <User className="h-4 w-4 mr-2" />
-                    {registerMutation.isPending ? "Creating account..." : "Create Account with Email"}
+                    <Mail className="h-4 w-4 mr-2" />
+                    {registerMutation.isPending ? "Creating account..." : "Create Account"}
                   </Button>
                   
                   <div className="flex items-center my-8">
@@ -432,7 +434,7 @@ export default function Login() {
           <h3 className="font-semibold text-amber-800 mb-3 text-center">Demo Account Available</h3>
           <div className="bg-white p-4 rounded-lg border border-amber-100 text-center">
             <p className="text-sm text-amber-700 mb-2">
-              Username: <span className="font-bold text-amber-900">demo</span>
+              Email: <span className="font-bold text-amber-900">demo@returnly.com</span>
             </p>
             <p className="text-sm text-amber-700 mb-3">
               Password: <span className="font-bold text-amber-900">demo123</span>

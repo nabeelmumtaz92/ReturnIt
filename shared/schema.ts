@@ -5,12 +5,11 @@ import { z } from "zod";
 // Enhanced Users table with profiles and preferences
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
   firstName: text("first_name"),
   lastName: text("last_name"),
-  phone: text("phone"),
+  phone: text("phone").notNull(),
   isDriver: boolean("is_driver").default(false).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   isActive: boolean("is_active").default(true).notNull(),

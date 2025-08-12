@@ -56,8 +56,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertUserSchema.parse(req.body);
       
       // Check if user already exists
-      const existingUser = await storage.getUserByUsername(validatedData.username) || 
-                           await storage.getUserByEmail(validatedData.email);
+      const existingUser = await storage.getUserByEmail(validatedData.email);
       
       if (existingUser) {
         return res.status(409).json({ message: "User already exists" });
@@ -71,11 +70,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Log user in
-      (req.session as any).user = { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver };
+      (req.session as any).user = { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver };
       
       res.status(201).json({ 
         message: "Registration successful",
-        user: { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver }
+        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver }
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid registration data" });
@@ -84,24 +83,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { username, password } = req.body;
+      const { email, password } = req.body;
       
-      if (!username || !password) {
-        return res.status(400).json({ message: "Username and password required" });
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password required" });
       }
 
-      const user = await storage.getUserByUsername(username);
+      const user = await storage.getUserByEmail(email);
       
       if (!user || !await bcrypt.compare(password, user.password)) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       // Log user in
-      (req.session as any).user = { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver };
+      (req.session as any).user = { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver };
       
       res.json({ 
         message: "Login successful",
-        user: { id: user.id, username: user.username, email: user.email, isDriver: user.isDriver }
+        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver }
       });
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
@@ -136,8 +135,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.user) {
         (req.session as any).user = { 
           id: (req.user as any).id, 
-          username: (req.user as any).username, 
           email: (req.user as any).email, 
+          phone: (req.user as any).phone || '', 
           isDriver: (req.user as any).isDriver || false 
         };
         res.redirect('/?auth=success');
@@ -159,8 +158,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.user) {
         (req.session as any).user = { 
           id: (req.user as any).id, 
-          username: (req.user as any).username, 
           email: (req.user as any).email, 
+          phone: (req.user as any).phone || '', 
           isDriver: (req.user as any).isDriver || false 
         };
         res.redirect('/?auth=success');
