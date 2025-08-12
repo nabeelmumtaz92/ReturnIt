@@ -37,7 +37,11 @@ import {
   Send,
   Bot,
   UserCheck,
-  X
+  X,
+  ArrowUpDown,
+  ChevronDown,
+  PieChart,
+  Target
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +49,9 @@ import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 interface Order {
   id: string;
@@ -88,6 +95,12 @@ export default function AdminDashboard() {
   const [showSupportChat, setShowSupportChat] = useState(false);
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
+  
+  // Enhanced completed orders state
+  const [completedOrdersSearch, setCompletedOrdersSearch] = useState('');
+  const [completedOrdersDateRange, setCompletedOrdersDateRange] = useState<'all' | 'today' | 'week' | 'month'>('all');
+  const [completedOrdersSort, setCompletedOrdersSort] = useState<'date' | 'amount' | 'driver'>('date');
+  const [completedOrdersSortOrder, setCompletedOrdersSortOrder] = useState<'asc' | 'desc'>('desc');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -280,6 +293,114 @@ export default function AdminDashboard() {
   const handleCustomerSupport = (order: Order) => {
     setSupportContext({ type: 'customer', id: order.id, name: order.customer });
     setShowAdminSupportModal(true);
+  };
+
+  // Excel export functionality for completed orders
+  const exportToExcel = () => {
+    const completedOrders = getFilteredCompletedOrders();
+    
+    const exportData = completedOrders.map(order => ({
+      'Order ID': order.id,
+      'Customer': order.customer,
+      'Driver': order.driver || 'N/A',
+      'Status': order.status.replace('_', ' ').toUpperCase(),
+      'Amount': `$${order.amount.toFixed(2)}`,
+      'Service Fee': '$3.99',
+      'Net Revenue': `$${(order.amount - 3.99).toFixed(2)}`,
+      'Driver Earnings': order.driver ? `$${(order.amount * 0.7).toFixed(2)}` : 'N/A',
+      'Pickup Address': order.pickupAddress,
+      'Destination': order.destination,
+      'Priority': order.priority.toUpperCase(),
+      'Completed Date': order.createdAt,
+      'Customer Rating': 'N/A', // Would come from actual data
+      'Driver Rating': 'N/A'    // Would come from actual data
+    }));
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Completed Orders");
+    
+    // Auto-size columns
+    const wscols = [
+      { wch: 10 }, // Order ID
+      { wch: 15 }, // Customer
+      { wch: 15 }, // Driver
+      { wch: 12 }, // Status
+      { wch: 10 }, // Amount
+      { wch: 12 }, // Service Fee
+      { wch: 12 }, // Net Revenue
+      { wch: 15 }, // Driver Earnings
+      { wch: 25 }, // Pickup Address
+      { wch: 25 }, // Destination
+      { wch: 10 }, // Priority
+      { wch: 18 }, // Completed Date
+      { wch: 12 }, // Customer Rating
+      { wch: 12 }  // Driver Rating
+    ];
+    ws['!cols'] = wscols;
+
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(data, `Returnly_Completed_Orders_${new Date().toISOString().split('T')[0]}.xlsx`);
+    
+    toast({
+      title: "Export Successful",
+      description: "Completed orders data has been exported to Excel",
+    });
+  };
+
+  // Enhanced filtering and sorting for completed orders
+  const getFilteredCompletedOrders = () => {
+    let completedOrders = orders.filter(order => order.status === 'delivered' || order.status === 'refunded');
+
+    // Apply search filter
+    if (completedOrdersSearch) {
+      const searchLower = completedOrdersSearch.toLowerCase();
+      completedOrders = completedOrders.filter(order => 
+        order.id.toLowerCase().includes(searchLower) ||
+        order.customer.toLowerCase().includes(searchLower) ||
+        (order.driver && order.driver.toLowerCase().includes(searchLower)) ||
+        order.pickupAddress.toLowerCase().includes(searchLower) ||
+        order.destination.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply date range filter (simplified for demo)
+    if (completedOrdersDateRange !== 'all') {
+      // In real implementation, would filter by actual dates
+      // This is just for demonstration
+    }
+
+    // Apply sorting
+    completedOrders.sort((a, b) => {
+      let valueA, valueB;
+      
+      switch (completedOrdersSort) {
+        case 'date':
+          valueA = new Date(a.createdAt);
+          valueB = new Date(b.createdAt);
+          break;
+        case 'amount':
+          valueA = a.amount;
+          valueB = b.amount;
+          break;
+        case 'driver':
+          valueA = a.driver || '';
+          valueB = b.driver || '';
+          break;
+        default:
+          valueA = a.createdAt;
+          valueB = b.createdAt;
+      }
+
+      if (completedOrdersSortOrder === 'asc') {
+        return valueA < valueB ? -1 : valueA > valueB ? 1 : 0;
+      } else {
+        return valueA > valueB ? -1 : valueA < valueB ? 1 : 0;
+      }
+    });
+
+    return completedOrders;
   };
 
   return (
@@ -495,96 +616,191 @@ export default function AdminDashboard() {
               </Card>
             </TabsContent>
 
-            {/* Completed Orders Tab */}
+            {/* Enhanced Completed Orders Tab */}
             <TabsContent value="completed">
               <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
                 <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                    <CardTitle className="text-amber-900 text-lg sm:text-xl">Completed Orders</CardTitle>
-                    <div className="flex items-center space-x-2 sm:space-x-3">
-                      <Button size="sm" variant="outline" className="px-2 sm:px-3">
-                        <Download className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                        <span className="hidden sm:inline">Export</span>
-                        <span className="sm:hidden text-xs">Export</span>
-                      </Button>
-                      <Button size="sm" variant="outline" className="px-2 sm:px-3">
-                        <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                        <span className="hidden sm:inline">Refresh</span>
-                        <span className="sm:hidden text-xs">Sync</span>
-                      </Button>
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                      <CardTitle className="text-amber-900 text-lg sm:text-xl">
+                        Completed Orders ({getFilteredCompletedOrders().length})
+                      </CardTitle>
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="px-2 sm:px-3"
+                          onClick={exportToExcel}
+                          data-testid="button-export-excel"
+                        >
+                          <Download className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                          <span className="hidden sm:inline">Export Excel</span>
+                          <span className="sm:hidden text-xs">Excel</span>
+                        </Button>
+                        <Button size="sm" variant="outline" className="px-2 sm:px-3">
+                          <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                          <span className="hidden sm:inline">Refresh</span>
+                          <span className="sm:hidden text-xs">Sync</span>
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Search and Filters */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder="Search orders..."
+                          value={completedOrdersSearch}
+                          onChange={(e) => setCompletedOrdersSearch(e.target.value)}
+                          className="pl-10"
+                          data-testid="input-search-completed-orders"
+                        />
+                      </div>
+                      
+                      <Select value={completedOrdersDateRange} onValueChange={setCompletedOrdersDateRange}>
+                        <SelectTrigger data-testid="select-date-range">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Time</SelectItem>
+                          <SelectItem value="today">Today</SelectItem>
+                          <SelectItem value="week">This Week</SelectItem>
+                          <SelectItem value="month">This Month</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select value={completedOrdersSort} onValueChange={setCompletedOrdersSort}>
+                        <SelectTrigger data-testid="select-sort-by">
+                          <ArrowUpDown className="h-4 w-4 mr-2" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="date">Sort by Date</SelectItem>
+                          <SelectItem value="amount">Sort by Amount</SelectItem>
+                          <SelectItem value="driver">Sort by Driver</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Select value={completedOrdersSortOrder} onValueChange={setCompletedOrdersSortOrder}>
+                        <SelectTrigger data-testid="select-sort-order">
+                          <ChevronDown className="h-4 w-4 mr-2" />
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="desc">Newest First</SelectItem>
+                          <SelectItem value="asc">Oldest First</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {orders.filter(order => order.status === 'delivered' || order.status === 'refunded').map((order) => (
-                      <div 
-                        key={order.id} 
-                        className="p-4 border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50 cursor-pointer transition-colors"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                          <div className="flex items-center space-x-3 sm:space-x-4">
-                            <CheckCircle className="h-5 w-5 text-green-600" />
-                            <div>
-                              <p className="font-semibold text-amber-900 text-sm sm:text-base">{order.id}</p>
-                              <p className="text-xs sm:text-sm text-amber-700">{order.customer}</p>
-                            </div>
-                            <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
-                              {order.priority.toUpperCase()}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-between sm:flex-col sm:items-end sm:text-right">
-                            <Badge className={`${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} text-xs mb-0 sm:mb-2`}>
-                              {order.status.replace('_', ' ').toUpperCase()}
-                            </Badge>
-                            <p className="text-sm font-semibold text-amber-900">${order.amount}</p>
-                          </div>
-                        </div>
-                        <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-amber-700">
-                          <p><MapPin className="h-3 w-3 inline mr-1" />{order.pickupAddress}</p>
-                          <p><Package className="h-3 w-3 inline mr-1" />{order.destination}</p>
-                          <p><Clock className="h-3 w-3 inline mr-1" />Completed: {order.createdAt}</p>
-                        </div>
-                        {order.driver && (
-                          <p className="mt-2 text-xs text-green-600">
-                            <Truck className="h-3 w-3 inline mr-1" />
-                            Completed by: {order.driver}
-                          </p>
-                        )}
-                        <div className="flex justify-between items-center mt-3">
-                          <div className="flex space-x-2">
-                            <Badge variant="outline" className="text-xs text-green-700 border-green-300">
-                              Payment Processed
-                            </Badge>
-                            {order.status === 'refunded' && (
-                              <Badge variant="outline" className="text-xs text-blue-700 border-blue-300">
-                                Customer Refunded
-                              </Badge>
-                            )}
-                          </div>
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="text-amber-700 border-amber-300 text-xs px-2 py-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCustomerSupport(order);
-                            }}
-                          >
-                            <Eye className="h-3 w-3 mr-1" />
-                            <span className="hidden sm:inline">View Details</span>
-                            <span className="sm:hidden">Details</span>
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {orders.filter(order => order.status === 'delivered' || order.status === 'refunded').length === 0 && (
+                  {getFilteredCompletedOrders().length === 0 ? (
                     <div className="text-center py-8 text-amber-600">
                       <CheckCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-                      <p className="text-lg font-medium">No completed orders yet</p>
-                      <p className="text-sm">Completed deliveries and refunds will appear here</p>
+                      <p className="text-lg font-medium">No completed orders found</p>
+                      <p className="text-sm">
+                        {completedOrdersSearch ? 'Try adjusting your search or filters' : 'Completed deliveries and refunds will appear here'}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="border rounded-lg overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow className="bg-amber-50">
+                            <TableHead className="font-semibold text-amber-900">Order ID</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Customer</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Driver</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Status</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Amount</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Revenue</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Date</TableHead>
+                            <TableHead className="font-semibold text-amber-900">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {getFilteredCompletedOrders().map((order) => (
+                            <TableRow 
+                              key={order.id} 
+                              className="hover:bg-amber-50/50 cursor-pointer transition-colors"
+                              onClick={() => setSelectedOrder(order)}
+                              data-testid={`row-completed-order-${order.id}`}
+                            >
+                              <TableCell className="font-medium text-amber-900">{order.id}</TableCell>
+                              <TableCell>{order.customer}</TableCell>
+                              <TableCell>
+                                {order.driver ? (
+                                  <span className="flex items-center text-green-700">
+                                    <CheckCircle className="h-4 w-4 mr-1" />
+                                    {order.driver}
+                                  </span>
+                                ) : (
+                                  <span className="text-gray-400">N/A</span>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={`${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} text-xs`}>
+                                  {order.status.replace('_', ' ').toUpperCase()}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="font-semibold">${order.amount.toFixed(2)}</TableCell>
+                              <TableCell className="font-semibold text-green-700">
+                                ${(order.amount - 3.99).toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-sm text-gray-600">{order.createdAt}</TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="text-amber-700 border-amber-300 text-xs px-2 py-1"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleCustomerSupport(order);
+                                    }}
+                                    data-testid={`button-view-details-${order.id}`}
+                                  >
+                                    <Eye className="h-3 w-3 mr-1" />
+                                    Details
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                  
+                  {/* Summary Statistics */}
+                  {getFilteredCompletedOrders().length > 0 && (
+                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <Card className="bg-green-50 border-green-200">
+                        <CardContent className="p-4 text-center">
+                          <p className="text-sm font-medium text-green-600">Total Revenue</p>
+                          <p className="text-2xl font-bold text-green-700">
+                            ${getFilteredCompletedOrders().reduce((sum, order) => sum + (order.amount - 3.99), 0).toFixed(2)}
+                          </p>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-blue-50 border-blue-200">
+                        <CardContent className="p-4 text-center">
+                          <p className="text-sm font-medium text-blue-600">Driver Earnings</p>
+                          <p className="text-2xl font-bold text-blue-700">
+                            ${getFilteredCompletedOrders().reduce((sum, order) => sum + (order.amount * 0.7), 0).toFixed(2)}
+                          </p>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-amber-50 border-amber-200">
+                        <CardContent className="p-4 text-center">
+                          <p className="text-sm font-medium text-amber-600">Service Fees</p>
+                          <p className="text-2xl font-bold text-amber-700">
+                            ${(getFilteredCompletedOrders().length * 3.99).toFixed(2)}
+                          </p>
+                        </CardContent>
+                      </Card>
                     </div>
                   )}
                 </CardContent>
