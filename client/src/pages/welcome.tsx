@@ -98,8 +98,10 @@ export default function Welcome() {
         
         {/* Floating Top Navigation - Role Switcher */}
         {isAuthenticated && (
-          <div className="absolute top-4 right-4 z-30">
-            <RoleSwitcher />
+          <div className="fixed top-2 right-2 sm:top-4 sm:right-4 z-50 safe-area-inset-top">
+            <div className="bg-white/95 backdrop-blur-sm rounded-xl p-2 sm:p-2 shadow-xl border border-amber-200">
+              <RoleSwitcher />
+            </div>
           </div>
         )}
 

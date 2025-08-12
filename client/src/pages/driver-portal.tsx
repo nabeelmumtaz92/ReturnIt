@@ -130,23 +130,26 @@ export default function DriverPortal() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-6">
-              <RoleSwitcher />
+            <div className="flex items-center space-x-2 sm:space-x-6">
+              <div className="order-1">
+                <RoleSwitcher />
+              </div>
               
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 order-3 sm:order-2">
                 <Switch 
                   checked={isOnline} 
                   onCheckedChange={handleOnlineToggle}
                   data-testid="switch-online-status"
                 />
-                <span className={`font-medium ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
-                  {isOnline ? 'Online' : 'Offline'}
+                <span className={`font-medium text-xs sm:text-sm ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                  <span className="hidden sm:inline">{isOnline ? 'Online' : 'Offline'}</span>
+                  <span className="sm:hidden">{isOnline ? 'On' : 'Off'}</span>
                 </span>
               </div>
               
-              <div className="flex items-center space-x-2 text-amber-700">
-                <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
-                <span className="font-semibold">{user.driverRating?.toFixed(1) || '5.0'}</span>
+              <div className="flex items-center space-x-1 sm:space-x-2 text-amber-700 order-2 sm:order-3">
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
+                <span className="font-semibold text-sm sm:text-base">{user.driverRating?.toFixed(1) || '5.0'}</span>
               </div>
             </div>
           </div>

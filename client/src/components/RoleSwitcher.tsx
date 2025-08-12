@@ -91,11 +91,11 @@ export function RoleSwitcher() {
   }
 
   return (
-    <div className="flex items-center space-x-3">
-      {/* Current Role Badge */}
-      <Badge className={`${currentRoleData?.color} border-0 px-3 py-1`}>
+    <div className="flex items-center space-x-2 sm:space-x-3">
+      {/* Current Role Badge - Hidden on small screens, shown on tablets+ */}
+      <Badge className={`${currentRoleData?.color} border-0 px-2 sm:px-3 py-1 hidden sm:flex items-center`}>
         {currentRoleData && <currentRoleData.icon className="h-3 w-3 mr-1" />}
-        {currentRoleData?.name}
+        <span className="text-xs sm:text-sm">{currentRoleData?.name}</span>
       </Badge>
 
       {/* Role Switcher Dropdown */}
@@ -104,16 +104,33 @@ export function RoleSwitcher() {
           <Button 
             variant="outline" 
             size="sm" 
-            className="text-amber-700 border-amber-300 hover:bg-amber-50"
+            className="text-amber-700 border-amber-300 hover:bg-amber-50 active:bg-amber-100 px-2 sm:px-3 py-2 sm:py-2 text-xs sm:text-sm min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 touch-manipulation"
           >
-            Switch Role
-            <ChevronDown className="h-3 w-3 ml-1" />
+            {/* Mobile: Show icon only */}
+            <span className="sm:hidden flex items-center justify-center">
+              {currentRoleData && <currentRoleData.icon className="h-5 w-5" />}
+            </span>
+            {/* Desktop: Show text */}
+            <span className="hidden sm:inline flex items-center">
+              Switch Role
+              <ChevronDown className="h-3 w-3 ml-1" />
+            </span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
-          <div className="px-3 py-2">
-            <p className="text-xs font-medium text-amber-700 mb-2">
-              Available Roles for {user.firstName} {user.lastName}
+        <DropdownMenuContent 
+          align="end" 
+          className="w-80 sm:w-96 max-h-[85vh] overflow-y-auto shadow-xl border-amber-200"
+          side="bottom"
+          sideOffset={8}
+          avoidCollisions={true}
+          collisionPadding={16}
+        >
+          <div className="px-3 py-2 border-b border-amber-100">
+            <p className="text-xs sm:text-sm font-medium text-amber-700 mb-1">
+              Available Roles
+            </p>
+            <p className="text-xs text-amber-600">
+              {user.firstName} {user.lastName}
             </p>
           </div>
           
@@ -124,13 +141,13 @@ export function RoleSwitcher() {
               {/* Role Header */}
               <div className="px-3 py-2">
                 <div className="flex items-center space-x-2 mb-2">
-                  <role.icon className="h-4 w-4 text-amber-700" />
-                  <span className="font-medium text-amber-900">{role.name}</span>
+                  <role.icon className="h-4 w-4 text-amber-700 flex-shrink-0" />
+                  <span className="font-medium text-amber-900 text-sm sm:text-base">{role.name}</span>
                   {role.id === currentRole && (
-                    <Badge variant="secondary" className="text-xs">Current</Badge>
+                    <Badge variant="secondary" className="text-xs ml-auto">Current</Badge>
                   )}
                 </div>
-                <p className="text-xs text-amber-600 mb-2">{role.description}</p>
+                <p className="text-xs text-amber-600 mb-2 leading-relaxed">{role.description}</p>
               </div>
 
               {/* Role Routes */}
@@ -138,19 +155,19 @@ export function RoleSwitcher() {
                 <DropdownMenuItem
                   key={route.path}
                   onClick={() => handleRoleSwitch(role.id, route.path)}
-                  className="pl-6 hover:bg-amber-50 cursor-pointer"
+                  className="pl-6 pr-3 py-3 sm:py-2.5 hover:bg-amber-50 active:bg-amber-100 cursor-pointer focus:bg-amber-50 touch-manipulation min-h-[48px] sm:min-h-0"
                 >
-                  <route.icon className="h-3 w-3 mr-2 text-amber-600" />
-                  <span className="text-sm">{route.name}</span>
+                  <route.icon className="h-5 w-5 sm:h-4 sm:w-4 mr-3 text-amber-600 flex-shrink-0" />
+                  <span className="text-sm sm:text-sm text-amber-900 font-medium">{route.name}</span>
                 </DropdownMenuItem>
               ))}
             </div>
           ))}
           
           <DropdownMenuSeparator />
-          <div className="px-3 py-2">
-            <p className="text-xs text-amber-600">
-              Quickly switch between your roles to test different features
+          <div className="px-3 py-2 bg-amber-25">
+            <p className="text-xs text-amber-600 leading-relaxed">
+              Switch between admin, driver, and customer views to test all platform features
             </p>
           </div>
         </DropdownMenuContent>

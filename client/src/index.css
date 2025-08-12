@@ -161,3 +161,35 @@
     box-shadow: 0 0 0 2px rgba(255, 140, 66, 0.2);
   }
 }
+
+/* Mobile and tablet optimizations for role switcher */
+@media (max-width: 768px) {
+  /* Ensure role switcher dropdown doesn't get cut off on mobile */
+  [data-radix-popper-content-wrapper] {
+    z-index: 9999 !important;
+  }
+  
+  /* Better touch targets on mobile */
+  .touch-manipulation {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Safe area for notched devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  /* Prevent zoom on input focus on iOS */
+  input, select, textarea, button {
+    font-size: 16px !important;
+  }
+}
+
+/* iPad and tablet specific optimizations */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Ensure proper spacing for role switcher on tablets */
+  .role-switcher-container {
+    margin-right: calc(env(safe-area-inset-right) + 0.5rem);
+  }
+}

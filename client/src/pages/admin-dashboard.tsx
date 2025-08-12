@@ -272,16 +272,21 @@ export default function AdminDashboard() {
                   <p className="text-sm sm:text-base text-amber-700 hidden sm:block">Business Operations Center</p>
                 </div>
               </div>
-              <div className="flex items-center justify-end space-x-2 sm:space-x-3">
-                <RoleSwitcher />
-                <NotificationBell userType="admin" />
+              <div className="flex items-center justify-end space-x-1 sm:space-x-3">
+                <div className="order-1 sm:order-none">
+                  <RoleSwitcher />
+                </div>
+                <div className="order-2 sm:order-none">
+                  <NotificationBell userType="admin" />
+                </div>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={() => setLocation('/')}
-                  className="text-xs sm:text-sm px-2 sm:px-3"
+                  className="text-xs sm:text-sm px-2 sm:px-3 order-3 sm:order-none"
                 >
-                  Back to Site
+                  <span className="hidden sm:inline">Back to Site</span>
+                  <span className="sm:hidden">Back</span>
                 </Button>
               </div>
             </div>
