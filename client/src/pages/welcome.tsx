@@ -4,7 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search } from 'lucide-react';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, HeadphonesIcon } from 'lucide-react';
+import SupportChat from '@/components/SupportChat';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ export default function Welcome() {
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [trackingNumber, setTrackingNumber] = useState('');
+  const [showSupportChat, setShowSupportChat] = useState(false);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -77,14 +79,15 @@ export default function Welcome() {
       {/* Sophisticated White/Beige Hero Section */}
       <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
-        {/* Sophisticated White Background with Subtle Image */}
-        <div className="absolute inset-0 bg-white">
-          <div 
-            className="absolute inset-0 bg-cover bg-center opacity-10 transition-all duration-1000"
-            style={{ backgroundImage: `url('${deliveryImages[currentImageIndex].url}')` }}
+        {/* Background with Lady Handing Package Image */}
+        <div className="absolute inset-0 opacity-25">
+          <img 
+            src="/attached_assets/Delivery Driver- Handoff_1754856749519.jpeg"
+            alt="Lady handing package to delivery driver"
+            className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-stone-50/80 to-amber-50/60"></div>
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-stone-50/80 to-amber-50/60"></div>
         
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
@@ -123,6 +126,40 @@ export default function Welcome() {
                     >
                       Book Pickup
                     </Button>
+                    
+                    {/* Track Order - Only for authenticated users */}
+                    <div className="flex flex-col sm:flex-row gap-3 items-center bg-white/80 backdrop-blur-sm rounded-lg border border-amber-200 p-4">
+                      <Label htmlFor="tracking" className="text-amber-800 font-medium whitespace-nowrap">
+                        Track Order:
+                      </Label>
+                      <Input
+                        id="tracking"
+                        type="text"
+                        placeholder="Enter order ID"
+                        value={trackingNumber}
+                        onChange={(e) => setTrackingNumber(e.target.value)}
+                        className="flex-1 bg-white/90 border-amber-300 focus:border-amber-500"
+                        data-testid="input-tracking"
+                      />
+                      <Button
+                        onClick={() => {
+                          if (trackingNumber.trim()) {
+                            setLocation(`/order-status/${trackingNumber.trim()}`);
+                          } else {
+                            toast({
+                              title: "Enter order ID",
+                              description: "Please enter your order ID to track",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                        className="bg-amber-700 hover:bg-amber-800 text-white px-6"
+                        data-testid="button-track-order"
+                      >
+                        <Search className="h-4 w-4 mr-2" />
+                        Track
+                      </Button>
+                    </div>
                     {user?.isDriver && (
                       <Button 
                         size="lg"
@@ -169,66 +206,25 @@ export default function Welcome() {
                     </Button>
                   </>
                 )}
-                
-                {/* Track Order Section - Available to all users */}
-                <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-amber-200">
-                  <div className="flex flex-col sm:flex-row gap-3 items-center">
-                    <Label htmlFor="tracking" className="text-amber-800 font-medium whitespace-nowrap">
-                      Track Order:
-                    </Label>
-                    <Input
-                      id="tracking"
-                      type="text"
-                      placeholder="Enter order ID or tracking number"
-                      value={trackingNumber}
-                      onChange={(e) => setTrackingNumber(e.target.value)}
-                      className="flex-1 bg-white/90 border-amber-300 focus:border-amber-500"
-                      data-testid="input-tracking"
-                    />
-                    <Button
-                      onClick={() => {
-                        if (trackingNumber.trim()) {
-                          if (isAuthenticated) {
-                            setLocation(`/order-status/${trackingNumber.trim()}`);
-                          } else {
-                            toast({
-                              title: "Sign in required",
-                              description: "Please sign in to track your order",
-                              variant: "destructive",
-                            });
-                            setLocation('/login');
-                          }
-                        } else {
-                          toast({
-                            title: "Enter tracking information",
-                            description: "Please enter your order ID or tracking number",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                      className="bg-amber-700 hover:bg-amber-800 text-white px-6"
-                      data-testid="button-track-order"
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      Track
-                    </Button>
-                  </div>
-                </div>
               </div>
 
-              {/* Quick stats */}
+              {/* Updated Quick stats */}
               <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 pt-4">
                 <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">2hr</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Average pickup</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">15min</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Avg pickup time</div>
                 </div>
                 <div className="text-center">
                   <div className="text-xl sm:text-2xl lg:text-3xl font-bold">500+</div>
                   <div className="text-amber-700 text-sm sm:text-base">Partner stores</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">$3.99</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Starting price</div>
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">12k+</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Hours saved</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">98%</div>
+                  <div className="text-amber-700 text-sm sm:text-base">Success rate</div>
                 </div>
               </div>
             </div>
@@ -260,7 +256,7 @@ export default function Welcome() {
             />
             <div>
               <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 mb-2 tracking-wide">Welcome to Returnly</div>
-              <div className="text-xl sm:text-2xl lg:text-3xl text-amber-700 font-medium">Professional Return Logistics</div>
+              <div className="text-xl sm:text-2xl lg:text-3xl text-amber-700 font-medium">Making Returns Effortless</div>
             </div>
           </div>
         </div>
@@ -300,12 +296,12 @@ export default function Welcome() {
           </h2>
           <div className="flex justify-center items-center gap-8 mb-12 flex-wrap text-amber-800">
             <span className="flex items-center gap-3 text-xl font-medium">
-              <CreditCard className="w-6 h-6 text-amber-700" />
-              From $3.99
+              <Clock className="w-6 h-6 text-amber-700" />
+              15 min avg pickup
             </span>
             <span className="flex items-center gap-3 text-xl font-medium">
-              <Clock className="w-6 h-6 text-amber-700" />
-              Pick up in 2 hours
+              <Star className="w-6 h-6 text-amber-700" />
+              98% success rate
             </span>
             <span className="flex items-center gap-3 text-xl font-medium">
               <MapPin className="w-6 h-6 text-amber-700" />
@@ -410,7 +406,13 @@ export default function Welcome() {
               <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
                 3
               </div>
-              <span className="text-xl font-medium text-gray-800">We handle the return for you</span>
+              <span className="text-xl font-medium text-gray-800">We take the package back to the designated store</span>
+            </div>
+            <div className="flex items-center gap-6 bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+              <div className="w-12 h-12 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-xl flex-shrink-0">
+                4
+              </div>
+              <span className="text-xl font-medium text-gray-800">You are given your money back through the app</span>
             </div>
           </div>
         </div>
@@ -516,10 +518,10 @@ export default function Welcome() {
             </button>
             <span className="text-gray-500">•</span>
             <button 
-              onClick={() => setLocation('/design-system-demo')}
+              onClick={() => setLocation('/help-center')}
               className="hover:text-orange-300 transition-colors font-medium text-lg"
             >
-              Design System
+              Help Center
             </button>
             <span className="text-gray-500">•</span>
             <button 
@@ -531,6 +533,24 @@ export default function Welcome() {
           </div>
         </div>
       </div>
+
+      {/* Floating Support Button */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <Button
+          onClick={() => setShowSupportChat(true)}
+          className="bg-amber-600 hover:bg-amber-700 text-white rounded-full w-14 h-14 shadow-lg"
+          size="lg"
+        >
+          <HeadphonesIcon className="h-6 w-6" />
+        </Button>
+      </div>
+
+      {/* Support Chat */}
+      <SupportChat 
+        isOpen={showSupportChat}
+        onClose={() => setShowSupportChat(false)}
+        context={{ type: 'customer', id: 'CUST001', name: 'Customer' }}
+      />
     </div>
   );
 }

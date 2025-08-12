@@ -1,436 +1,682 @@
-import { useState, useEffect } from "react";
-import { useAuth } from "@/hooks/useAuth-simple";
-import { useLocation } from "wouter";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from 'react';
+import { useLocation } from 'wouter';
+import { Screen } from '@/components/screen';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
-  Shield, 
-  Package, 
   Users, 
-  DollarSign, 
   TrendingUp, 
-  MapPin, 
+  DollarSign, 
+  Package, 
   Clock,
+  MapPin,
+  User,
+  Truck,
+  BarChart3,
+  Settings,
+  RefreshCw,
+  AlertTriangle,
   CheckCircle,
   XCircle,
-  AlertTriangle,
-  RefreshCw,
+  Edit,
+  Eye,
+  Filter,
+  Download,
+  Bell,
+  Calendar,
   Search,
-  Filter
-} from "lucide-react";
+  CreditCard,
+  MessageCircle,
+  Phone,
+  HeadphonesIcon,
+  Send,
+  Bot,
+  UserCheck,
+  X
+} from 'lucide-react';
+import { useAuth } from "@/hooks/useAuth-simple";
+import { useToast } from "@/hooks/use-toast";
 
 interface Order {
-  id: number;
-  customerId: number;
-  driverId?: number;
-  status: string;
+  id: string;
+  customer: string;
+  status: 'pending' | 'assigned' | 'picked_up' | 'delivered' | 'refunded';
+  driver?: string;
+  amount: number;
   pickupAddress: string;
-  retailer: string;
-  itemDescription: string;
-  totalAmount: number;
+  destination: string;
   createdAt: string;
-  customerName?: string;
-  driverName?: string;
+  priority: 'low' | 'medium' | 'high';
 }
 
 interface Driver {
-  id: number;
-  username: string;
+  id: string;
+  name: string;
   email: string;
-  isApproved: boolean;
-  backgroundCheckStatus: string;
-  totalEarnings: number;
-  completedJobs: number;
-  rating: number;
-}
-
-interface Analytics {
-  totalOrders: number;
+  phone: string;
+  status: 'active' | 'inactive' | 'suspended';
   completedOrders: number;
-  totalRevenue: number;
-  activeDrivers: number;
-  completionRate: number;
-  avgOrderValue: number;
+  rating: number;
+  earnings: number;
+  pendingPayouts: number;
+  location?: string;
+  vehicleInfo?: string;
+  joinDate: string;
+  lastActive: string;
+  supportTickets: number;
 }
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [drivers, setDrivers] = useState<Driver[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
+  const [showDriverDetail, setShowDriverDetail] = useState(false);
+  const [showSupportChat, setShowSupportChat] = useState(false);
+  const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
 
-  // Redirect if not authenticated or not admin
+  // Mock data for demonstration
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user || !(user as any).isAdmin)) {
-      toast({
-        title: "Access Denied",
-        description: "You don't have permission to access this page",
-        variant: "destructive",
-      });
-      setLocation('/');
-    }
-  }, [isAuthenticated, isLoading, user, setLocation, toast]);
+    setOrders([
+      {
+        id: 'ORD001',
+        customer: 'Sarah Johnson',
+        status: 'pending',
+        amount: 8.99,
+        pickupAddress: '123 Main St, St. Louis, MO',
+        destination: 'Target - Chesterfield',
+        createdAt: '2024-01-12 10:30 AM',
+        priority: 'high'
+      },
+      {
+        id: 'ORD002',
+        customer: 'Mike Rodriguez',
+        status: 'assigned',
+        driver: 'John Smith',
+        amount: 12.50,
+        pickupAddress: '456 Oak Ave, St. Louis, MO',
+        destination: 'Best Buy - Kirkwood',
+        createdAt: '2024-01-12 09:15 AM',
+        priority: 'medium'
+      },
+      {
+        id: 'ORD003',
+        customer: 'Jennifer Lee',
+        status: 'picked_up',
+        driver: 'Maria Garcia',
+        amount: 6.75,
+        pickupAddress: '789 Pine Rd, St. Louis, MO',
+        destination: 'Macy\'s - West County',
+        createdAt: '2024-01-12 08:45 AM',
+        priority: 'low'
+      }
+    ]);
 
-  // Fetch analytics data
-  const { data: analytics, isLoading: analyticsLoading } = useQuery({
-    queryKey: ['/api/admin/analytics'],
-    enabled: isAuthenticated && (user as any)?.isAdmin,
-  });
+    setDrivers([
+      {
+        id: 'DRV001',
+        name: 'John Smith',
+        email: 'john.smith@returnly.com',
+        phone: '(314) 555-0101',
+        status: 'active',
+        completedOrders: 245,
+        rating: 4.8,
+        earnings: 1847.50,
+        pendingPayouts: 127.85,
+        location: 'Downtown St. Louis',
+        vehicleInfo: '2021 Honda CR-V',
+        joinDate: '2024-01-15',
+        lastActive: '2024-01-12 11:45 AM',
+        supportTickets: 2
+      },
+      {
+        id: 'DRV002',
+        name: 'Maria Garcia',
+        email: 'maria.garcia@returnly.com',
+        phone: '(314) 555-0102',
+        status: 'active',
+        completedOrders: 189,
+        rating: 4.9,
+        earnings: 1432.75,
+        pendingPayouts: 89.50,
+        location: 'Clayton',
+        vehicleInfo: '2020 Toyota RAV4',
+        joinDate: '2024-02-03',
+        lastActive: '2024-01-12 10:22 AM',
+        supportTickets: 0
+      },
+      {
+        id: 'DRV003',
+        name: 'David Wilson',
+        email: 'david.wilson@returnly.com',
+        phone: '(314) 555-0103',
+        status: 'inactive',
+        completedOrders: 67,
+        rating: 4.6,
+        earnings: 528.25,
+        pendingPayouts: 45.00,
+        location: 'Chesterfield',
+        vehicleInfo: '2019 Subaru Outback',
+        joinDate: '2023-11-20',
+        lastActive: '2024-01-11 6:30 PM',
+        supportTickets: 5
+      }
+    ]);
+  }, []);
 
-  // Fetch orders
-  const { data: orders, isLoading: ordersLoading } = useQuery({
-    queryKey: ['/api/admin/orders'],
-    enabled: isAuthenticated && (user as any)?.isAdmin,
-  });
-
-  // Fetch drivers
-  const { data: drivers, isLoading: driversLoading } = useQuery({
-    queryKey: ['/api/admin/drivers'],
-    enabled: isAuthenticated && (user as any)?.isAdmin,
-  });
-
-  // Update order status mutation
-  const updateOrderMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
-      return await apiRequest(`/api/admin/orders/${orderId}/status`, 'PATCH', { status });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/analytics'] });
-      toast({
-        title: "Order Updated",
-        description: "Order status has been updated successfully",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Update Failed",
-        description: "Failed to update order status",
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Approve driver mutation
-  const approveDriverMutation = useMutation({
-    mutationFn: async (driverId: number) => {
-      return await apiRequest(`/api/admin/drivers/${driverId}/approve`, 'PATCH', {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/drivers'] });
-      toast({
-        title: "Driver Approved",
-        description: "Driver has been approved and can now accept orders",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Approval Failed",
-        description: "Failed to approve driver",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'in_progress': return 'bg-blue-100 text-blue-800';
-      case 'assigned': return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'completed': return <CheckCircle className="h-4 w-4" />;
-      case 'cancelled': return <XCircle className="h-4 w-4" />;
-      case 'assigned': return <Clock className="h-4 w-4" />;
-      default: return <Package className="h-4 w-4" />;
-    }
-  };
-
-  // Filter orders based on search and status
-  const filteredOrders = orders?.filter((order: Order) => {
-    const matchesSearch = !searchTerm || 
-      order.pickupAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.retailer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.itemDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customerName?.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === 'all' || order.status.toLowerCase() === statusFilter;
-    
-    return matchesSearch && matchesStatus;
-  }) || [];
-
-  if (isLoading) {
+  if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center">
-        <div className="text-center">
-          <Shield className="h-16 w-16 mx-auto mb-4 text-amber-800 animate-pulse" />
-          <p className="text-amber-800">Loading admin dashboard...</p>
+      <Screen>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-center text-amber-900">Admin Access Required</CardTitle>
+            </CardHeader>
+            <CardContent className="text-center">
+              <p className="text-amber-700 mb-4">Please sign in to access the admin dashboard.</p>
+              <Button 
+                onClick={() => setLocation('/login')}
+                className="bg-amber-700 hover:bg-amber-800 text-white"
+              >
+                Sign In
+              </Button>
+            </CardContent>
+          </Card>
         </div>
-      </div>
+      </Screen>
     );
   }
 
-  if (!isAuthenticated || !(user as any)?.isAdmin) {
-    return null; // Will redirect via useEffect
-  }
+  const getStatusBadge = (status: string) => {
+    const variants = {
+      pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+      assigned: 'bg-blue-100 text-blue-800 border-blue-300',
+      picked_up: 'bg-purple-100 text-purple-800 border-purple-300',
+      delivered: 'bg-green-100 text-green-800 border-green-300',
+      refunded: 'bg-gray-100 text-gray-800 border-gray-300'
+    };
+    return variants[status as keyof typeof variants] || variants.pending;
+  };
+
+  const getPriorityBadge = (priority: string) => {
+    const variants = {
+      low: 'bg-green-100 text-green-800',
+      medium: 'bg-yellow-100 text-yellow-800',
+      high: 'bg-red-100 text-red-800'
+    };
+    return variants[priority as keyof typeof variants] || variants.medium;
+  };
+
+  const getDriverStatusIcon = (status: string) => {
+    switch (status) {
+      case 'active': return <CheckCircle className="h-4 w-4 text-green-600" />;
+      case 'inactive': return <Clock className="h-4 w-4 text-yellow-600" />;
+      case 'suspended': return <XCircle className="h-4 w-4 text-red-600" />;
+      default: return <Clock className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  const filteredOrders = filterStatus === 'all' 
+    ? orders 
+    : orders.filter(order => order.status === filterStatus);
+
+  const handleDriverPayout = (driver: Driver) => {
+    toast({
+      title: "Payout Initiated",
+      description: `$${driver.pendingPayouts} sent to ${driver.name}`,
+    });
+  };
+
+  const handleDriverSupport = (driver: Driver) => {
+    setSupportContext({ type: 'driver', id: driver.id, name: driver.name });
+    setShowSupportChat(true);
+  };
+
+  const handleCustomerSupport = (order: Order) => {
+    setSupportContext({ type: 'customer', id: order.id, name: order.customer });
+    setShowSupportChat(true);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
-      {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-stone-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setLocation('/')}
-              className="text-amber-800 hover:text-amber-900"
-              data-testid="button-back-home"
-            >
-              ← Back
-            </Button>
-            <Shield className="h-8 w-8 text-amber-800" />
-            <h1 className="text-xl font-bold text-amber-900">Admin Dashboard</h1>
-          </div>
-          <div className="text-amber-800 text-sm">
-            Welcome, {user?.username}
-          </div>
-        </div>
-      </header>
-
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Analytics Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-stone-700">Total Orders</CardTitle>
-              <Package className="h-4 w-4 text-stone-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-amber-900">{analytics?.totalOrders || 0}</div>
-              <p className="text-xs text-stone-600">
-                {analytics?.completedOrders || 0} completed
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 backdrop-blur-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-stone-700">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-stone-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-700">
-                ${(analytics?.totalRevenue || 0).toFixed(2)}
-              </div>
-              <p className="text-xs text-stone-600">
-                ${(analytics?.avgOrderValue || 0).toFixed(2)} avg order
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white/90 backdrop-blur-sm">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-stone-700">Completion Rate</CardTitle>
-              <TrendingUp className="h-4 w-4 text-stone-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-700">
-                {((analytics?.completionRate || 0) * 100).toFixed(1)}%
-              </div>
-              <p className="text-xs text-stone-600">
-                {analytics?.activeDrivers || 0} active drivers
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Orders Management */}
-        <Card className="bg-white/90 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-amber-900 flex items-center">
-              <Package className="h-5 w-5 mr-2" />
-              Order Management
-            </CardTitle>
-            <CardDescription>
-              Monitor and manage all customer orders
-            </CardDescription>
-
-            {/* Search and Filter Controls */}
-            <div className="flex flex-col sm:flex-row gap-4 mt-4">
-              <div className="flex-1">
-                <Label htmlFor="search" className="sr-only">Search orders</Label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-stone-400" />
-                  <Input
-                    id="search"
-                    placeholder="Search orders..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10"
-                    data-testid="input-search-orders"
-                  />
+    <Screen>
+      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
+        
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b border-amber-200">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-10 w-auto"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold text-amber-900">Admin Dashboard</h1>
+                  <p className="text-amber-700">Business Operations Center</p>
                 </div>
               </div>
-              <div className="sm:w-48">
-                <Label htmlFor="status-filter" className="sr-only">Filter by status</Label>
-                <select
-                  id="status-filter"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-md bg-white"
-                  data-testid="select-status-filter"
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" size="sm">
+                  <Bell className="h-4 w-4 mr-2" />
+                  Notifications
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setLocation('/')}
                 >
-                  <option value="all">All Status</option>
-                  <option value="created">Created</option>
-                  <option value="assigned">Assigned</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="completed">Completed</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
+                  Back to Site
+                </Button>
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {ordersLoading ? (
-                <div className="text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-stone-400" />
-                  <p className="text-stone-600 mt-2">Loading orders...</p>
-                </div>
-              ) : filteredOrders.length === 0 ? (
-                <div className="text-center py-8 text-stone-600">
-                  No orders found matching your criteria
-                </div>
-              ) : (
-                filteredOrders.map((order: Order) => (
-                  <div key={order.id} className="border border-stone-200 rounded-lg p-4 bg-stone-50/50">
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Badge className={`${getStatusColor(order.status)} flex items-center gap-1`}>
-                            {getStatusIcon(order.status)}
-                            {order.status.replace('_', ' ').toUpperCase()}
-                          </Badge>
-                          <span className="font-medium text-amber-900">Order #{order.id}</span>
-                        </div>
-                        <div className="text-sm text-stone-700">
-                          <p><strong>Customer:</strong> {order.customerName || 'Unknown'}</p>
-                          <p><strong>Address:</strong> {order.pickupAddress}</p>
-                          <p><strong>Retailer:</strong> {order.retailer}</p>
-                          <p><strong>Item:</strong> {order.itemDescription}</p>
-                          <p><strong>Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
-                          {order.driverName && (
-                            <p><strong>Driver:</strong> {order.driverName}</p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        {order.status === 'created' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'assigned' })}
-                            disabled={updateOrderMutation.isPending}
-                            data-testid={`button-assign-${order.id}`}
-                          >
-                            Assign Driver
-                          </Button>
-                        )}
-                        {order.status !== 'completed' && order.status !== 'cancelled' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'cancelled' })}
-                            disabled={updateOrderMutation.isPending}
-                            className="text-red-600 border-red-300 hover:bg-red-50"
-                            data-testid={`button-cancel-${order.id}`}
-                          >
-                            Cancel
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Driver Management */}
-        <Card className="bg-white/90 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-amber-900 flex items-center">
-              <Users className="h-5 w-5 mr-2" />
-              Driver Management
-            </CardTitle>
-            <CardDescription>
-              Approve and manage delivery drivers
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {driversLoading ? (
-                <div className="text-center py-8">
-                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-stone-400" />
-                  <p className="text-stone-600 mt-2">Loading drivers...</p>
+        <div className="p-6">
+          {/* Key Metrics */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-600 text-sm font-medium">Today's Orders</p>
+                    <p className="text-2xl font-bold text-amber-900">47</p>
+                  </div>
+                  <Package className="h-8 w-8 text-amber-600" />
                 </div>
-              ) : !drivers || drivers.length === 0 ? (
-                <div className="text-center py-8 text-stone-600">
-                  No drivers registered yet
+                <p className="text-xs text-amber-700 mt-2">+12% from yesterday</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-600 text-sm font-medium">Active Drivers</p>
+                    <p className="text-2xl font-bold text-amber-900">28</p>
+                  </div>
+                  <Truck className="h-8 w-8 text-amber-600" />
                 </div>
-              ) : (
-                drivers.map((driver: Driver) => (
-                  <div key={driver.id} className="border border-stone-200 rounded-lg p-4 bg-stone-50/50">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-amber-900">{driver.username}</h3>
-                          <Badge className={driver.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
-                            {driver.isApproved ? 'Approved' : 'Pending'}
-                          </Badge>
-                        </div>
-                        <div className="text-sm text-stone-700">
-                          <p><strong>Email:</strong> {driver.email}</p>
-                          <p><strong>Background Check:</strong> {driver.backgroundCheckStatus}</p>
-                          <p><strong>Total Earnings:</strong> ${driver.totalEarnings?.toFixed(2) || '0.00'}</p>
-                          <p><strong>Completed Jobs:</strong> {driver.completedJobs || 0}</p>
-                          <p><strong>Rating:</strong> {driver.rating ? `${driver.rating.toFixed(1)}/5.0` : 'No ratings yet'}</p>
-                        </div>
-                      </div>
-                      {!driver.isApproved && (
-                        <Button
-                          size="sm"
-                          onClick={() => approveDriverMutation.mutate(driver.id)}
-                          disabled={approveDriverMutation.isPending}
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                          data-testid={`button-approve-driver-${driver.id}`}
-                        >
-                          Approve Driver
-                        </Button>
-                      )}
+                <p className="text-xs text-amber-700 mt-2">3 on break</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-600 text-sm font-medium">Revenue Today</p>
+                    <p className="text-2xl font-bold text-amber-900">$1,247</p>
+                  </div>
+                  <DollarSign className="h-8 w-8 text-amber-600" />
+                </div>
+                <p className="text-xs text-amber-700 mt-2">+8% from yesterday</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-600 text-sm font-medium">Avg Pickup Time</p>
+                    <p className="text-2xl font-bold text-amber-900">14min</p>
+                  </div>
+                  <Clock className="h-8 w-8 text-amber-600" />
+                </div>
+                <p className="text-xs text-amber-700 mt-2">-2min from yesterday</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Content Tabs */}
+          <Tabs defaultValue="orders" className="space-y-6">
+            <TabsList className="bg-white border-amber-200">
+              <TabsTrigger value="orders" className="data-[state=active]:bg-amber-100">
+                <Package className="h-4 w-4 mr-2" />
+                Orders
+              </TabsTrigger>
+              <TabsTrigger value="drivers" className="data-[state=active]:bg-amber-100">
+                <Truck className="h-4 w-4 mr-2" />
+                Drivers
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-100">
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Analytics
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100">
+                <Settings className="h-4 w-4 mr-2" />
+                Settings
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Orders Tab */}
+            <TabsContent value="orders">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-amber-900">Live Orders</CardTitle>
+                    <div className="flex items-center space-x-3">
+                      <Select value={filterStatus} onValueChange={setFilterStatus}>
+                        <SelectTrigger className="w-32">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Status</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="assigned">Assigned</SelectItem>
+                          <SelectItem value="picked_up">Picked Up</SelectItem>
+                          <SelectItem value="delivered">Delivered</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button size="sm" variant="outline">
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                      </Button>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {filteredOrders.map((order) => (
+                      <div 
+                        key={order.id} 
+                        className="p-4 border border-amber-200 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div>
+                              <p className="font-semibold text-amber-900">{order.id}</p>
+                              <p className="text-sm text-amber-700">{order.customer}</p>
+                            </div>
+                            <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
+                              {order.priority.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <div className="text-right">
+                            <Badge className={`${getStatusBadge(order.status)} text-xs mb-2`}>
+                              {order.status.replace('_', ' ').toUpperCase()}
+                            </Badge>
+                            <p className="text-sm font-semibold text-amber-900">${order.amount}</p>
+                          </div>
+                        </div>
+                        <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-amber-700">
+                          <p><MapPin className="h-3 w-3 inline mr-1" />{order.pickupAddress}</p>
+                          <p><Package className="h-3 w-3 inline mr-1" />{order.destination}</p>
+                        </div>
+                        {order.driver && (
+                          <p className="mt-2 text-xs text-amber-600">
+                            <Truck className="h-3 w-3 inline mr-1" />
+                            Assigned to: {order.driver}
+                          </p>
+                        )}
+                        <div className="flex justify-end mt-2">
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-blue-700 border-blue-300"
+                            onClick={() => handleCustomerSupport(order)}
+                          >
+                            <HeadphonesIcon className="h-3 w-3 mr-1" />
+                            Support
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Drivers Tab */}
+            <TabsContent value="drivers">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900">Driver Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {drivers.map((driver) => (
+                      <Card key={driver.id} className="border-amber-200">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <div className="flex items-center space-x-2">
+                              {getDriverStatusIcon(driver.status)}
+                              <p className="font-semibold text-amber-900">{driver.name}</p>
+                            </div>
+                            <Badge className={`text-xs ${driver.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                              {driver.status}
+                            </Badge>
+                          </div>
+                          <div className="space-y-2 text-sm text-amber-700">
+                            <p>📧 {driver.email}</p>
+                            <p>📱 {driver.phone}</p>
+                            <p>📍 {driver.location}</p>
+                            <div className="flex justify-between pt-2 border-t border-amber-200">
+                              <span>Orders: {driver.completedOrders}</span>
+                              <span>⭐ {driver.rating}</span>
+                            </div>
+                            <p className="font-semibold text-amber-900">
+                              Earnings: ${driver.earnings.toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex space-x-2 mt-4">
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="flex-1"
+                              onClick={() => {
+                                setSelectedDriver(driver);
+                                setShowDriverDetail(true);
+                              }}
+                            >
+                              <Eye className="h-3 w-3 mr-1" />
+                              View
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="flex-1 text-green-700 border-green-300"
+                              onClick={() => handleDriverPayout(driver)}
+                              disabled={driver.pendingPayouts === 0}
+                            >
+                              <CreditCard className="h-3 w-3 mr-1" />
+                              Pay
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline" 
+                              className="flex-1 text-blue-700 border-blue-300"
+                              onClick={() => handleDriverSupport(driver)}
+                            >
+                              <HeadphonesIcon className="h-3 w-3 mr-1" />
+                              Help
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                  <CardHeader>
+                    <CardTitle className="text-amber-900">Performance Metrics</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Orders This Week</span>
+                      <span className="font-bold text-amber-900">327</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Average Rating</span>
+                      <span className="font-bold text-amber-900">4.8⭐</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Customer Retention</span>
+                      <span className="font-bold text-amber-900">87%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Revenue Growth</span>
+                      <span className="font-bold text-green-700">+23%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                  <CardHeader>
+                    <CardTitle className="text-amber-900">System Health</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Server Status</span>
+                      <span className="flex items-center text-green-700">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Healthy
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Payment Processing</span>
+                      <span className="flex items-center text-green-700">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Online
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Driver Mobile App</span>
+                      <span className="flex items-center text-green-700">
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Connected
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900">Business Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <Label htmlFor="pickup-fee" className="text-amber-800 font-medium">Base Pickup Fee ($)</Label>
+                      <Input 
+                        id="pickup-fee" 
+                        defaultValue="6.99" 
+                        className="mt-1 border-amber-300 focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="service-area" className="text-amber-800 font-medium">Service Area (miles)</Label>
+                      <Input 
+                        id="service-area" 
+                        defaultValue="25" 
+                        className="mt-1 border-amber-300 focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="max-wait" className="text-amber-800 font-medium">Max Wait Time (hours)</Label>
+                      <Input 
+                        id="max-wait" 
+                        defaultValue="4" 
+                        className="mt-1 border-amber-300 focus:border-amber-500"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="driver-commission" className="text-amber-800 font-medium">Driver Commission (%)</Label>
+                      <Input 
+                        id="driver-commission" 
+                        defaultValue="70" 
+                        className="mt-1 border-amber-300 focus:border-amber-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex space-x-3">
+                    <Button className="bg-amber-700 hover:bg-amber-800 text-white">
+                      Save Settings
+                    </Button>
+                    <Button variant="outline" className="border-amber-300 text-amber-700">
+                      Reset to Defaults
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Support Chat Modal */}
+        {showSupportChat && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <Card className="w-full max-w-md h-[600px] flex flex-col">
+              <CardHeader className="flex-shrink-0 pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-lg">Support Chat</CardTitle>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setShowSupportChat(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                {supportContext && (
+                  <p className="text-sm text-gray-600">
+                    {supportContext.type === 'driver' ? 'Driver' : 'Customer'}: {supportContext.name}
+                  </p>
+                )}
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col">
+                <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
+                  <p className="text-gray-600 text-center">
+                    Admin support chat interface would be implemented here.
+                    This allows admins to communicate directly with drivers and customers.
+                  </p>
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      toast({
+                        title: "Chat Started",
+                        description: `Now chatting with ${supportContext?.name}`,
+                      });
+                    }}
+                  >
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Start Chat
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open(`tel:${supportContext?.type === 'driver' ? '+13145550101' : '+13145550102'}`)}
+                  >
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
-    </div>
+    </Screen>
   );
 }
