@@ -5,7 +5,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { ArrowLeft, CreditCard } from "lucide-react";
 
 // Import delivery images
@@ -184,11 +184,13 @@ export default function Checkout() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-8 w-auto"
-            />
+            <Link href="/">
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
             <span className="text-xl font-bold text-amber-900">Secure Payment</span>
           </div>
         </div>

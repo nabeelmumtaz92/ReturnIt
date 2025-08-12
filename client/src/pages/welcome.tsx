@@ -1,4 +1,4 @@
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -102,11 +102,13 @@ export default function Welcome() {
             {/* Left side - Main content */}
             <div className="text-amber-900 space-y-6 lg:space-y-8 text-center">
               <div className="flex justify-center mb-6 lg:mb-8">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto"
-                />
+                <Link href="/">
+                  <img 
+                    src="/logo-cardboard-deep.png" 
+                    alt="Returnly Logo" 
+                    className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  />
+                </Link>
               </div>
               
               <div className="space-y-4 lg:space-y-6">
@@ -255,11 +257,13 @@ export default function Welcome() {
         <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-stone-50/70 to-amber-50/60"></div>
         <div className="relative px-4 sm:px-8 lg:px-16 text-center">
           <div className="flex flex-col items-center justify-center mb-8 lg:mb-12">
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-24 sm:h-28 md:h-32 lg:h-40 xl:h-44 w-auto mb-6 lg:mb-8"
-            />
+            <Link href="/">
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-24 sm:h-28 md:h-32 lg:h-40 xl:h-44 w-auto mb-6 lg:mb-8 cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
             <div>
               <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 mb-2 tracking-wide">Welcome to Returnly</div>
               <div className="text-xl sm:text-2xl lg:text-3xl text-amber-700 font-medium">Making Returns Effortless</div>
@@ -494,11 +498,13 @@ export default function Welcome() {
         <div className="relative px-8 lg:px-16">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-4">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-12 w-auto"
-              />
+              <Link href="/">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </Link>
               <h3 className="text-3xl font-bold text-white tracking-wider">RETURNLY</h3>
               <p className="text-gray-300 text-lg">Return Delivery Service</p>
             </div>

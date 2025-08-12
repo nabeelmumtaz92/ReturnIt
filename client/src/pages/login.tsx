@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
@@ -176,11 +176,13 @@ export default function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <img 
-            src="/logo-cardboard-deep.png" 
-            alt="Returnly Logo" 
-            className="h-16 w-auto mx-auto mb-4"
-          />
+          <Link href="/">
+            <img 
+              src="/logo-cardboard-deep.png" 
+              alt="Returnly Logo" 
+              className="h-16 w-auto mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+            />
+          </Link>
           <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>
           <p className="text-amber-700">Returns made easy</p>
         </div>

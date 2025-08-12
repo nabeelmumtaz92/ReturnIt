@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -146,11 +146,13 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-8 w-auto"
-            />
+            <Link href="/">
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
             <span className="text-xl font-bold text-amber-900">Order Status</span>
           </div>
           <div className="text-amber-800 text-sm">

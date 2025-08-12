@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -259,11 +259,13 @@ export default function AdminDashboard() {
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-10 w-auto"
-                />
+                <Link href="/">
+                  <img 
+                    src="/logo-cardboard-deep.png" 
+                    alt="Returnly Logo" 
+                    className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                  />
+                </Link>
                 <div>
                   <h1 className="text-2xl font-bold text-amber-900">Admin Dashboard</h1>
                   <p className="text-amber-700">Business Operations Center</p>

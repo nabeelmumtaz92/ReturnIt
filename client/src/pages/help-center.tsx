@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { 
   Search, 
   ArrowLeft, 
@@ -223,11 +223,13 @@ export default function HelpCenter() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </Button>
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-8 w-auto"
-              />
+              <Link href="/">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </Link>
               <span className="text-xl font-bold text-amber-900">Help Center</span>
             </div>
           </div>

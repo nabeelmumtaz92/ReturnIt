@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -326,11 +326,13 @@ export default function BookPickup() {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-8 w-auto"
-            />
+            <Link href="/">
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </Link>
             <span className="text-xl font-bold text-amber-900">Book Pickup</span>
           </div>
           <div className="text-amber-800 text-sm">

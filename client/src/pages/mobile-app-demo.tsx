@@ -12,7 +12,7 @@ import {
   useToast 
 } from '@/components/design-system';
 import { Package2, MapPin, Phone, User, CreditCard } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 
 type MobileView = 'welcome' | 'login' | 'book-pickup' | 'order-status';
 
@@ -27,11 +27,13 @@ export default function MobileAppDemo() {
       <FlexStack gap="lg" align="center" className="py-8">
         {/* Real Logo */}
         <div className="w-20 h-20 flex items-center justify-center">
-          <img 
-            src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
-            alt="Returnly Logo" 
-            className="h-16 w-auto"
-          />
+          <Link href="/">
+            <img 
+              src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+              alt="Returnly Logo" 
+              className="h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+            />
+          </Link>
         </div>
         
         {/* Hero Text */}
