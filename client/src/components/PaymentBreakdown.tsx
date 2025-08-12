@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { calculatePayment, getItemSizeByValue, RouteInfo } from "@shared/paymentCalculator";
+import { calculatePaymentWithValue, getItemSizeByValue, RouteInfo } from "@shared/paymentCalculator";
 
 interface PaymentBreakdownProps {
   itemValue: number;
@@ -24,9 +24,9 @@ export function PaymentBreakdown({
   };
 
   const itemSize = getItemSizeByValue(itemValue);
-  const breakdown = calculatePayment(
+  const breakdown = calculatePaymentWithValue(
     routeInfo || defaultRouteInfo,
-    itemSize,
+    itemValue,
     numberOfItems,
     isRush,
     tip

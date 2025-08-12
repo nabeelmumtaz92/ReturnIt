@@ -108,6 +108,58 @@ export function getItemSizeByValue(itemValue: number): string {
   return 'XL';                          // $300+ = Extra Large
 }
 
+// Value-aware payment calculation that ensures customers never pay out of pocket
+export function calculatePaymentWithValue(
+  routeInfo: RouteInfo,
+  itemValue: number,
+  numberOfItems: number = 1,
+  isRush: boolean = false,
+  tip: number = 0,
+  config: PaymentConfig = DEFAULT_CONFIG
+): PaymentBreakdown {
+  const itemSize = getItemSizeByValue(itemValue);
+  const standardCalculation = calculatePayment(routeInfo, itemSize, numberOfItems, isRush, tip, config);
+  
+  // If total cost exceeds item value, cap it at item value minus $0.01 (so customer still gets something back)
+  const maxAllowableTotal = Math.max(itemValue - 0.01, 1.00); // Minimum $1.00 service
+  
+  if (standardCalculation.totalPrice > maxAllowableTotal) {
+    // Recalculate with capped total
+    const cappedTotal = maxAllowableTotal;
+    const cappedSubtotal = cappedTotal - tip; // Remove tip from capped total
+    const cappedServiceFee = cappedSubtotal * (config.serviceFeeRate / (1 + config.serviceFeeRate)); // Back-calculate service fee
+    const cappedPreServiceTotal = cappedSubtotal - cappedServiceFee;
+    
+    // Proportionally reduce all fees to fit within the cap
+    const originalPreServiceTotal = standardCalculation.subtotal;
+    const reductionFactor = cappedPreServiceTotal / originalPreServiceTotal;
+    
+    return {
+      ...standardCalculation,
+      basePrice: standardCalculation.basePrice * reductionFactor,
+      distanceFee: standardCalculation.distanceFee * reductionFactor,
+      timeFee: standardCalculation.timeFee * reductionFactor,
+      sizeUpcharge: standardCalculation.sizeUpcharge * reductionFactor,
+      multiItemFee: standardCalculation.multiItemFee * reductionFactor,
+      smallOrderFee: standardCalculation.smallOrderFee * reductionFactor,
+      rushFee: standardCalculation.rushFee * reductionFactor,
+      serviceFee: cappedServiceFee,
+      subtotal: cappedSubtotal,
+      totalPrice: cappedTotal,
+      // Adjust company revenue proportionally
+      companyServiceFee: cappedServiceFee,
+      companyBaseFeeShare: standardCalculation.companyBaseFeeShare * reductionFactor,
+      companyDistanceFeeShare: standardCalculation.companyDistanceFeeShare * reductionFactor,
+      companyTimeFeeShare: standardCalculation.companyTimeFeeShare * reductionFactor,
+      companyTotalRevenue: cappedServiceFee + (standardCalculation.companyBaseFeeShare * reductionFactor) + 
+                          (standardCalculation.companyDistanceFeeShare * reductionFactor) + 
+                          (standardCalculation.companyTimeFeeShare * reductionFactor)
+    };
+  }
+  
+  return standardCalculation;
+}
+
 export function calculatePayment(
   routeInfo: RouteInfo,
   itemSize: string = 'M',

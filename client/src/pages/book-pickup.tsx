@@ -18,6 +18,8 @@ import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
 import RoutePreview from "@/components/RoutePreview";
 import { PaymentBreakdown } from "@/components/PaymentBreakdown";
+import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
+import type { RouteInfo as PaymentRouteInfo } from "@shared/paymentCalculator";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 
 // Import delivery images
@@ -115,13 +117,7 @@ export default function BookPickup() {
     { size: 'XL', label: 'Extra Large', description: '$300+ (furniture, large electronics)', basePrice: 3.99, upcharge: 4.00, valueRange: '$300+' }
   ];
 
-  // Function to determine size based on item value
-  const getItemSizeByValue = (value: number): string => {
-    if (value < 25) return 'S';
-    if (value < 100) return 'M';  
-    if (value < 300) return 'L';
-    return 'XL';
-  };
+
 
   // Return reasons dropdown options
   const returnReasons = [
@@ -141,19 +137,25 @@ export default function BookPickup() {
     "Evening (5 PM - 8 PM)"
   ];
 
-  // Calculate total price - use route-based fare if available, otherwise use item-based pricing
+  // Calculate total price using value-aware pricing that ensures customers never pay out of pocket
   const calculateTotal = () => {
-    if (calculatedFare > 0) {
-      const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
-      return calculatedFare + multiItemFee;
-    }
+    const itemValue = parseFloat(formData.itemValue as string);
+    if (!itemValue || itemValue <= 0) return 0;
     
-    const selectedItemSize = itemSizes.find(item => item.size === formData.itemSize);
-    const basePrice = selectedItemSize?.basePrice || 3.99;
-    const sizeUpcharge = selectedItemSize?.upcharge || 0;
-    const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
+    const paymentRouteInfo: PaymentRouteInfo = {
+      distance: routeInfo?.distance || 0,
+      estimatedTime: routeInfo?.duration || 0  // Use duration from locationServices RouteInfo
+    };
     
-    return basePrice + sizeUpcharge + multiItemFee;
+    const breakdown = calculatePaymentWithValue(
+      paymentRouteInfo,
+      itemValue,
+      formData.numberOfItems,
+      false, // isRush
+      0      // tip
+    );
+    
+    return breakdown.totalPrice;
   };
 
   // Handle location updates
@@ -210,7 +212,7 @@ export default function BookPickup() {
   // Update total when form data changes
   useEffect(() => {
     setTotalAmount(calculateTotal());
-  }, [formData.itemSize, formData.numberOfItems]);
+  }, [formData.itemSize, formData.numberOfItems, formData.itemValue, routeInfo]);
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -789,7 +791,10 @@ export default function BookPickup() {
                   <PaymentBreakdown
                     itemValue={parseFloat(formData.itemValue) || 0}
                     numberOfItems={formData.numberOfItems}
-                    routeInfo={routeInfo}
+                    routeInfo={routeInfo ? {
+                      distance: routeInfo.distance,
+                      estimatedTime: routeInfo.duration
+                    } : undefined}
                     isRush={false}
                     tip={0}
                   />
