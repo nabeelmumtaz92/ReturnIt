@@ -130,9 +130,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
 
   app.get('/api/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login' }),
+    passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
     (req, res) => {
-      res.redirect('/');
+      // Set up session for authenticated user
+      if (req.user) {
+        (req.session as any).user = { 
+          id: (req.user as any).id, 
+          username: (req.user as any).username, 
+          email: (req.user as any).email, 
+          isDriver: (req.user as any).isDriver || false 
+        };
+        res.redirect('/?auth=success');
+      } else {
+        res.redirect('/login?error=auth_failed');
+      }
     }
   );
 
@@ -142,9 +153,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }));
 
   app.get('/api/auth/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login' }),
+    passport.authenticate('facebook', { failureRedirect: '/login?error=facebook_auth_failed' }),
     (req, res) => {
-      res.redirect('/');
+      // Set up session for authenticated user
+      if (req.user) {
+        (req.session as any).user = { 
+          id: (req.user as any).id, 
+          username: (req.user as any).username, 
+          email: (req.user as any).email, 
+          isDriver: (req.user as any).isDriver || false 
+        };
+        res.redirect('/?auth=success');
+      } else {
+        res.redirect('/login?error=auth_failed');
+      }
     }
   );
 

@@ -10,7 +10,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: '/api/auth/google/callback'
-  }, async (accessToken, refreshToken, profile, done) => {
+  }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Check if user exists
       const existingUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
@@ -19,18 +19,16 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         return done(null, existingUser);
       }
 
-      // Create new user
+      // Create new user - simplified for basic schema
       const newUser = await storage.createUser({
-        username: profile.displayName || profile.id,
-        email: profile.emails?.[0]?.value || '',
-        password: '', // Social auth doesn't need password
-        firstName: profile.name?.givenName || '',
-        lastName: profile.name?.familyName || '',
-        profileImage: profile.photos?.[0]?.value || ''
+        username: profile.displayName || `google_${profile.id}`,
+        email: profile.emails?.[0]?.value || `${profile.id}@google.temp`,
+        password: 'GOOGLE_AUTH_USER' // Social auth placeholder
       });
 
       return done(null, newUser);
     } catch (error) {
+      console.error('Google auth error:', error);
       return done(error);
     }
   }));
@@ -43,7 +41,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: '/api/auth/facebook/callback',
     profileFields: ['id', 'emails', 'name', 'picture']
-  }, async (accessToken, refreshToken, profile, done) => {
+  }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Check if user exists
       const existingUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
@@ -52,18 +50,16 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
         return done(null, existingUser);
       }
 
-      // Create new user
+      // Create new user - simplified for basic schema
       const newUser = await storage.createUser({
-        username: profile.displayName || profile.id,
-        email: profile.emails?.[0]?.value || '',
-        password: '', // Social auth doesn't need password
-        firstName: profile.name?.givenName || '',
-        lastName: profile.name?.familyName || '',
-        profileImage: profile.photos?.[0]?.value || ''
+        username: profile.displayName || `facebook_${profile.id}`,
+        email: profile.emails?.[0]?.value || `${profile.id}@facebook.temp`,
+        password: 'FACEBOOK_AUTH_USER' // Social auth placeholder
       });
 
       return done(null, newUser);
     } catch (error) {
+      console.error('Facebook auth error:', error);
       return done(error);
     }
   }));
