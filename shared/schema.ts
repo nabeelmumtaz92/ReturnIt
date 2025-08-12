@@ -44,7 +44,10 @@ export const orders = pgTable("orders", {
   trackingNumber: text("tracking_number").unique(),
   
   // Pickup details
-  pickupAddress: text("pickup_address").notNull(),
+  pickupStreetAddress: text("pickup_street_address").notNull(),
+  pickupCity: text("pickup_city").notNull(),
+  pickupState: text("pickup_state").notNull(),
+  pickupZipCode: text("pickup_zip_code").notNull(),
   pickupCoordinates: jsonb("pickup_coordinates"),
   pickupInstructions: text("pickup_instructions"),
   pickupWindow: jsonb("pickup_window"), // start/end times
@@ -53,16 +56,23 @@ export const orders = pgTable("orders", {
   
   // Return details
   retailer: text("retailer").notNull(),
+  retailerLocation: jsonb("retailer_location"), // Store location data
   returnAddress: text("return_address"),
   returnCoordinates: jsonb("return_coordinates"),
-  itemDescription: text("item_description").notNull(),
-  itemCategory: text("item_category"),
+  itemCategory: text("item_category").notNull(), // Electronics, Clothing, Home & Garden, Beauty & Health, Books & Media, Other
+  itemDescription: text("item_description"),
   itemPhotos: jsonb("item_photos").default([]),
   returnReason: text("return_reason"),
   originalOrderNumber: text("original_order_number"),
   
+  // Box and pricing details
+  boxSize: text("box_size").notNull(), // S, M, L, XL
+  numberOfBoxes: integer("number_of_boxes").default(1).notNull(),
+  
   // Pricing and payments
   basePrice: real("base_price").default(3.99),
+  sizeUpcharge: real("size_upcharge").default(0), // Additional cost for larger boxes
+  multiBoxFee: real("multi_box_fee").default(0), // Fee for multiple boxes
   surcharges: jsonb("surcharges").default([]),
   discountCode: text("discount_code"),
   discountAmount: real("discount_amount").default(0),

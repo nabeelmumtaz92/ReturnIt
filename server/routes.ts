@@ -322,14 +322,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/orders", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.session as any).user.id;
-      const validatedData = insertOrderSchema.parse({
-        ...req.body,
-        userId
-      });
-      const order = await storage.createOrder(validatedData);
+      
+      // Process the enhanced form data
+      const {
+        streetAddress,
+        city, 
+        state,
+        zipCode,
+        retailer,
+        itemCategory,
+        itemDescription,
+        boxSize,
+        numberOfBoxes,
+        notes,
+        totalAmount
+      } = req.body;
+
+      // Generate unique order ID and tracking number
+      const orderId = 'RTN-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+      const trackingNumber = 'TRK' + Date.now().toString().substr(-8);
+      
+      // Calculate pricing breakdown
+      const basePrice = 3.99;
+      const sizeUpcharge = boxSize === 'L' ? 2.00 : boxSize === 'XL' ? 4.00 : 0;
+      const multiBoxFee = numberOfBoxes > 1 ? (numberOfBoxes - 1) * 1.50 : 0;
+      const calculatedTotal = basePrice + sizeUpcharge + multiBoxFee;
+
+      const orderData = {
+        id: orderId,
+        userId,
+        trackingNumber,
+        status: 'created',
+        
+        // Enhanced pickup address
+        pickupStreetAddress: streetAddress,
+        pickupCity: city,
+        pickupState: state,
+        pickupZipCode: zipCode,
+        pickupInstructions: notes,
+        
+        // Retailer and item details
+        retailer,
+        itemCategory,
+        itemDescription,
+        
+        // Box details
+        boxSize,
+        numberOfBoxes,
+        
+        // Pricing
+        basePrice,
+        sizeUpcharge,
+        multiBoxFee,
+        totalPrice: calculatedTotal
+      };
+
+      const order = await storage.createOrder(orderData);
       res.status(201).json(order);
     } catch (error) {
-      res.status(400).json({ message: "Invalid order data" });
+      console.error('Order creation error:', error);
+      res.status(400).json({ message: "Failed to create order" });
     }
   });
 

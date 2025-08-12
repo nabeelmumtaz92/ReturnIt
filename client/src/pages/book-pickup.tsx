@@ -5,13 +5,14 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocation } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 
 export default function BookPickup() {
@@ -33,15 +34,92 @@ export default function BookPickup() {
   }, [isAuthenticated, isLoading, setLocation, toast]);
 
   const [formData, setFormData] = useState({
-    pickupAddress: '',
+    // Address fields
+    streetAddress: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    // Retailer selection
     retailer: '',
+    retailerQuery: '',
+    // Item details
+    itemCategory: '',
     itemDescription: '',
+    // Box details
+    boxSize: 'M',
+    numberOfBoxes: 1,
+    // Instructions
     notes: ''
   });
 
   const [currentStep, setCurrentStep] = useState<'details' | 'payment'>('details');
   const [totalAmount, setTotalAmount] = useState(3.99);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const [showRetailerDropdown, setShowRetailerDropdown] = useState(false);
+  const [filteredRetailers, setFilteredRetailers] = useState<string[]>([]);
+
+  // Common retailers for autocomplete
+  const commonRetailers = [
+    'Walmart', 'Target', 'Amazon', 'Best Buy', 'Home Depot', 'Lowes', 'CVS', 'Walgreens',
+    'Macys', 'Kohls', 'TJ Maxx', 'Marshall\'s', 'Costco', 'Sam\'s Club', 'Dick\'s Sporting Goods',
+    'GameStop', 'Barnes & Noble', 'Bed Bath & Beyond', 'Bath & Body Works', 'Victoria\'s Secret',
+    'Nike', 'Adidas', 'Old Navy', 'Gap', 'Banana Republic', 'J.Crew', 'American Eagle',
+    'Hollister', 'Forever 21', 'H&M', 'Zara', 'Uniqlo', 'REI', 'Nordstrom', 'Nordstrom Rack'
+  ];
+
+  // Item categories
+  const itemCategories = [
+    'Electronics',
+    'Clothing & Apparel', 
+    'Home & Garden',
+    'Beauty & Health',
+    'Books & Media',
+    'Other'
+  ];
+
+  // Box sizes with pricing
+  const boxSizes = [
+    { size: 'S', label: 'Small (Shoe box)', basePrice: 3.99, upcharge: 0 },
+    { size: 'M', label: 'Medium (Standard)', basePrice: 3.99, upcharge: 0 },
+    { size: 'L', label: 'Large (+$2)', basePrice: 3.99, upcharge: 2.00 },
+    { size: 'XL', label: 'Extra Large (+$4)', basePrice: 3.99, upcharge: 4.00 }
+  ];
+
+  // Calculate total price
+  const calculateTotal = () => {
+    const selectedBoxSize = boxSizes.find(box => box.size === formData.boxSize);
+    const basePrice = selectedBoxSize?.basePrice || 3.99;
+    const sizeUpcharge = selectedBoxSize?.upcharge || 0;
+    const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+    
+    return basePrice + sizeUpcharge + multiBoxFee;
+  };
+
+  // Handle retailer search
+  const handleRetailerSearch = (query: string) => {
+    setFormData(prev => ({ ...prev, retailerQuery: query }));
+    
+    if (query.length > 0) {
+      const filtered = commonRetailers.filter(retailer =>
+        retailer.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredRetailers(filtered.slice(0, 8)); // Show top 8 matches
+      setShowRetailerDropdown(true);
+    } else {
+      setShowRetailerDropdown(false);
+    }
+  };
+
+  // Select retailer from dropdown
+  const selectRetailer = (retailer: string) => {
+    setFormData(prev => ({ ...prev, retailer, retailerQuery: retailer }));
+    setShowRetailerDropdown(false);
+  };
+
+  // Update total when form data changes
+  useEffect(() => {
+    setTotalAmount(calculateTotal());
+  }, [formData.boxSize, formData.numberOfBoxes]);
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -67,7 +145,11 @@ export default function BookPickup() {
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.pickupAddress || !formData.retailer || !formData.itemDescription) {
+    // Validate required fields
+    const required = ['streetAddress', 'city', 'state', 'zipCode', 'retailer', 'itemCategory'];
+    const missing = required.filter(field => !formData[field as keyof typeof formData]);
+    
+    if (missing.length > 0) {
       toast({
         title: "Missing information",
         description: "Please fill in all required fields",
@@ -92,10 +174,10 @@ export default function BookPickup() {
     createOrderMutation.mutate(orderData);
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: field === 'numberOfBoxes' ? parseInt(value as string) : value
     }));
   };
 
@@ -162,65 +244,242 @@ export default function BookPickup() {
           
           <form onSubmit={handleDetailsSubmit}>
             <CardContent className="space-y-6">
-              {/* Pickup Address */}
-              <div className="space-y-2">
-                <Label htmlFor="pickup-address" className="text-amber-900 font-medium">
-                  Pickup Address *
-                </Label>
-                <Input
-                  id="pickup-address"
-                  data-testid="input-pickup-address"
-                  value={formData.pickupAddress}
-                  onChange={(e) => handleInputChange('pickupAddress', e.target.value)}
-                  placeholder="123 Main St, Apt 2C, City, State 12345"
-                  required
-                />
+              {/* Enhanced Pickup Address Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <MapPin className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Pickup Address</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="streetAddress" className="text-amber-800 font-medium">
+                      Street Address *
+                    </Label>
+                    <Input
+                      id="streetAddress"
+                      type="text"
+                      placeholder="123 Main Street"
+                      value={formData.streetAddress}
+                      onChange={(e) => handleInputChange('streetAddress', e.target.value)}
+                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                      required
+                      data-testid="input-street-address"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="city" className="text-amber-800 font-medium">
+                        City *
+                      </Label>
+                      <Input
+                        id="city"
+                        type="text"
+                        placeholder="City"
+                        value={formData.city}
+                        onChange={(e) => handleInputChange('city', e.target.value)}
+                        className="bg-white/80 border-amber-300 focus:border-amber-500"
+                        required
+                        data-testid="input-city"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="state" className="text-amber-800 font-medium">
+                        State *
+                      </Label>
+                      <Input
+                        id="state"
+                        type="text"
+                        placeholder="MO"
+                        value={formData.state}
+                        onChange={(e) => handleInputChange('state', e.target.value)}
+                        className="bg-white/80 border-amber-300 focus:border-amber-500"
+                        maxLength={2}
+                        required
+                        data-testid="input-state"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="w-1/2">
+                    <Label htmlFor="zipCode" className="text-amber-800 font-medium">
+                      Zip Code *
+                    </Label>
+                    <Input
+                      id="zipCode"
+                      type="text"
+                      placeholder="12345"
+                      value={formData.zipCode}
+                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
+                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                      required
+                      data-testid="input-zip-code"
+                    />
+                  </div>
+                </div>
               </div>
 
-              {/* Retailer */}
-              <div className="space-y-2">
-                <Label htmlFor="retailer" className="text-amber-900 font-medium">
-                  Return to Retailer *
-                </Label>
-                <Select
-                  value={formData.retailer}
-                  onValueChange={(value) => handleInputChange('retailer', value)}
-                  required
-                >
-                  <SelectTrigger data-testid="select-retailer">
-                    <SelectValue placeholder="Select retailer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Target">Target</SelectItem>
-                    <SelectItem value="Amazon">Amazon</SelectItem>
-                    <SelectItem value="Best Buy">Best Buy</SelectItem>
-                    <SelectItem value="Nike">Nike</SelectItem>
-                    <SelectItem value="Zara">Zara</SelectItem>
-                    <SelectItem value="Home Depot">Home Depot</SelectItem>
-                    <SelectItem value="Macy's">Macy's</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+              {/* Retailer Autocomplete Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Search className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Return to Retailer</Label>
+                </div>
+                
+                <div className="relative">
+                  <Label htmlFor="retailerSearch" className="text-amber-800 font-medium">
+                    Start typing retailer name *
+                  </Label>
+                  <Input
+                    id="retailerSearch"
+                    type="text"
+                    placeholder="e.g., Walmart, Target, Amazon..."
+                    value={formData.retailerQuery}
+                    onChange={(e) => handleRetailerSearch(e.target.value)}
+                    onFocus={() => formData.retailerQuery.length > 0 && setShowRetailerDropdown(true)}
+                    className="bg-white/80 border-amber-300 focus:border-amber-500"
+                    required
+                    data-testid="input-retailer-search"
+                  />
+                  
+                  {showRetailerDropdown && filteredRetailers.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 bg-white border border-amber-300 rounded-md shadow-lg z-50 max-h-48 overflow-y-auto">
+                      {filteredRetailers.map((retailer, index) => (
+                        <div
+                          key={index}
+                          onClick={() => selectRetailer(retailer)}
+                          className="px-4 py-2 hover:bg-amber-50 cursor-pointer border-b border-amber-100 last:border-b-0"
+                          data-testid={`option-retailer-${index}`}
+                        >
+                          {retailer}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                
+                {formData.retailer && (
+                  <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 rounded">
+                    <span>Selected:</span>
+                    <span className="font-medium">{formData.retailer}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Item Category Checkboxes */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Package className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Item Category</Label>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  {itemCategories.map((category) => (
+                    <div key={category} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`category-${category}`}
+                        checked={formData.itemCategory === category}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            handleInputChange('itemCategory', category);
+                          }
+                        }}
+                        data-testid={`checkbox-category-${category.toLowerCase().replace(/\s+/g, '-')}`}
+                      />
+                      <Label
+                        htmlFor={`category-${category}`}
+                        className="text-sm font-normal text-amber-800 cursor-pointer"
+                      >
+                        {category}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Item Description */}
               <div className="space-y-2">
-                <Label htmlFor="item-description" className="text-amber-900 font-medium">
-                  Item Description *
+                <Label htmlFor="itemDescription" className="text-amber-800 font-medium">
+                  Item Description (optional)
                 </Label>
-                <Input
-                  id="item-description"
-                  data-testid="input-item-description"
+                <Textarea
+                  id="itemDescription"
+                  placeholder="Describe what you're returning (optional)..."
                   value={formData.itemDescription}
                   onChange={(e) => handleInputChange('itemDescription', e.target.value)}
-                  placeholder="e.g., Nike Shoes - Wrong Size, Blue Sweater - Defective"
-                  required
+                  className="bg-white/80 border-amber-300 focus:border-amber-500"
+                  rows={3}
+                  data-testid="textarea-item-description"
                 />
+              </div>
+
+              {/* Box Size and Quantity */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Package className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Box Details</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="boxSize" className="text-amber-800 font-medium">
+                      Box Size *
+                    </Label>
+                    <Select
+                      value={formData.boxSize}
+                      onValueChange={(value) => handleInputChange('boxSize', value)}
+                      required
+                    >
+                      <SelectTrigger data-testid="select-box-size">
+                        <SelectValue placeholder="Select box size" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {boxSizes.map((box) => (
+                          <SelectItem key={box.size} value={box.size}>
+                            {box.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="numberOfBoxes" className="text-amber-800 font-medium">
+                      Number of Boxes *
+                    </Label>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleInputChange('numberOfBoxes', Math.max(1, formData.numberOfBoxes - 1).toString())}
+                        disabled={formData.numberOfBoxes <= 1}
+                        data-testid="button-decrease-boxes"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="px-3 py-2 bg-amber-50 border border-amber-300 rounded text-center min-w-[60px]" data-testid="text-box-count">
+                        {formData.numberOfBoxes}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleInputChange('numberOfBoxes', Math.min(10, formData.numberOfBoxes + 1).toString())}
+                        disabled={formData.numberOfBoxes >= 10}
+                        data-testid="button-increase-boxes"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Optional Notes */}
               <div className="space-y-2">
-                <Label htmlFor="notes" className="text-amber-900 font-medium">
+                <Label htmlFor="notes" className="text-amber-800 font-medium">
                   Special Instructions (optional)
                 </Label>
                 <Textarea
@@ -230,18 +489,47 @@ export default function BookPickup() {
                   onChange={(e) => handleInputChange('notes', e.target.value)}
                   placeholder="Any special pickup instructions..."
                   rows={3}
+                  className="bg-white/80 border-amber-300 focus:border-amber-500"
                 />
               </div>
 
-              {/* Pricing */}
+              {/* Dynamic Pricing */}
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <div className="flex justify-between items-center">
-                  <span className="text-amber-900 font-medium">Pickup Service:</span>
-                  <span className="text-amber-900 font-bold text-lg">$3.99</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-amber-800">Base pickup service:</span>
+                    <span className="text-amber-900 font-medium">$3.99</span>
+                  </div>
+                  
+                  {formData.boxSize === 'L' && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-800">Large box upcharge:</span>
+                      <span className="text-amber-900 font-medium">+$2.00</span>
+                    </div>
+                  )}
+                  
+                  {formData.boxSize === 'XL' && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-800">Extra large box upcharge:</span>
+                      <span className="text-amber-900 font-medium">+$4.00</span>
+                    </div>
+                  )}
+                  
+                  {formData.numberOfBoxes > 1 && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
+                      <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
+                    </div>
+                  )}
+                  
+                  <hr className="border-amber-300" />
+                  <div className="flex justify-between items-center">
+                    <span className="text-amber-900 font-semibold text-lg">Total:</span>
+                    <span className="text-amber-900 font-bold text-xl" data-testid="text-total-amount">
+                      ${totalAmount.toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-amber-700 text-sm mt-1">
-                  Professional pickup and return delivery service
-                </p>
               </div>
 
               {/* Submit Button */}
@@ -252,7 +540,7 @@ export default function BookPickup() {
                   disabled={createOrderMutation.isPending}
                   data-testid="button-book-pickup"
                 >
-                  {createOrderMutation.isPending ? "Booking Pickup..." : "Book Pickup - $3.99"}
+                  {createOrderMutation.isPending ? "Booking Pickup..." : `Book Pickup - $${totalAmount.toFixed(2)}`}
                 </Button>
               </div>
             </CardContent>
