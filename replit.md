@@ -1,6 +1,6 @@
 # Overview
 
-Returnly is a reverse delivery service platform designed to simplify returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with drivers capable of providing the service. It aims to be an enterprise-grade solution featuring a sophisticated white/beige design, a comprehensive admin dashboard, a driver onboarding system, and professional business content, all while retaining a distinctive cardboard/shipping theme. The system supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities for pilot operations.
+Returnly is a reverse delivery service platform designed to simplify returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with drivers capable of providing the service. It aims to be an enterprise-grade solution featuring a sophisticated white/beige design, a comprehensive admin dashboard with driver management and payment processing, AI-powered support chat system, and professional business content, all while retaining a distinctive cardboard/shipping theme. The system supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities with intelligent support automation for pilot operations.
 
 # User Preferences
 
@@ -43,11 +43,12 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: Server-side session storage.
 
 ## Features and Capabilities
-- **Customer Website**: Book pickups, real-time tracking, order history, mobile-responsive.
+- **Customer Website**: Book pickups, real-time tracking, order history, mobile-responsive, AI-powered support chat with floating help button.
 - **Customer Mobile App (Future)**: Native mobile experience, camera integration, push notifications, location services, offline capabilities.
-- **Driver Mobile App**: View/accept jobs, GPS navigation, status updates, earnings dashboard with instant pay/incentives, payment management (Stripe Connect 70/30 split), automatic 1099 generation, driver ratings.
-- **Admin Tools**: Comprehensive operations dashboard for live jobs, reassign, refund, manual payouts, content controls (pricing, fees, blackout dates).
-- **Payment Processing**: Multi-method (cards, Apple Pay, Google Pay, PayPal via Stripe), promotional codes, driver incentive system, 70/30 payment split.
+- **Driver Mobile App**: View/accept jobs, GPS navigation, status updates, earnings dashboard with instant pay/incentives, payment management (Stripe Connect 70/30 split), automatic 1099 generation, driver ratings, integrated support chat system.
+- **Admin Tools**: Comprehensive operations dashboard for live jobs, driver statistics, account management, payment processing, bulk payouts, support chat integration, driver performance monitoring.
+- **AI Support System**: Intelligent chat bot with context-aware responses, common issue categories (package not left, more packages than stated, etc.), human agent escalation, phone support integration.
+- **Payment Processing**: Multi-method (cards, Apple Pay, Google Pay, PayPal via Stripe), promotional codes, driver incentive system, 70/30 payment split, instant payout capabilities.
 
 # External Dependencies
 

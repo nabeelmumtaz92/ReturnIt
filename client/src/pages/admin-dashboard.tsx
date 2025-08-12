@@ -41,6 +41,9 @@ import {
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
+import AdminSupportModal from "@/components/AdminSupportModal";
+import NotificationBell from "@/components/NotificationBell";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 interface Order {
   id: string;
@@ -82,6 +85,7 @@ export default function AdminDashboard() {
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [showDriverDetail, setShowDriverDetail] = useState(false);
   const [showSupportChat, setShowSupportChat] = useState(false);
+  const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
 
   // Mock data for demonstration
@@ -238,12 +242,12 @@ export default function AdminDashboard() {
 
   const handleDriverSupport = (driver: Driver) => {
     setSupportContext({ type: 'driver', id: driver.id, name: driver.name });
-    setShowSupportChat(true);
+    setShowAdminSupportModal(true);
   };
 
   const handleCustomerSupport = (order: Order) => {
     setSupportContext({ type: 'customer', id: order.id, name: order.customer });
-    setShowSupportChat(true);
+    setShowAdminSupportModal(true);
   };
 
   return (
@@ -266,10 +270,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex items-center space-x-3">
-                <Button variant="outline" size="sm">
-                  <Bell className="h-4 w-4 mr-2" />
-                  Notifications
-                </Button>
+                <NotificationBell userType="admin" />
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -352,6 +353,10 @@ export default function AdminDashboard() {
               <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-100">
                 <BarChart3 className="h-4 w-4 mr-2" />
                 Analytics
+              </TabsTrigger>
+              <TabsTrigger value="support" className="data-[state=active]:bg-amber-100">
+                <MessageCircle className="h-4 w-4 mr-2" />
+                Support Tickets
               </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100">
                 <Settings className="h-4 w-4 mr-2" />
@@ -624,58 +629,12 @@ export default function AdminDashboard() {
           </Tabs>
         </div>
 
-        {/* Support Chat Modal */}
-        {showSupportChat && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md h-[600px] flex flex-col">
-              <CardHeader className="flex-shrink-0 pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-lg">Support Chat</CardTitle>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setShowSupportChat(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-                {supportContext && (
-                  <p className="text-sm text-gray-600">
-                    {supportContext.type === 'driver' ? 'Driver' : 'Customer'}: {supportContext.name}
-                  </p>
-                )}
-              </CardHeader>
-              <CardContent className="flex-1 flex flex-col">
-                <div className="flex-1 bg-gray-50 rounded-lg p-4 mb-4">
-                  <p className="text-gray-600 text-center">
-                    Admin support chat interface would be implemented here.
-                    This allows admins to communicate directly with drivers and customers.
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                    onClick={() => {
-                      toast({
-                        title: "Chat Started",
-                        description: `Now chatting with ${supportContext?.name}`,
-                      });
-                    }}
-                  >
-                    <MessageCircle className="h-4 w-4 mr-2" />
-                    Start Chat
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => window.open(`tel:${supportContext?.type === 'driver' ? '+13145550101' : '+13145550102'}`)}
-                  >
-                    <Phone className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        {/* Admin Support Modal */}
+        <AdminSupportModal
+          isOpen={showAdminSupportModal}
+          onClose={() => setShowAdminSupportModal(false)}
+          context={supportContext}
+        />
       </div>
     </Screen>
   );

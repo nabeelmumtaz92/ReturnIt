@@ -38,6 +38,7 @@ import {
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import SupportChat from "@/components/SupportChat";
+import NotificationBell from "@/components/NotificationBell";
 
 interface DriverJob {
   id: string;
@@ -236,6 +237,7 @@ export default function ReturnlyDriverApp() {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+                <NotificationBell userType="driver" />
                 <Button
                   size="sm"
                   variant={isOnline ? "default" : "outline"}
