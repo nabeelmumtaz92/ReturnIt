@@ -35,6 +35,9 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
     enabled: isAuthenticated && !!orderId,
   });
 
+  // Add state for location permission if needed for customer tracking
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'created': return 'bg-blue-100 text-blue-800';

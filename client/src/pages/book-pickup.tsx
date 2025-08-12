@@ -12,8 +12,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import StoreLocator from "@/components/StoreLocator";
+import RoutePreview from "@/components/RoutePreview";
+import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 
 export default function BookPickup() {
   const [, setLocation] = useLocation();
@@ -62,6 +66,13 @@ export default function BookPickup() {
     // Receipt upload
     receiptPhoto: null as File | null
   });
+
+  // Location and routing state
+  const [pickupLocation, setPickupLocation] = useState<Location | null>(null);
+  const [dropoffLocation, setDropoffLocation] = useState<Location | null>(null);
+  const [selectedStore, setSelectedStore] = useState<NearbyStore | null>(null);
+  const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
+  const [calculatedFare, setCalculatedFare] = useState<number>(0);
 
   const [currentStep, setCurrentStep] = useState<'details' | 'payment'>('details');
   const [totalAmount, setTotalAmount] = useState(3.99);
@@ -113,13 +124,37 @@ export default function BookPickup() {
     "Evening (5 PM - 8 PM)"
   ];
 
-  // Calculate total price based on new pricing structure
+  // Calculate total price - use route-based fare if available, otherwise use box-based pricing
   const calculateTotal = () => {
+    if (calculatedFare > 0) {
+      const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+      return calculatedFare + multiBoxFee;
+    }
+    
     const selectedBoxSize = boxSizes.find(box => box.size === formData.boxSize);
     const basePrice = selectedBoxSize?.basePrice || 3.99;
     const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
     
     return basePrice + multiBoxFee;
+  };
+
+  // Handle location updates
+  const handlePickupLocationSelect = (location: Location) => {
+    setPickupLocation(location);
+  };
+
+  const handleStoreSelect = (store: NearbyStore) => {
+    setSelectedStore(store);
+    setDropoffLocation(store.location);
+    setFormData(prev => ({ 
+      ...prev, 
+      retailer: store.name 
+    }));
+  };
+
+  const handleFareCalculated = (fare: number, route: RouteInfo) => {
+    setCalculatedFare(fare);
+    setRouteInfo(route);
   };
 
   // Handle retailer search
@@ -336,80 +371,22 @@ export default function BookPickup() {
                 </div>
               </div>
 
-              {/* Enhanced Pickup Address Section */}
+              {/* Enhanced Pickup Address Section with Google Autocomplete */}
               <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <MapPin className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Pickup Address</Label>
-                </div>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label htmlFor="streetAddress" className="text-amber-800 font-medium">
-                      Street Address *
-                    </Label>
-                    <Input
-                      id="streetAddress"
-                      type="text"
-                      placeholder="123 Main Street"
-                      value={formData.streetAddress}
-                      onChange={(e) => handleInputChange('streetAddress', e.target.value)}
-                      className="bg-white/80 border-amber-300 focus:border-amber-500"
-                      required
-                      data-testid="input-street-address"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="city" className="text-amber-800 font-medium">
-                        City *
-                      </Label>
-                      <Input
-                        id="city"
-                        type="text"
-                        placeholder="City"
-                        value={formData.city}
-                        onChange={(e) => handleInputChange('city', e.target.value)}
-                        className="bg-white/80 border-amber-300 focus:border-amber-500"
-                        required
-                        data-testid="input-city"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="state" className="text-amber-800 font-medium">
-                        State *
-                      </Label>
-                      <Input
-                        id="state"
-                        type="text"
-                        placeholder="MO"
-                        value={formData.state}
-                        onChange={(e) => handleInputChange('state', e.target.value)}
-                        className="bg-white/80 border-amber-300 focus:border-amber-500"
-                        maxLength={2}
-                        required
-                        data-testid="input-state"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="w-1/2">
-                    <Label htmlFor="zipCode" className="text-amber-800 font-medium">
-                      Zip Code *
-                    </Label>
-                    <Input
-                      id="zipCode"
-                      type="text"
-                      placeholder="12345"
-                      value={formData.zipCode}
-                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                      className="bg-white/80 border-amber-300 focus:border-amber-500"
-                      required
-                      data-testid="input-zip-code"
-                    />
-                  </div>
-                </div>
+                <AddressAutocomplete
+                  label="Pickup Address"
+                  placeholder="Enter your pickup address"
+                  value={formData.streetAddress}
+                  onChange={(address, placeResult) => {
+                    handleInputChange('streetAddress', address);
+                    if (placeResult) {
+                      handlePickupLocationSelect(placeResult.location);
+                    }
+                  }}
+                  onLocationSelect={handlePickupLocationSelect}
+                  required
+                  data-testid="input-pickup-address"
+                />
               </div>
 
               {/* Order Details Section */}
@@ -455,7 +432,7 @@ export default function BookPickup() {
                 </div>
               </div>
 
-              {/* Retailer Autocomplete Section */}
+              {/* Enhanced Retailer Selection with Store Locator */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 mb-3">
                   <Search className="h-5 w-5 text-amber-600" />
@@ -495,9 +472,18 @@ export default function BookPickup() {
                 </div>
                 
                 {formData.retailer && (
-                  <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 rounded">
-                    <span>Selected:</span>
-                    <span className="font-medium">{formData.retailer}</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 rounded">
+                      <span>Selected:</span>
+                      <span className="font-medium">{formData.retailer}</span>
+                    </div>
+                    
+                    {/* Store Locator */}
+                    <StoreLocator
+                      retailerName={formData.retailer}
+                      onStoreSelect={handleStoreSelect}
+                      customerLocation={pickupLocation || undefined}
+                    />
                   </div>
                 )}
               </div>
@@ -688,21 +674,52 @@ export default function BookPickup() {
                 />
               </div>
 
-              {/* Dynamic Pricing - Updated for new pricing structure */}
+              {/* Route Preview and Dynamic Pricing */}
+              {pickupLocation && dropoffLocation && (
+                <RoutePreview
+                  pickupLocation={pickupLocation}
+                  dropoffLocation={dropoffLocation}
+                  pickupAddress={formData.streetAddress}
+                  dropoffAddress={selectedStore?.address || formData.retailer}
+                  onFareCalculated={handleFareCalculated}
+                />
+              )}
+
+              {/* Dynamic Pricing - Route-based or fallback to box-based */}
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-amber-800">{formData.boxSize === 'S' ? 'Small' : formData.boxSize === 'M' ? 'Medium' : 'Large'} package fee:</span>
-                    <span className="text-amber-900 font-medium">
-                      ${boxSizes.find(box => box.size === formData.boxSize)?.basePrice.toFixed(2) || '3.99'}
-                    </span>
-                  </div>
-                  
-                  {formData.numberOfBoxes > 1 && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
-                      <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
-                    </div>
+                  {routeInfo ? (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-amber-800">Distance-based fare ({routeInfo.distance}):</span>
+                        <span className="text-amber-900 font-medium">
+                          ${calculatedFare.toFixed(2)}
+                        </span>
+                      </div>
+                      
+                      {formData.numberOfBoxes > 1 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
+                          <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between items-center">
+                        <span className="text-amber-800">{formData.boxSize === 'S' ? 'Small' : formData.boxSize === 'M' ? 'Medium' : 'Large'} package fee:</span>
+                        <span className="text-amber-900 font-medium">
+                          ${boxSizes.find(box => box.size === formData.boxSize)?.basePrice.toFixed(2) || '3.99'}
+                        </span>
+                      </div>
+                      
+                      {formData.numberOfBoxes > 1 && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
+                          <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
+                        </div>
+                      )}
+                    </>
                   )}
                   
                   <hr className="border-amber-300" />
@@ -712,6 +729,12 @@ export default function BookPickup() {
                       ${totalAmount.toFixed(2)}
                     </span>
                   </div>
+                  
+                  {routeInfo && (
+                    <p className="text-xs text-amber-600 mt-2">
+                      ETA: {routeInfo.duration} • Fare locked at booking
+                    </p>
+                  )}
                 </div>
               </div>
 

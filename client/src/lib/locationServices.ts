@@ -1,6 +1,88 @@
 // Location Services - Google Maps integration for Returnly
 import { useEffect, useState } from 'react';
 
+// Extend Window interface for Google Maps
+declare global {
+  interface Window {
+    google: typeof google;
+  }
+}
+
+// Google Maps type declarations
+declare namespace google {
+  namespace maps {
+    class Map {
+      constructor(mapDiv: Element, opts?: any);
+    }
+    
+    class LatLng {
+      constructor(lat: number, lng: number);
+      lat(): number;
+      lng(): number;
+    }
+    
+    enum TravelMode {
+      DRIVING = 'DRIVING',
+      WALKING = 'WALKING',
+      BICYCLING = 'BICYCLING',
+      TRANSIT = 'TRANSIT'
+    }
+    
+    enum UnitSystem {
+      METRIC = 0,
+      IMPERIAL = 1
+    }
+    
+    enum DistanceMatrixStatus {
+      OK = 'OK',
+      INVALID_REQUEST = 'INVALID_REQUEST',
+      OVER_QUERY_LIMIT = 'OVER_QUERY_LIMIT',
+      REQUEST_DENIED = 'REQUEST_DENIED',
+      UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+    }
+    
+    class DirectionsService {
+      route(request: any, callback: (result: any, status: any) => void): void;
+    }
+    
+    class DistanceMatrixService {
+      getDistanceMatrix(request: any, callback: (result: any, status: any) => void): void;
+    }
+    
+    class Geocoder {
+      geocode(request: any, callback: (results: any[], status: string) => void): void;
+    }
+    
+    namespace places {
+      enum PlacesServiceStatus {
+        OK = 'OK',
+        UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+        OVER_QUERY_LIMIT = 'OVER_QUERY_LIMIT',
+        REQUEST_DENIED = 'REQUEST_DENIED',
+        INVALID_REQUEST = 'INVALID_REQUEST',
+        ZERO_RESULTS = 'ZERO_RESULTS',
+        NOT_FOUND = 'NOT_FOUND'
+      }
+      
+      class AutocompleteService {
+        getPlacePredictions(request: any, callback: (predictions: any[], status: any) => void): void;
+      }
+      
+      class PlacesService {
+        constructor(attrContainer: Element | Map);
+        getDetails(request: any, callback: (place: any, status: any) => void): void;
+        nearbySearch(request: any, callback: (results: any[], status: any) => void): void;
+      }
+    }
+    
+    namespace geometry {
+      namespace spherical {
+        function computeDistanceBetween(from: LatLng, to: LatLng): number;
+      }
+    }
+  }
+}
+
 interface Location {
   lat: number;
   lng: number;

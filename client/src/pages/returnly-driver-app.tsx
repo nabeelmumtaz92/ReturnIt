@@ -39,6 +39,9 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import SupportChat from "@/components/SupportChat";
 import NotificationBell from "@/components/NotificationBell";
+import DriverNavigation from "@/components/DriverNavigation";
+import LocationPermissionPrompt from "@/components/LocationPermissionPrompt";
+import { type Location } from "@/lib/locationServices";
 
 interface DriverJob {
   id: string;
@@ -50,6 +53,8 @@ interface DriverJob {
   estimatedTime: string;
   pickupAddress: string;
   dropoffLocation: string;
+  pickupLocation?: Location;
+  dropoffLocationCoords?: Location;
   specialInstructions?: string;
   priority: 'low' | 'medium' | 'high';
 }
@@ -80,6 +85,8 @@ export default function ReturnlyDriverApp() {
     onlineTime: '0h 0m'
   });
   const [showSupportChat, setShowSupportChat] = useState(false);
+  const [showLocationPrompt, setShowLocationPrompt] = useState(false);
+  const [driverLocation, setDriverLocation] = useState<Location | null>(null);
 
   // Mock data for demonstration
   useEffect(() => {
@@ -94,6 +101,8 @@ export default function ReturnlyDriverApp() {
         estimatedTime: '12 min',
         pickupAddress: '123 Main St, St. Louis, MO 63101',
         dropoffLocation: 'Target - Chesterfield Valley',
+        pickupLocation: { lat: 38.6324, lng: -90.2040 },
+        dropoffLocationCoords: { lat: 38.6631, lng: -90.5215 },
         specialInstructions: 'Ring doorbell twice, customer will meet at door',
         priority: 'high'
       },
@@ -107,6 +116,8 @@ export default function ReturnlyDriverApp() {
         estimatedTime: '18 min',
         pickupAddress: '456 Oak Ave, St. Louis, MO 63108',
         dropoffLocation: 'Best Buy - Kirkwood Commons',
+        pickupLocation: { lat: 38.6191, lng: -90.2446 },
+        dropoffLocationCoords: { lat: 38.5767, lng: -90.4067 },
         priority: 'medium'
       }
     ]);
@@ -168,8 +179,15 @@ export default function ReturnlyDriverApp() {
   };
 
   const acceptJob = (job: DriverJob) => {
-    setCurrentJob({ ...job, status: 'accepted' });
+    const updatedJob = { ...job, status: 'accepted' as const };
+    setCurrentJob(updatedJob);
     setAvailableJobs(prev => prev.filter(j => j.id !== job.id));
+    
+    // Request location permission for navigation
+    if (!driverLocation) {
+      setShowLocationPrompt(true);
+    }
+    
     toast({
       title: "Job Accepted!",
       description: `Driving to pickup at ${job.pickupAddress}`,
@@ -194,6 +212,22 @@ export default function ReturnlyDriverApp() {
         });
       }
     }
+  };
+
+  const handleLocationPermissionGranted = (location: Location) => {
+    setDriverLocation(location);
+    toast({
+      title: "Location enabled",
+      description: "Navigation features are now available",
+    });
+  };
+
+  const handleLocationPermissionDenied = () => {
+    toast({
+      title: "Location access denied",
+      description: "Some navigation features will be limited",
+      variant: "destructive",
+    });
   };
 
   const getStatusBadge = (status: string) => {
@@ -624,6 +658,15 @@ export default function ReturnlyDriverApp() {
           isOpen={showSupportChat}
           onClose={() => setShowSupportChat(false)}
           context={{ type: 'driver', id: 'DRV001', name: 'John Smith' }}
+        />
+
+        {/* Location Permission Prompt */}
+        <LocationPermissionPrompt
+          userType="driver"
+          isOpen={showLocationPrompt}
+          onClose={() => setShowLocationPrompt(false)}
+          onPermissionGranted={handleLocationPermissionGranted}
+          onPermissionDenied={handleLocationPermissionDenied}
         />
       </div>
     </Screen>

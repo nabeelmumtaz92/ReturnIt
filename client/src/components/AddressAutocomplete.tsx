@@ -111,6 +111,9 @@ export default function AddressAutocomplete({
       const location = await getCurrentLocation();
       
       // Reverse geocode to get address
+      if (!window.google?.maps?.Geocoder) {
+        throw new Error('Google Maps not loaded');
+      }
       const geocoder = new google.maps.Geocoder();
       geocoder.geocode(
         { location: new google.maps.LatLng(location.lat, location.lng) },
