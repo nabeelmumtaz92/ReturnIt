@@ -62,9 +62,9 @@ export default function BookPickup() {
     itemCategories: [] as string[], // Changed to array for multiple selection
     itemDescription: '',
     estimatedWeight: '',
-    // Box details
-    boxSize: 'M',
-    numberOfBoxes: 1,
+    // Item details
+    itemSize: 'M',
+    numberOfItems: 1,
     // Preferred time slot
     preferredTimeSlot: '',
     // Instructions
@@ -105,11 +105,12 @@ export default function BookPickup() {
     'Other'
   ];
 
-  // Bag/Box sizes with correct pricing per requirements
-  const boxSizes = [
-    { size: 'S', label: 'Small', basePrice: 3.99, upcharge: 0 },
-    { size: 'M', label: 'Medium', basePrice: 5.99, upcharge: 0 },
-    { size: 'L', label: 'Large', basePrice: 7.99, upcharge: 0 }
+  // Item sizes with correct pricing per requirements
+  const itemSizes = [
+    { size: 'S', label: 'Small', description: 'Books, jewelry, small electronics', basePrice: 3.99, upcharge: 0 },
+    { size: 'M', label: 'Medium', description: 'Clothing, shoes, small home goods', basePrice: 3.99, upcharge: 0 },
+    { size: 'L', label: 'Large', description: 'Small appliances, multiple items', basePrice: 3.99, upcharge: 2.00 },
+    { size: 'XL', label: 'Extra Large', description: 'Large electronics, furniture pieces', basePrice: 3.99, upcharge: 4.00 }
   ];
 
   // Return reasons dropdown options
@@ -130,18 +131,19 @@ export default function BookPickup() {
     "Evening (5 PM - 8 PM)"
   ];
 
-  // Calculate total price - use route-based fare if available, otherwise use bag/box-based pricing
+  // Calculate total price - use route-based fare if available, otherwise use item-based pricing
   const calculateTotal = () => {
     if (calculatedFare > 0) {
-      const multiItemFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+      const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
       return calculatedFare + multiItemFee;
     }
     
-    const selectedBoxSize = boxSizes.find(box => box.size === formData.boxSize);
-    const basePrice = selectedBoxSize?.basePrice || 3.99;
-    const multiItemFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+    const selectedItemSize = itemSizes.find(item => item.size === formData.itemSize);
+    const basePrice = selectedItemSize?.basePrice || 3.99;
+    const sizeUpcharge = selectedItemSize?.upcharge || 0;
+    const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
     
-    return basePrice + multiItemFee;
+    return basePrice + sizeUpcharge + multiItemFee;
   };
 
   // Handle location updates
@@ -187,7 +189,7 @@ export default function BookPickup() {
   // Update total when form data changes
   useEffect(() => {
     setTotalAmount(calculateTotal());
-  }, [formData.boxSize, formData.numberOfBoxes]);
+  }, [formData.itemSize, formData.numberOfItems]);
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -248,8 +250,8 @@ export default function BookPickup() {
       itemCategory: formData.itemCategories.join(', '), // Convert array to comma-separated string
       itemDescription: formData.itemDescription,
       estimatedWeight: formData.estimatedWeight,
-      boxSize: formData.boxSize,
-      numberOfBoxes: formData.numberOfBoxes,
+      itemSize: formData.itemSize,
+      numberOfItems: formData.numberOfItems,
       notes: formData.notes,
       paymentMethod: method,
       paymentDetails: details,
@@ -264,7 +266,7 @@ export default function BookPickup() {
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      [field]: field === 'numberOfBoxes' ? parseInt(value as string) : value
+      [field]: field === 'numberOfItems' ? parseInt(value as string) : value
     }));
   };
 
@@ -582,31 +584,35 @@ export default function BookPickup() {
                 />
               </div>
 
-              {/* Box Size and Quantity */}
+              {/* Item Size and Quantity */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 mb-3">
                   <Package className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Bag/Box Details</Label>
+                  <Label className="text-amber-800 font-semibold text-lg">Item Details</Label>
                 </div>
-                <p className="text-sm text-amber-700 mb-3">Please use dropdown to describe the size of the bag/box</p>
+                <p className="text-sm text-amber-700 mb-3">Select the size of each individual item you're returning</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="boxSize" className="text-amber-800 font-medium">
-                      Bag/Box Size *
+                    <Label htmlFor="itemSize" className="text-amber-800 font-medium">
+                      Item Size *
                     </Label>
                     <Select
-                      value={formData.boxSize}
-                      onValueChange={(value) => handleInputChange('boxSize', value)}
+                      value={formData.itemSize}
+                      onValueChange={(value) => handleInputChange('itemSize', value)}
                       required
                     >
-                      <SelectTrigger data-testid="select-box-size">
-                        <SelectValue placeholder="Select bag/box size" />
+                      <SelectTrigger data-testid="select-item-size">
+                        <SelectValue placeholder="Select item size" />
                       </SelectTrigger>
                       <SelectContent>
-                        {boxSizes.map((box) => (
-                          <SelectItem key={box.size} value={box.size}>
-                            {box.label}
+                        {itemSizes.map((item) => (
+                          <SelectItem key={item.size} value={item.size}>
+                            <div className="flex flex-col">
+                              <span className="font-medium">{item.label}</span>
+                              <span className="text-xs text-gray-500">{item.description}</span>
+                              {item.upcharge > 0 && <span className="text-xs text-amber-600">+${item.upcharge.toFixed(2)}</span>}
+                            </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -614,34 +620,35 @@ export default function BookPickup() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="numberOfBoxes" className="text-amber-800 font-medium">
-                      Number of Bags/Boxes *
+                    <Label htmlFor="numberOfItems" className="text-amber-800 font-medium">
+                      Number of Items *
                     </Label>
                     <div className="flex items-center space-x-2">
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => handleInputChange('numberOfBoxes', Math.max(1, formData.numberOfBoxes - 1).toString())}
-                        disabled={formData.numberOfBoxes <= 1}
-                        data-testid="button-decrease-boxes"
+                        onClick={() => handleInputChange('numberOfItems', Math.max(1, formData.numberOfItems - 1).toString())}
+                        disabled={formData.numberOfItems <= 1}
+                        data-testid="button-decrease-items"
                       >
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <span className="px-3 py-2 bg-amber-50 border border-amber-300 rounded text-center min-w-[60px]" data-testid="text-box-count">
-                        {formData.numberOfBoxes}
+                      <span className="px-3 py-2 bg-amber-50 border border-amber-300 rounded text-center min-w-[60px]" data-testid="text-item-count">
+                        {formData.numberOfItems}
                       </span>
                       <Button
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => handleInputChange('numberOfBoxes', Math.min(10, formData.numberOfBoxes + 1).toString())}
-                        disabled={formData.numberOfBoxes >= 10}
-                        data-testid="button-increase-boxes"
+                        onClick={() => handleInputChange('numberOfItems', Math.min(10, formData.numberOfItems + 1).toString())}
+                        disabled={formData.numberOfItems >= 10}
+                        data-testid="button-increase-items"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
+                    <p className="text-xs text-amber-600 mt-1">Each additional item +$1.00</p>
                   </div>
                 </div>
               </div>
@@ -711,7 +718,7 @@ export default function BookPickup() {
                 />
               )}
 
-              {/* Dynamic Pricing - Route-based or fallback to box-based */}
+              {/* Dynamic Pricing - Route-based or fallback to item-based */}
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                 <div className="space-y-2">
                   {routeInfo ? (
@@ -723,26 +730,34 @@ export default function BookPickup() {
                         </span>
                       </div>
                       
-                      {formData.numberOfBoxes > 1 && (
+                      {formData.numberOfItems > 1 && (
                         <div className="flex justify-between items-center">
-                          <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
-                          <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
+                          <span className="text-amber-800">Additional items ({formData.numberOfItems - 1} × $1.00):</span>
+                          <span className="text-amber-900 font-medium">+${((formData.numberOfItems - 1) * 1.00).toFixed(2)}</span>
                         </div>
                       )}
                     </>
                   ) : (
                     <>
                       <div className="flex justify-between items-center">
-                        <span className="text-amber-800">{formData.boxSize === 'S' ? 'Small' : formData.boxSize === 'M' ? 'Medium' : 'Large'} package fee:</span>
-                        <span className="text-amber-900 font-medium">
-                          ${boxSizes.find(box => box.size === formData.boxSize)?.basePrice.toFixed(2) || '3.99'}
-                        </span>
+                        <span className="text-amber-800">Base service fee:</span>
+                        <span className="text-amber-900 font-medium">$3.99</span>
                       </div>
                       
-                      {formData.numberOfBoxes > 1 && (
+                      {(() => {
+                        const selectedSize = itemSizes.find(item => item.size === formData.itemSize);
+                        return selectedSize?.upcharge && selectedSize.upcharge > 0 ? (
+                          <div className="flex justify-between items-center">
+                            <span className="text-amber-800">{selectedSize.label} item upcharge:</span>
+                            <span className="text-amber-900 font-medium">+${selectedSize.upcharge.toFixed(2)}</span>
+                          </div>
+                        ) : null;
+                      })()}
+                      
+                      {formData.numberOfItems > 1 && (
                         <div className="flex justify-between items-center">
-                          <span className="text-amber-800">Additional boxes ({formData.numberOfBoxes - 1} × $1.50):</span>
-                          <span className="text-amber-900 font-medium">+${((formData.numberOfBoxes - 1) * 1.50).toFixed(2)}</span>
+                          <span className="text-amber-800">Additional items ({formData.numberOfItems - 1} × $1.00):</span>
+                          <span className="text-amber-900 font-medium">+${((formData.numberOfItems - 1) * 1.00).toFixed(2)}</span>
                         </div>
                       )}
                     </>

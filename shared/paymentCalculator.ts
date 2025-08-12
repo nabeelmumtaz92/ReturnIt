@@ -91,14 +91,14 @@ const DEFAULT_CONFIG: PaymentConfig = {
   },
   
   serviceFeeRate: 0.15,
-  multiBoxFee: 1.50,
+  multiItemFee: 1.00,
   rushFee: 3.00
 };
 
 export function calculatePayment(
   routeInfo: RouteInfo,
-  boxSize: string = 'M',
-  numberOfBoxes: number = 1,
+  itemSize: string = 'M',
+  numberOfItems: number = 1,
   isRush: boolean = false,
   tip: number = 0,
   config: PaymentConfig = DEFAULT_CONFIG
@@ -108,12 +108,12 @@ export function calculatePayment(
   const basePrice = config.basePrice;
   const distanceFee = routeInfo.distance * config.distanceRateTotal;
   const timeFee = (routeInfo.estimatedTime / 60) * config.timeRateTotal;
-  const sizeUpcharge = config.sizeUpcharges[boxSize] || 0;
-  const multiBoxFee = numberOfBoxes > 1 ? (numberOfBoxes - 1) * config.multiBoxFee : 0;
+  const sizeUpcharge = config.sizeUpcharges[itemSize] || 0;
+  const multiItemFee = numberOfItems > 1 ? (numberOfItems - 1) * config.multiItemFee : 0;
   const rushFee = isRush ? config.rushFee : 0;
   
   // Calculate subtotal and service fee
-  const subtotal = basePrice + distanceFee + timeFee + sizeUpcharge + multiBoxFee + rushFee;
+  const subtotal = basePrice + distanceFee + timeFee + sizeUpcharge + multiItemFee + rushFee;
   const serviceFee = subtotal * config.serviceFeeRate;
   const totalPrice = subtotal + serviceFee + tip;
   
@@ -121,7 +121,7 @@ export function calculatePayment(
   const driverBasePay = config.driverBasePay;
   const driverDistancePay = routeInfo.distance * config.driverDistanceRate;
   const driverTimePay = (routeInfo.estimatedTime / 60) * config.driverTimeRate;
-  const driverSizeBonus = config.driverSizeBonuses[boxSize] || 0;
+  const driverSizeBonus = config.driverSizeBonuses[itemSize] || 0;
   const driverTip = tip; // Driver gets 100% of tip
   const driverTotalEarning = driverBasePay + driverDistancePay + driverTimePay + driverSizeBonus + driverTip;
   
@@ -138,7 +138,7 @@ export function calculatePayment(
     distanceFee,
     timeFee,
     sizeUpcharge,
-    multiBoxFee,
+    multiItemFee,
     serviceFee,
     rushFee,
     subtotal,
