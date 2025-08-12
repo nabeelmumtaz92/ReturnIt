@@ -85,16 +85,72 @@ export class MemStorage implements IStorage {
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
     
-    // Initialize with comprehensive demo data - Super User with ALL features
-    const demoUser: User = {
+    // Master Administrator account
+    const masterAdmin: User = {
       id: 1,
+      email: 'nabeelmumtaz92@gmail.com',
+      password: '$2b$12$Fa9lpRHHCkE0bK.HJZiU/uQ1ahOuSvQYS.sH6dSQVsQSqT7V.nLkC', // hashed 'admin123'
+      firstName: 'Nabeel',
+      lastName: 'Mumtaz',
+      phone: '+1-555-0123',
+      isDriver: true,  // Driver access for testing
+      isAdmin: true,   // Admin access
+      isActive: true,
+      profileImage: null,
+      preferences: { role: 'master_admin' },
+      addresses: [
+        {
+          type: 'home',
+          street: '1234 Main St',
+          city: 'St. Louis',
+          state: 'MO',
+          zipCode: '63101',
+          isDefault: true
+        }
+      ],
+      paymentMethods: [],
+      driverLicense: 'DL98765432',
+      vehicleInfo: {
+        make: 'Toyota',
+        model: 'Camry',
+        year: 2022,
+        color: 'Silver',
+        licensePlate: 'RET-001',
+        capacity: 'Large'
+      },
+      bankInfo: {
+        routingNumber: '123456789',
+        accountNumber: '*****1234',
+        accountType: 'checking'
+      },
+      driverRating: 4.9,
+      totalEarnings: 2847.50,
+      completedDeliveries: 156,
+      isOnline: true,
+      currentLocation: {
+        latitude: 38.6270,
+        longitude: -90.1994,
+        address: 'Downtown St. Louis, MO'
+      },
+      stripeConnectAccountId: 'acct_master123',
+      stripeOnboardingComplete: true,
+      paymentPreference: 'instant',
+      instantPayFeePreference: 0.50,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(1, masterAdmin);
+    
+    // Demo user with limited access
+    const demoUser: User = {
+      id: 2,
       email: 'demo@returnly.com',
       password: '$2b$12$t/xI0Ofb0d/mGpHkZqGGvOISgiEr5o9mdki3uXo2gpMpK2NiTGgK6', // hashed 'demo123'
       firstName: 'Demo',
-      lastName: 'SuperUser',
-      phone: '+1-555-0123',
-      isDriver: true,  // Driver access
-      isAdmin: true,   // Admin access
+      lastName: 'User',
+      phone: '+1-555-0124',
+      isDriver: false,  // No driver access
+      isAdmin: false,   // No admin access
       isActive: true,
       profileImage: null,
       preferences: { role: 'super_admin' },
@@ -139,11 +195,11 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    this.users.set(1, demoUser);
+    this.users.set(2, demoUser);
     
     // Demo driver
     const demoDriver: User = {
-      id: 2,
+      id: 3,
       email: 'driver@returnly.com',
       password: '$2b$12$HgHCeh4iUcf7w4z/u/77F.L6hV.Je0QhgaSkA1cjhhXrWV/JJgsoa', // hashed 'driver123'
       firstName: 'Demo',
@@ -167,11 +223,11 @@ export class MemStorage implements IStorage {
       createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
       updatedAt: new Date()
     };
-    this.users.set(2, demoDriver);
+    this.users.set(3, demoDriver);
     
     const demoOrder: Order = {
       id: 'DEMO01',
-      userId: 1,
+      userId: 2,
       status: OrderStatus.PICKED_UP,
       trackingNumber: 'RTN001',
       pickupAddress: '500 Market St, Apt 2C, San Francisco, CA 94105',

@@ -26,8 +26,11 @@ export function RoleSwitcher() {
   const [, setLocation] = useLocation();
   const [currentRole, setCurrentRole] = useState<'customer' | 'driver' | 'admin'>('customer');
 
-  if (!user || (!user.isAdmin && !user.isDriver)) {
-    return null; // Don't show switcher if user doesn't have multiple roles
+  // Only show role switcher for the master administrator
+  const MASTER_ADMIN_EMAIL = 'nabeelmumtaz92@gmail.com';
+  
+  if (!user || user.email !== MASTER_ADMIN_EMAIL || (!user.isAdmin && !user.isDriver)) {
+    return null; // Only show for master admin with multiple roles
   }
 
   const roles = [
