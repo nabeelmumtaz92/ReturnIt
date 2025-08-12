@@ -498,13 +498,12 @@ export default function Welcome() {
         <div className="relative px-8 lg:px-16">
           <div className="text-center mb-8">
             <div className="flex flex-col items-center gap-4">
-              <Link href="/">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                />
-              </Link>
+              <img 
+                src="/logo-cardboard-deep.png" 
+                alt="Returnly Logo" 
+                className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              />
               <h3 className="text-3xl font-bold text-white tracking-wider">RETURNLY</h3>
               <p className="text-gray-300 text-lg">Return Delivery Service</p>
             </div>
