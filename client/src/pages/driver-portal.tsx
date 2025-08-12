@@ -13,6 +13,8 @@ import { Separator } from "@/components/ui/separator";
 import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard } from "lucide-react";
 import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
+import DriverOnlineToggle from "@/components/DriverOnlineToggle";
+import DriverOrderCard from "@/components/DriverOrderCard";
 
 export default function DriverPortal() {
   const { user, isAuthenticated } = useAuth();

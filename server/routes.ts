@@ -369,10 +369,103 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver-specific endpoints
+  app.get("/api/driver/orders/available", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const availableOrders = await storage.getAvailableOrders();
+      res.json(availableOrders);
+    } catch (error) {
+      console.error("Error fetching available orders:", error);
+      res.status(500).json({ message: "Failed to fetch available orders" });
+    }
+  });
+
+  app.get("/api/driver/orders", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const driverOrders = await storage.getDriverOrders(user.id);
+      res.json(driverOrders);
+    } catch (error) {
+      console.error("Error fetching driver orders:", error);
+      res.status(500).json({ message: "Failed to fetch driver orders" });
+    }
+  });
+
+  app.post("/api/driver/orders/:orderId/accept", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { orderId } = req.params;
+      const order = await storage.assignOrderToDriver(orderId, user.id);
+      res.json(order);
+    } catch (error) {
+      console.error("Error accepting order:", error);
+      res.status(500).json({ message: "Failed to accept order" });
+    }
+  });
+
+  app.patch("/api/driver/status", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { isOnline } = req.body;
+      await storage.updateDriverStatus(user.id, isOnline);
+      res.json({ success: true, isOnline });
+    } catch (error) {
+      console.error("Error updating driver status:", error);
+      res.status(500).json({ message: "Failed to update driver status" });
+    }
+  });
+
   // Create new order (protected)
   app.post("/api/orders", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.session as any).user.id;
+      
+      // Calculate payment breakdown if route info is available
+      let orderData = { ...req.body, userId };
+      
+      if (req.body.routeInfo) {
+        const { calculatePayment } = await import('@shared/paymentCalculator');
+        const distance = parseFloat(req.body.routeInfo.distance.replace(' miles', ''));
+        const time = parseFloat(req.body.routeInfo.duration.replace(' mins', ''));
+        
+        const paymentBreakdown = calculatePayment(
+          { distance, estimatedTime: time },
+          req.body.boxSize,
+          req.body.numberOfBoxes,
+          false, // rush delivery
+          0 // tip
+        );
+        
+        orderData = {
+          ...orderData,
+          driverBasePay: paymentBreakdown.driverBasePay,
+          driverDistancePay: paymentBreakdown.driverDistancePay,
+          driverTimePay: paymentBreakdown.driverTimePay,
+          driverSizeBonus: paymentBreakdown.driverSizeBonus,
+          driverTotalEarning: paymentBreakdown.driverTotalEarning,
+          companyServiceFee: paymentBreakdown.companyServiceFee,
+          distanceFee: paymentBreakdown.distanceFee,
+          timeFee: paymentBreakdown.timeFee,
+          serviceFee: paymentBreakdown.serviceFee
+        };
+      }
       
       // Process the enhanced form data
       const {
@@ -400,9 +493,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const multiBoxFee = numberOfBoxes > 1 ? (numberOfBoxes - 1) * 1.50 : 0;
       const calculatedTotal = basePrice + sizeUpcharge + multiBoxFee;
 
-      const orderData = {
+      // Merge the existing orderData with the additional fields
+      orderData = {
+        ...orderData,
         id: orderId,
-        userId,
         trackingNumber,
         status: 'created',
         
@@ -430,7 +524,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         totalPrice: calculatedTotal
       };
 
-      const order = await storage.createOrder(orderData);
+      const validatedData = insertOrderSchema.parse(orderData);
+      const order = await storage.createOrder(validatedData);
       res.status(201).json(order);
     } catch (error) {
       console.error('Order creation error:', error);
