@@ -123,6 +123,39 @@ export default function AdminDashboard() {
         destination: 'Macy\'s - West County',
         createdAt: '2024-01-12 08:45 AM',
         priority: 'low'
+      },
+      {
+        id: 'ORD004',
+        customer: 'Robert Chen',
+        status: 'delivered',
+        driver: 'John Smith',
+        amount: 9.99,
+        pickupAddress: '321 Elm St, St. Louis, MO',
+        destination: 'Amazon Returns - Brentwood',
+        createdAt: '2024-01-11 02:15 PM',
+        priority: 'medium'
+      },
+      {
+        id: 'ORD005',
+        customer: 'Lisa Thompson',
+        status: 'delivered',
+        driver: 'Maria Garcia',
+        amount: 7.50,
+        pickupAddress: '654 Maple Dr, St. Louis, MO',
+        destination: 'Walmart - Kirkwood',
+        createdAt: '2024-01-11 11:30 AM',
+        priority: 'low'
+      },
+      {
+        id: 'ORD006',
+        customer: 'Mark Johnson',
+        status: 'refunded',
+        driver: 'David Wilson',
+        amount: 15.75,
+        pickupAddress: '987 Oak St, St. Louis, MO',
+        destination: 'Best Buy - West County',
+        createdAt: '2024-01-10 09:45 AM',
+        priority: 'high'
       }
     ]);
 
@@ -351,8 +384,13 @@ export default function AdminDashboard() {
             <TabsList className="bg-white border-amber-200 h-auto flex-wrap gap-1 sm:gap-0 p-1">
               <TabsTrigger value="orders" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <Package className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Orders</span>
-                <span className="sm:hidden">Orders</span>
+                <span className="hidden sm:inline">Live Orders</span>
+                <span className="sm:hidden">Live</span>
+              </TabsTrigger>
+              <TabsTrigger value="completed" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
+                <CheckCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Completed</span>
+                <span className="sm:hidden">Done</span>
               </TabsTrigger>
               <TabsTrigger value="drivers" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <Truck className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
@@ -453,6 +491,102 @@ export default function AdminDashboard() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Completed Orders Tab */}
+            <TabsContent value="completed">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <CardTitle className="text-amber-900 text-lg sm:text-xl">Completed Orders</CardTitle>
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <Button size="sm" variant="outline" className="px-2 sm:px-3">
+                        <Download className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Export</span>
+                        <span className="sm:hidden text-xs">Export</span>
+                      </Button>
+                      <Button size="sm" variant="outline" className="px-2 sm:px-3">
+                        <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Refresh</span>
+                        <span className="sm:hidden text-xs">Sync</span>
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {orders.filter(order => order.status === 'delivered' || order.status === 'refunded').map((order) => (
+                      <div 
+                        key={order.id} 
+                        className="p-4 border border-green-200 rounded-lg bg-green-50/50 hover:bg-green-50 cursor-pointer transition-colors"
+                        onClick={() => setSelectedOrder(order)}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                          <div className="flex items-center space-x-3 sm:space-x-4">
+                            <CheckCircle className="h-5 w-5 text-green-600" />
+                            <div>
+                              <p className="font-semibold text-amber-900 text-sm sm:text-base">{order.id}</p>
+                              <p className="text-xs sm:text-sm text-amber-700">{order.customer}</p>
+                            </div>
+                            <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
+                              {order.priority.toUpperCase()}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between sm:flex-col sm:items-end sm:text-right">
+                            <Badge className={`${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} text-xs mb-0 sm:mb-2`}>
+                              {order.status.replace('_', ' ').toUpperCase()}
+                            </Badge>
+                            <p className="text-sm font-semibold text-amber-900">${order.amount}</p>
+                          </div>
+                        </div>
+                        <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-amber-700">
+                          <p><MapPin className="h-3 w-3 inline mr-1" />{order.pickupAddress}</p>
+                          <p><Package className="h-3 w-3 inline mr-1" />{order.destination}</p>
+                          <p><Clock className="h-3 w-3 inline mr-1" />Completed: {order.createdAt}</p>
+                        </div>
+                        {order.driver && (
+                          <p className="mt-2 text-xs text-green-600">
+                            <Truck className="h-3 w-3 inline mr-1" />
+                            Completed by: {order.driver}
+                          </p>
+                        )}
+                        <div className="flex justify-between items-center mt-3">
+                          <div className="flex space-x-2">
+                            <Badge variant="outline" className="text-xs text-green-700 border-green-300">
+                              Payment Processed
+                            </Badge>
+                            {order.status === 'refunded' && (
+                              <Badge variant="outline" className="text-xs text-blue-700 border-blue-300">
+                                Customer Refunded
+                              </Badge>
+                            )}
+                          </div>
+                          <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="text-amber-700 border-amber-300 text-xs px-2 py-1"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleCustomerSupport(order);
+                            }}
+                          >
+                            <Eye className="h-3 w-3 mr-1" />
+                            <span className="hidden sm:inline">View Details</span>
+                            <span className="sm:hidden">Details</span>
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {orders.filter(order => order.status === 'delivered' || order.status === 'refunded').length === 0 && (
+                    <div className="text-center py-8 text-amber-600">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+                      <p className="text-lg font-medium">No completed orders yet</p>
+                      <p className="text-sm">Completed deliveries and refunds will appear here</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

@@ -8,7 +8,7 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 import { 
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
-  insertNotificationSchema, OrderStatus 
+  insertNotificationSchema, insertDriverApplicationSchema, OrderStatus 
 } from "@shared/schema";
 
 // Simple session-based authentication middleware
@@ -1384,6 +1384,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Driver payout error:", error);
       res.status(500).json({ message: "Error processing driver payout: " + error.message });
+    }
+  });
+
+  // Driver Application routes
+  app.post("/api/driver-applications", isAuthenticated, async (req, res) => {
+    try {
+      const applicationData = {
+        ...req.body,
+        userId: (req.session?.user as any)?.id
+      };
+      
+      const validatedData = insertDriverApplicationSchema.parse(applicationData);
+      const application = await storage.createDriverApplication(validatedData);
+      res.status(201).json(application);
+    } catch (error: any) {
+      console.error("Error creating driver application:", error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ message: "Failed to create driver application" });
+    }
+  });
+
+  app.get("/api/driver-applications", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session?.user as any;
+      if (user?.isAdmin) {
+        // Admin can see all applications
+        const applications = await storage.getAllDriverApplications();
+        res.json(applications);
+      } else {
+        // User can only see their own application
+        const application = await storage.getUserDriverApplication(user.id);
+        res.json(application ? [application] : []);
+      }
+    } catch (error) {
+      console.error("Error fetching driver applications:", error);
+      res.status(500).json({ message: "Failed to fetch driver applications" });
+    }
+  });
+
+  app.get("/api/driver-applications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const application = await storage.getDriverApplication(req.params.id);
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      const user = req.session?.user as any;
+      if (!user?.isAdmin && application.userId !== user.id) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      res.json(application);
+    } catch (error) {
+      console.error("Error fetching driver application:", error);
+      res.status(500).json({ message: "Failed to fetch driver application" });
+    }
+  });
+
+  app.put("/api/driver-applications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const application = await storage.getDriverApplication(req.params.id);
+      if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+
+      const user = req.session?.user as any;
+      if (!user?.isAdmin && application.userId !== user.id) {
+        return res.status(403).json({ message: "Unauthorized" });
+      }
+
+      const updatedApplication = await storage.updateDriverApplication(
+        req.params.id, 
+        req.body
+      );
+      res.json(updatedApplication);
+    } catch (error) {
+      console.error("Error updating driver application:", error);
+      res.status(500).json({ message: "Failed to update driver application" });
     }
   });
 

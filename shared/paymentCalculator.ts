@@ -185,7 +185,7 @@ export function calculatePayment(
   
   // Final subtotal including small order fee
   const subtotal = initialSubtotal + smallOrderFee;
-  const serviceFee = subtotal * config.serviceFeeRate;
+  const serviceFee = 3.99;
   const totalPrice = subtotal + serviceFee + tip;
   
   // Calculate driver earnings

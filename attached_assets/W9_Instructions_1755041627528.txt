@@ -1,0 +1,14 @@
+
+IRS FORM W-9 INSTRUCTIONS FOR RETURNLY CONTRACTORS
+
+As a 1099 independent contractor, you must submit a completed IRS Form W-9 to Returnly before receiving your first payment.
+
+Steps:
+1. Fill in your legal name as shown on your tax return.
+2. If you have a business name, include it, otherwise leave blank.
+3. Select your federal tax classification (most individuals select "Individual/sole proprietor").
+4. Enter your address.
+5. Provide your Social Security Number (SSN) or Employer Identification Number (EIN).
+6. Sign and date the form.
+
+Return the completed W-9 securely to Returnly's onboarding team.

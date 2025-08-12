@@ -10,12 +10,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard } from "lucide-react";
+import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users } from "lucide-react";
 import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
 import DriverOrderCard from "@/components/DriverOrderCard";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function DriverPortal() {
   const { user, isAuthenticated } = useAuth();

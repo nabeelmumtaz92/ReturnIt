@@ -1,4 +1,5 @@
 import { pgTable, text, timestamp, integer, boolean, real, jsonb } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -376,4 +377,85 @@ export const DiscountType = {
   PERCENTAGE: 'percentage',
   FIXED: 'fixed',
   FREE_DELIVERY: 'free_delivery'
+} as const;
+
+// Driver applications and onboarding
+export const driverApplications = pgTable("driver_applications", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  
+  // Personal Information
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  dateOfBirth: timestamp("date_of_birth").notNull(),
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  
+  // Vehicle Information
+  vehicleMake: text("vehicle_make").notNull(),
+  vehicleModel: text("vehicle_model").notNull(),
+  vehicleYear: text("vehicle_year").notNull(),
+  vehicleColor: text("vehicle_color").notNull(),
+  licensePlate: text("license_plate").notNull(),
+  vehicleType: text("vehicle_type").notNull(), // car, truck, van, etc.
+  
+  // Document Status
+  driversLicenseUploaded: boolean("drivers_license_uploaded").default(false),
+  driversLicenseVerified: boolean("drivers_license_verified").default(false),
+  vehicleRegistrationUploaded: boolean("vehicle_registration_uploaded").default(false),
+  vehicleRegistrationVerified: boolean("vehicle_registration_verified").default(false),
+  insuranceUploaded: boolean("insurance_uploaded").default(false),
+  insuranceVerified: boolean("insurance_verified").default(false),
+  selfieUploaded: boolean("selfie_uploaded").default(false),
+  selfieVerified: boolean("selfie_verified").default(false),
+  
+  // Background Check
+  backgroundCheckStatus: text("background_check_status").default("pending"), // pending, in_progress, approved, rejected
+  backgroundCheckProvider: text("background_check_provider"), // checkr, etc.
+  backgroundCheckId: text("background_check_id"),
+  
+  // Terms and Agreement
+  termsAccepted: boolean("terms_accepted").default(false),
+  termsAcceptedAt: timestamp("terms_accepted_at"),
+  
+  // Application Status
+  status: text("status").default("draft"), // draft, submitted, under_review, approved, rejected
+  reviewNotes: text("review_notes"),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewedAt: timestamp("reviewed_at"),
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Schemas for driver application
+export const insertDriverApplicationSchema = createInsertSchema(driverApplications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// Types for driver application
+export type DriverApplication = typeof driverApplications.$inferSelect;
+export type InsertDriverApplication = z.infer<typeof insertDriverApplicationSchema>;
+
+// Driver application status enum
+export const DriverApplicationStatus = {
+  DRAFT: 'draft',
+  SUBMITTED: 'submitted',
+  UNDER_REVIEW: 'under_review',
+  APPROVED: 'approved',
+  REJECTED: 'rejected'
+} as const;
+
+export const DocumentTypeEnum = {
+  LICENSE: 'drivers-license',
+  REGISTRATION: 'vehicle-registration',
+  INSURANCE: 'insurance',
+  SELFIE: 'selfie'
 } as const;

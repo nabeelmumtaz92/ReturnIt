@@ -4,6 +4,7 @@ import {
   type Notification, type InsertNotification, type Analytics, type InsertAnalytics,
   type DriverPayout, type InsertDriverPayout, type DriverIncentive, type InsertDriverIncentive,
   type BusinessInfo, type InsertBusinessInfo,
+  type DriverApplication, type InsertDriverApplication,
   OrderStatus
 } from "@shared/schema";
 
@@ -55,6 +56,13 @@ export interface IStorage {
   // Business information
   getBusinessInfo(): Promise<BusinessInfo | undefined>;
   updateBusinessInfo(info: InsertBusinessInfo): Promise<BusinessInfo>;
+
+  // Driver Applications
+  createDriverApplication(application: InsertDriverApplication): Promise<DriverApplication>;
+  getDriverApplication(id: string): Promise<DriverApplication | undefined>;
+  getUserDriverApplication(userId: number): Promise<DriverApplication | undefined>;
+  updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined>;
+  getAllDriverApplications(): Promise<DriverApplication[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -67,6 +75,7 @@ export class MemStorage implements IStorage {
   private driverPayouts: Map<number, DriverPayout>;
   private driverIncentives: Map<number, DriverIncentive>;
   private businessInfo: BusinessInfo | undefined;
+  private driverApplications: Map<string, DriverApplication>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
@@ -84,6 +93,7 @@ export class MemStorage implements IStorage {
     this.analytics = new Map();
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
+    this.driverApplications = new Map();
     
     // Master Administrator account
     const masterAdmin: User = {
@@ -910,6 +920,43 @@ export class MemStorage implements IStorage {
     };
     
     return this.businessInfo;
+  }
+  // Driver Application methods
+  async createDriverApplication(application: InsertDriverApplication): Promise<DriverApplication> {
+    const id = `app_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const newApplication: DriverApplication = {
+      id,
+      ...application,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.driverApplications.set(id, newApplication);
+    return newApplication;
+  }
+
+  async getDriverApplication(id: string): Promise<DriverApplication | undefined> {
+    return this.driverApplications.get(id);
+  }
+
+  async getUserDriverApplication(userId: number): Promise<DriverApplication | undefined> {
+    return Array.from(this.driverApplications.values()).find(app => app.userId === userId);
+  }
+
+  async updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined> {
+    const existing = this.driverApplications.get(id);
+    if (!existing) return undefined;
+    
+    const updated = { 
+      ...existing, 
+      ...updates, 
+      updatedAt: new Date() 
+    };
+    this.driverApplications.set(id, updated);
+    return updated;
+  }
+
+  async getAllDriverApplications(): Promise<DriverApplication[]> {
+    return Array.from(this.driverApplications.values());
   }
 }
 
