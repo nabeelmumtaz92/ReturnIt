@@ -40,6 +40,31 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Driver Documents table for digital document management
+export const driverDocuments = pgTable("driver_documents", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  documentType: text("document_type").notNull(), // drivers-license, vehicle-registration, insurance, etc.
+  documentTitle: text("document_title").notNull(),
+  documentCategory: text("document_category").notNull(), // identity, vehicle, insurance, background, legal, tax
+  status: text("status").notNull().default("pending"), // pending, uploaded, approved, rejected
+  fileUrl: text("file_url"),
+  fileName: text("file_name"),
+  fileSize: integer("file_size"),
+  mimeType: text("mime_type"),
+  uploadedAt: timestamp("uploaded_at"),
+  reviewedAt: timestamp("reviewed_at"),
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewNotes: text("review_notes"),
+  expiresAt: timestamp("expires_at"),
+  isRequired: boolean("is_required").default(true).notNull(),
+  digitalSignature: text("digital_signature"),
+  signedAt: timestamp("signed_at"),
+  metadata: jsonb("metadata").default({}), // Additional document metadata
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Enhanced Orders table with comprehensive tracking
 export const orders = pgTable("orders", {
   id: text("id").primaryKey(),
@@ -70,16 +95,17 @@ export const orders = pgTable("orders", {
   returnReason: text("return_reason"),
   originalOrderNumber: text("original_order_number"),
   
-  // Box and pricing details
-  boxSize: text("box_size").notNull(), // S, M, L, XL
-  numberOfBoxes: integer("number_of_boxes").default(1).notNull(),
+  // Item and pricing details
+  numberOfItems: integer("number_of_items").default(1).notNull(),
+  itemSize: text("item_size").notNull(), // S, M, L, XL (individual item size)
+  packagingType: text("packaging_type").default("bag"), // bag, box, envelope, none
   
   // Pricing breakdown
   basePrice: real("base_price").default(3.99), // Minimum service fee
   distanceFee: real("distance_fee").default(0), // $0.50 per mile
   timeFee: real("time_fee").default(0), // $12/hour estimated time
   sizeUpcharge: real("size_upcharge").default(0), // L: +$2, XL: +$4
-  multiBoxFee: real("multi_box_fee").default(0), // $1.50 per additional box
+  multiItemFee: real("multi_item_fee").default(0), // $1.00 per additional item
   serviceFee: real("service_fee").default(0), // 15% of subtotal
   
   // Optional fees and discounts

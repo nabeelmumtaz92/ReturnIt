@@ -22,6 +22,9 @@ import LogoColors from "@/pages/logo-colors";
 import BackgroundColors from "@/pages/background-colors";
 import AdminPaymentTracking from "@/pages/admin-payment-tracking";
 import DriverTutorial from "@/pages/driver-tutorial";
+import DriverDocuments from "@/pages/driver-documents";
+import HelpCenter from "@/pages/help-center";
+import HelpArticle from "@/pages/help-article";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -56,6 +59,11 @@ function Router() {
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/driver-tutorial" component={DriverTutorial} />
+      <Route path="/driver-documents" component={DriverDocuments} />
+      <Route path="/help-center" component={HelpCenter} />
+      <Route path="/help-article/:articleId">
+        {(params) => <HelpArticle />}
+      </Route>
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />

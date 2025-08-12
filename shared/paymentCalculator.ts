@@ -12,7 +12,7 @@ export interface PaymentBreakdown {
   distanceFee: number;
   timeFee: number;
   sizeUpcharge: number;
-  multiBoxFee: number;
+  multiItemFee: number;
   serviceFee: number;
   rushFee: number;
   subtotal: number;
@@ -59,7 +59,7 @@ export interface PaymentConfig {
   serviceFeeRate: number; // 15% of subtotal
   
   // Other fees
-  multiBoxFee: number; // $1.50 per additional box
+  multiItemFee: number; // $1.00 per additional item
   rushFee: number; // $3 for same-day
 }
 
