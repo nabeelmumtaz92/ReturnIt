@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard } from "lucide-react";
 import { Order, User } from "@shared/schema";
+import { RoleSwitcher } from '@/components/RoleSwitcher';
 
 export default function DriverPortal() {
   const { user, isAuthenticated } = useAuth();
@@ -130,6 +131,8 @@ export default function DriverPortal() {
             </div>
             
             <div className="flex items-center space-x-6">
+              <RoleSwitcher />
+              
               <div className="flex items-center space-x-2">
                 <Switch 
                   checked={isOnline} 

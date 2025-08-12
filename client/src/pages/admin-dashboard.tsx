@@ -44,6 +44,7 @@ import { useToast } from "@/hooks/use-toast";
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
+import { RoleSwitcher } from '@/components/RoleSwitcher';
 
 interface Order {
   id: string;
@@ -272,6 +273,7 @@ export default function AdminDashboard() {
                 </div>
               </div>
               <div className="flex items-center justify-end space-x-2 sm:space-x-3">
+                <RoleSwitcher />
                 <NotificationBell userType="admin" />
                 <Button 
                   variant="outline" 

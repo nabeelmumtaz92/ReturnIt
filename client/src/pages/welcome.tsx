@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, HeadphonesIcon } from 'lucide-react';
 import SupportChat from '@/components/SupportChat';
+import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -95,6 +96,13 @@ export default function Welcome() {
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-white via-stone-50/80 to-amber-50/60"></div>
         
+        {/* Floating Top Navigation - Role Switcher */}
+        {isAuthenticated && (
+          <div className="absolute top-4 right-4 z-30">
+            <RoleSwitcher />
+          </div>
+        )}
+
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
           <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto">
