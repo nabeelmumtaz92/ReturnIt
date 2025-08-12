@@ -143,7 +143,7 @@ export default function Login() {
     <Button
       type="button"
       variant="outline"
-      className={`w-full flex items-center justify-center gap-3 h-12 border-2 hover:${color} transition-colors`}
+      className={`w-full flex items-center justify-center gap-3 h-12 border-2 border-amber-200 hover:bg-amber-50 hover:border-amber-300 transition-all duration-200 bg-white text-amber-800 font-medium`}
       onClick={onClick}
       data-testid={`button-${provider.toLowerCase()}-auth`}
     >
@@ -153,7 +153,7 @@ export default function Login() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -163,45 +163,73 @@ export default function Login() {
             className="h-16 w-auto mx-auto mb-4"
           />
           <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>
-          <p className="text-amber-700">Return delivery made effortless</p>
+          <p className="text-amber-700">Returns made easy</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="login" data-testid="tab-login">Sign In</TabsTrigger>
-            <TabsTrigger value="register" data-testid="tab-register">Sign Up</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 bg-white border border-amber-200 shadow-sm">
+            <TabsTrigger 
+              value="login" 
+              data-testid="tab-login"
+              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium"
+            >
+              Sign In
+            </TabsTrigger>
+            <TabsTrigger 
+              value="register" 
+              data-testid="tab-register"
+              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium"
+            >
+              Sign Up
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="login">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign In</CardTitle>
-                <CardDescription>
-                  Enter your credentials to access your account
+            <Card className="bg-white border-amber-200 shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-amber-900">Sign In to Your Account</CardTitle>
+                <CardDescription className="text-amber-700">
+                  Welcome back! Enter your credentials to continue
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleLogin}>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="login-username">Username</Label>
-                    <Input
-                      id="login-username"
-                      data-testid="input-login-username"
-                      value={loginData.username}
-                      onChange={(e) => setLoginData(prev => ({...prev, username: e.target.value}))}
-                      placeholder="Enter your username"
-                    />
+                    <Label htmlFor="login-username" className="text-amber-800 font-medium">Username</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <User className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="login-username"
+                            data-testid="input-login-username"
+                            value={loginData.username}
+                            onChange={(e) => setLoginData(prev => ({...prev, username: e.target.value}))}
+                            placeholder="Enter your username"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password"
-                      data-testid="input-login-password"
-                      type="password"
-                      value={loginData.password}
-                      onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
-                      placeholder="Enter your password"
-                    />
+                    <Label htmlFor="login-password" className="text-amber-800 font-medium">Password</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <Lock className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="login-password"
+                            data-testid="input-login-password"
+                            type="password"
+                            value={loginData.password}
+                            onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
+                            placeholder="Enter your password"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
@@ -215,10 +243,12 @@ export default function Login() {
                     {loginMutation.isPending ? "Signing in..." : "Sign In with Email"}
                   </Button>
                   
-                  <div className="relative">
-                    <Separator />
+                  <div className="relative my-6">
+                    <Separator className="bg-amber-200" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-white px-2 text-xs text-gray-500">OR CONTINUE WITH</span>
+                      <span className="bg-white px-4 py-1 text-sm font-medium text-amber-700 rounded-full border border-amber-200">
+                        Or continue with
+                      </span>
                     </div>
                   </div>
                   
@@ -258,57 +288,89 @@ export default function Login() {
           </TabsContent>
 
           <TabsContent value="register">
-            <Card>
-              <CardHeader>
-                <CardTitle>Sign Up</CardTitle>
-                <CardDescription>
-                  Create your account to start using Returnly
+            <Card className="bg-white border-amber-200 shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-amber-900">Create Your Account</CardTitle>
+                <CardDescription className="text-amber-700">
+                  Join Returnly to start making returns easy
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleRegister}>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="register-username">Username</Label>
-                    <Input
-                      id="register-username"
-                      data-testid="input-register-username"
-                      value={registerData.username}
-                      onChange={(e) => setRegisterData(prev => ({...prev, username: e.target.value}))}
-                      placeholder="Choose a username"
-                    />
+                    <Label htmlFor="register-username" className="text-amber-800 font-medium">Username</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <User className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-username"
+                            data-testid="input-register-username"
+                            value={registerData.username}
+                            onChange={(e) => setRegisterData(prev => ({...prev, username: e.target.value}))}
+                            placeholder="Choose a username"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
-                    <Input
-                      id="register-email"
-                      data-testid="input-register-email"
-                      type="email"
-                      value={registerData.email}
-                      onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
-                      placeholder="Enter your email"
-                    />
+                    <Label htmlFor="register-email" className="text-amber-800 font-medium">Email Address</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <Mail className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-email"
+                            data-testid="input-register-email"
+                            type="email"
+                            value={registerData.email}
+                            onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
+                            placeholder="Enter your email address"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-password">Password</Label>
-                    <Input
-                      id="register-password"
-                      data-testid="input-register-password"
-                      type="password"
-                      value={registerData.password}
-                      onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
-                      placeholder="Create a password"
-                    />
+                    <Label htmlFor="register-password" className="text-amber-800 font-medium">Password</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <Lock className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-password"
+                            data-testid="input-register-password"
+                            type="password"
+                            value={registerData.password}
+                            onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
+                            placeholder="Create a strong password"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-confirm">Confirm Password</Label>
-                    <Input
-                      id="register-confirm"
-                      data-testid="input-register-confirm"
-                      type="password"
-                      value={registerData.confirmPassword}
-                      onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
-                      placeholder="Confirm your password"
-                    />
+                    <Label htmlFor="register-confirm" className="text-amber-800 font-medium">Confirm Password</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <Lock className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-confirm"
+                            data-testid="input-register-confirm"
+                            type="password"
+                            value={registerData.confirmPassword}
+                            onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
+                            placeholder="Confirm your password"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
                 <CardFooter className="flex flex-col space-y-4">
@@ -322,10 +384,12 @@ export default function Login() {
                     {registerMutation.isPending ? "Creating account..." : "Create Account with Email"}
                   </Button>
                   
-                  <div className="relative">
-                    <Separator />
+                  <div className="relative my-6">
+                    <Separator className="bg-amber-200" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-white px-2 text-xs text-gray-500">OR SIGN UP WITH</span>
+                      <span className="bg-white px-4 py-1 text-sm font-medium text-amber-700 rounded-full border border-amber-200">
+                        Or sign up with
+                      </span>
                     </div>
                   </div>
                   
@@ -366,14 +430,19 @@ export default function Login() {
         </Tabs>
 
         {/* Demo account info */}
-        <div className="mt-6 p-4 bg-amber-100 rounded-lg border border-amber-200">
-          <h3 className="font-semibold text-amber-800 mb-2">Demo Account</h3>
-          <p className="text-sm text-amber-700 mb-2">
-            Try the demo account: <strong>demo</strong> / <strong>demo123</strong>
-          </p>
-          <p className="text-xs text-amber-600">
-            The demo account has sample orders for testing.
-          </p>
+        <div className="mt-6 p-6 bg-gradient-to-r from-amber-50 to-stone-50 rounded-lg border border-amber-200 shadow-sm">
+          <h3 className="font-semibold text-amber-800 mb-3 text-center">Demo Account Available</h3>
+          <div className="bg-white p-4 rounded-lg border border-amber-100 text-center">
+            <p className="text-sm text-amber-700 mb-2">
+              Username: <span className="font-bold text-amber-900">demo</span>
+            </p>
+            <p className="text-sm text-amber-700 mb-3">
+              Password: <span className="font-bold text-amber-900">demo123</span>
+            </p>
+            <p className="text-xs text-amber-600">
+              Includes sample orders and full platform access for testing
+            </p>
+          </div>
         </div>
       </div>
     </div>
