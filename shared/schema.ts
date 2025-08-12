@@ -32,6 +32,10 @@ export const users = pgTable("users", {
   stripeOnboardingComplete: boolean("stripe_onboarding_complete").default(false),
   paymentPreference: text("payment_preference").default("weekly"), // weekly, instant
   instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
+  
+  // Tutorial and onboarding tracking
+  tutorialCompleted: boolean("tutorial_completed").default(false),
+  hireDate: timestamp("hire_date"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

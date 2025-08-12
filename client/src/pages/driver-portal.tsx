@@ -15,12 +15,21 @@ import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
 import DriverOrderCard from "@/components/DriverOrderCard";
+import { useLocation } from "wouter";
 
 export default function DriverPortal() {
   const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [isOnline, setIsOnline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+
+  // Check if new driver needs tutorial
+  useEffect(() => {
+    if (user && user.isDriver && !user.tutorialCompleted) {
+      setLocation('/driver-tutorial');
+    }
+  }, [user, setLocation]);
 
   // Get current location
   useEffect(() => {

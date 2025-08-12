@@ -21,6 +21,7 @@ import MobileAppDemo from "@/pages/mobile-app-demo";
 import LogoColors from "@/pages/logo-colors";
 import BackgroundColors from "@/pages/background-colors";
 import AdminPaymentTracking from "@/pages/admin-payment-tracking";
+import DriverTutorial from "@/pages/driver-tutorial";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/driver-portal" component={DriverPortal} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
+      <Route path="/driver-tutorial" component={DriverTutorial} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />
