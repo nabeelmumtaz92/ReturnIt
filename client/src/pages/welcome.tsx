@@ -2,7 +2,9 @@ import { useLocation } from 'wouter';
 import { Screen } from '@/components/screen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +17,7 @@ export default function Welcome() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [trackingNumber, setTrackingNumber] = useState('');
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -164,9 +167,53 @@ export default function Welcome() {
                     >
                       Sign Up
                     </Button>
-
                   </>
                 )}
+                
+                {/* Track Order Section - Available to all users */}
+                <div className="mt-6 p-4 bg-white/80 backdrop-blur-sm rounded-lg border border-amber-200">
+                  <div className="flex flex-col sm:flex-row gap-3 items-center">
+                    <Label htmlFor="tracking" className="text-amber-800 font-medium whitespace-nowrap">
+                      Track Order:
+                    </Label>
+                    <Input
+                      id="tracking"
+                      type="text"
+                      placeholder="Enter order ID or tracking number"
+                      value={trackingNumber}
+                      onChange={(e) => setTrackingNumber(e.target.value)}
+                      className="flex-1 bg-white/90 border-amber-300 focus:border-amber-500"
+                      data-testid="input-tracking"
+                    />
+                    <Button
+                      onClick={() => {
+                        if (trackingNumber.trim()) {
+                          if (isAuthenticated) {
+                            setLocation(`/order-status/${trackingNumber.trim()}`);
+                          } else {
+                            toast({
+                              title: "Sign in required",
+                              description: "Please sign in to track your order",
+                              variant: "destructive",
+                            });
+                            setLocation('/login');
+                          }
+                        } else {
+                          toast({
+                            title: "Enter tracking information",
+                            description: "Please enter your order ID or tracking number",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      className="bg-amber-700 hover:bg-amber-800 text-white px-6"
+                      data-testid="button-track-order"
+                    >
+                      <Search className="h-4 w-4 mr-2" />
+                      Track
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* Quick stats */}

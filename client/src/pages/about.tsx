@@ -38,6 +38,14 @@ export default function About() {
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-4xl text-center">
+          <div className="mb-8">
+            <img 
+              src="/logo-cardboard-deep.png" 
+              alt="Returnly Logo" 
+              className="h-24 w-auto mx-auto mb-4"
+              data-testid="img-logo"
+            />
+          </div>
           <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200" data-testid="badge-company">
             {businessInfo?.companyName || "Returnly"}
           </Badge>

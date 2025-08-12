@@ -602,7 +602,7 @@ export class MemStorage implements IStorage {
         description: "At Returnly, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
         headquarters: "St. Louis, MO",
         supportEmail: "support@returnly.com",
-        supportPhone: "(555) 123-4567",
+        supportPhone: "(636) 254-4821",
         businessHours: "Mon–Sat, 8 AM – 8 PM CST",
         instagramHandle: "@ReturnlyApp",
         facebookUrl: "facebook.com/Returnly",

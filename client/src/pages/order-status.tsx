@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth-simple";
+import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin } from "lucide-react";
+import { Order } from "@shared/schema";
 
 interface OrderStatusProps {
   orderId: string;
@@ -29,7 +30,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
     }
   }, [isAuthenticated, isLoading, setLocation, toast]);
 
-  const { data: order, isLoading: orderLoading, error } = useQuery({
+  const { data: order, isLoading: orderLoading, error } = useQuery<Order>({
     queryKey: ['/api/orders', orderId],
     enabled: isAuthenticated && !!orderId,
   });
@@ -140,14 +141,14 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-amber-900">
-              <span>Order #{order.id}</span>
-              <Badge className={getStatusColor(order.status)}>
-                {getStatusIcon(order.status)}
-                <span className="ml-2 capitalize">{order.status.replace('_', ' ')}</span>
+              <span>Order #{order?.id || orderId}</span>
+              <Badge className={getStatusColor(order?.status || 'created')}>
+                {getStatusIcon(order?.status || 'created')}
+                <span className="ml-2 capitalize">{order?.status?.replace('_', ' ') || 'Created'}</span>
               </Badge>
             </CardTitle>
             <CardDescription>
-              Created on {new Date(order.createdAt).toLocaleDateString()}
+              Created on {order?.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}
             </CardDescription>
           </CardHeader>
           
@@ -155,7 +156,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
             {/* Status Description */}
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
               <p className="text-amber-900">
-                {getStatusDescription(order.status)}
+                {getStatusDescription(order?.status || 'created')}
               </p>
             </div>
 
@@ -165,7 +166,12 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
                 <MapPin className="h-5 w-5 text-amber-700 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-amber-900">Pickup Address</h4>
-                  <p className="text-amber-700">{order.pickupAddress}</p>
+                  <p className="text-amber-700">
+                    {order?.pickupStreetAddress ? 
+                      `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}` :
+                      'Address not available'
+                    }
+                  </p>
                 </div>
               </div>
 
@@ -174,11 +180,16 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
                 <div>
                   <h4 className="font-medium text-amber-900">Return Details</h4>
                   <p className="text-amber-700">
-                    <strong>Retailer:</strong> {order.retailer}
+                    <strong>Retailer:</strong> {order?.retailer || 'N/A'}
                   </p>
                   <p className="text-amber-700">
-                    <strong>Item:</strong> {order.itemDescription}
+                    <strong>Items:</strong> {order?.itemCategory || 'N/A'}
                   </p>
+                  {order?.itemDescription && (
+                    <p className="text-amber-700">
+                      <strong>Description:</strong> {order.itemDescription}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -186,7 +197,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
                 <Truck className="h-5 w-5 text-amber-700 mt-0.5" />
                 <div>
                   <h4 className="font-medium text-amber-900">Service Cost</h4>
-                  <p className="text-amber-700 font-bold">{order.price}</p>
+                  <p className="text-amber-700 font-bold">${order?.totalPrice?.toFixed(2) || '0.00'}</p>
                 </div>
               </div>
             </div>
