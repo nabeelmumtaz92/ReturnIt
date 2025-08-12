@@ -79,7 +79,9 @@ export const orders = pgTable("orders", {
   pickupState: text("pickup_state").notNull(),
   pickupZipCode: text("pickup_zip_code").notNull(),
   pickupCoordinates: jsonb("pickup_coordinates"),
+  pickupLocation: text("pickup_location").default("inside").notNull(), // 'inside' or 'outside'
   pickupInstructions: text("pickup_instructions"),
+  acceptsLiabilityTerms: boolean("accepts_liability_terms").default(false).notNull(), // Required for outside pickup
   pickupWindow: jsonb("pickup_window"), // start/end times
   scheduledPickupTime: timestamp("scheduled_pickup_time"),
   actualPickupTime: timestamp("actual_pickup_time"),

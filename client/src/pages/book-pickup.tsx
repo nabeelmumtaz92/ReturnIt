@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -71,10 +71,15 @@ export default function BookPickup() {
     itemValue: '',
     // Preferred time slot
     preferredTimeSlot: '',
+    // Pickup location preference
+    pickupLocation: 'inside', // 'inside' or 'outside'
+    pickupInstructions: '', // Special instructions for outside pickup
     // Instructions
     notes: '',
     // Receipt upload
-    receiptPhoto: null as File | null
+    receiptPhoto: null as File | null,
+    // Liability acceptance
+    acceptsLiabilityTerms: false
   });
 
   // Location and routing state
@@ -249,6 +254,27 @@ export default function BookPickup() {
       missing.push('itemCategories');
     }
     
+    // Validate outside pickup requirements
+    if (formData.pickupLocation === 'outside') {
+      if (!formData.pickupInstructions.trim()) {
+        toast({
+          title: "Pickup Instructions Required",
+          description: "Please provide specific instructions for outside pickup location",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (!formData.acceptsLiabilityTerms) {
+        toast({
+          title: "Liability Terms Required",
+          description: "Please accept the liability terms for outside pickup",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+    
     if (missing.length > 0) {
       toast({
         title: "Missing information",
@@ -276,6 +302,9 @@ export default function BookPickup() {
       itemSize: formData.itemSize,
       numberOfItems: formData.numberOfItems,
       notes: formData.notes,
+      pickupLocation: formData.pickupLocation,
+      pickupInstructions: formData.pickupInstructions,
+      acceptsLiabilityTerms: formData.acceptsLiabilityTerms,
       paymentMethod: method,
       paymentDetails: details,
       totalAmount
@@ -720,6 +749,131 @@ export default function BookPickup() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              {/* Pickup Location Preference */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Home className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Pickup Location</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div 
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.pickupLocation === 'inside' 
+                        ? 'border-amber-500 bg-amber-50' 
+                        : 'border-gray-300 bg-white hover:border-amber-300'
+                    }`}
+                    onClick={() => handleInputChange('pickupLocation', 'inside')}
+                    data-testid="option-pickup-inside"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <Home className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-amber-900">Inside Pickup</h3>
+                        <p className="text-sm text-amber-700">Driver will ring doorbell and collect items from you directly</p>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs text-green-600">✓ Secure handoff</p>
+                          <p className="text-xs text-green-600">✓ Receipt confirmation</p>
+                          <p className="text-xs text-green-600">✓ Full liability protection</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div 
+                    className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      formData.pickupLocation === 'outside' 
+                        ? 'border-amber-500 bg-amber-50' 
+                        : 'border-gray-300 bg-white hover:border-amber-300'
+                    }`}
+                    onClick={() => handleInputChange('pickupLocation', 'outside')}
+                    data-testid="option-pickup-outside"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        <Package className="h-6 w-6 text-amber-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-amber-900">Outside Pickup</h3>
+                        <p className="text-sm text-amber-700">Leave items outside - driver will collect without contact</p>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs text-blue-600">✓ Contactless pickup</p>
+                          <p className="text-xs text-blue-600">✓ Convenient scheduling</p>
+                          <p className="text-xs text-orange-600 flex items-center">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            Limited liability protection
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Outside Pickup Instructions */}
+                {formData.pickupLocation === 'outside' && (
+                  <div className="space-y-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
+                    <div className="flex items-start space-x-2">
+                      <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-semibold text-orange-900">Outside Pickup Instructions</h4>
+                        <p className="text-sm text-orange-700 mt-1">
+                          Please provide specific details about where items will be left for pickup
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <Textarea
+                      placeholder="e.g., 'Left by front door in Amazon box', 'Behind planter on porch', 'In garage by side door'"
+                      value={formData.pickupInstructions}
+                      onChange={(e) => handleInputChange('pickupInstructions', e.target.value)}
+                      className="bg-white border-orange-300 focus:border-orange-500"
+                      rows={3}
+                      data-testid="textarea-pickup-instructions"
+                    />
+                    
+                    <div className="bg-white p-4 rounded border border-orange-200">
+                      <h5 className="font-semibold text-orange-900 mb-2 flex items-center">
+                        <Shield className="h-4 w-4 mr-2" />
+                        Outside Pickup Liability Terms
+                      </h5>
+                      <div className="text-sm text-orange-800 space-y-2">
+                        <p><strong>By choosing outside pickup, you acknowledge and agree that:</strong></p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Items will be left unattended outside your residence</li>
+                          <li>Returnly and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
+                          <li>Weather, theft, or other external factors may affect your items</li>
+                          <li>You assume full risk and responsibility for items left outside</li>
+                          <li>Photo documentation will be provided as proof of pickup attempt</li>
+                          <li>No refunds will be provided for items not found at specified location</li>
+                        </ul>
+                        <div className="mt-3 p-2 bg-orange-100 rounded border border-orange-300">
+                          <p className="text-xs text-orange-900">
+                            <strong>Recommendation:</strong> For valuable items over $100, we strongly recommend choosing "Inside Pickup" 
+                            to ensure secure handoff and full liability protection.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="acceptsLiabilityTerms"
+                        checked={formData.acceptsLiabilityTerms}
+                        onCheckedChange={(checked) => 
+                          handleInputChange('acceptsLiabilityTerms', checked === true)
+                        }
+                        data-testid="checkbox-liability-terms"
+                      />
+                      <Label htmlFor="acceptsLiabilityTerms" className="text-sm text-orange-900 font-medium">
+                        I understand and accept the liability terms for outside pickup *
+                      </Label>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Receipt Upload */}
