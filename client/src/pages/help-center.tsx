@@ -17,7 +17,13 @@ import {
   MapPin,
   Phone,
   Mail,
-  MessageCircle
+  MessageCircle,
+  ChevronRight,
+  Star,
+  BookOpen,
+  FileText,
+  Settings,
+  AlertCircle
 } from "lucide-react";
 
 interface HelpArticle {
@@ -26,341 +32,526 @@ interface HelpArticle {
   category: string;
   content: string;
   tags: string[];
+  readTime: string;
+  popularity: number;
 }
 
-const helpArticles: HelpArticle[] = [
-  {
-    id: "how-to-book",
-    title: "How to Book a Return Pickup",
-    category: "Getting Started",
-    content: `
-      <h3>Step-by-Step Guide:</h3>
-      <ol>
-        <li>Sign in to your Returnly account</li>
-        <li>Click "Book Pickup" from the main page</li>
-        <li>Enter your pickup address details</li>
-        <li>Select the retailer you're returning to</li>
-        <li>Choose your item categories (Electronics, Clothing, etc.)</li>
-        <li>Select box size and quantity</li>
-        <li>Add estimated weight for better logistics</li>
-        <li>Review pricing and complete payment</li>
-        <li>Receive confirmation and track your pickup</li>
-      </ol>
-      
-      <h3>Pricing:</h3>
-      <ul>
-        <li>Base service fee: $3.99</li>
-        <li>Large box: +$2.00</li>
-        <li>Extra Large box: +$4.00</li>
-        <li>Additional boxes: +$1.50 each</li>
-      </ul>
-    `,
-    tags: ["booking", "pickup", "pricing", "getting-started"]
-  },
-  {
-    id: "track-order",
-    title: "How to Track Your Return",
-    category: "Order Management",
-    content: `
-      <h3>Tracking Your Return:</h3>
-      <ol>
-        <li>Use the Track Order feature on the home page</li>
-        <li>Enter your order ID or tracking number</li>
-        <li>View real-time status updates</li>
-      </ol>
-      
-      <h3>Order Statuses:</h3>
-      <ul>
-        <li><strong>Created:</strong> Your pickup request has been received</li>
-        <li><strong>Assigned:</strong> A driver has been assigned to your pickup</li>
-        <li><strong>Picked Up:</strong> Your item is on its way to the retailer</li>
-        <li><strong>Dropped Off:</strong> Successfully returned to retailer</li>
-        <li><strong>Refunded:</strong> Return processed and refunded</li>
-      </ul>
-    `,
-    tags: ["tracking", "order-status", "pickup"]
-  },
-  {
-    id: "payment-methods",
-    title: "Payment Methods & Billing",
-    category: "Billing",
-    content: `
-      <h3>Accepted Payment Methods:</h3>
-      <ul>
-        <li>Credit Cards (Visa, Mastercard, American Express)</li>
-        <li>Debit Cards</li>
-        <li>Apple Pay</li>
-        <li>Google Pay</li>
-        <li>PayPal (coming soon)</li>
-      </ul>
-      
-      <h3>Promo Codes:</h3>
-      <p>Enter promo codes during checkout to receive discounts:</p>
-      <ul>
-        <li><strong>RETURN50:</strong> 50% off your first return</li>
-        <li><strong>BUNDLE25:</strong> $2.50 off orders over $5</li>
-        <li><strong>FREESHIP:</strong> Free delivery on any order</li>
-      </ul>
-    `,
-    tags: ["payment", "billing", "promo-codes", "discount"]
-  },
-  {
-    id: "driver-program",
-    title: "Become a Returnly Driver",
-    category: "Driver Portal",
-    content: `
-      <h3>Driver Requirements:</h3>
-      <ul>
-        <li>Valid driver's license and insurance</li>
-        <li>Reliable vehicle</li>
-        <li>Smartphone for the driver app</li>
-        <li>Background check (we'll help with this)</li>
-      </ul>
-      
-      <h3>Earnings:</h3>
-      <ul>
-        <li>70% of service fee goes to drivers</li>
-        <li>Instant pay available</li>
-        <li>Weekly earnings summary</li>
-        <li>Bonus opportunities for large packages</li>
-        <li>Peak season bonuses</li>
-      </ul>
-      
-      <h3>Getting Started:</h3>
-      <ol>
-        <li>Complete driver onboarding</li>
-        <li>Upload required documents</li>
-        <li>Pass background check</li>
-        <li>Start accepting pickup requests</li>
-      </ol>
-    `,
-    tags: ["driver", "earnings", "requirements", "onboarding"]
-  },
-  {
-    id: "supported-retailers",
-    title: "Supported Retailers",
-    category: "Returns",
-    content: `
-      <h3>Partner Retailers (500+):</h3>
-      <p>We work with major retailers including:</p>
-      <ul>
-        <li>Amazon</li>
-        <li>Target</li>
-        <li>Best Buy</li>
-        <li>Walmart</li>
-        <li>Macy's</li>
-        <li>Nordstrom</li>
-        <li>Home Depot</li>
-        <li>And many more local and national retailers</li>
-      </ul>
-      
-      <h3>Return Policies:</h3>
-      <p>Each retailer has their own return policy. We'll help ensure your items meet the requirements before pickup.</p>
-    `,
-    tags: ["retailers", "partners", "returns", "policies"]
-  },
-  {
-    id: "troubleshooting",
-    title: "Common Issues & Solutions",
-    category: "Support",
-    content: `
-      <h3>Login Issues:</h3>
-      <ul>
-        <li>Reset your password if you can't sign in</li>
-        <li>Clear browser cache and cookies</li>
-        <li>Try signing in with Google if available</li>
-      </ul>
-      
-      <h3>Pickup Issues:</h3>
-      <ul>
-        <li>Ensure someone is available at pickup location</li>
-        <li>Have items packaged and ready</li>
-        <li>Contact driver if running late</li>
-      </ul>
-      
-      <h3>Payment Issues:</h3>
-      <ul>
-        <li>Verify card information is correct</li>
-        <li>Check if card has sufficient funds</li>
-        <li>Try a different payment method</li>
-      </ul>
-    `,
-    tags: ["troubleshooting", "issues", "problems", "solutions"]
-  }
-];
-
 export default function HelpCenter() {
-  const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [, setLocation] = useLocation();
 
-  const categories = ['All', ...new Set(helpArticles.map(article => article.category))];
+  const categories = [
+    { id: "getting-started", name: "Getting Started", icon: HelpCircle, color: "bg-blue-500", count: 8 },
+    { id: "order-management", name: "Order Management", icon: Package, color: "bg-green-500", count: 12 },
+    { id: "pricing-payment", name: "Pricing & Payment", icon: CreditCard, color: "bg-purple-500", count: 6 },
+    { id: "for-drivers", name: "For Drivers", icon: Truck, color: "bg-orange-500", count: 15 },
+    { id: "account-settings", name: "Account & Settings", icon: User, color: "bg-red-500", count: 9 },
+    { id: "policies", name: "Policies", icon: Shield, color: "bg-gray-500", count: 7 }
+  ];
+
+  // Comprehensive help articles database
+  const helpArticles: HelpArticle[] = [
+    // Getting Started
+    {
+      id: "how-to-book-return",
+      title: "How to Book a Return Pickup",
+      category: "Getting Started",
+      readTime: "3 min",
+      popularity: 98,
+      content: "Complete step-by-step guide for booking your first return pickup with Returnly. Learn about package requirements, pickup scheduling, pricing breakdown, and payment options.",
+      tags: ["booking", "pickup", "getting-started", "tutorial", "first-time"]
+    },
+    {
+      id: "service-areas",
+      title: "Service Areas & Availability",
+      category: "Getting Started", 
+      readTime: "2 min",
+      popularity: 85,
+      content: "Find out if Returnly services your area. Complete coverage map for St. Louis metro area including pickup and delivery zones.",
+      tags: ["service-area", "coverage", "availability", "location"]
+    },
+    {
+      id: "account-setup",
+      title: "Creating Your Returnly Account",
+      category: "Getting Started",
+      readTime: "2 min", 
+      popularity: 92,
+      content: "Quick guide to setting up your Returnly account, adding payment methods, and configuring notification preferences.",
+      tags: ["account", "setup", "registration", "profile"]
+    },
+    {
+      id: "mobile-app-guide",
+      title: "Using the Returnly Mobile App",
+      category: "Getting Started",
+      readTime: "4 min",
+      popularity: 76,
+      content: "Complete guide to downloading and using the Returnly mobile app for iOS and Android. Features, navigation, and pro tips.",
+      tags: ["mobile-app", "ios", "android", "app-guide"]
+    },
+
+    // Order Management
+    {
+      id: "tracking-order",
+      title: "Track Your Return Order",
+      category: "Order Management",
+      readTime: "2 min",
+      popularity: 95,
+      content: "Learn how to track your return from booking to delivery with real-time updates, status explanations, and troubleshooting tips for tracking issues.",
+      tags: ["tracking", "status", "delivery", "updates", "real-time"]
+    },
+    {
+      id: "modify-cancel-order",
+      title: "Modify or Cancel Your Order",
+      category: "Order Management",
+      readTime: "3 min",
+      popularity: 88,
+      content: "How to change pickup times, addresses, or cancel your return pickup. Cancellation policies and fees explained.",
+      tags: ["modify", "cancel", "reschedule", "change"]
+    },
+    {
+      id: "delivery-issues",
+      title: "Delivery Problems & Solutions",
+      category: "Order Management",
+      readTime: "4 min",
+      popularity: 72,
+      content: "What to do when packages are delayed, damaged, or lost. Step-by-step resolution process and how to file claims.",
+      tags: ["problems", "issues", "delayed", "damaged", "lost"]
+    },
+    {
+      id: "multiple-packages",
+      title: "Handling Multiple Package Returns",
+      category: "Order Management",
+      readTime: "3 min",
+      popularity: 83,
+      content: "Best practices for returning multiple packages in one pickup. Consolidation tips, pricing optimization, and organization strategies.",
+      tags: ["multiple-packages", "bulk", "consolidation", "optimization"]
+    },
+
+    // Pricing & Payment
+    {
+      id: "pricing-guide",
+      title: "Understanding Returnly Pricing",
+      category: "Pricing & Payment",
+      readTime: "4 min",
+      popularity: 94,
+      content: "Comprehensive breakdown of our transparent pricing model including base fees, distance charges, size upcharges, rush fees, and money-saving tips.",
+      tags: ["pricing", "fees", "cost", "payment", "billing", "transparent"]
+    },
+    {
+      id: "payment-methods",
+      title: "Accepted Payment Methods",
+      category: "Pricing & Payment", 
+      readTime: "2 min",
+      popularity: 79,
+      content: "All accepted payment options including credit cards, debit cards, Apple Pay, Google Pay, and PayPal. Security and billing information.",
+      tags: ["payment", "methods", "cards", "apple-pay", "paypal"]
+    },
+    {
+      id: "promo-codes",
+      title: "Promo Codes & Discounts",
+      category: "Pricing & Payment",
+      readTime: "2 min",
+      popularity: 91,
+      content: "Current promotional codes, how to apply discounts, and ways to save money on your returns. Special offers for new and repeat customers.",
+      tags: ["promo-codes", "discounts", "savings", "offers", "coupons"]
+    },
+    {
+      id: "refunds-billing",
+      title: "Refunds & Billing Questions",
+      category: "Pricing & Payment",
+      readTime: "3 min",
+      popularity: 68,
+      content: "Understanding our refund policy, how to request refunds, billing dispute resolution, and receipt information for business expenses.",
+      tags: ["refunds", "billing", "disputes", "receipts", "business-expenses"]
+    },
+
+    // For Drivers
+    {
+      id: "driver-faq",
+      title: "Driver FAQ - Frequently Asked Questions", 
+      category: "For Drivers",
+      readTime: "6 min",
+      popularity: 89,
+      content: "Comprehensive FAQ for Returnly drivers covering requirements, earnings, schedules, app usage, customer interaction, payments, and support resources.",
+      tags: ["driver", "faq", "earnings", "requirements", "schedule", "comprehensive"]
+    },
+    {
+      id: "driver-requirements",
+      title: "Driver Requirements & Application",
+      category: "For Drivers",
+      readTime: "4 min", 
+      popularity: 86,
+      content: "Complete list of requirements to become a Returnly driver. Application process, background checks, vehicle standards, and approval timeline.",
+      tags: ["driver", "requirements", "application", "background-check", "vehicle"]
+    },
+    {
+      id: "driver-payments",
+      title: "Driver Payment Structure & Earnings",
+      category: "For Drivers",
+      readTime: "5 min",
+      popularity: 93,
+      content: "Detailed breakdown of driver earnings including base pay, mileage, time bonuses, tips, and instant payout options. Tax information included.",
+      tags: ["driver", "payments", "earnings", "payouts", "taxes", "1099"]
+    },
+    {
+      id: "driver-app-guide",
+      title: "Driver App Tutorial & Features",
+      category: "For Drivers",
+      readTime: "4 min",
+      popularity: 81,
+      content: "Complete guide to using the Returnly driver app. From going online to completing deliveries, navigation, customer communication, and earnings tracking.",
+      tags: ["driver", "app", "tutorial", "features", "navigation"]
+    },
+    {
+      id: "driver-safety",
+      title: "Driver Safety & Support",
+      category: "For Drivers",
+      readTime: "3 min",
+      popularity: 78,
+      content: "Safety protocols, emergency procedures, customer interaction guidelines, and 24/7 support resources for drivers.",
+      tags: ["driver", "safety", "emergency", "support", "protocols"]
+    },
+
+    // Account & Settings  
+    {
+      id: "account-management",
+      title: "Managing Your Account Settings",
+      category: "Account & Settings",
+      readTime: "3 min",
+      popularity: 75,
+      content: "How to update personal information, change passwords, manage notification preferences, and configure account security settings.",
+      tags: ["account", "settings", "profile", "security", "notifications"]
+    },
+    {
+      id: "notification-settings",
+      title: "Email & SMS Notification Settings",
+      category: "Account & Settings",
+      readTime: "2 min",
+      popularity: 82,
+      content: "Customize your notification preferences for order updates, promotional offers, and driver communications via email and SMS.",
+      tags: ["notifications", "email", "sms", "preferences", "communications"]
+    },
+    {
+      id: "privacy-security",
+      title: "Privacy & Security Information",
+      category: "Account & Settings", 
+      readTime: "4 min",
+      popularity: 71,
+      content: "Information about data privacy, security measures, account protection, and how your personal information is handled and protected.",
+      tags: ["privacy", "security", "data-protection", "account-safety"]
+    },
+
+    // Policies
+    {
+      id: "return-policies",
+      title: "Return Policies & Guidelines",
+      category: "Policies",
+      readTime: "5 min",
+      popularity: 87,
+      content: "Complete guide to our return policies including accepted items, prohibited materials, size restrictions, service areas, and quality standards.",
+      tags: ["policies", "guidelines", "restrictions", "terms", "prohibited-items"]
+    },
+    {
+      id: "terms-of-service",
+      title: "Terms of Service",
+      category: "Policies",
+      readTime: "8 min",
+      popularity: 45,
+      content: "Complete terms of service including user responsibilities, liability limits, dispute resolution, and legal agreements.",
+      tags: ["terms", "legal", "liability", "agreements", "responsibilities"]
+    },
+    {
+      id: "privacy-policy",
+      title: "Privacy Policy",
+      category: "Policies",
+      readTime: "6 min", 
+      popularity: 52,
+      content: "Detailed privacy policy explaining data collection, usage, sharing, and your privacy rights when using Returnly services.",
+      tags: ["privacy", "data-collection", "rights", "policy"]
+    },
+
+    // Support
+    {
+      id: "contact-support",
+      title: "Contact Customer Support",
+      category: "Support",
+      readTime: "2 min",
+      popularity: 96,
+      content: "Multiple ways to reach our 24/7 support team including live chat, phone, email, and self-service options. Response times and contact information.",
+      tags: ["support", "contact", "help", "customer-service", "24-7"]
+    },
+    {
+      id: "troubleshooting",
+      title: "Common Issues & Troubleshooting",
+      category: "Support",
+      readTime: "5 min",
+      popularity: 84,
+      content: "Solutions to common problems including app issues, booking problems, payment failures, and driver communication issues.",
+      tags: ["troubleshooting", "problems", "solutions", "common-issues", "fixes"]
+    }
+  ];
 
   const filteredArticles = helpArticles.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = searchQuery === '' || 
+      article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     
-    const matchesCategory = selectedCategory === 'All' || article.category === selectedCategory;
+    const matchesCategory = selectedCategory === null || 
+      article.category.toLowerCase().replace(/\s+/g, '-').replace('&', '') === selectedCategory;
     
     return matchesSearch && matchesCategory;
   });
 
+  // Sort by popularity for better user experience
+  const sortedArticles = filteredArticles.sort((a, b) => b.popularity - a.popularity);
+
+  const popularArticles = helpArticles
+    .sort((a, b) => b.popularity - a.popularity)
+    .slice(0, 6);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
-      {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-amber-900 mb-4">Help Center</h1>
+          <p className="text-xl text-amber-700 max-w-2xl mx-auto">
+            Find answers to your questions about Returnly's return pickup service
+          </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-2xl mx-auto mb-12">
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-5 w-5 text-amber-500" />
+            <Input
+              placeholder="Search help articles..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 py-3 text-lg border-amber-200 focus:border-amber-400"
+              data-testid="input-help-search"
+            />
+          </div>
+          {searchQuery && (
+            <p className="text-sm text-amber-600 mt-2">
+              {sortedArticles.length} result{sortedArticles.length !== 1 ? 's' : ''} found for "{searchQuery}"
+            </p>
+          )}
+        </div>
+
+        {/* Categories */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-amber-900 mb-6">Browse by Category</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              const isSelected = selectedCategory === category.id;
+              return (
+                <Card 
+                  key={category.id}
+                  className={`cursor-pointer transition-all hover:shadow-lg ${
+                    isSelected ? 'ring-2 ring-amber-400 bg-amber-50' : 'hover:bg-amber-50'
+                  }`}
+                  onClick={() => setSelectedCategory(isSelected ? null : category.id)}
+                  data-testid={`category-${category.id}`}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-4">
+                      <div className={`p-3 rounded-lg ${category.color}`}>
+                        <Icon className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-amber-900 mb-1">{category.name}</h3>
+                        <p className="text-sm text-amber-600">{category.count} articles</p>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-amber-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          {selectedCategory && (
+            <div className="mt-4 text-center">
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setLocation('/')}
-                className="text-amber-800 hover:text-amber-900"
-                data-testid="button-back-home"
+                variant="outline"
+                onClick={() => setSelectedCategory(null)}
+                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                data-testid="button-clear-category"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back
+                Clear Category Filter
               </Button>
-              <Link href="/">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                />
-              </Link>
-              <span className="text-xl font-bold text-amber-900">Help Center</span>
+            </div>
+          )}
+        </div>
+
+        {/* Popular Articles */}
+        {!searchQuery && !selectedCategory && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-amber-900 mb-6">Most Popular Articles</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {popularArticles.map((article, index) => (
+                <Card key={article.id} className="hover:shadow-lg transition-shadow bg-white">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <Badge variant="secondary" className="bg-amber-100 text-amber-800 mb-2">
+                        {article.category}
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                        <span className="text-sm text-gray-600">#{index + 1}</span>
+                      </div>
+                    </div>
+                    <CardTitle className="text-amber-900 leading-tight">{article.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-gray-600 mb-4 line-clamp-2">{article.content}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-amber-600">
+                        <Clock className="h-4 w-4" />
+                        <span>{article.readTime}</span>
+                      </div>
+                      <Link href={`/help-article/${article.id}`}>
+                        <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid={`button-read-${article.id}`}>
+                          Read Article
+                        </Button>
+                      </Link>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
-        </div>
-      </header>
+        )}
 
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Search and Categories */}
-        <div className="mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center text-amber-900">
-                <HelpCircle className="h-6 w-6 mr-2" />
-                How can we help you?
-              </CardTitle>
-              <CardDescription>
-                Search our knowledge base or browse by category
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-amber-600" />
-                <Input
-                  placeholder="Search help articles..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-white/90 border-amber-300 focus:border-amber-500"
-                  data-testid="input-help-search"
-                />
-              </div>
-              
-              {/* Category Filters */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map(category => (
-                  <Button
-                    key={category}
-                    variant={selectedCategory === category ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedCategory(category)}
-                    className={selectedCategory === category 
-                      ? "bg-amber-700 hover:bg-amber-800 text-white" 
-                      : "border-amber-300 text-amber-700 hover:bg-amber-50"
-                    }
-                    data-testid={`button-category-${category.toLowerCase().replace(' ', '-')}`}
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Help Articles */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredArticles.map(article => (
-            <Card key={article.id} className="bg-white/90 backdrop-blur-sm hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-2">
-                  <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                    {article.category}
-                  </Badge>
-                </div>
-                <CardTitle className="text-amber-900 text-lg">
-                  {article.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div 
-                  className="text-amber-700 text-sm line-clamp-3 mb-4"
-                  dangerouslySetInnerHTML={{ 
-                    __html: article.content.replace(/<[^>]*>/g, ' ').substring(0, 150) + '...' 
-                  }}
-                />
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {article.tags.slice(0, 3).map(tag => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
+        {/* All Articles / Search Results */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-amber-900 mb-6">
+            {searchQuery ? 'Search Results' : selectedCategory ? `${categories.find(c => c.id === selectedCategory)?.name} Articles` : 'All Help Articles'}
+          </h2>
+          
+          {sortedArticles.length === 0 ? (
+            <Card className="bg-white">
+              <CardContent className="text-center py-12">
+                <AlertCircle className="h-12 w-12 text-amber-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-amber-900 mb-2">No articles found</h3>
+                <p className="text-amber-600 mb-4">
+                  {searchQuery ? `No articles match "${searchQuery}"` : 'No articles in this category'}
+                </p>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setLocation(`/help-center/${article.id}`)}
-                  className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
-                  data-testid={`button-article-${article.id}`}
+                  onClick={() => {
+                    setSearchQuery('');
+                    setSelectedCategory(null);
+                  }}
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                  data-testid="button-clear-search"
                 >
-                  Read Article
+                  Clear Search
                 </Button>
               </CardContent>
             </Card>
-          ))}
+          ) : (
+            <div className="space-y-4">
+              {sortedArticles.map((article) => (
+                <Card key={article.id} className="bg-white hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="text-xs">
+                            {article.category}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <Clock className="h-3 w-3" />
+                            {article.readTime}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <Star className="h-3 w-3 text-yellow-500" />
+                            {article.popularity}% helpful
+                          </div>
+                        </div>
+                        <h3 className="text-lg font-semibold text-amber-900 mb-2">{article.title}</h3>
+                        <p className="text-gray-600 mb-3">{article.content}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {article.tags.slice(0, 4).map((tag) => (
+                            <Badge key={tag} variant="secondary" className="text-xs bg-gray-100 text-gray-600">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {article.tags.length > 4 && (
+                            <span className="text-xs text-gray-400">+{article.tags.length - 4} more</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Link href={`/help-article/${article.id}`}>
+                          <Button className="w-full md:w-auto bg-amber-600 hover:bg-amber-700 text-white" data-testid={`button-view-${article.id}`}>
+                            <BookOpen className="h-4 w-4 mr-2" />
+                            Read Article
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Contact Support */}
-        <div className="mt-12">
-          <Card className="bg-white/90 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-amber-900">Still Need Help?</CardTitle>
-              <CardDescription>
-                Our support team is here to assist you
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg">
-                  <Phone className="h-6 w-6 text-amber-700" />
-                  <div>
-                    <div className="font-medium text-amber-900">Call Us</div>
-                    <div className="text-sm text-amber-700">(636) 254-4821</div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg">
-                  <Mail className="h-6 w-6 text-amber-700" />
-                  <div>
-                    <div className="font-medium text-amber-900">Email</div>
-                    <div className="text-sm text-amber-700">support@returnly.com</div>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg">
-                  <MessageCircle className="h-6 w-6 text-amber-700" />
-                  <div>
-                    <div className="font-medium text-amber-900">Live Chat</div>
-                    <div className="text-sm text-amber-700">Available 8 AM - 8 PM CST</div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Contact Support Section */}
+        <Card className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+          <CardContent className="p-8">
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-bold mb-2">Still Need Help?</h2>
+              <p className="text-amber-100">Our support team is available 24/7 to assist you</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-white/10 backdrop-blur border-0">
+                <CardContent className="p-4 text-center">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2" />
+                  <h3 className="font-semibold mb-1">Live Chat</h3>
+                  <p className="text-sm text-amber-100 mb-3">Instant support available</p>
+                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-live-chat-support">
+                    Start Chat
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/10 backdrop-blur border-0">
+                <CardContent className="p-4 text-center">
+                  <Phone className="h-8 w-8 mx-auto mb-2" />
+                  <h3 className="font-semibold mb-1">Phone Support</h3>
+                  <p className="text-sm text-amber-100 mb-3">(314) 555-0123</p>
+                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-call-support">
+                    Call Now
+                  </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/10 backdrop-blur border-0">
+                <CardContent className="p-4 text-center">
+                  <Mail className="h-8 w-8 mx-auto mb-2" />
+                  <h3 className="font-semibold mb-1">Email Support</h3>
+                  <p className="text-sm text-amber-100 mb-3">support@returnly.com</p>
+                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-email-support">
+                    Send Email
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Back to Home */}
+        <div className="text-center mt-8">
+          <Link href="/">
+            <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50" data-testid="button-back-home">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

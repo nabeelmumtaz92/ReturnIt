@@ -598,11 +598,16 @@ export default function Welcome() {
             <button 
               onClick={() => setLocation('/login')}
               className="hover:text-orange-300 transition-colors text-lg"
+              data-testid="button-footer-signin"
             >
               Sign In
             </button>
             <span className="text-gray-500">•</span>
-            <button className="hover:text-orange-300 transition-colors text-lg">
+            <button 
+              onClick={() => setLocation('/help-center')}
+              className="hover:text-orange-300 transition-colors font-medium text-lg"
+              data-testid="button-footer-help-center"
+            >
               Help Center
             </button>
             <span className="text-gray-500">•</span>
@@ -615,17 +620,19 @@ export default function Welcome() {
             </button>
             <span className="text-gray-500">•</span>
             <button 
-              onClick={() => setLocation('/help-center')}
+              onClick={() => setLocation('/mobile-app-demo')}
               className="hover:text-orange-300 transition-colors font-medium text-lg"
+              data-testid="button-footer-mobile-app"
             >
-              Help Center
+              Mobile App
             </button>
             <span className="text-gray-500">•</span>
             <button 
-              onClick={() => setLocation('/mobile-app-demo')}
+              onClick={() => setLocation('/driver-tutorial')}
               className="hover:text-orange-300 transition-colors font-medium text-lg"
+              data-testid="button-footer-driver-training"
             >
-              Mobile App
+              Driver Training
             </button>
           </div>
         </div>
