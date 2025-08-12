@@ -243,13 +243,12 @@ export default function Login() {
                     {loginMutation.isPending ? "Signing in..." : "Sign In with Email"}
                   </Button>
                   
-                  <div className="relative my-6">
-                    <Separator className="bg-amber-200" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-white px-4 py-1 text-sm font-medium text-amber-700 rounded-full border border-amber-200">
-                        Or continue with
-                      </span>
-                    </div>
+                  <div className="flex items-center my-8">
+                    <div className="flex-1 h-px bg-amber-200"></div>
+                    <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                      Or continue with
+                    </span>
+                    <div className="flex-1 h-px bg-amber-200"></div>
                   </div>
                   
                   <div className="space-y-2">
@@ -384,13 +383,12 @@ export default function Login() {
                     {registerMutation.isPending ? "Creating account..." : "Create Account with Email"}
                   </Button>
                   
-                  <div className="relative my-6">
-                    <Separator className="bg-amber-200" />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-white px-4 py-1 text-sm font-medium text-amber-700 rounded-full border border-amber-200">
-                        Or sign up with
-                      </span>
-                    </div>
+                  <div className="flex items-center my-8">
+                    <div className="flex-1 h-px bg-amber-200"></div>
+                    <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                      Or sign up with
+                    </span>
+                    <div className="flex-1 h-px bg-amber-200"></div>
                   </div>
                   
                   <div className="space-y-2">
