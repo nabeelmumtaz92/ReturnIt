@@ -2,9 +2,16 @@ import { useState, useEffect } from "react";
 
 interface User {
   id: number;
-  username: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   isDriver: boolean;
+  isAdmin: boolean;
+  phone?: string;
+  driverRating?: number;
+  totalEarnings?: number;
+  completedDeliveries?: number;
 }
 
 export function useAuth() {

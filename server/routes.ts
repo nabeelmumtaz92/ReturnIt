@@ -79,11 +79,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       // Log user in
-      (req.session as any).user = { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver };
+      (req.session as any).user = { 
+        id: user.id, 
+        email: user.email, 
+        phone: user.phone, 
+        isDriver: user.isDriver, 
+        isAdmin: user.isAdmin,
+        firstName: user.firstName,
+        lastName: user.lastName
+      };
       
       res.status(201).json({ 
         message: "Registration successful",
-        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver }
+        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver, isAdmin: user.isAdmin }
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid registration data" });
@@ -105,11 +113,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Log user in
-      (req.session as any).user = { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver };
+      (req.session as any).user = { 
+        id: user.id, 
+        email: user.email, 
+        phone: user.phone, 
+        isDriver: user.isDriver, 
+        isAdmin: user.isAdmin,
+        firstName: user.firstName,
+        lastName: user.lastName
+      };
       
       res.json({ 
         message: "Login successful",
-        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver }
+        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver, isAdmin: user.isAdmin }
       });
     } catch (error) {
       res.status(500).json({ message: "Login failed" });
@@ -122,9 +138,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/auth/me", (req, res) => {
+  app.get("/api/auth/me", async (req, res) => {
     if ((req.session as any)?.user) {
-      res.json((req.session as any).user);
+      try {
+        // Get full user data from storage
+        const userId = (req.session as any).user.id;
+        const user = await storage.getUser(userId);
+        
+        if (user) {
+          res.json({
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            phone: user.phone,
+            isDriver: user.isDriver,
+            isAdmin: user.isAdmin,
+            driverRating: user.driverRating,
+            totalEarnings: user.totalEarnings,
+            completedDeliveries: user.completedDeliveries,
+            isOnline: user.isOnline,
+            currentLocation: user.currentLocation
+          });
+        } else {
+          res.status(401).json({ message: "User not found" });
+        }
+      } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ message: "Failed to get user information" });
+      }
     } else {
       res.status(401).json({ message: "Not authenticated" });
     }

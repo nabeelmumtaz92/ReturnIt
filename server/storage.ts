@@ -85,29 +85,57 @@ export class MemStorage implements IStorage {
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
     
-    // Initialize with comprehensive demo data
+    // Initialize with comprehensive demo data - Super User with ALL features
     const demoUser: User = {
       id: 1,
       email: 'demo@returnly.com',
       password: '$2b$12$t/xI0Ofb0d/mGpHkZqGGvOISgiEr5o9mdki3uXo2gpMpK2NiTGgK6', // hashed 'demo123'
       firstName: 'Demo',
-      lastName: 'User',
+      lastName: 'SuperUser',
       phone: '+1-555-0123',
-      isDriver: false,
-      isAdmin: false,
+      isDriver: true,  // Driver access
+      isAdmin: true,   // Admin access
       isActive: true,
       profileImage: null,
-      preferences: {},
-      addresses: [],
+      preferences: { role: 'super_admin' },
+      addresses: [
+        {
+          type: 'home',
+          street: '1234 Main St',
+          city: 'St. Louis',
+          state: 'MO',
+          zipCode: '63101',
+          isDefault: true
+        }
+      ],
       paymentMethods: [],
-      driverLicense: null,
-      vehicleInfo: null,
-      bankInfo: null,
-      driverRating: 5.0,
-      totalEarnings: 0,
-      completedDeliveries: 0,
-      isOnline: false,
-      currentLocation: null,
+      driverLicense: 'DL123456789',
+      vehicleInfo: {
+        make: 'Toyota',
+        model: 'Camry',
+        year: 2022,
+        color: 'Silver',
+        licensePlate: 'RET-001',
+        capacity: 'Large'
+      },
+      bankInfo: {
+        routingNumber: '123456789',
+        accountNumber: '*****1234',
+        accountType: 'checking'
+      },
+      driverRating: 4.9,
+      totalEarnings: 2847.50,
+      completedDeliveries: 156,
+      isOnline: true,
+      currentLocation: {
+        latitude: 38.6270,
+        longitude: -90.1994,
+        address: 'Downtown St. Louis, MO'
+      },
+      stripeConnectAccountId: 'acct_demo123',
+      stripeOnboardingComplete: true,
+      paymentPreference: 'instant',
+      instantPayFeePreference: 0.50,
       createdAt: new Date(),
       updatedAt: new Date()
     };
