@@ -12,6 +12,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
+// Import delivery images
+import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
+import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
+import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
+import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+
 export default function Welcome() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -48,19 +54,19 @@ export default function Welcome() {
       alt: "Woman receiving package from courier"
     },
     {
-      url: "/attached_assets/Delivery Driver- Box in Car_1754856749497.jpeg",
+      url: deliveryCarImg,
       alt: "Delivery driver with box in car"
     },
     {
-      url: "/attached_assets/Delivery Driver- Handoff_1754856749519.jpeg", 
+      url: deliveryHandoffImg, 
       alt: "Delivery driver handing off package"
     },
     {
-      url: "/attached_assets/Delivery Driver- outside_1754856749521.jpeg",
+      url: deliveryOutsideImg,
       alt: "Delivery driver outside"
     },
     {
-      url: "/attached_assets/Delivery Driver Receiving Box_1754856749524.jpeg",
+      url: deliveryReceivingImg,
       alt: "Delivery driver receiving box"
     }
   ];
