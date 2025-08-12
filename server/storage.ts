@@ -604,7 +604,7 @@ export class MemStorage implements IStorage {
         supportEmail: "support@returnly.com",
         supportPhone: "(636) 254-4821",
         businessHours: "Mon–Sat, 8 AM – 8 PM CST",
-        instagramHandle: "@ReturnlyApp",
+        instagramHandle: "@Returnly",
         facebookUrl: "facebook.com/Returnly",
         twitterHandle: "@Returnly",
         missionStatement: "Founded with the mission to save you time and effort, Returnly partners with local drivers to ensure every return is handled quickly, safely, and securely. Whether it's a small package or a bulky box, we've got you covered.",
