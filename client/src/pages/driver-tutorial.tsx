@@ -63,7 +63,7 @@ export default function DriverTutorial() {
           </div>
           
           <div className="text-center">
-            <p className="text-sm text-gray-600">This tutorial takes about 10 minutes to complete</p>
+            <p className="text-sm text-gray-600">Let's get you started with the essentials</p>
           </div>
         </div>
       )
@@ -171,11 +171,11 @@ export default function DriverTutorial() {
               <CardContent className="text-sm space-y-2">
                 <p>When an order comes in, you'll see:</p>
                 <ul className="list-disc list-inside space-y-1 text-xs">
-                  <li>Pickup location and distance</li>
-                  <li>Estimated time and payment</li>
+                  <li>Pickup location and distance to store</li>
+                  <li>Estimated time from customer to store</li>
+                  <li>Estimated payment including customer tip</li>
                   <li>Package size and any special instructions</li>
                 </ul>
-                <p className="font-medium">You have 60 seconds to accept or the order goes to another driver.</p>
               </CardContent>
             </Card>
             
