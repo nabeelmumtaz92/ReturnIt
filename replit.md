@@ -16,7 +16,7 @@ Preferred communication style: Simple, everyday language.
 - **Routing**: Wouter for client-side routing.
 - **Form Handling**: React Hook Form with Zod validation.
 - **Design System**: Comprehensive Figma-based design system with mobile-first responsive components, including a full component library and design token system.
-- **UI/UX Decisions**: Refined white/beige design aesthetic, sophisticated gradients, professional typography, and a distinctive cardboard/shipping theme with authentic stock photography.
+- **UI/UX Decisions**: Refined white/beige design aesthetic, sophisticated gradients, professional typography, and a distinctive cardboard/shipping theme with authentic stock photography. Each page features randomized delivery driver background images for visual consistency and professional appeal.
 
 ## Backend Architecture
 - **Runtime**: Node.js with Express.js.

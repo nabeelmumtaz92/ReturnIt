@@ -12,6 +12,12 @@ import { apiRequest } from "@/lib/queryClient";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 
+// Import delivery images
+import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
+import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
+import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
+import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
@@ -152,9 +158,22 @@ export default function Login() {
     </Button>
   );
 
+  // Random delivery image selection for this page
+  const loginPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
+  const selectedImage = loginPageImages[Math.floor(Math.random() * loginPageImages.length)];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center p-4 relative">
+      {/* Background Hero Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-15"
+        style={{
+          backgroundImage: `url(${selectedImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
           <img 

@@ -19,6 +19,12 @@ import StoreLocator from "@/components/StoreLocator";
 import RoutePreview from "@/components/RoutePreview";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 
+// Import delivery images
+import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
+import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
+import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
+import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+
 export default function BookPickup() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -286,10 +292,23 @@ export default function BookPickup() {
     return null; // Will redirect via useEffect
   }
 
+  // Random delivery image selection for this page
+  const bookingPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
+  const selectedImage = bookingPageImages[Math.floor(Math.random() * bookingPageImages.length)];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 relative">
+      {/* Background Hero Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10"
+        style={{
+          backgroundImage: `url(${selectedImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
+      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
@@ -316,7 +335,7 @@ export default function BookPickup() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center text-amber-900">

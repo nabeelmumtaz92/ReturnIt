@@ -1,13 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin } from "lucide-react";
 import { Order } from "@shared/schema";
+import LiveOrderTracking from "@/components/LiveOrderTracking";
+
+// Import delivery images
+import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
+import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
+import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
+import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
 
 interface OrderStatusProps {
   orderId: string;
@@ -110,10 +117,23 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
     );
   }
 
+  // Random delivery image selection for this page
+  const statusPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
+  const selectedImage = statusPageImages[Math.floor(Math.random() * statusPageImages.length)];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 relative">
+      {/* Background Hero Image */}
+      <div 
+        className="absolute inset-0 z-0 opacity-10"
+        style={{
+          backgroundImage: `url(${selectedImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
+      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
@@ -140,7 +160,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center justify-between text-amber-900">
