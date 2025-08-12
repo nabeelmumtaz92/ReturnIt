@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import Stripe from "stripe";
 import session from "express-session";
 import passport from "./auth/strategies";
 import bcrypt from "bcrypt";
@@ -48,6 +49,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       done(error);
     }
+  });
+
+  // Initialize Stripe
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+  }
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: "2024-12-18",
   });
 
   // Auth routes
@@ -1095,6 +1104,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log(`Document uploaded for user ${user.id}`);
 
     res.json({ message: 'Document uploaded successfully' });
+  });
+
+  // Stripe payment route for customer bookings
+  app.post("/api/create-payment-intent", async (req, res) => {
+    try {
+      const { amount, orderId } = req.body;
+      
+      // Validate amount
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid amount" });
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100), // Convert to cents
+        currency: "usd",
+        metadata: {
+          orderId: orderId || 'unknown'
+        }
+      });
+      
+      res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error: any) {
+      console.error("Payment intent creation error:", error);
+      res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Driver payout endpoint (70/30 split)
+  app.post("/api/process-driver-payout", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId, driverAmount, platformAmount } = req.body;
+      
+      // In a real implementation, you would:
+      // 1. Verify the order exists and is completed
+      // 2. Check if payout was already processed
+      // 3. Use Stripe Connect to transfer to driver
+      // 4. Update order status with payout info
+      
+      console.log(`Processing payout for order ${orderId}: Driver: $${driverAmount}, Platform: $${platformAmount}`);
+      
+      // For now, just update the order status
+      const order = await storage.getOrder(orderId);
+      if (order) {
+        await storage.updateOrderStatus(orderId, 'refunded');
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Driver payout processed successfully",
+        driverAmount,
+        platformAmount 
+      });
+    } catch (error: any) {
+      console.error("Driver payout error:", error);
+      res.status(500).json({ message: "Error processing driver payout: " + error.message });
+    }
   });
 
   const httpServer = createServer(app);

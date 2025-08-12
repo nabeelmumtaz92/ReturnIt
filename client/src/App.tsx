@@ -9,6 +9,7 @@ import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
 import OrderStatus from "@/pages/order-status";
+import Checkout from "@/pages/checkout";
 import DriverPortal from "@/pages/driver-portal";
 import DriverPayments from "@/pages/driver-payments";
 import AdminDashboard from "@/pages/admin-dashboard";
@@ -21,10 +22,10 @@ import BackgroundColors from "@/pages/background-colors";
 import NotFound from "@/pages/not-found";
 
 function Router() {
-  const { user, isLoading, error } = useAuth();
+  const { user, isLoading } = useAuth();
   
-  // Only show loading if actually loading, not on auth errors
-  if (isLoading && !error) {
+  // Only show loading if actually loading
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
         <div className="text-center">
@@ -44,7 +45,10 @@ function Router() {
       <Route path="/" component={Welcome} />
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
-      <Route path="/order-status/:orderId" component={OrderStatus} />
+      <Route path="/checkout" component={Checkout} />
+      <Route path="/order-status/:orderId">
+        {(params) => <OrderStatus orderId={params.orderId} />}
+      </Route>
       <Route path="/driver-portal" component={DriverPortal} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />

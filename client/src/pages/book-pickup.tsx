@@ -191,15 +191,18 @@ export default function BookPickup() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: any) => {
-      const response = await apiRequest('/api/orders', 'POST', data);
-      return response.json();
+      return apiRequest('/api/orders', 'POST', data);
     },
     onSuccess: (order: any) => {
       toast({
-        title: "Pickup booked!",
-        description: `Your pickup has been scheduled. Order ID: ${order.id}`,
+        title: "Order Created!",
+        description: "Proceeding to payment...",
       });
-      setLocation(`/order-status/${order.id}`);
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      // Navigate to checkout page with order details
+      setTimeout(() => {
+        setLocation(`/checkout?amount=${order.totalPrice}&orderId=${order.id}`);
+      }, 1000);
     },
     onError: (error: Error) => {
       toast({
@@ -254,6 +257,8 @@ export default function BookPickup() {
     };
 
     createOrderMutation.mutate(orderData);
+    
+    // Navigate to checkout page with order details after successful order creation
   };
 
   const handleInputChange = (field: string, value: string | number) => {
