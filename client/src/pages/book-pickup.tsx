@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 
 export default function BookPickup() {
@@ -34,6 +34,9 @@ export default function BookPickup() {
   }, [isAuthenticated, isLoading, setLocation, toast]);
 
   const [formData, setFormData] = useState({
+    // Customer info
+    fullName: '',
+    phone: '',
     // Address fields
     streetAddress: '',
     city: '',
@@ -42,6 +45,9 @@ export default function BookPickup() {
     // Retailer selection
     retailer: '',
     retailerQuery: '',
+    // Return details
+    orderName: '', // NEW: Order name like "Black Purse"
+    returnReason: '',
     // Item details
     itemCategories: [] as string[], // Changed to array for multiple selection
     itemDescription: '',
@@ -49,8 +55,12 @@ export default function BookPickup() {
     // Box details
     boxSize: 'M',
     numberOfBoxes: 1,
+    // Preferred time slot
+    preferredTimeSlot: '',
     // Instructions
-    notes: ''
+    notes: '',
+    // Receipt upload
+    receiptPhoto: null as File | null
   });
 
   const [currentStep, setCurrentStep] = useState<'details' | 'payment'>('details');
@@ -78,22 +88,38 @@ export default function BookPickup() {
     'Other'
   ];
 
-  // Box sizes with pricing
+  // Box sizes with correct pricing per requirements
   const boxSizes = [
-    { size: 'S', label: 'Small (Shoe box)', basePrice: 3.99, upcharge: 0 },
-    { size: 'M', label: 'Medium (Standard)', basePrice: 3.99, upcharge: 0 },
-    { size: 'L', label: 'Large (+$2)', basePrice: 3.99, upcharge: 2.00 },
-    { size: 'XL', label: 'Extra Large (+$4)', basePrice: 3.99, upcharge: 4.00 }
+    { size: 'S', label: 'Small', basePrice: 3.99, upcharge: 0 },
+    { size: 'M', label: 'Medium', basePrice: 5.99, upcharge: 0 },
+    { size: 'L', label: 'Large', basePrice: 7.99, upcharge: 0 }
   ];
 
-  // Calculate total price
+  // Return reasons dropdown options
+  const returnReasons = [
+    "Doesn't fit",
+    "Wrong item", 
+    "Damaged item",
+    "No longer needed",
+    "Received extra item",
+    "Defective product",
+    "Other"
+  ];
+
+  // Time slot options
+  const timeSlots = [
+    "Morning (8 AM - 12 PM)",
+    "Afternoon (12 PM - 5 PM)", 
+    "Evening (5 PM - 8 PM)"
+  ];
+
+  // Calculate total price based on new pricing structure
   const calculateTotal = () => {
     const selectedBoxSize = boxSizes.find(box => box.size === formData.boxSize);
     const basePrice = selectedBoxSize?.basePrice || 3.99;
-    const sizeUpcharge = selectedBoxSize?.upcharge || 0;
     const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
     
-    return basePrice + sizeUpcharge + multiBoxFee;
+    return basePrice + multiBoxFee;
   };
 
   // Handle retailer search
@@ -147,7 +173,7 @@ export default function BookPickup() {
     e.preventDefault();
     
     // Validate required fields
-    const required = ['streetAddress', 'city', 'state', 'zipCode', 'retailer'];
+    const required = ['fullName', 'phone', 'streetAddress', 'city', 'state', 'zipCode', 'retailer', 'orderName', 'returnReason', 'preferredTimeSlot'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
     if (formData.itemCategories.length === 0) {
@@ -269,6 +295,47 @@ export default function BookPickup() {
           
           <form onSubmit={handleDetailsSubmit}>
             <CardContent className="space-y-6">
+              {/* Customer Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <User className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Contact Information</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="fullName" className="text-amber-800 font-medium">
+                      Full Name *
+                    </Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      placeholder="John Doe"
+                      value={formData.fullName}
+                      onChange={(e) => handleInputChange('fullName', e.target.value)}
+                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                      required
+                      data-testid="input-full-name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone" className="text-amber-800 font-medium">
+                      Phone Number *
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                      required
+                      data-testid="input-phone"
+                    />
+                  </div>
+                </div>
+              </div>
+
               {/* Enhanced Pickup Address Section */}
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 mb-3">
@@ -341,6 +408,49 @@ export default function BookPickup() {
                       required
                       data-testid="input-zip-code"
                     />
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Details Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Package className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Return Details</Label>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="orderName" className="text-amber-800 font-medium">
+                      Order Name/Description *
+                    </Label>
+                    <Input
+                      id="orderName"
+                      type="text"
+                      placeholder="e.g., Black Purse, Nike Shoes"
+                      value={formData.orderName}
+                      onChange={(e) => handleInputChange('orderName', e.target.value)}
+                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                      required
+                      data-testid="input-order-name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="returnReason" className="text-amber-800 font-medium">
+                      Return Reason *
+                    </Label>
+                    <Select value={formData.returnReason} onValueChange={(value) => handleInputChange('returnReason', value)}>
+                      <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-return-reason">
+                        <SelectValue placeholder="Select reason" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {returnReasons.map((reason) => (
+                          <SelectItem key={reason} value={reason}>
+                            {reason}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -524,6 +634,44 @@ export default function BookPickup() {
                 </div>
               </div>
 
+              {/* Preferred Time Slot */}
+              <div className="space-y-2">
+                <Label htmlFor="preferredTimeSlot" className="text-amber-800 font-medium">
+                  Preferred Pickup Time *
+                </Label>
+                <Select value={formData.preferredTimeSlot} onValueChange={(value) => handleInputChange('preferredTimeSlot', value)}>
+                  <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-time-slot">
+                    <SelectValue placeholder="Select preferred time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {timeSlots.map((slot) => (
+                      <SelectItem key={slot} value={slot}>
+                        {slot}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Receipt Upload */}
+              <div className="space-y-2">
+                <Label htmlFor="receiptPhoto" className="text-amber-800 font-medium">
+                  Receipt or Return Label (optional)
+                </Label>
+                <Input
+                  id="receiptPhoto"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0] || null;
+                    setFormData(prev => ({ ...prev, receiptPhoto: file }));
+                  }}
+                  className="bg-white/80 border-amber-300 focus:border-amber-500"
+                  data-testid="input-receipt-photo"
+                />
+                <p className="text-xs text-amber-600">Upload a photo of your receipt or prepaid return label</p>
+              </div>
+
               {/* Optional Notes */}
               <div className="space-y-2">
                 <Label htmlFor="notes" className="text-amber-800 font-medium">
@@ -540,27 +688,15 @@ export default function BookPickup() {
                 />
               </div>
 
-              {/* Dynamic Pricing */}
+              {/* Dynamic Pricing - Updated for new pricing structure */}
               <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-amber-800">Service fee:</span>
-                    <span className="text-amber-900 font-medium">$3.99</span>
+                    <span className="text-amber-800">{formData.boxSize === 'S' ? 'Small' : formData.boxSize === 'M' ? 'Medium' : 'Large'} package fee:</span>
+                    <span className="text-amber-900 font-medium">
+                      ${boxSizes.find(box => box.size === formData.boxSize)?.basePrice.toFixed(2) || '3.99'}
+                    </span>
                   </div>
-                  
-                  {formData.boxSize === 'L' && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-800">Large box upcharge:</span>
-                      <span className="text-amber-900 font-medium">+$2.00</span>
-                    </div>
-                  )}
-                  
-                  {formData.boxSize === 'XL' && (
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-800">Extra large box upcharge:</span>
-                      <span className="text-amber-900 font-medium">+$4.00</span>
-                    </div>
-                  )}
                   
                   {formData.numberOfBoxes > 1 && (
                     <div className="flex justify-between items-center">

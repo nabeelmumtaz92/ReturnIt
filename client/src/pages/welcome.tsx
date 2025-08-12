@@ -79,11 +79,11 @@ export default function Welcome() {
       {/* Sophisticated White/Beige Hero Section */}
       <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
-        {/* Background with Lady Handing Package Image */}
-        <div className="absolute inset-0 opacity-25">
+        {/* Background with Stock Delivery Image */}
+        <div className="absolute inset-0 opacity-20">
           <img 
-            src="/attached_assets/Delivery Driver- Handoff_1754856749519.jpeg"
-            alt="Lady handing package to delivery driver"
+            src="https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Professional delivery service"
             className="w-full h-full object-cover"
           />
         </div>
