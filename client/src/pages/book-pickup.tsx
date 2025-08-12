@@ -105,7 +105,7 @@ export default function BookPickup() {
     'Other'
   ];
 
-  // Box sizes with correct pricing per requirements
+  // Bag/Box sizes with correct pricing per requirements
   const boxSizes = [
     { size: 'S', label: 'Small', basePrice: 3.99, upcharge: 0 },
     { size: 'M', label: 'Medium', basePrice: 5.99, upcharge: 0 },
@@ -130,18 +130,18 @@ export default function BookPickup() {
     "Evening (5 PM - 8 PM)"
   ];
 
-  // Calculate total price - use route-based fare if available, otherwise use box-based pricing
+  // Calculate total price - use route-based fare if available, otherwise use bag/box-based pricing
   const calculateTotal = () => {
     if (calculatedFare > 0) {
-      const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
-      return calculatedFare + multiBoxFee;
+      const multiItemFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+      return calculatedFare + multiItemFee;
     }
     
     const selectedBoxSize = boxSizes.find(box => box.size === formData.boxSize);
     const basePrice = selectedBoxSize?.basePrice || 3.99;
-    const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
+    const multiItemFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 1.50 : 0;
     
-    return basePrice + multiBoxFee;
+    return basePrice + multiItemFee;
   };
 
   // Handle location updates
@@ -586,14 +586,14 @@ export default function BookPickup() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-2 mb-3">
                   <Package className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Box Details</Label>
+                  <Label className="text-amber-800 font-semibold text-lg">Bag/Box Details</Label>
                 </div>
-                <p className="text-sm text-amber-700 mb-3">Please use dropdown to describe the size of the box</p>
+                <p className="text-sm text-amber-700 mb-3">Please use dropdown to describe the size of the bag/box</p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="boxSize" className="text-amber-800 font-medium">
-                      Box Size *
+                      Bag/Box Size *
                     </Label>
                     <Select
                       value={formData.boxSize}
@@ -601,7 +601,7 @@ export default function BookPickup() {
                       required
                     >
                       <SelectTrigger data-testid="select-box-size">
-                        <SelectValue placeholder="Select box size" />
+                        <SelectValue placeholder="Select bag/box size" />
                       </SelectTrigger>
                       <SelectContent>
                         {boxSizes.map((box) => (
@@ -615,7 +615,7 @@ export default function BookPickup() {
                   
                   <div>
                     <Label htmlFor="numberOfBoxes" className="text-amber-800 font-medium">
-                      Number of Boxes *
+                      Number of Bags/Boxes *
                     </Label>
                     <div className="flex items-center space-x-2">
                       <Button
