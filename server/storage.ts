@@ -89,7 +89,7 @@ export class MemStorage implements IStorage {
     const demoUser: User = {
       id: 1,
       email: 'demo@returnly.com',
-      password: 'demo123',
+      password: '$2b$12$t/xI0Ofb0d/mGpHkZqGGvOISgiEr5o9mdki3uXo2gpMpK2NiTGgK6', // hashed 'demo123'
       firstName: 'Demo',
       lastName: 'User',
       phone: '+1-555-0123',
@@ -117,7 +117,7 @@ export class MemStorage implements IStorage {
     const demoDriver: User = {
       id: 2,
       email: 'driver@returnly.com',
-      password: 'driver123',
+      password: '$2b$12$HgHCeh4iUcf7w4z/u/77F.L6hV.Je0QhgaSkA1cjhhXrWV/JJgsoa', // hashed 'driver123'
       firstName: 'Demo',
       lastName: 'Driver',
       phone: '+1-555-0124',
