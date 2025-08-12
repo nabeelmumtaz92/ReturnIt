@@ -760,6 +760,21 @@ export default function BookPickup() {
                           <span className="text-amber-900 font-medium">+${((formData.numberOfItems - 1) * 1.00).toFixed(2)}</span>
                         </div>
                       )}
+                      
+                      {(() => {
+                        const selectedSize = itemSizes.find(item => item.size === formData.itemSize);
+                        const basePrice = selectedSize?.basePrice || 3.99;
+                        const sizeUpcharge = selectedSize?.upcharge || 0;
+                        const multiItemFee = formData.numberOfItems > 1 ? (formData.numberOfItems - 1) * 1.00 : 0;
+                        const currentSubtotal = basePrice + sizeUpcharge + multiItemFee;
+                        
+                        return currentSubtotal < 8.00 ? (
+                          <div className="flex justify-between items-center">
+                            <span className="text-amber-800">Small order fee (under $8):</span>
+                            <span className="text-amber-900 font-medium">+$2.00</span>
+                          </div>
+                        ) : null;
+                      })()}
                     </>
                   )}
                   

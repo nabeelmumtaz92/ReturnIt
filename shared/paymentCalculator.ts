@@ -13,6 +13,7 @@ export interface PaymentBreakdown {
   timeFee: number;
   sizeUpcharge: number;
   multiItemFee: number;
+  smallOrderFee: number;
   serviceFee: number;
   rushFee: number;
   subtotal: number;
@@ -61,6 +62,8 @@ export interface PaymentConfig {
   // Other fees
   multiItemFee: number; // $1.00 per additional item
   rushFee: number; // $3 for same-day
+  smallOrderFee: number; // $2.00 fee for orders under threshold
+  smallOrderThreshold: number; // $8.00 minimum before small order fee applies
 }
 
 const DEFAULT_CONFIG: PaymentConfig = {
@@ -92,7 +95,9 @@ const DEFAULT_CONFIG: PaymentConfig = {
   
   serviceFeeRate: 0.15,
   multiItemFee: 1.00,
-  rushFee: 3.00
+  rushFee: 3.00,
+  smallOrderFee: 2.00,
+  smallOrderThreshold: 8.00
 };
 
 export function calculatePayment(
@@ -112,8 +117,14 @@ export function calculatePayment(
   const multiItemFee = numberOfItems > 1 ? (numberOfItems - 1) * config.multiItemFee : 0;
   const rushFee = isRush ? config.rushFee : 0;
   
-  // Calculate subtotal and service fee
-  const subtotal = basePrice + distanceFee + timeFee + sizeUpcharge + multiItemFee + rushFee;
+  // Calculate initial subtotal (before small order fee)
+  const initialSubtotal = basePrice + distanceFee + timeFee + sizeUpcharge + multiItemFee + rushFee;
+  
+  // Apply small order fee if subtotal is below threshold
+  const smallOrderFee = initialSubtotal < config.smallOrderThreshold ? config.smallOrderFee : 0;
+  
+  // Final subtotal including small order fee
+  const subtotal = initialSubtotal + smallOrderFee;
   const serviceFee = subtotal * config.serviceFeeRate;
   const totalPrice = subtotal + serviceFee + tip;
   
@@ -139,6 +150,7 @@ export function calculatePayment(
     timeFee,
     sizeUpcharge,
     multiItemFee,
+    smallOrderFee,
     serviceFee,
     rushFee,
     subtotal,
@@ -172,7 +184,8 @@ Customer Pays:
 • Distance (${breakdown.distanceFee > 0 ? `$0.50/mile` : 'included'}): $${breakdown.distanceFee.toFixed(2)}
 • Time estimate: $${breakdown.timeFee.toFixed(2)}
 • Size upcharge: $${breakdown.sizeUpcharge.toFixed(2)}
-• Additional boxes: $${breakdown.multiBoxFee.toFixed(2)}
+• Additional items: $${breakdown.multiItemFee.toFixed(2)}
+• Small order fee: $${breakdown.smallOrderFee.toFixed(2)}
 • Service fee (15%): $${breakdown.serviceFee.toFixed(2)}
 • Rush delivery: $${breakdown.rushFee.toFixed(2)}
 • Tip: $${breakdown.tip.toFixed(2)}
