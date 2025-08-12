@@ -49,7 +49,7 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      return await apiRequest('/api/auth/login', 'POST', data);
+      return await apiRequest('POST', '/api/auth/login', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
@@ -70,7 +70,7 @@ export default function Login() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: { email: string; phone: string; password: string }) => {
-      return await apiRequest('/api/auth/register', 'POST', data);
+      return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
