@@ -533,6 +533,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Administrative payment tracking endpoints
+  app.get("/api/admin/payment-records", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const paymentRecords = await storage.getPaymentRecords();
+      res.json(paymentRecords);
+    } catch (error) {
+      console.error("Error fetching payment records:", error);
+      res.status(500).json({ message: "Failed to fetch payment records" });
+    }
+  });
+
+  app.get("/api/admin/payment-summary", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const summary = await storage.getPaymentSummary();
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching payment summary:", error);
+      res.status(500).json({ message: "Failed to fetch payment summary" });
+    }
+  });
+
+  app.post("/api/admin/export-payments", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { format, dateRange, status } = req.body;
+      const exportData = await storage.exportPaymentData(format, dateRange, status);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=returnly-payments-${new Date().toISOString().split('T')[0]}.xlsx`);
+      res.send(exportData);
+    } catch (error) {
+      console.error("Error exporting payments:", error);
+      res.status(500).json({ message: "Failed to export payment data" });
+    }
+  });
+
+  app.post("/api/admin/tax-report", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { year } = req.body;
+      const taxReport = await storage.generateTaxReport(year);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=returnly-tax-report-${year}.xlsx`);
+      res.send(taxReport);
+    } catch (error) {
+      console.error("Error generating tax report:", error);
+      res.status(500).json({ message: "Failed to generate tax report" });
+    }
+  });
+
+  app.post("/api/admin/generate-1099s", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      
+      const { year } = req.body;
+      const forms1099 = await storage.generate1099Forms(year);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=returnly-1099-forms-${year}.xlsx`);
+      res.send(forms1099);
+    } catch (error) {
+      console.error("Error generating 1099 forms:", error);
+      res.status(500).json({ message: "Failed to generate 1099 forms" });
+    }
+  });
+
   // Update order status (protected)
   app.patch("/api/orders/:id", isAuthenticated, async (req, res) => {
     try {

@@ -452,7 +452,197 @@ export class MemStorage implements IStorage {
     }
     
     this.orders.set(id, updatedOrder);
+    
+    // Create payment record when order is completed
+    if (updates.status === 'completed') {
+      await this.createPaymentRecord(updatedOrder);
+    }
+    
     return updatedOrder;
+  }
+
+  // Payment tracking methods
+  async createPaymentRecord(order: Order): Promise<void> {
+    const user = this.users.get(order.driverId!);
+    if (!user) return;
+
+    const paymentRecord = {
+      id: `PAY-${Date.now()}-${Math.random().toString(36).substr(2, 6)}`,
+      orderId: order.id,
+      transactionDate: new Date(),
+      driverEarnings: {
+        basePay: order.driverBasePay || 3.00,
+        distancePay: order.driverDistancePay || 0,
+        timePay: order.driverTimePay || 0,
+        sizeBonus: order.driverSizeBonus || 0,
+        tip: order.tip || 0,
+        total: (order.driverBasePay || 3.00) + (order.driverDistancePay || 0) + 
+               (order.driverTimePay || 0) + (order.driverSizeBonus || 0) + (order.tip || 0)
+      },
+      companyRevenue: {
+        serviceFee: order.companyServiceFee || 0.99,
+        distanceFee: order.distanceFee || 0,
+        timeFee: order.timeFee || 0,
+        total: (order.companyServiceFee || 0.99) + (order.distanceFee || 0) + (order.timeFee || 0)
+      },
+      customerPayment: {
+        basePrice: order.basePrice || 3.99,
+        surcharges: order.surcharges?.reduce((sum, s) => sum + s.amount, 0) || 0,
+        taxes: (order.totalPrice || 3.99) * 0.085, // 8.5% tax rate
+        total: order.totalPrice || 3.99
+      },
+      driverId: order.driverId!,
+      driverName: `${user.firstName} ${user.lastName}`,
+      paymentMethod: 'stripe',
+      status: 'completed',
+      taxYear: new Date().getFullYear(),
+      quarter: Math.ceil((new Date().getMonth() + 1) / 3)
+    };
+
+    this.paymentRecords.set(paymentRecord.id, paymentRecord);
+  }
+
+  async getPaymentRecords(): Promise<any[]> {
+    return Array.from(this.paymentRecords.values());
+  }
+
+  async getPaymentSummary(): Promise<any> {
+    const records = Array.from(this.paymentRecords.values());
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    const monthlyRecords = records.filter(r => {
+      const recordDate = new Date(r.transactionDate);
+      return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+    });
+
+    const yearlyRecords = records.filter(r => {
+      const recordDate = new Date(r.transactionDate);
+      return recordDate.getFullYear() === currentYear;
+    });
+
+    const totalDriverEarnings = monthlyRecords.reduce((sum, r) => sum + r.driverEarnings.total, 0);
+    const totalCompanyRevenue = monthlyRecords.reduce((sum, r) => sum + r.companyRevenue.total, 0);
+    const totalCustomerPayments = monthlyRecords.reduce((sum, r) => sum + r.customerPayment.total, 0);
+
+    const quarterlyRevenue = [1, 2, 3, 4].map(quarter => {
+      const quarterRecords = yearlyRecords.filter(r => r.quarter === quarter);
+      return quarterRecords.reduce((sum, r) => sum + r.companyRevenue.total, 0);
+    });
+
+    const activeDrivers = new Set(yearlyRecords.map(r => r.driverId)).size;
+    const driverEarningsMap = new Map();
+    
+    yearlyRecords.forEach(r => {
+      const current = driverEarningsMap.get(r.driverId) || 0;
+      driverEarningsMap.set(r.driverId, current + r.driverEarnings.total);
+    });
+
+    const driversRequiring1099 = Array.from(driverEarningsMap.values()).filter(earnings => earnings >= 600).length;
+
+    return {
+      totalDriverEarnings,
+      totalCompanyRevenue,
+      totalCustomerPayments,
+      totalTransactions: monthlyRecords.length,
+      monthlyDriverPayments: totalDriverEarnings,
+      monthlyCompanyRevenue: totalCompanyRevenue,
+      q1Revenue: quarterlyRevenue[0],
+      q2Revenue: quarterlyRevenue[1],
+      q3Revenue: quarterlyRevenue[2],
+      q4Revenue: quarterlyRevenue[3],
+      activeDriversCount: activeDrivers,
+      totalDriverPayments: yearlyRecords.reduce((sum, r) => sum + r.driverEarnings.total, 0),
+      driversRequiring1099
+    };
+  }
+
+  async exportPaymentData(format: string, dateRange: string, status: string): Promise<Buffer> {
+    // Mock Excel export - in production, use a library like ExcelJS
+    const records = Array.from(this.paymentRecords.values());
+    const csvData = this.generatePaymentCSV(records);
+    return Buffer.from(csvData, 'utf8');
+  }
+
+  async generateTaxReport(year: number): Promise<Buffer> {
+    const records = Array.from(this.paymentRecords.values())
+      .filter(r => r.taxYear === year);
+    
+    const taxData = this.generateTaxCSV(records);
+    return Buffer.from(taxData, 'utf8');
+  }
+
+  async generate1099Forms(year: number): Promise<Buffer> {
+    const records = Array.from(this.paymentRecords.values())
+      .filter(r => r.taxYear === year);
+    
+    const driverEarnings = new Map();
+    records.forEach(r => {
+      const current = driverEarnings.get(r.driverId) || { total: 0, driverName: r.driverName };
+      current.total += r.driverEarnings.total;
+      driverEarnings.set(r.driverId, current);
+    });
+
+    const form1099Data = this.generate1099CSV(driverEarnings, year);
+    return Buffer.from(form1099Data, 'utf8');
+  }
+
+  private generatePaymentCSV(records: any[]): string {
+    const headers = [
+      'Payment ID', 'Order ID', 'Transaction Date', 'Driver Name',
+      'Driver Base Pay', 'Driver Distance Pay', 'Driver Time Pay', 'Driver Size Bonus', 'Driver Tip', 'Driver Total',
+      'Company Service Fee', 'Company Distance Fee', 'Company Time Fee', 'Company Total',
+      'Customer Base Price', 'Customer Surcharges', 'Customer Taxes', 'Customer Total',
+      'Payment Method', 'Status', 'Tax Year', 'Quarter'
+    ];
+
+    const rows = records.map(r => [
+      r.id, r.orderId, r.transactionDate, r.driverName,
+      r.driverEarnings.basePay, r.driverEarnings.distancePay, r.driverEarnings.timePay, 
+      r.driverEarnings.sizeBonus, r.driverEarnings.tip, r.driverEarnings.total,
+      r.companyRevenue.serviceFee, r.companyRevenue.distanceFee, r.companyRevenue.timeFee, r.companyRevenue.total,
+      r.customerPayment.basePrice, r.customerPayment.surcharges, r.customerPayment.taxes, r.customerPayment.total,
+      r.paymentMethod, r.status, r.taxYear, r.quarter
+    ]);
+
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
+  }
+
+  private generateTaxCSV(records: any[]): string {
+    const headers = ['Tax Year', 'Quarter', 'Total Revenue', 'Driver Payments', 'Net Income', 'Estimated Tax'];
+    
+    const quarterlyData = [1, 2, 3, 4].map(quarter => {
+      const quarterRecords = records.filter(r => r.quarter === quarter);
+      const totalRevenue = quarterRecords.reduce((sum, r) => sum + r.companyRevenue.total, 0);
+      const driverPayments = quarterRecords.reduce((sum, r) => sum + r.driverEarnings.total, 0);
+      const netIncome = totalRevenue;
+      const estimatedTax = netIncome * 0.21; // 21% corporate tax rate
+
+      return [
+        records[0]?.taxYear || new Date().getFullYear(),
+        `Q${quarter}`,
+        totalRevenue.toFixed(2),
+        driverPayments.toFixed(2),
+        netIncome.toFixed(2),
+        estimatedTax.toFixed(2)
+      ];
+    });
+
+    return [headers, ...quarterlyData].map(row => row.join(',')).join('\n');
+  }
+
+  private generate1099CSV(driverEarnings: Map<number, any>, year: number): string {
+    const headers = ['Driver ID', 'Driver Name', 'Total Earnings', 'Tax Year', 'Requires 1099'];
+    
+    const rows = Array.from(driverEarnings.entries()).map(([driverId, data]) => [
+      driverId,
+      data.driverName,
+      data.total.toFixed(2),
+      year,
+      data.total >= 600 ? 'Yes' : 'No'
+    ]);
+
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
   }
 
   // Promo code operations
