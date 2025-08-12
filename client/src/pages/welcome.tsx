@@ -70,25 +70,17 @@ export default function Welcome() {
   }, [deliveryImages.length]);
 
   return (
-    <div className="min-h-screen">
-      {/* DoorDash-style Hero Section with Real Stock Photo */}
-      <div className="relative h-screen overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-stone-100">
+      {/* Sophisticated White/Beige Hero Section */}
+      <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
-        {/* Background Image Carousel */}
-        <div className="absolute inset-0">
-          <img 
-            src={deliveryImages[currentImageIndex].url}
-            alt={deliveryImages[currentImageIndex].alt}
-            className="w-full h-full object-cover transition-opacity duration-1000"
-            onError={(e) => {
-              // Fallback to first image if current fails to load
-              if (currentImageIndex !== 0) {
-                setCurrentImageIndex(0);
-              }
-            }}
+        {/* Sophisticated White Background with Subtle Image */}
+        <div className="absolute inset-0 bg-white">
+          <div 
+            className="absolute inset-0 bg-cover bg-center opacity-10 transition-all duration-1000"
+            style={{ backgroundImage: `url('${deliveryImages[currentImageIndex].url}')` }}
           />
-          {/* Warm beige overlay to match cardboard theme */}
-          <div className="absolute inset-0 bg-gradient-to-r from-amber-200 via-yellow-100 to-orange-100"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-stone-50/80 to-amber-50/60"></div>
         </div>
         
         {/* Hero Content */}
@@ -202,82 +194,85 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* Section 1: Welcome Message - No borders, with background image */}
-      <div className="w-full py-12 bg-gradient-to-r from-gray-50 to-blue-50 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
+      {/* Section 1: Sophisticated Welcome Section */}
+      <div className="w-full py-16 bg-gradient-to-br from-white via-stone-50 to-amber-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5">
           <img 
             src="https://images.pexels.com/photos/6994108/pexels-photo-6994108.jpeg?auto=compress&cs=tinysrgb&w=800"
             alt="Packages on porch"
             className="w-full h-full object-cover"
           />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/90 via-stone-50/70 to-amber-50/60"></div>
         <div className="relative px-4 sm:px-8 lg:px-16 text-center">
           <div className="flex flex-col items-center justify-center mb-8 lg:mb-12">
             <img 
               src="/logo-cardboard-deep.png" 
               alt="Returnly Logo" 
-              className="h-20 sm:h-24 md:h-28 lg:h-36 xl:h-40 w-auto mb-6 lg:mb-8"
+              className="h-24 sm:h-28 md:h-32 lg:h-40 xl:h-44 w-auto mb-6 lg:mb-8"
             />
             <div>
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-2">Welcome to Returnly</div>
-              <div className="text-lg sm:text-xl lg:text-2xl text-gray-600">Return Delivery Service</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 mb-2 tracking-wide">Welcome to Returnly</div>
+              <div className="text-xl sm:text-2xl lg:text-3xl text-amber-700 font-medium">Professional Return Logistics</div>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Section 2: Promotional Banner - No borders, with background image */}
-      <div className="w-full py-12 bg-gradient-to-r from-orange-500 to-red-500 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
+      {/* Section 2: Sophisticated Promotional Banner */}
+      <div className="w-full py-12 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
           <img 
             src="https://images.pexels.com/photos/6667682/pexels-photo-6667682.jpeg?auto=compress&cs=tinysrgb&w=800"
             alt="Delivery man giving packages"
             className="w-full h-full object-cover"
           />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-amber-50/10"></div>
         <div className="relative px-8 lg:px-16 text-center">
-          <div className="text-3xl font-bold mb-4">🎉 Limited Time: 50% OFF First Return</div>
-          <div className="bg-white/20 inline-block px-6 py-3 rounded-lg font-bold text-xl">
+          <div className="text-3xl font-bold mb-4 tracking-wide">✨ Special Offer: 50% OFF First Return</div>
+          <div className="bg-white text-amber-800 inline-block px-8 py-3 rounded-full font-bold text-xl shadow-lg">
             Use code: RETURN50
           </div>
         </div>
       </div>
       
-      {/* Section 3: Main CTA - No borders, with background image */}
-      <div className="w-full py-16 bg-gradient-to-r from-white to-gray-100 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-15">
+      {/* Section 3: Sophisticated Main CTA */}
+      <div className="w-full py-20 bg-gradient-to-br from-white via-stone-50 to-amber-50 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-8">
           <img 
             src="https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&w=800"
             alt="Person handing over boxes"
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative px-8 lg:px-16 max-w-4xl mx-auto">
-          <h2 className="text-4xl font-bold text-gray-800 mb-6 text-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-white/85 via-stone-50/60 to-amber-50/70"></div>
+        <div className="relative px-8 lg:px-16 max-w-5xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-amber-900 mb-8 text-center tracking-wide">
             Book Your Return Pickup
           </h2>
-          <div className="flex justify-center items-center gap-8 mb-8 flex-wrap text-gray-700">
-            <span className="flex items-center gap-2 text-lg">
-              <CreditCard className="w-5 h-5 text-orange-600" />
+          <div className="flex justify-center items-center gap-8 mb-12 flex-wrap text-amber-800">
+            <span className="flex items-center gap-3 text-xl font-medium">
+              <CreditCard className="w-6 h-6 text-amber-700" />
               From $3.99
             </span>
-            <span className="flex items-center gap-2 text-lg">
-              <Clock className="w-5 h-5 text-orange-600" />
+            <span className="flex items-center gap-3 text-xl font-medium">
+              <Clock className="w-6 h-6 text-amber-700" />
               Pick up in 2 hours
             </span>
-            <span className="flex items-center gap-2 text-lg">
-              <MapPin className="w-5 h-5 text-orange-600" />
+            <span className="flex items-center gap-3 text-xl font-medium">
+              <MapPin className="w-6 h-6 text-amber-700" />
               500+ retail partners
             </span>
           </div>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-6 justify-center flex-wrap">
             <Button 
               size="lg"
-              className="bg-orange-600 hover:bg-orange-700 text-white font-bold text-xl px-10 py-4 h-auto"
+              className="bg-amber-700 hover:bg-amber-800 text-white font-bold text-xl px-12 py-5 h-auto shadow-lg"
               onClick={() => setLocation(isAuthenticated ? '/book-pickup' : '/login')}
               data-testid="button-start-return"
             >
-              {isAuthenticated ? 'Book Pickup' : 'Start Return'} 📦
+              {isAuthenticated ? 'Book Pickup' : 'Start Return'}
             </Button>
             <Button 
               size="lg"

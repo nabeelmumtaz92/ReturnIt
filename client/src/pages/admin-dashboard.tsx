@@ -1,551 +1,435 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth-simple";
+import { useLocation } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { Package, Users, TrendingUp, DollarSign, MapPin, Clock, Star, AlertTriangle, Plus, Edit2, Trash2 } from "lucide-react";
-import { Order, User } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { 
+  Shield, 
+  Package, 
+  Users, 
+  DollarSign, 
+  TrendingUp, 
+  MapPin, 
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  RefreshCw,
+  Search,
+  Filter
+} from "lucide-react";
+
+interface Order {
+  id: number;
+  customerId: number;
+  driverId?: number;
+  status: string;
+  pickupAddress: string;
+  retailer: string;
+  itemDescription: string;
+  totalAmount: number;
+  createdAt: string;
+  customerName?: string;
+  driverName?: string;
+}
+
+interface Driver {
+  id: number;
+  username: string;
+  email: string;
+  isApproved: boolean;
+  backgroundCheckStatus: string;
+  totalEarnings: number;
+  completedJobs: number;
+  rating: number;
+}
+
+interface Analytics {
+  totalOrders: number;
+  completedOrders: number;
+  totalRevenue: number;
+  activeDrivers: number;
+  completionRate: number;
+  avgOrderValue: number;
+}
 
 export default function AdminDashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [newPromoCode, setNewPromoCode] = useState({
-    code: '',
-    description: '',
-    discountType: 'percentage' as const,
-    discountValue: 0,
-    minOrderValue: 0,
-    maxUses: 100,
-    validUntil: ''
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Redirect if not authenticated or not admin
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || !user || !(user as any).isAdmin)) {
+      toast({
+        title: "Access Denied",
+        description: "You don't have permission to access this page",
+        variant: "destructive",
+      });
+      setLocation('/');
+    }
+  }, [isAuthenticated, isLoading, user, setLocation, toast]);
+
+  // Fetch analytics data
+  const { data: analytics, isLoading: analyticsLoading } = useQuery({
+    queryKey: ['/api/admin/analytics'],
+    enabled: isAuthenticated && (user as any)?.isAdmin,
   });
 
-  // Queries
-  const { data: orders = [], isLoading: loadingOrders } = useQuery<Order[]>({
-    queryKey: ["/api/admin/orders"],
-    enabled: isAuthenticated && user?.isAdmin
+  // Fetch orders
+  const { data: orders, isLoading: ordersLoading } = useQuery({
+    queryKey: ['/api/admin/orders'],
+    enabled: isAuthenticated && (user as any)?.isAdmin,
   });
 
-  const { data: drivers = [], isLoading: loadingDrivers } = useQuery<User[]>({
-    queryKey: ["/api/admin/drivers"],
-    enabled: isAuthenticated && user?.isAdmin
+  // Fetch drivers
+  const { data: drivers, isLoading: driversLoading } = useQuery({
+    queryKey: ['/api/admin/drivers'],
+    enabled: isAuthenticated && (user as any)?.isAdmin,
   });
 
-  // Mutations
-  const createPromoMutation = useMutation({
-    mutationFn: async (promoData: any) => {
-      await apiRequest("POST", "/api/admin/promo", promoData);
+  // Update order status mutation
+  const updateOrderMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
+      return await apiRequest(`/api/admin/orders/${orderId}/status`, 'PATCH', { status });
     },
     onSuccess: () => {
-      setNewPromoCode({
-        code: '',
-        description: '',
-        discountType: 'percentage',
-        discountValue: 0,
-        minOrderValue: 0,
-        maxUses: 100,
-        validUntil: ''
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/orders'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/analytics'] });
+      toast({
+        title: "Order Updated",
+        description: "Order status has been updated successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update order status",
+        variant: "destructive",
       });
     }
   });
 
-  const updateOrderMutation = useMutation({
-    mutationFn: async ({ orderId, status, adminNotes }: { orderId: string, status?: string, adminNotes?: string }) => {
-      await apiRequest("PATCH", `/api/orders/${orderId}`, { status, adminNotes });
+  // Approve driver mutation
+  const approveDriverMutation = useMutation({
+    mutationFn: async (driverId: number) => {
+      return await apiRequest(`/api/admin/drivers/${driverId}/approve`, 'PATCH', {});
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/drivers'] });
+      toast({
+        title: "Driver Approved",
+        description: "Driver has been approved and can now accept orders",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Approval Failed",
+        description: "Failed to approve driver",
+        variant: "destructive",
+      });
     }
   });
 
-  if (!isAuthenticated || !user?.isAdmin) {
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return 'bg-green-100 text-green-800';
+      case 'in_progress': return 'bg-blue-100 text-blue-800';
+      case 'assigned': return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed': return <CheckCircle className="h-4 w-4" />;
+      case 'cancelled': return <XCircle className="h-4 w-4" />;
+      case 'assigned': return <Clock className="h-4 w-4" />;
+      default: return <Package className="h-4 w-4" />;
+    }
+  };
+
+  // Filter orders based on search and status
+  const filteredOrders = orders?.filter((order: Order) => {
+    const matchesSearch = !searchTerm || 
+      order.pickupAddress.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.retailer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.itemDescription.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customerName?.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || order.status.toLowerCase() === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  }) || [];
+
+  if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
-        <Card className="w-96">
-          <CardHeader>
-            <CardTitle className="text-red-600">Access Denied</CardTitle>
-            <CardDescription>You need administrator access to view this page.</CardDescription>
-          </CardHeader>
-        </Card>
+      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center">
+        <div className="text-center">
+          <Shield className="h-16 w-16 mx-auto mb-4 text-amber-800 animate-pulse" />
+          <p className="text-amber-800">Loading admin dashboard...</p>
+        </div>
       </div>
     );
   }
 
-  // Analytics calculations
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-  const todayOrders = orders.filter(order => 
-    new Date(order.createdAt).toDateString() === new Date().toDateString()
-  ).length;
-  const onlineDrivers = drivers.filter(driver => driver.isOnline).length;
-  const avgDeliveryTime = orders.filter(o => o.actualDeliveryTime && o.actualPickupTime)
-    .reduce((sum, order) => {
-      const pickup = new Date(order.actualPickupTime!).getTime();
-      const delivery = new Date(order.actualDeliveryTime!).getTime();
-      return sum + (delivery - pickup);
-    }, 0) / orders.filter(o => o.actualDeliveryTime && o.actualPickupTime).length / (1000 * 60); // in minutes
-
-  // Chart data
-  const orderStatusData = [
-    { name: 'Created', value: orders.filter(o => o.status === 'created').length, color: '#F59E0B' },
-    { name: 'Assigned', value: orders.filter(o => o.status === 'assigned').length, color: '#3B82F6' },
-    { name: 'Picked Up', value: orders.filter(o => o.status === 'picked_up').length, color: '#10B981' },
-    { name: 'Delivered', value: orders.filter(o => o.status === 'delivered').length, color: '#6366F1' },
-    { name: 'Completed', value: orders.filter(o => o.status === 'completed').length, color: '#059669' }
-  ];
-
-  const revenueData = orders.reduce((acc: any[], order) => {
-    const date = new Date(order.createdAt).toISOString().split('T')[0];
-    const existing = acc.find(item => item.date === date);
-    if (existing) {
-      existing.revenue += order.totalPrice || 0;
-      existing.orders += 1;
-    } else {
-      acc.push({ date, revenue: order.totalPrice || 0, orders: 1 });
-    }
-    return acc;
-  }, []).slice(-7);
+  if (!isAuthenticated || !(user as any)?.isAdmin) {
+    return null; // Will redirect via useEffect
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-amber-900">Admin Dashboard</h1>
-              <p className="text-amber-700 mt-1">Manage your Returnly platform</p>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Badge variant="outline" className="border-green-300 text-green-700">
-                {onlineDrivers} Drivers Online
-              </Badge>
-              <Badge variant="outline" className="border-blue-300 text-blue-700">
-                {todayOrders} Orders Today
-              </Badge>
-            </div>
+      <header className="bg-white/90 backdrop-blur-sm border-b border-stone-200 sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation('/')}
+              className="text-amber-800 hover:text-amber-900"
+              data-testid="button-back-home"
+            >
+              ← Back
+            </Button>
+            <Shield className="h-8 w-8 text-amber-800" />
+            <h1 className="text-xl font-bold text-amber-900">Admin Dashboard</h1>
+          </div>
+          <div className="text-amber-800 text-sm">
+            Welcome, {user?.username}
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Total Revenue</p>
-                  <p className="text-3xl font-bold text-amber-900">${totalRevenue.toFixed(2)}</p>
-                </div>
-                <DollarSign className="h-8 w-8 text-green-500" />
-              </div>
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Analytics Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-stone-700">Total Orders</CardTitle>
+              <Package className="h-4 w-4 text-stone-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">{analytics?.totalOrders || 0}</div>
+              <p className="text-xs text-stone-600">
+                {analytics?.completedOrders || 0} completed
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Total Orders</p>
-                  <p className="text-3xl font-bold text-amber-900">{orders.length}</p>
-                </div>
-                <Package className="h-8 w-8 text-blue-500" />
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-stone-700">Total Revenue</CardTitle>
+              <DollarSign className="h-4 w-4 text-stone-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-700">
+                ${(analytics?.totalRevenue || 0).toFixed(2)}
               </div>
+              <p className="text-xs text-stone-600">
+                ${(analytics?.avgOrderValue || 0).toFixed(2)} avg order
+              </p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Active Drivers</p>
-                  <p className="text-3xl font-bold text-amber-900">{onlineDrivers}/{drivers.length}</p>
-                </div>
-                <Users className="h-8 w-8 text-purple-500" />
+          <Card className="bg-white/90 backdrop-blur-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-stone-700">Completion Rate</CardTitle>
+              <TrendingUp className="h-4 w-4 text-stone-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-700">
+                {((analytics?.completionRate || 0) * 100).toFixed(1)}%
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Avg Delivery</p>
-                  <p className="text-3xl font-bold text-amber-900">{avgDeliveryTime ? `${Math.round(avgDeliveryTime)}m` : 'N/A'}</p>
-                </div>
-                <Clock className="h-8 w-8 text-orange-500" />
-              </div>
+              <p className="text-xs text-stone-600">
+                {analytics?.activeDrivers || 0} active drivers
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <Card className="bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-amber-900">Revenue Trend</CardTitle>
-              <CardDescription>Daily revenue over the last 7 days</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="revenue" stroke="#F59E0B" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
+        {/* Orders Management */}
+        <Card className="bg-white/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-amber-900 flex items-center">
+              <Package className="h-5 w-5 mr-2" />
+              Order Management
+            </CardTitle>
+            <CardDescription>
+              Monitor and manage all customer orders
+            </CardDescription>
 
-          <Card className="bg-white shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-amber-900">Order Status Distribution</CardTitle>
-              <CardDescription>Current status of all orders</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={orderStatusData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, value }) => `${name}: ${value}`}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {orderStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="orders" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-amber-100">
-            <TabsTrigger value="orders" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              Orders
-            </TabsTrigger>
-            <TabsTrigger value="drivers" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              Drivers
-            </TabsTrigger>
-            <TabsTrigger value="promos" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              Promo Codes
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              Analytics
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="orders">
-            <Card className="bg-white shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-amber-900">Order Management</CardTitle>
-                <CardDescription>Monitor and manage all return orders</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loadingOrders ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full" />
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Order ID</TableHead>
-                        <TableHead>Customer</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Driver</TableHead>
-                        <TableHead>Total</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {orders.slice(0, 20).map((order) => (
-                        <TableRow key={order.id}>
-                          <TableCell className="font-medium">{order.id}</TableCell>
-                          <TableCell>User #{order.userId}</TableCell>
-                          <TableCell>
-                            <Badge variant={
-                              order.status === 'completed' ? 'default' :
-                              order.status === 'delivered' ? 'secondary' :
-                              order.status === 'picked_up' ? 'outline' : 'destructive'
-                            }>
-                              {order.status.replace('_', ' ')}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {order.driverId ? `Driver #${order.driverId}` : 'Unassigned'}
-                          </TableCell>
-                          <TableCell>${order.totalPrice?.toFixed(2) || '0.00'}</TableCell>
-                          <TableCell>{new Date(order.createdAt).toLocaleDateString()}</TableCell>
-                          <TableCell>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={() => setSelectedOrder(order)}
-                                  data-testid={`button-view-order-${order.id}`}
-                                >
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Order Details #{selectedOrder?.id}</DialogTitle>
-                                  <DialogDescription>
-                                    View and manage order information
-                                  </DialogDescription>
-                                </DialogHeader>
-                                {selectedOrder && (
-                                  <div className="space-y-4">
-                                    <div className="grid grid-cols-2 gap-4">
-                                      <div>
-                                        <Label>Pickup Address</Label>
-                                        <p className="text-sm text-gray-600">{selectedOrder.pickupAddress}</p>
-                                      </div>
-                                      <div>
-                                        <Label>Retailer</Label>
-                                        <p className="text-sm text-gray-600">{selectedOrder.retailer}</p>
-                                      </div>
-                                      <div>
-                                        <Label>Item Description</Label>
-                                        <p className="text-sm text-gray-600">{selectedOrder.itemDescription}</p>
-                                      </div>
-                                      <div>
-                                        <Label>Total Price</Label>
-                                        <p className="text-sm text-gray-600">${selectedOrder.totalPrice?.toFixed(2)}</p>
-                                      </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <Label>Update Status</Label>
-                                      <Select onValueChange={(value) => updateOrderMutation.mutate({ orderId: selectedOrder.id, status: value })}>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder={selectedOrder.status} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="created">Created</SelectItem>
-                                          <SelectItem value="assigned">Assigned</SelectItem>
-                                          <SelectItem value="picked_up">Picked Up</SelectItem>
-                                          <SelectItem value="in_transit">In Transit</SelectItem>
-                                          <SelectItem value="delivered">Delivered</SelectItem>
-                                          <SelectItem value="completed">Completed</SelectItem>
-                                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                                          <SelectItem value="refunded">Refunded</SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                  </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="drivers">
-            <Card className="bg-white shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-amber-900">Driver Management</CardTitle>
-                <CardDescription>Monitor driver performance and status</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {loadingDrivers ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full" />
-                  </div>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Driver ID</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Rating</TableHead>
-                        <TableHead>Deliveries</TableHead>
-                        <TableHead>Total Earnings</TableHead>
-                        <TableHead>Joined</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {drivers.map((driver) => (
-                        <TableRow key={driver.id}>
-                          <TableCell className="font-medium">#{driver.id}</TableCell>
-                          <TableCell>
-                            {driver.firstName && driver.lastName 
-                              ? `${driver.firstName} ${driver.lastName}`
-                              : driver.username}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={driver.isOnline ? 'default' : 'secondary'}>
-                              {driver.isOnline ? 'Online' : 'Offline'}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center space-x-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span>{driver.driverRating?.toFixed(1) || '5.0'}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>{driver.completedDeliveries}</TableCell>
-                          <TableCell>${driver.totalEarnings?.toFixed(2) || '0.00'}</TableCell>
-                          <TableCell>{new Date(driver.createdAt).toLocaleDateString()}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="promos">
-            <Card className="bg-white shadow-lg">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-amber-900">Promotional Codes</CardTitle>
-                  <CardDescription>Create and manage discount codes</CardDescription>
+            {/* Search and Filter Controls */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-4">
+              <div className="flex-1">
+                <Label htmlFor="search" className="sr-only">Search orders</Label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-stone-400" />
+                  <Input
+                    id="search"
+                    placeholder="Search orders..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-search-orders"
+                  />
                 </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button className="bg-amber-600 hover:bg-amber-700" data-testid="button-create-promo">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Promo Code
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Create New Promo Code</DialogTitle>
-                      <DialogDescription>
-                        Set up a new promotional discount code
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="code" className="text-right">Code</Label>
-                        <Input
-                          id="code"
-                          value={newPromoCode.code}
-                          onChange={(e) => setNewPromoCode({...newPromoCode, code: e.target.value.toUpperCase()})}
-                          className="col-span-3"
-                          placeholder="SAVE20"
-                          data-testid="input-promo-code"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="description" className="text-right">Description</Label>
-                        <Input
-                          id="description"
-                          value={newPromoCode.description}
-                          onChange={(e) => setNewPromoCode({...newPromoCode, description: e.target.value})}
-                          className="col-span-3"
-                          placeholder="20% off your order"
-                          data-testid="input-promo-description"
-                        />
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="discountType" className="text-right">Type</Label>
-                        <Select value={newPromoCode.discountType} onValueChange={(value: any) => setNewPromoCode({...newPromoCode, discountType: value})}>
-                          <SelectTrigger className="col-span-3">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="percentage">Percentage</SelectItem>
-                            <SelectItem value="fixed">Fixed Amount</SelectItem>
-                            <SelectItem value="free_delivery">Free Delivery</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="discountValue" className="text-right">Value</Label>
-                        <Input
-                          id="discountValue"
-                          type="number"
-                          value={newPromoCode.discountValue}
-                          onChange={(e) => setNewPromoCode({...newPromoCode, discountValue: parseFloat(e.target.value)})}
-                          className="col-span-3"
-                          placeholder="20"
-                          data-testid="input-promo-value"
-                        />
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <Button 
-                        onClick={() => createPromoMutation.mutate(newPromoCode)}
-                        disabled={createPromoMutation.isPending}
-                        data-testid="button-save-promo"
-                      >
-                        {createPromoMutation.isPending ? "Creating..." : "Create Code"}
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </CardHeader>
-              <CardContent>
-                <Alert className="mb-4">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    Demo promo codes: RETURN50 (50% off), BUNDLE25 ($2.50 off), STUDENT15 (15% off), FREESHIP (free delivery)
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <div className="grid gap-6">
-              <Card className="bg-white shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-amber-900">Performance Analytics</CardTitle>
-                  <CardDescription>Detailed insights into platform performance</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-amber-50 rounded-lg">
-                      <h3 className="text-2xl font-bold text-amber-900">{((orders.filter(o => o.status === 'completed').length / orders.length) * 100).toFixed(1)}%</h3>
-                      <p className="text-amber-600">Success Rate</p>
-                    </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <h3 className="text-2xl font-bold text-green-900">${(totalRevenue / orders.length).toFixed(2)}</h3>
-                      <p className="text-green-600">Avg Order Value</p>
-                    </div>
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <h3 className="text-2xl font-bold text-blue-900">{drivers.filter(d => d.driverRating && d.driverRating >= 4.5).length}</h3>
-                      <p className="text-blue-600">Top Rated Drivers</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              </div>
+              <div className="sm:w-48">
+                <Label htmlFor="status-filter" className="sr-only">Filter by status</Label>
+                <select
+                  id="status-filter"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-stone-300 rounded-md bg-white"
+                  data-testid="select-status-filter"
+                >
+                  <option value="all">All Status</option>
+                  <option value="created">Created</option>
+                  <option value="assigned">Assigned</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
+              </div>
             </div>
-          </TabsContent>
-        </Tabs>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {ordersLoading ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-stone-400" />
+                  <p className="text-stone-600 mt-2">Loading orders...</p>
+                </div>
+              ) : filteredOrders.length === 0 ? (
+                <div className="text-center py-8 text-stone-600">
+                  No orders found matching your criteria
+                </div>
+              ) : (
+                filteredOrders.map((order: Order) => (
+                  <div key={order.id} className="border border-stone-200 rounded-lg p-4 bg-stone-50/50">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${getStatusColor(order.status)} flex items-center gap-1`}>
+                            {getStatusIcon(order.status)}
+                            {order.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                          <span className="font-medium text-amber-900">Order #{order.id}</span>
+                        </div>
+                        <div className="text-sm text-stone-700">
+                          <p><strong>Customer:</strong> {order.customerName || 'Unknown'}</p>
+                          <p><strong>Address:</strong> {order.pickupAddress}</p>
+                          <p><strong>Retailer:</strong> {order.retailer}</p>
+                          <p><strong>Item:</strong> {order.itemDescription}</p>
+                          <p><strong>Amount:</strong> ${order.totalAmount.toFixed(2)}</p>
+                          {order.driverName && (
+                            <p><strong>Driver:</strong> {order.driverName}</p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {order.status === 'created' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'assigned' })}
+                            disabled={updateOrderMutation.isPending}
+                            data-testid={`button-assign-${order.id}`}
+                          >
+                            Assign Driver
+                          </Button>
+                        )}
+                        {order.status !== 'completed' && order.status !== 'cancelled' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'cancelled' })}
+                            disabled={updateOrderMutation.isPending}
+                            className="text-red-600 border-red-300 hover:bg-red-50"
+                            data-testid={`button-cancel-${order.id}`}
+                          >
+                            Cancel
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Driver Management */}
+        <Card className="bg-white/90 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-amber-900 flex items-center">
+              <Users className="h-5 w-5 mr-2" />
+              Driver Management
+            </CardTitle>
+            <CardDescription>
+              Approve and manage delivery drivers
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {driversLoading ? (
+                <div className="text-center py-8">
+                  <RefreshCw className="h-8 w-8 animate-spin mx-auto text-stone-400" />
+                  <p className="text-stone-600 mt-2">Loading drivers...</p>
+                </div>
+              ) : !drivers || drivers.length === 0 ? (
+                <div className="text-center py-8 text-stone-600">
+                  No drivers registered yet
+                </div>
+              ) : (
+                drivers.map((driver: Driver) => (
+                  <div key={driver.id} className="border border-stone-200 rounded-lg p-4 bg-stone-50/50">
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-medium text-amber-900">{driver.username}</h3>
+                          <Badge className={driver.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                            {driver.isApproved ? 'Approved' : 'Pending'}
+                          </Badge>
+                        </div>
+                        <div className="text-sm text-stone-700">
+                          <p><strong>Email:</strong> {driver.email}</p>
+                          <p><strong>Background Check:</strong> {driver.backgroundCheckStatus}</p>
+                          <p><strong>Total Earnings:</strong> ${driver.totalEarnings?.toFixed(2) || '0.00'}</p>
+                          <p><strong>Completed Jobs:</strong> {driver.completedJobs || 0}</p>
+                          <p><strong>Rating:</strong> {driver.rating ? `${driver.rating.toFixed(1)}/5.0` : 'No ratings yet'}</p>
+                        </div>
+                      </div>
+                      {!driver.isApproved && (
+                        <Button
+                          size="sm"
+                          onClick={() => approveDriverMutation.mutate(driver.id)}
+                          disabled={approveDriverMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          data-testid={`button-approve-driver-${driver.id}`}
+                        >
+                          Approve Driver
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

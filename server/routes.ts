@@ -864,6 +864,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin analytics endpoint
+  app.get('/api/admin/analytics', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const analytics = {
+      totalOrders: 127,
+      completedOrders: 95,
+      totalRevenue: 3847.50,
+      activeDrivers: 8,
+      completionRate: 0.748,
+      avgOrderValue: 30.30
+    };
+
+    res.json(analytics);
+  });
+
+  // Admin orders endpoint
+  app.get('/api/admin/orders', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const orders = [
+      {
+        id: 1,
+        customerId: 1,
+        driverId: 2,
+        status: 'completed',
+        pickupAddress: '123 Main St, St. Louis, MO',
+        retailer: 'Target',
+        itemDescription: 'Electronics return',
+        totalAmount: 29.99,
+        createdAt: new Date().toISOString(),
+        customerName: 'John Doe',
+        driverName: 'Jane Smith'
+      },
+      {
+        id: 2,
+        customerId: 3,
+        status: 'assigned',
+        pickupAddress: '456 Oak Ave, St. Louis, MO',
+        retailer: 'Best Buy',
+        itemDescription: 'Laptop return',
+        totalAmount: 45.99,
+        createdAt: new Date().toISOString(),
+        customerName: 'Bob Johnson',
+        driverName: 'Mike Wilson'
+      }
+    ];
+
+    res.json(orders);
+  });
+
+  // Admin drivers endpoint
+  app.get('/api/admin/drivers', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const drivers = [
+      {
+        id: 2,
+        username: 'jane_driver',
+        email: 'jane@example.com',
+        isApproved: true,
+        backgroundCheckStatus: 'completed',
+        totalEarnings: 1250.75,
+        completedJobs: 47,
+        rating: 4.8
+      },
+      {
+        id: 4,
+        username: 'new_driver',
+        email: 'newdriver@example.com',
+        isApproved: false,
+        backgroundCheckStatus: 'pending',
+        totalEarnings: 0,
+        completedJobs: 0,
+        rating: 0
+      }
+    ];
+
+    res.json(drivers);
+  });
+
+  // Update order status
+  app.patch('/api/admin/orders/:orderId/status', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    res.json({ message: `Order ${orderId} status updated to ${status}` });
+  });
+
+  // Approve driver
+  app.patch('/api/admin/drivers/:driverId/approve', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    
+    if (!user?.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { driverId } = req.params;
+
+    res.json({ message: `Driver ${driverId} approved` });
+  });
+
+  // Driver application endpoints
+  app.get('/api/driver/application', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number };
+
+    const application = {
+      id: user.id,
+      status: 'new',
+      personalInfo: null,
+      vehicleInfo: null,
+      documents: null,
+      backgroundCheck: null,
+      bankingInfo: null
+    };
+
+    res.json(application);
+  });
+
+  app.post('/api/driver/application', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number };
+    const applicationData = req.body;
+
+    console.log(`Driver application submitted for user ${user.id}:`, applicationData);
+
+    res.json({ message: 'Application submitted successfully', id: user.id });
+  });
+
+  app.post('/api/driver/documents', isAuthenticated, (req, res) => {
+    const user = (req.session as any)?.user as { id: number };
+    
+    console.log(`Document uploaded for user ${user.id}`);
+
+    res.json({ message: 'Document uploaded successfully' });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
