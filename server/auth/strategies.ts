@@ -10,8 +10,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.REPLIT_DEV_DOMAIN 
-      ? 'https://' + process.env.REPLIT_DEV_DOMAIN + '/api/auth/google/callback'
-      : 'http://localhost:5000/api/auth/google/callback'
+      ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/google/callback`
+      : `http://localhost:5000/api/auth/google/callback`
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Check if user exists
