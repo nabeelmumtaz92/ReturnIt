@@ -25,6 +25,7 @@ interface Order {
   status: 'delivered' | 'refunded';
   driver?: string;
   amount: number;
+  driverEarning: number;
   pickupAddress: string;
   destination: string;
   createdAt: string;
@@ -42,7 +43,7 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
   // Calculate key metrics
   const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.amount - 3.99), 0);
   const totalServiceFees = completedOrders.length * 3.99;
-  const totalDriverEarnings = completedOrders.reduce((sum, order) => sum + (order.amount * 0.7), 0);
+  const totalDriverEarnings = completedOrders.reduce((sum, order) => sum + (order.driverEarning || order.amount * 0.7), 0);
   const averageOrderValue = completedOrders.length > 0 ? completedOrders.reduce((sum, order) => sum + order.amount, 0) / completedOrders.length : 0;
   
   // Driver performance analysis
@@ -59,7 +60,7 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
         };
       }
       stats[order.driver].orders++;
-      stats[order.driver].earnings += order.amount * 0.7;
+      stats[order.driver].earnings += order.driverEarning || order.amount * 0.7;
       if (order.status === 'delivered') {
         stats[order.driver].deliveredCount++;
       } else {
@@ -121,7 +122,7 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
           <h2 className="text-2xl font-bold text-amber-900">Advanced Analytics</h2>
           <p className="text-amber-700">Comprehensive completed orders analysis</p>
         </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
+        <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
           <SelectTrigger className="w-40">
             <Calendar className="h-4 w-4 mr-2" />
             <SelectValue />
@@ -191,12 +192,13 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
       </div>
 
       {/* Detailed Analytics Tabs */}
-      <Tabs value={analyticsView} onValueChange={setAnalyticsView}>
-        <TabsList className="grid w-full grid-cols-4">
+      <Tabs value={analyticsView} onValueChange={(value: any) => setAnalyticsView(value)}>
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="drivers">Drivers</TabsTrigger>
           <TabsTrigger value="customers">Customers</TabsTrigger>
           <TabsTrigger value="locations">Locations</TabsTrigger>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6 mt-6">
@@ -353,6 +355,70 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
                   </div>
                 ))}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Detailed Orders Table */}
+        <TabsContent value="orders" className="space-y-6 mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Package className="h-5 w-5 mr-2" />
+                Individual Order Details
+              </CardTitle>
+              <CardDescription>Complete breakdown of return amounts and driver earnings per order</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-3 font-semibold text-gray-700">Order ID</th>
+                      <th className="text-left p-3 font-semibold text-gray-700">Customer</th>
+                      <th className="text-left p-3 font-semibold text-gray-700">Driver</th>
+                      <th className="text-right p-3 font-semibold text-gray-700">Return Amount</th>
+                      <th className="text-right p-3 font-semibold text-gray-700">Driver Earnings</th>
+                      <th className="text-left p-3 font-semibold text-gray-700">Status</th>
+                      <th className="text-left p-3 font-semibold text-gray-700">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {completedOrders.slice(0, 50).map((order) => (
+                      <tr key={order.id} className="border-b hover:bg-gray-50" data-testid={`order-row-${order.id}`}>
+                        <td className="p-3 text-sm font-mono text-blue-600" data-testid={`text-order-id-${order.id}`}>
+                          #{order.id}
+                        </td>
+                        <td className="p-3 text-sm text-gray-700" data-testid={`text-customer-${order.id}`}>
+                          {order.customer}
+                        </td>
+                        <td className="p-3 text-sm text-gray-700" data-testid={`text-driver-${order.id}`}>
+                          {order.driver || 'N/A'}
+                        </td>
+                        <td className="p-3 text-sm text-right font-semibold text-green-700" data-testid={`text-amount-${order.id}`}>
+                          ${order.amount.toFixed(2)}
+                        </td>
+                        <td className="p-3 text-sm text-right font-semibold text-purple-700" data-testid={`text-driver-earning-${order.id}`}>
+                          ${(order.driverEarning || order.amount * 0.7).toFixed(2)}
+                        </td>
+                        <td className="p-3 text-sm" data-testid={`status-${order.id}`}>
+                          <Badge className={order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}>
+                            {order.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-sm text-gray-600" data-testid={`text-date-${order.id}`}>
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {completedOrders.length > 50 && (
+                <div className="mt-4 text-center text-sm text-gray-600">
+                  Showing first 50 orders of {completedOrders.length} total completed orders
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

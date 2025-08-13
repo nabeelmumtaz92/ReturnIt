@@ -60,6 +60,7 @@ interface Order {
   status: 'pending' | 'assigned' | 'picked_up' | 'delivered' | 'refunded';
   driver?: string;
   amount: number;
+  driverEarning: number;
   pickupAddress: string;
   destination: string;
   createdAt: string;
@@ -112,6 +113,7 @@ export default function AdminDashboard() {
         customer: 'Sarah Johnson',
         status: 'pending',
         amount: 8.99,
+        driverEarning: 6.29,
         pickupAddress: '123 Main St, St. Louis, MO',
         destination: 'Target - Chesterfield',
         createdAt: '2024-01-12 10:30 AM',
@@ -123,6 +125,7 @@ export default function AdminDashboard() {
         status: 'assigned',
         driver: 'John Smith',
         amount: 12.50,
+        driverEarning: 8.75,
         pickupAddress: '456 Oak Ave, St. Louis, MO',
         destination: 'Best Buy - Kirkwood',
         createdAt: '2024-01-12 09:15 AM',
@@ -134,6 +137,7 @@ export default function AdminDashboard() {
         status: 'picked_up',
         driver: 'Maria Garcia',
         amount: 6.75,
+        driverEarning: 4.73,
         pickupAddress: '789 Pine Rd, St. Louis, MO',
         destination: 'Macy\'s - West County',
         createdAt: '2024-01-12 08:45 AM',
@@ -145,6 +149,7 @@ export default function AdminDashboard() {
         status: 'delivered',
         driver: 'John Smith',
         amount: 9.99,
+        driverEarning: 6.99,
         pickupAddress: '321 Elm St, St. Louis, MO',
         destination: 'Amazon Returns - Brentwood',
         createdAt: '2024-01-11 02:15 PM',
@@ -156,6 +161,7 @@ export default function AdminDashboard() {
         status: 'delivered',
         driver: 'Maria Garcia',
         amount: 7.50,
+        driverEarning: 5.25,
         pickupAddress: '654 Maple Dr, St. Louis, MO',
         destination: 'Walmart - Kirkwood',
         createdAt: '2024-01-11 11:30 AM',
@@ -167,6 +173,7 @@ export default function AdminDashboard() {
         status: 'refunded',
         driver: 'David Wilson',
         amount: 15.75,
+        driverEarning: 11.03,
         pickupAddress: '987 Oak St, St. Louis, MO',
         destination: 'Best Buy - West County',
         createdAt: '2024-01-10 09:45 AM',
