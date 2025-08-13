@@ -626,14 +626,6 @@ export default function Welcome() {
             >
               Mobile App
             </button>
-            <span className="text-gray-500">•</span>
-            <button 
-              onClick={() => setLocation('/driver-tutorial')}
-              className="hover:text-orange-300 transition-colors font-medium text-lg"
-              data-testid="button-footer-driver-training"
-            >
-              Driver Training
-            </button>
           </div>
         </div>
       </div>
