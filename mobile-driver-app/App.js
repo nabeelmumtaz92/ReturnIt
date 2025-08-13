@@ -369,6 +369,16 @@ export default function App() {
               </MapView>
             </View>
           )}
+
+          {/* Contact Support Button */}
+          <View style={styles.section}>
+            <TouchableOpacity 
+              style={styles.contactSupportButton}
+              onPress={() => Alert.alert('Contact Support', 'Support chat feature coming soon! For immediate help, call (314) 555-0199')}
+            >
+              <Text style={styles.contactSupportText}>💬 Contact Support</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -568,5 +578,26 @@ const styles = StyleSheet.create({
   map: {
     height: 200,
     borderRadius: 12,
+  },
+  contactSupportButton: {
+    backgroundColor: '#D97706',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  contactSupportText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });

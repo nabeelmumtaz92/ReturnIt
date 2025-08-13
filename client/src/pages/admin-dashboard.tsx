@@ -49,6 +49,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
+import ContactSupportButton from "@/components/ContactSupportButton";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -1393,6 +1394,11 @@ export default function AdminDashboard() {
           isOpen={showAdminSupportModal}
           onClose={() => setShowAdminSupportModal(false)}
           context={supportContext}
+        />
+
+        {/* Contact Support Button */}
+        <ContactSupportButton 
+          context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
       </div>
   );

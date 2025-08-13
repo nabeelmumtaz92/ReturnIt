@@ -282,7 +282,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md h-[600px] flex flex-col">
+      <Card className="w-full max-w-2xl h-[700px] flex flex-col">
         <CardHeader className="flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">

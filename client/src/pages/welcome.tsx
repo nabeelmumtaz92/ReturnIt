@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, HeadphonesIcon, CheckCircle, DollarSign, Zap, Phone, ArrowRight } from 'lucide-react';
-import SupportChat from '@/components/SupportChat';
+import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, CheckCircle, DollarSign, Zap, Phone, ArrowRight } from 'lucide-react';
+import ContactSupportButton from '@/components/ContactSupportButton';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
@@ -27,7 +27,6 @@ export default function Welcome() {
   const queryClient = useQueryClient();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [trackingNumber, setTrackingNumber] = useState('');
-  const [showSupportChat, setShowSupportChat] = useState(false);
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -638,21 +637,8 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* Floating Support Button */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <Button
-          onClick={() => setShowSupportChat(true)}
-          className="bg-amber-600 hover:bg-amber-700 text-white rounded-full w-14 h-14 shadow-lg"
-          size="lg"
-        >
-          <HeadphonesIcon className="h-6 w-6" />
-        </Button>
-      </div>
-
-      {/* Support Chat */}
-      <SupportChat 
-        isOpen={showSupportChat}
-        onClose={() => setShowSupportChat(false)}
+      {/* Contact Support Button */}
+      <ContactSupportButton 
         context={{ type: 'customer', id: 'CUST001', name: 'Customer' }}
       />
     </div>
