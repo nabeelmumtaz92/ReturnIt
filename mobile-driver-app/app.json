@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Returnly Driver",
+    "slug": "returnly-driver",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F59E0B"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.returnly.driver"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F59E0B"
+      },
+      "package": "com.returnly.driver"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Returnly Driver needs location access to navigate to pickups and deliveries."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Returnly Driver needs camera access to take photos of packages."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#F59E0B"
+        }
+      ]
+    ]
+  }
+}
