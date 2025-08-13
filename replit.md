@@ -7,6 +7,8 @@ Returnly is a reverse delivery service platform designed to simplify returns, ex
 - Comprehensive completed orders analytics system with advanced Excel export capabilities, professional table organization, real-time filtering/search, and detailed business intelligence reporting across multiple data sheets
 - **Native Driver Mobile App**: Complete React Native mobile application for drivers with GPS navigation, camera integration, push notifications, real-time job management, and earnings tracking. Ready for App Store deployment to iOS and Android
 - **Business Transition Phase**: Platform ready for partnerships, employee hiring, and operational scaling
+- **Help Center Overhaul**: Complete replacement of all mock data with comprehensive, accurate help articles covering pricing, policies, driver information, service areas, troubleshooting, and St. Louis-specific details. Professional knowledge base with proper navigation and search functionality
+- **UI Polish**: Minor text refinements including sign-in page messaging improvements
 
 # User Preferences
 

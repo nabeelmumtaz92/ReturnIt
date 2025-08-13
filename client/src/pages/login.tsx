@@ -210,7 +210,7 @@ export default function Login() {
               <CardHeader className="text-center">
                 <CardTitle className="text-amber-900">Sign In to Your Account</CardTitle>
                 <CardDescription className="text-amber-700">
-                  Welcome back! Enter your credentials to continue
+                  Welcome back! Sign in to continue
                 </CardDescription>
               </CardHeader>
               <form onSubmit={handleLogin}>
