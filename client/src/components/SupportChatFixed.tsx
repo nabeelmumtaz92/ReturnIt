@@ -50,8 +50,8 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
-        addMessage("I understand your concern. Let me help you with that right away. Can you provide more details about your specific issue?", 'ai');
-      }, 2000);
+        addMessage("I understand your concern. Let me help you with that right away. Would you like me to connect you with a human agent for personalized assistance?", 'ai');
+      }, 1500);
     }
   };
 
@@ -79,10 +79,6 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
     if (isOpen && messages.length === 0) {
       setTimeout(() => {
         addMessage("Hello! I'm here to help with your return pickup. What can I assist you with?", 'ai');
-        
-        setTimeout(() => {
-          addMessage("Please select what best describes your issue:", 'ai');
-        }, 1000);
       }, 500);
     }
   }, [isOpen, messages.length]);
@@ -215,15 +211,11 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
                   <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.4' }}>
                     {message.content}
                   </p>
-                  {message.sender === 'ai' && !isEscalated && (
+                  {message.sender === 'ai' && !isEscalated && messages.length > 2 && (
                     <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                       <Button size="sm" variant="outline" onClick={handleEscalate}>
                         <MessageCircle style={{ width: '12px', height: '12px', marginRight: '4px' }} />
                         Talk to Human
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={handleCallSupport}>
-                        <Phone style={{ width: '12px', height: '12px', marginRight: '4px' }} />
-                        Call Support
                       </Button>
                     </div>
                   )}
