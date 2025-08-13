@@ -28,7 +28,17 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
   const [inputMessage, setInputMessage] = useState('');
   const [isEscalated, setIsEscalated] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [questionStep, setQuestionStep] = useState(0);
+  const [userResponses, setUserResponses] = useState<string[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const supportQuestions = [
+    "What type of issue are you experiencing today?",
+    "When did this issue first occur?", 
+    "What steps have you already tried to resolve this?",
+    "Are you experiencing this issue on a specific order? If so, what's the order number?",
+    "How urgent is this issue for you?"
+  ];
 
   const addMessage = (content: string, sender: 'user' | 'ai' | 'support') => {
     const newMessage: Message = {
@@ -44,13 +54,24 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
     if (!inputMessage.trim()) return;
     
     addMessage(inputMessage, 'user');
+    const currentResponse = inputMessage;
     setInputMessage('');
     
     if (!isEscalated) {
+      const newResponses = [...userResponses, currentResponse];
+      setUserResponses(newResponses);
+      
       setIsTyping(true);
       setTimeout(() => {
         setIsTyping(false);
-        addMessage("I understand your concern. Let me help you with that right away. Would you like me to connect you with a human agent for personalized assistance?", 'ai');
+        
+        if (questionStep < supportQuestions.length - 1) {
+          const nextStep = questionStep + 1;
+          setQuestionStep(nextStep);
+          addMessage(supportQuestions[nextStep], 'ai');
+        } else {
+          addMessage("Thank you for providing those details! Based on your responses, I can see you need assistance. Would you like me to connect you with a human support agent who can provide personalized help with your specific situation?", 'ai');
+        }
       }, 1500);
     }
   };
@@ -78,7 +99,10 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       setTimeout(() => {
-        addMessage("Hello! I'm here to help with your return pickup. What can I assist you with?", 'ai');
+        addMessage("Hello! I'm here to help with your return pickup. I'll ask you a few quick questions to better understand your situation.", 'ai');
+        setTimeout(() => {
+          addMessage(supportQuestions[0], 'ai');
+        }, 1000);
       }, 500);
     }
   }, [isOpen, messages.length]);
@@ -211,11 +235,11 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
                   <p style={{ margin: 0, fontSize: '14px', lineHeight: '1.4' }}>
                     {message.content}
                   </p>
-                  {message.sender === 'ai' && !isEscalated && messages.length > 2 && (
+                  {message.sender === 'ai' && !isEscalated && questionStep >= supportQuestions.length && message.content.includes('connect you with a human') && (
                     <div style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
                       <Button size="sm" variant="outline" onClick={handleEscalate}>
                         <MessageCircle style={{ width: '12px', height: '12px', marginRight: '4px' }} />
-                        Talk to Human
+                        Connect with Agent
                       </Button>
                     </div>
                   )}

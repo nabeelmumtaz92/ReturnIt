@@ -19,6 +19,7 @@ import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jp
 import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
 import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
 import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+import heroDriverImg from "@assets/image_1755100609852.png";
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
@@ -90,7 +91,7 @@ export default function Welcome() {
         <div 
           className="absolute inset-0"
           style={{
-            backgroundImage: 'url(https://images.pexels.com/photos/7517660/pexels-photo-7517660.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+            backgroundImage: `url(${heroDriverImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
