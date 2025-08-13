@@ -497,29 +497,29 @@ export default function Welcome() {
             </Link>
           </div>
 
-          {/* Professional Training Ad */}
+          {/* Driver Benefits */}
           <div className="bg-gradient-to-r from-green-600 to-emerald-700 rounded-xl p-6 text-white shadow-lg">
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge className="bg-yellow-400 text-yellow-900 font-bold">NEW DRIVERS</Badge>
+                  <Badge className="bg-yellow-400 text-yellow-900 font-bold">DRIVER BENEFITS</Badge>
                   <div className="bg-white/20 rounded-full p-1">
                     <Star className="h-4 w-4" />
                   </div>
                 </div>
-                <h4 className="text-xl font-bold mb-2">Complete Professional Training in 10 Minutes</h4>
+                <h4 className="text-xl font-bold mb-2">Professional Driver Program</h4>
                 <p className="text-green-100 mb-3">
-                  Get started with our comprehensive driver tutorial covering payment structure, 
-                  safety guidelines, and professional pickup procedures.
+                  Join our growing network of professional drivers with comprehensive training,
+                  competitive pay, and flexible scheduling.
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
-                    <span>Learn earning structure</span>
+                    <span>Competitive hourly rates</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
-                    <span>App training & navigation</span>
+                    <span>Instant payment options</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
@@ -529,12 +529,12 @@ export default function Welcome() {
               </div>
               <div className="text-center">
                 <div className="bg-white/10 rounded-lg p-3 mb-3">
-                  <div className="text-2xl font-bold text-yellow-300">10 min</div>
-                  <div className="text-xs text-green-200">training time</div>
+                  <div className="text-2xl font-bold text-yellow-300">$18-25</div>
+                  <div className="text-xs text-green-200">per hour</div>
                 </div>
-                <Link href="/driver-tutorial">
-                  <Button className="bg-white text-green-700 hover:bg-green-50 font-semibold text-sm" data-testid="button-start-training-ad">
-                    Start Training
+                <Link href="/driver-onboarding">
+                  <Button className="bg-white text-green-700 hover:bg-green-50 font-semibold text-sm" data-testid="button-learn-more-benefits">
+                    Learn More
                   </Button>
                 </Link>
               </div>

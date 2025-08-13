@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
-import { Upload, FileText, User, Car, Shield, CheckCircle, AlertCircle, Clock, Camera } from 'lucide-react';
+import { Upload, FileText, User, Car, Shield, CheckCircle, AlertCircle, Clock, Camera, GraduationCap, Play } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
 // Form validation schemas
@@ -128,6 +128,7 @@ const DocumentUploadCard = ({
 export default function DriverOnboarding() {
   const [currentStep, setCurrentStep] = useState(1);
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [tutorialCompleted, setTutorialCompleted] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
@@ -256,10 +257,11 @@ export default function DriverOnboarding() {
 
   // Calculate progress
   const getProgress = () => {
-    if (currentStep === 1) return 20;
-    if (currentStep === 2) return 40;
-    if (currentStep === 3) return 60;
-    if (currentStep === 4) return 80;
+    if (currentStep === 1) return 16;
+    if (currentStep === 2) return 32;
+    if (currentStep === 3) return 48;
+    if (currentStep === 4) return 64;
+    if (currentStep === 5) return 80;
     return 100;
   };
 
@@ -649,7 +651,89 @@ export default function DriverOnboarding() {
                 <Button
                   onClick={() => setCurrentStep(4)}
                   className="bg-amber-700 hover:bg-amber-800 text-white px-8"
-                  data-testid="button-continue-documents"
+                  data-testid="button-continue-to-training"
+                >
+                  Continue to Training
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 4: Driver Training */}
+        {currentStep === 4 && (
+          <Card className="border-amber-200">
+            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
+              <CardTitle className="flex items-center space-x-2 text-amber-900">
+                <GraduationCap className="h-5 w-5" />
+                <span>Driver Training</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="text-center mb-6">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                  <h3 className="text-lg font-semibold text-green-800 mb-2">
+                    Complete Your Professional Training
+                  </h3>
+                  <p className="text-green-700 mb-4">
+                    Before you can start working as a Returnly driver, you must complete our 
+                    comprehensive training program. This covers safety protocols, payment structure, 
+                    and professional service standards.
+                  </p>
+                  {tutorialCompleted ? (
+                    <div className="flex items-center justify-center gap-2 text-green-700">
+                      <CheckCircle className="h-5 w-5" />
+                      <span className="font-medium">Training Completed Successfully!</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center gap-2 text-amber-700">
+                      <Clock className="h-5 w-5" />
+                      <span className="font-medium">Training Required (10 minutes)</span>
+                    </div>
+                  )}
+                </div>
+
+                {!tutorialCompleted && (
+                  <div className="space-y-4">
+                    <Link href="/driver-tutorial">
+                      <Button 
+                        className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg"
+                        data-testid="button-start-tutorial"
+                      >
+                        <Play className="h-5 w-5 mr-2" />
+                        Start Driver Tutorial
+                      </Button>
+                    </Link>
+                    <p className="text-sm text-gray-600">
+                      The tutorial will open in a new window. Return here when complete.
+                    </p>
+                    <Button
+                      variant="outline"
+                      onClick={() => setTutorialCompleted(true)}
+                      className="border-green-300 text-green-700 text-sm"
+                      data-testid="button-mark-complete"
+                    >
+                      Mark as Complete (for testing)
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentStep(3)}
+                  className="border-amber-300 text-amber-700"
+                  data-testid="button-back-to-documents-training"
+                >
+                  Back to Documents
+                </Button>
+                <Button
+                  onClick={() => setCurrentStep(5)}
+                  disabled={!tutorialCompleted}
+                  className="bg-amber-700 hover:bg-amber-800 text-white px-8 disabled:opacity-50"
+                  data-testid="button-continue-to-terms"
                 >
                   Continue to Terms
                 </Button>
@@ -658,8 +742,8 @@ export default function DriverOnboarding() {
           </Card>
         )}
 
-        {/* Step 4: Terms and Conditions */}
-        {currentStep === 4 && (
+        {/* Step 5: Terms and Conditions */}
+        {currentStep === 5 && (
           <Card className="border-amber-200">
             <CardHeader className="bg-amber-50/50 border-b border-amber-200">
               <CardTitle className="flex items-center space-x-2 text-amber-900">
@@ -769,11 +853,11 @@ export default function DriverOnboarding() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setCurrentStep(3)}
+                  onClick={() => setCurrentStep(4)}
                   className="border-amber-300 text-amber-700"
-                  data-testid="button-back-to-documents"
+                  data-testid="button-back-to-training"
                 >
-                  Back to Documents
+                  Back to Training
                 </Button>
                 <Button
                   onClick={handleFinalSubmit}
