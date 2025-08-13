@@ -123,7 +123,19 @@ export default function DriverPortal() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          backgroundImage: 'url(https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      <div className="absolute inset-0 bg-white/85"></div>
+      <div className="relative z-10">
       {/* Navigation Header */}
       <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">
@@ -566,6 +578,7 @@ export default function DriverPortal() {
       <ContactSupportButton 
         context={{ type: 'driver', id: user?.id || 'DRIVER', name: user?.firstName || 'Driver' }}
       />
+      </div>
     </div>
   );
 }

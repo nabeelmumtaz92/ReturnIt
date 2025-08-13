@@ -163,16 +163,17 @@ export default function Login() {
   const selectedImage = loginPageImages[Math.floor(Math.random() * loginPageImages.length)];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center p-4 relative">
+    <div className="min-h-screen relative flex items-center justify-center p-4">
       {/* Background Hero Image */}
       <div 
-        className="absolute inset-0 z-0 opacity-15"
+        className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${selectedImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       />
+      <div className="absolute inset-0 bg-black/40"></div>
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">

@@ -356,16 +356,17 @@ export default function BookPickup() {
   const selectedImage = bookingPageImages[Math.floor(Math.random() * bookingPageImages.length)];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 relative">
+    <div className="min-h-screen relative">
       {/* Background Hero Image */}
       <div 
-        className="absolute inset-0 z-0 opacity-10"
+        className="absolute inset-0 z-0"
         style={{
           backgroundImage: `url(${selectedImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       />
+      <div className="absolute inset-0 bg-white/75"></div>
       {/* Header */}
       <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">

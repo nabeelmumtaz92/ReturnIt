@@ -93,7 +93,7 @@ export default function Welcome() {
           style={{
             backgroundImage: `url(${heroDriverImg})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center right',
+            backgroundPosition: 'right center',
             backgroundRepeat: 'no-repeat'
           }}
         />
