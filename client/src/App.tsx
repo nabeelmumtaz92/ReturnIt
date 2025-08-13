@@ -25,6 +25,8 @@ import DriverTutorial from "@/pages/driver-tutorial";
 import DriverDocuments from "@/pages/driver-documents";
 import HelpCenter from "@/pages/help-center";
 import HelpArticle from "@/pages/help-article";
+import CustomerMobileApp from "@/pages/customer-mobile-app";
+import ReturnlyDriverApp from "@/pages/returnly-driver-app";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -70,6 +72,8 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/design-system-demo" component={DesignSystemDemo} />
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
+      <Route path="/customer-mobile-app" component={CustomerMobileApp} />
+      <Route path="/driver-mobile-app" component={ReturnlyDriverApp} />
       <Route path="/logo-colors" component={LogoColors} />
       <Route path="/background-colors" component={BackgroundColors} />
       <Route component={NotFound} />

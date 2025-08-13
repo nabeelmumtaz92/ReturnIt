@@ -620,11 +620,19 @@ export default function Welcome() {
             </button>
             <span className="text-gray-500">•</span>
             <button 
-              onClick={() => setLocation('/mobile-app-demo')}
+              onClick={() => setLocation('/customer-mobile-app')}
               className="hover:text-orange-300 transition-colors font-medium text-lg"
-              data-testid="button-footer-mobile-app"
+              data-testid="button-footer-customer-mobile-app"
             >
-              Mobile App
+              Customer App
+            </button>
+            <span className="text-gray-500">•</span>
+            <button 
+              onClick={() => setLocation('/driver-mobile-app')}
+              className="hover:text-orange-300 transition-colors font-medium text-lg"
+              data-testid="button-footer-driver-mobile-app"
+            >
+              Driver App
             </button>
           </div>
         </div>
