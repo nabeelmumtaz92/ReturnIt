@@ -1497,6 +1497,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Employee Management Routes
+  // Get all employees (admin only)
+  app.get('/api/employees', isAuthenticated, async (req, res) => {
+    try {
+      const currentUser = req.session?.user;
+      if (!currentUser?.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const employees = await storage.getEmployees();
+      res.json(employees);
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+      res.status(500).json({ message: 'Failed to fetch employees' });
+    }
+  });
+
+  // Grant admin access to employee
+  app.post('/api/employees/:id/grant-admin', isAuthenticated, async (req, res) => {
+    try {
+      const currentUser = req.session?.user;
+      if (!currentUser?.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const employeeId = parseInt(req.params.id);
+      const updatedEmployee = await storage.updateUser(employeeId, { isAdmin: true });
+      
+      if (!updatedEmployee) {
+        return res.status(404).json({ message: 'Employee not found' });
+      }
+
+      res.json(updatedEmployee);
+    } catch (error) {
+      console.error('Error granting admin access:', error);
+      res.status(500).json({ message: 'Failed to grant admin access' });
+    }
+  });
+
+  // Revoke admin access from employee
+  app.post('/api/employees/:id/revoke-admin', isAuthenticated, async (req, res) => {
+    try {
+      const currentUser = req.session?.user;
+      if (!currentUser?.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const employeeId = parseInt(req.params.id);
+      const updatedEmployee = await storage.updateUser(employeeId, { isAdmin: false });
+      
+      if (!updatedEmployee) {
+        return res.status(404).json({ message: 'Employee not found' });
+      }
+
+      res.json(updatedEmployee);
+    } catch (error) {
+      console.error('Error revoking admin access:', error);
+      res.status(500).json({ message: 'Failed to revoke admin access' });
+    }
+  });
+
+  // Invite new employee
+  app.post('/api/employees/invite', isAuthenticated, async (req, res) => {
+    try {
+      const currentUser = req.session?.user;
+      if (!currentUser?.isAdmin) {
+        return res.status(403).json({ message: 'Admin access required' });
+      }
+
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({ message: 'User already exists' });
+      }
+
+      // Create employee user with temporary password
+      const hashedPassword = await bcrypt.hash('temp123', 12);
+      const newEmployee = await storage.createUser({
+        email,
+        password: hashedPassword,
+        firstName: email.split('@')[0],
+        lastName: '',
+        isAdmin: false,
+        isActive: false // Will be activated when they set their password
+      });
+
+      res.json({ 
+        message: 'Employee invitation sent',
+        employee: { ...newEmployee, password: undefined }
+      });
+    } catch (error) {
+      console.error('Error inviting employee:', error);
+      res.status(500).json({ message: 'Failed to invite employee' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

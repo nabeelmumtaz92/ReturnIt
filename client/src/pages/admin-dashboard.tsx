@@ -45,6 +45,8 @@ import {
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
@@ -106,6 +108,94 @@ export default function AdminDashboard() {
   const [completedOrdersSort, setCompletedOrdersSort] = useState<'date' | 'amount' | 'driver'>('date');
   const [completedOrdersSortOrder, setCompletedOrdersSortOrder] = useState<'asc' | 'desc'>('desc');
   const [showAdvancedAnalytics, setShowAdvancedAnalytics] = useState(false);
+  
+  // Employee management with API integration
+  const queryClient = useQueryClient();
+  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
+  const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
+  
+  // Fetch employees from API
+  const { data: employees = [], isLoading: employeesLoading } = useQuery({
+    queryKey: ['/api/employees'],
+    enabled: currentUser?.isAdmin
+  });
+
+  // Transform employee data for display
+  const transformedEmployees = employees.map((emp: any) => ({
+    id: emp.id,
+    name: `${emp.firstName} ${emp.lastName}`.trim() || emp.email.split('@')[0],
+    email: emp.email,
+    role: emp.isAdmin ? 'Admin' : 'Employee',
+    status: emp.isActive ? 'active' : 'pending',
+    joinDate: new Date(emp.createdAt).toLocaleDateString(),
+    isAdmin: emp.isAdmin
+  }));
+
+  // Grant admin access mutation
+  const grantAdminMutation = useMutation({
+    mutationFn: async (employeeId: number) => {
+      await apiRequest('POST', `/api/employees/${employeeId}/grant-admin`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/employees'] });
+      toast({
+        title: "Success",
+        description: "Admin access granted successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to grant admin access",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Revoke admin access mutation
+  const revokeAdminMutation = useMutation({
+    mutationFn: async (employeeId: number) => {
+      await apiRequest('POST', `/api/employees/${employeeId}/revoke-admin`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/employees'] });
+      toast({
+        title: "Success", 
+        description: "Admin access revoked successfully",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to revoke admin access",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Invite employee mutation
+  const inviteEmployeeMutation = useMutation({
+    mutationFn: async (email: string) => {
+      await apiRequest('POST', '/api/employees/invite', { email });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/employees'] });
+      setNewEmployeeEmail('');
+      setShowAddEmployeeModal(false);
+      toast({
+        title: "Success",
+        description: "Employee invitation sent successfully",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send invitation",
+        variant: "destructive",
+      });
+    }
+  });
+  const [newEmployeeEmail, setNewEmployeeEmail] = useState('');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -233,6 +323,9 @@ export default function AdminDashboard() {
         supportTickets: 5
       }
     ]);
+
+    // Initialize employee data
+
   }, []);
 
   if (!isAuthenticated) {
@@ -305,6 +398,25 @@ export default function AdminDashboard() {
     setSupportContext({ type: 'customer', id: order.id, name: order.customer });
     setShowAdminSupportModal(true);
   };
+
+  // Employee management functions
+  const handleGrantAdminAccess = (employee: any) => {
+    grantAdminMutation.mutate(employee.id);
+  };
+
+  const handleRevokeAdminAccess = (employee: any) => {
+    revokeAdminMutation.mutate(employee.id);
+  };
+
+  const handleAddEmployee = () => {
+    if (!newEmployeeEmail) return;
+    inviteEmployeeMutation.mutate(newEmployeeEmail);
+  };
+
+  const filteredEmployees = transformedEmployees.filter(employee => 
+    employee.name.toLowerCase().includes(employeeSearchTerm.toLowerCase()) ||
+    employee.email.toLowerCase().includes(employeeSearchTerm.toLowerCase())
+  );
 
   // Enhanced Excel export functionality for completed orders with advanced analytics
   const exportToExcel = () => {
@@ -596,6 +708,11 @@ export default function AdminDashboard() {
                 <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Support Tickets</span>
                 <span className="sm:hidden">Support</span>
+              </TabsTrigger>
+              <TabsTrigger value="employees" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
+                <UserCheck className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Employees</span>
+                <span className="sm:hidden">Staff</span>
               </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <Settings className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
@@ -1053,6 +1170,170 @@ export default function AdminDashboard() {
             </TabsContent>
 
             {/* Settings Tab */}
+            {/* Employee Management Tab */}
+            <TabsContent value="employees">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <CardTitle className="text-amber-900">Employee Management</CardTitle>
+                    <Button 
+                      onClick={() => setShowAddEmployeeModal(true)}
+                      className="bg-amber-700 hover:bg-amber-800 text-white"
+                      data-testid="button-add-employee"
+                    >
+                      <User className="h-4 w-4 mr-2" />
+                      Add Employee
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {/* Search */}
+                  <div className="mb-6">
+                    <div className="relative max-w-md">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Search employees..."
+                        value={employeeSearchTerm}
+                        onChange={(e) => setEmployeeSearchTerm(e.target.value)}
+                        className="pl-10"
+                        data-testid="input-search-employees"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Employee List */}
+                  <div className="border rounded-lg overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-amber-50">
+                          <TableHead className="font-semibold text-amber-900">Name</TableHead>
+                          <TableHead className="font-semibold text-amber-900">Email</TableHead>
+                          <TableHead className="font-semibold text-amber-900">Role</TableHead>
+                          <TableHead className="font-semibold text-amber-900">Status</TableHead>
+                          <TableHead className="font-semibold text-amber-900">Join Date</TableHead>
+                          <TableHead className="font-semibold text-amber-900">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredEmployees.map((employee) => (
+                          <TableRow 
+                            key={employee.id} 
+                            className="hover:bg-amber-50/50"
+                            data-testid={`row-employee-${employee.id}`}
+                          >
+                            <TableCell className="font-medium">{employee.name}</TableCell>
+                            <TableCell>{employee.email}</TableCell>
+                            <TableCell>
+                              <Badge 
+                                className={employee.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}
+                              >
+                                {employee.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                className={employee.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
+                              >
+                                {employee.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>{employee.joinDate}</TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                {!employee.isAdmin && employee.email !== 'nabeelmumtaz92@gmail.com' ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleGrantAdminAccess(employee)}
+                                    className="text-green-700 border-green-300 hover:bg-green-50"
+                                    data-testid={`button-grant-admin-${employee.id}`}
+                                  >
+                                    <UserCheck className="h-3 w-3 mr-1" />
+                                    Grant Admin
+                                  </Button>
+                                ) : employee.email !== 'nabeelmumtaz92@gmail.com' ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleRevokeAdminAccess(employee)}
+                                    className="text-red-700 border-red-300 hover:bg-red-50"
+                                    data-testid={`button-revoke-admin-${employee.id}`}
+                                  >
+                                    <X className="h-3 w-3 mr-1" />
+                                    Revoke Admin
+                                  </Button>
+                                ) : (
+                                  <Badge className="bg-purple-100 text-purple-800">
+                                    Master Admin
+                                  </Badge>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Add Employee Modal */}
+                  {showAddEmployeeModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="text-lg font-semibold text-amber-900">Add New Employee</h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowAddEmployeeModal(false)}
+                            data-testid="button-close-add-employee"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="employee-email" className="text-amber-800 font-medium">
+                              Employee Email
+                            </Label>
+                            <Input
+                              id="employee-email"
+                              type="email"
+                              placeholder="employee@company.com"
+                              value={newEmployeeEmail}
+                              onChange={(e) => setNewEmployeeEmail(e.target.value)}
+                              className="mt-1 border-amber-300 focus:border-amber-500"
+                              data-testid="input-employee-email"
+                            />
+                            <p className="text-sm text-amber-600 mt-1">
+                              They'll receive an invitation to join Returnly
+                            </p>
+                          </div>
+                          <div className="flex space-x-3">
+                            <Button
+                              onClick={handleAddEmployee}
+                              className="bg-amber-700 hover:bg-amber-800 text-white flex-1"
+                              disabled={!newEmployeeEmail}
+                              data-testid="button-confirm-add-employee"
+                            >
+                              Send Invitation
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setShowAddEmployeeModal(false)}
+                              className="border-amber-300 text-amber-700"
+                              data-testid="button-cancel-add-employee"
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             <TabsContent value="settings">
               <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
                 <CardHeader>

@@ -15,6 +15,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   getDrivers(isOnline?: boolean): Promise<User[]>;
+  getEmployees(): Promise<User[]>;
   
   // Order operations
   getOrder(id: string): Promise<Order | undefined>;
@@ -370,6 +371,10 @@ export class MemStorage implements IStorage {
       return drivers.filter(driver => driver.isOnline === isOnline);
     }
     return drivers;
+  }
+
+  async getEmployees(): Promise<User[]> {
+    return Array.from(this.users.values());
   }
 
   // Order operations
