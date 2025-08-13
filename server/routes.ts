@@ -154,6 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             phone: user.phone,
             isDriver: user.isDriver,
             isAdmin: user.isAdmin,
+            tutorialCompleted: user.tutorialCompleted,
             driverRating: user.driverRating,
             totalEarnings: user.totalEarnings,
             completedDeliveries: user.completedDeliveries,

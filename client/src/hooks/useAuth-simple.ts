@@ -8,6 +8,7 @@ interface User {
   email: string;
   isDriver: boolean;
   isAdmin: boolean;
+  tutorialCompleted?: boolean;
   phone?: string;
   driverRating?: number;
   totalEarnings?: number;
