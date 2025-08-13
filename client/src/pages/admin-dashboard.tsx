@@ -94,6 +94,8 @@ export default function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [showDriverDetail, setShowDriverDetail] = useState(false);
+  const [driverSearchTerm, setDriverSearchTerm] = useState('');
+  const [driverStatusFilter, setDriverStatusFilter] = useState<string>('all');
   const [showSupportChat, setShowSupportChat] = useState(false);
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
@@ -898,11 +900,36 @@ export default function AdminDashboard() {
             <TabsContent value="drivers">
               <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Driver Management</CardTitle>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <CardTitle className="text-amber-900">Driver Management</CardTitle>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400 h-4 w-4" />
+                        <Input
+                          placeholder="Search drivers..."
+                          value={driverSearchTerm}
+                          onChange={(e) => setDriverSearchTerm(e.target.value)}
+                          className="pl-10 border-amber-300 focus:border-amber-500 w-full sm:w-64"
+                          data-testid="input-driver-search"
+                        />
+                      </div>
+                      <Select value={driverStatusFilter} onValueChange={setDriverStatusFilter}>
+                        <SelectTrigger className="border-amber-300 w-full sm:w-40" data-testid="select-driver-status">
+                          <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Drivers</SelectItem>
+                          <SelectItem value="active">Active Only</SelectItem>
+                          <SelectItem value="inactive">Inactive Only</SelectItem>
+                          <SelectItem value="suspended">Suspended Only</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {drivers.map((driver) => (
+                    {getFilteredDrivers().map((driver) => (
                       <Card key={driver.id} className="border-amber-200">
                         <CardContent className="p-3 sm:p-4">
                           <div className="flex items-center justify-between mb-3">
