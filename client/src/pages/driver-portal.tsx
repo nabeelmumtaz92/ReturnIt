@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users } from "lucide-react";
+import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users, Menu, ArrowLeft, Home, Settings } from "lucide-react";
 import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
@@ -23,6 +23,7 @@ export default function DriverPortal() {
   const [, setLocation] = useLocation();
   const [isOnline, setIsOnline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   // Check if new driver needs tutorial
   useEffect(() => {
@@ -122,7 +123,77 @@ export default function DriverPortal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
-      {/* Header */}
+      {/* Navigation Header */}
+      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/welcome">
+                <Button variant="ghost" size="sm" className="text-amber-700 hover:bg-amber-50" data-testid="button-home">
+                  <Home className="h-4 w-4 mr-2" />
+                  Home
+                </Button>
+              </Link>
+              <div className="h-6 w-px bg-amber-200"></div>
+              <h1 className="text-xl font-bold text-amber-900" data-testid="heading-portal">
+                Driver Portal
+              </h1>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="text-amber-700 hover:bg-amber-50"
+              data-testid="button-menu"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar Navigation */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowSidebar(false)}>
+          <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-amber-900 mb-6">Driver Navigation</h2>
+            <div className="space-y-3">
+              <Link href="/driver-portal">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-50" data-testid="nav-portal">
+                  <Home className="h-4 w-4 mr-3" />
+                  Driver Portal
+                </Button>
+              </Link>
+              <Link href="/driver-payments">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-payments">
+                  <CreditCard className="h-4 w-4 mr-3" />
+                  Payments & Earnings
+                </Button>
+              </Link>
+              <Link href="/order-status">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-orders">
+                  <Package className="h-4 w-4 mr-3" />
+                  My Orders
+                </Button>
+              </Link>
+              <Link href="/admin-dashboard">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-admin">
+                  <Users className="h-4 w-4 mr-3" />
+                  Admin Dashboard
+                </Button>
+              </Link>
+              <Link href="/welcome">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-home">
+                  <Home className="h-4 w-4 mr-3" />
+                  Home
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Header with User Info */}
       <div className="bg-white shadow-sm border-b border-amber-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -134,9 +205,9 @@ export default function DriverPortal() {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <h1 className="text-2xl font-bold text-amber-900">
+                <h2 className="text-2xl font-bold text-amber-900">
                   Welcome back, {user.firstName || user.username}!
-                </h1>
+                </h2>
                 <p className="text-amber-700">Driver ID: {user.id}</p>
               </div>
             </div>

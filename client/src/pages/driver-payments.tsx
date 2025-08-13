@@ -15,13 +15,22 @@ import {
   Calendar,
   Receipt,
   Star,
-  CheckCircle
+  CheckCircle,
+  ArrowLeft,
+  Menu,
+  Home,
+  Package,
+  CreditCard,
+  Settings,
+  Users
 } from "lucide-react";
+import { Link } from "wouter";
 
 export default function DriverPayments() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const { data: orders, isLoading: ordersLoading } = useQuery({
     queryKey: ["/api/driver/orders"],
@@ -93,12 +102,79 @@ export default function DriverPayments() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 p-6">
-      <div className="container mx-auto max-w-6xl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+      {/* Navigation Header */}
+      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/driver-portal">
+                <Button variant="ghost" size="sm" className="text-amber-700 hover:bg-amber-50" data-testid="button-back">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Portal
+                </Button>
+              </Link>
+              <div className="h-6 w-px bg-amber-200"></div>
+              <h1 className="text-xl font-bold text-amber-900" data-testid="heading-payments">
+                Payments & Earnings
+              </h1>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="text-amber-700 hover:bg-amber-50"
+              data-testid="button-menu"
+            >
+              <Menu className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sidebar Navigation */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowSidebar(false)}>
+          <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold text-amber-900 mb-6">Driver Navigation</h2>
+            <div className="space-y-3">
+              <Link href="/driver-portal">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-portal">
+                  <Home className="h-4 w-4 mr-3" />
+                  Driver Portal
+                </Button>
+              </Link>
+              <Link href="/driver-payments">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-50" data-testid="nav-payments">
+                  <CreditCard className="h-4 w-4 mr-3" />
+                  Payments & Earnings
+                </Button>
+              </Link>
+              <Link href="/order-status">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-orders">
+                  <Package className="h-4 w-4 mr-3" />
+                  My Orders
+                </Button>
+              </Link>
+              <Link href="/admin-dashboard">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-admin">
+                  <Users className="h-4 w-4 mr-3" />
+                  Admin Dashboard
+                </Button>
+              </Link>
+              <Link href="/welcome">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-home">
+                  <Home className="h-4 w-4 mr-3" />
+                  Home
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="container mx-auto max-w-6xl p-6">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-amber-900 mb-2" data-testid="heading-payments">
-            Driver Payments & Earnings
-          </h1>
           <p className="text-amber-700" data-testid="text-subtitle">
             Manage your earnings, payouts, and incentives
           </p>
@@ -166,11 +242,35 @@ export default function DriverPayments() {
         </div>
 
         <Tabs defaultValue="instant-pay" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="instant-pay" data-testid="tab-instant-pay">Instant Pay</TabsTrigger>
-            <TabsTrigger value="earnings" data-testid="tab-earnings">Earnings</TabsTrigger>
-            <TabsTrigger value="incentives" data-testid="tab-incentives">Incentives</TabsTrigger>
-            <TabsTrigger value="tax-info" data-testid="tab-tax">Tax Info</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4 bg-amber-100 p-1 h-12 rounded-lg border border-amber-200">
+            <TabsTrigger 
+              value="instant-pay" 
+              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              data-testid="tab-instant-pay"
+            >
+              Instant Pay
+            </TabsTrigger>
+            <TabsTrigger 
+              value="earnings" 
+              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              data-testid="tab-earnings"
+            >
+              Earnings
+            </TabsTrigger>
+            <TabsTrigger 
+              value="incentives" 
+              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              data-testid="tab-incentives"
+            >
+              Incentives
+            </TabsTrigger>
+            <TabsTrigger 
+              value="tax-info" 
+              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              data-testid="tab-tax"
+            >
+              Tax Info
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="instant-pay">
