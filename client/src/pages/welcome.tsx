@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Truck, Star, MapPin, Clock, Package, CreditCard, LogOut, User, Settings, Shield, Search, CheckCircle, DollarSign, Zap, Phone, ArrowRight } from 'lucide-react';
 import ContactSupportButton from '@/components/ContactSupportButton';
+import Footer from '@/components/Footer';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
@@ -574,71 +575,8 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* Footer Section - No borders, with background image */}
-      <div className="w-full py-12 bg-gradient-to-r from-gray-800 to-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <img 
-            src="https://images.pexels.com/photos/586744/pexels-photo-586744.jpeg?auto=compress&cs=tinysrgb&w=800"
-            alt="Modern office building"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="relative px-8 lg:px-16">
-          <div className="text-center mb-8">
-            <div className="flex flex-col items-center gap-4">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-12 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              />
-              <h3 className="text-3xl font-bold text-white tracking-wider">RETURNLY</h3>
-              <p className="text-gray-300 text-lg">Return Delivery Service</p>
-            </div>
-          </div>
-          <div className="flex justify-center items-center gap-6 text-white flex-wrap">
-            <button 
-              onClick={() => setLocation('/login')}
-              className="hover:text-orange-300 transition-colors text-lg"
-              data-testid="button-footer-signin"
-            >
-              Sign In
-            </button>
-            <span className="text-gray-500">•</span>
-            <button 
-              onClick={() => setLocation('/help-center')}
-              className="hover:text-orange-300 transition-colors font-medium text-lg"
-              data-testid="button-footer-help-center"
-            >
-              Help Center
-            </button>
-            <span className="text-gray-500">•</span>
-            <button 
-              onClick={() => setLocation('/about')}
-              className="hover:text-orange-300 transition-colors text-lg"
-              data-testid="button-footer-about"
-            >
-              About Us
-            </button>
-            <span className="text-gray-500">•</span>
-            <button 
-              onClick={() => setLocation('/customer-mobile-app')}
-              className="hover:text-orange-300 transition-colors font-medium text-lg"
-              data-testid="button-footer-customer-mobile-app"
-            >
-              Customer App
-            </button>
-            <span className="text-gray-500">•</span>
-            <button 
-              onClick={() => setLocation('/driver-mobile-app')}
-              className="hover:text-orange-300 transition-colors font-medium text-lg"
-              data-testid="button-footer-driver-mobile-app"
-            >
-              Driver App
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Footer Component */}
+      <Footer />
 
       {/* Contact Support Button - Only for authenticated users */}
       {isAuthenticated && (

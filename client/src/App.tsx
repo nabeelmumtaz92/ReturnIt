@@ -25,6 +25,7 @@ import DriverTutorial from "@/pages/driver-tutorial";
 import DriverDocuments from "@/pages/driver-documents";
 import HelpCenter from "@/pages/help-center";
 import HelpArticle from "@/pages/help-article";
+import FAQ from "@/pages/faq";
 import CustomerMobileApp from "@/pages/customer-mobile-app";
 import ReturnlyDriverApp from "@/pages/returnly-driver-app";
 import NotFound from "@/pages/not-found";
@@ -66,6 +67,7 @@ function Router() {
       <Route path="/help-article/:articleId">
         {(params) => <HelpArticle />}
       </Route>
+      <Route path="/faq" component={FAQ} />
       <Route path="/admin-dashboard" component={AdminDashboard} />
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />

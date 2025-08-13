@@ -21,6 +21,7 @@ import { PaymentBreakdown } from "@/components/PaymentBreakdown";
 import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
 import type { RouteInfo as PaymentRouteInfo } from "@shared/paymentCalculator";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
+import Footer from "@/components/Footer";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -971,6 +972,9 @@ export default function BookPickup() {
           </form>
         </Card>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
