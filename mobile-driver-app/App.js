@@ -14,6 +14,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import * as Notifications from 'expo-notifications';
+import { Camera } from 'expo-camera';
+import * as ImagePicker from 'expo-image-picker';
 
 // Configure notifications
 Notifications.setNotificationHandler({
@@ -33,6 +35,7 @@ export default function App() {
   const [completedJobs, setCompletedJobs] = useState(8);
   const [driverRating, setDriverRating] = useState(4.8);
   const [currentJobStatus, setCurrentJobStatus] = useState(null); // 'accepted', 'en_route', 'arrived', 'picked_up'
+  const [packagePhotos, setPackagePhotos] = useState([]);
 
   // Sample job data - in production this would come from your API
   const [availableJobs] = useState([
@@ -178,6 +181,43 @@ export default function App() {
     );
   };
 
+  const takePackagePhoto = async () => {
+    // Request camera permissions
+    const { status } = await Camera.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Camera access is required to take package photos');
+      return;
+    }
+
+    // Launch camera
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      const newPhoto = {
+        id: Date.now().toString(),
+        uri: result.assets[0].uri,
+        timestamp: new Date().toISOString()
+      };
+      setPackagePhotos(prev => [...prev, newPhoto]);
+      
+      Alert.alert('Photo Saved', 'Package photo has been captured and saved');
+      
+      // Send notification
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Package Photo Captured',
+          body: 'Photo saved for delivery verification',
+        },
+        trigger: null,
+      });
+    }
+  };
+
   const completeJob = (jobId) => {
     const job = activeJobs.find(j => j.id === jobId);
     setActiveJobs(activeJobs.filter(j => j.id !== jobId));
@@ -244,14 +284,29 @@ export default function App() {
                   </View>
                   <Text style={styles.address}>{job.pickupAddress}</Text>
                   <Text style={styles.dropoff}>→ {job.dropoffLocation}</Text>
+                  <Text style={styles.statusText}>Status: {job.status.replace('_', ' ').toUpperCase()}</Text>
                   <View style={styles.jobFooter}>
                     <Text style={styles.distance}>{job.distance} • {job.estimatedTime}</Text>
-                    <TouchableOpacity
-                      style={styles.completeButton}
-                      onPress={() => completeJob(job.id)}
-                    >
-                      <Text style={styles.completeButtonText}>Complete</Text>
-                    </TouchableOpacity>
+                    <View style={styles.jobActions}>
+                      <TouchableOpacity
+                        style={styles.photoButton}
+                        onPress={takePackagePhoto}
+                      >
+                        <Text style={styles.photoButtonText}>📷</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.navButton}
+                        onPress={() => startNavigation(job)}
+                      >
+                        <Text style={styles.navButtonText}>Navigate</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.completeButton}
+                        onPress={() => completeJob(job.id)}
+                      >
+                        <Text style={styles.completeButtonText}>Complete</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               ))}
@@ -479,6 +534,36 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     fontSize: 14,
+  },
+  statusText: {
+    fontSize: 12,
+    color: '#10B981',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  jobActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  photoButton: {
+    backgroundColor: '#8B5CF6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  photoButtonText: {
+    fontSize: 16,
+  },
+  navButton: {
+    backgroundColor: '#3B82F6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  navButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 12,
   },
   map: {
     height: 200,
