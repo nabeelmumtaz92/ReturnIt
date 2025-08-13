@@ -29,7 +29,10 @@ export default function App() {
   const [currentLocation, setCurrentLocation] = useState(null);
   const [activeJobs, setActiveJobs] = useState([]);
   const [todayEarnings, setTodayEarnings] = useState(127.45);
+  const [weeklyEarnings, setWeeklyEarnings] = useState(847.22);
   const [completedJobs, setCompletedJobs] = useState(8);
+  const [driverRating, setDriverRating] = useState(4.8);
+  const [currentJobStatus, setCurrentJobStatus] = useState(null); // 'accepted', 'en_route', 'arrived', 'picked_up'
 
   // Sample job data - in production this would come from your API
   const [availableJobs] = useState([
@@ -109,17 +112,70 @@ export default function App() {
   };
 
   const acceptJob = (job) => {
-    setActiveJobs([...activeJobs, { ...job, status: 'accepted' }]);
+    const acceptedJob = { ...job, status: 'accepted' };
+    setActiveJobs([...activeJobs, acceptedJob]);
+    setCurrentJobStatus('accepted');
     Alert.alert('Job Accepted', `You accepted the pickup for ${job.customer}`);
     
     // Send notification
     Notifications.scheduleNotificationAsync({
       content: {
-        title: 'Job Accepted',
-        body: `Navigate to ${job.pickupAddress}`,
+        title: 'Job Accepted - Navigate Now',
+        body: `Pickup: ${job.pickupAddress}`,
       },
       trigger: null,
     });
+  };
+
+  const updateJobStatus = (jobId, newStatus) => {
+    setActiveJobs(prev => 
+      prev.map(job => 
+        job.id === jobId ? { ...job, status: newStatus } : job
+      )
+    );
+    setCurrentJobStatus(newStatus);
+
+    const statusMessages = {
+      'en_route': 'Navigation started to pickup location',
+      'arrived': 'You have arrived at pickup location',
+      'picked_up': 'Package picked up successfully',
+      'completed': 'Job completed! Payment processing...'
+    };
+
+    if (statusMessages[newStatus]) {
+      Alert.alert('Status Updated', statusMessages[newStatus]);
+      
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Job Status Updated',
+          body: statusMessages[newStatus],
+        },
+        trigger: null,
+      });
+    }
+  };
+
+  const startNavigation = (job) => {
+    // Open native maps app for navigation
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?daddr=${encodeURIComponent(job.pickupAddress)}`,
+      android: `google.navigation:q=${encodeURIComponent(job.pickupAddress)}`
+    });
+    
+    Alert.alert(
+      'Open Navigation',
+      'This will open your maps app for turn-by-turn directions',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Navigate', 
+          onPress: () => {
+            // In a real app, you'd use Linking.openURL(url)
+            updateJobStatus(job.id, 'en_route');
+          }
+        }
+      ]
+    );
   };
 
   const completeJob = (jobId) => {
