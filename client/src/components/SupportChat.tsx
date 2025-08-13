@@ -282,27 +282,41 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
   return (
     <div 
-      className="fixed inset-0 flex items-center justify-center p-4" 
       style={{ 
-        backgroundColor: 'rgba(0, 0, 0, 0.8)', 
-        zIndex: 9999,
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0
+        bottom: 0,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px'
       }}
     >
       <div 
-        className="w-full max-w-4xl bg-white rounded-lg shadow-2xl border-2 border-orange-500 flex flex-col" 
         style={{ 
+          width: '100%',
+          maxWidth: '900px',
+          height: '500px',
           backgroundColor: 'white',
-          height: '600px',
-          maxHeight: '90vh'
+          borderRadius: '12px',
+          border: '2px solid #ea580c',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden'
         }}
       >
         {/* Header */}
-        <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white rounded-t-lg">
+        <div style={{ 
+          flexShrink: 0,
+          padding: '16px',
+          borderBottom: '1px solid #e5e7eb',
+          backgroundColor: 'white'
+        }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {isEscalated ? (
@@ -344,8 +358,17 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 p-4 overflow-hidden bg-gray-50">
-          <div className="h-full overflow-y-auto space-y-3 pr-2" style={{ backgroundColor: '#f9fafb' }}>
+        <div style={{ 
+          flex: 1,
+          padding: '16px',
+          backgroundColor: '#f9fafb',
+          overflow: 'hidden'
+        }}>
+          <div style={{ 
+            height: '100%',
+            overflowY: 'auto',
+            paddingRight: '8px'
+          }} className="space-y-3">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -429,8 +452,13 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
         </div>
 
         {/* Input Area */}
-        <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white rounded-b-lg">
-          <div className="flex space-x-2">
+        <div style={{ 
+          flexShrink: 0,
+          padding: '16px',
+          borderTop: '1px solid #e5e7eb',
+          backgroundColor: 'white'
+        }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}

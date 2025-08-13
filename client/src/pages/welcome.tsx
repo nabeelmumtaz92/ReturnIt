@@ -87,15 +87,12 @@ export default function Welcome() {
       <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
         {/* Background with Stock Delivery Image */}
-        <div className="absolute inset-0 opacity-40">
+        <div className="absolute inset-0 opacity-50">
           <img 
-            src={deliveryImages[currentImageIndex].url}
-            alt={deliveryImages[currentImageIndex].alt}
-            className="w-full h-full object-cover transition-opacity duration-1000"
-            onError={(e) => {
-              // Fallback to Pexels image if current image fails
-              e.currentTarget.src = "https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600";
-            }}
+            src="https://images.pexels.com/photos/5025639/pexels-photo-5025639.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            alt="Professional delivery service"
+            className="w-full h-full object-cover"
+            style={{ filter: 'brightness(1.1) contrast(0.9)' }}
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-stone-50/50 to-amber-50/40"></div>
