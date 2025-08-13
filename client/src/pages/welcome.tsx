@@ -83,9 +83,9 @@ export default function Welcome() {
   }, [deliveryImages.length]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-amber-50 to-stone-100">
-      {/* Sophisticated White/Beige Hero Section */}
-      <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
+    <div className="min-h-screen">
+      {/* Hero Section with Driver Background */}
+      <div className="relative min-h-screen overflow-hidden">
         
         {/* Background with Stock Delivery Image */}
         <div 
@@ -94,12 +94,10 @@ export default function Welcome() {
             backgroundImage: `url(${heroDriverImg})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center right',
-            backgroundRepeat: 'no-repeat',
-            opacity: 0.3,
-            filter: 'brightness(1.2) contrast(0.8)'
+            backgroundRepeat: 'no-repeat'
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-stone-50/50 to-amber-50/40"></div>
+        <div className="absolute inset-0 bg-black/20"></div>
         
         {/* Floating Top Navigation - Role Switcher */}
         {isAuthenticated && (
@@ -642,10 +640,12 @@ export default function Welcome() {
         </div>
       </div>
 
-      {/* Contact Support Button */}
-      <ContactSupportButton 
-        context={{ type: 'customer', id: 'CUST001', name: 'Customer' }}
-      />
+      {/* Contact Support Button - Only for authenticated users */}
+      {isAuthenticated && (
+        <ContactSupportButton 
+          context={{ type: 'customer', id: 'CUST001', name: 'Customer' }}
+        />
+      )}
     </div>
   );
 }
