@@ -281,9 +281,28 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)', zIndex: 9999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-      <Card className="w-full max-w-4xl h-[85vh] flex flex-col bg-white shadow-2xl border-2 border-orange-500" style={{ backgroundColor: 'white', zIndex: 100 }}>
-        <CardHeader className="flex-shrink-0 pb-3">
+    <div 
+      className="fixed inset-0 flex items-center justify-center p-4" 
+      style={{ 
+        backgroundColor: 'rgba(0, 0, 0, 0.8)', 
+        zIndex: 9999,
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
+      }}
+    >
+      <div 
+        className="w-full max-w-4xl bg-white rounded-lg shadow-2xl border-2 border-orange-500 flex flex-col" 
+        style={{ 
+          backgroundColor: 'white',
+          height: '600px',
+          maxHeight: '90vh'
+        }}
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 p-4 border-b border-gray-200 bg-white rounded-t-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {isEscalated ? (
@@ -291,9 +310,9 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
               ) : (
                 <Bot className="h-5 w-5 text-blue-600" />
               )}
-              <CardTitle className="text-lg">
+              <h3 className="text-lg font-semibold">
                 {isEscalated ? 'Human Support' : 'AI Assistant'}
-              </CardTitle>
+              </h3>
               {isEscalated && (
                 <Badge className="bg-green-100 text-green-800 text-xs">Live</Badge>
               )}
@@ -318,15 +337,15 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
             </div>
           </div>
           {context && (
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600 mt-1">
               {context.type === 'driver' ? 'Driver' : 'Customer'} Support • {context.name}
             </p>
           )}
-        </CardHeader>
+        </div>
 
-        <CardContent className="flex-1 flex flex-col p-4 space-y-3 overflow-hidden">
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 bg-gray-50 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-300" style={{ backgroundColor: '#f9fafb', maxHeight: '60vh' }}>
+        {/* Messages Area */}
+        <div className="flex-1 p-4 overflow-hidden bg-gray-50">
+          <div className="h-full overflow-y-auto space-y-3 pr-2" style={{ backgroundColor: '#f9fafb' }}>
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -407,9 +426,11 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
             )}
             <div ref={messagesEndRef} />
           </div>
+        </div>
 
-          {/* Input */}
-          <div className="flex-shrink-0 flex space-x-2 bg-white p-2 rounded-lg border-t border-gray-200">
+        {/* Input Area */}
+        <div className="flex-shrink-0 p-4 border-t border-gray-200 bg-white rounded-b-lg">
+          <div className="flex space-x-2">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
@@ -426,8 +447,8 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
               <Send className="h-4 w-4" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
