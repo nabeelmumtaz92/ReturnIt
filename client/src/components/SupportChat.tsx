@@ -282,7 +282,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)', zIndex: 9999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
-      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-white shadow-2xl border-4 border-orange-500" style={{ backgroundColor: 'white', zIndex: 100 }}>
+      <Card className="w-full max-w-4xl h-[85vh] flex flex-col bg-white shadow-2xl border-2 border-orange-500" style={{ backgroundColor: 'white', zIndex: 100 }}>
         <CardHeader className="flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -324,9 +324,9 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
           )}
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col p-4 space-y-4">
+        <CardContent className="flex-1 flex flex-col p-4 space-y-3 overflow-hidden">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 max-h-[70vh] bg-gray-50 rounded-lg p-4 scrollbar-thin scrollbar-thumb-gray-300" style={{ backgroundColor: '#f9fafb' }}>
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 bg-gray-50 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-300" style={{ backgroundColor: '#f9fafb', maxHeight: '60vh' }}>
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -409,15 +409,20 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
           </div>
 
           {/* Input */}
-          <div className="flex-shrink-0 flex space-x-2">
+          <div className="flex-shrink-0 flex space-x-2 bg-white p-2 rounded-lg border-t border-gray-200">
             <Input
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               placeholder={isEscalated ? "Message support..." : "Type your message..."}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              className="flex-1"
+              className="flex-1 bg-white"
+              style={{ backgroundColor: 'white' }}
             />
-            <Button onClick={handleSendMessage} disabled={!inputMessage.trim()}>
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={!inputMessage.trim()}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
               <Send className="h-4 w-4" />
             </Button>
           </div>
