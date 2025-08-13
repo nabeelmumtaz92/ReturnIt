@@ -281,8 +281,8 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
-      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-white shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)', zIndex: 9999, position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
+      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-white shadow-2xl border-4 border-orange-500" style={{ backgroundColor: 'white', zIndex: 100 }}>
         <CardHeader className="flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -326,7 +326,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
         <CardContent className="flex-1 flex flex-col p-4 space-y-4">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 max-h-[70vh] bg-gray-50 rounded-lg p-4 scrollbar-thin scrollbar-thumb-gray-300">
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 max-h-[70vh] bg-gray-50 rounded-lg p-4 scrollbar-thin scrollbar-thumb-gray-300" style={{ backgroundColor: '#f9fafb' }}>
             {messages.map((message) => (
               <div
                 key={message.id}
