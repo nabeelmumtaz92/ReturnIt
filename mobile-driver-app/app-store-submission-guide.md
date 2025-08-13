@@ -22,7 +22,7 @@ Everything you need to submit to both Apple App Store and Google Play Store.
 
 ### Apple App Store Description (4000 character limit)
 ```
-Returnly Driver is the professional mobile application for delivery drivers in the Returnly logistics network. Join thousands of drivers earning competitive income with flexible delivery opportunities.
+Returnly Driver is the mobile application for drivers in the Returnly Driver Program. Join thousands of drivers earning competitive income with flexible delivery opportunities.
 
 KEY FEATURES:
 • Instant Job Notifications - Get alerted to new delivery opportunities in real-time
@@ -37,20 +37,20 @@ KEY FEATURES:
 DRIVER BENEFITS:
 • Competitive 70% earnings share on all deliveries
 • Flexible scheduling - work when you want, where you want
-• Professional logistics network with reliable opportunities
+• Returnly logistics network with reliable opportunities
 • Instant payment processing through Stripe Connect
 • Comprehensive driver support and training resources
 • Performance bonuses and incentive programs
 
 PERFECT FOR:
 - Independent contractors seeking reliable delivery work
-- Professional drivers wanting flexible schedules
+- Drivers wanting flexible schedules
 - Anyone looking to earn extra income with delivery services
 - Experienced logistics professionals
 
-Returnly connects customers needing returns, exchanges, and deliveries with professional drivers. Our platform handles everything from pickup scheduling to payment processing, so drivers can focus on what they do best - delivering excellent service.
+Returnly connects customers needing returns, exchanges, and deliveries with drivers in the Returnly Driver Program. Our platform handles everything from pickup scheduling to payment processing, so drivers can focus on what they do best - delivering excellent service.
 
-Download Returnly Driver today and start your professional delivery career with one of the fastest-growing logistics platforms!
+Download Returnly Driver today and start your delivery career with the Returnly Driver Program!
 
 Requirements:
 - Valid driver's license
@@ -61,7 +61,7 @@ Requirements:
 
 ### Google Play Store Description (4000 character limit)  
 ```
-Returnly Driver - Professional delivery app for drivers in the Returnly logistics network.
+Returnly Driver - Delivery app for drivers in the Returnly Driver Program.
 
 EARN MORE WITH RETURNLY:
 Join thousands of drivers earning competitive income with flexible delivery opportunities. Our platform offers 70% driver earnings share with instant payment options.
@@ -79,14 +79,14 @@ KEY FEATURES:
 DRIVER BENEFITS:
 ✓ Competitive 70% earnings share on all deliveries
 ✓ Flexible scheduling - work when you want
-✓ Professional logistics network with reliable opportunities  
+✓ Returnly logistics network with reliable opportunities  
 ✓ Instant payment processing and weekly payouts
 ✓ Comprehensive driver support and training
 ✓ Performance bonuses and incentive programs
 
 PERFECT FOR:
 - Independent contractors seeking delivery work
-- Professional drivers wanting flexible schedules
+- Drivers wanting flexible schedules
 - Anyone looking to earn extra income
 - Experienced logistics professionals
 
@@ -99,9 +99,9 @@ HOW IT WORKS:
 6. Document packages with built-in camera
 7. Get paid instantly after completion
 
-Returnly connects customers needing returns, exchanges, and deliveries with professional drivers. Our platform handles scheduling, payments, and support so you can focus on delivering excellent service.
+Returnly connects customers needing returns, exchanges, and deliveries with drivers in the Returnly Driver Program. Our platform handles scheduling, payments, and support so you can focus on delivering excellent service.
 
-Start your professional delivery career today!
+Start your delivery career with the Returnly Driver Program today!
 
 Requirements: Valid driver's license, reliable vehicle, smartphone with GPS.
 ```

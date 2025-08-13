@@ -88,7 +88,7 @@ expo build:android --type app-bundle
 
 ### App Description (Use This Exact Text)
 ```
-Returnly Driver is the professional mobile app for delivery drivers in the Returnly network.
+Returnly Driver is the mobile app for drivers in the Returnly Driver Program.
 
 FEATURES:
 • Accept delivery jobs instantly with push notifications
@@ -104,17 +104,17 @@ DRIVER BENEFITS:
 • Competitive 70% earnings share
 • Instant payment options available
 • Flexible scheduling - work when you want
-• Professional logistics network
+• Returnly logistics network
 • Comprehensive driver support
 
-Join the Returnly professional driver network and start earning with reliable pickup and delivery opportunities in your area.
+Join the Returnly Driver Program and start earning with reliable pickup and delivery opportunities in your area.
 
 Perfect for:
 - Independent contractors seeking delivery work
-- Professional drivers wanting flexible schedules
+- Drivers wanting flexible schedules
 - Anyone looking to earn extra income with delivery services
 
-Download now and start your professional delivery career with Returnly!
+Download now and start your delivery career with the Returnly Driver Program!
 ```
 
 ### Keywords
