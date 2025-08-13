@@ -87,14 +87,17 @@ export default function Welcome() {
       <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
         {/* Background with Stock Delivery Image */}
-        <div className="absolute inset-0 opacity-50">
-          <img 
-            src="https://images.pexels.com/photos/5025639/pexels-photo-5025639.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Professional delivery service"
-            className="w-full h-full object-cover"
-            style={{ filter: 'brightness(1.1) contrast(0.9)' }}
-          />
-        </div>
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'url(https://images.pexels.com/photos/7517660/pexels-photo-7517660.jpeg?auto=compress&cs=tinysrgb&w=1920)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            opacity: 0.3,
+            filter: 'brightness(1.2) contrast(0.8)'
+          }}
+        />
         <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-stone-50/50 to-amber-50/40"></div>
         
         {/* Floating Top Navigation - Role Switcher */}
