@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Circle, ArrowRight, ArrowLeft, Car, Clock, DollarSign, MapPin, Package, Phone, Star, Truck, Users, Zap } from "lucide-react";
 import { Link } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
 interface TutorialStep {
@@ -21,6 +21,7 @@ interface TutorialStep {
 export default function DriverTutorial() {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const queryClient = useQueryClient();
 
   const tutorialSteps: TutorialStep[] = [
     {
@@ -274,6 +275,16 @@ export default function DriverTutorial() {
       icon: <MapPin className="h-6 w-6" />,
       content: (
         <div className="space-y-4">
+          <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4 mb-4">
+            <h3 className="text-xl font-bold text-red-900 flex items-center gap-2">
+              ⚠️ CRITICAL RESPONSIBILITY: Complete Return Processing
+            </h3>
+            <p className="text-red-800 font-medium mt-2">
+              As a Returnly driver, you are responsible for completing the ENTIRE return process - not just delivering items to a store representative.
+              You must process the full return transaction yourself to ensure customer satisfaction and proper completion.
+            </p>
+          </div>
+          
           <h3 className="text-xl font-bold text-amber-900">Drop-off Best Practices</h3>
           
           <div className="space-y-3">
@@ -294,26 +305,29 @@ export default function DriverTutorial() {
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
+              <div className="bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
               <div>
-                <h4 className="font-semibold text-gray-900">Complete Handoff</h4>
-                <p className="text-sm text-gray-600">Give packages to store employee or secure drop location</p>
+                <h4 className="font-semibold text-gray-900">⚠️ CRITICAL: Complete FULL Return Processing</h4>
+                <p className="text-sm text-red-600 font-medium">
+                  You MUST process the complete return yourself - NOT just hand items to return representatives.
+                  You are responsible for the entire return transaction from start to finish.
+                </p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
               <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</div>
               <div>
-                <h4 className="font-semibold text-gray-900">Document Delivery</h4>
-                <p className="text-sm text-gray-600">Take photo proof and get receipt if required</p>
+                <h4 className="font-semibold text-gray-900">Process Complete Return Transaction</h4>
+                <p className="text-sm text-gray-600">Complete the full return at customer service counter, obtain return receipt, and document with photos</p>
               </div>
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-blue-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">5</div>
+              <div className="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">5</div>
               <div>
-                <h4 className="font-semibold text-gray-900">Mark Complete</h4>
-                <p className="text-sm text-gray-600">Update status to "Delivered" - payment is processed immediately</p>
+                <h4 className="font-semibold text-gray-900">Mark Complete Only After Full Processing</h4>
+                <p className="text-sm text-gray-600">Update status to "Delivered" only after you've completed the entire return process - payment is processed immediately</p>
               </div>
             </div>
           </div>
@@ -429,7 +443,7 @@ export default function DriverTutorial() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
-                Professional pickup procedures
+                Full return processing responsibilities
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4" />
@@ -467,8 +481,12 @@ export default function DriverTutorial() {
           <div className="text-center">
             <p className="text-sm text-gray-600 mb-4">Welcome to the Returnly family! 🎉</p>
             <Link href="/driver-portal">
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-start-driving">
-                Go to Driver Portal
+              <Button 
+                className="bg-amber-600 hover:bg-amber-700 text-white" 
+                data-testid="button-start-driving"
+                disabled={completeTutorialMutation.isPending}
+              >
+                {completeTutorialMutation.isPending ? "Completing..." : "Go to Driver Portal"}
               </Button>
             </Link>
           </div>
@@ -481,7 +499,9 @@ export default function DriverTutorial() {
   const completeTutorialMutation = useMutation({
     mutationFn: () => apiRequest("POST", "/api/driver/complete-tutorial"),
     onSuccess: () => {
-      console.log("Tutorial completed successfully");
+      // Refresh user data to reflect tutorial completion and driver access
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      console.log("Tutorial completed successfully - driver access granted");
     }
   });
 

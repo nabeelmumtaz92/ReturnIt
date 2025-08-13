@@ -104,6 +104,7 @@ export class MemStorage implements IStorage {
       lastName: 'Mumtaz',
       phone: '+1-555-0123',
       isDriver: true,  // Driver access for testing
+      tutorialCompleted: true, // Tutorial already completed
       isAdmin: true,   // Admin access
       isActive: true,
       profileImage: null,

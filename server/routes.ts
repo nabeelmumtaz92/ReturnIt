@@ -779,6 +779,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver tutorial completion
+  app.post('/api/driver/complete-tutorial', isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      
+      // Mark tutorial as completed and ensure driver access
+      const user = await storage.updateUser(userId, { 
+        tutorialCompleted: true,
+        isDriver: true // Ensure driver access is granted upon tutorial completion
+      });
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        message: "Tutorial completed successfully", 
+        driverAccess: user.isDriver,
+        tutorialCompleted: user.tutorialCompleted 
+      });
+    } catch (error) {
+      console.error('Error completing tutorial:', error);
+      res.status(500).json({ message: "Failed to complete tutorial" });
+    }
+  });
+
   // Promo code routes
   app.post("/api/promo/validate", async (req, res) => {
     try {
