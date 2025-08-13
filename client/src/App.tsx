@@ -36,6 +36,11 @@ import AdvancedReporting from "@/pages/advanced-reporting";
 import MultiCityManagement from "@/pages/multi-city-management";
 import CustomerServiceTickets from "@/pages/customer-service-tickets";
 import BulkOrderImport from "@/pages/bulk-order-import";
+import LoyaltyDashboard from "@/pages/loyalty-dashboard";
+import DriverSafetyCenter from "@/pages/driver-safety-center";
+import DriverPerformance from "@/pages/driver-performance";
+import RouteOptimization from "@/pages/route-optimization";
+import ChatCenter from "@/pages/chat-center";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -92,6 +97,11 @@ function Router() {
       <Route path="/multi-city-management" component={MultiCityManagement} />
       <Route path="/customer-service-tickets" component={CustomerServiceTickets} />
       <Route path="/bulk-order-import" component={BulkOrderImport} />
+      <Route path="/loyalty-dashboard" component={LoyaltyDashboard} />
+      <Route path="/driver-safety-center" component={DriverSafetyCenter} />
+      <Route path="/driver-performance" component={DriverPerformance} />
+      <Route path="/route-optimization" component={RouteOptimization} />
+      <Route path="/chat-center" component={ChatCenter} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1598,6 +1598,249 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS Notifications API
+  app.post("/api/sms/send", async (req, res) => {
+    try {
+      const { userId, phoneNumber, messageType, message, orderId } = req.body;
+      
+      // In production, integrate with Twilio
+      const smsRecord = {
+        userId,
+        orderId,
+        phoneNumber,
+        messageType,
+        message,
+        status: "sent",
+        sentAt: new Date(),
+        twilioMessageId: `mock_${Date.now()}`
+      };
+      
+      res.json({ success: true, smsId: smsRecord.twilioMessageId });
+    } catch (error) {
+      console.error("SMS send error:", error);
+      res.status(500).json({ error: "Failed to send SMS" });
+    }
+  });
+
+  // Loyalty Program API
+  app.get("/api/loyalty/profile", async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    // Mock loyalty data
+    const loyaltyProfile = {
+      totalPoints: 2450,
+      availablePoints: 1250,
+      membershipTier: "silver",
+      lifetimeSpent: 150.50,
+      referralCode: "RETURN50",
+      joinDate: new Date("2023-01-15")
+    };
+    
+    res.json(loyaltyProfile);
+  });
+
+  app.get("/api/loyalty/transactions", async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    // Mock transaction history
+    const transactions = [
+      { description: "Return completed - Order #R12345", pointsAmount: 50, createdAt: new Date() },
+      { description: "Referral bonus - Friend signup", pointsAmount: 500, createdAt: new Date(Date.now() - 86400000) },
+      { description: "Redeemed $5 credit", pointsAmount: -500, createdAt: new Date(Date.now() - 172800000) },
+    ];
+    
+    res.json(transactions);
+  });
+
+  // Chat System API
+  app.get("/api/chat/conversations", async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    // Mock conversations
+    const conversations = [
+      {
+        id: 1,
+        type: "customer_driver",
+        otherUser: "Mike Chen (Driver)",
+        orderId: "R12345",
+        lastMessage: "I'm about 10 minutes away",
+        lastMessageTime: "2 min ago",
+        status: "active",
+        unreadCount: 1
+      }
+    ];
+    
+    res.json(conversations);
+  });
+
+  app.get("/api/chat/messages/:conversationId", async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    // Mock messages
+    const messages = [
+      {
+        id: 1,
+        senderId: 2,
+        content: "Hi! I'm your driver for order R12345.",
+        timestamp: new Date(),
+        messageType: "text",
+        isRead: true
+      }
+    ];
+    
+    res.json(messages);
+  });
+
+  app.post("/api/chat/send", async (req, res) => {
+    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    
+    const { conversationId, content, messageType = "text" } = req.body;
+    
+    // Mock message sending
+    const message = {
+      id: Date.now(),
+      senderId: req.user.id,
+      conversationId,
+      content,
+      messageType,
+      timestamp: new Date(),
+      isRead: false
+    };
+    
+    res.json(message);
+  });
+
+  // Route Optimization API
+  app.get("/api/routes/current", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    // Mock current route
+    const currentRoute = {
+      id: 1,
+      totalStops: 8,
+      estimatedTime: 4.2,
+      estimatedDistance: 32.5,
+      fuelCost: 12.50,
+      optimizationScore: 92,
+      stops: [
+        { id: 1, address: "123 Main St, Clayton, MO", order: "#R001", estimatedTime: "2:15 PM", status: "pending" }
+      ]
+    };
+    
+    res.json(currentRoute);
+  });
+
+  app.post("/api/routes/optimize", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    const { orderIds, preferences } = req.body;
+    
+    // Mock route optimization
+    const optimizedRoute = {
+      id: Date.now(),
+      orderIds,
+      estimatedDuration: 240, // 4 hours
+      estimatedDistance: 32.5,
+      fuelCostEstimate: 12.50,
+      routeStatus: "planned",
+      optimizedRoute: {
+        waypoints: orderIds.map((id: number, index: number) => ({
+          orderId: id,
+          sequence: index + 1,
+          address: `Stop ${index + 1} Address`,
+          estimatedArrival: new Date(Date.now() + (index * 30 * 60000))
+        }))
+      }
+    };
+    
+    res.json(optimizedRoute);
+  });
+
+  // Driver Performance API
+  app.get("/api/driver/performance", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    // Mock performance data
+    const performance = {
+      weeklyEarnings: 485.50,
+      weeklyDeliveries: 32,
+      avgRating: 4.9,
+      onTimeRate: 96,
+      customerSatisfaction: 98,
+      efficiency: 92
+    };
+    
+    res.json(performance);
+  });
+
+  app.get("/api/driver/earnings", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    // Mock earnings data
+    const earnings = {
+      daily: [65, 78, 82, 71, 89, 95, 105],
+      weekly: 485.50,
+      monthly: 2450.00,
+      projectedMonthly: 2850.00
+    };
+    
+    res.json(earnings);
+  });
+
+  // Driver Safety API
+  app.get("/api/safety/status", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    // Mock safety status
+    const safetyStatus = {
+      currentStatus: "on_duty_safe",
+      lastCheckIn: new Date(),
+      locationSharing: true,
+      emergencyContactsConfigured: true
+    };
+    
+    res.json(safetyStatus);
+  });
+
+  app.post("/api/safety/panic", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    const { location, timestamp } = req.body;
+    
+    // Mock panic button response
+    const safetyEvent = {
+      id: Date.now(),
+      driverId: req.user.id,
+      eventType: "panic_button",
+      location,
+      timestamp,
+      status: "active",
+      responseTime: null
+    };
+    
+    // In production: Alert dispatch, emergency contacts, authorities
+    
+    res.json({ success: true, eventId: safetyEvent.id });
+  });
+
+  app.post("/api/safety/checkin", async (req, res) => {
+    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    
+    const { eventType, location, timestamp } = req.body;
+    
+    // Mock check-in/check-out
+    const safetyEvent = {
+      id: Date.now(),
+      driverId: req.user.id,
+      eventType,
+      location,
+      timestamp,
+      status: "resolved"
+    };
+    
+    res.json({ success: true, eventId: safetyEvent.id });
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
