@@ -111,11 +111,11 @@ export default function Welcome() {
 
         {/* Hero Content */}
         <div className="relative z-20 h-full flex items-center">
-          <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto">
+          <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto lg:mr-auto lg:ml-0">
             
             {/* Left side - Main content */}
-            <div className="text-amber-900 space-y-6 lg:space-y-8 text-center">
-              <div className="flex justify-center mb-6 lg:mb-8">
+            <div className="text-amber-900 space-y-6 lg:space-y-8 text-center lg:text-left lg:max-w-2xl">
+              <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
                   <img 
                     src="/logo-cardboard-deep.png" 
@@ -137,7 +137,7 @@ export default function Welcome() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 {isAuthenticated ? (
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button 
