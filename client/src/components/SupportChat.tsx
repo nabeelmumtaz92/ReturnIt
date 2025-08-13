@@ -281,8 +281,8 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl h-[700px] flex flex-col">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-2 sm:p-4">
+      <Card className="w-full max-w-5xl h-[90vh] flex flex-col bg-white shadow-2xl">
         <CardHeader className="flex-shrink-0 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -326,7 +326,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
         <CardContent className="flex-1 flex flex-col p-4 space-y-4">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0">
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0 max-h-[70vh] bg-gray-50 rounded-lg p-4 scrollbar-thin scrollbar-thumb-gray-300">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -348,7 +348,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
-                  <p className="text-sm whitespace-pre-line">{message.content}</p>
+                  <p className="text-sm whitespace-pre-line break-words overflow-hidden">{message.content}</p>
                   
                   {message.type === 'options' && message.options && (
                     <div className="mt-3 space-y-1.5 max-w-full">
