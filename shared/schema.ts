@@ -50,6 +50,119 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// SMS Notifications table
+export const smsNotifications = pgTable("sms_notifications", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  orderId: integer("order_id").references(() => orders.id),
+  phoneNumber: text("phone_number").notNull(),
+  messageType: text("message_type").notNull(), // order_confirmed, driver_assigned, driver_arriving, delivered, etc.
+  message: text("message").notNull(),
+  status: text("status").notNull().default("pending"), // pending, sent, delivered, failed
+  sentAt: timestamp("sent_at"),
+  deliveredAt: timestamp("delivered_at"),
+  failureReason: text("failure_reason"),
+  twilioMessageId: text("twilio_message_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Customer Loyalty Program
+export const loyaltyProgram = pgTable("loyalty_program", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  totalPoints: integer("total_points").default(0).notNull(),
+  availablePoints: integer("available_points").default(0).notNull(),
+  membershipTier: text("membership_tier").default("bronze").notNull(), // bronze, silver, gold, platinum
+  tierBenefits: jsonb("tier_benefits").default({}),
+  lifetimeSpent: real("lifetime_spent").default(0).notNull(),
+  referralCode: text("referral_code").unique(),
+  referredBy: integer("referred_by").references(() => users.id),
+  joinDate: timestamp("join_date").defaultNow().notNull(),
+  lastActivity: timestamp("last_activity").defaultNow().notNull(),
+});
+
+// Loyalty Transactions
+export const loyaltyTransactions = pgTable("loyalty_transactions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  orderId: integer("order_id").references(() => orders.id),
+  transactionType: text("transaction_type").notNull(), // earned, redeemed, expired, bonus
+  pointsAmount: integer("points_amount").notNull(),
+  description: text("description").notNull(),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Real-time Chat System
+export const chatConversations = pgTable("chat_conversations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: integer("order_id").references(() => orders.id),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id),
+  supportAgentId: integer("support_agent_id").references(() => users.id),
+  conversationType: text("conversation_type").notNull(), // customer_driver, customer_support, driver_dispatch
+  status: text("status").default("active").notNull(), // active, closed, escalated
+  lastMessageAt: timestamp("last_message_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const chatMessages = pgTable("chat_messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  conversationId: integer("conversation_id").references(() => chatConversations.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  messageType: text("message_type").default("text").notNull(), // text, image, location, system
+  messageContent: text("message_content").notNull(),
+  attachments: jsonb("attachments").default([]),
+  isRead: boolean("is_read").default(false).notNull(),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Route Optimization
+export const routeOptimization = pgTable("route_optimization", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  routeDate: timestamp("route_date").notNull(),
+  orderIds: jsonb("order_ids").notNull(), // Array of order IDs
+  optimizedRoute: jsonb("optimized_route").notNull(), // Optimized waypoints
+  estimatedDuration: integer("estimated_duration"), // In minutes
+  estimatedDistance: real("estimated_distance"), // In miles
+  actualDuration: integer("actual_duration"),
+  actualDistance: real("actual_distance"),
+  fuelCostEstimate: real("fuel_cost_estimate"),
+  routeStatus: text("route_status").default("planned").notNull(), // planned, in_progress, completed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Driver Safety Features
+export const driverSafety = pgTable("driver_safety", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  eventType: text("event_type").notNull(), // panic_button, check_in, check_out, emergency_alert
+  location: jsonb("location").notNull(), // GPS coordinates
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  status: text("status").default("active").notNull(), // active, resolved, false_alarm
+  emergencyContacts: jsonb("emergency_contacts").default([]),
+  responseTime: integer("response_time"), // Minutes to resolution
+  resolvedBy: integer("resolved_by").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  notes: text("notes"),
+  metadata: jsonb("metadata").default({}),
+});
+
+// Return Label Generation (Design Only - Not Implemented)
+export const returnLabels = pgTable("return_labels", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: integer("order_id").references(() => orders.id).notNull(),
+  retailerName: text("retailer_name").notNull(),
+  labelType: text("label_type").notNull(), // qr_code, barcode, pdf_label
+  labelUrl: text("label_url"),
+  trackingNumber: text("tracking_number"),
+  generatedAt: timestamp("generated_at").defaultNow().notNull(),
+  usedAt: timestamp("used_at"),
+  status: text("status").default("generated").notNull(), // generated, printed, used, expired
+});
+
 // Driver Documents table for digital document management
 export const driverDocuments = pgTable("driver_documents", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
