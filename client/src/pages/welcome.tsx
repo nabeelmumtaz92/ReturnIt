@@ -88,14 +88,14 @@ export default function Welcome() {
       <div className="relative min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 overflow-hidden">
         
         {/* Background with Stock Delivery Image */}
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-60">
           <img 
             src="https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600"
             alt="Professional delivery service"
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-stone-50/80 to-amber-50/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/70 via-stone-50/50 to-amber-50/40"></div>
         
         {/* Floating Top Navigation - Role Switcher */}
         {isAuthenticated && (
