@@ -29,6 +29,13 @@ import FAQ from "@/pages/faq";
 import CustomerMobileApp from "@/pages/customer-mobile-app";
 import ReturnlyDriverApp from "@/pages/returnly-driver-app";
 import NotFound from "@/pages/not-found";
+import RealTimeTracking from "@/pages/real-time-tracking";
+import DriverAnalytics from "@/pages/driver-analytics";
+import CustomerRating from "@/pages/customer-rating";
+import AdvancedReporting from "@/pages/advanced-reporting";
+import MultiCityManagement from "@/pages/multi-city-management";
+import CustomerServiceTickets from "@/pages/customer-service-tickets";
+import BulkOrderImport from "@/pages/bulk-order-import";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -78,6 +85,13 @@ function Router() {
       <Route path="/driver-mobile-app" component={ReturnlyDriverApp} />
       <Route path="/logo-colors" component={LogoColors} />
       <Route path="/background-colors" component={BackgroundColors} />
+      <Route path="/real-time-tracking" component={RealTimeTracking} />
+      <Route path="/driver-analytics" component={DriverAnalytics} />
+      <Route path="/customer-rating" component={CustomerRating} />
+      <Route path="/advanced-reporting" component={AdvancedReporting} />
+      <Route path="/multi-city-management" component={MultiCityManagement} />
+      <Route path="/customer-service-tickets" component={CustomerServiceTickets} />
+      <Route path="/bulk-order-import" component={BulkOrderImport} />
       <Route component={NotFound} />
     </Switch>
   );

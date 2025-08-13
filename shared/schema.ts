@@ -37,6 +37,15 @@ export const users = pgTable("users", {
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),
   hireDate: timestamp("hire_date"),
+  
+  // Multi-city expansion fields
+  assignedCity: text("assigned_city").default("st-louis"),
+  serviceZones: jsonb("service_zones").default([]),
+  
+  // Emergency and safety features
+  emergencyContacts: jsonb("emergency_contacts").default([]),
+  lastSafetyCheck: timestamp("last_safety_check"),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -277,6 +286,161 @@ export const businessInfo = pgTable("business_info", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Cities and Market Management
+export const cities = pgTable("cities", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: text("name").notNull().unique(),
+  state: text("state").notNull(),
+  region: text("region").notNull(), // midwest, northeast, south, west
+  isActive: boolean("is_active").default(true),
+  launchDate: timestamp("launch_date"),
+  marketManager: integer("market_manager").references(() => users.id),
+  serviceArea: jsonb("service_area").default({}), // Geographic boundaries
+  basePricing: jsonb("base_pricing").default({}), // City-specific pricing
+  localRegulations: jsonb("local_regulations").default({}),
+  partnerRetailers: jsonb("partner_retailers").default([]),
+  population: integer("population"),
+  marketPotential: text("market_potential").default("medium"), // low, medium, high
+  competitorAnalysis: jsonb("competitor_analysis").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Customer Service Tickets
+export const supportTickets = pgTable("support_tickets", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id),
+  orderId: text("order_id").references(() => orders.id),
+  category: text("category").notNull(), // technical, payment, delivery, general
+  priority: text("priority").default("medium"), // low, medium, high, urgent
+  status: text("status").default("open"), // open, in_progress, waiting, resolved, closed
+  subject: text("subject").notNull(),
+  description: text("description").notNull(),
+  assignedAgent: integer("assigned_agent").references(() => users.id),
+  tags: jsonb("tags").default([]),
+  attachments: jsonb("attachments").default([]),
+  resolution: text("resolution"),
+  customerSatisfaction: integer("customer_satisfaction"), // 1-5 rating
+  timeToResolution: integer("time_to_resolution"), // minutes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+// Support Ticket Messages
+export const ticketMessages = pgTable("ticket_messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  ticketId: integer("ticket_id").references(() => supportTickets.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  message: text("message").notNull(),
+  messageType: text("message_type").default("text"), // text, file, image
+  attachments: jsonb("attachments").default([]),
+  isInternal: boolean("is_internal").default(false), // internal agent notes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Real-time Order Tracking Events
+export const trackingEvents = pgTable("tracking_events", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  eventType: text("event_type").notNull(), // pickup_scheduled, driver_assigned, en_route, picked_up, delivered
+  description: text("description").notNull(),
+  location: jsonb("location"), // GPS coordinates
+  driverId: integer("driver_id").references(() => users.id),
+  metadata: jsonb("metadata").default({}),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+// Customer Reviews and Ratings
+export const reviews = pgTable("reviews", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id),
+  overallRating: integer("overall_rating").notNull(), // 1-5 stars
+  serviceRating: integer("service_rating"), // 1-5 stars
+  timelinessRating: integer("timeliness_rating"), // 1-5 stars
+  communicationRating: integer("communication_rating"), // 1-5 stars
+  reviewText: text("review_text"),
+  wouldRecommend: boolean("would_recommend"),
+  isPublic: boolean("is_public").default(true),
+  flaggedInappropriate: boolean("flagged_inappropriate").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Driver Performance Analytics
+export const driverPerformance = pgTable("driver_performance", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  date: timestamp("date").notNull(),
+  totalOrders: integer("total_orders").default(0),
+  completedOrders: integer("completed_orders").default(0),
+  cancelledOrders: integer("cancelled_orders").default(0),
+  avgRating: real("avg_rating"),
+  totalEarnings: real("total_earnings").default(0),
+  onlineHours: real("online_hours").default(0),
+  avgPickupTime: real("avg_pickup_time"), // minutes
+  avgDeliveryTime: real("avg_delivery_time"), // minutes
+  customerFeedbackScore: real("customer_feedback_score"),
+  completionRate: real("completion_rate"), // percentage
+  safetyIncidents: integer("safety_incidents").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Corporate Partnerships
+export const partnerships = pgTable("partnerships", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyName: text("company_name").notNull(),
+  contactName: text("contact_name").notNull(),
+  contactEmail: text("contact_email").notNull(),
+  contactPhone: text("contact_phone"),
+  partnershipType: text("partnership_type").notNull(), // retailer, logistics, corporate
+  status: text("status").default("prospect"), // prospect, negotiating, active, inactive
+  contractValue: real("contract_value"),
+  discountRate: real("discount_rate"), // percentage discount
+  volumeThreshold: integer("volume_threshold"), // minimum orders
+  serviceAreas: jsonb("service_areas").default([]),
+  specialTerms: text("special_terms"),
+  accountManager: integer("account_manager").references(() => users.id),
+  contractStartDate: timestamp("contract_start_date"),
+  contractEndDate: timestamp("contract_end_date"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Bulk Order Imports
+export const bulkOrderImports = pgTable("bulk_order_imports", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  importedBy: integer("imported_by").references(() => users.id).notNull(),
+  fileName: text("file_name").notNull(),
+  fileSize: integer("file_size"),
+  totalRows: integer("total_rows"),
+  successfulImports: integer("successful_imports").default(0),
+  failedImports: integer("failed_imports").default(0),
+  errors: jsonb("errors").default([]),
+  status: text("status").default("processing"), // processing, completed, failed
+  importType: text("import_type").notNull(), // orders, customers, drivers
+  mapping: jsonb("mapping").default({}), // column mapping configuration
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+});
+
+// Emergency Alerts and Safety
+export const emergencyAlerts = pgTable("emergency_alerts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id),
+  alertType: text("alert_type").notNull(), // emergency_911, safety_concern, breakdown, accident
+  location: jsonb("location").notNull(), // GPS coordinates
+  description: text("description"),
+  isResolved: boolean("is_resolved").default(false),
+  responseTime: integer("response_time"), // minutes
+  responderNotes: text("responder_notes"),
+  emergencyContacts: jsonb("emergency_contacts").default([]),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
 // Insert schemas with validation
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -294,7 +458,7 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  pickupAddress: z.string().min(10, "Pickup address must be detailed"),
+  pickupStreetAddress: z.string().min(10, "Pickup address must be detailed"),
   itemDescription: z.string().min(5, "Item description required"),
   retailer: z.string().min(2, "Retailer name required"),
 });
@@ -334,6 +498,55 @@ export const insertBusinessInfoSchema = createInsertSchema(businessInfo).omit({
   updatedAt: true,
 });
 
+// New table insert schemas
+export const insertCitySchema = createInsertSchema(cities).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertTicketMessageSchema = createInsertSchema(ticketMessages).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertTrackingEventSchema = createInsertSchema(trackingEvents).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDriverPerformanceSchema = createInsertSchema(driverPerformance).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertPartnershipSchema = createInsertSchema(partnerships).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertBulkOrderImportSchema = createInsertSchema(bulkOrderImports).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertEmergencyAlertSchema = createInsertSchema(emergencyAlerts).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Enhanced types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -353,6 +566,26 @@ export type DriverIncentive = typeof driverIncentives.$inferSelect;
 export type InsertDriverIncentive = z.infer<typeof insertDriverIncentiveSchema>;
 export type BusinessInfo = typeof businessInfo.$inferSelect;
 export type InsertBusinessInfo = z.infer<typeof insertBusinessInfoSchema>;
+
+// New table types
+export type City = typeof cities.$inferSelect;
+export type InsertCity = z.infer<typeof insertCitySchema>;
+export type SupportTicket = typeof supportTickets.$inferSelect;
+export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
+export type TicketMessage = typeof ticketMessages.$inferSelect;
+export type InsertTicketMessage = z.infer<typeof insertTicketMessageSchema>;
+export type TrackingEvent = typeof trackingEvents.$inferSelect;
+export type InsertTrackingEvent = z.infer<typeof insertTrackingEventSchema>;
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type DriverPerformance = typeof driverPerformance.$inferSelect;
+export type InsertDriverPerformance = z.infer<typeof insertDriverPerformanceSchema>;
+export type Partnership = typeof partnerships.$inferSelect;
+export type InsertPartnership = z.infer<typeof insertPartnershipSchema>;
+export type BulkOrderImport = typeof bulkOrderImports.$inferSelect;
+export type InsertBulkOrderImport = z.infer<typeof insertBulkOrderImportSchema>;
+export type EmergencyAlert = typeof emergencyAlerts.$inferSelect;
+export type InsertEmergencyAlert = z.infer<typeof insertEmergencyAlertSchema>;
 
 // Status enums for type safety
 export const OrderStatus = {
