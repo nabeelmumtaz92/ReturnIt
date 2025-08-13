@@ -326,14 +326,14 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
         <CardContent className="flex-1 flex flex-col p-4 space-y-4">
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          <div className="flex-1 overflow-y-auto space-y-3 pr-2 min-h-0">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`max-w-[85%] rounded-lg p-3 ${
                     message.sender === 'user'
                       ? 'bg-blue-600 text-white'
                       : message.sender === 'support'
@@ -351,13 +351,13 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
                   <p className="text-sm whitespace-pre-line">{message.content}</p>
                   
                   {message.type === 'options' && message.options && (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3 space-y-1.5 max-w-full">
                       {message.options.map((option, index) => (
                         <Button
                           key={index}
                           variant="outline"
                           size="sm"
-                          className="w-full text-left justify-start text-xs"
+                          className="w-full text-left justify-start text-xs h-auto py-2 px-3 whitespace-normal break-words"
                           onClick={() => handleOptionClick(option)}
                         >
                           {option}
@@ -367,10 +367,10 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
                   )}
                   
                   {message.type === 'escalation' && !isEscalated && (
-                    <div className="mt-3 flex space-x-2">
+                    <div className="mt-3 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                       <Button
                         size="sm"
-                        className="bg-green-600 hover:bg-green-700 text-white text-xs"
+                        className="bg-green-600 hover:bg-green-700 text-white text-xs flex-1"
                         onClick={handleEscalation}
                       >
                         <MessageCircle className="h-3 w-3 mr-1" />
@@ -379,7 +379,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-blue-600 border-blue-300 text-xs"
+                        className="text-blue-600 border-blue-300 text-xs flex-1"
                         onClick={handleCallSupport}
                       >
                         <Phone className="h-3 w-3 mr-1" />
