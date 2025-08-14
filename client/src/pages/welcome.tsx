@@ -118,12 +118,28 @@ export default function Welcome() {
             <div className="text-amber-900 space-y-6 lg:space-y-8 text-center lg:text-left lg:max-w-2xl">
               <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
-                  <div className="group cursor-pointer">
-                    <img 
-                      src="/logo-cardboard-deep.png" 
-                      alt="Returnly Logo" 
-                      className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto transition-all duration-300 group-hover:scale-105 logo-enhanced group-hover:drop-shadow-xl"
-                    />
+                  <div className="group cursor-pointer relative">
+                    <div className="relative">
+                      <img 
+                        src="/logo-cardboard-deep.png" 
+                        alt="Returnly Logo" 
+                        className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto transition-all duration-300 group-hover:scale-105 relative z-10"
+                        style={{
+                          filter: 'contrast(1.35) saturate(1.3) brightness(0.95) drop-shadow(0 8px 16px rgba(0,0,0,0.25)) drop-shadow(0 4px 8px rgba(139,69,19,0.4))',
+                          imageRendering: '-webkit-optimize-contrast',
+                          imageRendering: 'crisp-edges'
+                        }}
+                      />
+                      {/* Enhanced glow effect for premium look */}
+                      <div 
+                        className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-md"
+                        style={{
+                          backgroundImage: 'linear-gradient(135deg, rgba(251,191,36,0.8), rgba(217,119,6,0.6))',
+                          borderRadius: '20%',
+                          transform: 'scale(1.1)'
+                        }}
+                      />
+                    </div>
                   </div>
                 </Link>
               </div>
