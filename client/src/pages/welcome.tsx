@@ -125,18 +125,33 @@ export default function Welcome() {
                         alt="Returnly Logo" 
                         className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto transition-all duration-300 group-hover:scale-105 relative z-10"
                         style={{
-                          filter: 'contrast(1.35) saturate(1.3) brightness(0.95) drop-shadow(0 8px 16px rgba(0,0,0,0.25)) drop-shadow(0 4px 8px rgba(139,69,19,0.4))',
-                          imageRendering: '-webkit-optimize-contrast',
-                          imageRendering: 'crisp-edges'
+                          filter: 'contrast(1.6) saturate(1.5) brightness(0.85) hue-rotate(3deg) drop-shadow(0 12px 24px rgba(0,0,0,0.35)) drop-shadow(0 8px 16px rgba(139,69,19,0.6)) drop-shadow(0 4px 8px rgba(0,0,0,0.5)) drop-shadow(0 1px 2px rgba(0,0,0,0.7))',
+                          imageRendering: 'crisp-edges',
+                          WebkitImageRendering: '-webkit-optimize-contrast',
+                          mixBlendMode: 'multiply',
+                          clipPath: 'inset(4% 4% 4% 4%)',
+                          transform: 'scale(1.05)',
+                          background: 'transparent',
+                          isolation: 'isolate'
                         }}
                       />
                       {/* Enhanced glow effect for premium look */}
                       <div 
-                        className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-300 blur-md"
+                        className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-all duration-500 blur-lg"
                         style={{
-                          backgroundImage: 'linear-gradient(135deg, rgba(251,191,36,0.8), rgba(217,119,6,0.6))',
-                          borderRadius: '20%',
-                          transform: 'scale(1.1)'
+                          backgroundImage: 'radial-gradient(ellipse at center, rgba(251,191,36,0.9) 0%, rgba(217,119,6,0.7) 40%, rgba(139,69,19,0.5) 60%, transparent 80%)',
+                          borderRadius: '30%',
+                          transform: 'scale(1.15)',
+                          filter: 'blur(8px)'
+                        }}
+                      />
+                      {/* Additional sharp accent glow */}
+                      <div 
+                        className="absolute inset-0 opacity-20 group-hover:opacity-35 transition-all duration-300 blur-sm"
+                        style={{
+                          backgroundImage: 'linear-gradient(45deg, rgba(217,119,6,0.8), rgba(251,191,36,0.6))',
+                          borderRadius: '25%',
+                          transform: 'scale(1.08)'
                         }}
                       />
                     </div>
