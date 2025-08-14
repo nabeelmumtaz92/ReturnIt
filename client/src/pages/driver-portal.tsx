@@ -59,7 +59,7 @@ export default function DriverPortal() {
     enabled: isAuthenticated && user?.isDriver
   });
 
-  const { data: earnings = [] } = useQuery({
+  const { data: earnings = [] } = useQuery<any[]>({
     queryKey: ["/api/driver/earnings"],
     enabled: isAuthenticated && user?.isDriver
   });
