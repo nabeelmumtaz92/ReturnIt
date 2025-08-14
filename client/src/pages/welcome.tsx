@@ -88,9 +88,9 @@ export default function Welcome() {
       {/* Hero Section with Driver Background */}
       <div className="relative min-h-screen overflow-hidden">
         
-        {/* Background with Stock Delivery Image */}
+        {/* Background with Enhanced Stock Delivery Image */}
         <div 
-          className="absolute inset-0"
+          className="absolute inset-0 bg-img-enhanced"
           style={{
             backgroundImage: `url(${heroDriverImg})`,
             backgroundSize: 'cover',
@@ -98,7 +98,8 @@ export default function Welcome() {
             backgroundRepeat: 'no-repeat'
           }}
         />
-        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-black/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-pattern-enhanced"></div>
         
         {/* Floating Top Navigation - Role Switcher */}
         {isAuthenticated && (
@@ -117,11 +118,13 @@ export default function Welcome() {
             <div className="text-amber-900 space-y-6 lg:space-y-8 text-center lg:text-left lg:max-w-2xl">
               <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
-                  <img 
-                    src="/logo-cardboard-deep.png" 
-                    alt="Returnly Logo" 
-                    className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                  />
+                  <div className="group cursor-pointer">
+                    <img 
+                      src="/logo-cardboard-deep.png" 
+                      alt="Returnly Logo" 
+                      className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto transition-all duration-300 group-hover:scale-105 logo-enhanced group-hover:drop-shadow-xl"
+                    />
+                  </div>
                 </Link>
               </div>
               

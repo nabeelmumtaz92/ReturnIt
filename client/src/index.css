@@ -59,6 +59,11 @@
   --brand-text: hsl(210, 7%, 10%);
   --brand-muted: hsl(30, 32%, 39%);
   --brand-border: hsl(39, 39%, 70%);
+  
+  /* Enhanced image rendering */
+  --image-rendering: optimizeQuality;
+  --logo-filter: contrast(1.1) saturate(1.05) brightness(1.02);
+  --bg-image-filter: contrast(1.08) saturate(1.1) brightness(0.95);
 }
 
 .dark {
@@ -263,6 +268,40 @@
     box-shadow: 
       0 20px 25px -5px rgba(0, 0, 0, 0.1),
       0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Enhanced image quality utilities */
+  .img-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: contrast(1.1) saturate(1.05) brightness(1.02);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .bg-img-enhanced {
+    image-rendering: -webkit-optimize-contrast;
+    filter: contrast(1.08) saturate(1.1) brightness(0.95);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  
+  .logo-enhanced {
+    filter: contrast(1.15) saturate(1.1) brightness(1.03) drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  .bg-pattern-enhanced {
+    background-image: 
+      radial-gradient(circle at 25% 25%, rgba(251, 191, 36, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, rgba(180, 83, 9, 0.03) 0%, transparent 50%),
+      linear-gradient(135deg, rgba(251, 191, 36, 0.02) 0%, rgba(180, 83, 9, 0.02) 100%);
   }
 }
 
