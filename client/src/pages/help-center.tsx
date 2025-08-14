@@ -317,7 +317,7 @@ export default function HelpCenter() {
       <div 
         className="absolute inset-0 bg-img-enhanced"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/5025639/pexels-photo-5025639.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2)',
+          backgroundImage: 'url(https://images.pexels.com/photos/5025639/pexels-photo-5025639.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2560&dpr=3&fit=crop&crop=center&q=95)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
