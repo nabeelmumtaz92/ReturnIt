@@ -397,14 +397,25 @@ export default function DriverPortal() {
                           )}
                         </div>
                         
-                        <Button 
-                          onClick={() => acceptOrderMutation.mutate(order.id)}
-                          disabled={acceptOrderMutation.isPending}
-                          className="bg-amber-600 hover:bg-amber-700 text-white"
-                          data-testid={`button-accept-${order.id}`}
-                        >
-                          {acceptOrderMutation.isPending ? "Accepting..." : "Accept Order"}
-                        </Button>
+                        <div className="flex space-x-2">
+                          <Link href={`/driver-portal/job/${order.id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                            >
+                              View Details
+                            </Button>
+                          </Link>
+                          <Button 
+                            onClick={() => acceptOrderMutation.mutate(order.id)}
+                            disabled={acceptOrderMutation.isPending}
+                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                            data-testid={`button-accept-${order.id}`}
+                          >
+                            {acceptOrderMutation.isPending ? "Accepting..." : "Accept Order"}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -504,6 +515,15 @@ export default function DriverPortal() {
                         </div>
                         
                         <div className="flex space-x-2">
+                          <Link href={`/driver-portal/job/${order.id}`}>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                            >
+                              View Details
+                            </Button>
+                          </Link>
                           <Button variant="outline" size="sm" data-testid={`button-navigate-${order.id}`}>
                             <Navigation className="h-4 w-4 mr-1" />
                             Navigate

@@ -41,6 +41,7 @@ import DriverSafetyCenter from "@/pages/driver-safety-center";
 import DriverPerformance from "@/pages/driver-performance";
 import RouteOptimization from "@/pages/route-optimization";
 import ChatCenter from "@/pages/chat-center";
+import DriverJob from "@/pages/driver-job";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -71,6 +72,7 @@ function Router() {
         {(params) => <OrderStatus orderId={params.orderId} />}
       </Route>
       <Route path="/driver-portal" component={DriverPortal} />
+      <Route path="/driver-portal/job/:id" component={DriverJob} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/driver-tutorial" component={DriverTutorial} />
