@@ -37,7 +37,7 @@ export default function About() {
     <div className="min-h-screen relative">
       {/* Background Image */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 bg-img-enhanced"
         style={{
           backgroundImage: 'url(https://images.pexels.com/photos/8001186/pexels-photo-8001186.jpeg?auto=compress&cs=tinysrgb&w=1920)',
           backgroundSize: 'cover',
@@ -54,7 +54,7 @@ export default function About() {
             <img 
               src="/logo-cardboard-deep.png" 
               alt="Returnly Logo" 
-              className="h-24 w-auto mx-auto mb-4"
+              className="h-24 w-auto mx-auto mb-4 logo-enhanced"
               data-testid="img-logo"
             />
           </div>

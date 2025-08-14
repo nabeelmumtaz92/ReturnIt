@@ -53,7 +53,7 @@ function Router() {
           <img 
             src="/logo-cardboard-deep.png" 
             alt="Returnly Logo" 
-            className="h-16 w-auto mx-auto mb-4 animate-pulse"
+            className="h-16 w-auto mx-auto mb-4 animate-pulse logo-enhanced"
           />
           <p className="text-amber-800">Loading...</p>
         </div>

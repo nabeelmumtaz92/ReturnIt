@@ -85,7 +85,7 @@ export default function BackgroundColors() {
                 <img 
                   src="/logo-cardboard-deep.png"
                   alt="Deep Cardboard logo preview"
-                  className="h-20 w-auto"
+                  className="h-20 w-auto logo-enhanced"
                 />
                 <div className="absolute top-2 left-2">
                   <span className="text-white/80 text-xs bg-black/20 px-2 py-1 rounded">

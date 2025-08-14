@@ -274,27 +274,42 @@
   .img-crisp {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    filter: contrast(1.1) saturate(1.05) brightness(1.02);
+    image-rendering: optimizeQuality;
+    filter: contrast(1.15) saturate(1.1) brightness(1.04) blur(0px);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    -webkit-filter: contrast(1.15) saturate(1.1) brightness(1.04);
   }
   
   .bg-img-enhanced {
     image-rendering: -webkit-optimize-contrast;
-    filter: contrast(1.08) saturate(1.1) brightness(0.95);
+    image-rendering: optimizeQuality;
+    filter: contrast(1.15) saturate(1.18) brightness(0.97) hue-rotate(1deg);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
+    -webkit-filter: contrast(1.15) saturate(1.18) brightness(0.97) hue-rotate(1deg);
+    will-change: transform;
   }
   
   .logo-enhanced {
-    filter: contrast(1.15) saturate(1.1) brightness(1.03) drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    filter: contrast(1.25) saturate(1.2) brightness(1.06) drop-shadow(0 4px 8px rgba(0,0,0,0.15));
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     backface-visibility: hidden;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
+    -webkit-filter: contrast(1.25) saturate(1.2) brightness(1.06) drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+  }
+  
+  /* Professional text enhancement */
+  .text-enhanced {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+    letter-spacing: -0.01em;
   }
   
   .bg-pattern-enhanced {

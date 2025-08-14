@@ -275,7 +275,7 @@ export default function DriverOnboarding() {
               <img 
                 src="/logo-cardboard-deep.png" 
                 alt="Returnly Logo" 
-                className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                className="h-10 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
               />
             </Link>
             <div>

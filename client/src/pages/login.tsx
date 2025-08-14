@@ -166,14 +166,14 @@ export default function Login() {
     <div className="min-h-screen relative flex items-center justify-center p-4">
       {/* Background Hero Image */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-img-enhanced"
         style={{
           backgroundImage: `url(${selectedImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
       />
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/45"></div>
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="text-center mb-8">
@@ -181,7 +181,7 @@ export default function Login() {
             <img 
               src="/logo-cardboard-deep.png" 
               alt="Returnly Logo" 
-              className="h-16 w-auto mx-auto mb-4 cursor-pointer hover:opacity-80 transition-opacity"
+              className="h-16 w-auto mx-auto mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
             />
           </Link>
           <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>

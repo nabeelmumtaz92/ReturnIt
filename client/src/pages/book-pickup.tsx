@@ -360,7 +360,7 @@ export default function BookPickup() {
     <div className="min-h-screen relative">
       {/* Background Hero Image */}
       <div 
-        className="absolute inset-0 z-0"
+        className="absolute inset-0 z-0 bg-img-enhanced"
         style={{
           backgroundImage: `url(${selectedImage})`,
           backgroundSize: 'cover',
@@ -386,7 +386,7 @@ export default function BookPickup() {
               <img 
                 src="/logo-cardboard-deep.png" 
                 alt="Returnly Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                className="h-8 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
               />
             </Link>
             <span className="text-xl font-bold text-amber-900">Book Pickup</span>

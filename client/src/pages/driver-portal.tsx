@@ -126,7 +126,7 @@ export default function DriverPortal() {
     <div className="min-h-screen relative">
       {/* Background Image */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 bg-img-enhanced"
         style={{
           backgroundImage: 'url(https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg?auto=compress&cs=tinysrgb&w=1920)',
           backgroundSize: 'cover',
