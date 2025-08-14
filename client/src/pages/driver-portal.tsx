@@ -114,8 +114,8 @@ export default function DriverPortal() {
     );
   }
 
-  const totalEarnings = earnings.reduce((sum: number, earning: any) => sum + earning.totalEarning, 0);
-  const pendingEarnings = earnings.filter((e: any) => e.status === 'pending').reduce((sum: number, earning: any) => sum + earning.totalEarning, 0);
+  const totalEarnings = Array.isArray(earnings) ? earnings.reduce((sum: number, earning: any) => sum + (earning.totalEarning || 0), 0) : 0;
+  const pendingEarnings = Array.isArray(earnings) ? earnings.filter((e: any) => e.status === 'pending').reduce((sum: number, earning: any) => sum + (earning.totalEarning || 0), 0) : 0;
   const activeOrders = myOrders.filter(order => ['assigned', 'picked_up', 'in_transit'].includes(order.status));
   const completedToday = myOrders.filter(order => 
     order.status === 'completed' && 
@@ -123,80 +123,90 @@ export default function DriverPortal() {
   ).length;
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-img-enhanced"
-        style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/6195125/pexels-photo-6195125.jpeg?auto=compress&cs=tinysrgb&w=5120&h=3413&dpr=3&fit=crop&crop=center&q=100)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      <div className="absolute inset-0 bg-white/85"></div>
-      <div className="relative z-10">
-      {/* Navigation Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
-        <div className="container mx-auto px-4 py-3">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      {/* Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center space-x-4">
               <Link href="/welcome">
-                <Button variant="ghost" size="sm" className="text-amber-700 hover:bg-amber-50" data-testid="button-home">
-                  <Home className="h-4 w-4 mr-2" />
+                <Button variant="ghost" size="sm" className="text-amber-800">
+                  <ArrowLeft className="h-4 w-4 mr-1" />
                   Home
                 </Button>
               </Link>
-              <div className="h-6 w-px bg-amber-200"></div>
-              <h1 className="text-xl font-bold text-amber-900" data-testid="heading-portal">
-                Driver Portal
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold text-amber-900">Driver Portal</h1>
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-amber-700">Welcome back, {user.firstName || user.username || 'Driver'}!</span>
+                  <div className="flex items-center space-x-1">
+                    <Switch 
+                      checked={isOnline} 
+                      onCheckedChange={handleOnlineToggle}
+                      data-testid="switch-online-status"
+                    />
+                    <span className={`font-medium ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
+                      {isOnline ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setShowSidebar(!showSidebar)}
-              className="text-amber-700 hover:bg-amber-50"
-              data-testid="button-menu"
-            >
-              <Menu className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1 text-amber-700">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <span className="font-semibold">{user.driverRating?.toFixed(1) || '5.0'}</span>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowSidebar(!showSidebar)}
+                className="text-amber-800"
+              >
+                <Menu className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Sidebar Navigation */}
       {showSidebar && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowSidebar(false)}>
-          <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-amber-900 mb-6">Driver Navigation</h2>
-            <div className="space-y-3">
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowSidebar(false)}>
+          <div className="fixed right-0 top-0 h-full w-80 bg-white/95 backdrop-blur-sm shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-bold text-amber-900">Navigation</h2>
+              <Button variant="ghost" size="sm" onClick={() => setShowSidebar(false)}>
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="space-y-2">
               <Link href="/driver-portal">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-50" data-testid="nav-portal">
-                  <Home className="h-4 w-4 mr-3" />
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-100">
+                  <Truck className="h-4 w-4 mr-3" />
                   Driver Portal
                 </Button>
               </Link>
               <Link href="/driver-payments">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-payments">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
                   <CreditCard className="h-4 w-4 mr-3" />
                   Payments & Earnings
                 </Button>
               </Link>
               <Link href="/order-status">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-orders">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
                   <Package className="h-4 w-4 mr-3" />
                   My Orders
                 </Button>
               </Link>
               <Link href="/admin-dashboard">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-admin">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
                   <Users className="h-4 w-4 mr-3" />
                   Admin Dashboard
                 </Button>
               </Link>
               <Link href="/welcome">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-home">
+                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
                   <Home className="h-4 w-4 mr-3" />
                   Home
                 </Button>
@@ -206,127 +216,58 @@ export default function DriverPortal() {
         </div>
       )}
 
-      {/* Header with User Info */}
-      <div className="bg-white shadow-sm border-b border-amber-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={user.profileImage || undefined} />
-                <AvatarFallback className="bg-amber-100 text-amber-900">
-                  {user.firstName?.[0] || user.username[0].toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="text-2xl font-bold text-amber-900">
-                  Welcome back, {user.firstName || user.username}!
-                </h2>
-                <p className="text-amber-700">Driver ID: {user.id}</p>
+      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        {/* Stats Dashboard */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-amber-900 flex items-center space-x-2">
+              <DollarSign className="h-5 w-5" />
+              <span>Today's Performance</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-lg border border-green-200">
+                <div className="text-2xl font-bold text-emerald-800">
+                  ${totalEarnings.toFixed(2)}
+                </div>
+                <div className="text-sm text-emerald-600 font-medium">Total Earnings</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-amber-800">${pendingEarnings.toFixed(2)}</div>
+                <div className="text-sm text-amber-600">Pending</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-amber-800">{activeOrders.length}</div>
+                <div className="text-sm text-amber-600">Active Jobs</div>
+              </div>
+              <div className="text-center">
+                <div className="text-lg font-bold text-amber-800">{completedToday}</div>
+                <div className="text-sm text-amber-600">Completed Today</div>
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 sm:space-x-6">
-              <div className="order-1">
-                <RoleSwitcher />
-              </div>
-              
-              <div className="flex items-center space-x-2 order-3 sm:order-2">
-                <Switch 
-                  checked={isOnline} 
-                  onCheckedChange={handleOnlineToggle}
-                  data-testid="switch-online-status"
-                />
-                <span className={`font-medium text-xs sm:text-sm ${isOnline ? 'text-green-600' : 'text-gray-500'}`}>
-                  <span className="hidden sm:inline">{isOnline ? 'Online' : 'Offline'}</span>
-                  <span className="sm:hidden">{isOnline ? 'On' : 'Off'}</span>
-                </span>
-              </div>
-              
-              <div className="flex items-center space-x-1 sm:space-x-2 text-amber-700 order-2 sm:order-3">
-                <Star className="h-4 w-4 sm:h-5 sm:w-5 fill-amber-400 text-amber-400" />
-                <span className="font-semibold text-sm sm:text-base">{user.driverRating?.toFixed(1) || '5.0'}</span>
-              </div>
+            <div className="mt-4">
+              <Link href="/driver-payments">
+                <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
+                  <CreditCard className="h-4 w-4 mr-2" />
+                  Instant Pay Available
+                </Button>
+              </Link>
             </div>
-          </div>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Dashboard */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Total Earnings</p>
-                  <p className="text-3xl font-bold text-amber-900">${totalEarnings.toFixed(2)}</p>
-                </div>
-                <DollarSign className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Pending</p>
-                  <p className="text-3xl font-bold text-amber-900">${pendingEarnings.toFixed(2)}</p>
-                </div>
-                <Clock className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-lg border-amber-200 cursor-pointer hover:shadow-xl transition-shadow">
-            <CardContent className="p-6">
-              <a href="/driver-payments" className="block">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-blue-600">Payment Center</p>
-                    <p className="text-lg font-bold text-blue-700">Instant Pay</p>
-                  </div>
-                  <CreditCard className="h-8 w-8 text-blue-500" />
-                </div>
-              </a>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Active Orders</p>
-                  <p className="text-3xl font-bold text-amber-900">{activeOrders.length}</p>
-                </div>
-                <Truck className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white shadow-lg border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Today</p>
-                  <p className="text-3xl font-bold text-amber-900">{completedToday}</p>
-                </div>
-                <Package className="h-8 w-8 text-amber-500" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content */}
-        <Tabs defaultValue="available" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-amber-100">
-            <TabsTrigger value="available" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              Available Orders ({availableOrders.length})
+        {/* Orders Management */}
+        <Tabs defaultValue="available" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="available" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              Available ({availableOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="active" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
-              My Orders ({myOrders.length})
+            <TabsTrigger value="active" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              Active ({myOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="earnings" className="data-[state=active]:bg-white data-[state=active]:text-amber-900">
+            <TabsTrigger value="earnings" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               Earnings
             </TabsTrigger>
           </TabsList>
@@ -355,8 +296,8 @@ export default function DriverPortal() {
                           <p className="text-amber-700">{order.retailer}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-green-600">${(order.basePrice + (order.tip || 0)).toFixed(2)}</p>
-                          <p className="text-sm text-gray-500">Base: ${order.basePrice} + Tip: ${order.tip || 0}</p>
+                          <p className="text-2xl font-bold text-green-600">${((order.basePrice || 0) + (order.tip || 0)).toFixed(2)}</p>
+                          <p className="text-sm text-gray-500">Base: ${order.basePrice || 0} + Tip: ${order.tip || 0}</p>
                         </div>
                       </div>
                       
@@ -365,7 +306,7 @@ export default function DriverPortal() {
                           <MapPin className="h-5 w-5 text-amber-500 mt-0.5" />
                           <div>
                             <p className="font-medium text-amber-900">Pickup Address</p>
-                            <p className="text-amber-700">{order.pickupAddress}</p>
+                            <p className="text-amber-700">{order.pickupStreetAddress}, {order.pickupCity}</p>
                             {order.pickupInstructions && (
                               <p className="text-sm text-amber-600 mt-1">{order.pickupInstructions}</p>
                             )}
@@ -455,7 +396,7 @@ export default function DriverPortal() {
                           </Badge>
                         </div>
                         <div className="text-right">
-                          <p className="text-xl font-bold text-green-600">${(order.basePrice + (order.tip || 0)).toFixed(2)}</p>
+                          <p className="text-xl font-bold text-green-600">${((order.basePrice || 0) + (order.tip || 0)).toFixed(2)}</p>
                         </div>
                       </div>
 
@@ -465,7 +406,7 @@ export default function DriverPortal() {
                             <MapPin className="h-4 w-4 text-amber-500" />
                             <span className="text-sm font-medium text-amber-900">Pickup</span>
                           </div>
-                          <p className="text-sm text-amber-700 ml-6">{order.pickupAddress}</p>
+                          <p className="text-sm text-amber-700 ml-6">{order.pickupStreetAddress}, {order.pickupCity}</p>
                         </div>
                         
                         <div className="space-y-2">
@@ -594,10 +535,10 @@ export default function DriverPortal() {
         </Tabs>
       </div>
 
-      {/* Contact Support Button */}
-      <ContactSupportButton 
-        context={{ type: 'driver', id: user?.id || 'DRIVER', name: user?.firstName || 'Driver' }}
-      />
+        {/* Contact Support Button */}
+        <ContactSupportButton 
+          context={{ type: 'driver', id: String(user?.id) || 'DRIVER', name: user?.firstName || 'Driver' }}
+        />
       </div>
     </div>
   );
