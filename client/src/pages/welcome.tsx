@@ -125,24 +125,25 @@ export default function Welcome() {
                 </Link>
               </div>
               
-              <div className="space-y-4 lg:space-y-6">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight">
+              <div className="space-y-6 lg:space-y-8">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight text-crisp tracking-tight">
                   Returns made
                   <br />
-                  <span className="text-amber-700">easy</span>
+                  <span className="text-amber-700 bg-gradient-to-r from-amber-700 to-amber-600 bg-clip-text text-transparent">easy</span>
                 </h1>
-                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-amber-800 font-medium max-w-4xl mx-auto px-4">
+                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-amber-800 font-semibold max-w-4xl mx-auto px-4 text-crisp leading-relaxed">
                   We pick up your returns and deliver them back to the store. 
-                  Zero trips, zero hassle.
+                  <br className="hidden sm:block" />
+                  <span className="font-bold text-amber-700">Zero trips, zero hassle.</span>
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
                 {isAuthenticated ? (
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center">
                     <Button 
                       size="lg"
-                      className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
+                      className="bg-gradient-to-r from-amber-800 to-amber-700 text-white hover:from-amber-900 hover:to-amber-800 font-bold text-xl px-12 py-6 h-auto shadow-crisp-lg hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1"
                       onClick={() => setLocation('/book-pickup')}
                       data-testid="button-book-pickup-hero"
                     >
@@ -150,8 +151,8 @@ export default function Welcome() {
                     </Button>
                     
                     {/* Track Order - Only for authenticated users */}
-                    <div className="flex flex-col sm:flex-row gap-3 items-center bg-white/80 backdrop-blur-sm rounded-lg border border-amber-200 p-4">
-                      <Label htmlFor="tracking" className="text-amber-800 font-medium whitespace-nowrap">
+                    <div className="flex flex-col sm:flex-row gap-4 items-center glass-card rounded-xl border border-amber-200/30 p-6 backdrop-blur-md">
+                      <Label htmlFor="tracking" className="text-amber-800 font-semibold whitespace-nowrap text-lg">
                         Track Order:
                       </Label>
                       <Input
@@ -160,7 +161,7 @@ export default function Welcome() {
                         placeholder="Enter order ID"
                         value={trackingNumber}
                         onChange={(e) => setTrackingNumber(e.target.value)}
-                        className="flex-1 bg-white/90 border-amber-300 focus:border-amber-500"
+                        className="flex-1 bg-white/95 border-amber-300 focus:border-amber-500 h-14 text-lg shadow-crisp"
                         data-testid="input-tracking"
                       />
                       <Button
@@ -175,10 +176,10 @@ export default function Welcome() {
                             });
                           }
                         }}
-                        className="bg-amber-700 hover:bg-amber-800 text-white px-6"
+                        className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-800 hover:to-amber-700 text-white px-8 py-4 h-14 text-lg font-semibold shadow-crisp-lg"
                         data-testid="button-track-order"
                       >
-                        <Search className="h-4 w-4 mr-2" />
+                        <Search className="h-5 w-5 mr-2" />
                         Track
                       </Button>
                     </div>
@@ -230,23 +231,23 @@ export default function Welcome() {
                 )}
               </div>
 
-              {/* Updated Quick stats */}
-              <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-12 pt-4">
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">15min</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Avg pickup time</div>
+              {/* Enhanced Quick stats */}
+              <div className="flex flex-wrap justify-center gap-8 sm:gap-12 lg:gap-16 pt-8">
+                <div className="text-center group">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">15min</div>
+                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Avg pickup time</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">500+</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Partner stores</div>
+                <div className="text-center group">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">500+</div>
+                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Partner stores</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">12k+</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Hours saved</div>
+                <div className="text-center group">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">12k+</div>
+                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Hours saved</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-xl sm:text-2xl lg:text-3xl font-bold">98%</div>
-                  <div className="text-amber-700 text-sm sm:text-base">Success rate</div>
+                <div className="text-center group">
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">98%</div>
+                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Success rate</div>
                 </div>
               </div>
             </div>
