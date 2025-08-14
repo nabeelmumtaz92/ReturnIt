@@ -1,18 +1,13 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { 
-  Package, 
   Phone, 
   Mail, 
   MapPin, 
   Facebook, 
   Twitter, 
   Instagram, 
-  Linkedin,
-  HelpCircle,
-  FileText,
-  Shield,
-  Users
+  Linkedin
 } from "lucide-react";
 
 export default function Footer() {
@@ -78,7 +73,7 @@ export default function Footer() {
                     variant="link" 
                     className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                   >
-                    <Package className="h-4 w-4 mr-2" />
+
                     Book Return Pickup
                   </Button>
                 </Link>
@@ -93,17 +88,7 @@ export default function Footer() {
                   </Button>
                 </Link>
               </li>
-              <li>
-                <Link href="/driver-portal">
-                  <Button 
-                    variant="link" 
-                    className="text-amber-100 hover:text-white p-0 h-auto justify-start"
-                  >
-                    <Users className="h-4 w-4 mr-2" />
-                    Driver Portal
-                  </Button>
-                </Link>
-              </li>
+
               <li>
                 <Link href="/about">
                   <Button 
@@ -127,7 +112,7 @@ export default function Footer() {
                     variant="link" 
                     className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                   >
-                    <HelpCircle className="h-4 w-4 mr-2" />
+
                     FAQ
                   </Button>
                 </Link>
@@ -147,7 +132,7 @@ export default function Footer() {
                   variant="link" 
                   className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                 >
-                  <FileText className="h-4 w-4 mr-2" />
+
                   Terms of Service
                 </Button>
               </li>
@@ -156,7 +141,7 @@ export default function Footer() {
                   variant="link" 
                   className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                 >
-                  <Shield className="h-4 w-4 mr-2" />
+
                   Privacy Policy
                 </Button>
               </li>

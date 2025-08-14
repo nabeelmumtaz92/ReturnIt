@@ -516,9 +516,9 @@ export default function Welcome() {
                     <Star className="h-4 w-4" />
                   </div>
                 </div>
-                <h4 className="text-xl font-bold mb-2">Professional Driver Program</h4>
+                <h4 className="text-xl font-bold mb-2">Delivery Driver Program</h4>
                 <p className="text-green-100 mb-3">
-                  Join our growing network of professional drivers with comprehensive training,
+                  Join our growing network of delivery drivers with comprehensive training,
                   competitive pay, and flexible scheduling.
                 </p>
                 <div className="flex flex-wrap gap-4 text-sm">
