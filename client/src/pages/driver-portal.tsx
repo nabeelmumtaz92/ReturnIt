@@ -535,11 +535,10 @@ export default function DriverPortal() {
         </Tabs>
       </div>
 
-        {/* Contact Support Button */}
-        <ContactSupportButton 
-          context={{ type: 'driver', id: String(user?.id) || 'DRIVER', name: user?.firstName || 'Driver' }}
-        />
-      </div>
+      {/* Contact Support Button */}
+      <ContactSupportButton 
+        context={{ type: 'driver', id: String(user?.id) || 'DRIVER', name: user?.firstName || 'Driver' }}
+      />
     </div>
   );
 }
