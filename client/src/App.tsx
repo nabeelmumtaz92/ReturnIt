@@ -49,14 +49,21 @@ function Router() {
   // Only show loading if actually loading
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
-        <div className="text-center">
-          <img 
-            src="/logo-cardboard-deep.png" 
-            alt="Returnly Logo" 
-            className="h-16 w-auto mx-auto mb-4 animate-pulse logo-enhanced"
-          />
-          <p className="text-amber-800">Loading...</p>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <img 
+              src="/logo-cardboard-deep.png" 
+              alt="Returnly Logo" 
+              className="h-16 w-auto mx-auto animate-pulse"
+            />
+          </div>
+          <div className="space-y-2">
+            <div className="w-32 h-2 bg-amber-200 rounded-full mx-auto overflow-hidden">
+              <div className="h-full bg-amber-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+            </div>
+            <p className="text-amber-800 text-sm font-medium">Loading your experience...</p>
+          </div>
         </div>
       </div>
     );
