@@ -591,7 +591,7 @@ export default function AdminDashboard() {
       <div 
         className="absolute inset-0"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2)',
+          backgroundImage: 'url(https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2560&dpr=3&fit=crop&crop=center&q=95)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'

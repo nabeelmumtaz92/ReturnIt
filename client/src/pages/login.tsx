@@ -158,9 +158,8 @@ export default function Login() {
     </Button>
   );
 
-  // Random delivery image selection for this page
-  const loginPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
-  const selectedImage = loginPageImages[Math.floor(Math.random() * loginPageImages.length)];
+  // Static delivery image for this page - no rotation
+  const selectedImage = deliveryHandoffImg;
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
