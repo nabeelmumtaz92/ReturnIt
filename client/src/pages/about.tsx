@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Mail, Phone, Clock, Instagram, Facebook, Twitter } from "lucide-react";
+import { MapPin, Mail, Phone, Clock, Instagram, Facebook, Twitter, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
+import Footer from "@/components/Footer";
 
 interface BusinessInfo {
   id: number;
@@ -35,6 +38,35 @@ export default function About() {
 
   return (
     <div className="min-h-screen relative">
+      {/* Navigation Header */}
+      <header className="bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="text-amber-800 hover:text-amber-900"
+              >
+                <Link href="/">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back
+                </Link>
+              </Button>
+              <Link href="/">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </Link>
+              <h1 className="text-2xl font-bold text-amber-900">About Us</h1>
+            </div>
+          </div>
+        </div>
+      </header>
+      
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-img-enhanced"
@@ -218,6 +250,9 @@ export default function About() {
         </div>
       </section>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

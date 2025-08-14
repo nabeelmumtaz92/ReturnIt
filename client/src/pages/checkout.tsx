@@ -6,7 +6,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation, Link } from "wouter";
-import { ArrowLeft, CreditCard } from "lucide-react";
+import { ArrowLeft, CreditCard, Shield, Clock } from "lucide-react";
+import Footer from "@/components/Footer";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -211,7 +212,35 @@ export default function Checkout() {
             </Elements>
           </CardContent>
         </Card>
+        
+        {/* Security Features */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <Shield className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-amber-900 text-sm">Secure Payment</h3>
+              <p className="text-xs text-amber-700">SSL encrypted</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <Clock className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-amber-900 text-sm">Quick Pickup</h3>
+              <p className="text-xs text-amber-700">Same-day available</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <CreditCard className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-amber-900 text-sm">Multiple Payment</h3>
+              <p className="text-xs text-amber-700">Cards, Apple Pay, Google Pay</p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

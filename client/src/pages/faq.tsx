@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLocation, Link } from "wouter";
+import Footer from "@/components/Footer";
 import { 
   Search, 
   ArrowLeft, 
@@ -527,6 +528,10 @@ export default function FAQ() {
           </Card>
         </div>
       </div>
+      
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
