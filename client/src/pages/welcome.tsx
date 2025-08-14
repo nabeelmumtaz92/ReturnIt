@@ -53,7 +53,7 @@ export default function Welcome() {
   // Image carousel data
   const deliveryImages = [
     {
-      url: "https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      url: "https://images.pexels.com/photos/13443801/pexels-photo-13443801.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2",
       alt: "Woman receiving package from courier"
     },
     {
@@ -269,7 +269,7 @@ export default function Welcome() {
       <div className="w-full py-16 bg-gradient-to-br from-white via-stone-50 to-amber-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <img 
-            src="https://images.pexels.com/photos/6994108/pexels-photo-6994108.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/6994108/pexels-photo-6994108.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Packages on porch"
             className="w-full h-full object-cover"
           />
@@ -296,7 +296,7 @@ export default function Welcome() {
       <div className="w-full py-12 bg-gradient-to-r from-amber-700 via-amber-600 to-amber-700 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <img 
-            src="https://images.pexels.com/photos/6667682/pexels-photo-6667682.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/6667682/pexels-photo-6667682.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Delivery man giving packages"
             className="w-full h-full object-cover"
           />
@@ -314,7 +314,7 @@ export default function Welcome() {
       <div className="w-full py-20 bg-gradient-to-br from-white via-stone-50 to-amber-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-8">
           <img 
-            src="https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Person handing over boxes"
             className="w-full h-full object-cover"
           />
@@ -365,7 +365,7 @@ export default function Welcome() {
       <div className="w-full py-16 bg-gradient-to-r from-blue-50 to-indigo-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
-            src="https://images.pexels.com/photos/6869055/pexels-photo-6869055.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/6869055/pexels-photo-6869055.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Woman receiving delivered items"
             className="w-full h-full object-cover"
           />
@@ -410,7 +410,7 @@ export default function Welcome() {
       <div className="w-full py-16 bg-gradient-to-r from-green-50 to-emerald-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-25">
           <img 
-            src="https://images.pexels.com/photos/4393426/pexels-photo-4393426.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/4393426/pexels-photo-4393426.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Person organizing packages"
             className="w-full h-full object-cover"
           />
@@ -452,7 +452,7 @@ export default function Welcome() {
       <div className="w-full py-16 bg-gradient-to-r from-purple-50 to-pink-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
-            src="https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/230544/pexels-photo-230544.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Shopping bags and retail"
             className="w-full h-full object-cover"
           />
@@ -478,7 +478,7 @@ export default function Welcome() {
       <div className="w-full py-16 bg-gradient-to-r from-yellow-50 to-amber-100 relative overflow-hidden">
         <div className="absolute inset-0 opacity-25">
           <img 
-            src="https://images.pexels.com/photos/4393558/pexels-photo-4393558.jpeg?auto=compress&cs=tinysrgb&w=800"
+            src="https://images.pexels.com/photos/4393558/pexels-photo-4393558.jpeg?auto=compress&cs=tinysrgb&w=2400&h=1600&dpr=2"
             alt="Delivery driver with van"
             className="w-full h-full object-cover"
           />
