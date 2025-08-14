@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import Stripe from "stripe";
@@ -56,7 +57,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
   }
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: "2024-12-18",
+    apiVersion: "2025-07-30.basil",
   });
 
   // Auth routes
@@ -254,22 +255,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create Stripe payment intent
   app.post('/api/payments/stripe/create-intent', isAuthenticated, async (req, res) => {
     try {
-      const { amount, payment_method_types = ['card'] } = req.body;
+      const { amount, orderId, payment_method_types = ['card'] } = req.body;
       
-      // In a real implementation, you would use Stripe SDK here
-      const mockPaymentIntent = {
-        id: 'pi_' + Math.random().toString(36).substr(2, 9),
-        client_secret: 'pi_test_' + Math.random().toString(36).substr(2, 20),
+      const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
         currency: 'usd',
-        status: 'requires_payment_method'
-      };
+        payment_method_types,
+        metadata: {
+          orderId: orderId || 'unknown'
+        }
+      });
 
-      res.json(mockPaymentIntent);
+      res.json({
+        client_secret: paymentIntent.client_secret,
+        id: paymentIntent.id
+      });
     } catch (error) {
       console.error('Stripe payment intent error:', error);
       res.status(500).json({ message: 'Failed to create payment intent' });
     }
+  });
+
+  // Stripe webhook endpoint for live payments
+  app.post('/api/webhooks/stripe', express.raw({type: 'application/json'}), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!endpointSecret) {
+      console.error('Stripe webhook secret not configured');
+      return res.status(400).send('Webhook secret not configured');
+    }
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig as string, endpointSecret);
+    } catch (err: any) {
+      console.error(`Webhook signature verification failed: ${err.message}`);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    try {
+      switch (event.type) {
+        case 'payment_intent.succeeded':
+          const paymentIntent = event.data.object;
+          console.log(`Payment succeeded: ${paymentIntent.id}`);
+          
+          // Update order status in database
+          const orderId = paymentIntent.metadata?.orderId;
+          if (orderId && orderId !== 'unknown') {
+            await storage.updateOrder(orderId, { 
+              status: 'paid'
+            });
+          }
+          break;
+
+        case 'payment_intent.payment_failed':
+          const failedPayment = event.data.object;
+          console.log(`Payment failed: ${failedPayment.id}`);
+          
+          // Update order status in database
+          const failedOrderId = failedPayment.metadata?.orderId;
+          if (failedOrderId && failedOrderId !== 'unknown') {
+            await storage.updateOrder(failedOrderId, { 
+              status: 'payment_failed'
+            });
+          }
+          break;
+
+        default:
+          console.log(`Unhandled event type: ${event.type}`);
+      }
+    } catch (error) {
+      console.error('Error processing webhook event:', error);
+      return res.status(500).send('Error processing webhook');
+    }
+
+    res.json({received: true});
   });
 
   // Process PayPal payment

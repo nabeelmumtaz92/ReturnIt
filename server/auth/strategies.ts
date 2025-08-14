@@ -26,7 +26,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       // Create new user - simplified for basic schema
       const newUser = await storage.createUser({
         email: profile.emails?.[0]?.value || `${profile.id}@google.temp`,
-        phone: null, // Social auth users need to add phone later
+        phone: '', // Social auth users need to add phone later
         password: 'GOOGLE_AUTH_USER' // Social auth placeholder
       });
 
@@ -61,7 +61,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
       // Create new user - simplified for basic schema
       const newUser = await storage.createUser({
         email: profile.emails?.[0]?.value || `${profile.id}@facebook.temp`,
-        phone: null, // Social auth users need to add phone later
+        phone: '', // Social auth users need to add phone later
         password: 'FACEBOOK_AUTH_USER' // Social auth placeholder
       });
 
