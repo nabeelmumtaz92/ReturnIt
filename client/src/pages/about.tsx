@@ -39,7 +39,7 @@ export default function About() {
       <div 
         className="absolute inset-0 bg-img-enhanced"
         style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/8001186/pexels-photo-8001186.jpeg?auto=compress&cs=tinysrgb&w=3840&h=2560&dpr=3&fit=crop&crop=center&q=95)',
+          backgroundImage: 'url(https://images.pexels.com/photos/8001186/pexels-photo-8001186.jpeg?auto=compress&cs=tinysrgb&w=5120&h=3413&dpr=3&fit=crop&crop=center&q=100)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat'
