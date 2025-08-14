@@ -26,7 +26,6 @@ export default function Footer() {
                 alt="Returnly Logo" 
                 className="h-8 w-auto brightness-0 invert"
               />
-              <span className="text-xl font-bold">Returnly</span>
             </div>
             <p className="text-amber-100 leading-relaxed">
               Convenient return pickup service in St. Louis, MO. We handle your returns so you don't have to.
