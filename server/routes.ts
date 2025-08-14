@@ -23,11 +23,11 @@ const isAuthenticated = (req: any, res: any, next: any) => {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Session middleware
   app.use(session({
-    secret: 'returnly-secret-key', // In production, use a proper secret
+    secret: process.env.SESSION_SECRET || 'returnly-secret-key-fallback',
     resave: false,
     saveUninitialized: false,
     cookie: { 
-      secure: false, // Set to true with HTTPS in production
+      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
