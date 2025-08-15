@@ -267,18 +267,14 @@ export default function ReturnlyDriverApp() {
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-8 w-auto"
-                />
+                <LogoIcon size={32} className="text-primary" />
                 <div>
                   <h1 className="text-lg font-bold text-blue-900">ReturnlyDriver</h1>
                   <p className="text-xs text-blue-700">Drive. Deliver. Earn.</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
-                <NotificationBell userType="driver" />
+                <NotificationBell />
                 <Button
                   size="sm"
                   variant={isOnline ? "default" : "outline"}

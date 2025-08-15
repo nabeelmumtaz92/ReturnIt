@@ -14,6 +14,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { ReturnlyLogo, LogoIcon } from "@/components/LogoIcon";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -119,12 +120,14 @@ export default function Welcome() {
               <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
                   <div className="group cursor-pointer relative">
-                    <div className="relative">
-                      <img 
-                        src="/logo-cardboard-deep.png" 
-                        alt="Returnly Logo" 
-                        className="h-28 sm:h-32 md:h-36 lg:h-44 xl:h-52 2xl:h-60 w-auto transition-all duration-300 group-hover:scale-105 logo-enhanced group-hover:drop-shadow-xl"
+                    <div className="relative flex items-center gap-4">
+                      <LogoIcon 
+                        size={120} 
+                        className="text-primary transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-xl"
                       />
+                      <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-primary transition-all duration-300 group-hover:scale-105">
+                        Returnly
+                      </h1>
                     </div>
                   </div>
                 </Link>

@@ -9,6 +9,7 @@ import {
   Instagram, 
   Linkedin
 } from "lucide-react";
+import { LogoIcon } from "@/components/LogoIcon";
 
 export default function Footer() {
   return (
@@ -21,11 +22,8 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-8 w-auto brightness-0 invert"
-              />
+              <LogoIcon size={32} className="text-white" />
+              <span className="text-xl font-bold text-white">Returnly</span>
             </div>
             <p className="text-amber-100 leading-relaxed">
               Convenient return pickup service in St. Louis, MO. We handle your returns so you don't have to.
