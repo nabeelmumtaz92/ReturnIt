@@ -65,6 +65,12 @@ export function useAuth() {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
           localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
         } else if (mounted) {
+          // Don't clear admin users - they use client-side auth
+          if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
+            console.log('Admin user detected - keeping client-side auth');
+            return;
+          }
+          
           // Only clear if we have no stored user, or if it's a 401/403 error
           if (!user || response.status === 401 || response.status === 403) {
             setUser(null);
@@ -74,7 +80,13 @@ export function useAuth() {
           }
         }
       } catch (error) {
-        // Don't clear stored user on network errors - maintain offline experience
+        // Don't clear admin users on network errors
+        if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
+          console.log('Admin user detected - keeping auth despite network error');
+          return;
+        }
+        
+        // Don't clear stored user on network errors - maintain offline experience  
         if (mounted && !user) {
           setUser(null);
           setIsAuthenticated(false);
