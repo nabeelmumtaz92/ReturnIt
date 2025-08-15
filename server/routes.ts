@@ -13,7 +13,7 @@ import {
 } from "@shared/schema";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
-import { envConfig, canRegister, canLogin, canUseGoogleAuth, isEmailWhitelisted } from "./config/environment";
+// Removed environment restrictions - authentication always enabled
 
 // Simple session-based authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -69,23 +69,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes with environment controls
   app.post("/api/auth/register", async (req, res) => {
     try {
-      // Check if registration is allowed in current environment
-      if (!canRegister()) {
-        return res.status(403).json({ 
-          message: "Registration is currently disabled",
-          reason: "public_registration_disabled"
-        });
-      }
-
       const validatedData = insertUserSchema.parse(req.body);
-      
-      // Check email whitelist in restricted environments
-      if (!isEmailWhitelisted(validatedData.email)) {
-        return res.status(403).json({ 
-          message: "Registration not allowed for this email",
-          reason: "email_not_whitelisted"
-        });
-      }
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);
@@ -124,26 +108,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/login", async (req, res) => {
     try {
-      // Check if login is allowed in current environment
-      if (!canLogin()) {
-        return res.status(403).json({ 
-          message: "Login is currently disabled",
-          reason: "public_login_disabled"
-        });
-      }
-
       const { email, password } = req.body;
       
       if (!email || !password) {
         return res.status(400).json({ message: "Email and password required" });
-      }
-
-      // Check email whitelist in restricted environments
-      if (!isEmailWhitelisted(email)) {
-        return res.status(403).json({ 
-          message: "Login not allowed for this email",
-          reason: "email_not_whitelisted"
-        });
       }
 
       const user = await storage.getUserByEmail(email);
@@ -215,64 +183,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Social Authentication Routes
   
-  // Google Auth with environment controls
-  app.get('/api/auth/google', (req, res, next) => {
-    if (!canUseGoogleAuth()) {
-      return res.status(403).json({ 
-        message: "Google authentication is currently disabled",
-        reason: "google_auth_disabled"
-      });
-    }
-    passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
-  });
+  // Google Auth
+  app.get('/api/auth/google', passport.authenticate('google', { 
+    scope: ['profile', 'email'] 
+  }));
 
-  app.get('/api/auth/google/callback', (req, res, next) => {
-    if (!canUseGoogleAuth()) {
-      return res.redirect('/login?error=google_auth_disabled');
+  app.get('/api/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
+    (req, res) => {
+      // Set up session for authenticated user
+      if (req.user) {
+        const user = req.user as any;
+        const userData = {
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone || '', 
+          isDriver: user.isDriver || false,
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName || '',
+          lastName: user.lastName || ''
+        };
+        
+        // Store user data in session
+        (req.session as any).user = userData;
+        
+        // Force session save before redirect
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return res.redirect('/login?error=session_failed');
+          }
+          console.log('Session user saved successfully:', userData);
+          res.redirect('/?auth=success');
+        });
+      } else {
+        console.log('Google callback - no user found');
+        res.redirect('/login?error=auth_failed');
+      }
     }
-    passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' })(req, res, next);
-  }, (req, res) => {
-    console.log('Google callback - req.user:', req.user);
-    
-    // Additional email whitelist check for Google auth
-    const user = req.user as any;
-    if (user && !isEmailWhitelisted(user.email)) {
-      req.logout(() => {
-        res.redirect('/login?error=email_not_whitelisted');
-      });
-      return;
-    }
-    
-    // Set up session for authenticated user
-    if (req.user) {
-      const user = req.user as any;
-      const userData = {
-        id: user.id, 
-        email: user.email, 
-        phone: user.phone || '', 
-        isDriver: user.isDriver || false,
-        isAdmin: user.isAdmin || false,
-        firstName: user.firstName || '',
-        lastName: user.lastName || ''
-      };
-      
-      // Store user data in session
-      (req.session as any).user = userData;
-      
-      // Force session save before redirect
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.redirect('/login?error=session_failed');
-        }
-        console.log('Session user saved successfully:', userData);
-        res.redirect('/?auth=success');
-      });
-    } else {
-      console.log('Google callback - no user found');
-      res.redirect('/login?error=auth_failed');
-    }
-  });
+  );
 
   // Facebook Auth
   app.get('/api/auth/facebook', passport.authenticate('facebook', { 
@@ -1978,11 +1927,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Environment configuration endpoint
   app.get("/api/config/environment", (req, res) => {
     res.json({
-      allowPublicRegistration: envConfig.allowPublicRegistration,
-      allowPublicLogin: envConfig.allowPublicLogin,
-      allowGoogleAuth: envConfig.allowGoogleAuth,
-      allowDriverSignup: envConfig.allowDriverSignup,
-      enableDemoMode: envConfig.enableDemoMode,
+      allowPublicRegistration: true,
+      allowPublicLogin: true,
+      allowGoogleAuth: true,
+      allowDriverSignup: true,
+      enableDemoMode: true,
       environment: process.env.NODE_ENV || 'development'
     });
   });
