@@ -105,7 +105,7 @@ export default function CustomerMobileApp() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 w-full">
         <Button 
           onClick={() => setCurrentView('book')}
           className="h-20 bg-amber-600 hover:bg-amber-700 flex flex-col items-center gap-2"

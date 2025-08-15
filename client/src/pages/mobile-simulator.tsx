@@ -12,12 +12,12 @@ export default function MobileSimulator() {
   const [packages, setPackages] = useState(1);
 
   const PhoneFrame = ({ children }: { children: React.ReactNode }) => (
-    <div className="mx-auto bg-black rounded-[3rem] p-2 shadow-2xl max-w-sm">
-      <div className="bg-white rounded-[2.5rem] h-[700px] overflow-hidden">
+    <div className="w-full max-w-sm mx-auto bg-black rounded-[3rem] p-2 shadow-2xl">
+      <div className="bg-white rounded-[2.5rem] h-[700px] w-full overflow-hidden">
         <div className="h-6 bg-black rounded-t-[2.5rem] flex justify-center items-center">
           <div className="w-16 h-1 bg-gray-800 rounded-full"></div>
         </div>
-        <div className="h-[calc(100%-24px)] overflow-y-auto">
+        <div className="h-[calc(100%-24px)] w-full overflow-y-auto overflow-x-hidden">
           {children}
         </div>
       </div>
@@ -25,14 +25,14 @@ export default function MobileSimulator() {
   );
 
   const CustomerApp = () => (
-    <div className="h-full bg-amber-50">
+    <div className="h-full bg-amber-50 w-full overflow-x-hidden">
       {/* Header */}
-      <div className="bg-amber-600 text-white p-4 text-center">
+      <div className="bg-amber-600 text-white p-4 text-center w-full">
         <h1 className="text-xl font-bold">📦 Returnly</h1>
         <p className="text-sm opacity-90">Customer App</p>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 w-full">
         {currentScreen === 'home' && (
           <>
             <Card>
@@ -56,21 +56,21 @@ export default function MobileSimulator() {
                   <label className="block text-sm font-medium text-amber-800 mb-2">
                     Number of Packages
                   </label>
-                  <div className="flex items-center justify-center space-x-4">
+                  <div className="flex items-center justify-center space-x-3">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPackages(Math.max(1, packages - 1))}
-                      className="w-8 h-8 p-0 border-amber-300"
+                      className="w-8 h-8 p-0 border-amber-300 flex-shrink-0"
                     >
                       -
                     </Button>
-                    <span className="text-lg font-bold text-amber-900">{packages}</span>
+                    <span className="text-lg font-bold text-amber-900 min-w-[2rem] text-center">{packages}</span>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPackages(packages + 1)}
-                      className="w-8 h-8 p-0 border-amber-300"
+                      className="w-8 h-8 p-0 border-amber-300 flex-shrink-0"
                     >
                       +
                     </Button>
@@ -87,17 +87,17 @@ export default function MobileSimulator() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 w-full">
               <Button
                 variant="outline"
-                className="border-amber-300 text-amber-700"
+                className="border-amber-300 text-amber-700 text-xs sm:text-sm px-2"
                 onClick={() => setCurrentScreen('history')}
               >
                 Order History
               </Button>
               <Button
                 variant="outline"
-                className="border-red-300 text-red-700"
+                className="border-red-300 text-red-700 text-xs sm:text-sm px-2"
                 onClick={() => setCurrentApp('driver')}
               >
                 Driver App
@@ -180,14 +180,14 @@ export default function MobileSimulator() {
   );
 
   const DriverApp = () => (
-    <div className="h-full bg-green-50">
+    <div className="h-full bg-green-50 w-full overflow-x-hidden">
       {/* Header */}
-      <div className="bg-green-600 text-white p-4 text-center">
+      <div className="bg-green-600 text-white p-4 text-center w-full">
         <h1 className="text-xl font-bold">🚗 Returnly Driver</h1>
         <p className="text-sm opacity-90">Driver App</p>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 w-full">
         <h2 className="text-lg font-bold text-green-900">Available Jobs</h2>
         
         <Card className="border-green-200">
@@ -283,7 +283,7 @@ export default function MobileSimulator() {
       <div className="max-w-4xl mx-auto px-4">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Phone Simulator */}
-          <div>
+          <div className="w-full overflow-x-hidden">
             <PhoneFrame>
               {currentApp === 'customer' ? <CustomerApp /> : <DriverApp />}
             </PhoneFrame>
