@@ -13,28 +13,28 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Clean 3D diamond/cube shape as drawn - no cross lines */}
+      {/* 3D cube rotated 90 degrees right - going into the page */}
       <g transform="translate(2, 1)">
         
         {/* Front face - cream colored */}
         <path
-          d="M6 6L26 6L26 20L6 20Z"
+          d="M8 8L24 8L24 18L8 18Z"
           fill="#F5F0E6"
           stroke="#A47C48"
           strokeWidth="1.5"
         />
         
-        {/* Top face - cardboard brown */}
+        {/* Top face - cardboard brown (rotated perspective) */}
         <path
-          d="M6 6L10 2L30 2L26 6Z"
+          d="M8 8L16 2L32 2L24 8Z"
           fill="#A47C48"
           stroke="#A47C48"
           strokeWidth="1.5"
         />
         
-        {/* Right side face - cardboard brown */}
+        {/* Left side face - cardboard brown (now visible from rotation) */}
         <path
-          d="M26 6L30 2L30 16L26 20Z"
+          d="M8 8L16 2L16 12L8 18Z"
           fill="#A47C48"
           stroke="#A47C48"
           strokeWidth="1.5"
