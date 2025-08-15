@@ -450,21 +450,7 @@ export default function Login() {
           </TabsContent>
         </Tabs>
 
-        {/* Demo account info */}
-        <div className="mt-6 p-6 bg-gradient-to-r from-amber-50 to-stone-50 rounded-lg border border-amber-200 shadow-sm">
-          <h3 className="font-semibold text-amber-800 mb-3 text-center">Demo Account Available</h3>
-          <div className="bg-white p-4 rounded-lg border border-amber-100 text-center">
-            <p className="text-sm text-amber-700 mb-2">
-              Email: <span className="font-bold text-amber-900">demo@returnly.com</span>
-            </p>
-            <p className="text-sm text-amber-700 mb-3">
-              Password: <span className="font-bold text-amber-900">demo123</span>
-            </p>
-            <p className="text-xs text-amber-600">
-              Includes sample orders and full platform access for testing
-            </p>
-          </div>
-        </div>
+
       </div>
     </div>
   );
