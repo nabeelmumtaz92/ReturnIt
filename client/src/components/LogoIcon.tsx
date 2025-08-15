@@ -13,75 +13,67 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* 3D Cardboard box with Y-shaped interior opening */}
+      {/* 3D Cardboard box exactly as drawn - forming the 'Y' */}
       <g transform="translate(2, 1)">
         
-        {/* Left side panel of the box */}
+        {/* Main 3D box structure - front face */}
         <path
-          d="M2 8L12 4L12 20L2 20Z"
-          fill="#A47C48"
-          stroke="#8B6635"
-          strokeWidth="1.2"
-        />
-        
-        {/* Right side panel of the box */}
-        <path
-          d="M24 4L34 8L34 20L24 20Z"
-          fill="#A47C48"
-          stroke="#8B6635"
-          strokeWidth="1.2"
-        />
-        
-        {/* Bottom panel of the box */}
-        <path
-          d="M2 20L34 20L34 22L2 22Z"
-          fill="#A47C48"
-          stroke="#8B6635"
-          strokeWidth="1.2"
-        />
-        
-        {/* Top left flap - creating the Y opening */}
-        <path
-          d="M2 8L12 4L18 8L12 10Z"
-          fill="#A47C48"
-          stroke="#8B6635"
-          strokeWidth="1.2"
-        />
-        
-        {/* Top right flap - creating the Y opening */}
-        <path
-          d="M34 8L24 4L18 8L24 10Z"
-          fill="#A47C48"
-          stroke="#8B6635"
-          strokeWidth="1.2"
-        />
-        
-        {/* Interior Y-shaped opening - cream colored inside */}
-        <path
-          d="M12 10L18 8L24 10L24 20L12 20Z"
+          d="M6 6L26 6L26 20L6 20Z"
           fill="#F5F0E6"
-          stroke="#8B6635"
-          strokeWidth="1"
+          stroke="#A47C48"
+          strokeWidth="1.5"
         />
         
-        {/* Center fold line creating the Y stem */}
+        {/* Top face of the 3D box */}
         <path
-          d="M18 8L18 20"
-          stroke="#8B6635"
+          d="M6 6L10 2L30 2L26 6Z"
+          fill="#A47C48"
+          stroke="#A47C48"
+          strokeWidth="1.5"
+        />
+        
+        {/* Right side face of the 3D box */}
+        <path
+          d="M26 6L30 2L30 16L26 20Z"
+          fill="#A47C48"
+          stroke="#A47C48"
+          strokeWidth="1.5"
+        />
+        
+        {/* Connection circles at all corners exactly like your drawing */}
+        {/* Front face corners */}
+        <circle cx="6" cy="6" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        <circle cx="26" cy="6" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        <circle cx="6" cy="20" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        <circle cx="26" cy="20" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        
+        {/* Back face corners (3D depth) */}
+        <circle cx="10" cy="2" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        <circle cx="30" cy="2" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        <circle cx="30" cy="16" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
+        
+        {/* Internal cross/X patterns exactly like your drawing */}
+        {/* First X pattern */}
+        <path
+          d="M10 8L22 18"
+          stroke="#A47C48"
+          strokeWidth="1.2"
+        />
+        <path
+          d="M22 8L10 18"
+          stroke="#A47C48"
           strokeWidth="1.2"
         />
         
-        {/* Left Y branch fold line */}
+        {/* Second X pattern */}
         <path
-          d="M18 8L12 10"
-          stroke="#8B6635"
+          d="M14 10L18 14"
+          stroke="#A47C48"
           strokeWidth="1"
         />
-        
-        {/* Right Y branch fold line */}
         <path
-          d="M18 8L24 10"
-          stroke="#8B6635"
+          d="M18 10L14 14"
+          stroke="#A47C48"
           strokeWidth="1"
         />
         
