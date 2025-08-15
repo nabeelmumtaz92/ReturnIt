@@ -35,6 +35,7 @@ import DriverAnalytics from "@/pages/driver-analytics";
 import CustomerRating from "@/pages/customer-rating";
 import AdvancedReporting from "@/pages/advanced-reporting";
 import MultiCityManagement from "@/pages/multi-city-management";
+import EnhancedAnalyticsDashboard from "@/pages/enhanced-analytics-dashboard";
 import CustomerServiceTickets from "@/pages/customer-service-tickets";
 import BulkOrderImport from "@/pages/bulk-order-import";
 import LoyaltyDashboard from "@/pages/loyalty-dashboard";
@@ -123,6 +124,7 @@ function Router() {
       <Route path="/notification-center" component={NotificationCenter} />
       <Route path="/quality-assurance" component={QualityAssurance} />
       <Route path="/driver-incentives" component={DriverIncentives} />
+      <Route path="/enhanced-analytics" component={EnhancedAnalyticsDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

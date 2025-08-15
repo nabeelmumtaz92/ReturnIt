@@ -2,20 +2,94 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    
+    <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
     <link rel="manifest" href="/site.webmanifest" />
+    
+    <!-- Viewport & Mobile -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#FF8C42" />
+    <meta name="theme-color" content="#A47C48" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Returnly" />
-    <title>Returnly: Return Delivery Service</title>
-    <meta name="description" content="Schedule a pickup, hand off your item, and we'll return it for you. Professional return delivery for returns, exchanges, and donations." />
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Returnly - Professional Return Delivery Service | Package Returns Made Easy</title>
+    <meta name="description" content="Skip the return trip! Returnly picks up your packages and returns them to stores for you. Professional return delivery service for online purchases, exchanges, and donations. Available in St. Louis with same-day pickup." />
+    <meta name="keywords" content="return delivery, package returns, return service, online returns, package pickup, delivery service, St. Louis returns" />
+    <meta name="author" content="Returnly" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://returnly.tech" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://returnly.tech" />
+    <meta property="og:title" content="Returnly - Professional Return Delivery Service" />
+    <meta property="og:description" content="Skip the return trip! We pick up your packages and return them to stores for you. Professional return delivery service with same-day pickup available." />
+    <meta property="og:image" content="https://returnly.tech/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Returnly" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://returnly.tech" />
+    <meta name="twitter:title" content="Returnly - Professional Return Delivery Service" />
+    <meta name="twitter:description" content="Skip the return trip! We pick up your packages and return them to stores for you. Same-day pickup available." />
+    <meta name="twitter:image" content="https://returnly.tech/og-image.jpg" />
+    
+    <!-- Business/Service Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "LocalBusiness",
+      "name": "Returnly",
+      "description": "Professional return delivery service for online purchases and package returns",
+      "url": "https://returnly.tech",
+      "logo": "https://returnly.tech/logo.svg",
+      "image": "https://returnly.tech/og-image.jpg",
+      "serviceType": "Delivery Service",
+      "areaServed": {
+        "@type": "City",
+        "name": "St. Louis",
+        "addressRegion": "MO",
+        "addressCountry": "US"
+      },
+      "hasOfferingCatalog": {
+        "@type": "OfferingCatalog",
+        "name": "Return Services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Package Return Pickup",
+              "description": "We pick up your returns and deliver them back to stores"
+            }
+          },
+          {
+            "@type": "Offer", 
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Same-Day Return Service",
+              "description": "Fast same-day pickup and return delivery"
+            }
+          }
+        ]
+      }
+    }
+    </script>
+    
+    <!-- Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://api.stripe.com" />
+    <link rel="dns-prefetch" href="https://js.stripe.com" />
   </head>
   <body>
     <div id="root"></div>

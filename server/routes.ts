@@ -11,6 +11,8 @@ import {
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
   insertNotificationSchema, insertDriverApplicationSchema, OrderStatus 
 } from "@shared/schema";
+import { PerformanceService, performanceMiddleware } from "./performance";
+import { AdvancedAnalytics } from "./analytics";
 
 // Simple session-based authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
@@ -22,6 +24,9 @@ const isAuthenticated = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Performance monitoring middleware
+  app.use(performanceMiddleware);
+
   // Session middleware
   app.use(session({
     secret: process.env.SESSION_SECRET || 'returnly-secret-key-fallback',
@@ -1916,6 +1921,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
     };
     
     res.json({ success: true, eventId: safetyEvent.id });
+  });
+
+  // Performance & Analytics API Endpoints
+  
+  // System health check
+  app.get("/api/health", (req, res) => {
+    res.json(PerformanceService.getHealthStats());
+  });
+
+  // Advanced business analytics (protected route)
+  app.get("/api/analytics/business-report", isAuthenticated, async (req, res) => {
+    try {
+      const report = await AdvancedAnalytics.generateBusinessReport();
+      res.json(report);
+    } catch (error) {
+      console.error("Error generating business report:", error);
+      res.status(500).json({ error: "Failed to generate analytics report" });
+    }
+  });
+
+  // Real-time dashboard metrics
+  app.get("/api/analytics/realtime", isAuthenticated, async (req, res) => {
+    try {
+      const metrics = await AdvancedAnalytics.getRealTimeMetrics();
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching real-time metrics:", error);
+      res.status(500).json({ error: "Failed to fetch real-time metrics" });
+    }
+  });
+
+  // Export analytics data
+  app.get("/api/analytics/export", isAuthenticated, async (req, res) => {
+    try {
+      const format = (req.query.format as string) || 'excel';
+      const data = await AdvancedAnalytics.generateExportData(format as 'excel' | 'csv');
+      
+      if (format === 'csv') {
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', 'attachment; filename="returnly-analytics.csv"');
+        res.send(data);
+      } else {
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', 'attachment; filename="returnly-analytics.json"');
+        res.json(data);
+      }
+    } catch (error) {
+      console.error("Error exporting analytics data:", error);
+      res.status(500).json({ error: "Failed to export analytics data" });
+    }
+  });
+
+  // Performance metrics endpoint
+  app.get("/api/performance/metrics", isAuthenticated, (req, res) => {
+    res.json(PerformanceService.getMetrics());
+  });
+
+  // Clear cache endpoint (admin only)
+  app.post("/api/performance/clear-cache", isAuthenticated, (req, res) => {
+    PerformanceService.clearCache();
+    res.json({ message: "Cache cleared successfully" });
   });
 
   const httpServer = createServer(app);
