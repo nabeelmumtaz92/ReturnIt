@@ -13,50 +13,43 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Cardboard box replacing the Y in Returnly - clean 3D design */}
+      {/* Clean 3D cardboard box exactly like the image */}
       <g transform="translate(2, 1)">
         
-        {/* Front face - cream colored interior */}
+        {/* Front face - outline only */}
         <path
-          d="M4 6L28 6L28 18L4 18Z"
-          fill="#F5F0E6"
+          d="M4 8L26 8L26 18L4 18Z"
+          fill="none"
           stroke="#A47C48"
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
         
-        {/* Top face - cardboard brown */}
+        {/* Top face */}
         <path
-          d="M4 6L8 2L32 2L28 6Z"
-          fill="#A47C48"
+          d="M4 8L8 4L30 4L26 8Z"
+          fill="none"
           stroke="#A47C48"
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
         
-        {/* Right side face - cardboard brown */}
+        {/* Right side face */}
         <path
-          d="M28 6L32 2L32 14L28 18Z"
-          fill="#A47C48"
+          d="M26 8L30 4L30 14L26 18Z"
+          fill="none"
           stroke="#A47C48"
-          strokeWidth="1.5"
+          strokeWidth="2"
         />
         
-        {/* Center fold line - Y stem */}
+        {/* Back edges for 3D effect */}
         <path
-          d="M16 6L16 18"
+          d="M8 4L30 4"
           stroke="#A47C48"
-          strokeWidth="1.2"
-        />
-        
-        {/* Y branches - 45 degree fold lines */}
-        <path
-          d="M16 10L8 6"
-          stroke="#A47C48"
-          strokeWidth="1.2"
+          strokeWidth="2"
         />
         <path
-          d="M16 10L24 6"
+          d="M30 4L30 14"
           stroke="#A47C48"
-          strokeWidth="1.2"
+          strokeWidth="2"
         />
         
       </g>
