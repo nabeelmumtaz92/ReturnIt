@@ -120,14 +120,10 @@ export default function Welcome() {
               <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
                   <div className="group cursor-pointer relative">
-                    <div className="relative flex items-center">
+                    <div className="relative">
                       <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light text-primary transition-all duration-300 group-hover:scale-105">
-                        Returnl
+                        Returnly
                       </h1>
-                      <LogoIcon 
-                        size={140} 
-                        className="transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-xl"
-                      />
                     </div>
                   </div>
                 </Link>
