@@ -111,6 +111,7 @@ export default function ReturnlyDriverApp() {
   const [showSupportChat, setShowSupportChat] = useState(false);
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [driverLocation, setDriverLocation] = useState<Location | null>(null);
+  const [showEarningsDropdown, setShowEarningsDropdown] = useState(false);
 
   // Mock data for demonstration
   useEffect(() => {
@@ -287,30 +288,11 @@ export default function ReturnlyDriverApp() {
                 <LogoIcon size={32} className="text-[#A47C48]" />
                 <div>
                   <h1 className="text-lg font-bold text-[#A47C48]">ReturnlyDriver</h1>
-                  <p className="text-xs text-[#7B5E3B]">Drive. Deliver. Earn.</p>
+                  <p className="text-xs text-[#7B5E3B]">Drive. Return. Earn.</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <NotificationBell />
-                <Button
-                  size="sm"
-                  variant={isOnline ? "default" : "outline"}
-                  onClick={toggleOnlineStatus}
-                  className={isOnline ? "bg-[#A47C48] hover:bg-[#8B5A2B] text-white" : "border-[#A47C48] text-[#A47C48]"}
-                  data-testid="button-online-toggle"
-                >
-                  {isOnline ? (
-                    <>
-                      <Play className="h-3 w-3 mr-1" />
-                      Online
-                    </>
-                  ) : (
-                    <>
-                      <Square className="h-3 w-3 mr-1" />
-                      Offline
-                    </>
-                  )}
-                </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -323,38 +305,77 @@ export default function ReturnlyDriverApp() {
           </div>
         </div>
 
+        {/* Standalone Go Online Button */}
+        <div className="px-4 pb-4">
+          <Button
+            size="lg"
+            variant={isOnline ? "default" : "outline"}
+            onClick={toggleOnlineStatus}
+            className={`w-full ${isOnline ? "bg-[#A47C48] hover:bg-[#8B5A2B] text-white" : "border-[#A47C48] text-[#A47C48] hover:bg-[#F5F0E6]"}`}
+            data-testid="button-online-toggle"
+          >
+            {isOnline ? (
+              <>
+                <Play className="h-4 w-4 mr-2" />
+                Online - Receiving Jobs
+              </>
+            ) : (
+              <>
+                <Square className="h-4 w-4 mr-2" />
+                Go Online
+              </>
+            )}
+          </Button>
+        </div>
+
         <div className="p-4 space-y-4">
-          {/* Current Earnings Dashboard - Mobile Vertical Layout */}
+          {/* Earnings Dropdown */}
           <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-[#A47C48] text-center">Daily Earnings</CardTitle>
+            <CardHeader 
+              className="pb-2 cursor-pointer"
+              onClick={() => setShowEarningsDropdown(!showEarningsDropdown)}
+            >
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm text-[#A47C48]">
+                  Daily Earnings - ${driverStats.todayEarnings.toFixed(2)}
+                </CardTitle>
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  {showEarningsDropdown ? (
+                    <div className="h-3 w-3 border-l-2 border-b-2 border-[#A47C48] transform rotate-45" />
+                  ) : (
+                    <div className="h-3 w-3 border-l-2 border-b-2 border-[#A47C48] transform -rotate-45" />
+                  )}
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <p className="text-blue-600 text-xs font-medium">Today</p>
-                <p className="text-2xl font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
-              </div>
-              
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <p className="text-green-600 text-xs font-medium">This Week</p>
-                <p className="text-xl font-bold text-green-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
-              </div>
-              
-              <div className="flex flex-col gap-3">
-                <div className="text-center p-3 bg-purple-50 rounded-lg">
-                  <p className="text-purple-600 text-xs font-medium">Jobs Done</p>
-                  <p className="text-lg font-bold text-purple-900">{driverStats.completedJobs}</p>
+            {showEarningsDropdown && (
+              <CardContent className="space-y-3">
+                <div className="text-center p-3 bg-blue-50 rounded-lg">
+                  <p className="text-blue-600 text-xs font-medium">Today</p>
+                  <p className="text-2xl font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
                 </div>
                 
-                <div className="text-center p-3 bg-yellow-50 rounded-lg">
-                  <p className="text-yellow-600 text-xs font-medium">Rating</p>
-                  <div className="flex items-center justify-center">
-                    <Star className="h-4 w-4 text-yellow-500 fill-current mr-1" />
-                    <p className="text-lg font-bold text-yellow-900">{driverStats.rating}</p>
+                <div className="text-center p-3 bg-green-50 rounded-lg">
+                  <p className="text-green-600 text-xs font-medium">This Week</p>
+                  <p className="text-xl font-bold text-green-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
+                </div>
+                
+                <div className="flex flex-col gap-3">
+                  <div className="text-center p-3 bg-purple-50 rounded-lg">
+                    <p className="text-purple-600 text-xs font-medium">Jobs Done</p>
+                    <p className="text-lg font-bold text-purple-900">{driverStats.completedJobs}</p>
+                  </div>
+                  
+                  <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                    <p className="text-yellow-600 text-xs font-medium">Rating</p>
+                    <div className="flex items-center justify-center">
+                      <Star className="h-4 w-4 text-yellow-500 fill-current mr-1" />
+                      <p className="text-lg font-bold text-yellow-900">{driverStats.rating}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
+              </CardContent>
+            )}
           </Card>
 
           {/* Current Job - Priority Display */}
