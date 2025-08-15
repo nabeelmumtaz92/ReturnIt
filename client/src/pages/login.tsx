@@ -19,6 +19,7 @@ import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jp
 import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
 import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
 import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+import deliveryProfessionalImg from "@assets/delivery-professional.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -173,7 +174,7 @@ export default function Login() {
   );
 
   // Static delivery image for this page - no rotation
-  const selectedImage = deliveryHandoffImg;
+  const selectedImage = deliveryProfessionalImg;
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
