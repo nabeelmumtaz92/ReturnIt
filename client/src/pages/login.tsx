@@ -20,6 +20,7 @@ import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.j
 import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
 import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
 import deliveryProfessionalImg from "@assets/delivery-professional.png";
+import deliveryDriverSignupImg from "@assets/delivery-driver-signup.png";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -173,22 +174,30 @@ export default function Login() {
     </Button>
   );
 
-  // Static delivery image for this page - no rotation
-  const selectedImage = deliveryProfessionalImg;
+  // Dynamic background based on active tab
+  const selectedImage = activeTab === 'register' ? deliveryDriverSignupImg : deliveryProfessionalImg;
+  const backgroundPosition = activeTab === 'register' ? 'center right' : 'center';
 
   return (
     <div className="min-h-screen relative flex items-center justify-center p-4">
       {/* Background Hero Image */}
       <div 
-        className="absolute inset-0 z-0 bg-img-enhanced"
+        className="absolute inset-0 z-0 bg-img-enhanced transition-all duration-500"
         style={{
           backgroundImage: `url(${selectedImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundSize: activeTab === 'register' ? 'contain' : 'cover',
+          backgroundPosition: backgroundPosition,
+          backgroundRepeat: 'no-repeat',
         }}
       />
-      <div className="absolute inset-0 bg-gradient-to-br from-black/45 via-black/30 to-black/45"></div>
-      <div className="w-full max-w-md relative z-10">
+      <div className={`absolute inset-0 transition-all duration-500 ${
+        activeTab === 'register' 
+          ? 'bg-gradient-to-r from-black/60 via-black/40 to-transparent' 
+          : 'bg-gradient-to-br from-black/45 via-black/30 to-black/45'
+      }`}></div>
+      <div className={`w-full max-w-md relative z-10 transition-all duration-500 ${
+        activeTab === 'register' ? 'mr-auto ml-8' : ''
+      }`}>
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/">
