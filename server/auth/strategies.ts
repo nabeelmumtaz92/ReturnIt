@@ -24,14 +24,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       }
 
       // Create new user with Google profile data
+      const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
       const newUser = await storage.createUser({
-        email: profile.emails?.[0]?.value || `${profile.id}@google.temp`,
-        phone: '', // Social auth users need to add phone later
+        email: userEmail,
+        phone: userEmail === 'nabeelmumtaz92@gmail.com' ? '6362544821' : '', // Admin gets phone number
         password: 'GOOGLE_AUTH_USER', // Social auth placeholder
         firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
         lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
-        isDriver: false,
-        isAdmin: false
+        isDriver: userEmail === 'nabeelmumtaz92@gmail.com', // Admin is also driver for testing
+        isAdmin: userEmail === 'nabeelmumtaz92@gmail.com' // Exclusive admin access
       });
 
       return done(null, newUser);

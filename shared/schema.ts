@@ -390,7 +390,7 @@ export const businessInfo = pgTable("business_info", {
   description: text("description"),
   headquarters: text("headquarters").default("St. Louis, MO"),
   supportEmail: text("support_email").default("support@returnly.com"),
-  supportPhone: text("support_phone").default("(555) 123-4567"),
+  supportPhone: text("support_phone").default("6362544821"),
   businessHours: text("business_hours").default("Mon–Sat, 8 AM – 8 PM CST"),
   instagramHandle: text("instagram_handle").default("@ReturnlyApp"),
   facebookUrl: text("facebook_url").default("facebook.com/Returnly"),

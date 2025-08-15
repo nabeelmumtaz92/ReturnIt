@@ -103,7 +103,7 @@ export class MemStorage implements IStorage {
       password: '$2b$12$cN/By3bj1ZBoMG1nz3meVem9BtmYO2bpw/8TiwtXmb/VzzGQN2qB2', // hashed 'test123'
       firstName: 'Nabeel',
       lastName: 'Mumtaz',
-      phone: '+1-555-0123',
+      phone: '6362544821',
       isDriver: true,  // Driver access for testing
       tutorialCompleted: true, // Tutorial already completed
       isAdmin: true,   // Admin access
