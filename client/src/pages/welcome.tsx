@@ -188,16 +188,6 @@ export default function Welcome() {
                         Track
                       </Button>
                     </div>
-                    <Button 
-                      size="lg"
-                      variant="outline"
-                      className="border-green-800 text-green-800 hover:bg-green-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
-                      onClick={() => setLocation('/mobile-app-demo')}
-                      data-testid="button-test-mobile-apps"
-                    >
-                      <Phone className="h-5 w-5 mr-2" />
-                      Test Mobile Apps
-                    </Button>
                     {user?.isDriver && (
                       <Button 
                         size="lg"
@@ -244,6 +234,20 @@ export default function Welcome() {
                     </Button>
                   </>
                 )}
+              </div>
+
+              {/* Mobile App Test Button - Always Visible */}
+              <div className="flex justify-center pt-4">
+                <Button 
+                  size="lg"
+                  variant="outline"
+                  className="border-green-800 text-green-800 hover:bg-green-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
+                  onClick={() => setLocation('/mobile-app-demo')}
+                  data-testid="button-test-mobile-apps"
+                >
+                  <Phone className="h-5 w-5 mr-2" />
+                  Test Mobile Apps
+                </Button>
               </div>
 
               {/* Enhanced Quick stats */}
