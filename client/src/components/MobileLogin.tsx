@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Lock, Mail, Smartphone } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth-simple';
+import { LogoIcon } from '@/components/LogoIcon';
 
 interface MobileLoginProps {
   onLogin: () => void;
@@ -80,11 +81,7 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
       <Card className="w-full max-w-sm border-border shadow-lg">
         <CardHeader className="text-center">
           <div className="mx-auto w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
-            {isDriver ? (
-              <Smartphone className="h-8 w-8 text-primary" />
-            ) : (
-              <User className="h-8 w-8 text-primary" />
-            )}
+            <LogoIcon size={32} className="text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold text-primary">
             {isDriver ? 'Driver Sign In' : 'Welcome Back'}
