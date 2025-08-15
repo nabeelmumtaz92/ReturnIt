@@ -18,6 +18,7 @@ import DriverOnboarding from "@/pages/driver-onboarding";
 import About from "@/pages/about";
 import DesignSystemDemo from "@/pages/design-system-demo";
 import MobileAppDemo from "@/pages/mobile-app-demo";
+import MobileSimulator from "@/pages/mobile-simulator";
 import LogoColors from "@/pages/logo-colors";
 import BackgroundColors from "@/pages/background-colors";
 import AdminPaymentTracking from "@/pages/admin-payment-tracking";
@@ -95,6 +96,7 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/design-system-demo" component={DesignSystemDemo} />
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
+      <Route path="/mobile-simulator" component={MobileSimulator} />
       <Route path="/customer-mobile-app" component={CustomerMobileApp} />
       <Route path="/driver-mobile-app" component={ReturnlyDriverApp} />
       <Route path="/logo-colors" component={LogoColors} />
