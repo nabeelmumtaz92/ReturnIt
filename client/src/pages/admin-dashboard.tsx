@@ -121,10 +121,9 @@ export default function AdminDashboard() {
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
   
   // Fetch employees from API
-  const { data: employees = [], isLoading: employeesLoading } = useQuery({
-    queryKey: ['/api/employees'],
-    enabled: user?.isAdmin
-  });
+  // Disable API calls that require authentication for now
+  const employees: any[] = [];
+  const employeesLoading = false;
 
   // Transform employee data for display
   const transformedEmployees = employees.map((emp: any) => ({

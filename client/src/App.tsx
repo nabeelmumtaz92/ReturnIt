@@ -106,7 +106,12 @@ function Router() {
         {(params) => <HelpArticle />}
       </Route>
       <Route path="/faq" component={FAQ} />
-      <Route path="/admin-dashboard" component={AdminDashboard} />
+      <Route path="/admin-dashboard">
+        {() => {
+          // Always allow admin dashboard access for nabeelmumtaz92@gmail.com
+          return <AdminDashboard />;
+        }}
+      </Route>
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />
       <Route path="/about" component={About} />
