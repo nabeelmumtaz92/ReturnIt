@@ -20,6 +20,7 @@ Returnly is a reverse delivery service platform designed to simplify returns, ex
 - **Persistent Authentication System (January 2025)**: Mobile apps now feature persistent sign-in functionality like other mobile applications. Users stay logged in for 30 days with automatic session restoration, offline capability maintenance, and seamless authentication across app restarts. Authentication state persists in localStorage with timestamp validation for security.
 - **Updated Color Scheme & Logo Implementation (January 2025)**: Platform redesigned with cardboard brown (#A47C48) as primary color, cream (#F5F0E6) as secondary color, and darker brown borders. Custom SVG logo component created based on user sketches featuring cardboard box design with connection points and fold lines. Logo implemented across all pages including welcome page, mobile apps, headers, footers, and login screens. Complete color system and branding updated throughout platform.
 - **SEO Optimization Complete (January 2025)**: Comprehensive SEO implementation with enhanced meta tags, Open Graph tags, Twitter cards, structured data (Schema.org LocalBusiness), canonical URLs, and performance-optimized DNS prefetch directives for search engine visibility and social media sharing optimization.
+- **Environment-Based Access Control (January 2025)**: Comprehensive authentication restriction system with development/staging/production environment configurations. Public registration, login, Google auth, and driver signup can be disabled based on environment settings. Email whitelist support for restricted access scenarios.
 
 # User Preferences
 
@@ -60,6 +61,7 @@ Preferred communication style: Simple, everyday language.
 - **Authentication**: Basic username/password, Email/Password (bcrypt), Google, Apple, Facebook sign-in via Passport.js.
 - **Authorization**: Role-based access (driver vs. customer).
 - **Session Management**: Server-side session storage.
+- **Environment-Based Access Control**: Configurable authentication restrictions based on deployment environment (development/staging/production) with email whitelist support for secure access control.
 
 ## Features and Capabilities
 - **Customer Website**: Book pickups, real-time tracking, order history, mobile-responsive, AI-powered support chat with floating help button.

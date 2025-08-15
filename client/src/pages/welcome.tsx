@@ -6,10 +6,19 @@ import Footer from '@/components/Footer';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LogoIcon } from "@/components/LogoIcon";
+
+interface EnvironmentConfig {
+  allowPublicRegistration: boolean;
+  allowPublicLogin: boolean;
+  allowGoogleAuth: boolean;
+  allowDriverSignup: boolean;
+  enableDemoMode: boolean;
+  environment: string;
+}
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
@@ -17,6 +26,11 @@ export default function Welcome() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [trackingNumber, setTrackingNumber] = useState('');
+
+  // Fetch environment configuration
+  const { data: envConfig } = useQuery<EnvironmentConfig>({
+    queryKey: ['/api/config/environment'],
+  });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
@@ -106,37 +120,56 @@ export default function Welcome() {
             </Button>
           </Link>
           
-          <Link href="/login" className="flex-1">
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="w-full border-primary text-primary hover:bg-primary/10 py-4 text-lg"
-              data-testid="button-sign-in"
-            >
-              <User className="h-5 w-5 mr-2" />
-              Sign In
-            </Button>
-          </Link>
-        </div>
-
-        {/* Become a Driver - Separate Tab */}
-        <div className="mt-8 pt-8 border-t border-primary/20">
-          <div className="text-center space-y-4">
-            <p className="text-primary/70 text-sm">
-              Interested in earning money as a driver?
-            </p>
-            <Link href="/driver-onboarding">
+          {/* Show Sign In button only if login is allowed */}
+          {envConfig?.allowPublicLogin && (
+            <Link href="/login" className="flex-1">
               <Button 
                 variant="outline" 
-                className="border-primary text-primary hover:bg-primary/10"
-                data-testid="button-become-driver"
+                size="lg" 
+                className="w-full border-primary text-primary hover:bg-primary/10 py-4 text-lg"
+                data-testid="button-sign-in"
               >
-                <Truck className="h-4 w-4 mr-2" />
-                Become a Driver
+                <User className="h-5 w-5 mr-2" />
+                Sign In
               </Button>
             </Link>
-          </div>
+          )}
         </div>
+
+        {/* Environment Notice for Restricted Access */}
+        {envConfig && !envConfig.allowPublicLogin && (
+          <div className="text-center p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-md">
+            <p className="text-amber-800 text-sm">
+              This is a demonstration platform. Public authentication is currently disabled.
+            </p>
+            {envConfig.enableDemoMode && (
+              <p className="text-amber-700 text-xs mt-2">
+                Environment: {envConfig.environment}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Become a Driver - Separate Tab */}
+        {envConfig?.allowDriverSignup && (
+          <div className="mt-8 pt-8 border-t border-primary/20">
+            <div className="text-center space-y-4">
+              <p className="text-primary/70 text-sm">
+                Interested in earning money as a driver?
+              </p>
+              <Link href="/driver-onboarding">
+                <Button 
+                  variant="outline" 
+                  className="border-primary text-primary hover:bg-primary/10"
+                  data-testid="button-become-driver"
+                >
+                  <Truck className="h-4 w-4 mr-2" />
+                  Become a Driver
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Order Tracking Section */}
         <div className="w-full max-w-md mt-12 pt-8 border-t border-primary/20">
