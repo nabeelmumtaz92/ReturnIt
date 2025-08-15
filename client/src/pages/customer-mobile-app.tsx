@@ -742,19 +742,39 @@ export default function CustomerMobileApp() {
       </Card>
 
       <div className="space-y-2">
-        <Button variant="outline" className="w-full justify-start border-amber-300 text-amber-700">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+          onClick={() => toast({ title: "Payment Methods", description: "Opening payment settings..." })}
+          data-testid="button-payment-methods"
+        >
           <CreditCard className="h-4 w-4 mr-3" />
           Payment Methods
         </Button>
-        <Button variant="outline" className="w-full justify-start border-amber-300 text-amber-700">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+          onClick={() => toast({ title: "Saved Addresses", description: "Managing your addresses..." })}
+          data-testid="button-saved-addresses"
+        >
           <Home className="h-4 w-4 mr-3" />
           Saved Addresses
         </Button>
-        <Button variant="outline" className="w-full justify-start border-amber-300 text-amber-700">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+          onClick={() => toast({ title: "Notifications", description: "Updating notification preferences..." })}
+          data-testid="button-notifications"
+        >
           <Bell className="h-4 w-4 mr-3" />
           Notifications
         </Button>
-        <Button variant="outline" className="w-full justify-start border-amber-300 text-amber-700">
+        <Button 
+          variant="outline" 
+          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
+          onClick={() => toast({ title: "Settings", description: "Opening app settings..." })}
+          data-testid="button-settings"
+        >
           <Settings className="h-4 w-4 mr-3" />
           Settings
         </Button>
@@ -849,11 +869,23 @@ export default function CustomerMobileApp() {
               <h1 className="text-lg font-bold text-primary">Returnly</h1>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="p-2">
-                <Bell className="h-5 w-5 text-primary" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setCurrentView('book')}
+                className={`p-2 ${currentView === 'book' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'}`}
+                data-testid="header-book"
+              >
+                <Plus className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-2">
-                <HeadphonesIcon className="h-5 w-5 text-primary" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setCurrentView('profile')}
+                className={`p-2 ${currentView === 'profile' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'}`}
+                data-testid="header-profile"
+              >
+                <User className="h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -867,7 +899,7 @@ export default function CustomerMobileApp() {
 
       {/* Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-amber-200 shadow-lg">
-        <div className="grid grid-cols-5 h-16">
+        <div className="grid grid-cols-3 h-16">
           <Button
             variant="ghost"
             onClick={() => setCurrentView('home')}
@@ -882,18 +914,6 @@ export default function CustomerMobileApp() {
           
           <Button
             variant="ghost"
-            onClick={() => setCurrentView('book')}
-            className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
-              currentView === 'book' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
-            }`}
-            data-testid="nav-book"
-          >
-            <Plus className="h-5 w-5" />
-            <span className="text-xs">Book</span>
-          </Button>
-          
-          <Button
-            variant="ghost"
             onClick={() => setCurrentView('orders')}
             className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
               currentView === 'orders' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
@@ -902,18 +922,6 @@ export default function CustomerMobileApp() {
           >
             <Package className="h-5 w-5" />
             <span className="text-xs">Orders</span>
-          </Button>
-          
-          <Button
-            variant="ghost"
-            onClick={() => setCurrentView('profile')}
-            className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
-              currentView === 'profile' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
-            }`}
-            data-testid="nav-profile"
-          >
-            <User className="h-5 w-5" />
-            <span className="text-xs">Profile</span>
           </Button>
           
           <Button

@@ -305,29 +305,6 @@ export default function ReturnlyDriverApp() {
           </div>
         </div>
 
-        {/* Standalone Go Online Button */}
-        <div className="px-4 pb-4">
-          <Button
-            size="lg"
-            variant={isOnline ? "default" : "outline"}
-            onClick={toggleOnlineStatus}
-            className={`w-full ${isOnline ? "bg-[#A47C48] hover:bg-[#8B5A2B] text-white" : "border-[#A47C48] text-[#A47C48] hover:bg-[#F5F0E6]"}`}
-            data-testid="button-online-toggle"
-          >
-            {isOnline ? (
-              <>
-                <Play className="h-4 w-4 mr-2" />
-                Online - Receiving Jobs
-              </>
-            ) : (
-              <>
-                <Square className="h-4 w-4 mr-2" />
-                Go Online
-              </>
-            )}
-          </Button>
-        </div>
-
         <div className="p-4 space-y-4">
           {/* Earnings Dropdown */}
           <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
@@ -495,20 +472,15 @@ export default function ReturnlyDriverApp() {
             {/* Available Jobs Tab */}
             <TabsContent value="jobs">
               {!isOnline ? (
-                <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
-                  <CardContent className="p-8 text-center">
-                    <Truck className="h-16 w-16 mx-auto text-blue-300 mb-4" />
-                    <h3 className="text-lg font-semibold text-blue-900 mb-2">You're Currently Offline</h3>
-                    <p className="text-blue-600 mb-4">Turn online to start receiving job requests</p>
-                    <Button 
-                      onClick={toggleOnlineStatus}
-                      className="bg-blue-600 hover:bg-blue-700 text-white"
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      Go Online
-                    </Button>
-                  </CardContent>
-                </Card>
+                <Button 
+                  onClick={toggleOnlineStatus}
+                  size="lg"
+                  className="w-full bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
+                  data-testid="button-online-toggle"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Go Online
+                </Button>
               ) : availableJobs.length === 0 ? (
                 <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
                   <CardContent className="p-8 text-center">
