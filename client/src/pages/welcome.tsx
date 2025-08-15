@@ -53,10 +53,13 @@ export default function Welcome() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-cover bg-center bg-no-repeat" 
+      style={{ 
+        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80")'
+      }}>
       
       {/* Top Navigation Bar */}
-      <nav className="bg-white shadow-sm border-b border-primary/20 sticky top-0 z-50">
+      <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
@@ -101,14 +104,14 @@ export default function Welcome() {
         
         {/* Returnly Title - Centered */}
         <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-primary mb-4">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-4">
             Returnly
           </h1>
         </div>
 
         {/* Hassle Free - Centered */}
         <div className="text-center">
-          <p className="text-xl sm:text-2xl text-primary/80 font-medium">
+          <p className="text-xl sm:text-2xl text-white/90 font-medium">
             Hassle-free returns with professional pickup service
           </p>
         </div>
@@ -180,7 +183,7 @@ export default function Welcome() {
         {/* Order Tracking Section */}
         <div className="w-full max-w-md mt-12 pt-8 border-t border-primary/20">
           <div className="text-center space-y-4">
-            <h3 className="text-lg font-semibold text-primary">
+            <h3 className="text-lg font-semibold text-white">
               Track Your Order
             </h3>
             <div className="flex gap-2">
