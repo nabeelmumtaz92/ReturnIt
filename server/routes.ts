@@ -227,6 +227,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('=== SENDING RESPONSE ===');
       console.log(JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
       
+      console.log('=== FINAL RESPONSE ===');
+      console.log('About to send response:', JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
+      
       res.json({ 
         message: "Login successful",
         user: responseUser
