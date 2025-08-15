@@ -66,6 +66,20 @@ export default function Login() {
       return await apiRequest('POST', '/api/auth/login', data);
     },
     onSuccess: (response: any) => {
+      console.log('Login response:', response);
+      console.log('User object:', response?.user);
+      
+      // Check if user object exists
+      if (!response?.user) {
+        console.error('No user object in response:', response);
+        toast({
+          title: "Login Error",
+          description: "Invalid response from server",
+          variant: "destructive",
+        });
+        return;
+      }
+      
       // Update auth state immediately
       login(response.user);
       
@@ -75,11 +89,16 @@ export default function Login() {
         description: "You have successfully signed in.",
       });
       
+      console.log('User isAdmin:', response.user.isAdmin);
+      console.log('User email:', response.user.email);
+      
       // Redirect based on user type
       setTimeout(() => {
-        if (response.user.isAdmin && response.user.email === "nabeelmumtaz92@gmail.com") {
+        if (response.user?.isAdmin && response.user?.email === "nabeelmumtaz92@gmail.com") {
+          console.log('Redirecting to admin dashboard');
           setLocation('/admin-dashboard');
         } else {
+          console.log('Redirecting to welcome page');
           setLocation('/');
         }
       }, 500);
