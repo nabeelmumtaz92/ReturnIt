@@ -280,14 +280,14 @@ export default function ReturnlyDriverApp() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100">
         
         {/* Header */}
-        <div className="bg-white shadow-sm border-b border-blue-200">
+        <div className="bg-[#F5F0E6] shadow-sm border-b border-[#A47C48]/30">
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <LogoIcon size={32} className="text-primary" />
+                <LogoIcon size={32} className="text-[#A47C48]" />
                 <div>
-                  <h1 className="text-lg font-bold text-blue-900">ReturnlyDriver</h1>
-                  <p className="text-xs text-blue-700">Drive. Deliver. Earn.</p>
+                  <h1 className="text-lg font-bold text-[#A47C48]">ReturnlyDriver</h1>
+                  <p className="text-xs text-[#7B5E3B]">Drive. Deliver. Earn.</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -296,7 +296,7 @@ export default function ReturnlyDriverApp() {
                   size="sm"
                   variant={isOnline ? "default" : "outline"}
                   onClick={toggleOnlineStatus}
-                  className={isOnline ? "bg-green-600 hover:bg-green-700 text-white" : "border-green-600 text-green-600"}
+                  className={isOnline ? "bg-[#A47C48] hover:bg-[#8B5A2B] text-white" : "border-[#A47C48] text-[#A47C48]"}
                   data-testid="button-online-toggle"
                 >
                   {isOnline ? (
@@ -325,9 +325,9 @@ export default function ReturnlyDriverApp() {
 
         <div className="p-4 space-y-4">
           {/* Current Earnings Dashboard - Mobile Vertical Layout */}
-          <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
+          <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-blue-900 text-center">Daily Earnings</CardTitle>
+              <CardTitle className="text-sm text-[#A47C48] text-center">Daily Earnings</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-center p-3 bg-blue-50 rounded-lg">

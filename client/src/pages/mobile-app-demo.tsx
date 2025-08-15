@@ -12,6 +12,7 @@ import {
   useToast 
 } from '@/components/design-system';
 import { Package2, MapPin, Phone, User, CreditCard } from 'lucide-react';
+import { LogoIcon } from '@/components/LogoIcon';
 import { useLocation, Link } from 'wouter';
 
 type MobileView = 'welcome' | 'login' | 'book-pickup' | 'order-status';
@@ -28,11 +29,7 @@ export default function MobileAppDemo() {
         {/* Real Logo */}
         <div className="w-20 h-20 flex items-center justify-center">
           <Link href="/">
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-            />
+            <LogoIcon size={64} className="text-[#A47C48] cursor-pointer hover:opacity-80 transition-opacity" />
           </Link>
         </div>
         
@@ -67,7 +64,7 @@ export default function MobileAppDemo() {
         </FlexStack>
 
         {/* Driver CTA Card */}
-        <Card className="w-full mt-4 bg-gradient-to-r from-[#FF8C42] to-[#e07530] text-white border-none">
+        <Card className="w-full mt-4 bg-gradient-to-r from-[#A47C48] to-[#8B5A2B] text-white border-none">
           <CardContent className="p-4 text-center">
             <h3 className="text-[16px] leading-[24px] font-semibold mb-1">
               Want to earn $18-25/hour?
@@ -75,7 +72,7 @@ export default function MobileAppDemo() {
             <p className="text-[13px] leading-[18px] opacity-90 mb-3">
               Join as a driver and pick up packages in your area
             </p>
-            <Button variant="secondary" size="sm" className="bg-white text-[#FF8C42]">
+            <Button variant="secondary" size="sm" className="bg-white text-[#A47C48]">
               Become a Driver
             </Button>
           </CardContent>
@@ -193,7 +190,7 @@ export default function MobileAppDemo() {
         </Card>
 
         {/* CTA */}
-        <Card className="bg-[#FF8C42] text-white border-[#FF8C42]">
+        <Card className="bg-[#A47C48] text-white border-[#A47C48]">
           <CardContent className="p-4 text-center">
             <div className="flex justify-between items-center">
               <div className="text-left">
@@ -202,7 +199,7 @@ export default function MobileAppDemo() {
               </div>
               <Button 
                 variant="secondary" 
-                className="bg-white text-[#FF8C42]"
+                className="bg-white text-[#A47C48]"
                 onClick={() => {
                   addToast({ variant: 'success', title: 'Order Created!', description: 'Your pickup is scheduled.' });
                   setCurrentView('order-status');

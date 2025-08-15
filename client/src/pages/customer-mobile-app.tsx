@@ -66,9 +66,11 @@ export default function CustomerMobileApp() {
     return <MobileLogin onLogin={() => {}} isDriver={false} />;
   }
 
-  const { data: orders = [], isLoading: ordersLoading } = useQuery<CustomerOrder[]>({
+  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery<CustomerOrder[]>({
     queryKey: ["/api/orders"],
-    enabled: isAuthenticated
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    retry: 3
   });
 
   const activeOrders = orders.filter(order => 
@@ -85,17 +87,20 @@ export default function CustomerMobileApp() {
     <div className="space-y-6">
       {/* Welcome Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-amber-900 mb-2">
+        <div className="flex items-center justify-center mb-4">
+          <LogoIcon size={48} className="text-[#A47C48]" />
+        </div>
+        <h1 className="text-2xl font-bold text-[#A47C48] mb-2">
           Hello, {user?.firstName || 'Customer'}!
         </h1>
-        <p className="text-amber-700">Ready to return something?</p>
+        <p className="text-[#7B5E3B]">Ready to return something?</p>
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-2 gap-4 w-full">
         <Button 
           onClick={() => setCurrentView('book')}
-          className="h-20 bg-amber-600 hover:bg-amber-700 flex flex-col items-center gap-2"
+          className="h-20 bg-[#A47C48] hover:bg-[#8B5A2B] flex flex-col items-center gap-2 text-white"
           data-testid="button-book-pickup"
         >
           <Plus className="h-6 w-6" />
@@ -104,7 +109,7 @@ export default function CustomerMobileApp() {
         <Button 
           onClick={() => setCurrentView('orders')}
           variant="outline"
-          className="h-20 border-amber-300 text-amber-700 hover:bg-amber-50 flex flex-col items-center gap-2"
+          className="h-20 border-[#A47C48] text-[#A47C48] hover:bg-[#F5F0E6] flex flex-col items-center gap-2"
           data-testid="button-my-orders"
         >
           <Package className="h-6 w-6" />
@@ -115,7 +120,7 @@ export default function CustomerMobileApp() {
       {/* Active Orders */}
       {activeOrders.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-amber-900 mb-3">Active Orders</h2>
+          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Active Orders</h2>
           <div className="space-y-3">
             {activeOrders.map(order => (
               <Card 
@@ -154,7 +159,7 @@ export default function CustomerMobileApp() {
       {/* Recent Orders */}
       {recentOrders.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-amber-900 mb-3">Recent Orders</h2>
+          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Recent Orders</h2>
           <div className="space-y-3">
             {recentOrders.slice(0, 3).map(order => (
               <Card 
@@ -190,7 +195,7 @@ export default function CustomerMobileApp() {
             <Button 
               variant="ghost" 
               onClick={() => setCurrentView('orders')}
-              className="w-full text-amber-700 hover:bg-amber-50"
+              className="w-full text-[#A47C48] hover:bg-[#F5F0E6]"
             >
               View All Orders
             </Button>
@@ -215,10 +220,10 @@ export default function CustomerMobileApp() {
 
   const bookPickupMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/orders", data),
-    onSuccess: (newOrder) => {
+    onSuccess: (newOrder: any) => {
       toast({
         title: "Pickup Booked Successfully!",
-        description: `Your tracking number is ${newOrder.trackingNumber}`,
+        description: `Your tracking number is ${newOrder.trackingNumber || newOrder.id}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       setCurrentView('orders');
@@ -235,10 +240,11 @@ export default function CustomerMobileApp() {
         paymentMethod: 'card'
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Booking error:', error);
       toast({
         title: "Booking Failed",
-        description: "Unable to book pickup. Please try again.",
+        description: error.message || "Unable to book pickup. Please try again.",
         variant: "destructive",
       });
     },
@@ -315,7 +321,7 @@ export default function CustomerMobileApp() {
             <Button 
               onClick={() => setBookingStep('schedule')}
               disabled={!bookingData.retailer || !bookingData.pickupAddress}
-              className="w-full bg-amber-600 hover:bg-amber-700"
+              className="w-full bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
             >
               Continue to Scheduling
             </Button>
@@ -368,7 +374,7 @@ export default function CustomerMobileApp() {
               <Button 
                 onClick={() => setBookingStep('payment')}
                 disabled={!bookingData.pickupDate || !bookingData.pickupTime}
-                className="flex-1 bg-amber-600 hover:bg-amber-700"
+                className="flex-1 bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
               >
                 Continue to Payment
               </Button>
@@ -398,9 +404,9 @@ export default function CustomerMobileApp() {
 
         return (
           <div className="space-y-4">
-            <Card className="border-amber-200 bg-amber-50">
+            <Card className="border-[#A47C48]/30 bg-[#F5F0E6]">
               <CardContent className="p-4">
-                <h3 className="font-semibold text-amber-900 mb-3">Order Summary</h3>
+                <h3 className="font-semibold text-[#A47C48] mb-3">Order Summary</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-amber-700">Base Service Fee</span>
@@ -444,7 +450,7 @@ export default function CustomerMobileApp() {
               <Button 
                 onClick={handleBookingSubmit}
                 disabled={bookPickupMutation.isPending}
-                className="flex-1 bg-amber-600 hover:bg-amber-700"
+                className="flex-1 bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
               >
                 {bookPickupMutation.isPending ? 'Booking...' : `Book Pickup - $${totalAmount.toFixed(2)}`}
               </Button>
