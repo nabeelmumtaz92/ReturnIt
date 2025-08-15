@@ -17,28 +17,28 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       <g transform="translate(2, 1)">
         {/* Main box structure - wider shipping box dimensions */}
         
-        {/* Back face (partially visible) - wider box */}
+        {/* Back face (partially visible) - wider box with thinner lines */}
         <path
           d="M5 6L20 2L35 6L35 18L20 22L5 18Z"
           fill="#F5F0E6"
           stroke="#A47C48"
-          strokeWidth="2"
+          strokeWidth="1.2"
           opacity="0.7"
         />
         
-        {/* Front face overlay - wider proportions */}
+        {/* Front face overlay - wider proportions with thinner lines */}
         <path
           d="M2 8L18 4L34 8L34 20L18 24L2 20Z"
           fill="#F5F0E6"
           stroke="#A47C48"
-          strokeWidth="2.5"
+          strokeWidth="1.5"
         />
         
         {/* Top fold - creating the 3D effect across wider box */}
         <path
           d="M2 8L18 12L34 8"
           stroke="#A47C48"
-          strokeWidth="2"
+          strokeWidth="1.2"
           fill="none"
         />
         
@@ -46,65 +46,56 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
         <path
           d="M18 4L18 12"
           stroke="#A47C48"
-          strokeWidth="2"
+          strokeWidth="1.2"
         />
         
         {/* Bottom vertical crease */}
         <path
           d="M18 12L18 24"
           stroke="#A47C48"
-          strokeWidth="2"
+          strokeWidth="1.2"
         />
         
-        {/* Connection circles positioned for wider box proportions */}
-        {/* Top circles - spaced wider */}
-        <circle cx="10" cy="10" r="1.3" fill="#A47C48" />
-        <circle cx="26" cy="10" r="1.3" fill="#A47C48" />
-        
-        {/* Bottom circles - darker brown, wider spacing */}
-        <circle cx="10" cy="18" r="1.3" fill="#8B6635" />
-        <circle cx="26" cy="18" r="1.3" fill="#8B6635" />
-        
-        {/* Inner cross lines spanning the wider box */}
+        {/* Inner cross lines spanning the wider box - thinner */}
         <path
-          d="M10 10L26 18"
+          d="M8 10L28 18"
           stroke="#A47C48"
-          strokeWidth="1.5"
+          strokeWidth="0.8"
+          opacity="0.5"
+        />
+        <path
+          d="M28 10L8 18"
+          stroke="#A47C48"
+          strokeWidth="0.8"
+          opacity="0.5"
+        />
+        
+        {/* Additional corner details for wider box - thinner */}
+        <path
+          d="M2 8L8 10"
+          stroke="#A47C48"
+          strokeWidth="0.8"
           opacity="0.6"
         />
         <path
-          d="M26 10L10 18"
+          d="M34 8L28 10"
           stroke="#A47C48"
-          strokeWidth="1.5"
+          strokeWidth="0.8"
           opacity="0.6"
         />
         
-        {/* Additional corner details for wider box */}
-        <path
-          d="M2 8L10 10"
-          stroke="#A47C48"
-          strokeWidth="1.5"
-          opacity="0.8"
-        />
-        <path
-          d="M34 8L26 10"
-          stroke="#A47C48"
-          strokeWidth="1.5"
-          opacity="0.8"
-        />
-        
-        {/* Side fold lines for realistic box appearance */}
+        {/* Side fold lines for realistic box appearance - thinner */}
         <path
           d="M2 8L2 20"
           stroke="#A47C48"
-          strokeWidth="1.5"
-          opacity="0.6"
+          strokeWidth="0.8"
+          opacity="0.4"
         />
         <path
           d="M34 8L34 20"
           stroke="#A47C48"
-          strokeWidth="1.5"
-          opacity="0.6"
+          strokeWidth="0.8"
+          opacity="0.4"
         />
       </g>
     </svg>
@@ -114,7 +105,7 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
 export function ReturnlyLogo({ size = 32, className = "" }: LogoIconProps) {
   return (
     <div className={`flex items-center ${className}`}>
-      <span className="font-bold text-primary text-lg">Returnl</span>
+      <span className="font-light text-primary text-lg">Returnl</span>
       <LogoIcon size={size} className="mx-0" />
     </div>
   );

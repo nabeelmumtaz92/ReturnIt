@@ -121,7 +121,7 @@ export default function Welcome() {
                 <Link href="/">
                   <div className="group cursor-pointer relative">
                     <div className="relative flex items-center">
-                      <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-primary transition-all duration-300 group-hover:scale-105">
+                      <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-light text-primary transition-all duration-300 group-hover:scale-105">
                         Returnl
                       </h1>
                       <LogoIcon 
