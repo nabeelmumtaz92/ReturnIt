@@ -68,6 +68,7 @@ export function useAuth() {
           // Don't clear admin users - they use client-side auth
           if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
             console.log('Admin user detected - keeping client-side auth');
+            setIsLoading(false);
             return;
           }
           
@@ -83,6 +84,7 @@ export function useAuth() {
         // Don't clear admin users on network errors
         if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
           console.log('Admin user detected - keeping auth despite network error');
+          setIsLoading(false);
           return;
         }
         
@@ -104,7 +106,13 @@ export function useAuth() {
     } else {
       // We have stored user, just validate in background
       setIsLoading(false);
-      checkAuth();
+      
+      // Skip server validation for admin users - they use client-side auth
+      if (user.isAdmin && user.email === 'nabeelmumtaz92@gmail.com') {
+        console.log('Admin user from localStorage - skipping server check');
+      } else {
+        checkAuth();
+      }
     }
 
     return () => {
