@@ -17,6 +17,21 @@ import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
 // Removed environment restrictions - authentication always enabled
 
+// Extend session type to include user property
+declare module 'express-session' {
+  interface SessionData {
+    user?: {
+      id: number;
+      email: string;
+      isAdmin: boolean;
+      isDriver: boolean;
+      firstName?: string;
+      lastName?: string;
+      phone?: string;
+    };
+  }
+}
+
 // Simple session-based authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
   if (req.session?.user) {
@@ -203,7 +218,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('User object keys:', Object.keys(user));
 
       // Create secure session
-      (req.session as any).user = AuthService.sanitizeUserData({ 
+      req.session.user = AuthService.sanitizeUserData({ 
         id: user.id, 
         email: user.email, 
         phone: user.phone, 
@@ -247,10 +262,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/auth/me", async (req, res) => {
-    if ((req.session as any)?.user) {
+    if (req.session?.user) {
       try {
         // Get full user data from storage
-        const userId = (req.session as any).user.id;
+        const userId = req.session.user.id;
         const user = await storage.getUser(userId);
         
         if (user) {
