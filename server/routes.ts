@@ -30,6 +30,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 
+  // Add cache-busting headers for development
+  if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      next();
+    });
+  }
+
   // Session middleware
   app.use(session({
     secret: process.env.SESSION_SECRET || 'returnly-secret-key-fallback',
