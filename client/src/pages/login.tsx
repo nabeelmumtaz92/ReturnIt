@@ -70,7 +70,7 @@ export default function Login() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { email: string; phone: string; password: string }) => {
+    mutationFn: async (data: { email: string; phone: string; password: string; dateOfBirth: string }) => {
       return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: () => {
