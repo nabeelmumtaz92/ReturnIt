@@ -13,7 +13,7 @@ import { LogoIcon } from "@/components/LogoIcon";
 
 export default function Footer() {
   return (
-    <footer className="bg-amber-900 text-white relative z-10">
+    <footer className="bg-primary text-primary-foreground relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Footer Content */}
@@ -25,35 +25,35 @@ export default function Footer() {
               <LogoIcon size={32} className="text-white" />
               <span className="text-xl font-bold text-white">Returnly</span>
             </div>
-            <p className="text-amber-100 leading-relaxed">
+            <p className="text-primary-foreground/80 leading-relaxed">
               Convenient return pickup service in St. Louis, MO. We handle your returns so you don't have to.
             </p>
             <div className="flex space-x-4">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-amber-100 hover:text-white hover:bg-amber-800 p-2"
+                className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
               >
                 <Facebook className="h-4 w-4" />
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-amber-100 hover:text-white hover:bg-amber-800 p-2"
+                className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
               >
                 <Twitter className="h-4 w-4" />
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-amber-100 hover:text-white hover:bg-amber-800 p-2"
+                className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
               >
                 <Instagram className="h-4 w-4" />
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-amber-100 hover:text-white hover:bg-amber-800 p-2"
+                className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
               >
                 <Linkedin className="h-4 w-4" />
               </Button>
@@ -68,9 +68,8 @@ export default function Footer() {
                 <Link href="/book-pickup">
                   <Button 
                     variant="link" 
-                    className="text-amber-100 hover:text-white p-0 h-auto justify-start"
+                    className="text-primary-foreground/80 hover:text-white p-0 h-auto justify-start"
                   >
-
                     Book Return Pickup
                   </Button>
                 </Link>

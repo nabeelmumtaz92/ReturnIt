@@ -13,47 +13,77 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Cardboard box outline inspired by your sketch */}
+      {/* Cardboard box based on your sketch - positioned center-right perspective */}
       <path
-        d="M4 8L12 4L20 8V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V8Z"
+        d="M6 7L12 3L18 7L18 17L12 21L6 17Z"
         stroke="currentColor"
         strokeWidth="1.5"
         fill="none"
       />
       
-      {/* Box fold lines */}
+      {/* Top face fold lines - like your sketch shows */}
       <path
-        d="M4 8L12 12L20 8"
-        stroke="currentColor"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M12 4V12"
+        d="M6 7L12 11L18 7"
         stroke="currentColor"
         strokeWidth="1.5"
       />
       
-      {/* Tape/connection points inspired by circles in your sketch */}
+      {/* Center vertical fold */}
+      <path
+        d="M12 3L12 11"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      
+      {/* Side face visible fold */}
+      <path
+        d="M12 11L12 21"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      />
+      
+      {/* Connection points/tape circles from your drawing */}
       <circle
-        cx="8"
-        cy="10"
+        cx="9"
+        cy="9"
         r="1"
         fill="currentColor"
-        opacity="0.6"
+        opacity="0.7"
       />
       <circle
-        cx="16"
-        cy="10"
+        cx="15"
+        cy="9"
         r="1"
         fill="currentColor"
-        opacity="0.6"
+        opacity="0.7"
       />
       <circle
-        cx="12"
-        cy="16"
+        cx="9"
+        cy="15"
         r="1"
         fill="currentColor"
-        opacity="0.6"
+        opacity="0.7"
+      />
+      <circle
+        cx="15"
+        cy="15"
+        r="1"
+        fill="currentColor"
+        opacity="0.7"
+      />
+      
+      {/* Cross fold lines inside box like your sketch */}
+      <path
+        d="M9 9L15 15"
+        stroke="currentColor"
+        strokeWidth="1"
+        opacity="0.5"
+      />
+      <path
+        d="M15 9L9 15"
+        stroke="currentColor"
+        strokeWidth="1"
+        opacity="0.5"
       />
     </svg>
   );

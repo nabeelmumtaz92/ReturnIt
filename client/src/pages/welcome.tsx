@@ -116,7 +116,7 @@ export default function Welcome() {
           <div className="w-full px-4 sm:px-8 lg:px-16 grid grid-cols-1 gap-8 items-center h-full max-w-6xl mx-auto lg:mr-auto lg:ml-0">
             
             {/* Left side - Main content */}
-            <div className="text-amber-900 space-y-6 lg:space-y-8 text-center lg:text-left lg:max-w-2xl">
+            <div className="text-primary space-y-6 lg:space-y-8 text-center lg:text-left lg:max-w-2xl">
               <div className="flex justify-center lg:justify-start mb-6 lg:mb-8">
                 <Link href="/">
                   <div className="group cursor-pointer relative">
@@ -134,15 +134,15 @@ export default function Welcome() {
               </div>
               
               <div className="space-y-6 lg:space-y-8">
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight text-crisp tracking-tight">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold leading-tight text-crisp tracking-tight text-primary">
                   Returns made
                   <br />
-                  <span className="text-amber-700 bg-gradient-to-r from-amber-700 to-amber-600 bg-clip-text text-transparent">easy</span>
+                  <span className="text-primary">easy</span>
                 </h1>
-                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-amber-800 font-semibold max-w-4xl mx-auto px-4 text-crisp leading-relaxed">
+                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl text-primary font-semibold max-w-4xl mx-auto px-4 text-crisp leading-relaxed">
                   We pick up your returns and deliver them back to the store. 
                   <br className="hidden sm:block" />
-                  <span className="font-bold text-amber-700">Zero trips, zero hassle.</span>
+                  <span className="font-bold text-primary">Zero trips, zero hassle.</span>
                 </p>
               </div>
 
@@ -151,7 +151,7 @@ export default function Welcome() {
                   <div className="flex flex-col sm:flex-row gap-6 justify-center">
                     <Button 
                       size="lg"
-                      className="bg-gradient-to-r from-amber-800 to-amber-700 text-white hover:from-amber-900 hover:to-amber-800 font-bold text-xl px-12 py-6 h-auto shadow-crisp-lg hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xl px-12 py-6 h-auto shadow-crisp-lg hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1"
                       onClick={() => setLocation('/book-pickup')}
                       data-testid="button-book-pickup-hero"
                     >
@@ -159,8 +159,8 @@ export default function Welcome() {
                     </Button>
                     
                     {/* Track Order - Only for authenticated users */}
-                    <div className="flex flex-col sm:flex-row gap-4 items-center glass-card rounded-xl border border-amber-200/30 p-6 backdrop-blur-md">
-                      <Label htmlFor="tracking" className="text-amber-800 font-semibold whitespace-nowrap text-lg">
+                    <div className="flex flex-col sm:flex-row gap-4 items-center glass-card rounded-xl border border-border p-6 backdrop-blur-md">
+                      <Label htmlFor="tracking" className="text-primary font-semibold whitespace-nowrap text-lg">
                         Track Order:
                       </Label>
                       <Input
@@ -169,7 +169,7 @@ export default function Welcome() {
                         placeholder="Enter order ID"
                         value={trackingNumber}
                         onChange={(e) => setTrackingNumber(e.target.value)}
-                        className="flex-1 bg-white/95 border-amber-300 focus:border-amber-500 h-14 text-lg shadow-crisp"
+                        className="flex-1 bg-white/95 border-border focus:border-primary h-14 text-lg shadow-crisp"
                         data-testid="input-tracking"
                       />
                       <Button
@@ -184,7 +184,7 @@ export default function Welcome() {
                             });
                           }
                         }}
-                        className="bg-gradient-to-r from-amber-700 to-amber-600 hover:from-amber-800 hover:to-amber-700 text-white px-8 py-4 h-14 text-lg font-semibold shadow-crisp-lg"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 h-14 text-lg font-semibold shadow-crisp-lg"
                         data-testid="button-track-order"
                       >
                         <Search className="h-5 w-5 mr-2" />
@@ -220,7 +220,7 @@ export default function Welcome() {
                   <>
                     <Button 
                       size="lg"
-                      className="bg-amber-800 text-white hover:bg-amber-900 font-bold text-lg px-8 py-4 h-auto"
+                      className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg px-8 py-4 h-auto"
                       onClick={() => setLocation('/login')}
                       data-testid="button-sign-in-hero"
                     >
@@ -229,7 +229,7 @@ export default function Welcome() {
                     <Button 
                       size="lg"
                       variant="outline"
-                      className="border-amber-800 text-amber-800 hover:bg-amber-800 hover:text-white font-bold text-lg px-8 py-4 h-auto"
+                      className="border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold text-lg px-8 py-4 h-auto"
                       onClick={() => setLocation('/login?tab=register')}
                       data-testid="button-sign-up-hero"
                     >
@@ -256,20 +256,20 @@ export default function Welcome() {
               {/* Enhanced Quick stats */}
               <div className="flex flex-wrap justify-center gap-8 sm:gap-12 lg:gap-16 pt-8">
                 <div className="text-center group">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">15min</div>
-                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Avg pickup time</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-primary group-hover:scale-110 transition-transform duration-300">15min</div>
+                  <div className="text-primary text-base sm:text-lg font-semibold">Avg pickup time</div>
                 </div>
                 <div className="text-center group">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">500+</div>
-                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Partner stores</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-primary group-hover:scale-110 transition-transform duration-300">500+</div>
+                  <div className="text-primary text-base sm:text-lg font-semibold">Partner stores</div>
                 </div>
                 <div className="text-center group">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">12k+</div>
-                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Hours saved</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-primary group-hover:scale-110 transition-transform duration-300">12k+</div>
+                  <div className="text-primary text-base sm:text-lg font-semibold">Hours saved</div>
                 </div>
                 <div className="text-center group">
-                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-amber-900 group-hover:scale-110 transition-transform duration-300">98%</div>
-                  <div className="text-amber-700 text-base sm:text-lg font-semibold">Success rate</div>
+                  <div className="text-2xl sm:text-3xl lg:text-4xl font-black text-crisp text-primary group-hover:scale-110 transition-transform duration-300">98%</div>
+                  <div className="text-primary text-base sm:text-lg font-semibold">Success rate</div>
                 </div>
               </div>
             </div>
