@@ -11,19 +11,19 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: hsl(30, 32%, 39%);
-  --primary-foreground: hsl(45, 42%, 96%);
-  --secondary: hsl(45, 42%, 96%);
-  --secondary-foreground: hsl(30, 32%, 39%);
+  --primary: #A47C48;
+  --primary-foreground: #F5F0E6;
+  --secondary: #F5F0E6;
+  --secondary-foreground: #A47C48;
   --muted: hsl(39, 20%, 85%);
   --muted-foreground: hsl(30, 20%, 45%);
-  --accent: hsl(45, 42%, 96%);
-  --accent-foreground: hsl(30, 32%, 39%);
+  --accent: #F5F0E6;
+  --accent-foreground: #A47C48;
   --destructive: hsl(0, 85%, 58%);
   --destructive-foreground: hsl(0, 0%, 100%);
   --border: hsl(30, 40%, 25%);
-  --input: hsl(45, 42%, 96%);
-  --ring: hsl(30, 32%, 39%);
+  --input: #F5F0E6;
+  --ring: #A47C48;
   --chart-1: hsl(20, 100%, 60%);
   --chart-2: hsl(123, 45%, 30%);
   --chart-3: hsl(39, 35%, 65%);
@@ -43,8 +43,9 @@
   --radius: 0.75rem;
   
   /* Brand specific colors - Cardboard Theme */
-  --brand-cardboard: hsl(39, 39%, 70%);
-  --brand-off-white: hsl(45, 42%, 96%);
+  --brand-cardboard: #A47C48;
+  --brand-cream: #F5F0E6;
+  --brand-cardboard-dark: hsl(30, 40%, 25%);
   --brand-barcode-black: hsl(210, 7%, 10%);
   --brand-tape-brown: hsl(30, 32%, 39%);
   --brand-accent-orange: hsl(20, 100%, 63%);

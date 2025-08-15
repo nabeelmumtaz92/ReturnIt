@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { MobileLogin } from '@/components/MobileLogin';
+import { LogoIcon } from '@/components/LogoIcon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -838,11 +839,7 @@ export default function CustomerMobileApp() {
         <div className="px-4 py-3 w-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly" 
-                className="h-8 w-auto"
-              />
+              <LogoIcon size={32} className="text-primary" />
               <h1 className="text-lg font-bold text-primary">Returnly</h1>
             </div>
             <div className="flex items-center gap-2">
