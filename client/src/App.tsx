@@ -43,6 +43,11 @@ import DriverPerformance from "@/pages/driver-performance";
 import RouteOptimization from "@/pages/route-optimization";
 import ChatCenter from "@/pages/chat-center";
 import DriverJob from "@/pages/driver-job";
+import RealTimeTrackingAdvanced from "@/pages/real-time-tracking-advanced";
+import BusinessIntelligence from "@/pages/business-intelligence";
+import NotificationCenter from "@/pages/notification-center";
+import QualityAssurance from "@/pages/quality-assurance";
+import DriverIncentives from "@/pages/driver-incentives";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -113,6 +118,11 @@ function Router() {
       <Route path="/driver-performance" component={DriverPerformance} />
       <Route path="/route-optimization" component={RouteOptimization} />
       <Route path="/chat-center" component={ChatCenter} />
+      <Route path="/real-time-tracking-advanced" component={RealTimeTrackingAdvanced} />
+      <Route path="/business-intelligence" component={BusinessIntelligence} />
+      <Route path="/notification-center" component={NotificationCenter} />
+      <Route path="/quality-assurance" component={QualityAssurance} />
+      <Route path="/driver-incentives" component={DriverIncentives} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -41,7 +41,10 @@ import {
   ArrowUpDown,
   ChevronDown,
   PieChart,
-  Target
+  Target,
+  Trophy,
+  Shield,
+  MessageSquare
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
