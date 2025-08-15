@@ -620,6 +620,41 @@ export default function AdminDashboard() {
                   <p className="text-sm sm:text-base text-amber-700 hidden sm:block">Business Operations Center</p>
                 </div>
               </div>
+              
+              {/* Advanced Features Navigation */}
+              <div className="hidden lg:flex items-center space-x-2">
+                <Link href="/real-time-tracking-advanced">
+                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                    <MapPin className="h-4 w-4 mr-1" />
+                    Live Tracking
+                  </Button>
+                </Link>
+                <Link href="/business-intelligence">
+                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                    <BarChart3 className="h-4 w-4 mr-1" />
+                    Analytics
+                  </Button>
+                </Link>
+                <Link href="/notification-center">
+                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                    <MessageSquare className="h-4 w-4 mr-1" />
+                    Communications
+                  </Button>
+                </Link>
+                <Link href="/quality-assurance">
+                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                    <Shield className="h-4 w-4 mr-1" />
+                    Quality
+                  </Button>
+                </Link>
+                <Link href="/driver-incentives">
+                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                    <Trophy className="h-4 w-4 mr-1" />
+                    Incentives
+                  </Button>
+                </Link>
+              </div>
+              
               <div className="flex items-center justify-end space-x-1 sm:space-x-3">
                 <div className="order-1 sm:order-none">
                   <RoleSwitcher />
@@ -697,6 +732,60 @@ export default function AdminDashboard() {
             </Card>
           </div>
 
+          {/* Mobile Quick Navigation */}
+          <div className="lg:hidden mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <Link href="/real-time-tracking-advanced" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <MapPin className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Live Tracking</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/business-intelligence" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <BarChart3 className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Analytics</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/notification-center" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <MessageSquare className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Communications</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/quality-assurance" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Shield className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Quality</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/driver-incentives" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <Trophy className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Incentives</p>
+                  </CardContent>
+                </Card>
+              </Link>
+              <Link href="/advanced-reporting" className="block">
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200 hover:border-amber-300 transition-colors cursor-pointer">
+                  <CardContent className="p-4 text-center">
+                    <PieChart className="h-6 w-6 text-amber-600 mx-auto mb-2" />
+                    <p className="text-sm font-medium text-amber-900">Reports</p>
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
+          </div>
+
           {/* Main Content Tabs */}
           <Tabs defaultValue="orders" className="space-y-4 sm:space-y-6">
             <TabsList className="bg-white border-amber-200 h-auto flex-wrap gap-1 sm:gap-0 p-1">
@@ -724,6 +813,11 @@ export default function AdminDashboard() {
                 <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Support Tickets</span>
                 <span className="sm:hidden">Support</span>
+              </TabsTrigger>
+              <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
+                <Target className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Advanced Features</span>
+                <span className="sm:hidden">Advanced</span>
               </TabsTrigger>
               <TabsTrigger value="employees" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <UserCheck className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
@@ -1397,6 +1491,127 @@ export default function AdminDashboard() {
                     <Button variant="outline" className="border-amber-300 text-amber-700">
                       Reset to Defaults
                     </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Advanced Features Tab */}
+            <TabsContent value="advanced" className="space-y-4 sm:space-y-6">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 flex items-center">
+                    <Target className="h-5 w-5 mr-2" />
+                    Advanced Business Features
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    
+                    {/* Real-Time Tracking */}
+                    <Link href="/real-time-tracking-advanced" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <MapPin className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Live Driver Tracking</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Real-time GPS monitoring, ETA calculations, and driver location visualization
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    {/* Business Intelligence */}
+                    <Link href="/business-intelligence" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <BarChart3 className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Business Intelligence</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Revenue forecasting, demand prediction, and market expansion analysis
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    {/* Automated Communications */}
+                    <Link href="/notification-center" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <MessageSquare className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Auto Communications</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            SMS/email notifications, templates, and delivery settings management
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    {/* Quality Assurance */}
+                    <Link href="/quality-assurance" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <Shield className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Quality Assurance</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Photo verification, damage claims, and insurance integration
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    {/* Driver Incentives */}
+                    <Link href="/driver-incentives" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <Trophy className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Driver Incentives</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Performance bonuses, challenges, rewards, and analytics tracking
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                    {/* Advanced Reporting */}
+                    <Link href="/advanced-reporting" className="block">
+                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
+                        <CardContent className="p-4">
+                          <div className="flex items-center mb-3">
+                            <PieChart className="h-6 w-6 text-amber-600 mr-3" />
+                            <h3 className="font-semibold text-amber-900">Advanced Reporting</h3>
+                          </div>
+                          <p className="text-sm text-amber-700 mb-3">
+                            Comprehensive analytics, custom reports, and data exports
+                          </p>
+                          <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        </CardContent>
+                      </Card>
+                    </Link>
+
+                  </div>
+                  
+                  <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <h4 className="font-semibold text-amber-900 mb-2">Business Scaling Features</h4>
+                    <p className="text-sm text-amber-700">
+                      These advanced features provide enterprise-grade capabilities for scaling your delivery operations, 
+                      improving customer satisfaction, and optimizing business performance.
+                    </p>
                   </div>
                 </CardContent>
               </Card>
