@@ -13,10 +13,10 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* 3D Cardboard box exactly as drawn - forming the 'Y' */}
+      {/* 3D Cardboard box as drawn - clean cube design */}
       <g transform="translate(2, 1)">
         
-        {/* Main 3D box structure - front face */}
+        {/* Front face - cream colored (marked with X in your drawing) */}
         <path
           d="M6 6L26 6L26 20L6 20Z"
           fill="#F5F0E6"
@@ -24,7 +24,7 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
           strokeWidth="1.5"
         />
         
-        {/* Top face of the 3D box */}
+        {/* Top face - cardboard brown (marked with circle in your drawing) */}
         <path
           d="M6 6L10 2L30 2L26 6Z"
           fill="#A47C48"
@@ -32,7 +32,7 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
           strokeWidth="1.5"
         />
         
-        {/* Right side face of the 3D box */}
+        {/* Right side face - cardboard brown (marked with circle in your drawing) */}
         <path
           d="M26 6L30 2L30 16L26 20Z"
           fill="#A47C48"
@@ -40,41 +40,18 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
           strokeWidth="1.5"
         />
         
-        {/* Connection circles at all corners exactly like your drawing */}
-        {/* Front face corners */}
-        <circle cx="6" cy="6" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        <circle cx="26" cy="6" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        <circle cx="6" cy="20" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        <circle cx="26" cy="20" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        
-        {/* Back face corners (3D depth) */}
-        <circle cx="10" cy="2" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        <circle cx="30" cy="2" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        <circle cx="30" cy="16" r="1.5" fill="none" stroke="#A47C48" strokeWidth="1.2" />
-        
-        {/* Internal cross/X patterns exactly like your drawing */}
-        {/* First X pattern */}
+        {/* Internal cross/X patterns on the front face */}
         <path
-          d="M10 8L22 18"
+          d="M8 8L24 18"
           stroke="#A47C48"
           strokeWidth="1.2"
+          opacity="0.7"
         />
         <path
-          d="M22 8L10 18"
+          d="M24 8L8 18"
           stroke="#A47C48"
           strokeWidth="1.2"
-        />
-        
-        {/* Second X pattern */}
-        <path
-          d="M14 10L18 14"
-          stroke="#A47C48"
-          strokeWidth="1"
-        />
-        <path
-          d="M18 10L14 14"
-          stroke="#A47C48"
-          strokeWidth="1"
+          opacity="0.7"
         />
         
       </g>
