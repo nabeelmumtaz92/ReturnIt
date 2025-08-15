@@ -55,7 +55,7 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat" 
       style={{ 
-        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2787&q=80")'
+        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/attached_assets/image_1755273879529.png")'
       }}>
       
       {/* Top Navigation Bar */}
