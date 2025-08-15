@@ -123,7 +123,7 @@ export default function AdminDashboard() {
   // Fetch employees from API
   const { data: employees = [], isLoading: employeesLoading } = useQuery({
     queryKey: ['/api/employees'],
-    enabled: currentUser?.isAdmin
+    enabled: user?.isAdmin
   });
 
   // Transform employee data for display
