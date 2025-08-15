@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
+import { MobileLogin } from '@/components/MobileLogin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,7 +30,8 @@ import {
   CheckCircle,
   Truck,
   Navigation,
-  HeadphonesIcon
+  HeadphonesIcon,
+  LogOut
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
@@ -53,17 +55,15 @@ interface CustomerOrder {
 export default function CustomerMobileApp() {
   const [currentView, setCurrentView] = useState<MobileView>('home');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
 
-  // Check if user is authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLocation('/login');
-    }
-  }, [isAuthenticated, setLocation]);
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <MobileLogin onLogin={() => {}} isDriver={false} />;
+  }
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery<CustomerOrder[]>({
     queryKey: ["/api/orders"],
@@ -78,21 +78,7 @@ export default function CustomerMobileApp() {
     ['completed', 'cancelled'].includes(order.status)
   ).slice(0, 5);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-bold text-amber-900 mb-4">Sign in required</h2>
-            <p className="text-amber-700 mb-4">Please sign in to access the mobile app.</p>
-            <Link href="/login">
-              <Button className="w-full bg-amber-600 hover:bg-amber-700">Sign In</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+
 
   const renderHome = () => (
     <div className="space-y-6">
@@ -764,6 +750,14 @@ export default function CustomerMobileApp() {
         <Button variant="outline" className="w-full justify-start border-amber-300 text-amber-700">
           <Settings className="h-4 w-4 mr-3" />
           Settings
+        </Button>
+        <Button 
+          variant="outline" 
+          onClick={logout} 
+          className="w-full justify-start border-red-300 text-red-700 hover:bg-red-50"
+        >
+          <LogOut className="h-4 w-4 mr-3" />
+          Sign Out
         </Button>
       </div>
     </div>

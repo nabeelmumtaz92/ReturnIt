@@ -36,6 +36,7 @@ import {
   HeadphonesIcon
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
+import { MobileLogin } from '@/components/MobileLogin';
 import { useToast } from "@/hooks/use-toast";
 import SupportChat from "@/components/SupportChat";
 import NotificationBell from "@/components/NotificationBell";
@@ -70,8 +71,13 @@ interface DriverStats {
 
 export default function ReturnlyDriverApp() {
   const [, setLocation] = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
+
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <MobileLogin onLogin={() => {}} isDriver={true} />;
+  }
   const [isOnline, setIsOnline] = useState(false);
   const [currentJob, setCurrentJob] = useState<DriverJob | null>(null);
   const [availableJobs, setAvailableJobs] = useState<DriverJob[]>([]);
