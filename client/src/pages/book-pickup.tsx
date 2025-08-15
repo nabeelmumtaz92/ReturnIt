@@ -419,7 +419,7 @@ export default function BookPickup() {
                   <Label className="text-amber-800 font-semibold text-lg">Contact Information</Label>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                   <div>
                     <Label htmlFor="fullName" className="text-amber-800 font-medium">
                       Full Name *
@@ -478,7 +478,7 @@ export default function BookPickup() {
                   <Label className="text-amber-800 font-semibold text-lg">Return Details</Label>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                   <div>
                     <Label htmlFor="orderName" className="text-amber-800 font-medium">
                       Order Name/Description *
@@ -646,7 +646,7 @@ export default function BookPickup() {
                 </div>
                 <p className="text-sm text-amber-700 mb-3">Select the size of each individual item you're returning</p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                   <div>
                     <Label htmlFor="itemValue" className="text-amber-800 font-medium">
                       Item Value *
@@ -760,7 +760,7 @@ export default function BookPickup() {
                   <Label className="text-amber-800 font-semibold text-lg">Pickup Location</Label>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-4">
                   <div 
                     className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                       formData.pickupLocation === 'inside' 

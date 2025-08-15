@@ -340,7 +340,7 @@ export default function ReturnlyDriverApp() {
                 <p className="text-xl font-bold text-green-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
               </div>
               
-              <div className="grid grid-cols-2 gap-3">
+              <div className="flex flex-col gap-3">
                 <div className="text-center p-3 bg-purple-50 rounded-lg">
                   <p className="text-purple-600 text-xs font-medium">Jobs Done</p>
                   <p className="text-lg font-bold text-purple-900">{driverStats.completedJobs}</p>
@@ -454,18 +454,18 @@ export default function ReturnlyDriverApp() {
             </Card>
           )}
 
-          {/* Main Content Tabs */}
+          {/* Main Content Tabs - Mobile Vertical Layout */}
           <Tabs defaultValue="jobs" className="space-y-4">
-            <TabsList className="bg-white border-blue-200 grid w-full grid-cols-3">
-              <TabsTrigger value="jobs" className="data-[state=active]:bg-blue-100">
+            <TabsList className="bg-white border-blue-200 flex flex-col w-full gap-1">
+              <TabsTrigger value="jobs" className="w-full data-[state=active]:bg-blue-100">
                 <Package className="h-4 w-4 mr-2" />
                 Jobs
               </TabsTrigger>
-              <TabsTrigger value="earnings" className="data-[state=active]:bg-blue-100">
+              <TabsTrigger value="earnings" className="w-full data-[state=active]:bg-blue-100">
                 <DollarSign className="h-4 w-4 mr-2" />
                 Earnings
               </TabsTrigger>
-              <TabsTrigger value="profile" className="data-[state=active]:bg-blue-100">
+              <TabsTrigger value="profile" className="w-full data-[state=active]:bg-blue-100">
                 <User className="h-4 w-4 mr-2" />
                 Profile
               </TabsTrigger>

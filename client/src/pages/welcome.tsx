@@ -64,7 +64,7 @@ export default function Welcome() {
               <span className="text-xl font-bold text-primary">Returnly</span>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               {isAuthenticated ? (
                 <>
                   <Link href="/profile">
