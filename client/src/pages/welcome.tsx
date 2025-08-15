@@ -67,6 +67,12 @@ export default function Welcome() {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <>
+                  <Link href="/profile">
+                    <Button variant="ghost" size="sm" data-testid="button-profile">
+                      <User className="h-4 w-4 mr-2" />
+                      Me
+                    </Button>
+                  </Link>
                   <RoleSwitcher />
                   <Button
                     variant="outline"
@@ -107,9 +113,9 @@ export default function Welcome() {
           </p>
         </div>
 
-        {/* Buttons - Side by Side */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
-          <Link href="/book-pickup" className="flex-1">
+        {/* Buttons - Vertical Stack on Mobile */}
+        <div className="flex flex-col gap-4 w-full max-w-md">
+          <Link href="/book-pickup" className="w-full">
             <Button 
               size="lg" 
               className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg"
@@ -122,7 +128,7 @@ export default function Welcome() {
           
           {/* Show Sign In button only if login is allowed */}
           {envConfig?.allowPublicLogin && (
-            <Link href="/login" className="flex-1">
+            <Link href="/login" className="w-full">
               <Button 
                 variant="outline" 
                 size="lg" 

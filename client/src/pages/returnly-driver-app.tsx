@@ -36,9 +36,20 @@ import {
   HeadphonesIcon
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { MobileLogin } from '@/components/MobileLogin';
 import { LogoIcon, ReturnlyLogo } from '@/components/LogoIcon';
 import { useToast } from "@/hooks/use-toast";
+
+interface EnvironmentConfig {
+  allowPublicRegistration: boolean;
+  allowPublicLogin: boolean;
+  allowGoogleAuth: boolean;
+  allowDriverSignup: boolean;
+  enableDemoMode: boolean;
+  environment: string;
+}
 import SupportChat from "@/components/SupportChat";
 import NotificationBell from "@/components/NotificationBell";
 import DriverNavigation from "@/components/DriverNavigation";
@@ -73,6 +84,12 @@ interface DriverStats {
 export default function ReturnlyDriverApp() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
+  const queryClient = useQueryClient();
+
+  // Fetch environment configuration
+  const { data: envConfig } = useQuery<EnvironmentConfig>({
+    queryKey: ['/api/config/environment'],
+  });
   const { toast } = useToast();
 
   // Show login screen if not authenticated

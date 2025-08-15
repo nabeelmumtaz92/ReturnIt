@@ -188,18 +188,18 @@ export default function Login() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-white border border-amber-200 shadow-sm">
+          <TabsList className="grid w-full grid-cols-1 gap-2 bg-transparent border-0 shadow-none h-auto">
             <TabsTrigger 
               value="login" 
               data-testid="tab-login"
-              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium"
+              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium bg-white border border-amber-200 py-3"
             >
               Sign In
             </TabsTrigger>
             <TabsTrigger 
               value="register" 
               data-testid="tab-register"
-              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium"
+              className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium bg-white border border-amber-200 py-3"
             >
               Sign Up
             </TabsTrigger>

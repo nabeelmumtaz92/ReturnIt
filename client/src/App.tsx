@@ -16,7 +16,7 @@ import PaymentStructure from "@/pages/payment-structure";
 import AdminDashboard from "@/pages/admin-dashboard";
 import DriverOnboarding from "@/pages/driver-onboarding";
 import About from "@/pages/about";
-import DesignSystemDemo from "@/pages/design-system-demo";
+
 import MobileAppDemo from "@/pages/mobile-app-demo";
 import MobileSimulator from "@/pages/mobile-simulator";
 import LogoColors from "@/pages/logo-colors";
@@ -49,6 +49,7 @@ import BusinessIntelligence from "@/pages/business-intelligence";
 import NotificationCenter from "@/pages/notification-center";
 import QualityAssurance from "@/pages/quality-assurance";
 import DriverIncentives from "@/pages/driver-incentives";
+import Profile from "@/pages/profile";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -100,7 +101,7 @@ function Router() {
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />
       <Route path="/about" component={About} />
-      <Route path="/design-system-demo" component={DesignSystemDemo} />
+
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
       <Route path="/mobile-simulator" component={MobileSimulator} />
       <Route path="/customer-mobile-app" component={CustomerMobileApp} />
@@ -125,6 +126,7 @@ function Router() {
       <Route path="/quality-assurance" component={QualityAssurance} />
       <Route path="/driver-incentives" component={DriverIncentives} />
       <Route path="/enhanced-analytics" component={EnhancedAnalyticsDashboard} />
+      <Route path="/profile" component={Profile} />
       <Route component={NotFound} />
     </Switch>
   );
