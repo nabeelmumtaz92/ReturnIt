@@ -306,45 +306,39 @@ export default function ReturnlyDriverApp() {
           </div>
         </div>
 
-        <div className="p-4">
-          {/* Current Earnings Dashboard */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
-              <CardContent className="p-3">
-                <div className="text-center">
-                  <p className="text-blue-600 text-xs font-medium">Today</p>
-                  <p className="text-lg font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
+        <div className="p-4 space-y-4">
+          {/* Current Earnings Dashboard - Mobile Vertical Layout */}
+          <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm text-blue-900 text-center">Daily Earnings</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <p className="text-blue-600 text-xs font-medium">Today</p>
+                <p className="text-2xl font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
+              </div>
+              
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <p className="text-green-600 text-xs font-medium">This Week</p>
+                <p className="text-xl font-bold text-green-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center p-3 bg-purple-50 rounded-lg">
+                  <p className="text-purple-600 text-xs font-medium">Jobs Done</p>
+                  <p className="text-lg font-bold text-purple-900">{driverStats.completedJobs}</p>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
-              <CardContent className="p-3">
-                <div className="text-center">
-                  <p className="text-blue-600 text-xs font-medium">This Week</p>
-                  <p className="text-lg font-bold text-blue-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
+                
+                <div className="text-center p-3 bg-yellow-50 rounded-lg">
+                  <p className="text-yellow-600 text-xs font-medium">Rating</p>
+                  <div className="flex items-center justify-center">
+                    <Star className="h-4 w-4 text-yellow-500 fill-current mr-1" />
+                    <p className="text-lg font-bold text-yellow-900">{driverStats.rating}</p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
-              <CardContent className="p-3">
-                <div className="text-center">
-                  <p className="text-blue-600 text-xs font-medium">Jobs</p>
-                  <p className="text-lg font-bold text-blue-900">{driverStats.completedJobs}</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/90 backdrop-blur-sm border-blue-200">
-              <CardContent className="p-3">
-                <div className="text-center">
-                  <p className="text-blue-600 text-xs font-medium">Rating</p>
-                  <p className="text-lg font-bold text-blue-900">{driverStats.rating}⭐</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Current Job - Priority Display */}
           {currentJob && (
@@ -370,7 +364,7 @@ export default function ReturnlyDriverApp() {
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                  <div className="space-y-3 text-sm">
                     <div className="bg-white/10 p-3 rounded-lg">
                       <p className="text-blue-200 text-xs">PICKUP</p>
                       <p className="font-medium">{currentJob.pickupAddress}</p>
@@ -545,14 +539,14 @@ export default function ReturnlyDriverApp() {
                     <CardTitle className="text-blue-900">Earnings Summary</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-3">
                       <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <p className="text-blue-600 text-sm font-medium">Today</p>
-                        <p className="text-2xl font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
+                        <p className="text-blue-600 text-sm font-medium">Today's Earnings</p>
+                        <p className="text-3xl font-bold text-blue-900">${driverStats.todayEarnings.toFixed(2)}</p>
                       </div>
-                      <div className="text-center p-4 bg-blue-50 rounded-lg">
-                        <p className="text-blue-600 text-sm font-medium">This Week</p>
-                        <p className="text-2xl font-bold text-blue-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
+                      <div className="text-center p-4 bg-green-50 rounded-lg">
+                        <p className="text-green-600 text-sm font-medium">This Week's Earnings</p>
+                        <p className="text-2xl font-bold text-green-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
                       </div>
                     </div>
                     
