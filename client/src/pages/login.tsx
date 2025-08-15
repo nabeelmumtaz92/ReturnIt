@@ -46,8 +46,8 @@ export default function Login() {
 
   // Login form state
   const [loginData, setLoginData] = useState<LoginData>({
-    email: '',
-    password: ''
+    email: 'nabeelmumtaz92@gmail.com',
+    password: 'Admin123!'
   });
 
   // Register form state
@@ -162,7 +162,7 @@ export default function Login() {
     console.log('LOGIN ATTEMPT:', loginData.email, loginData.password);
     
     // SUPER SIMPLE ADMIN BYPASS - NO SERVER CALLS
-    if (loginData.email === 'nabeelmumtaz92@gmail.com' && loginData.password === 'Test123') {
+    if (loginData.email === 'nabeelmumtaz92@gmail.com' && loginData.password === 'Admin123!') {
       console.log('ADMIN LOGIN DETECTED - BYPASSING ALL AUTH');
       
       const adminUser = {
