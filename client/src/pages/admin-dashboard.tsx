@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { 
   Users, 
   TrendingUp, 
@@ -44,7 +45,9 @@ import {
   Target,
   Trophy,
   Shield,
-  MessageSquare
+  MessageSquare,
+  Menu,
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -623,38 +626,87 @@ export default function AdminDashboard() {
                 </div>
               </div>
               
-              {/* Advanced Features Navigation */}
-              <div className="hidden lg:flex items-center space-x-2">
-                <Link href="/real-time-tracking-advanced">
-                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    Live Tracking
-                  </Button>
-                </Link>
-                <Link href="/business-intelligence">
-                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                    <BarChart3 className="h-4 w-4 mr-1" />
-                    Analytics
-                  </Button>
-                </Link>
-                <Link href="/notification-center">
-                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                    <MessageSquare className="h-4 w-4 mr-1" />
-                    Communications
-                  </Button>
-                </Link>
-                <Link href="/quality-assurance">
-                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                    <Shield className="h-4 w-4 mr-1" />
-                    Quality
-                  </Button>
-                </Link>
-                <Link href="/driver-incentives">
-                  <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                    <Trophy className="h-4 w-4 mr-1" />
-                    Incentives
-                  </Button>
-                </Link>
+              {/* Advanced Features Navigation - Responsive */}
+              <div className="flex items-center">
+                {/* Show buttons inline on extra large screens */}
+                <div className="hidden xl:flex items-center space-x-2">
+                  <Link href="/real-time-tracking-advanced">
+                    <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                      <MapPin className="h-4 w-4 mr-1" />
+                      Live Tracking
+                    </Button>
+                  </Link>
+                  <Link href="/business-intelligence">
+                    <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                      <BarChart3 className="h-4 w-4 mr-1" />
+                      Analytics
+                    </Button>
+                  </Link>
+                  <Link href="/notification-center">
+                    <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                      <MessageSquare className="h-4 w-4 mr-1" />
+                      Communications
+                    </Button>
+                  </Link>
+                  <Link href="/quality-assurance">
+                    <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                      <Shield className="h-4 w-4 mr-1" />
+                      Quality
+                    </Button>
+                  </Link>
+                  <Link href="/driver-incentives">
+                    <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                      <Trophy className="h-4 w-4 mr-1" />
+                      Incentives
+                    </Button>
+                  </Link>
+                </div>
+                
+                {/* Dropdown menu for smaller screens */}
+                <div className="xl:hidden">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm" className="border-amber-200 text-amber-700 hover:bg-amber-50">
+                        <Menu className="h-4 w-4 mr-1" />
+                        <span className="hidden sm:inline">Admin Tools</span>
+                        <span className="sm:hidden">Tools</span>
+                        <ChevronDown className="h-3 w-3 ml-1" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 bg-white border-amber-200">
+                      <DropdownMenuItem asChild>
+                        <Link href="/real-time-tracking-advanced" className="cursor-pointer flex items-center px-2 py-1.5 text-amber-700 hover:bg-amber-50">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          Live Tracking
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/business-intelligence" className="cursor-pointer flex items-center px-2 py-1.5 text-amber-700 hover:bg-amber-50">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          Analytics
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/notification-center" className="cursor-pointer flex items-center px-2 py-1.5 text-amber-700 hover:bg-amber-50">
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          Communications
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/quality-assurance" className="cursor-pointer flex items-center px-2 py-1.5 text-amber-700 hover:bg-amber-50">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Quality
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link href="/driver-incentives" className="cursor-pointer flex items-center px-2 py-1.5 text-amber-700 hover:bg-amber-50">
+                          <Trophy className="h-4 w-4 mr-2" />
+                          Incentives
+                        </Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
               
               <div className="flex items-center justify-end space-x-1 sm:space-x-3">
