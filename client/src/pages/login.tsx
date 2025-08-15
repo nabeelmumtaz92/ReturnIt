@@ -76,11 +76,13 @@ export default function Login() {
       });
       
       // Redirect based on user type
-      if (response.user.isAdmin && response.user.email === "nabeelmumtaz92@gmail.com") {
-        window.location.href = '/admin-dashboard';
-      } else {
-        setLocation('/');
-      }
+      setTimeout(() => {
+        if (response.user.isAdmin && response.user.email === "nabeelmumtaz92@gmail.com") {
+          setLocation('/admin-dashboard');
+        } else {
+          setLocation('/');
+        }
+      }, 500);
     },
     onError: (error: Error) => {
       toast({
@@ -95,13 +97,20 @@ export default function Login() {
     mutationFn: async (data: { email: string; phone: string; firstName: string; lastName: string; password: string; dateOfBirth: string }) => {
       return await apiRequest('POST', '/api/auth/register', data);
     },
-    onSuccess: () => {
+    onSuccess: (response: any) => {
+      // Update auth state immediately
+      login(response.user);
+      
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({
         title: "Welcome to Returnly!",
         description: "Your account has been created successfully.",
       });
-      setLocation('/');
+      
+      // Redirect to appropriate page
+      setTimeout(() => {
+        setLocation('/');
+      }, 500);
     },
     onError: (error: Error) => {
       toast({

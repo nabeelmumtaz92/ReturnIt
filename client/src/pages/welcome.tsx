@@ -70,12 +70,21 @@ export default function Welcome() {
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               {isAuthenticated ? (
                 <>
-                  <Link href="/profile">
-                    <Button variant="ghost" size="sm" data-testid="button-profile">
-                      <User className="h-4 w-4 mr-2" />
-                      Me
-                    </Button>
-                  </Link>
+                  {user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? (
+                    <Link href="/admin-dashboard">
+                      <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
+                        <User className="h-4 w-4 mr-2" />
+                        Admin Dashboard
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/profile">
+                      <Button variant="ghost" size="sm" data-testid="button-profile">
+                        <User className="h-4 w-4 mr-2" />
+                        Profile
+                      </Button>
+                    </Link>
+                  )}
                   <RoleSwitcher />
                   <Button
                     variant="outline"

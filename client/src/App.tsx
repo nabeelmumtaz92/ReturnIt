@@ -85,6 +85,7 @@ function Router() {
           if (user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com") {
             return <AdminDashboard />;
           }
+          // Show welcome page for all other users (logged in or not)
           return <Welcome />;
         }}
       </Route>

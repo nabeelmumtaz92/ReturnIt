@@ -53,6 +53,7 @@ import { apiRequest } from "@/lib/queryClient";
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import ContactSupportButton from "@/components/ContactSupportButton";
+import { AdminNavigation } from "@/components/AdminNavigation";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { ReturnlyLogo } from '@/components/LogoIcon';
@@ -591,6 +592,9 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen relative">
+      {/* Admin Navigation */}
+      <AdminNavigation />
+      
       {/* Background Image */}
       <div 
         className="absolute inset-0"
