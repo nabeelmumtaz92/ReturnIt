@@ -6,87 +6,91 @@ interface LogoIconProps {
 export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
   return (
     <svg
-      width={size}
+      width={size * 1.2}
       height={size}
-      viewBox="0 0 24 24"
+      viewBox="0 0 30 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Cardboard box that forms the 'Y' in Returnly - based on your sketch */}
-      <g transform="translate(6, 2)">
-        {/* Main box outline - cardboard brown */}
+      {/* Cardboard box exactly as drawn in your sketch - forming the 'Y' */}
+      <g transform="translate(3, 1)">
+        {/* Main box structure - 6-sided box with proper perspective */}
+        
+        {/* Back face (partially visible) */}
         <path
-          d="M1 5L6 1L11 5L11 15L6 19L1 15Z"
-          stroke="#A47C48"
-          strokeWidth="1.5"
+          d="M4 6L12 2L20 6L20 18L12 22L4 18Z"
           fill="#F5F0E6"
-          fillOpacity="0.8"
+          stroke="#A47C48"
+          strokeWidth="2"
+          opacity="0.7"
         />
         
-        {/* Top face fold lines */}
+        {/* Front face overlay */}
         <path
-          d="M1 5L6 9L11 5"
+          d="M2 8L10 4L18 8L18 20L10 24L2 20Z"
+          fill="#F5F0E6"
+          stroke="#A47C48"
+          strokeWidth="2.5"
+        />
+        
+        {/* Top fold - creating the 3D effect like your sketch */}
+        <path
+          d="M2 8L10 12L18 8"
+          stroke="#A47C48"
+          strokeWidth="2"
+          fill="none"
+        />
+        
+        {/* Center crease - vertical line down the middle */}
+        <path
+          d="M10 4L10 12"
+          stroke="#A47C48"
+          strokeWidth="2"
+        />
+        
+        {/* Bottom vertical crease */}
+        <path
+          d="M10 12L10 24"
+          stroke="#A47C48"
+          strokeWidth="2"
+        />
+        
+        {/* Connection circles exactly as in your drawing - positioned at corners */}
+        {/* Top circles */}
+        <circle cx="6" cy="10" r="1.2" fill="#A47C48" />
+        <circle cx="14" cy="10" r="1.2" fill="#A47C48" />
+        
+        {/* Bottom circles - darker brown as you noted */}
+        <circle cx="6" cy="18" r="1.2" fill="#8B6635" />
+        <circle cx="14" cy="18" r="1.2" fill="#8B6635" />
+        
+        {/* Inner cross lines from your sketch */}
+        <path
+          d="M6 10L14 18"
           stroke="#A47C48"
           strokeWidth="1.5"
-        />
-        
-        {/* Center vertical fold */}
-        <path
-          d="M6 1L6 9"
-          stroke="#A47C48"
-          strokeWidth="1.5"
-        />
-        
-        {/* Side face visible fold */}
-        <path
-          d="M6 9L6 19"
-          stroke="#A47C48"
-          strokeWidth="1.2"
-        />
-        
-        {/* Connection points/tape circles from your drawing with different colors */}
-        <circle
-          cx="3.5"
-          cy="7"
-          r="0.8"
-          fill="#A47C48"
-          opacity="0.9"
-        />
-        <circle
-          cx="8.5"
-          cy="7"
-          r="0.8"
-          fill="#A47C48"
-          opacity="0.9"
-        />
-        <circle
-          cx="3.5"
-          cy="13"
-          r="0.8"
-          fill="#8B6635"
-          opacity="0.9"
-        />
-        <circle
-          cx="8.5"
-          cy="13"
-          r="0.8"
-          fill="#8B6635"
-          opacity="0.9"
-        />
-        
-        {/* Cross fold lines inside box like your sketch */}
-        <path
-          d="M3.5 7L8.5 13"
-          stroke="#A47C48"
-          strokeWidth="1"
           opacity="0.6"
         />
         <path
-          d="M8.5 7L3.5 13"
+          d="M14 10L6 18"
           stroke="#A47C48"
-          strokeWidth="1"
+          strokeWidth="1.5"
           opacity="0.6"
+        />
+        
+        {/* Additional corner details to match your sketch */}
+        <path
+          d="M2 8L6 10"
+          stroke="#A47C48"
+          strokeWidth="1.5"
+          opacity="0.8"
+        />
+        <path
+          d="M18 8L14 10"
+          stroke="#A47C48"
+          strokeWidth="1.5"
+          opacity="0.8"
         />
       </g>
     </svg>

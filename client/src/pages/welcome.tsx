@@ -125,7 +125,7 @@ export default function Welcome() {
                         Returnl
                       </h1>
                       <LogoIcon 
-                        size={120} 
+                        size={140} 
                         className="transition-all duration-300 group-hover:scale-105 group-hover:drop-shadow-xl"
                       />
                     </div>
