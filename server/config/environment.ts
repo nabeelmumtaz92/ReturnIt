@@ -32,10 +32,11 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     enableDemoMode: false,
     restrictToWhitelist: true,
     whitelistedEmails: [
-      // Add admin/team emails here
+      // Primary authorized account for mobile app testing
+      'nabeelmumtaz92@gmail.com',
+      // Admin accounts
       'admin@returnly.tech',
       'demo@returnly.tech',
-      // Add more authorized emails as needed
     ]
   };
 
@@ -48,6 +49,8 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     enableDemoMode: true,
     restrictToWhitelist: true,
     whitelistedEmails: [
+      // Primary authorized account for mobile app testing
+      'nabeelmumtaz92@gmail.com',
       'admin@returnly.tech',
       'demo@returnly.tech',
       'test@returnly.tech',
