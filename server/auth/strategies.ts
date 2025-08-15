@@ -23,11 +23,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         return done(null, existingUser);
       }
 
-      // Create new user - simplified for basic schema
+      // Create new user with Google profile data
       const newUser = await storage.createUser({
         email: profile.emails?.[0]?.value || `${profile.id}@google.temp`,
         phone: '', // Social auth users need to add phone later
-        password: 'GOOGLE_AUTH_USER' // Social auth placeholder
+        password: 'GOOGLE_AUTH_USER', // Social auth placeholder
+        firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
+        lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
+        isDriver: false,
+        isAdmin: false
       });
 
       return done(null, newUser);

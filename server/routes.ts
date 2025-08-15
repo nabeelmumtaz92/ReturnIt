@@ -187,15 +187,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Google callback - req.user:', req.user);
       // Set up session for authenticated user
       if (req.user) {
+        const user = req.user as any;
         const userData = {
-          id: (req.user as any).id, 
-          email: (req.user as any).email, 
-          phone: (req.user as any).phone || null, 
-          isDriver: (req.user as any).isDriver || false 
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone || '', 
+          isDriver: user.isDriver || false,
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName || '',
+          lastName: user.lastName || ''
         };
+        
+        // Store user data in session
         (req.session as any).user = userData;
-        console.log('Session user set:', userData);
-        res.redirect('/?auth=success');
+        
+        // Force session save before redirect
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return res.redirect('/login?error=session_failed');
+          }
+          console.log('Session user saved successfully:', userData);
+          res.redirect('/?auth=success');
+        });
       } else {
         console.log('Google callback - no user found');
         res.redirect('/login?error=auth_failed');
