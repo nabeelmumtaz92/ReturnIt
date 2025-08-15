@@ -832,9 +832,9 @@ export default function CustomerMobileApp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 w-full max-w-md mx-auto overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-secondary to-muted w-full max-w-md mx-auto overflow-x-hidden">
       {/* Mobile App Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40 w-full">
+      <div className="bg-white shadow-sm border-b border-border sticky top-0 z-40 w-full">
         <div className="px-4 py-3 w-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -843,14 +843,14 @@ export default function CustomerMobileApp() {
                 alt="Returnly" 
                 className="h-8 w-auto"
               />
-              <h1 className="text-lg font-bold text-amber-900">Returnly</h1>
+              <h1 className="text-lg font-bold text-primary">Returnly</h1>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" className="p-2">
-                <Bell className="h-5 w-5 text-amber-700" />
+                <Bell className="h-5 w-5 text-primary" />
               </Button>
               <Button variant="ghost" size="sm" className="p-2">
-                <HeadphonesIcon className="h-5 w-5 text-amber-700" />
+                <HeadphonesIcon className="h-5 w-5 text-primary" />
               </Button>
             </div>
           </div>

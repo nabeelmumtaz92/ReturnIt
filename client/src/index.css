@@ -11,19 +11,19 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: hsl(20, 100%, 60%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(39, 35%, 65%);
-  --secondary-foreground: hsl(210, 10%, 8%);
-  --muted: hsl(30, 28%, 35%);
-  --muted-foreground: hsl(30, 28%, 35%);
-  --accent: hsl(39, 35%, 65%);
-  --accent-foreground: hsl(210, 10%, 8%);
+  --primary: hsl(30, 32%, 39%);
+  --primary-foreground: hsl(45, 42%, 96%);
+  --secondary: hsl(45, 42%, 96%);
+  --secondary-foreground: hsl(30, 32%, 39%);
+  --muted: hsl(39, 20%, 85%);
+  --muted-foreground: hsl(30, 20%, 45%);
+  --accent: hsl(45, 42%, 96%);
+  --accent-foreground: hsl(30, 32%, 39%);
   --destructive: hsl(0, 85%, 58%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(39, 25%, 75%);
-  --input: hsl(0, 0%, 100%);
-  --ring: hsl(20, 100%, 60%);
+  --border: hsl(30, 40%, 25%);
+  --input: hsl(45, 42%, 96%);
+  --ring: hsl(30, 32%, 39%);
   --chart-1: hsl(20, 100%, 60%);
   --chart-2: hsl(123, 45%, 30%);
   --chart-3: hsl(39, 35%, 65%);
@@ -31,12 +31,12 @@
   --chart-5: hsl(210, 10%, 8%);
   --sidebar: hsl(45, 35%, 97%);
   --sidebar-foreground: hsl(210, 10%, 8%);
-  --sidebar-primary: hsl(20, 100%, 60%);
-  --sidebar-primary-foreground: hsl(0, 0%, 100%);
-  --sidebar-accent: hsl(39, 35%, 65%);
-  --sidebar-accent-foreground: hsl(210, 10%, 8%);
-  --sidebar-border: hsl(39, 25%, 75%);
-  --sidebar-ring: hsl(20, 100%, 60%);
+  --sidebar-primary: hsl(30, 32%, 39%);
+  --sidebar-primary-foreground: hsl(45, 42%, 96%);
+  --sidebar-accent: hsl(45, 42%, 96%);
+  --sidebar-accent-foreground: hsl(30, 32%, 39%);
+  --sidebar-border: hsl(30, 40%, 25%);
+  --sidebar-ring: hsl(30, 32%, 39%);
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
@@ -51,14 +51,14 @@
   --brand-accent-green: hsl(123, 43%, 32%);
   
   /* Mapped brand variables */
-  --brand-primary: hsl(20, 100%, 63%);
-  --brand-primary-dark: hsl(20, 100%, 53%);
-  --brand-accent: hsl(39, 39%, 70%);
+  --brand-primary: hsl(30, 32%, 39%);
+  --brand-primary-dark: hsl(30, 40%, 25%);
+  --brand-accent: hsl(45, 42%, 96%);
   --brand-bg: hsl(45, 42%, 96%);
   --brand-surface: hsl(0, 0%, 100%);
   --brand-text: hsl(210, 7%, 10%);
-  --brand-muted: hsl(30, 32%, 39%);
-  --brand-border: hsl(39, 39%, 70%);
+  --brand-muted: hsl(39, 39%, 70%);
+  --brand-border: hsl(30, 40%, 25%);
   
   /* Enhanced image rendering */
   --image-rendering: optimizeQuality;
@@ -73,6 +73,17 @@
   --card-foreground: hsl(45, 42%, 96%);
   --popover: hsl(30, 32%, 18%);
   --popover-foreground: hsl(45, 42%, 96%);
+  --primary: hsl(45, 42%, 96%);
+  --primary-foreground: hsl(30, 32%, 15%);
+  --secondary: hsl(30, 32%, 25%);
+  --secondary-foreground: hsl(45, 42%, 96%);
+  --muted: hsl(30, 20%, 25%);
+  --muted-foreground: hsl(45, 20%, 70%);
+  --accent: hsl(30, 32%, 25%);
+  --accent-foreground: hsl(45, 42%, 96%);
+  --border: hsl(30, 40%, 35%);
+  --input: hsl(30, 32%, 18%);
+  --ring: hsl(45, 42%, 96%);
   --primary: hsl(20, 100%, 63%);
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(30, 32%, 39%);

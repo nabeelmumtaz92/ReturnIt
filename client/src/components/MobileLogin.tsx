@@ -76,20 +76,20 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-sm border-amber-200 shadow-lg">
+    <div className="min-h-screen bg-gradient-to-br from-secondary to-muted flex items-center justify-center p-4">
+      <Card className="w-full max-w-sm border-border shadow-lg">
         <CardHeader className="text-center">
-          <div className="mx-auto w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+          <div className="mx-auto w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-4">
             {isDriver ? (
-              <Smartphone className="h-8 w-8 text-amber-600" />
+              <Smartphone className="h-8 w-8 text-primary" />
             ) : (
-              <User className="h-8 w-8 text-amber-600" />
+              <User className="h-8 w-8 text-primary" />
             )}
           </div>
-          <CardTitle className="text-2xl font-bold text-amber-900">
+          <CardTitle className="text-2xl font-bold text-primary">
             {isDriver ? 'Driver Sign In' : 'Welcome Back'}
           </CardTitle>
-          <p className="text-amber-600">
+          <p className="text-muted-foreground">
             {isDriver ? 'Access your driver portal' : 'Sign in to your account'}
           </p>
         </CardHeader>
@@ -98,13 +98,13 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-amber-500" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="email"
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 border-amber-200 focus:border-amber-500"
+                  className="pl-10 border-border focus:border-primary"
                   required
                   data-testid="input-email"
                 />
@@ -113,13 +113,13 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
             
             <div className="space-y-2">
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-amber-500" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="password"
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 border-amber-200 focus:border-amber-500"
+                  className="pl-10 border-border focus:border-primary"
                   required
                   data-testid="input-password"
                 />
@@ -134,7 +134,7 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
 
             <Button
               type="submit"
-              className="w-full bg-amber-600 hover:bg-amber-700"
+              className="w-full"
               disabled={isLoading}
               data-testid="button-login"
             >
@@ -144,24 +144,24 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
 
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-amber-200" />
+              <div className="w-full border-t border-border" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-amber-600">Or try demo</span>
+              <span className="bg-white px-2 text-muted-foreground">Or try demo</span>
             </div>
           </div>
 
           <Button
             variant="outline"
             onClick={handleDemoLogin}
-            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
+            className="w-full"
             disabled={isLoading}
             data-testid="button-demo"
           >
             {isDriver ? 'Demo Driver Account' : 'Demo Customer Account'}
           </Button>
 
-          <div className="text-xs text-center text-amber-600 space-y-1">
+          <div className="text-xs text-center text-muted-foreground space-y-1">
             <p>Stay signed in for 30 days</p>
             <p>Your session persists like other mobile apps</p>
           </div>
