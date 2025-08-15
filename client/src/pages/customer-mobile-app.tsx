@@ -838,10 +838,10 @@ export default function CustomerMobileApp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 w-full max-w-md mx-auto overflow-x-hidden">
       {/* Mobile App Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
-        <div className="px-4 py-3">
+      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40 w-full">
+        <div className="px-4 py-3 w-full">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 

@@ -12,12 +12,16 @@ export default function MobileSimulator() {
   const [packages, setPackages] = useState(1);
 
   const PhoneFrame = ({ children }: { children: React.ReactNode }) => (
-    <div className="w-full max-w-sm mx-auto bg-black rounded-[3rem] p-2 shadow-2xl">
-      <div className="bg-white rounded-[2.5rem] h-[700px] w-full overflow-hidden">
-        <div className="h-6 bg-black rounded-t-[2.5rem] flex justify-center items-center">
-          <div className="w-16 h-1 bg-gray-800 rounded-full"></div>
+    <div className="w-full max-w-[350px] mx-auto bg-black rounded-[2.5rem] p-3 shadow-2xl" style={{ aspectRatio: '9/19.5' }}>
+      <div className="bg-white rounded-[2rem] h-full w-full overflow-hidden relative">
+        {/* Phone Notch */}
+        <div className="h-8 bg-black rounded-t-[2rem] flex justify-center items-center relative">
+          <div className="w-20 h-1.5 bg-gray-800 rounded-full"></div>
+          {/* Speaker */}
+          <div className="absolute top-2 w-12 h-1 bg-gray-700 rounded-full"></div>
         </div>
-        <div className="h-[calc(100%-24px)] w-full overflow-y-auto overflow-x-hidden">
+        {/* App Content - Vertical Scrolling Only */}
+        <div className="h-[calc(100%-32px)] w-full overflow-y-auto overflow-x-hidden">
           {children}
         </div>
       </div>
@@ -280,17 +284,17 @@ export default function MobileSimulator() {
       </div>
 
       {/* App Simulator */}
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="grid md:grid-cols-2 gap-8">
-          {/* Phone Simulator */}
-          <div className="w-full overflow-x-hidden">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+          {/* Phone Simulator - Always Vertical */}
+          <div className="w-full max-w-sm mx-auto lg:mx-0 flex-shrink-0">
             <PhoneFrame>
               {currentApp === 'customer' ? <CustomerApp /> : <DriverApp />}
             </PhoneFrame>
           </div>
 
           {/* Controls */}
-          <div className="space-y-6">
+          <div className="space-y-6 flex-1 min-w-0">
             <Card>
               <CardHeader>
                 <CardTitle className="text-amber-900">App Controls</CardTitle>
