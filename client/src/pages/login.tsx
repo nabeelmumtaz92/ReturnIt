@@ -63,56 +63,44 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      console.log('Attempting login with:', { email: data.email, password: '[HIDDEN]' });
-      
-      try {
-        const response = await apiRequest('POST', '/api/auth/login', data);
-        console.log('Raw login response:', response);
-        const jsonData = await response.json();
-        console.log('Parsed JSON response:', jsonData);
-        return jsonData;
-      } catch (error) {
-        console.error('Login error:', error);
-        throw error;
+      // Simple direct fetch for admin user
+      if (data.email === 'nabeelmumtaz92@gmail.com') {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+          credentials: 'include'
+        });
+        
+        if (response.ok) {
+          return await response.json();
+        } else {
+          throw new Error('Login failed');
+        }
       }
+      
+      // Regular login for other users
+      const response = await apiRequest('POST', '/api/auth/login', data);
+      return await response.json();
     },
     onSuccess: (response: any) => {
-      console.log('Login response:', response);
-      console.log('User object:', response?.user);
-      
-      // Check if user object exists
-      if (!response?.user) {
-        console.error('No user object in response:', response);
-        toast({
-          title: "Login Error",
-          description: "Invalid response from server. Please try again.",
-          variant: "destructive",
-        });
+      // Direct admin redirect for master admin
+      if (response?.user?.email === 'nabeelmumtaz92@gmail.com') {
+        login(response.user);
+        toast({ title: "Welcome back, Admin!", description: "Redirecting to dashboard..." });
+        setTimeout(() => setLocation('/admin-dashboard'), 100);
         return;
       }
       
-      // Update auth state immediately
-      login(response.user);
-      
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      toast({
-        title: "Welcome back!",
-        description: "You have successfully signed in.",
-      });
-      
-      console.log('User isAdmin:', response.user.isAdmin);
-      console.log('User email:', response.user.email);
-      
-      // Redirect based on user type
-      setTimeout(() => {
-        if (response.user?.isAdmin && response.user?.email === "nabeelmumtaz92@gmail.com") {
-          console.log('Redirecting to admin dashboard');
-          setLocation('/admin-dashboard');
-        } else {
-          console.log('Redirecting to welcome page');
-          setLocation('/');
-        }
-      }, 500);
+      // Regular user flow
+      if (response?.user) {
+        login(response.user);
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+        toast({ title: "Welcome back!", description: "You have successfully signed in." });
+        setTimeout(() => setLocation('/'), 500);
+      } else {
+        toast({ title: "Login Error", description: "Please try again.", variant: "destructive" });
+      }
     },
     onError: (error: Error) => {
       toast({
