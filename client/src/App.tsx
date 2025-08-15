@@ -54,25 +54,6 @@ import Profile from "@/pages/profile";
 function Router() {
   const { user, isLoading } = useAuth();
   
-  // Redirect admin user to admin dashboard immediately
-  if (user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com") {
-    return (
-      <Switch>
-        <Route path="/" component={AdminDashboard} />
-        <Route path="/admin" component={AdminDashboard} />
-        <Route path="/admin-dashboard" component={AdminDashboard} />
-        <Route path="/login" component={AdminDashboard} />
-        <Route path="/welcome" component={AdminDashboard} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/help-center" component={HelpCenter} />
-        <Route path="/help-center/:slug" component={HelpArticle} />
-        <Route path="/faq" component={FAQ} />
-        <Route path="/about" component={About} />
-        <Route component={AdminDashboard} />
-      </Switch>
-    );
-  }
-  
   // Only show loading if actually loading
   if (isLoading) {
     return (
@@ -98,7 +79,15 @@ function Router() {
 
   return (
     <Switch>
-      <Route path="/" component={Welcome} />
+      <Route path="/">
+        {() => {
+          // Check if admin user should go directly to dashboard
+          if (user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com") {
+            return <AdminDashboard />;
+          }
+          return <Welcome />;
+        }}
+      </Route>
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
       <Route path="/checkout" component={Checkout} />

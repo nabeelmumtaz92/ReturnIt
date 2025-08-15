@@ -9,6 +9,7 @@ import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth-simple";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 
@@ -22,6 +23,7 @@ export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { login } = useAuth();
   const [activeTab, setActiveTab] = useState("login");
 
   // Check URL params for tab selection
@@ -52,13 +54,22 @@ export default function Login() {
     mutationFn: async (data: { email: string; password: string }) => {
       return await apiRequest('POST', '/api/auth/login', data);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      // Update auth state immediately
+      login(response.user);
+      
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
       toast({
         title: "Welcome back!",
         description: "You have successfully signed in.",
       });
-      setLocation('/');
+      
+      // Redirect based on user type
+      if (response.user.isAdmin && response.user.email === "nabeelmumtaz92@gmail.com") {
+        window.location.href = '/admin-dashboard';
+      } else {
+        setLocation('/');
+      }
     },
     onError: (error: Error) => {
       toast({

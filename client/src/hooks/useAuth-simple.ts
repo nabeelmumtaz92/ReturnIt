@@ -105,6 +105,13 @@ export function useAuth() {
     setIsAuthenticated(true);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
     localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
+    
+    // Force a page reload for admin users to trigger the router logic
+    if (userData.isAdmin && userData.email === "nabeelmumtaz92@gmail.com") {
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 100);
+    }
   };
 
   const logout = () => {
