@@ -159,6 +159,25 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Ultra simple admin bypass
+    if (loginData.email === 'nabeelmumtaz92@gmail.com' && loginData.password === 'test123') {
+      // Create fake admin user for immediate redirect
+      const adminUser = {
+        id: 1,
+        email: 'nabeelmumtaz92@gmail.com',
+        isAdmin: true,
+        isDriver: true,
+        firstName: 'Nabeel',
+        lastName: 'Mumtaz'
+      };
+      
+      login(adminUser);
+      toast({ title: "Admin Access Granted!", description: "Welcome back!" });
+      setLocation('/admin-dashboard');
+      return;
+    }
+    
+    // Regular validation for other users
     if (!validateForm(loginData, loginSchema)) {
       toast({
         title: "Validation Error",
