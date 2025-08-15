@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { LogoIcon } from "@/components/LogoIcon";
+import { LogoIcon, ReturnlyLogo } from "@/components/LogoIcon";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
 
 interface EnvironmentConfig {
@@ -63,9 +63,8 @@ export default function Welcome() {
       <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-primary/20 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <LogoIcon size={32} className="text-primary" />
-              <span className="text-xl font-bold text-primary">Returnly</span>
+            <div className="flex items-center">
+              <ReturnlyLogo size={24} variant="default" />
             </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">

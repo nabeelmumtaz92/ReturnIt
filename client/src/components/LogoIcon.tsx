@@ -1,67 +1,80 @@
 interface LogoIconProps {
   size?: number;
   className?: string;
+  variant?: 'default' | 'white' | 'dark';
 }
 
-export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
+export function LogoIcon({ size = 24, className = "", variant = 'default' }: LogoIconProps) {
+  const colors = {
+    default: '#6B7280',
+    white: '#FFFFFF', 
+    dark: '#374151'
+  };
+  
+  const color = colors[variant];
+  
   return (
     <svg
-      width={size * 1.8}
+      width={size}
       height={size}
-      viewBox="0 0 44 24"
+      viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Clean 3D cardboard box exactly like the image */}
-      <g transform="translate(2, 1)">
-        
-        {/* Front face - outline only */}
-        <path
-          d="M4 8L26 8L26 18L4 18Z"
-          fill="none"
-          stroke="#A47C48"
-          strokeWidth="2"
-        />
-        
-        {/* Top face */}
-        <path
-          d="M4 8L8 4L30 4L26 8Z"
-          fill="none"
-          stroke="#A47C48"
-          strokeWidth="2"
-        />
-        
-        {/* Right side face */}
-        <path
-          d="M26 8L30 4L30 14L26 18Z"
-          fill="none"
-          stroke="#A47C48"
-          strokeWidth="2"
-        />
-        
-        {/* Back edges for 3D effect */}
-        <path
-          d="M8 4L30 4"
-          stroke="#A47C48"
-          strokeWidth="2"
-        />
-        <path
-          d="M30 4L30 14"
-          stroke="#A47C48"
-          strokeWidth="2"
-        />
-        
-      </g>
+      {/* 3D Cube based on your logo mockups */}
+      
+      {/* Left face */}
+      <path
+        d="M2 8L12 3L12 15L2 20V8Z"
+        fill={color}
+        fillOpacity="0.7"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      
+      {/* Right face */}
+      <path
+        d="M12 3L22 8V20L12 15V3Z"
+        fill={color}
+        fillOpacity="0.9"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      
+      {/* Top face */}
+      <path
+        d="M2 8L12 3L22 8L12 13L2 8Z"
+        fill={color}
+        fillOpacity="1"
+        stroke={color}
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+      
+      {/* Center dividing line for 3D effect */}
+      <line
+        x1="12"
+        y1="3"
+        x2="12"
+        y2="15"
+        stroke={color}
+        strokeWidth="1"
+        opacity="0.8"
+      />
     </svg>
   );
 }
 
-export function ReturnlyLogo({ size = 32, className = "" }: LogoIconProps) {
+export function ReturnlyLogo({ size = 32, className = "", variant = 'default' }: LogoIconProps) {
+  const textColor = variant === 'white' ? 'text-white' : variant === 'dark' ? 'text-gray-800' : 'text-primary';
+  
   return (
-    <div className={`flex items-center ${className}`}>
-      <span className="font-light text-primary text-lg">Returnl</span>
-      <LogoIcon size={size} className="mx-0" />
+    <div className={`flex items-center gap-2 ${className}`}>
+      <span className={`font-semibold text-2xl ${textColor}`}>Returnly</span>
+      <LogoIcon size={size} variant={variant} />
     </div>
   );
 }
