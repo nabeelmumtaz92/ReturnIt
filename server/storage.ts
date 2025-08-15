@@ -153,89 +153,9 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, masterAdmin);
     
-    // Demo user with limited access
-    const demoUser: User = {
-      id: 2,
-      email: 'demo@returnly.com',
-      password: '$2b$12$t/xI0Ofb0d/mGpHkZqGGvOISgiEr5o9mdki3uXo2gpMpK2NiTGgK6', // hashed 'demo123'
-      firstName: 'Demo',
-      lastName: 'User',
-      phone: '+1-555-0124',
-      isDriver: false,  // No driver access
-      isAdmin: false,   // No admin access
-      isActive: true,
-      profileImage: null,
-      preferences: { role: 'super_admin' },
-      addresses: [
-        {
-          type: 'home',
-          street: '1234 Main St',
-          city: 'St. Louis',
-          state: 'MO',
-          zipCode: '63101',
-          isDefault: true
-        }
-      ],
-      paymentMethods: [],
-      driverLicense: 'DL123456789',
-      vehicleInfo: {
-        make: 'Toyota',
-        model: 'Camry',
-        year: 2022,
-        color: 'Silver',
-        licensePlate: 'RET-001',
-        capacity: 'Large'
-      },
-      bankInfo: {
-        routingNumber: '123456789',
-        accountNumber: '*****1234',
-        accountType: 'checking'
-      },
-      driverRating: 4.9,
-      totalEarnings: 2847.50,
-      completedDeliveries: 156,
-      isOnline: true,
-      currentLocation: {
-        latitude: 38.6270,
-        longitude: -90.1994,
-        address: 'Downtown St. Louis, MO'
-      },
-      stripeConnectAccountId: 'acct_demo123',
-      stripeOnboardingComplete: true,
-      paymentPreference: 'instant',
-      instantPayFeePreference: 0.50,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.users.set(2, demoUser);
+    // Demo user removed
     
-    // Demo driver
-    const demoDriver: User = {
-      id: 3,
-      email: 'driver@returnly.com',
-      password: '$2b$12$HgHCeh4iUcf7w4z/u/77F.L6hV.Je0QhgaSkA1cjhhXrWV/JJgsoa', // hashed 'driver123'
-      firstName: 'Demo',
-      lastName: 'Driver',
-      phone: '+1-555-0124',
-      isDriver: true,
-      isAdmin: false,
-      isActive: true,
-      profileImage: null,
-      preferences: {},
-      addresses: [],
-      paymentMethods: [],
-      driverLicense: 'DL12345678',
-      vehicleInfo: { make: 'Toyota', model: 'Camry', year: 2020, licensePlate: 'ABC123' },
-      bankInfo: { accountNumber: '****1234', routingNumber: '021000021' },
-      driverRating: 4.8,
-      totalEarnings: 2450.50,
-      completedDeliveries: 127,
-      isOnline: true,
-      currentLocation: { lat: 37.7749, lng: -122.4194 },
-      createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-      updatedAt: new Date()
-    };
-    this.users.set(3, demoDriver);
+    // Demo driver removed
     
     const demoOrder: Order = {
       id: 'DEMO01',
@@ -311,7 +231,7 @@ export class MemStorage implements IStorage {
       this.promoCodes.set(promo.code, promoCode);
     });
     
-    this.nextUserId = 3;
+    this.nextUserId = 2;
   }
 
   // User operations
