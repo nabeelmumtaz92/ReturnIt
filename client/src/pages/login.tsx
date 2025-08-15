@@ -63,7 +63,18 @@ export default function Login() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      return await apiRequest('POST', '/api/auth/login', data);
+      console.log('Attempting login with:', { email: data.email, password: '[HIDDEN]' });
+      
+      try {
+        const response = await apiRequest('POST', '/api/auth/login', data);
+        console.log('Raw login response:', response);
+        const jsonData = await response.json();
+        console.log('Parsed JSON response:', jsonData);
+        return jsonData;
+      } catch (error) {
+        console.error('Login error:', error);
+        throw error;
+      }
     },
     onSuccess: (response: any) => {
       console.log('Login response:', response);
@@ -74,7 +85,7 @@ export default function Login() {
         console.error('No user object in response:', response);
         toast({
           title: "Login Error",
-          description: "Invalid response from server",
+          description: "Invalid response from server. Please try again.",
           variant: "destructive",
         });
         return;
