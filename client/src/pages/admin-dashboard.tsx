@@ -1159,7 +1159,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {getFilteredDrivers().map((driver) => (
+                    {(drivers || []).map((driver) => (
                       <Card key={driver.id} className="border-amber-200">
                         <CardContent className="p-3 sm:p-4">
                           <div className="flex items-center justify-between mb-3">

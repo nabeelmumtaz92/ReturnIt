@@ -160,7 +160,7 @@ export default function Login() {
     e.preventDefault();
     
     // Ultra simple admin bypass
-    if (loginData.email === 'nabeelmumtaz92@gmail.com' && loginData.password === 'test123') {
+    if (loginData.email === 'nabeelmumtaz92@gmail.com' && loginData.password === 'Test123') {
       // Create fake admin user for immediate redirect
       const adminUser = {
         id: 1,
