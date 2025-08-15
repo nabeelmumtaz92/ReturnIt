@@ -167,8 +167,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
+      console.log('=== LOGIN DEBUG ===');
       console.log('Login attempt for:', email);
       console.log('User found:', user ? 'Yes' : 'No');
+      if (user) {
+        console.log('User isAdmin:', user.isAdmin);
+        console.log('User email matches:', user.email === 'nabeelmumtaz92@gmail.com');
+      }
       
       // Verify credentials
       if (!user || !await AuthService.verifyPassword(password, user.password)) {
@@ -209,6 +214,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       console.log('Response user object:', responseUser);
+      console.log('=== SENDING RESPONSE ===');
+      console.log(JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
       
       res.json({ 
         message: "Login successful",
