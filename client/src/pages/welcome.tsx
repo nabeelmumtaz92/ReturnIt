@@ -10,6 +10,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LogoIcon } from "@/components/LogoIcon";
+import deliveryDriverImage from "@assets/image_1755273879529.png";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -55,7 +56,7 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat" 
       style={{ 
-        backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/attached_assets/image_1755273879529.png")'
+        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${deliveryDriverImage})`
       }}>
       
       {/* Top Navigation Bar */}
