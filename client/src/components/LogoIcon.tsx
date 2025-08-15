@@ -13,10 +13,10 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* 3D Cardboard box as drawn - clean cube design */}
+      {/* Clean 3D diamond/cube shape as drawn - no cross lines */}
       <g transform="translate(2, 1)">
         
-        {/* Front face - cream colored (marked with X in your drawing) */}
+        {/* Front face - cream colored */}
         <path
           d="M6 6L26 6L26 20L6 20Z"
           fill="#F5F0E6"
@@ -24,7 +24,7 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
           strokeWidth="1.5"
         />
         
-        {/* Top face - cardboard brown (marked with circle in your drawing) */}
+        {/* Top face - cardboard brown */}
         <path
           d="M6 6L10 2L30 2L26 6Z"
           fill="#A47C48"
@@ -32,26 +32,12 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
           strokeWidth="1.5"
         />
         
-        {/* Right side face - cardboard brown (marked with circle in your drawing) */}
+        {/* Right side face - cardboard brown */}
         <path
           d="M26 6L30 2L30 16L26 20Z"
           fill="#A47C48"
           stroke="#A47C48"
           strokeWidth="1.5"
-        />
-        
-        {/* Internal cross/X patterns on the front face */}
-        <path
-          d="M8 8L24 18"
-          stroke="#A47C48"
-          strokeWidth="1.2"
-          opacity="0.7"
-        />
-        <path
-          d="M24 8L8 18"
-          stroke="#A47C48"
-          strokeWidth="1.2"
-          opacity="0.7"
         />
         
       </g>
