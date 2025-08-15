@@ -55,6 +55,7 @@ import NotificationBell from "@/components/NotificationBell";
 import ContactSupportButton from "@/components/ContactSupportButton";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
+import { ReturnlyLogo } from '@/components/LogoIcon';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import * as XLSX from 'xlsx';
@@ -609,11 +610,9 @@ export default function AdminDashboard() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
               <div className="flex items-center space-x-3 sm:space-x-4">
                 <Link href="/">
-                  <img 
-                    src="/logo-cardboard-deep.png" 
-                    alt="Returnly Logo" 
-                    className="h-8 sm:h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                  />
+                  <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                    <ReturnlyLogo size={32} variant="default" />
+                  </div>
                 </Link>
                 <div>
                   <h1 className="text-xl sm:text-2xl font-bold text-amber-900">Admin Dashboard</h1>

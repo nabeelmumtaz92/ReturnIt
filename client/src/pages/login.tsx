@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
+import { ReturnlyLogo } from "@/components/LogoIcon";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 
@@ -54,7 +55,7 @@ export default function Login() {
     mutationFn: async (data: { email: string; password: string }) => {
       return await apiRequest('POST', '/api/auth/login', data);
     },
-    onSuccess: (response) => {
+    onSuccess: (response: any) => {
       // Update auth state immediately
       login(response.user);
       
@@ -190,11 +191,9 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/">
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-16 w-auto mx-auto mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
-            />
+            <div className="mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 inline-block">
+              <ReturnlyLogo size={48} variant="default" />
+            </div>
           </Link>
           <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>
           <p className="text-amber-700">Returns made easy</p>
