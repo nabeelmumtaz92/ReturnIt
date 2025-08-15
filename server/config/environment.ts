@@ -20,7 +20,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     allowDriverSignup: true,
     enableDemoMode: true,
     restrictToWhitelist: false,
-    whitelistedEmails: []
+    whitelistedEmails: ['nabeelmumtaz92@gmail.com']
   };
 
   // Production configuration - restricted access
