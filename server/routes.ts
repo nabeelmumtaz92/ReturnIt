@@ -99,7 +99,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.status(201).json({ 
         message: "Registration successful",
-        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver, isAdmin: user.isAdmin }
+        user: { 
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone, 
+          isDriver: user.isDriver || false, 
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName,
+          lastName: user.lastName
+        }
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid registration data" });
@@ -115,27 +123,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
+      console.log('Login attempt for:', email);
+      console.log('User found:', user ? 'Yes' : 'No');
       
       if (!user || !await bcrypt.compare(password, user.password)) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
+
+      console.log('User isAdmin property:', user.isAdmin);
+      console.log('User object keys:', Object.keys(user));
 
       // Log user in
       (req.session as any).user = { 
         id: user.id, 
         email: user.email, 
         phone: user.phone, 
-        isDriver: user.isDriver, 
-        isAdmin: user.isAdmin,
+        isDriver: user.isDriver || false, 
+        isAdmin: user.isAdmin || false,
         firstName: user.firstName,
         lastName: user.lastName
       };
       
+      const responseUser = { 
+        id: user.id, 
+        email: user.email, 
+        phone: user.phone, 
+        isDriver: user.isDriver || false, 
+        isAdmin: user.isAdmin || false,
+        firstName: user.firstName,
+        lastName: user.lastName
+      };
+      
+      console.log('Response user object:', responseUser);
+      
       res.json({ 
         message: "Login successful",
-        user: { id: user.id, email: user.email, phone: user.phone, isDriver: user.isDriver, isAdmin: user.isAdmin }
+        user: responseUser
       });
     } catch (error) {
+      console.error('Login error:', error);
       res.status(500).json({ message: "Login failed" });
     }
   });
