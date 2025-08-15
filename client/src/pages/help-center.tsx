@@ -24,7 +24,10 @@ import {
   BookOpen,
   FileText,
   Settings,
-  AlertCircle
+  AlertCircle,
+  TrendingUp,
+  Users,
+  Calendar
 } from "lucide-react";
 
 interface HelpArticle {

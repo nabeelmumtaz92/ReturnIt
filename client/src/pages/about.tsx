@@ -81,60 +81,149 @@ export default function About() {
       <div className="relative z-10">
       {/* Hero Section */}
       <section className="py-20 px-6">
-        <div className="container mx-auto max-w-4xl text-center">
-          <div className="mb-8">
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
-              className="h-24 w-auto mx-auto mb-4 logo-enhanced"
-              data-testid="img-logo"
-            />
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="text-center lg:text-left">
+              <div className="mb-8 flex justify-center lg:justify-start">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-20 w-auto logo-enhanced"
+                  data-testid="img-logo"
+                />
+              </div>
+              <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200" data-testid="badge-company">
+                {businessInfo?.companyName || "Returnly"}
+              </Badge>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 mb-6 leading-tight" data-testid="heading-tagline">
+                {businessInfo?.tagline || "Making Returns Effortless"}
+              </h1>
+              <p className="text-xl text-amber-700 leading-relaxed mb-8" data-testid="text-description">
+                {businessInfo?.description || "At Returnly, we believe returning an item should be as easy as ordering it. Our professional pickup service connects you with local drivers who handle every step of the return process."}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link href="/book-pickup">
+                  <Button className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-3 rounded-lg font-semibold" data-testid="button-book-pickup">
+                    Book Your First Pickup
+                  </Button>
+                </Link>
+                <Link href="/driver-portal">
+                  <Button variant="outline" className="border-amber-600 text-amber-600 hover:bg-amber-50 px-8 py-3 rounded-lg font-semibold" data-testid="button-become-driver">
+                    Become a Driver
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 shadow-2xl">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4" data-testid="stat-st-louis">
+                    <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
+                      <MapPin className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-900">St. Louis Based</h3>
+                      <p className="text-amber-700">Serving the Greater Metro Area</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4" data-testid="stat-drivers">
+                    <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
+                      <Badge className="h-6 w-6 text-white bg-transparent" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-900">Professional Drivers</h3>
+                      <p className="text-amber-700">Background checked & insured</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4" data-testid="stat-earnings">
+                    <div className="w-12 h-12 bg-amber-500 rounded-xl flex items-center justify-center">
+                      <span className="text-white font-bold">$</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-amber-900">$18-25 per Hour</h3>
+                      <p className="text-amber-700">Competitive driver earnings</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200" data-testid="badge-company">
-            {businessInfo?.companyName || "Returnly"}
-          </Badge>
-          <h1 className="text-4xl md:text-6xl font-bold text-amber-900 mb-6" data-testid="heading-tagline">
-            {businessInfo?.tagline || "Making Returns Effortless"}
-          </h1>
-          <p className="text-xl text-amber-700 leading-relaxed" data-testid="text-description">
-            {businessInfo?.description || "At Returnly, we believe returning an item should be as easy as ordering it."}
-          </p>
         </div>
       </section>
 
       {/* Mission Section */}
-      <section className="py-16 px-6 bg-white/70">
-        <div className="container mx-auto max-w-4xl">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-6" data-testid="heading-mission">
-                Our Mission
-              </h2>
-              <p className="text-lg text-amber-700 leading-relaxed mb-6" data-testid="text-mission">
-                {businessInfo?.missionStatement || "Founded with the mission to save you time and effort, Returnly partners with local drivers to ensure every return is handled quickly, safely, and securely."}
-              </p>
-              <p className="text-lg text-amber-700 leading-relaxed" data-testid="text-coverage">
-                Whether it's a small package or a bulky box, we've got you covered with our comprehensive return logistics platform.
-              </p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-2xl p-8">
-              <div className="space-y-4">
-                <div className="flex items-center gap-3" data-testid="feature-hassle-free">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full" />
-                  <span className="text-amber-800 font-medium">No more long lines</span>
+      <section className="py-20 px-6 bg-white/90">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-amber-900 mb-4" data-testid="heading-mission">
+              Our Mission
+            </h2>
+            <p className="text-xl text-amber-700 max-w-3xl mx-auto leading-relaxed" data-testid="text-mission">
+              {businessInfo?.missionStatement || "Founded with the mission to save you time and effort, Returnly partners with local drivers to ensure every return is handled quickly, safely, and securely."}
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <Card className="bg-white border-amber-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Clock className="h-8 w-8 text-amber-600" />
                 </div>
-                <div className="flex items-center gap-3" data-testid="feature-no-labels">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full" />
-                  <span className="text-amber-800 font-medium">No more printing labels</span>
+                <h3 className="text-xl font-semibold text-amber-900 mb-3">Save Time</h3>
+                <p className="text-amber-700">No more waiting in lines or driving to return locations. We handle everything for you.</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white border-amber-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-8 w-8 text-amber-600" />
                 </div>
-                <div className="flex items-center gap-3" data-testid="feature-doorstep">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full" />
-                  <span className="text-amber-800 font-medium">Pickup from your doorstep</span>
+                <h3 className="text-xl font-semibold text-amber-900 mb-3">Local Service</h3>
+                <p className="text-amber-700">Supporting the St. Louis community with local drivers and personalized service.</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-white border-amber-200 hover:shadow-lg transition-shadow">
+              <CardContent className="p-8 text-center">
+                <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Badge className="h-8 w-8 text-amber-600 bg-transparent border-0" />
                 </div>
-                <div className="flex items-center gap-3" data-testid="feature-secure">
-                  <div className="w-3 h-3 bg-amber-500 rounded-full" />
-                  <span className="text-amber-800 font-medium">Safe & secure handling</span>
+                <h3 className="text-xl font-semibold text-amber-900 mb-3">Secure Returns</h3>
+                <p className="text-amber-700">Professional, insured drivers ensure your returns are handled safely and securely.</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h3 className="text-2xl font-bold text-amber-900 mb-4">Why Choose Returnly?</h3>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3" data-testid="feature-hassle-free">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                    <span className="text-amber-800">No more long lines at stores</span>
+                  </div>
+                  <div className="flex items-center gap-3" data-testid="feature-no-labels">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                    <span className="text-amber-800">No more printing labels</span>
+                  </div>
+                  <div className="flex items-center gap-3" data-testid="feature-doorstep">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                    <span className="text-amber-800">Pickup from your doorstep</span>
+                  </div>
+                  <div className="flex items-center gap-3" data-testid="feature-secure">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                    <span className="text-amber-800">Safe & secure handling</span>
+                  </div>
                 </div>
+              </div>
+              <div className="flex justify-center">
+                <img 
+                  src="https://images.pexels.com/photos/6195124/pexels-photo-6195124.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2&fit=crop&crop=center&q=80"
+                  alt="Professional package handling"
+                  className="rounded-2xl shadow-lg max-w-md w-full"
+                />
               </div>
             </div>
           </div>

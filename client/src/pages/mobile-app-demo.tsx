@@ -29,7 +29,7 @@ export default function MobileAppDemo() {
         <div className="w-20 h-20 flex items-center justify-center">
           <Link href="/">
             <img 
-              src="/attached_assets/file_00000000802861f4ad89299ee34ee0eb_1754855656601.png" 
+              src="/logo-cardboard-deep.png" 
               alt="Returnly Logo" 
               className="h-16 w-auto cursor-pointer hover:opacity-80 transition-opacity"
             />

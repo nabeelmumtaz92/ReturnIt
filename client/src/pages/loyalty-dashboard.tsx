@@ -51,24 +51,61 @@ export default function LoyaltyDashboard() {
   const TierIcon = tierIcons[currentTier];
 
   return (
-    <Screen>
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-amber-900 mb-2">Returnly Rewards</h1>
-            <p className="text-amber-700 text-lg">Earn points with every return and unlock exclusive benefits</p>
+    <div className="min-h-screen relative">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-img-enhanced"
+        style={{
+          backgroundImage: 'url(https://images.pexels.com/photos/8199189/pexels-photo-8199189.jpeg?auto=compress&cs=tinysrgb&w=5120&h=3413&dpr=3&fit=crop&crop=center&q=100)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      />
+      <div className="absolute inset-0 bg-white/85"></div>
+      
+      {/* Navigation Header */}
+      <header className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <img 
+                  src="/logo-cardboard-deep.png" 
+                  alt="Returnly Logo" 
+                  className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+                />
+              </Link>
+              <h1 className="text-3xl font-bold text-amber-900">Returnly Rewards</h1>
+            </div>
+            <div className="flex space-x-3">
+              <Link href="/book-pickup">
+                <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                  Book Pickup
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      <div className="relative z-10">
+        <div className="container mx-auto px-4 py-12">
+          <div className="mb-12 text-center">
+            <h2 className="text-4xl font-bold text-amber-900 mb-4">Your Loyalty Dashboard</h2>
+            <p className="text-amber-700 text-xl max-w-2xl mx-auto">Earn points with every return and unlock exclusive benefits as you climb our membership tiers</p>
           </div>
 
           {/* Loyalty Status Card */}
-          <Card className="mb-8 border-amber-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="text-center pb-4">
-              <div className="flex items-center justify-center mb-4">
-                <div className={`${tierColors[currentTier]} p-4 rounded-full mr-4`}>
-                  <TierIcon className="h-8 w-8 text-white" />
+          <Card className="mb-12 border-amber-200 bg-white/90 backdrop-blur-sm shadow-xl">
+            <CardHeader className="text-center pb-6">
+              <div className="flex items-center justify-center mb-6">
+                <div className={`${tierColors[currentTier]} p-6 rounded-full mr-6 shadow-lg`}>
+                  <TierIcon className="h-12 w-12 text-white" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl text-amber-900 capitalize">{currentTier} Member</CardTitle>
-                  <p className="text-amber-700">{loyaltyData?.totalPoints || 0} Total Points Earned</p>
+                  <CardTitle className="text-3xl text-amber-900 capitalize font-bold">{currentTier} Member</CardTitle>
+                  <p className="text-amber-700 text-lg">{loyaltyData?.totalPoints || 0} Total Points Earned</p>
                 </div>
               </div>
               
@@ -231,6 +268,6 @@ export default function LoyaltyDashboard() {
         </div>
       </div>
       <Footer />
-    </Screen>
+    </div>
   );
 }
