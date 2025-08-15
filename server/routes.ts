@@ -11,6 +11,8 @@ import {
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
   insertNotificationSchema, insertDriverApplicationSchema, OrderStatus 
 } from "@shared/schema";
+import { AuthService } from "./auth";
+import { registrationSchema, loginSchema } from "@shared/validation";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
 // Removed environment restrictions - authentication always enabled
@@ -69,37 +71,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes with environment controls
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const validatedData = insertUserSchema.parse(req.body);
+      // Enhanced validation using Zod schema
+      const validatedData = registrationSchema.parse(req.body);
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);
       
       if (existingUser) {
-        return res.status(409).json({ message: "User already exists" });
+        return res.status(409).json({ 
+          message: "An account with this email already exists",
+          field: "email"
+        });
       }
 
-      // Create user with hashed password
-      const hashedPassword = await bcrypt.hash(validatedData.password, 12);
+      // Additional password strength validation
+      const passwordValidation = AuthService.validatePassword(validatedData.password);
+      if (!passwordValidation.isValid) {
+        return res.status(400).json({ 
+          message: "Password does not meet security requirements",
+          errors: passwordValidation.errors,
+          field: "password"
+        });
+      }
+
+      // Hash password with enhanced security
+      const hashedPassword = await AuthService.hashPassword(validatedData.password);
+      
       const user = await storage.createUser({
-        ...validatedData,
-        password: hashedPassword
+        email: validatedData.email,
+        phone: validatedData.phone,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        password: hashedPassword,
+        dateOfBirth: validatedData.dateOfBirth,
+        isDriver: false,
+        isAdmin: validatedData.email === 'nabeelmumtaz92@gmail.com' // Admin access
       });
       
-      // Log user in
-      (req.session as any).user = { 
+      // Log user in with secure session
+      (req.session as any).user = AuthService.sanitizeUserData({ 
         id: user.id, 
         email: user.email, 
         phone: user.phone, 
-        isDriver: user.isDriver, 
-        isAdmin: user.isAdmin,
+        isDriver: user.isDriver || false, 
+        isAdmin: user.isAdmin || false,
         firstName: user.firstName,
         lastName: user.lastName,
         dateOfBirth: user.dateOfBirth
-      };
+      });
       
       res.status(201).json({ 
         message: "Registration successful",
-        user: { 
+        user: AuthService.sanitizeUserData({
           id: user.id, 
           email: user.email, 
           phone: user.phone, 
@@ -107,34 +130,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
           isAdmin: user.isAdmin || false,
           firstName: user.firstName,
           lastName: user.lastName
-        }
+        })
       });
-    } catch (error) {
-      res.status(400).json({ message: "Invalid registration data" });
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      
+      if (error.issues) {
+        // Zod validation errors
+        const fieldErrors = error.issues.map((issue: any) => ({
+          field: issue.path[0],
+          message: issue.message
+        }));
+        return res.status(400).json({ 
+          message: "Validation failed",
+          errors: fieldErrors
+        });
+      }
+      
+      res.status(400).json({ message: "Registration failed. Please try again." });
     }
   });
 
   app.post("/api/auth/login", async (req, res) => {
     try {
-      const { email, password } = req.body;
+      // Enhanced validation
+      const validatedData = loginSchema.parse(req.body);
+      const { email, password } = validatedData;
       
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password required" });
+      // Check for lockout
+      if (AuthService.isUserLockedOut(email)) {
+        const remainingTime = AuthService.getRemainingLockoutTime(email);
+        return res.status(429).json({ 
+          message: `Account temporarily locked due to multiple failed attempts. Try again in ${remainingTime} minutes.`,
+          lockoutTime: remainingTime
+        });
       }
 
       const user = await storage.getUserByEmail(email);
       console.log('Login attempt for:', email);
       console.log('User found:', user ? 'Yes' : 'No');
       
-      if (!user || !await bcrypt.compare(password, user.password)) {
-        return res.status(401).json({ message: "Invalid credentials" });
+      // Verify credentials
+      if (!user || !await AuthService.verifyPassword(password, user.password)) {
+        // Record failed attempt
+        AuthService.recordFailedAttempt(email);
+        
+        return res.status(401).json({ 
+          message: "Invalid email or password",
+          attempts: AuthService.isUserLockedOut(email) ? "Account locked" : "Invalid credentials"
+        });
       }
 
+      // Clear failed attempts on successful login
+      AuthService.clearFailedAttempts(email);
+      
       console.log('User isAdmin property:', user.isAdmin);
       console.log('User object keys:', Object.keys(user));
 
-      // Log user in
-      (req.session as any).user = { 
+      // Create secure session
+      (req.session as any).user = AuthService.sanitizeUserData({ 
         id: user.id, 
         email: user.email, 
         phone: user.phone, 
@@ -142,7 +196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isAdmin: user.isAdmin || false,
         firstName: user.firstName,
         lastName: user.lastName
-      };
+      });
       
       const responseUser = { 
         id: user.id, 

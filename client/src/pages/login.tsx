@@ -11,7 +11,9 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { ReturnlyLogo } from "@/components/LogoIcon";
-import { Mail, Lock, User, Phone } from "lucide-react";
+import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
+import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
+import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 
 // Import delivery images
@@ -28,6 +30,10 @@ export default function Login() {
   const queryClient = useQueryClient();
   const { login } = useAuth();
   const [activeTab, setActiveTab] = useState("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [passwordFocused, setPasswordFocused] = useState(false);
 
   // Check URL params for tab selection
   useEffect(() => {
@@ -39,15 +45,17 @@ export default function Login() {
   }, []);
 
   // Login form state
-  const [loginData, setLoginData] = useState({
+  const [loginData, setLoginData] = useState<LoginData>({
     email: '',
     password: ''
   });
 
   // Register form state
-  const [registerData, setRegisterData] = useState({
+  const [registerData, setRegisterData] = useState<RegistrationData>({
     email: '',
     phone: '',
+    firstName: '',
+    lastName: '',
     password: '',
     confirmPassword: '',
     dateOfBirth: ''
@@ -84,7 +92,7 @@ export default function Login() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { email: string; phone: string; password: string; dateOfBirth: string }) => {
+    mutationFn: async (data: { email: string; phone: string; firstName: string; lastName: string; password: string; dateOfBirth: string }) => {
       return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: () => {
@@ -104,40 +112,55 @@ export default function Login() {
     }
   });
 
+  const validateForm = (data: any, schema: any): boolean => {
+    try {
+      schema.parse(data);
+      setValidationErrors({});
+      return true;
+    } catch (error: any) {
+      const errors: Record<string, string> = {};
+      if (error.issues) {
+        error.issues.forEach((issue: any) => {
+          errors[issue.path[0]] = issue.message;
+        });
+      }
+      setValidationErrors(errors);
+      return false;
+    }
+  };
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginData.email || !loginData.password) {
+    
+    if (!validateForm(loginData, loginSchema)) {
       toast({
-        title: "Missing fields",
-        description: "Please fill in all fields",
+        title: "Validation Error",
+        description: "Please check the form for errors",
         variant: "destructive",
       });
       return;
     }
+    
     loginMutation.mutate(loginData);
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!registerData.email || !registerData.phone || !registerData.password || !registerData.dateOfBirth) {
+    
+    if (!validateForm(registerData, registrationSchema)) {
       toast({
-        title: "Missing fields",
-        description: "Please fill in all fields",
+        title: "Validation Error", 
+        description: "Please check the form for errors",
         variant: "destructive",
       });
       return;
     }
-    if (registerData.password !== registerData.confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please ensure both passwords are the same",
-        variant: "destructive",
-      });
-      return;
-    }
+    
     registerMutation.mutate({
       email: registerData.email,
       phone: registerData.phone,
+      firstName: registerData.firstName,
+      lastName: registerData.lastName,
       password: registerData.password,
       dateOfBirth: registerData.dateOfBirth
     });
@@ -340,6 +363,52 @@ export default function Login() {
               </CardHeader>
               <form onSubmit={handleRegister}>
                 <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="register-first-name" className="text-amber-800 font-medium">First Name</Label>
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                          <div className="flex items-center space-x-3">
+                            <User className="h-5 w-5 text-amber-600" />
+                            <Input
+                              id="register-first-name"
+                              data-testid="input-register-first-name"
+                              type="text"
+                              value={registerData.firstName}
+                              onChange={(e) => setRegisterData(prev => ({...prev, firstName: e.target.value}))}
+                              placeholder="First name"
+                              className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                            />
+                          </div>
+                        </div>
+                        {validationErrors.firstName && (
+                          <p className="text-red-600 text-xs mt-1">{validationErrors.firstName}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="register-last-name" className="text-amber-800 font-medium">Last Name</Label>
+                      <div className="relative">
+                        <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                          <div className="flex items-center space-x-3">
+                            <User className="h-5 w-5 text-amber-600" />
+                            <Input
+                              id="register-last-name"
+                              data-testid="input-register-last-name"
+                              type="text"
+                              value={registerData.lastName}
+                              onChange={(e) => setRegisterData(prev => ({...prev, lastName: e.target.value}))}
+                              placeholder="Last name"
+                              className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                            />
+                          </div>
+                        </div>
+                        {validationErrors.lastName && (
+                          <p className="text-red-600 text-xs mt-1">{validationErrors.lastName}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                   <div className="space-y-2">
                     <Label htmlFor="register-email" className="text-amber-800 font-medium">Email Address</Label>
                     <div className="relative">
@@ -357,6 +426,9 @@ export default function Login() {
                           />
                         </div>
                       </div>
+                      {validationErrors.email && (
+                        <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -376,6 +448,9 @@ export default function Login() {
                           />
                         </div>
                       </div>
+                      {validationErrors.phone && (
+                        <p className="text-red-600 text-xs mt-1">{validationErrors.phone}</p>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -397,7 +472,10 @@ export default function Login() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-password" className="text-amber-800 font-medium">Password</Label>
+                    <Label htmlFor="register-password" className="text-amber-800 font-medium">
+                      Password
+                      <Shield className="inline h-3 w-3 ml-1 text-amber-600" />
+                    </Label>
                     <div className="relative">
                       <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
                         <div className="flex items-center space-x-3">
@@ -405,15 +483,28 @@ export default function Login() {
                           <Input
                             id="register-password"
                             data-testid="input-register-password"
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={registerData.password}
                             onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
+                            onFocus={() => setPasswordFocused(true)}
+                            onBlur={() => setPasswordFocused(false)}
                             placeholder="Create a strong password"
-                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 pr-10"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 text-amber-600 hover:text-amber-800"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
                       </div>
+                      {validationErrors.password && (
+                        <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
+                      )}
                     </div>
+                    <PasswordStrengthIndicator password={registerData.password} showDetails={passwordFocused || registerData.password.length > 0} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="register-confirm" className="text-amber-800 font-medium">Confirm Password</Label>
@@ -424,14 +515,24 @@ export default function Login() {
                           <Input
                             id="register-confirm"
                             data-testid="input-register-confirm"
-                            type="password"
+                            type={showConfirmPassword ? "text" : "password"}
                             value={registerData.confirmPassword}
                             onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
                             placeholder="Confirm your password"
-                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 pr-10"
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-4 text-amber-600 hover:text-amber-800"
+                          >
+                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
                         </div>
                       </div>
+                      {validationErrors.confirmPassword && (
+                        <p className="text-red-600 text-xs mt-1">{validationErrors.confirmPassword}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
