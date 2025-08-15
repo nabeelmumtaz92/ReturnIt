@@ -1052,12 +1052,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin routes  
+  // Admin routes - restricted to nabeelmumtaz92@gmail.com only
   app.get("/api/admin/orders", async (req, res) => {
     try {
       const user = (req.session as any).user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+        return res.status(403).json({ message: "Admin access restricted" });
       }
       
       const orders = await storage.getAllOrders();
@@ -1070,8 +1070,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/drivers", async (req, res) => {
     try {
       const user = (req.session as any).user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+        return res.status(403).json({ message: "Admin access restricted" });
       }
       
       const drivers = await storage.getAllDrivers();
@@ -1084,8 +1084,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/promo", async (req, res) => {
     try {
       const user = (req.session as any).user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+        return res.status(403).json({ message: "Admin access restricted" });
       }
       
       const validatedData = insertPromoCodeSchema.parse(req.body);
@@ -1251,8 +1251,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/admin/incentives", isAuthenticated, async (req, res) => {
     try {
       const user = (req.session as any).user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+        return res.status(403).json({ message: "Admin access restricted" });
       }
 
       // Validate incentive data would go here
@@ -1276,8 +1276,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/admin/business-info", isAuthenticated, async (req, res) => {
     try {
       const user = (req.session as any).user;
-      if (!user?.isAdmin) {
-        return res.status(403).json({ message: "Admin access required" });
+      if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+        return res.status(403).json({ message: "Admin access restricted" });
       }
 
       const updatedInfo = await storage.updateBusinessInfo(req.body);
@@ -1289,10 +1289,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin analytics endpoint
   app.get('/api/admin/analytics', isAuthenticated, (req, res) => {
-    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean; email?: string };
     
-    if (!user?.isAdmin) {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+      return res.status(403).json({ error: 'Admin access restricted' });
     }
 
     const analytics = {
@@ -1307,51 +1307,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(analytics);
   });
 
-  // Admin orders endpoint
-  app.get('/api/admin/orders', isAuthenticated, (req, res) => {
-    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
-    
-    if (!user?.isAdmin) {
-      return res.status(403).json({ error: 'Admin access required' });
-    }
+  // Admin orders endpoint (duplicate - removed)
 
-    const orders = [
-      {
-        id: 1,
-        customerId: 1,
-        driverId: 2,
-        status: 'completed',
-        pickupAddress: '123 Main St, St. Louis, MO',
-        retailer: 'Target',
-        itemDescription: 'Electronics return',
-        totalAmount: 29.99,
-        createdAt: new Date().toISOString(),
-        customerName: 'John Doe',
-        driverName: 'Jane Smith'
-      },
-      {
-        id: 2,
-        customerId: 3,
-        status: 'assigned',
-        pickupAddress: '456 Oak Ave, St. Louis, MO',
-        retailer: 'Best Buy',
-        itemDescription: 'Laptop return',
-        totalAmount: 45.99,
-        createdAt: new Date().toISOString(),
-        customerName: 'Bob Johnson',
-        driverName: 'Mike Wilson'
-      }
-    ];
 
-    res.json(orders);
-  });
 
   // Admin drivers endpoint
   app.get('/api/admin/drivers', isAuthenticated, (req, res) => {
-    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean; email?: string };
     
-    if (!user?.isAdmin) {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+      return res.status(403).json({ error: 'Admin access restricted' });
     }
 
     const drivers = [
@@ -1382,10 +1347,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Update order status
   app.patch('/api/admin/orders/:orderId/status', isAuthenticated, (req, res) => {
-    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean; email?: string };
     
-    if (!user?.isAdmin) {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+      return res.status(403).json({ error: 'Admin access restricted' });
     }
 
     const { orderId } = req.params;
@@ -1396,10 +1361,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Approve driver
   app.patch('/api/admin/drivers/:driverId/approve', isAuthenticated, (req, res) => {
-    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean };
+    const user = (req.session as any)?.user as { id: number; isAdmin?: boolean; email?: string };
     
-    if (!user?.isAdmin) {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (!user?.isAdmin || user.email !== "nabeelmumtaz92@gmail.com") {
+      return res.status(403).json({ error: 'Admin access restricted' });
     }
 
     const { driverId } = req.params;
