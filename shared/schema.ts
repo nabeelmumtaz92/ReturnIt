@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   phone: text("phone"),
+  dateOfBirth: text("date_of_birth"),
   isDriver: boolean("is_driver").default(false).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
@@ -563,6 +564,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   password: z.string().min(6, "Password must be at least 6 characters"),
   email: z.string().email("Invalid email format"),
   phone: z.string().optional(),
+  dateOfBirth: z.string().optional(),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({

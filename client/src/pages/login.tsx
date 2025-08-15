@@ -44,7 +44,8 @@ export default function Login() {
     email: '',
     phone: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    dateOfBirth: ''
   });
 
   const loginMutation = useMutation({
@@ -104,7 +105,7 @@ export default function Login() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!registerData.email || !registerData.phone || !registerData.password) {
+    if (!registerData.email || !registerData.phone || !registerData.password || !registerData.dateOfBirth) {
       toast({
         title: "Missing fields",
         description: "Please fill in all fields",
@@ -123,7 +124,8 @@ export default function Login() {
     registerMutation.mutate({
       email: registerData.email,
       phone: registerData.phone,
-      password: registerData.password
+      password: registerData.password,
+      dateOfBirth: registerData.dateOfBirth
     });
   };
 
@@ -350,6 +352,24 @@ export default function Login() {
                             value={registerData.phone}
                             onChange={(e) => setRegisterData(prev => ({...prev, phone: e.target.value}))}
                             placeholder="Enter your phone number"
+                            className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-dob" className="text-amber-800 font-medium">Date of Birth</Label>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-3">
+                          <User className="h-5 w-5 text-amber-600" />
+                          <Input
+                            id="register-dob"
+                            data-testid="input-register-dob"
+                            type="date"
+                            value={registerData.dateOfBirth}
+                            onChange={(e) => setRegisterData(prev => ({...prev, dateOfBirth: e.target.value}))}
                             className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
                           />
                         </div>

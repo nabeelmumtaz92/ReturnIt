@@ -109,7 +109,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isDriver: user.isDriver, 
         isAdmin: user.isAdmin,
         firstName: user.firstName,
-        lastName: user.lastName
+        lastName: user.lastName,
+        dateOfBirth: user.dateOfBirth
       };
       
       res.status(201).json({ 
