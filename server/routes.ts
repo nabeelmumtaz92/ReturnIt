@@ -1931,7 +1931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       allowPublicLogin: true,
       allowGoogleAuth: true,
       allowDriverSignup: true,
-      enableDemoMode: true,
+      enableDemoMode: false,
       environment: process.env.NODE_ENV || 'development'
     });
   });
