@@ -13,90 +13,78 @@ export function LogoIcon({ size = 24, className = "" }: LogoIconProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Wider cardboard box with realistic box proportions - forming the 'Y' */}
+      {/* 3D Cardboard box with Y-shaped interior opening */}
       <g transform="translate(2, 1)">
-        {/* Main box structure - wider shipping box dimensions */}
         
-        {/* Back face (partially visible) - wider box with thinner lines */}
+        {/* Left side panel of the box */}
         <path
-          d="M5 6L20 2L35 6L35 18L20 22L5 18Z"
+          d="M2 8L12 4L12 20L2 20Z"
+          fill="#A47C48"
+          stroke="#8B6635"
+          strokeWidth="1.2"
+        />
+        
+        {/* Right side panel of the box */}
+        <path
+          d="M24 4L34 8L34 20L24 20Z"
+          fill="#A47C48"
+          stroke="#8B6635"
+          strokeWidth="1.2"
+        />
+        
+        {/* Bottom panel of the box */}
+        <path
+          d="M2 20L34 20L34 22L2 22Z"
+          fill="#A47C48"
+          stroke="#8B6635"
+          strokeWidth="1.2"
+        />
+        
+        {/* Top left flap - creating the Y opening */}
+        <path
+          d="M2 8L12 4L18 8L12 10Z"
+          fill="#A47C48"
+          stroke="#8B6635"
+          strokeWidth="1.2"
+        />
+        
+        {/* Top right flap - creating the Y opening */}
+        <path
+          d="M34 8L24 4L18 8L24 10Z"
+          fill="#A47C48"
+          stroke="#8B6635"
+          strokeWidth="1.2"
+        />
+        
+        {/* Interior Y-shaped opening - cream colored inside */}
+        <path
+          d="M12 10L18 8L24 10L24 20L12 20Z"
           fill="#F5F0E6"
-          stroke="#A47C48"
-          strokeWidth="1.2"
-          opacity="0.7"
+          stroke="#8B6635"
+          strokeWidth="1"
         />
         
-        {/* Front face overlay - wider proportions with thinner lines */}
+        {/* Center fold line creating the Y stem */}
         <path
-          d="M2 8L18 4L34 8L34 20L18 24L2 20Z"
-          fill="#F5F0E6"
-          stroke="#A47C48"
-          strokeWidth="1.5"
-        />
-        
-        {/* Top fold - creating the 3D effect across wider box */}
-        <path
-          d="M2 8L18 12L34 8"
-          stroke="#A47C48"
-          strokeWidth="1.2"
-          fill="none"
-        />
-        
-        {/* Center crease - vertical line down the middle */}
-        <path
-          d="M18 4L18 12"
-          stroke="#A47C48"
+          d="M18 8L18 20"
+          stroke="#8B6635"
           strokeWidth="1.2"
         />
         
-        {/* Bottom vertical crease */}
+        {/* Left Y branch fold line */}
         <path
-          d="M18 12L18 24"
-          stroke="#A47C48"
-          strokeWidth="1.2"
+          d="M18 8L12 10"
+          stroke="#8B6635"
+          strokeWidth="1"
         />
         
-        {/* Inner cross lines spanning the wider box - thinner */}
+        {/* Right Y branch fold line */}
         <path
-          d="M8 10L28 18"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.5"
-        />
-        <path
-          d="M28 10L8 18"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.5"
+          d="M18 8L24 10"
+          stroke="#8B6635"
+          strokeWidth="1"
         />
         
-        {/* Additional corner details for wider box - thinner */}
-        <path
-          d="M2 8L8 10"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.6"
-        />
-        <path
-          d="M34 8L28 10"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.6"
-        />
-        
-        {/* Side fold lines for realistic box appearance - thinner */}
-        <path
-          d="M2 8L2 20"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.4"
-        />
-        <path
-          d="M34 8L34 20"
-          stroke="#A47C48"
-          strokeWidth="0.8"
-          opacity="0.4"
-        />
       </g>
     </svg>
   );
