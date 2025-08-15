@@ -1,54 +1,15 @@
 import { z } from "zod";
 
-// Password validation schema with comprehensive requirements
+// Simple password validation
 export const passwordSchema = z.string()
-  .min(8, "Password must be at least 8 characters long")
-  .max(128, "Password must be less than 128 characters")
-  .regex(/^(?=.*[a-z])/, "Password must contain at least one lowercase letter")
-  .regex(/^(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
-  .regex(/^(?=.*\d)/, "Password must contain at least one number")
-  .regex(/^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/, "Password must contain at least one special character")
-  .refine((password) => {
-    // Check for common weak passwords
-    const commonPasswords = [
-      "password", "123456", "12345678", "qwerty", "abc123", 
-      "password123", "admin", "letmein", "welcome", "monkey"
-    ];
-    return !commonPasswords.includes(password.toLowerCase());
-  }, "Password is too common. Please choose a stronger password")
-  .refine((password) => {
-    // Check for sequential characters
-    const sequential = /012|123|234|345|456|567|678|789|890|abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz/i;
-    return !sequential.test(password);
-  }, "Password cannot contain sequential characters")
-  .refine((password) => {
-    // Check for repeated characters
-    const repeated = /(.)\1{2,}/;
-    return !repeated.test(password);
-  }, "Password cannot contain repeated characters");
+  .min(1, "Password is required");
 
-// Email validation with enhanced rules
+// Simple email validation
 export const emailSchema = z.string()
-  .email("Please enter a valid email address")
-  .min(5, "Email must be at least 5 characters")
-  .max(254, "Email must be less than 254 characters")
-  .refine((email) => {
-    // Check for disposable email domains
-    const disposableDomains = [
-      "10minutemail.com", "tempmail.org", "guerrillamail.com",
-      "mailinator.com", "yopmail.com", "temp-mail.org"
-    ];
-    const domain = email.split('@')[1]?.toLowerCase();
-    return !disposableDomains.includes(domain);
-  }, "Disposable email addresses are not allowed");
+  .email("Please enter a valid email address");
 
-// Phone validation
-export const phoneSchema = z.string()
-  .regex(/^\+?[\d\s\-\(\)]{10,15}$/, "Please enter a valid phone number")
-  .refine((phone) => {
-    const digitsOnly = phone.replace(/\D/g, '');
-    return digitsOnly.length >= 10 && digitsOnly.length <= 15;
-  }, "Phone number must contain 10-15 digits");
+// Simple phone validation
+export const phoneSchema = z.string().optional();
 
 // Registration validation schema
 export const registrationSchema = z.object({
