@@ -77,6 +77,7 @@ export class MemStorage implements IStorage {
   private driverIncentives: Map<number, DriverIncentive>;
   private businessInfo: BusinessInfo | undefined;
   private driverApplications: Map<string, DriverApplication>;
+  private paymentRecords: Map<string, any>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
@@ -95,6 +96,7 @@ export class MemStorage implements IStorage {
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
     this.driverApplications = new Map();
+    this.paymentRecords = new Map();
     
     // Master Administrator account
     const masterAdmin: User = {
@@ -629,9 +631,6 @@ export class MemStorage implements IStorage {
   }
 
   // Additional required methods
-  async getAllOrders(): Promise<Order[]> {
-    return Array.from(this.orders.values());
-  }
 
   async getAllDrivers(): Promise<User[]> {
     return Array.from(this.users.values()).filter(user => user.isDriver);
@@ -641,9 +640,6 @@ export class MemStorage implements IStorage {
     return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
   }
 
-  async getDriverOrders(driverId: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
-  }
 
   // Driver payouts and Stripe Connect methods
   async createDriverPayout(insertPayout: InsertDriverPayout): Promise<DriverPayout> {
