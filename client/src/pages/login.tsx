@@ -279,11 +279,11 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/">
             <div className="mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 inline-block">
-              <ReturnlyLogo size={48} variant="default" />
+              <ReturnlyLogo size={48} variant="light" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-amber-900">Welcome to Returnly</h1>
-          <p className="text-amber-700">Returns made easy</p>
+          <h1 className="text-2xl font-bold text-white">Welcome to Returnly</h1>
+          <p className="text-white/90">Returns made easy</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -291,14 +291,14 @@ export default function Login() {
             <TabsTrigger 
               value="login" 
               data-testid="tab-login"
-              className="w-full data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium bg-white border border-amber-200 py-3"
+              className="w-full data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=inactive]:text-white data-[state=inactive]:bg-white/20 font-medium border border-white/30 py-3"
             >
               Sign In
             </TabsTrigger>
             <TabsTrigger 
               value="register" 
               data-testid="tab-register"
-              className="w-full data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900 data-[state=inactive]:text-amber-700 font-medium bg-white border border-amber-200 py-3"
+              className="w-full data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=inactive]:text-white data-[state=inactive]:bg-white/20 font-medium border border-white/30 py-3"
             >
               Sign Up
             </TabsTrigger>
