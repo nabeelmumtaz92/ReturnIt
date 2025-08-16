@@ -939,7 +939,7 @@ export default function CustomerMobileApp() {
               <Phone className="h-6 w-6 text-amber-600" />
               <div>
                 <h3 className="font-medium text-amber-900">Call Support</h3>
-                <p className="text-sm text-amber-700">(314) 555-0199</p>
+                <p className="text-sm text-amber-700">(636) 254-4821</p>
               </div>
             </div>
           </CardContent>

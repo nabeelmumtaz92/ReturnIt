@@ -259,7 +259,7 @@ export default function DriverSafetyCenter() {
                       <div>
                         <h3 className="font-semibold text-red-900">Returnly Emergency Dispatch</h3>
                         <p className="text-sm text-red-700">24/7 emergency response team</p>
-                        <p className="text-lg font-bold text-red-900">(314) 555-HELP</p>
+                        <p className="text-lg font-bold text-red-900">(636) 254-4821</p>
                       </div>
                       <Phone className="h-8 w-8 text-red-600" />
                     </div>
@@ -277,7 +277,7 @@ export default function DriverSafetyCenter() {
                       <div>
                         <h3 className="font-semibold text-green-900">Primary Emergency Contact</h3>
                         <p className="text-sm text-green-700">Sarah Johnson (Spouse)</p>
-                        <p className="text-lg font-bold text-green-900">(314) 555-0123</p>
+                        <p className="text-lg font-bold text-green-900">(636) 254-4821</p>
                       </div>
                       <Phone className="h-8 w-8 text-green-600" />
                     </div>

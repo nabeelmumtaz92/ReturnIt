@@ -1360,7 +1360,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const netAmount = totalEarnings - feeAmount;
 
       // Get driver's Stripe Connect account
-      const driver = await storage.getUser(driverId.toString());
       if (!driver?.stripeConnectAccountId) {
         return res.status(400).json({ message: "Driver Stripe Connect account not set up" });
       }

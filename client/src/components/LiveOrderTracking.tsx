@@ -54,7 +54,7 @@ export default function LiveOrderTracking({
       id: orderId,
       customerName: 'Sarah Johnson',
       driverName: 'Mike Rodriguez',
-      driverPhone: '(314) 555-0124',
+      driverPhone: '(636) 254-4821',
       status: 'en_route',
       pickupAddress: '123 Main St, St. Louis, MO 63101',
       dropoffAddress: 'Target - Chesterfield Valley',

@@ -124,7 +124,7 @@ export default function ReturnItDriverApp() {
       {
         id: 'JOB001',
         customer: 'Sarah Johnson',
-        customerPhone: '(314) 555-0123',
+        customerPhone: '(636) 254-4821',
         status: 'available',
         amount: 8.99,
         distance: '2.3 mi',
@@ -139,7 +139,7 @@ export default function ReturnItDriverApp() {
       {
         id: 'JOB002',
         customer: 'Mike Rodriguez',
-        customerPhone: '(314) 555-0124',
+        customerPhone: '(636) 254-4821',
         status: 'available',
         amount: 12.50,
         distance: '4.1 mi',
@@ -156,7 +156,7 @@ export default function ReturnItDriverApp() {
       {
         id: 'JOB003',
         customer: 'Jennifer Lee',
-        customerPhone: '(314) 555-0125',
+        customerPhone: '(636) 254-4821',
         status: 'completed',
         amount: 6.75,
         distance: '1.8 mi',
@@ -646,7 +646,7 @@ export default function ReturnItDriverApp() {
                     </div>
                     <div>
                       <Label className="text-blue-800 font-medium">Phone</Label>
-                      <p className="text-blue-900">(314) 555-0123</p>
+                      <p className="text-blue-900">(636) 254-4821</p>
                     </div>
                     <div>
                       <Label className="text-blue-800 font-medium">Vehicle</Label>

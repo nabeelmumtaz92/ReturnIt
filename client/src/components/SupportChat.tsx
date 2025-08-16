@@ -275,7 +275,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
   };
 
   const handleCallSupport = () => {
-    window.open('tel:+13145550199');
+    window.open('tel:+16362544821');
   };
 
   if (!isOpen) return null;

@@ -99,7 +99,7 @@ Booking a return pickup with Returnly is quick and easy! Follow this step-by-ste
 ## Need Help?
 If you run into any issues during booking:
 - **Live Chat**: Available 8 AM - 8 PM CST
-- **Phone**: (314) 555-0123
+- **Phone**: (636) 254-4821
 - **Email**: support@returnly.com
 
 ## Related Articles
@@ -239,7 +239,7 @@ We accept all major payment methods:
 ## Questions About Pricing?
 Our support team can help clarify any charges:
 - **Live Chat**: Instant pricing estimates
-- **Phone**: (314) 555-0123
+- **Phone**: (636) 254-4821
 - **Email**: billing@returnly.com
       `,
       relatedArticles: ['how-to-book-return', 'promo-codes', 'payment-methods'],
@@ -373,12 +373,12 @@ Stay informed about your return pickup with real-time tracking updates from book
 
 ### Quick Support Options
 - **Live Chat**: Instant help with tracking
-- **Phone**: (314) 555-0123
+- **Phone**: (636) 254-4821
 - **Email**: tracking@returnly.com
 
 ### Emergency Support
 Available 24/7 for urgent tracking issues:
-- **Emergency Line**: (314) 555-0911
+- **Emergency Line**: (636) 254-4821
 - **Priority Chat**: Available to premium customers
 
 ## Related Articles
@@ -561,7 +561,7 @@ We deliver to major retailers throughout our service area:
 
 **Contact our expansion team**:
 - **Email**: expansion@returnly.com
-- **Phone**: (314) 555-0123 ext. 3
+- **Phone**: (636) 254-4821 ext. 3
 - **Live Chat**: Available 9 AM - 5 PM CST
 
 ## Related Articles
@@ -715,7 +715,7 @@ Everything drivers need to know about working with Returnly, from getting starte
 2. **Check internet connection** and GPS
 3. **Update to latest version** from app store
 4. **Restart phone** if problems persist
-5. **Contact tech support**: (314) 555-0123 ext. 4
+5. **Contact tech support**: (636) 254-4821 ext. 4
 
 ### How do I track my earnings?
 - **Real-time tracking**: See earnings per pickup
@@ -735,8 +735,8 @@ Everything drivers need to know about working with Returnly, from getting starte
 
 ### How do I get help?
 - **In-app support**: Chat feature for quick questions
-- **Phone support**: (314) 555-0123 for drivers
-- **Emergency line**: (314) 555-0911 for urgent issues
+- **Phone support**: (636) 254-4821 for drivers
+- **Emergency line**: (636) 254-4821 for urgent issues
 - **Email support**: drivers@returnly.com
 - **Driver community**: Facebook group for tips
 
@@ -808,9 +808,9 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Phone Support 📞
 
 ### Talk to a Human
-- **Main line**: (314) 555-0123
+- **Main line**: (636) 254-4821
 - **Hours**: 8 AM - 8 PM CST daily
-- **Emergency**: (314) 555-0911 (24/7)
+- **Emergency**: (636) 254-4821 (24/7)
 - **Driver support**: Ext. 2
 - **Billing questions**: Ext. 3
 
@@ -868,7 +868,7 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Emergency Support 🚨
 
 ### 24/7 Emergency Line
-- **Phone**: (314) 555-0911
+- **Phone**: (636) 254-4821
 - **For urgent issues only**:
   - Driver safety concerns
   - Package theft or damage
@@ -884,7 +884,7 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Support for Drivers 🚗
 
 ### Driver-Specific Help
-- **Dedicated line**: (314) 555-0123 ext. 2
+- **Dedicated line**: (636) 254-4821 ext. 2
 - **Driver portal**: drivers.returnly.com
 - **24/7 roadside**: Emergency assistance
 - **Payment questions**: Instant pay support
@@ -989,7 +989,7 @@ Quick solutions for common delivery issues, from delays to damage claims.
 1. **Check the app** for updated arrival time
 2. **Contact driver** through in-app messaging
 3. **Allow 15-minute buffer** - traffic happens
-4. **Call support** if over 30 minutes late: (314) 555-0123
+4. **Call support** if over 30 minutes late: (636) 254-4821
 
 ### Automatic Solutions
 - **Real-time updates** sent to your phone
@@ -1034,7 +1034,7 @@ Quick solutions for common delivery issues, from delays to damage claims.
 ## Wrong Delivery Location
 
 ### If Package Went to Wrong Store
-1. **Contact us immediately**: (314) 555-0123
+1. **Contact us immediately**: (636) 254-4821
 2. **Provide correct destination** details
 3. **We'll redirect** or arrange new pickup
 4. **No additional charges** for our error
@@ -1107,7 +1107,7 @@ Quick solutions for common delivery issues, from delays to damage claims.
 1. **Force close** and restart app
 2. **Check internet connection** and GPS
 3. **Update to latest version** from app store
-4. **Contact tech support**: (314) 555-0123 ext. 4
+4. **Contact tech support**: (636) 254-4821 ext. 4
 
 ### Tracking Issues
 - **GPS delays**: Updates within 15 minutes
@@ -1171,7 +1171,7 @@ Quick solutions for common delivery issues, from delays to damage claims.
 - **Repeated issues**: Same problem multiple times
 - **Driver behavior**: Unprofessional conduct
 
-### Emergency Hotline: (314) 555-0911
+### Emergency Hotline: (636) 254-4821
 Available 24/7 for urgent issues requiring immediate attention.
 
 ## Compensation Policy
@@ -1363,7 +1363,7 @@ Multiple secure payment options to make your return pickup convenient and safe.
 ## Payment Support 📞
 
 ### Common Questions
-- **Failed payments**: (314) 555-0123 ext. 3
+- **Failed payments**: (636) 254-4821 ext. 3
 - **Billing disputes**: billing@returnly.com
 - **Refund status**: Check account or contact support
 - **Business accounts**: enterprise@returnly.com
@@ -1601,13 +1601,13 @@ Complete guide to our return policies including accepted items, size restriction
 ## Contact Information
 
 ### Policy Questions
-- **General policies**: (314) 555-0123
+- **General policies**: (636) 254-4821
 - **Legal questions**: legal@returnly.com
 - **Dispute resolution**: disputes@returnly.com
 - **Insurance claims**: insurance@returnly.com
 
 ### Emergency Situations
-- **Safety concerns**: (314) 555-0911
+- **Safety concerns**: (636) 254-4821
 - **Prohibited items**: Stop transport immediately
 - **Hazmat discovery**: Emergency protocols activated
 - **Driver safety**: Priority response
@@ -2073,7 +2073,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
                 </Button>
                 <Button className="bg-white text-amber-600 hover:bg-amber-50" data-testid="button-article-call">
                   <Phone className="h-4 w-4 mr-2" />
-                  Call (314) 555-0123
+                  Call (636) 254-4821
                 </Button>
                 <Button className="bg-white text-amber-600 hover:bg-amber-50" data-testid="button-article-email">
                   <Mail className="h-4 w-4 mr-2" />

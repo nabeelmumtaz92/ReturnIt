@@ -411,7 +411,7 @@ export default function DriverTutorial() {
               24/7 Support
             </h4>
             <p className="text-sm text-yellow-800">
-              Need help? Contact driver support anytime at <strong>(314) 555-0199</strong> or through the app's help button.
+              Need help? Contact driver support anytime at <strong>(636) 254-4821</strong> or through the app's help button.
             </p>
           </div>
         </div>

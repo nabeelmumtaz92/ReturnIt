@@ -93,7 +93,7 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
   };
 
   const handleCallSupport = () => {
-    window.open('tel:+13145550199');
+    window.open('tel:+16362544821');
   };
 
   useEffect(() => {

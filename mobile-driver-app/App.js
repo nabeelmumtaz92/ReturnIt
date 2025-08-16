@@ -374,7 +374,7 @@ export default function App() {
           <View style={styles.section}>
             <TouchableOpacity 
               style={styles.contactSupportButton}
-              onPress={() => Alert.alert('Contact Support', 'Support chat feature coming soon! For immediate help, call (314) 555-0199')}
+              onPress={() => Alert.alert('Contact Support', 'Support chat feature coming soon! For immediate help, call (636) 254-4821')}
             >
               <Text style={styles.contactSupportText}>💬 Contact Support</Text>
             </TouchableOpacity>
