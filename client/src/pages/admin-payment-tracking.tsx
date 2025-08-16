@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, Download, DollarSign, FileSpreadsheet, Filter, Search, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { generateSamplePaymentRecords, generatePaymentSummary } from "@/lib/demoPaymentData";
+import { AdminNavigation } from "@/components/AdminNavigation";
 
 interface PaymentRecord {
   id: string;
@@ -121,6 +122,7 @@ export default function AdminPaymentTracking() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-amber-900 mb-2">Payment Tracking & Tax Management</h1>
