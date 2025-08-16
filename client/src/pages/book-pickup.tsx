@@ -924,36 +924,123 @@ export default function BookPickup() {
                 />
               )}
 
-              {/* Financial Breakdown */}
+              {/* Pricing Display */}
               {formData.itemValue && parseFloat(formData.itemValue) > 0 && (
                 <div className="space-y-4">
+                  {/* Subtotal */}
                   <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-amber-900 font-semibold text-lg">Returnly Service Fee:</span>
-                        <span className="text-amber-900 font-bold text-xl" data-testid="text-total-amount">
-                          ${totalAmount.toFixed(2)}
-                        </span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-900 font-semibold text-lg">Subtotal:</span>
+                      <span className="text-amber-900 font-bold text-xl" data-testid="text-subtotal-amount">
+                        $3.99
+                      </span>
+                    </div>
+                    {routeInfo && (
+                      <p className="text-xs text-amber-600">
+                        ETA: {routeInfo.duration} • Price locked at booking
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Fees Breakdown */}
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <h4 className="text-blue-900 font-semibold mb-3">Fees & Taxes</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Service Fee (15%):</span>
+                        <span className="font-medium">$0.60</span>
                       </div>
-                      {routeInfo && (
-                        <p className="text-xs text-amber-600">
-                          ETA: {routeInfo.duration} • Fare locked at booking
-                        </p>
-                      )}
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Processing Fee:</span>
+                        <span className="font-medium">$0.30</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Tax (8.5%):</span>
+                        <span className="font-medium">$0.42</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Import and use the comprehensive breakdown component */}
-                  <PaymentBreakdown
-                    itemValue={parseFloat(formData.itemValue) || 0}
-                    numberOfItems={formData.numberOfItems}
-                    routeInfo={routeInfo ? {
-                      distance: routeInfo.distance,
-                      estimatedTime: routeInfo.duration
-                    } : undefined}
-                    isRush={false}
-                    tip={0}
-                  />
+                  {/* Total */}
+                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-900 font-bold text-lg">Total:</span>
+                      <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">
+                        $5.31
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payment Method Selection */}
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <h4 className="text-gray-900 font-semibold mb-3">Payment Method</h4>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <Button
+                          type="button"
+                          variant={selectedPaymentMethod === 'card' ? 'default' : 'outline'}
+                          onClick={() => setSelectedPaymentMethod('card')}
+                          className="h-12"
+                          data-testid="button-payment-card"
+                        >
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Debit/Credit
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={selectedPaymentMethod === 'paypal' ? 'default' : 'outline'}
+                          onClick={() => setSelectedPaymentMethod('paypal')}
+                          className="h-12"
+                          data-testid="button-payment-paypal"
+                        >
+                          💳 PayPal
+                        </Button>
+                      </div>
+                      
+                      {selectedPaymentMethod === 'card' && (
+                        <div className="space-y-3 mt-4 p-3 bg-gray-50 rounded border">
+                          <div>
+                            <Label htmlFor="cardNumber">Card Number</Label>
+                            <Input
+                              id="cardNumber"
+                              placeholder="1234 5678 9012 3456"
+                              className="bg-white"
+                              data-testid="input-card-number"
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <Label htmlFor="expiry">Expiry</Label>
+                              <Input
+                                id="expiry"
+                                placeholder="MM/YY"
+                                className="bg-white"
+                                data-testid="input-card-expiry"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="cvv">CVV</Label>
+                              <Input
+                                id="cvv"
+                                placeholder="123"
+                                className="bg-white"
+                                data-testid="input-card-cvv"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="cardName">Name on Card</Label>
+                            <Input
+                              id="cardName"
+                              placeholder="John Doe"
+                              className="bg-white"
+                              data-testid="input-card-name"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -962,11 +1049,16 @@ export default function BookPickup() {
                 <Button
                   type="submit"
                   className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3"
-                  disabled={createOrderMutation.isPending}
+                  disabled={createOrderMutation.isPending || !selectedPaymentMethod}
                   data-testid="button-book-pickup"
                 >
-                  {createOrderMutation.isPending ? "Booking Pickup..." : `Book Pickup - $${totalAmount.toFixed(2)}`}
+                  {createOrderMutation.isPending ? "Booking Pickup..." : "Book Pickup"}
                 </Button>
+                {!selectedPaymentMethod && (
+                  <p className="text-sm text-red-600 mt-2 text-center">
+                    Please select a payment method to continue
+                  </p>
+                )}
               </div>
             </CardContent>
           </form>
