@@ -117,6 +117,84 @@ export default function CustomerMobileApp() {
         </Button>
       </div>
 
+      {/* How It Works - Always visible */}
+      <div>
+        <h2 className="text-lg font-semibold text-[#A47C48] mb-3">How It Works</h2>
+        <div className="grid grid-cols-1 gap-3">
+          <Card className="border-[#A47C48]/20">
+            <CardContent className="p-4 flex items-start gap-3">
+              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
+                1
+              </div>
+              <div>
+                <h3 className="font-medium text-[#A47C48] mb-1">Book Your Pickup</h3>
+                <p className="text-sm text-[#7B5E3B]">Schedule a pickup for your returns with just a few taps</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-[#A47C48]/20">
+            <CardContent className="p-4 flex items-start gap-3">
+              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
+                2
+              </div>
+              <div>
+                <h3 className="font-medium text-[#A47C48] mb-1">Package & Wait</h3>
+                <p className="text-sm text-[#7B5E3B]">Package your items and wait for our driver to arrive</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-[#A47C48]/20">
+            <CardContent className="p-4 flex items-start gap-3">
+              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
+                3
+              </div>
+              <div>
+                <h3 className="font-medium text-[#A47C48] mb-1">We Handle the Rest</h3>
+                <p className="text-sm text-[#7B5E3B]">Our driver takes care of returning your items to the store</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Popular Retailers */}
+      <div>
+        <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Popular Retailers</h2>
+        <Card className="border-[#A47C48]/20">
+          <CardContent className="p-4">
+            <p className="text-sm text-[#7B5E3B] mb-3">We handle returns for all major retailers:</p>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Amazon</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Target</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Best Buy</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Walmart</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>Home Depot</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span>+ Many More</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* Active Orders */}
       {activeOrders.length > 0 && (
         <div>
@@ -152,6 +230,44 @@ export default function CustomerMobileApp() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Service Info - Always visible when no recent orders */}
+      {recentOrders.length === 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Service Information</h2>
+          <div className="space-y-3">
+            <Card className="border-[#A47C48]/20 bg-blue-50">
+              <CardContent className="p-4 flex items-start gap-3">
+                <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h3 className="font-medium text-blue-900 mb-1">Same-Day Pickup Available</h3>
+                  <p className="text-sm text-blue-700">Book before 2 PM for same-day pickup service</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-[#A47C48]/20 bg-green-50">
+              <CardContent className="p-4 flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
+                <div>
+                  <h3 className="font-medium text-green-900 mb-1">Serving St. Louis Area</h3>
+                  <p className="text-sm text-green-700">Available throughout St. Louis City and County</p>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-[#A47C48]/20 bg-amber-50">
+              <CardContent className="p-4 flex items-start gap-3">
+                <DollarSign className="h-5 w-5 text-amber-600 mt-0.5" />
+                <div>
+                  <h3 className="font-medium text-amber-900 mb-1">Starting at $8.99</h3>
+                  <p className="text-sm text-amber-700">Transparent pricing with no hidden fees</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       )}
