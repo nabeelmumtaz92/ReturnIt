@@ -86,7 +86,7 @@ export function SupportChatFixed({ isOpen, onClose, context }: SupportChatProps)
       const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       
       addMessage(
-        `Hi ${context?.name || 'there'}! This is ${randomAgent} from Returnly Support (${currentTime}). I'm here to help you resolve this issue. How can I assist you today?`,
+        `Hi ${context?.name || 'there'}! This is ${randomAgent} from ReturnIt Support (${currentTime}). I'm here to help you resolve this issue. How can I assist you today?`,
         'support'
       );
     }, 3000);

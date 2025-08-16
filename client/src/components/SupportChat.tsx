@@ -36,49 +36,157 @@ interface SupportChatProps {
   } | null;
 }
 
-const AI_RESPONSES = {
+interface QuestionNode {
+  question: string;
+  options?: Array<{
+    text: string;
+    next?: string;
+    action?: 'navigate' | 'guide' | 'escalate';
+    link?: string;
+    content?: string;
+  }>;
+  action?: 'escalate';
+}
+
+const CONVERSATION_FLOW = {
   greeting: {
-    driver: "Hi! I'm the ReturnIt AI Assistant 🤖 I'm here to guide you to exactly what you need. I can help you navigate to the right place in your app, check your earnings, resolve delivery issues, or connect you with live support. Let me help you get where you need to go!",
-    customer: "Hello! I'm the ReturnIt AI Assistant 🤖 I'm here to guide you to exactly what you need. Whether it's tracking your pickup, contacting your driver, managing payments, or speaking with support, I'll help you navigate to the right solution quickly!"
+    driver: "Hi! I'm the ReturnIt AI Assistant. I'll help you navigate to exactly what you need with a few quick questions.",
+    customer: "Hello! I'm the ReturnIt AI Assistant. I'll ask you a few questions to guide you to the right solution quickly."
   },
-  commonIssues: {
-    driver: [
-      "💰 Check my earnings & payments",
-      "🚗 Current delivery assistance", 
-      "📱 App & account help",
-      "📍 Navigation & address issues",
-      "☎️ Speak with support now"
-    ],
-    customer: [
-      "📦 Track my pickup status",
-      "🚗 Driver location & timing",
-      "💳 Payment & billing help", 
-      "📍 Change pickup details",
-      "☎️ Speak with support now"
-    ]
-  },
-  responses: {
-    // Customer responses - Updated with navigation guidance
-    "📦 Track my pickup status": "I can help you track your pickup right away! Here's what I can show you:\n\n🔍 **Where to check your status:**\n• Visit your Order History page\n• Check your email for updates\n• View real-time tracking when driver is assigned\n\n📍 **Current status options:**\n• Pickup scheduled\n• Driver assigned & en route\n• Pickup completed\n\nWould you like me to look up your specific order status?",
+  
+  // Question tree structure
+  questions: {
+    initial: {
+      driver: {
+        question: "What can I help you with today?",
+        options: [
+          { text: "💰 Earnings and payments", next: "earnings" },
+          { text: "🚗 Current delivery help", next: "delivery" },
+          { text: "📱 App or account issues", next: "app" },
+          { text: "📍 Navigation problems", next: "navigation" },
+          { text: "🆘 Something else", next: "other_driver" }
+        ]
+      },
+      customer: {
+        question: "What can I help you with today?",
+        options: [
+          { text: "📦 Track my pickup", next: "tracking" },
+          { text: "🚗 Driver questions", next: "driver_contact" },
+          { text: "💳 Payment issues", next: "payment" },
+          { text: "📍 Change pickup details", next: "pickup_changes" },
+          { text: "🆘 Something else", next: "other_customer" }
+        ]
+      }
+    },
     
-    "🚗 Driver location & timing": "Let me help you get real-time driver information:\n\n📱 **Track your driver:**\n• Check the tracking link sent to your phone\n• View live GPS location when driver is dispatched\n• Get estimated arrival time updates\n\n⏰ **If your driver is delayed:**\n• I can contact them directly\n• Reschedule for a better time\n• Assign a different driver if available\n\nWhat would be most helpful for you right now?",
+    // Driver flow
+    earnings: {
+      question: "What specific earnings question do you have?",
+      options: [
+        { text: "View my earnings dashboard", action: "navigate", link: "/driver-earnings" },
+        { text: "Update payment method", action: "navigate", link: "/driver-settings" },
+        { text: "Payment didn't arrive", next: "payment_missing" },
+        { text: "Something else about earnings", next: "other_earnings" }
+      ]
+    },
     
-    "💳 Payment & billing help": "I can assist with all payment-related questions:\n\n💰 **Common payment help:**\n• Update your payment method\n• Review charges and fees\n• Process refunds if needed\n• Apply promotional codes\n\n🧾 **Where to manage payments:**\n• Go to Account Settings → Payment Methods\n• View billing history in your profile\n• Download receipts from Order History\n\nWhat specific payment issue can I help resolve?",
+    delivery: {
+      question: "What delivery issue are you experiencing?",
+      options: [
+        { text: "Customer not available", next: "customer_unavailable" },
+        { text: "Can't find the address", action: "navigate", link: "/driver-help" },
+        { text: "Package damaged", next: "package_damaged" },
+        { text: "Something else about delivery", next: "other_delivery" }
+      ]
+    },
     
-    "📍 Change pickup details": "I can help you update your pickup information:\n\n✏️ **What you can change:**\n• Pickup address or location\n• Contact phone number\n• Special instructions for driver\n• Number of packages\n\n📱 **How to make changes:**\n• Go to your active order and tap 'Edit'\n• Call our support line: (636) 254-4821\n• I can update details for you right now\n\nWhat pickup details would you like to change?",
+    app: {
+      question: "What app or account issue are you having?",
+      options: [
+        { text: "Can't log in", action: "navigate", link: "/login" },
+        { text: "Update my profile", action: "navigate", link: "/driver-profile" },
+        { text: "App crashes or freezes", next: "app_technical" },
+        { text: "Something else with the app", next: "other_app" }
+      ]
+    },
     
-    "☎️ Speak with support now (customer)": "I'll connect you with a live support agent immediately!\n\n👥 **Live support options:**\n• Chat with a human agent (available now)\n• Call our support line: (636) 254-4821\n• Email support: hello@returnit.online\n\n⚡ **What our agents can help with:**\n• Complex order issues\n• Urgent pickup changes\n• Payment disputes\n• Account problems\n\nShould I connect you with an agent now?",
+    navigation: {
+      question: "What navigation problem can I help with?",
+      options: [
+        { text: "GPS not working", next: "gps_issues" },
+        { text: "Wrong pickup address", next: "wrong_address" },
+        { text: "Can't find customer", action: "guide", content: "Use the 'Contact Customer' button in your driver app to call or text them for better directions." },
+        { text: "Something else about navigation", next: "other_navigation" }
+      ]
+    },
     
-    // Driver responses - Updated with navigation guidance  
-    "💰 Check my earnings & payments": "I can help you access your earnings information:\n\n💵 **Check your earnings:**\n• Open the Driver App → Earnings tab\n• View daily, weekly, and monthly totals\n• See completed delivery payments\n• Track bonus and incentive earnings\n\n🏦 **Payment settings:**\n• Update bank account info\n• Choose instant pay or weekly deposits\n• View tax documents (1099s)\n\nWhat specific earnings information do you need?",
+    // Customer flow
+    tracking: {
+      question: "What would you like to track?",
+      options: [
+        { text: "View my order status", action: "navigate", link: "/order-history" },
+        { text: "See driver location", action: "guide", content: "Check your email for the tracking link sent when your driver was assigned." },
+        { text: "Pickup hasn't happened yet", next: "pickup_delayed" },
+        { text: "Something else about tracking", next: "other_tracking" }
+      ]
+    },
     
-    "🚗 Current delivery assistance": "I'm here to help with your active delivery:\n\n📦 **Common delivery help:**\n• Customer not available at pickup\n• Wrong or unclear address\n• Package issues or damages\n• Customer communication problems\n\n📱 **Use your Driver App:**\n• Tap 'Contact Customer' to call/text\n• Use 'Report Issue' for problems\n• Take photos for documentation\n• Mark delivery status updates\n\nWhat's happening with your current delivery?",
+    driver_contact: {
+      question: "What do you need regarding your driver?",
+      options: [
+        { text: "Contact my driver", action: "guide", content: "Use the phone number in your order confirmation email or the tracking link to contact your driver." },
+        { text: "Driver is late", next: "driver_late" },
+        { text: "Driver didn't show up", next: "driver_noshow" },
+        { text: "Something else about my driver", next: "other_driver_contact" }
+      ]
+    },
     
-    "📱 App & account help": "I can help you with app and account issues:\n\n🔧 **Common fixes:**\n• Force close and reopen the app\n• Check for app updates in your app store\n• Clear cache (Android) or restart phone\n• Log out and back in to refresh\n\n⚙️ **Account management:**\n• Update profile information\n• Change notification settings\n• Reset password if needed\n• Contact technical support\n\nWhat specific issue are you experiencing?",
+    payment: {
+      question: "What payment issue can I help with?",
+      options: [
+        { text: "Update payment method", action: "navigate", link: "/account-settings" },
+        { text: "Request a refund", next: "refund_request" },
+        { text: "Billing questions", next: "billing_questions" },
+        { text: "Something else about payment", next: "other_payment" }
+      ]
+    },
     
-    "📍 Navigation & address issues": "I can help with navigation and address problems:\n\n🗺️ **Navigation help:**\n• Use the built-in GPS in your Driver App\n• Tap address to open in your preferred map app\n• Call customer for clarification\n• Report incorrect addresses\n\n🏠 **Address problems:**\n• Use 'Cannot Find Address' button\n• Take photos of location/building\n• Contact customer for better directions\n• Mark as 'Address Issue' if unsolvable\n\nWhat navigation issue can I help resolve?",
+    pickup_changes: {
+      question: "What pickup details need to be changed?",
+      options: [
+        { text: "Change pickup address", next: "change_address" },
+        { text: "Reschedule pickup time", next: "reschedule" },
+        { text: "Add more packages", next: "add_packages" },
+        { text: "Something else about pickup", next: "other_pickup" }
+      ]
+    },
     
-    "☎️ Speak with support now (driver)": "I'll get you connected with driver support immediately:\n\n📞 **Driver support contact:**\n• Priority driver support line: (636) 254-4821\n• Live chat with driver specialists\n• Email: driversupport@returnit.online\n\n🚨 **Emergency support for:**\n• Vehicle breakdowns\n• Safety concerns\n• Customer disputes\n• Urgent payment issues\n\nShould I connect you with a support specialist now?"
+    // Terminal nodes that lead to support
+    other_driver: { question: "I'll connect you with driver support for personalized help.", action: "escalate" },
+    other_customer: { question: "I'll connect you with customer support for personalized help.", action: "escalate" },
+    other_earnings: { question: "I'll connect you with our payments team for detailed assistance.", action: "escalate" },
+    other_delivery: { question: "I'll connect you with driver support to resolve this delivery issue.", action: "escalate" },
+    other_app: { question: "I'll connect you with technical support for app-related issues.", action: "escalate" },
+    other_navigation: { question: "I'll connect you with driver support for navigation assistance.", action: "escalate" },
+    other_tracking: { question: "I'll connect you with customer support for order tracking help.", action: "escalate" },
+    other_driver_contact: { question: "I'll connect you with customer support for driver-related assistance.", action: "escalate" },
+    other_payment: { question: "I'll connect you with our billing team for payment assistance.", action: "escalate" },
+    other_pickup: { question: "I'll connect you with customer support for pickup modifications.", action: "escalate" },
+    
+    payment_missing: { question: "I'll connect you with our payments team to investigate your missing payment.", action: "escalate" },
+    customer_unavailable: { question: "I'll connect you with driver support for guidance on unavailable customers.", action: "escalate" },
+    package_damaged: { question: "I'll connect you with driver support for damaged package procedures.", action: "escalate" },
+    app_technical: { question: "I'll connect you with technical support for app performance issues.", action: "escalate" },
+    gps_issues: { question: "I'll connect you with technical support for GPS troubleshooting.", action: "escalate" },
+    wrong_address: { question: "I'll connect you with driver support to help correct the pickup address.", action: "escalate" },
+    pickup_delayed: { question: "I'll connect you with customer support to check on your delayed pickup.", action: "escalate" },
+    driver_late: { question: "I'll connect you with customer support to update you on your driver's status.", action: "escalate" },
+    driver_noshow: { question: "I'll connect you with customer support to resolve this no-show situation immediately.", action: "escalate" },
+    refund_request: { question: "I'll connect you with our billing team to process your refund request.", action: "escalate" },
+    billing_questions: { question: "I'll connect you with our billing team for detailed billing assistance.", action: "escalate" },
+    change_address: { question: "I'll connect you with customer support to help change your pickup address.", action: "escalate" },
+    reschedule: { question: "I'll connect you with customer support to reschedule your pickup.", action: "escalate" },
+    add_packages: { question: "I'll connect you with customer support to add more packages to your pickup.", action: "escalate" }
   }
 };
 
@@ -87,6 +195,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
   const [inputMessage, setInputMessage] = useState('');
   const [isEscalated, setIsEscalated] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [currentStep, setCurrentStep] = useState('initial');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -108,22 +217,24 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
 
     const greeting: Message = {
       id: 'greeting',
-      content: AI_RESPONSES.greeting[context.type],
+      content: CONVERSATION_FLOW.greeting[context.type],
       sender: 'ai',
       timestamp: new Date(),
       type: 'text'
     };
 
+    const initialQuestion = CONVERSATION_FLOW.questions.initial[context.type];
     const options: Message = {
-      id: 'options',
-      content: "Please select what best describes your issue:",
+      id: 'initial-options',
+      content: initialQuestion.question,
       sender: 'ai',
       timestamp: new Date(),
       type: 'options',
-      options: AI_RESPONSES.commonIssues[context.type]
+      options: initialQuestion.options?.map(opt => opt.text) || []
     };
 
     setMessages([greeting, options]);
+    setCurrentStep('initial');
   };
 
   const addMessage = (content: string, sender: 'user' | 'ai' | 'support', type: 'text' | 'options' | 'escalation' = 'text', options?: string[]) => {
@@ -142,69 +253,73 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
     // Add user's selection
     addMessage(option, 'user');
     
-    // Simulate AI typing
+    // Find the selected option from current step
+    const currentQuestion = currentStep === 'initial' 
+      ? CONVERSATION_FLOW.questions.initial[context?.type || 'customer']
+      : CONVERSATION_FLOW.questions[currentStep as keyof typeof CONVERSATION_FLOW.questions] as QuestionNode;
+    
+    const selectedOption = currentQuestion?.options?.find(opt => opt.text === option);
+    
     setIsTyping(true);
     
     setTimeout(() => {
       setIsTyping(false);
       
-      // Map option to response key, handling the context-specific keys
-      let responseKey = option;
-      if (option === "☎️ Speak with support now" && context) {
-        responseKey = `☎️ Speak with support now (${context.type})`;
-      }
-      
-      // Check if user selected immediate support
-      if (option.includes("☎️ Speak with support now")) {
-        addMessage("Perfect! Let me connect you with a live support agent right away.", 'ai');
-        setTimeout(() => {
-          handleEscalation();
-        }, 1000);
+      if (!selectedOption) {
+        addMessage("I'm not sure about that option. Let me connect you with support.", 'ai');
+        handleEscalation();
         return;
       }
       
-      // Get AI response with improved intelligence
-      const response = AI_RESPONSES.responses[responseKey as keyof typeof AI_RESPONSES.responses];
-      if (response) {
-        let finalResponse = response;
-        
-        // Replace placeholders with realistic context data
-        if (context) {
-          const currentTime = new Date();
-          const estimatedArrival = new Date(currentTime.getTime() + 15 * 60000);
-          
-          finalResponse = finalResponse
-            .replace('{address}', 'the pickup address on file')
-            .replace('{driverName}', context.type === 'driver' ? context.name : 'your assigned driver')
-            .replace('{time}', `${estimatedArrival.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`);
-        }
-        
-        addMessage(finalResponse, 'ai');
-        
-        // Provide helpful follow-up options
+      // Handle different action types
+      if ('action' in selectedOption && selectedOption.action === 'navigate' && 'link' in selectedOption && selectedOption.link) {
+        addMessage(`Perfect! I'll take you to ${selectedOption.link} now.`, 'ai');
         setTimeout(() => {
-          addMessage("Was this helpful? I can also:\n• Provide more detailed guidance\n• Connect you with a specialist\n• Transfer to live support\n\nWhat would you like to do next?", 'ai', 'escalation');
+          // Navigate to the page
+          window.location.href = selectedOption.link!;
+        }, 1000);
+        
+      } else if ('action' in selectedOption && selectedOption.action === 'guide' && 'content' in selectedOption && selectedOption.content) {
+        addMessage(selectedOption.content, 'ai');
+        setTimeout(() => {
+          addMessage("Was that helpful? I can also connect you with support if you need more assistance.", 'ai', 'escalation');
         }, 2000);
-      } else {
-        // More intelligent default response
-        addMessage(
-          `I understand you're dealing with "${option}". This is a common issue that our team handles regularly. Let me help you with the best solution.`,
-          'ai'
-        );
         
+      } else if ('action' in selectedOption && selectedOption.action === 'escalate') {
+        const escalationNode = CONVERSATION_FLOW.questions[selectedOption.next as keyof typeof CONVERSATION_FLOW.questions] as QuestionNode;
+        addMessage(escalationNode.question, 'ai');
         setTimeout(() => {
-          let specificHelp = "Based on your issue, here are the immediate steps I recommend:\n\n";
+          handleEscalation();
+        }, 1000);
+        
+      } else if (selectedOption.next) {
+        // Navigate to next question
+        const nextQuestion = CONVERSATION_FLOW.questions[selectedOption.next as keyof typeof CONVERSATION_FLOW.questions] as QuestionNode;
+        
+        if (nextQuestion.action === 'escalate') {
+          addMessage(nextQuestion.question, 'ai');
+          setTimeout(() => {
+            handleEscalation();
+          }, 1000);
+        } else {
+          // Show next question with options
+          addMessage(nextQuestion.question, 'ai');
           
-          if (option.toLowerCase().includes("payment") || option.toLowerCase().includes("money")) {
-            specificHelp += "1. I'll check your payment status\n2. Review any recent transactions\n3. Escalate to our payments team if needed\n\nWould you like me to start by checking your account?";
-          } else if (option.toLowerCase().includes("delivery") || option.toLowerCase().includes("pickup")) {
-            specificHelp += "1. Verify the current order status\n2. Check driver/customer location\n3. Contact the other party if necessary\n\nShould I look up your current delivery details?";
-          } else {
-            specificHelp += "1. Document your specific situation\n2. Provide immediate guidance\n3. Connect you with the right specialist\n\nCan you provide a few more details about what happened?";
+          if (nextQuestion.options && nextQuestion.options.length > 0) {
+            setTimeout(() => {
+              const optionsMessage: Message = {
+                id: Date.now().toString(),
+                content: "Please choose an option:",
+                sender: 'ai',
+                timestamp: new Date(),
+                type: 'options',
+                options: nextQuestion.options!.map(opt => opt.text)
+              };
+              setMessages(prev => [...prev, optionsMessage]);
+              setCurrentStep(selectedOption.next!);
+            }, 1000);
           }
-          
-          addMessage(specificHelp, 'ai', 'escalation');
-        }, 2000);
+        }
       }
     }, 1200);
   };
@@ -269,7 +384,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
       const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
       
       addMessage(
-        `Hi ${context?.name || 'there'}! This is ${randomAgent} from Returnly Support (${currentTime}). I see you need help with ${context?.type === 'driver' ? 'your driver account' : 'your return pickup'}. I've reviewed your conversation with our AI assistant and I'm here to provide personalized assistance. How can I help you resolve this today?`,
+        `Hi ${context?.name || 'there'}! This is ${randomAgent} from ReturnIt Support (${currentTime}). I see you need help with ${context?.type === 'driver' ? 'your driver account' : 'your return pickup'}. I've reviewed your conversation with our AI assistant and I'm here to provide personalized assistance. How can I help you resolve this today?`,
         'support'
       );
       

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageCircle } from 'lucide-react';
-import { SupportChatFixed as SupportChat } from './SupportChatFixed';
+import SupportChat from './SupportChat';
 
 interface ContactSupportButtonProps {
   context?: {
