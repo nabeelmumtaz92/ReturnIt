@@ -112,7 +112,7 @@ export default function Login() {
   });
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { email: string; phone: string; firstName: string; lastName: string; password: string; dateOfBirth: string }) => {
+    mutationFn: async (data: { email: string; phone: string; firstName: string; lastName: string; password: string; confirmPassword: string; dateOfBirth: string }) => {
       return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: (response: any) => {
@@ -215,6 +215,7 @@ export default function Login() {
       firstName: registerData.firstName,
       lastName: registerData.lastName,
       password: registerData.password,
+      confirmPassword: registerData.confirmPassword,
       dateOfBirth: registerData.dateOfBirth
     });
   };
