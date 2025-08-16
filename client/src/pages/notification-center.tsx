@@ -48,7 +48,7 @@ export default function NotificationCenter() {
       type: 'sms',
       status: 'delivered',
       recipient: '+1-314-555-0123',
-      message: 'Your driver Mike is 5 minutes away! Track live: returnly.tech/track/RTN12345',
+      message: 'Your driver Mike is 5 minutes away! Track live: returnit.online/track/RTN12345',
       timestamp: new Date(Date.now() - 5 * 60 * 1000),
       orderId: 'RTN12345',
       automated: true,

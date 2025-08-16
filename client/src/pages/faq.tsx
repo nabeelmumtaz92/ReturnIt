@@ -98,7 +98,7 @@ export default function FAQ() {
     {
       id: "how-to-book",
       question: "How do I book a return pickup?",
-      answer: "Booking is easy! Visit our website at returnly.tech, create an account, and click 'Book Pickup'. Fill in your pickup address, select items to return, choose your preferred time slot, and complete payment. You can also use our mobile app for iOS and Android. You'll receive confirmation via email and SMS with driver details.",
+      answer: "Booking is easy! Visit our website at returnit.online, create an account, and click 'Book Pickup'. Fill in your pickup address, select items to return, choose your preferred time slot, and complete payment. You can also use our mobile app for iOS and Android. You'll receive confirmation via email and SMS with driver details.",
       category: "booking",
       tags: ["booking", "how-to", "website", "mobile-app"],
       isPopular: true
@@ -166,7 +166,7 @@ export default function FAQ() {
     {
       id: "become-driver",
       question: "How do I become a Returnly driver?",
-      answer: "Apply through our driver portal at returnly.tech/driver-onboarding. Requirements: 21+ years old, valid driver's license, reliable vehicle, smartphone, pass background check. The process takes 3-5 business days. Drivers earn 70% of delivery fees plus tips and bonuses.",
+      answer: "Apply through our driver portal at returnit.online/driver-onboarding. Requirements: 21+ years old, valid driver's license, reliable vehicle, smartphone, pass background check. The process takes 3-5 business days. Drivers earn 70% of delivery fees plus tips and bonuses.",
       category: "drivers",
       tags: ["driver", "apply", "requirements", "earnings"],
       isPopular: true
