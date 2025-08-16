@@ -43,7 +43,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { MobileLogin } from '@/components/MobileLogin';
-import { LogoIcon, ReturnlyLogo } from '@/components/LogoIcon';
+import { ReturnItIcon, ReturnItLogo } from '@/components/ReturnItLogo';
 import { useToast } from "@/hooks/use-toast";
 
 interface EnvironmentConfig {
@@ -85,7 +85,7 @@ interface DriverStats {
   onlineTime: string;
 }
 
-export default function ReturnlyDriverApp() {
+export default function ReturnItDriverApp() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const queryClient = useQueryClient();
@@ -186,7 +186,7 @@ export default function ReturnlyDriverApp() {
               <CardTitle className="text-center text-blue-900">Driver Login Required</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <p className="text-blue-700 mb-4">Please sign in to access the ReturnlyDriver app.</p>
+              <p className="text-blue-700 mb-4">Please sign in to access the ReturnItDriver app.</p>
               <Button 
                 onClick={() => setLocation('/login')}
                 className="bg-blue-700 hover:bg-blue-800 text-white"
@@ -290,9 +290,9 @@ export default function ReturnlyDriverApp() {
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <LogoIcon size={32} className="text-[#A47C48]" />
+                <ReturnItIcon size={32} className="text-[#A47C48]" />
                 <div>
-                  <h1 className="text-lg font-bold text-[#A47C48]">ReturnlyDriver</h1>
+                  <h1 className="text-lg font-bold text-[#A47C48]">ReturnIt Driver</h1>
                   <p className="text-xs text-[#7B5E3B]">Drive. Return. Earn.</p>
                 </div>
               </div>
@@ -831,8 +831,7 @@ export default function ReturnlyDriverApp() {
                 </div>
               </CardContent>
             </Card>
-          )
-        }
+          ) : null}
         </div>
 
         {/* Support Chat */}

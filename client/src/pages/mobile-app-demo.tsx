@@ -12,7 +12,7 @@ import {
   useToast 
 } from '@/components/design-system';
 import { Package2, MapPin, Phone, User, CreditCard } from 'lucide-react';
-import { LogoIcon } from '@/components/LogoIcon';
+import { ReturnItIcon } from '@/components/ReturnItLogo';
 import { useLocation, Link } from 'wouter';
 
 type MobileView = 'welcome' | 'login' | 'book-pickup' | 'order-status';
@@ -29,14 +29,14 @@ export default function MobileAppDemo() {
         {/* Real Logo */}
         <div className="w-20 h-20 flex items-center justify-center">
           <Link href="/">
-            <LogoIcon size={64} className="text-[#A47C48] cursor-pointer hover:opacity-80 transition-opacity" />
+            <ReturnItIcon size={64} className="text-[#A47C48] cursor-pointer hover:opacity-80 transition-opacity" />
           </Link>
         </div>
         
         {/* Hero Text */}
         <FlexStack gap="sm" align="center" className="text-center">
           <h1 className="text-[28px] leading-[34px] font-extrabold text-[#1A1A1A]">
-            Returnly
+            ReturnIt
           </h1>
           <p className="text-[16px] leading-[24px] text-[#7B5E3B] max-w-xs">
             Hassle-free returns with professional pickup service

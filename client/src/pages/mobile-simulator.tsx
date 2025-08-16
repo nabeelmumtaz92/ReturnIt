@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Link } from 'wouter';
 import { ArrowLeft, Package, Car, MapPin, Camera, DollarSign, Clock } from 'lucide-react';
-import { LogoIcon } from '@/components/LogoIcon';
+import { ReturnItIcon } from '@/components/ReturnItLogo';
 
 export default function MobileSimulator() {
   const [currentApp, setCurrentApp] = useState<'customer' | 'driver'>('customer');
@@ -34,8 +34,8 @@ export default function MobileSimulator() {
       {/* Header */}
       <div className="bg-[#A47C48] text-white p-4 text-center w-full">
         <div className="flex items-center justify-center mb-2">
-          <LogoIcon size={24} className="text-white mr-2" />
-          <h1 className="text-xl font-bold">Returnly</h1>
+          <ReturnItIcon size={24} className="text-white mr-2" />
+          <h1 className="text-xl font-bold">ReturnIt</h1>
         </div>
         <p className="text-sm opacity-90">Customer App</p>
       </div>
@@ -192,8 +192,8 @@ export default function MobileSimulator() {
       {/* Header */}
       <div className="bg-[#A47C48] text-white p-4 text-center w-full">
         <div className="flex items-center justify-center mb-2">
-          <LogoIcon size={24} className="text-white mr-2" />
-          <h1 className="text-xl font-bold">Returnly Driver</h1>
+          <ReturnItIcon size={24} className="text-white mr-2" />
+          <h1 className="text-xl font-bold">ReturnIt Driver</h1>
         </div>
         <p className="text-sm opacity-90">Driver App</p>
       </div>
