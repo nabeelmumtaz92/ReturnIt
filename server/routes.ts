@@ -1104,6 +1104,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe Connect account creation for drivers
+  app.post("/api/driver/stripe-connect", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      if (driver.stripeConnectAccountId) {
+        return res.status(400).json({ message: "Stripe Connect account already exists" });
+      }
+
+      // Create Stripe Connect account
+      const account = await stripe.accounts.create({
+        type: 'express',
+        country: 'US',
+        email: driver.email,
+        capabilities: {
+          card_payments: { requested: true },
+          transfers: { requested: true },
+        },
+        business_type: 'individual',
+        individual: {
+          first_name: driver.firstName,
+          last_name: driver.lastName,
+          email: driver.email,
+        },
+      });
+
+      // Update driver with Stripe Connect account ID
+      await storage.updateUser(driverId, {
+        stripeConnectAccountId: account.id
+      });
+
+      // Create account link for onboarding
+      const accountLink = await stripe.accountLinks.create({
+        account: account.id,
+        refresh_url: `${req.protocol}://${req.get('host')}/driver-onboarding?refresh=true`,
+        return_url: `${req.protocol}://${req.get('host')}/driver-payments`,
+        type: 'account_onboarding',
+      });
+
+      res.json({
+        accountId: account.id,
+        onboardingUrl: accountLink.url
+      });
+    } catch (error: any) {
+      console.error('Stripe Connect account creation failed:', error);
+      res.status(500).json({ 
+        message: "Failed to create Stripe Connect account", 
+        error: error.message 
+      });
+    }
+  });
+
   // Driver routes
   app.get("/api/driver/orders/available", async (req, res) => {
     try {
@@ -1302,21 +1359,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverEarning || 0), 0);
       const netAmount = totalEarnings - feeAmount;
 
-      // Create payout record
-      const payout = await storage.createDriverPayout({
-        driverId,
-        payoutType: "instant",
-        totalAmount: totalEarnings,
-        feeAmount,
-        netAmount,
-        orderIds: pendingOrders.map(o => o.id),
-        taxYear: new Date().getFullYear(),
-        status: "completed"
-      });
+      // Get driver's Stripe Connect account
+      const driver = await storage.getUser(driverId.toString());
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ message: "Driver Stripe Connect account not set up" });
+      }
 
-      // Update orders to mark as paid
-      for (const order of pendingOrders) {
-        await storage.updateOrder(order.id, { driverPayoutStatus: "instant_paid" });
+      try {
+        // Create Stripe transfer to driver's Connect account
+        const transfer = await stripe.transfers.create({
+          amount: Math.round(netAmount * 100), // Convert to cents
+          currency: 'usd',
+          destination: driver.stripeConnectAccountId,
+          description: `Instant payout for ${pendingOrders.length} orders`,
+          metadata: {
+            driverId: driverId.toString(),
+            orderIds: pendingOrders.map(o => o.id).join(','),
+            payoutType: 'instant'
+          }
+        });
+
+        // Create payout record with Stripe transfer ID
+        const payout = await storage.createDriverPayout({
+          driverId,
+          payoutType: "instant",
+          totalAmount: totalEarnings,
+          feeAmount,
+          netAmount,
+          orderIds: pendingOrders.map(o => o.id),
+          taxYear: new Date().getFullYear(),
+          status: "completed",
+          stripeTransferId: transfer.id
+        });
+
+        // Update orders to mark as paid
+        for (const order of pendingOrders) {
+          await storage.updateOrder(order.id, { driverPayoutStatus: "instant_paid" });
+        }
+      } catch (stripeError: any) {
+        console.error('Stripe transfer failed:', stripeError);
+        return res.status(500).json({ 
+          message: "Payment transfer failed", 
+          error: stripeError.message 
+        });
       }
 
       res.json({
@@ -1551,18 +1636,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId, driverAmount, platformAmount } = req.body;
       
-      // In a real implementation, you would:
       // 1. Verify the order exists and is completed
-      // 2. Check if payout was already processed
-      // 3. Use Stripe Connect to transfer to driver
-      // 4. Update order status with payout info
-      
-      console.log(`Processing payout for order ${orderId}: Driver: $${driverAmount}, Platform: $${platformAmount}`);
-      
-      // For now, just update the order status
       const order = await storage.getOrder(orderId);
-      if (order) {
-        await storage.updateOrderStatus(orderId, 'refunded');
+      if (!order || order.status !== 'completed') {
+        return res.status(400).json({ message: "Order not found or not completed" });
+      }
+
+      // 2. Check if payout was already processed
+      if (order.driverPayoutStatus === 'weekly_paid' || order.driverPayoutStatus === 'instant_paid') {
+        return res.status(400).json({ message: "Payout already processed for this order" });
+      }
+
+      // 3. Get driver info for Stripe Connect
+      const driver = await storage.getUser(order.driverId.toString());
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ message: "Driver Stripe Connect account not set up" });
+      }
+
+      try {
+        // 4. Use Stripe Connect to transfer to driver
+        const transfer = await stripe.transfers.create({
+          amount: Math.round(driverAmount * 100), // Convert to cents
+          currency: 'usd',
+          destination: driver.stripeConnectAccountId,
+          description: `Weekly payout for order ${orderId}`,
+          metadata: {
+            orderId,
+            driverId: order.driverId.toString(),
+            payoutType: 'weekly'
+          }
+        });
+
+        // 5. Update order status with payout info
+        await storage.updateOrder(orderId, { 
+          driverPayoutStatus: 'weekly_paid',
+          stripeTransferId: transfer.id 
+        });
+
+        console.log(`Stripe transfer completed: ${transfer.id}`);
+      } catch (stripeError: any) {
+        console.error('Stripe transfer failed:', stripeError);
+        return res.status(500).json({ 
+          message: "Payment transfer failed", 
+          error: stripeError.message 
+        });
       }
       
       res.json({ 
