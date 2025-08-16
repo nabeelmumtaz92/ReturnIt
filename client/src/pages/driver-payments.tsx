@@ -25,6 +25,7 @@ import {
   Users
 } from "lucide-react";
 import { Link } from "wouter";
+import { AdminNavigation } from "@/components/AdminNavigation";
 
 export default function DriverPayments() {
   const { toast } = useToast();
@@ -103,6 +104,7 @@ export default function DriverPayments() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+      <AdminNavigation />
       {/* Navigation Header */}
       <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">

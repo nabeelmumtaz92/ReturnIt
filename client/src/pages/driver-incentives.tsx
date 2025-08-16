@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Link } from 'wouter';
+import { AdminNavigation } from '@/components/AdminNavigation';
 import { 
   Trophy, Star, DollarSign, TrendingUp, Gift, Target, 
   Calendar, Users, Award, Zap, Clock, MapPin, Package,
@@ -195,6 +196,7 @@ export default function DriverIncentives() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+      <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

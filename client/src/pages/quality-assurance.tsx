@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Link } from 'wouter';
+import { AdminNavigation } from '@/components/AdminNavigation';
 import { 
   Camera, Shield, AlertTriangle, CheckCircle, FileImage, 
   Clock, DollarSign, User, Package, MapPin, Eye, Download,
@@ -200,6 +201,7 @@ export default function QualityAssurance() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+      <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
