@@ -15,7 +15,7 @@ export const phoneSchema = z.string().optional();
 export const registrationSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
-  confirmPassword: z.string(),
+  confirmPassword: z.string().min(1, "Confirm password is required"),
   phone: phoneSchema.optional(),
   firstName: z.string().min(1, "First name is required").max(50, "First name must be less than 50 characters"),
   lastName: z.string().min(1, "Last name is required").max(50, "Last name must be less than 50 characters"),
