@@ -62,7 +62,7 @@ function Router() {
           <div className="relative">
             <img 
               src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
+              alt="ReturnIt Logo" 
               className="h-16 w-auto mx-auto animate-pulse"
             />
           </div>

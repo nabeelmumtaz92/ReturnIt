@@ -33,7 +33,7 @@ export function Header({ title, subtitle, showBack = false, backUrl = "/", class
             <Link href="/">
               <img 
                 src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
+                alt="ReturnIt Logo" 
                 className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
               />
             </Link>

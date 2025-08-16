@@ -10,6 +10,7 @@ import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LogoIcon, ReturnlyLogo } from "@/components/LogoIcon";
+import { ReturnItLogo } from "@/components/ReturnItLogo";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
 
 interface EnvironmentConfig {
@@ -64,7 +65,7 @@ export default function Welcome() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <ReturnlyLogo size={24} variant="default" />
+              <ReturnItLogo size={24} className="text-[#A47C48]" />
             </div>
             
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
@@ -114,7 +115,7 @@ export default function Welcome() {
         {/* Returnly Title - Centered */}
         <div className="text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-4">
-            Returnly
+            ReturnIt
           </h1>
         </div>
 

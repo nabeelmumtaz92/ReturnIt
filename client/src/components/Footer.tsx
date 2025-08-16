@@ -10,6 +10,7 @@ import {
   Linkedin
 } from "lucide-react";
 import { LogoIcon } from "@/components/LogoIcon";
+import { ReturnItIcon } from "@/components/ReturnItLogo";
 
 export default function Footer() {
   return (
@@ -22,8 +23,8 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <LogoIcon size={32} className="text-white" />
-              <span className="text-xl font-bold text-white">Returnly</span>
+              <ReturnItIcon size={32} className="text-white" />
+              <span className="text-xl font-bold text-white">ReturnIt</span>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
               Convenient return pickup service in St. Louis, MO. We handle your returns so you don't have to.
