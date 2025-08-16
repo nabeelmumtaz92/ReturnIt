@@ -98,11 +98,18 @@ export default function Welcome() {
                   </Button>
                 </>
               ) : (
-                <Link href="/login">
-                  <Button variant="outline" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
+                <div className="flex gap-2">
+                  <Link href="/login">
+                    <Button variant="outline" size="sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/login?tab=register">
+                    <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>
@@ -139,19 +146,32 @@ export default function Welcome() {
             </Button>
           </Link>
           
-          {/* Show Sign In button only if login is allowed */}
+          {/* Show Sign In and Sign Up buttons only if login is allowed */}
           {envConfig?.allowPublicLogin && (
-            <Link href="/login" className="w-full">
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="w-full border-primary text-primary hover:bg-primary/10 py-4 text-lg"
-                data-testid="button-sign-in"
-              >
-                <User className="h-5 w-5 mr-2" />
-                Sign In
-              </Button>
-            </Link>
+            <>
+              <Link href="/login" className="w-full">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="w-full border-primary text-primary hover:bg-primary/10 py-4 text-lg"
+                  data-testid="button-sign-in"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/login?tab=register" className="w-full">
+                <Button 
+                  variant="default" 
+                  size="lg" 
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg"
+                  data-testid="button-sign-up"
+                >
+                  <User className="h-5 w-5 mr-2" />
+                  Sign Up
+                </Button>
+              </Link>
+            </>
           )}
         </div>
 
