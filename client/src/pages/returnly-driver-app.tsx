@@ -365,7 +365,7 @@ export default function ReturnlyDriverApp() {
                 )}
               </CardContent>
             </Card>
-          ) : (
+          ) : currentView === 'jobs' ? (
             <>
               {/* Current Job - Priority Display */}
           {currentJob && (
@@ -672,6 +672,7 @@ export default function ReturnlyDriverApp() {
               </Card>
             </TabsContent>
           </Tabs>
+            </>
           ) : currentView === 'maps' ? (
             <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
               <CardHeader>
@@ -851,7 +852,7 @@ export default function ReturnlyDriverApp() {
 
         {/* Bottom Navigation */}
         <div className="fixed bottom-0 left-0 right-0 bg-[#F5F0E6] border-t border-[#A47C48]/30 px-4 py-2">
-          <div className="flex justify-around items-center max-w-md mx-auto">
+          <div className="flex justify-between items-center max-w-md mx-auto px-4">
             <Button
               variant="ghost"
               size="sm"
