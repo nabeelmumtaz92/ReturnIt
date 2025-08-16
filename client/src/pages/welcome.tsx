@@ -173,7 +173,7 @@ export default function Welcome() {
         {envConfig?.allowDriverSignup && (
           <div className="mt-8 pt-8 border-t border-primary/20">
             <div className="text-center space-y-4">
-              <p className="text-primary/70 text-sm">
+              <p className="text-white text-sm">
                 Interested in earning money as a driver?
               </p>
               <Link href="/driver-onboarding">
