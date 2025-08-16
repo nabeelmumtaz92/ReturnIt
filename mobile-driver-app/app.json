@@ -28,26 +28,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "Returnly Driver needs location access to navigate to pickups and deliveries."
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Returnly Driver needs camera access to take photos of packages."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#F59E0B"
-        }
-      ]
-    ]
+    "plugins": []
   }
 }
