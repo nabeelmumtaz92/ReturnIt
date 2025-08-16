@@ -339,7 +339,7 @@ export default function BookPickup() {
         <div className="text-center">
           <img 
             src="/logo-cardboard-deep.png" 
-            alt="Returnly Logo" 
+            alt="ReturnIt Logo" 
             className="h-16 w-auto mx-auto mb-4 animate-pulse"
           />
           <p className="text-amber-800">Loading...</p>
@@ -385,7 +385,7 @@ export default function BookPickup() {
             <Link href="/">
               <img 
                 src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
+                alt="ReturnIt Logo" 
                 className="h-8 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
               />
             </Link>

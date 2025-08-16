@@ -1,4 +1,4 @@
-# Contributing to Returnly
+# Contributing to ReturnIt
 
 Thank you for your interest in contributing to Returnly! We welcome contributions from the community and are excited to work with you.
 

@@ -68,12 +68,12 @@ export function LogoIcon({ size = 24, className = "", variant = 'default' }: Log
   );
 }
 
-export function ReturnlyLogo({ size = 32, className = "", variant = 'default' }: LogoIconProps) {
+export function ReturnItLogo({ size = 32, className = "", variant = 'default' }: LogoIconProps) {
   const textColor = variant === 'white' ? 'text-white' : variant === 'dark' ? 'text-gray-800' : 'text-primary';
   
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className={`font-semibold text-2xl ${textColor}`}>Returnly</span>
+      <span className={`font-semibold text-2xl ${textColor}`}>ReturnIt</span>
       <LogoIcon size={size} variant={variant} />
     </div>
   );

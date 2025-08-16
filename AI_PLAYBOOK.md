@@ -1,7 +1,7 @@
 # Returnly – AI Playbook
 
 ## Mission
-Help build Returnly (customer app + website) using React Native Web (Expo) and Next.js, sharing a single design system (tokens). Keep code plain JS.
+Help build ReturnIt (customer app + website) using React Native Web (Expo) and Next.js, sharing a single design system (tokens). Keep code plain JS.
 
 ## Where to record progress
 - Update `RETURNLY_CHECKLIST.md` checkboxes as tasks complete.

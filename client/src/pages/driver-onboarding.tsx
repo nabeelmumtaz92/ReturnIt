@@ -842,7 +842,7 @@ export default function DriverOnboarding() {
                 <div className="flex items-start space-x-3">
                   <Checkbox id="terms-agreement" className="mt-1" data-testid="checkbox-terms" />
                   <Label htmlFor="terms-agreement" className="text-sm text-amber-800 leading-relaxed">
-                    I have read, understood, and agree to the Returnly Driver Terms of Service. 
+                    I have read, understood, and agree to the ReturnIt Driver Terms of Service. 
                     I understand that I am applying to be an independent contractor and that my 
                     application will be subject to a background check and document verification.
                   </Label>

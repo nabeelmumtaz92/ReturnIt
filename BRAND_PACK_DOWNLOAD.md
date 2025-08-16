@@ -1,4 +1,4 @@
-# 📦 Returnly Brand Pack - Ready for Download!
+# 📦 ReturnIt Brand Pack - Ready for Download!
 
 ## Download the Complete Brand Pack
 

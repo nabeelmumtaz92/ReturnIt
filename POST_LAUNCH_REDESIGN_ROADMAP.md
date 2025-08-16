@@ -1,4 +1,4 @@
-# 🎨 Post-Launch Redesign Roadmap - Returnly Platform
+# 🎨 Post-Launch Redesign Roadmap - ReturnIt Platform
 
 ## Strategy: Launch First, Redesign Through Updates
 

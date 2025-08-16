@@ -10,12 +10,12 @@ export default function WelcomeSimple() {
       <div className="container mx-auto px-4 py-16 text-center">
         <img 
           src="/logo-cardboard-deep.png" 
-          alt="Returnly Logo" 
+          alt="ReturnIt Logo" 
           className="h-20 w-auto mx-auto mb-8"
         />
         
         <h1 className="text-6xl font-bold text-amber-900 mb-6">
-          Returnly
+          ReturnIt
         </h1>
         
         <p className="text-2xl text-amber-800 mb-12">

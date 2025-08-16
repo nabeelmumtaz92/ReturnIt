@@ -138,6 +138,9 @@ export function useAuth() {
       method: 'POST',
       credentials: 'include'
     }).catch(console.error);
+    
+    // Redirect to home page after logout
+    window.location.href = '/';
   };
 
   return {

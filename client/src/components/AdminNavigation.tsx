@@ -24,7 +24,7 @@ import {
   Home
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ReturnlyLogo } from "./LogoIcon";
+import { ReturnItLogo } from "./LogoIcon";
 
 interface NavigationItem {
   label: string;
@@ -294,7 +294,7 @@ export function AdminNavigation() {
         <SheetContent side="left" className="w-80 bg-white border-amber-200">
           <SheetHeader className="border-b border-amber-200 pb-4 mb-6">
             <div className="flex items-center space-x-3">
-              <ReturnlyLogo size={24} variant="default" />
+              <ReturnItLogo size={24} variant="default" />
               <SheetTitle className="text-amber-900">Admin Panel</SheetTitle>
             </div>
           </SheetHeader>

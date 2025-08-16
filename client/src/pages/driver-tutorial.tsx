@@ -26,7 +26,7 @@ export default function DriverTutorial() {
   const tutorialSteps: TutorialStep[] = [
     {
       id: 0,
-      title: "Welcome to Returnly!",
+      title: "Welcome to ReturnIt!",
       description: "Your journey as a professional return driver begins here",
       icon: <Users className="h-6 w-6" />,
       content: (
@@ -34,10 +34,10 @@ export default function DriverTutorial() {
           <div className="text-center">
             <img 
               src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
+              alt="ReturnIt Logo" 
               className="h-16 w-auto mx-auto mb-4"
             />
-            <h3 className="text-2xl font-bold text-amber-900">Welcome to the Returnly Driver Team!</h3>
+            <h3 className="text-2xl font-bold text-amber-900">Welcome to the ReturnIt Driver Team!</h3>
             <p className="text-amber-700 mt-2">Congratulations on joining St. Louis's premier return logistics service</p>
           </div>
           
@@ -400,7 +400,7 @@ export default function DriverTutorial() {
                 <li>Handle packages with care</li>
                 <li>Be friendly and professional</li>
                 <li>Keep your vehicle clean and presentable</li>
-                <li>Wear the Returnly driver identification</li>
+                <li>Wear the ReturnIt driver identification</li>
               </ul>
             </CardContent>
           </Card>
@@ -427,7 +427,7 @@ export default function DriverTutorial() {
           <div className="text-center">
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
             <h3 className="text-2xl font-bold text-amber-900">Congratulations!</h3>
-            <p className="text-amber-700 mt-2">You've completed the Returnly driver training</p>
+            <p className="text-amber-700 mt-2">You've completed the ReturnIt driver training</p>
           </div>
           
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">

@@ -59,7 +59,7 @@ import ContactSupportButton from "@/components/ContactSupportButton";
 import { AdminNavigation } from "@/components/AdminNavigation";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
-import { ReturnlyLogo } from '@/components/LogoIcon';
+import { ReturnItLogo } from '@/components/LogoIcon';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import * as XLSX from 'xlsx';
@@ -617,7 +617,7 @@ export default function AdminDashboard() {
               <div className="flex items-center space-x-3 sm:space-x-4">
                 <Link href="/">
                   <div className="cursor-pointer hover:opacity-80 transition-opacity">
-                    <ReturnlyLogo size={32} variant="default" />
+                    <ReturnItLogo size={32} variant="default" />
                   </div>
                 </Link>
                 <div>
