@@ -22,7 +22,7 @@ import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.j
 import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
 import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
 import deliveryProfessionalImg from "@assets/delivery-professional.png";
-import deliveryDriverSignupImg from "@assets/delivery-driver-signup.png";
+import deliveryDriverSignupImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
 
 export default function Login() {
   const [, setLocation] = useLocation();
