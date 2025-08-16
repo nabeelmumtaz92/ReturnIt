@@ -38,43 +38,47 @@ interface SupportChatProps {
 
 const AI_RESPONSES = {
   greeting: {
-    driver: "Hi! I'm the Returnly AI Assistant, and I'm here to help with your driver account and any delivery issues. I can assist with payments, app problems, delivery logistics, and more. What can I help you with today?",
-    customer: "Hello! I'm the Returnly AI Assistant, ready to help with your return pickup and any questions you have. I can track your order, resolve delivery issues, handle payments, and connect you with live support when needed. How can I assist you?"
+    driver: "Hi! I'm the ReturnIt AI Assistant 🤖 I'm here to guide you to exactly what you need. I can help you navigate to the right place in your app, check your earnings, resolve delivery issues, or connect you with live support. Let me help you get where you need to go!",
+    customer: "Hello! I'm the ReturnIt AI Assistant 🤖 I'm here to guide you to exactly what you need. Whether it's tracking your pickup, contacting your driver, managing payments, or speaking with support, I'll help you navigate to the right solution quickly!"
   },
   commonIssues: {
     driver: [
-      "Payment/earnings question",
-      "Can't access the app", 
-      "Problem with a delivery",
-      "Customer wasn't available",
-      "Vehicle or equipment issue",
-      "Account settings",
-      "Other issue"
+      "💰 Check my earnings & payments",
+      "🚗 Current delivery assistance", 
+      "📱 App & account help",
+      "📍 Navigation & address issues",
+      "☎️ Speak with support now"
     ],
     customer: [
-      "Customer didn't leave package",
-      "More packages than stated",
-      "Wrong pickup address",
-      "Driver hasn't arrived",
-      "Payment issue",
-      "Cancel pickup",
-      "Track my order",
-      "Other issue"
+      "📦 Track my pickup status",
+      "🚗 Driver location & timing",
+      "💳 Payment & billing help", 
+      "📍 Change pickup details",
+      "☎️ Speak with support now"
     ]
   },
   responses: {
-    // Customer responses
-    "Customer didn't leave package": "I understand the customer wasn't available. Let me help you with next steps:\n\n1. Did you try calling the customer?\n2. Are you currently at the pickup location?\n3. Is this the correct address: {address}?\n\nI can contact the customer or reschedule the pickup for you.",
-    "More packages than stated": "I see there are more packages than expected. This happens sometimes! Here's what we can do:\n\n1. Take a photo of all packages\n2. I'll update the order with additional items\n3. You'll be compensated for the extra packages\n\nShould I add the extra packages to your current order?",
-    "Wrong pickup address": "Let me verify the pickup address for you. I'm checking order details now...\n\nI can see the address on file. Is this different from where you're currently located? I can:\n\n1. Update the address immediately\n2. Contact the customer to confirm the correct location\n3. Provide turn-by-turn directions to the correct address\n\nWhat would be most helpful right now?",
-    "Driver hasn't arrived": "I apologize for the delay. Let me check on your driver's status immediately.\n\nI can see your driver's current location and estimated arrival time. Here's what I can do right now:\n\n1. Contact the driver directly to get an update\n2. Send you live tracking updates via text\n3. Reschedule your pickup for a more convenient time\n4. Assign a different driver if available\n\nWhich option would work best for you?",
-    "Payment issue": "I can help resolve payment issues right away. What specific problem are you experiencing?\n\n1. Payment method declined\n2. Unexpected charges\n3. Refund question\n4. Promotional code issue\n\nLet me look up your payment details...",
+    // Customer responses - Updated with navigation guidance
+    "📦 Track my pickup status": "I can help you track your pickup right away! Here's what I can show you:\n\n🔍 **Where to check your status:**\n• Visit your Order History page\n• Check your email for updates\n• View real-time tracking when driver is assigned\n\n📍 **Current status options:**\n• Pickup scheduled\n• Driver assigned & en route\n• Pickup completed\n\nWould you like me to look up your specific order status?",
     
-    // Driver responses  
-    "Payment/earnings question": "I can help with payment questions! What specifically would you like to know?\n\n1. When will I get paid?\n2. Missing payment for a delivery\n3. Payment amount seems wrong\n4. Tax/1099 questions\n5. Update payment method\n\nI can check your earnings and payment schedule.",
-    "Can't access the app": "I can help you get back into the app quickly. Let's troubleshoot this step by step:\n\n1. Try force-closing and reopening the app\n2. Check if your app is updated to the latest version\n3. Clear the app cache if you're on Android\n4. Restart your phone if the issue persists\n\nIf none of these work, I can reset your account access or send you a direct login link. What error message are you seeing, if any?",
-    "Problem with a delivery": "I'm here to help with delivery issues. What happened during the delivery?\n\n1. Customer wasn't available\n2. Wrong address/couldn't find location\n3. Package was damaged\n4. Customer refused delivery\n5. Safety concern\n\nPlease tell me more details about what occurred.",
-    "Customer wasn't available": "This situation comes up often. Here's what you should do:\n\n1. Call the customer (if you haven't already)\n2. Wait 5 minutes at the location\n3. Take a photo showing you're at the correct address\n4. Mark as 'Customer Not Available'\n\nYou'll still be paid for the attempted delivery. Should I help you process this now?"
+    "🚗 Driver location & timing": "Let me help you get real-time driver information:\n\n📱 **Track your driver:**\n• Check the tracking link sent to your phone\n• View live GPS location when driver is dispatched\n• Get estimated arrival time updates\n\n⏰ **If your driver is delayed:**\n• I can contact them directly\n• Reschedule for a better time\n• Assign a different driver if available\n\nWhat would be most helpful for you right now?",
+    
+    "💳 Payment & billing help": "I can assist with all payment-related questions:\n\n💰 **Common payment help:**\n• Update your payment method\n• Review charges and fees\n• Process refunds if needed\n• Apply promotional codes\n\n🧾 **Where to manage payments:**\n• Go to Account Settings → Payment Methods\n• View billing history in your profile\n• Download receipts from Order History\n\nWhat specific payment issue can I help resolve?",
+    
+    "📍 Change pickup details": "I can help you update your pickup information:\n\n✏️ **What you can change:**\n• Pickup address or location\n• Contact phone number\n• Special instructions for driver\n• Number of packages\n\n📱 **How to make changes:**\n• Go to your active order and tap 'Edit'\n• Call our support line: (636) 254-4821\n• I can update details for you right now\n\nWhat pickup details would you like to change?",
+    
+    "☎️ Speak with support now (customer)": "I'll connect you with a live support agent immediately!\n\n👥 **Live support options:**\n• Chat with a human agent (available now)\n• Call our support line: (636) 254-4821\n• Email support: hello@returnit.online\n\n⚡ **What our agents can help with:**\n• Complex order issues\n• Urgent pickup changes\n• Payment disputes\n• Account problems\n\nShould I connect you with an agent now?",
+    
+    // Driver responses - Updated with navigation guidance  
+    "💰 Check my earnings & payments": "I can help you access your earnings information:\n\n💵 **Check your earnings:**\n• Open the Driver App → Earnings tab\n• View daily, weekly, and monthly totals\n• See completed delivery payments\n• Track bonus and incentive earnings\n\n🏦 **Payment settings:**\n• Update bank account info\n• Choose instant pay or weekly deposits\n• View tax documents (1099s)\n\nWhat specific earnings information do you need?",
+    
+    "🚗 Current delivery assistance": "I'm here to help with your active delivery:\n\n📦 **Common delivery help:**\n• Customer not available at pickup\n• Wrong or unclear address\n• Package issues or damages\n• Customer communication problems\n\n📱 **Use your Driver App:**\n• Tap 'Contact Customer' to call/text\n• Use 'Report Issue' for problems\n• Take photos for documentation\n• Mark delivery status updates\n\nWhat's happening with your current delivery?",
+    
+    "📱 App & account help": "I can help you with app and account issues:\n\n🔧 **Common fixes:**\n• Force close and reopen the app\n• Check for app updates in your app store\n• Clear cache (Android) or restart phone\n• Log out and back in to refresh\n\n⚙️ **Account management:**\n• Update profile information\n• Change notification settings\n• Reset password if needed\n• Contact technical support\n\nWhat specific issue are you experiencing?",
+    
+    "📍 Navigation & address issues": "I can help with navigation and address problems:\n\n🗺️ **Navigation help:**\n• Use the built-in GPS in your Driver App\n• Tap address to open in your preferred map app\n• Call customer for clarification\n• Report incorrect addresses\n\n🏠 **Address problems:**\n• Use 'Cannot Find Address' button\n• Take photos of location/building\n• Contact customer for better directions\n• Mark as 'Address Issue' if unsolvable\n\nWhat navigation issue can I help resolve?",
+    
+    "☎️ Speak with support now (driver)": "I'll get you connected with driver support immediately:\n\n📞 **Driver support contact:**\n• Priority driver support line: (636) 254-4821\n• Live chat with driver specialists\n• Email: driversupport@returnit.online\n\n🚨 **Emergency support for:**\n• Vehicle breakdowns\n• Safety concerns\n• Customer disputes\n• Urgent payment issues\n\nShould I connect you with a support specialist now?"
   }
 };
 
@@ -144,8 +148,23 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
     setTimeout(() => {
       setIsTyping(false);
       
+      // Map option to response key, handling the context-specific keys
+      let responseKey = option;
+      if (option === "☎️ Speak with support now" && context) {
+        responseKey = `☎️ Speak with support now (${context.type})`;
+      }
+      
+      // Check if user selected immediate support
+      if (option.includes("☎️ Speak with support now")) {
+        addMessage("Perfect! Let me connect you with a live support agent right away.", 'ai');
+        setTimeout(() => {
+          handleEscalation();
+        }, 1000);
+        return;
+      }
+      
       // Get AI response with improved intelligence
-      const response = AI_RESPONSES.responses[option as keyof typeof AI_RESPONSES.responses];
+      const response = AI_RESPONSES.responses[responseKey as keyof typeof AI_RESPONSES.responses];
       if (response) {
         let finalResponse = response;
         
@@ -162,20 +181,10 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
         
         addMessage(finalResponse, 'ai');
         
-        // Provide more specific follow-up based on the issue
+        // Provide helpful follow-up options
         setTimeout(() => {
-          let followUpMessage = "Is this helpful? If you need more assistance, I can connect you with a human support agent.";
-          
-          if (option.includes("Payment") || option.includes("earnings")) {
-            followUpMessage = "I can also check your specific payment details if you'd like. Would you like me to connect you with our payments specialist?";
-          } else if (option.includes("Driver hasn't arrived") || option.includes("Customer wasn't available")) {
-            followUpMessage = "I can send you real-time updates or contact the other party directly. Would you like me to do that, or connect you with live support?";
-          } else if (option.includes("app") || option.includes("access")) {
-            followUpMessage = "I can help reset your account or walk you through troubleshooting steps. Would you like to try that, or speak with our technical support team?";
-          }
-          
-          addMessage(followUpMessage, 'ai', 'escalation');
-        }, 1000);
+          addMessage("Was this helpful? I can also:\n• Provide more detailed guidance\n• Connect you with a specialist\n• Transfer to live support\n\nWhat would you like to do next?", 'ai', 'escalation');
+        }, 2000);
       } else {
         // More intelligent default response
         addMessage(
