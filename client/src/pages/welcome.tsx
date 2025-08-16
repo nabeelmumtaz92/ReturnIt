@@ -11,6 +11,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { LogoIcon } from "@/components/LogoIcon";
 import { ReturnItLogo } from "@/components/ReturnItLogo";
+import ContactSupportButton from "@/components/ContactSupportButton";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
 
 interface EnvironmentConfig {
@@ -241,6 +242,15 @@ export default function Welcome() {
 
       {/* Footer */}
       <Footer />
+      
+      {/* Floating Support Chat Button */}
+      <ContactSupportButton 
+        context={{
+          type: isAuthenticated ? (user?.isAdmin ? 'customer' : 'customer') : 'customer',
+          id: user?.id ? String(user.id) : 'GUEST',
+          name: user?.firstName || 'Customer'
+        }}
+      />
     </div>
   );
 }
