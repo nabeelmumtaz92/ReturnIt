@@ -9,7 +9,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { LogoIcon, ReturnlyLogo } from "@/components/LogoIcon";
+import { LogoIcon } from "@/components/LogoIcon";
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
 
@@ -112,7 +112,7 @@ export default function Welcome() {
       {/* Main Content - Mobile Optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 space-y-8">
         
-        {/* Returnly Title - Centered */}
+        {/* ReturnIt Title - Centered */}
         <div className="text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-4">
             ReturnIt

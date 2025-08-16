@@ -63,8 +63,8 @@ export default function FAQ() {
     // General Questions
     {
       id: "what-is-returnly",
-      question: "What is Returnly and how does it work?",
-      answer: "Returnly is a convenient return pickup service based in St. Louis, MO. We connect you with local drivers who will pick up your returns from any retailer and handle the return process for you. Simply book a pickup through our website or app, package your items, and our driver will collect them from your doorstep. We take care of dropping them off at the appropriate return location, saving you time and hassle.",
+      question: "What is ReturnIt and how does it work?",
+      answer: "ReturnIt is a convenient return pickup service based in St. Louis, MO. We connect you with local drivers who will pick up your returns from any retailer and handle the return process for you. Simply book a pickup through our website or app, package your items, and our driver will collect them from your doorstep. We take care of dropping them off at the appropriate return location, saving you time and hassle.",
       category: "general",
       tags: ["overview", "how-it-works", "service"],
       isPopular: true
@@ -72,7 +72,7 @@ export default function FAQ() {
     {
       id: "service-areas",
       question: "What areas do you serve?",
-      answer: "Returnly currently operates in the Greater St. Louis Metropolitan Area, including St. Louis City, St. Louis County, and surrounding suburbs such as Clayton, University City, Kirkwood, Webster Groves, Chesterfield, Florissant, and Hazelwood. We're expanding our coverage regularly, so check our website for the most current service area map.",
+      answer: "ReturnIt currently operates in the Greater St. Louis Metropolitan Area, including St. Louis City, St. Louis County, and surrounding suburbs such as Clayton, University City, Kirkwood, Webster Groves, Chesterfield, Florissant, and Hazelwood. We're expanding our coverage regularly, so check our website for the most current service area map.",
       category: "general",
       tags: ["service-area", "st-louis", "coverage", "locations"],
       isPopular: true
@@ -131,7 +131,7 @@ export default function FAQ() {
     // Pricing & Payment
     {
       id: "pricing-structure",
-      question: "How much does Returnly cost?",
+      question: "How much does ReturnIt cost?",
       answer: "Our transparent pricing starts at $8.99 for local pickups (up to 5 packages). Distance fees apply: +$1 per mile beyond 5 miles from driver location. Size upcharges: Large items (over 50 lbs) +$5, Oversized items +$10. Rush delivery (same-day) +$4.99. No hidden fees, and you see the total cost before booking.",
       category: "pricing",
       tags: ["pricing", "cost", "fees", "transparent"],
@@ -165,7 +165,7 @@ export default function FAQ() {
     // For Drivers
     {
       id: "become-driver",
-      question: "How do I become a Returnly driver?",
+      question: "How do I become a ReturnIt driver?",
       answer: "Apply through our driver portal at returnit.online/driver-onboarding. Requirements: 21+ years old, valid driver's license, reliable vehicle, smartphone, pass background check. The process takes 3-5 business days. Drivers earn 70% of delivery fees plus tips and bonuses.",
       category: "drivers",
       tags: ["driver", "apply", "requirements", "earnings"],
@@ -242,7 +242,7 @@ export default function FAQ() {
     {
       id: "notification-issues",
       question: "Why am I not receiving pickup notifications?",
-      answer: "Check that notifications are enabled in your phone settings for the Returnly app. Ensure our emails aren't going to spam. You can update notification preferences in your account settings. We send confirmations via email, SMS, and push notifications.",
+      answer: "Check that notifications are enabled in your phone settings for the ReturnIt app. Ensure our emails aren't going to spam. You can update notification preferences in your account settings. We send confirmations via email, SMS, and push notifications.",
       category: "technical",
       tags: ["notifications", "alerts", "settings", "email", "sms"],
       isPopular: false
@@ -296,7 +296,7 @@ export default function FAQ() {
             </div>
             <h1 className="text-4xl font-bold text-amber-900 mb-4">Frequently Asked Questions</h1>
             <p className="text-xl text-amber-700 max-w-3xl mx-auto">
-              Find answers to common questions about Returnly's return pickup service. Can't find what you're looking for? Contact our support team.
+              Find answers to common questions about ReturnIt's return pickup service. Can't find what you're looking for? Contact our support team.
             </p>
           </div>
 

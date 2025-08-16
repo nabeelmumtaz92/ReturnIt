@@ -244,7 +244,7 @@ export default function App() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.headerTitle}>Returnly Driver</Text>
+            <Text style={styles.headerTitle}>ReturnIt Driver</Text>
             <Text style={styles.headerSubtitle}>
               {isOnline ? '🟢 Online' : '🔴 Offline'}
             </Text>

@@ -90,7 +90,7 @@ export default function NotificationCenter() {
       type: 'email',
       status: 'sent',
       recipient: 'sarah.wilson@email.com',
-      message: 'Thank you for using Returnly! Please rate your experience.',
+      message: 'Thank you for using ReturnIt! Please rate your experience.',
       timestamp: new Date(Date.now() - 120 * 60 * 1000),
       orderId: 'RTN12342',
       automated: true,
@@ -132,7 +132,7 @@ export default function NotificationCenter() {
       name: 'Review Request',
       type: 'email',
       trigger: 'delivery_complete_24h',
-      subject: 'How was your Returnly experience?',
+      subject: 'How was your ReturnIt experience?',
       content: 'Hi {{customerName}}, please take a moment to rate your recent return experience.',
       variables: ['customerName', 'orderId'],
       active: true

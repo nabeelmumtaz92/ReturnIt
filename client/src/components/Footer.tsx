@@ -92,7 +92,7 @@ export default function Footer() {
                     variant="link" 
                     className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                   >
-                    About Returnly
+                    About ReturnIt
                   </Button>
                 </Link>
               </li>
@@ -155,7 +155,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-amber-300" />
-                <span className="text-amber-100">support@returnly.com</span>
+                <span className="text-amber-100">support@returnit.online</span>
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-amber-300 mt-1" />
@@ -184,7 +184,7 @@ export default function Footer() {
         <div className="border-t border-amber-800 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-amber-100 text-sm">
-              © 2025 Returnly. All rights reserved. | Licensed return service provider in Missouri.
+              © 2025 ReturnIt. All rights reserved. | Licensed return service provider in Missouri.
             </div>
             <div className="flex space-x-6 text-sm">
               <Button 

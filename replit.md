@@ -1,9 +1,9 @@
 # Overview
 
-Returnly is a reverse delivery service platform designed to simplify returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with drivers capable of providing the service. It aims to be an enterprise-grade solution featuring a sophisticated white/beige design, a comprehensive admin dashboard with driver management and payment processing, AI-powered support chat system, and professional business content, all while retaining a distinctive cardboard/shipping theme. The system supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities with intelligent support automation for pilot operations.
+ReturnIt is a reverse delivery service platform designed to simplify returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with drivers capable of providing the service. It aims to be an enterprise-grade solution featuring a sophisticated white/beige design, a comprehensive admin dashboard with driver management and payment processing, AI-powered support chat system, and professional business content, all while retaining a distinctive cardboard/shipping theme. The system supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities with intelligent support automation for pilot operations.
 
 **Production Status (January 2025)**: 
-- Platform is production-ready and deployment-ready for returnly.tech domain
+- Platform is production-ready and deployment-ready for returnit.online domain
 - **Performance Optimization & Advanced Analytics (January 2025)**: Comprehensive performance monitoring system with LRU caching, request tracking, memory usage monitoring, and advanced business intelligence dashboard with real-time metrics, export capabilities, driver leaderboards, regional analysis, and system health monitoring
 - Comprehensive completed orders analytics system with advanced Excel export capabilities, professional table organization, real-time filtering/search, and detailed business intelligence reporting across multiple data sheets
 - **Native Driver Mobile App**: Complete React Native mobile application for drivers with GPS navigation, camera integration, push notifications, real-time job management, and earnings tracking. Ready for App Store deployment to iOS and Android
@@ -26,6 +26,12 @@ Returnly is a reverse delivery service platform designed to simplify returns, ex
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
+
+**Domain Status (January 2025)**:
+- Primary domain: returnit.online (live and connected)
+- All platform references updated from "Returnly" to "ReturnIt"
+- DNS configuration completed via GoDaddy
+- SSL certificate automatically provisioned by Replit
 
 # System Architecture
 
