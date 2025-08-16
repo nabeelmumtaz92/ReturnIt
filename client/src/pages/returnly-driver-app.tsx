@@ -33,7 +33,8 @@ import {
   RefreshCw,
   Play,
   Square,
-  HeadphonesIcon
+  HeadphonesIcon,
+  ArrowLeft
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -112,6 +113,7 @@ export default function ReturnlyDriverApp() {
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [driverLocation, setDriverLocation] = useState<Location | null>(null);
   const [showEarningsDropdown, setShowEarningsDropdown] = useState(false);
+  const [currentView, setCurrentView] = useState<'jobs' | 'profile'>('jobs');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -300,32 +302,36 @@ export default function ReturnlyDriverApp() {
                 >
                   <HeadphonesIcon className="h-3 w-3" />
                 </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setCurrentView('profile')}
+                  className="border-[#A47C48] text-[#A47C48]"
+                >
+                  <User className="h-3 w-3" />
+                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-4 space-y-4">
-          {/* Earnings Dropdown */}
-          <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
-            <CardHeader 
-              className="pb-2 cursor-pointer"
-              onClick={() => setShowEarningsDropdown(!showEarningsDropdown)}
-            >
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm text-[#A47C48]">
-                  Daily Earnings - ${driverStats.todayEarnings.toFixed(2)}
-                </CardTitle>
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                  {showEarningsDropdown ? (
-                    <div className="h-3 w-3 border-l-2 border-b-2 border-[#A47C48] transform rotate-45" />
-                  ) : (
-                    <div className="h-3 w-3 border-l-2 border-b-2 border-[#A47C48] transform -rotate-45" />
-                  )}
-                </Button>
-              </div>
-            </CardHeader>
-            {showEarningsDropdown && (
+        <div className="p-4 space-y-4 pb-32">
+          {/* View Content */}
+          {currentView === 'profile' ? (
+            <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-[#A47C48]">Driver Profile</CardTitle>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => setCurrentView('jobs')}
+                    className="text-[#A47C48]"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
               <CardContent className="space-y-3">
                 <div className="text-center p-3 bg-blue-50 rounded-lg">
                   <p className="text-blue-600 text-xs font-medium">Today</p>
@@ -351,11 +357,22 @@ export default function ReturnlyDriverApp() {
                     </div>
                   </div>
                 </div>
+                
+                {isOnline && (
+                  <Button 
+                    variant="outline"
+                    onClick={toggleOnlineStatus}
+                    className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 mt-4"
+                  >
+                    <Square className="h-4 w-4 mr-2" />
+                    Go Offline
+                  </Button>
+                )}
               </CardContent>
-            )}
-          </Card>
-
-          {/* Current Job - Priority Display */}
+            </Card>
+          ) : (
+            <>
+              {/* Current Job - Priority Display */}
           {currentJob && (
             <Card className="mb-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
               <CardHeader>
@@ -525,13 +542,15 @@ export default function ReturnlyDriverApp() {
                             disabled={!!currentJob}
                           >
                             <CheckCircle className="h-4 w-4 mr-2" />
-                            Accept Job
+                            Accept
                           </Button>
                           <Button 
                             variant="outline" 
-                            className="border-blue-300 text-blue-700"
+                            className="flex-1 border-red-300 text-red-700 hover:bg-red-50"
+                            onClick={() => toast({ title: "Job Declined", description: "Job has been declined" })}
                           >
-                            <Navigation className="h-4 w-4" />
+                            <XCircle className="h-4 w-4 mr-2" />
+                            Decline
                           </Button>
                         </div>
                       </CardContent>
@@ -658,6 +677,8 @@ export default function ReturnlyDriverApp() {
               </Card>
             </TabsContent>
           </Tabs>
+            </>
+          )}
         </div>
 
         {/* Support Chat */}
