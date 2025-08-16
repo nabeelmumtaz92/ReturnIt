@@ -263,8 +263,8 @@ export default function CustomerMobileApp() {
               <CardContent className="p-4 flex items-start gap-3">
                 <DollarSign className="h-5 w-5 text-amber-600 mt-0.5" />
                 <div>
-                  <h3 className="font-medium text-amber-900 mb-1">Starting at $8.99</h3>
-                  <p className="text-sm text-amber-700">Transparent pricing with no hidden fees</p>
+                  <h3 className="font-medium text-amber-900 mb-1">Starting at $3.99</h3>
+                  <p className="text-sm text-amber-700">Base fee plus size-based upcharges</p>
                 </div>
               </CardContent>
             </Card>
