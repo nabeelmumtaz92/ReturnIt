@@ -831,7 +831,8 @@ export default function ReturnlyDriverApp() {
                 </div>
               </CardContent>
             </Card>
-          )}
+          )
+        }
         </div>
 
         {/* Support Chat */}
