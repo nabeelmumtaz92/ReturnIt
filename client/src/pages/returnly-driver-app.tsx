@@ -34,7 +34,10 @@ import {
   Play,
   Square,
   HeadphonesIcon,
-  ArrowLeft
+  ArrowLeft,
+  Map,
+  BarChart3,
+  Activity
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -113,7 +116,7 @@ export default function ReturnlyDriverApp() {
   const [showLocationPrompt, setShowLocationPrompt] = useState(false);
   const [driverLocation, setDriverLocation] = useState<Location | null>(null);
   const [showEarningsDropdown, setShowEarningsDropdown] = useState(false);
-  const [currentView, setCurrentView] = useState<'jobs' | 'profile'>('jobs');
+  const [currentView, setCurrentView] = useState<'jobs' | 'profile' | 'maps' | 'earnings' | 'stats' | 'messages'>('jobs');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -302,20 +305,12 @@ export default function ReturnlyDriverApp() {
                 >
                   <HeadphonesIcon className="h-3 w-3" />
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setCurrentView('profile')}
-                  className="border-[#A47C48] text-[#A47C48]"
-                >
-                  <User className="h-3 w-3" />
-                </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="p-4 space-y-4 pb-32">
+        <div className="p-4 space-y-4 pb-20">
           {/* View Content */}
           {currentView === 'profile' ? (
             <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
@@ -677,7 +672,164 @@ export default function ReturnlyDriverApp() {
               </Card>
             </TabsContent>
           </Tabs>
-            </>
+          ) : currentView === 'maps' ? (
+            <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
+              <CardHeader>
+                <CardTitle className="text-[#A47C48] flex items-center">
+                  <Map className="h-5 w-5 mr-2" />
+                  Navigation & Maps
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-gray-100 rounded-lg h-48 flex items-center justify-center">
+                  <div className="text-center text-gray-600">
+                    <MapPin className="h-12 w-12 mx-auto mb-2" />
+                    <p>Map view will appear here</p>
+                    <p className="text-sm">GPS navigation for current job</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button className="bg-[#A47C48] hover:bg-[#8B5A2B] text-white">
+                    <Navigation className="h-4 w-4 mr-2" />
+                    Start Navigation
+                  </Button>
+                  <Button variant="outline" className="border-[#A47C48] text-[#A47C48]">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    My Location
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ) : currentView === 'earnings' ? (
+            <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
+              <CardHeader>
+                <CardTitle className="text-[#A47C48] flex items-center">
+                  <DollarSign className="h-5 w-5 mr-2" />
+                  Earnings Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-4 bg-green-50 rounded-lg">
+                    <p className="text-green-600 text-sm font-medium">Today</p>
+                    <p className="text-2xl font-bold text-green-900">${driverStats.todayEarnings.toFixed(2)}</p>
+                  </div>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg">
+                    <p className="text-blue-600 text-sm font-medium">This Week</p>
+                    <p className="text-2xl font-bold text-blue-900">${driverStats.weeklyEarnings.toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                    <span className="text-[#7B5E3B]">Jobs Completed Today</span>
+                    <span className="font-semibold text-[#A47C48]">5</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                    <span className="text-[#7B5E3B]">Average per Job</span>
+                    <span className="font-semibold text-[#A47C48]">${(driverStats.todayEarnings / 5).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                    <span className="text-[#7B5E3B]">Hours Online</span>
+                    <span className="font-semibold text-[#A47C48]">{driverStats.onlineTime}</span>
+                  </div>
+                </div>
+                <Button className="w-full bg-[#A47C48] hover:bg-[#8B5A2B] text-white">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  View Detailed Report
+                </Button>
+              </CardContent>
+            </Card>
+          ) : currentView === 'stats' ? (
+            <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
+              <CardHeader>
+                <CardTitle className="text-[#A47C48] flex items-center">
+                  <BarChart3 className="h-5 w-5 mr-2" />
+                  Driver Statistics
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="text-center p-4 bg-purple-50 rounded-lg">
+                    <Activity className="h-6 w-6 mx-auto text-purple-600 mb-1" />
+                    <p className="text-purple-600 text-sm font-medium">Jobs Done</p>
+                    <p className="text-xl font-bold text-purple-900">{driverStats.completedJobs}</p>
+                  </div>
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
+                    <Star className="h-6 w-6 mx-auto text-yellow-600 mb-1" />
+                    <p className="text-yellow-600 text-sm font-medium">Rating</p>
+                    <p className="text-xl font-bold text-yellow-900">{driverStats.rating} ⭐</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="p-3 bg-white rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[#7B5E3B] text-sm">Acceptance Rate</span>
+                      <span className="font-semibold text-[#A47C48]">94%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-[#A47C48] h-2 rounded-full" style={{width: '94%'}}></div>
+                    </div>
+                  </div>
+                  <div className="p-3 bg-white rounded-lg">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[#7B5E3B] text-sm">On-Time Rate</span>
+                      <span className="font-semibold text-[#A47C48]">98%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: '98%'}}></div>
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white rounded-lg">
+                    <span className="text-[#7B5E3B]">Total Distance</span>
+                    <span className="font-semibold text-[#A47C48]">{driverStats.totalDistance}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : currentView === 'messages' ? (
+            <Card className="bg-[#F5F0E6]/90 backdrop-blur-sm border-[#A47C48]/30">
+              <CardHeader>
+                <CardTitle className="text-[#A47C48] flex items-center">
+                  <MessageCircle className="h-5 w-5 mr-2" />
+                  Messages & Notifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-3">
+                  <div className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-medium text-blue-900">New Job Available</span>
+                      <span className="text-xs text-blue-600">2 min ago</span>
+                    </div>
+                    <p className="text-sm text-blue-700">Pickup at 123 Main St - $8.99</p>
+                  </div>
+                  <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-medium text-green-900">Job Completed</span>
+                      <span className="text-xs text-green-600">1 hour ago</span>
+                    </div>
+                    <p className="text-sm text-green-700">You earned $6.29 for job #JOB003</p>
+                  </div>
+                  <div className="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-medium text-yellow-900">Weekly Summary</span>
+                      <span className="text-xs text-yellow-600">3 hours ago</span>
+                    </div>
+                    <p className="text-sm text-yellow-700">You've earned $856.75 this week!</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button variant="outline" className="border-[#A47C48] text-[#A47C48]">
+                    <Bell className="h-4 w-4 mr-2" />
+                    Settings
+                  </Button>
+                  <Button className="bg-[#A47C48] hover:bg-[#8B5A2B] text-white">
+                    <MessageCircle className="h-4 w-4 mr-2" />
+                    Support Chat
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </div>
 
@@ -696,6 +848,62 @@ export default function ReturnlyDriverApp() {
           onPermissionGranted={handleLocationPermissionGranted}
           onPermissionDenied={handleLocationPermissionDenied}
         />
+
+        {/* Bottom Navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-[#F5F0E6] border-t border-[#A47C48]/30 px-4 py-2">
+          <div className="flex justify-around items-center max-w-md mx-auto">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentView('maps')}
+              className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${currentView === 'maps' ? 'text-[#A47C48]' : 'text-[#7B5E3B]'}`}
+              data-testid="button-maps"
+            >
+              <Map className="h-5 w-5" />
+              <span className="text-xs">Maps</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentView('earnings')}
+              className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${currentView === 'earnings' ? 'text-[#A47C48]' : 'text-[#7B5E3B]'}`}
+              data-testid="button-earnings"
+            >
+              <DollarSign className="h-5 w-5" />
+              <span className="text-xs">Earnings</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentView('stats')}
+              className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${currentView === 'stats' ? 'text-[#A47C48]' : 'text-[#7B5E3B]'}`}
+              data-testid="button-stats"
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-xs">Stats</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentView('messages')}
+              className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${currentView === 'messages' ? 'text-[#A47C48]' : 'text-[#7B5E3B]'}`}
+              data-testid="button-messages"
+            >
+              <MessageCircle className="h-5 w-5" />
+              <span className="text-xs">Messages</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentView('profile')}
+              className={`flex flex-col items-center gap-1 h-auto py-2 px-3 ${currentView === 'profile' ? 'text-[#A47C48]' : 'text-[#7B5E3B]'}`}
+              data-testid="button-profile"
+            >
+              <User className="h-5 w-5" />
+              <span className="text-xs">Profile</span>
+            </Button>
+          </div>
+        </div>
       </div>
     </Screen>
   );
