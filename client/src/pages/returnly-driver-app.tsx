@@ -802,7 +802,7 @@ export default function ReturnItDriverApp() {
                       <span className="font-medium text-blue-900">New Job Available</span>
                       <span className="text-xs text-blue-600">2 min ago</span>
                     </div>
-                    <p className="text-sm text-blue-700">Pickup at 123 Main St - $8.99</p>
+                    <p className="text-sm text-blue-700">Pickup at 123 Main St - $3.99</p>
                   </div>
                   <div className="p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
                     <div className="flex justify-between items-start mb-1">

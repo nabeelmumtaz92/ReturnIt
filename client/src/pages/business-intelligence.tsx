@@ -426,7 +426,7 @@ export default function BusinessIntelligence() {
                         <p className="text-sm text-gray-600">Premium service</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-green-600">$8.99</p>
+                        <p className="text-lg font-bold text-green-600">$3.99</p>
                         <Badge variant="default">Market Leader</Badge>
                       </div>
                     </div>

@@ -90,7 +90,7 @@ export default function MobileSimulator() {
                   onClick={() => setCurrentScreen('tracking')}
                 >
                   <Package className="w-4 h-4 mr-2" />
-                  Book Pickup - $8.99
+                  Book Pickup - $3.99
                 </Button>
               </CardContent>
             </Card>
@@ -148,7 +148,7 @@ export default function MobileSimulator() {
                     <div>
                       <p className="font-semibold text-amber-900">Today</p>
                       <p className="text-sm text-green-600">In Progress</p>
-                      <p className="text-xs text-gray-600">{packages} packages - $8.99</p>
+                      <p className="text-xs text-gray-600">{packages} packages - $3.99</p>
                     </div>
                     <div className="text-right">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -163,7 +163,7 @@ export default function MobileSimulator() {
                     <div>
                       <p className="font-semibold text-amber-900">Yesterday</p>
                       <p className="text-sm text-gray-600">Completed</p>
-                      <p className="text-xs text-gray-600">1 package - $8.99</p>
+                      <p className="text-xs text-gray-600">1 package - $3.99</p>
                     </div>
                     <div className="text-right">
                       <div className="w-2 h-2 bg-gray-400 rounded-full"></div>

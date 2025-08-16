@@ -132,7 +132,7 @@ export default function FAQ() {
     {
       id: "pricing-structure",
       question: "How much does ReturnIt cost?",
-      answer: "Our transparent pricing starts at $8.99 for local pickups (up to 5 packages). Distance fees apply: +$1 per mile beyond 5 miles from driver location. Size upcharges: Large items (over 50 lbs) +$5, Oversized items +$10. Rush delivery (same-day) +$4.99. No hidden fees, and you see the total cost before booking.",
+      answer: "Our simple, transparent pricing is just $3.99 for all return pickups, regardless of size or distance within our service area. No hidden fees, no distance charges, no size upcharges - just one flat rate that includes all taxes and service fees. You see the total cost of $3.99 before booking.",
       category: "pricing",
       tags: ["pricing", "cost", "fees", "transparent"],
       isPopular: true

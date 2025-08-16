@@ -54,7 +54,7 @@ export default function App() {
               setCurrentView('tracking');
             }}
           >
-            <Text style={styles.buttonText}>Book Pickup - $8.99</Text>
+            <Text style={styles.buttonText}>Book Pickup - $3.99</Text>
           </TouchableOpacity>
 
           <View style={styles.navButtons}>
@@ -100,13 +100,13 @@ export default function App() {
           <View style={styles.historyItem}>
             <Text style={styles.historyDate}>Today</Text>
             <Text style={styles.historyStatus}>In Progress</Text>
-            <Text style={styles.historyDetail}>2 packages - $8.99</Text>
+            <Text style={styles.historyDetail}>2 packages - $3.99</Text>
           </View>
 
           <View style={styles.historyItem}>
             <Text style={styles.historyDate}>Yesterday</Text>
             <Text style={styles.historyStatus}>Completed</Text>
-            <Text style={styles.historyDetail}>1 package - $8.99</Text>
+            <Text style={styles.historyDetail}>1 package - $3.99</Text>
           </View>
 
           <TouchableOpacity 

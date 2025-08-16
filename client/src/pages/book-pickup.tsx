@@ -115,12 +115,12 @@ export default function BookPickup() {
     'Other'
   ];
 
-  // Item sizes based on value ranges
+  // Item sizes based on value ranges - all standardized to $3.99
   const itemSizes = [
     { size: 'S', label: 'Small', description: 'Under $25 (jewelry, books, small items)', basePrice: 3.99, upcharge: 0, valueRange: 'Under $25' },
     { size: 'M', label: 'Medium', description: '$25-$99 (clothing, shoes, electronics)', basePrice: 3.99, upcharge: 0, valueRange: '$25-$99' },
-    { size: 'L', label: 'Large', description: '$100-$299 (appliances, multiple items)', basePrice: 3.99, upcharge: 2.00, valueRange: '$100-$299' },
-    { size: 'XL', label: 'Extra Large', description: '$300+ (furniture, large electronics)', basePrice: 3.99, upcharge: 4.00, valueRange: '$300+' }
+    { size: 'L', label: 'Large', description: '$100-$299 (appliances, multiple items)', basePrice: 3.99, upcharge: 0, valueRange: '$100-$299' },
+    { size: 'XL', label: 'Extra Large', description: '$300+ (furniture, large electronics)', basePrice: 3.99, upcharge: 0, valueRange: '$300+' }
   ];
 
 
