@@ -42,6 +42,33 @@ const isAuthenticated = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Basic Auth for staging environment (returnly.tech)
+  app.use((req, res, next) => {
+    // Only apply basic auth to returnly.tech domain
+    if (req.hostname === 'returnly.tech') {
+      const auth = req.headers.authorization;
+      
+      if (!auth || !auth.startsWith('Basic ')) {
+        res.setHeader('WWW-Authenticate', 'Basic realm="Staging Environment"');
+        return res.status(401).send('Access to staging environment requires authentication');
+      }
+      
+      const credentials = Buffer.from(auth.slice(6), 'base64').toString('utf-8');
+      const [username, password] = credentials.split(':');
+      
+      // Staging credentials (you can change these)
+      const stagingUsername = process.env.STAGING_USERNAME || 'returnly';
+      const stagingPassword = process.env.STAGING_PASSWORD || 'staging2025';
+      
+      if (username !== stagingUsername || password !== stagingPassword) {
+        res.setHeader('WWW-Authenticate', 'Basic realm="Staging Environment"');
+        return res.status(401).send('Invalid credentials for staging environment');
+      }
+    }
+    
+    next();
+  });
+
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 

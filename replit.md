@@ -31,9 +31,11 @@ Preferred communication style: Simple, everyday language.
 
 **Domain Status (January 2025)**:
 - Primary domain: returnit.online (live and connected)
+- Staging domain: returnly.tech (protected with HTTP Basic Auth)
 - All platform references updated from "Returnly" to "ReturnIt"
 - DNS configuration completed via GoDaddy
 - SSL certificate automatically provisioned by Replit
+- **Staging Protection**: returnly.tech requires username/password (returnly/staging2025)
 
 # System Architecture
 
