@@ -47,7 +47,8 @@ import {
   Shield,
   MessageSquare,
   Menu,
-  ExternalLink
+  ExternalLink,
+  Mail
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -131,6 +132,8 @@ export default function AdminDashboard() {
   const [emailBody, setEmailBody] = useState('');
   const [emailRecipients, setEmailRecipients] = useState<string[]>([]);
   const [showComposeEmail, setShowComposeEmail] = useState(false);
+  const [hasNewMessages, setHasNewMessages] = useState(true); // Simulate unread messages
+  const [unreadCount, setUnreadCount] = useState(3);
   
   // Fetch employees from API
   // Disable API calls that require authentication for now
@@ -895,10 +898,20 @@ export default function AdminDashboard() {
                 <span className="hidden sm:inline">Employees</span>
                 <span className="sm:hidden">Staff</span>
               </TabsTrigger>
-              <TabsTrigger value="messaging" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+              <TabsTrigger value="messaging" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2 relative">
+                <div className="relative">
+                  <Mail className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                  {hasNewMessages && (
+                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  )}
+                </div>
                 <span className="hidden sm:inline">Messaging</span>
                 <span className="sm:hidden">Messages</span>
+                {unreadCount > 0 && (
+                  <Badge className="ml-1 bg-red-500 text-white text-xs h-4 w-4 p-0 flex items-center justify-center">
+                    {unreadCount}
+                  </Badge>
+                )}
               </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <Settings className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
@@ -1716,11 +1729,12 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {[
-                      { id: 'drivers', name: 'All Drivers', count: 12, type: 'group' },
-                      { id: 'customers', name: 'All Customers', count: 45, type: 'group' },
-                      { id: 'support', name: 'Support Team', count: 3, type: 'group' },
-                      { id: 'john_driver', name: 'John Driver', status: 'online', type: 'individual' },
-                      { id: 'sarah_customer', name: 'Sarah Customer', status: 'offline', type: 'individual' },
+                      { id: 'all_admins', name: 'All Admins', count: 3, type: 'group' },
+                      { id: 'operations_team', name: 'Operations Team', count: 5, type: 'group' },
+                      { id: 'management', name: 'Management', count: 2, type: 'group' },
+                      { id: 'sarah_admin', name: 'Sarah (Admin)', status: 'online', type: 'individual' },
+                      { id: 'mike_operations', name: 'Mike (Operations)', status: 'offline', type: 'individual' },
+                      { id: 'john_manager', name: 'John (Manager)', status: 'online', type: 'individual' },
                     ].map((conversation) => (
                       <div
                         key={conversation.id}
@@ -1753,7 +1767,15 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                           {conversation.type === 'individual' && (
-                            <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                            <div className="flex items-center space-x-1">
+                              <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                              {Math.random() > 0.5 && (
+                                <div className="relative">
+                                  <Mail className="h-4 w-4 text-amber-600" />
+                                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                </div>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1767,11 +1789,12 @@ export default function AdminDashboard() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-amber-900">
                         {selectedConversation ? 
-                          (selectedConversation === 'drivers' ? 'All Drivers' :
-                           selectedConversation === 'customers' ? 'All Customers' :
-                           selectedConversation === 'support' ? 'Support Team' :
-                           selectedConversation === 'john_driver' ? 'John Driver' :
-                           'Sarah Customer') 
+                          (selectedConversation === 'all_admins' ? 'All Admins' :
+                           selectedConversation === 'operations_team' ? 'Operations Team' :
+                           selectedConversation === 'management' ? 'Management' :
+                           selectedConversation === 'sarah_admin' ? 'Sarah (Admin)' :
+                           selectedConversation === 'mike_operations' ? 'Mike (Operations)' :
+                           'John (Manager)') 
                           : 'Select a conversation'
                         }
                       </CardTitle>
@@ -1793,9 +1816,10 @@ export default function AdminDashboard() {
                         {/* Message History */}
                         <div className="h-96 overflow-y-auto space-y-4 p-4 bg-amber-50 rounded-lg">
                           {[
-                            { id: 1, sender: 'Admin', message: 'Weekly driver meeting scheduled for Friday at 2 PM', time: '10:30 AM', isOwn: true },
-                            { id: 2, sender: selectedConversation === 'john_driver' ? 'John' : 'Driver Team', message: 'Received. Will there be parking available?', time: '10:32 AM', isOwn: false },
-                            { id: 3, sender: 'Admin', message: 'Yes, reserved spaces in the north lot', time: '10:35 AM', isOwn: true },
+                            { id: 1, sender: 'You', message: 'Team meeting scheduled for Friday at 2 PM in conference room A', time: '10:30 AM', isOwn: true },
+                            { id: 2, sender: selectedConversation === 'sarah_admin' ? 'Sarah' : selectedConversation === 'mike_operations' ? 'Mike' : 'John', message: 'Perfect! Should we prepare quarterly reports beforehand?', time: '10:32 AM', isOwn: false },
+                            { id: 3, sender: 'You', message: 'Yes, please have Q3 performance data ready for review', time: '10:35 AM', isOwn: true },
+                            { id: 4, sender: selectedConversation === 'sarah_admin' ? 'Sarah' : selectedConversation === 'mike_operations' ? 'Mike' : 'John', message: 'Will do. Any specific metrics you want highlighted?', time: '10:40 AM', isOwn: false },
                           ].map((msg) => (
                             <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
                               <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
@@ -1823,6 +1847,13 @@ export default function AdminDashboard() {
                               if (e.key === 'Enter') {
                                 // Send message logic
                                 setMessageText('');
+                                // Mark conversation as read and decrease unread count
+                                if (hasNewMessages && unreadCount > 0) {
+                                  setUnreadCount(prev => Math.max(0, prev - 1));
+                                  if (unreadCount <= 1) {
+                                    setHasNewMessages(false);
+                                  }
+                                }
                                 toast({
                                   title: "Message sent",
                                   description: "Your message has been delivered",
@@ -1834,6 +1865,13 @@ export default function AdminDashboard() {
                             size="sm"
                             onClick={() => {
                               setMessageText('');
+                              // Mark conversation as read and decrease unread count
+                              if (hasNewMessages && unreadCount > 0) {
+                                setUnreadCount(prev => Math.max(0, prev - 1));
+                                if (unreadCount <= 1) {
+                                  setHasNewMessages(false);
+                                }
+                              }
                               toast({
                                 title: "Message sent",
                                 description: "Your message has been delivered",
