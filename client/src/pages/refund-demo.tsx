@@ -210,7 +210,6 @@ export default function RefundDemo() {
                           refundMethod === 'store_credit' ? 'Store Credit (Instant)' :
                           'Cash (Pending Admin Approval)'
                         }</p>
-                        <p><strong>Amount:</strong> ${order.totalPrice}</p>
                         <p><strong>Amount:</strong> ${order.itemCost}</p>
                         <p><strong>Status:</strong> {
                           refundMethod === 'store_credit' ? 'Completed - Available Now' :
