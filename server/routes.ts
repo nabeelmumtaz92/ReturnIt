@@ -1326,7 +1326,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const driverId = (req.session as any).user?.id;
-      const { deliveryNotes, photosUploaded } = req.body;
+      const { deliveryNotes, photosUploaded, refundMethod, customRefundAmount, refundReason } = req.body;
       
       // 1. Verify driver is assigned to this order
       const order = await storage.getOrder(orderId);
@@ -1342,6 +1342,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Order already completed" });
       }
 
+      // Determine refund amount
+      const refundAmount = customRefundAmount && customRefundAmount > 0 && customRefundAmount <= (order.totalPrice || 0)
+        ? customRefundAmount
+        : (order.totalPrice || 0);
+
       // 2. Mark order as delivered to retailer
       const completedOrder = await storage.updateOrder(orderId, {
         status: 'delivered',
@@ -1349,84 +1354,247 @@ export async function registerRoutes(app: Express): Promise<Server> {
         driverNotes: deliveryNotes,
         completedAt: new Date().toISOString(),
         deliveryConfirmed: true,
-        photosUploaded: photosUploaded || false
+        photosUploaded: photosUploaded || false,
+        refundMethod: refundMethod || 'original_payment',
+        refundReason: refundReason || 'return_delivered',
+        refundAmount: refundAmount
       });
 
-      // 3. Automatically process customer refund since return is complete
-      if (order.stripePaymentIntentId && order.paymentStatus !== 'refunded') {
-        try {
-          const refund = await stripe.refunds.create({
-            payment_intent: order.stripePaymentIntentId,
-            amount: Math.round((order.totalPrice || 0) * 100), // Full refund in cents
-            metadata: {
-              orderId,
-              refundReason: 'return_delivered',
-              processedBy: 'automatic_driver_completion',
-              driverId: driverId.toString()
-            }
-          });
+      // 3. Process customer refund based on selected method
+      let refundResult: any = null;
 
-          // Update order with refund details
-          await storage.updateOrder(orderId, {
-            paymentStatus: 'refunded',
-            status: 'refunded',
-            stripeRefundId: refund.id,
-            refundProcessedAt: new Date().toISOString(),
-            refundAmount: order.totalPrice || 0
-          });
+      if (refundMethod === 'store_credit') {
+        // Process as store credit - instant
+        await storage.updateOrder(orderId, {
+          paymentStatus: 'refunded',
+          status: 'refunded',
+          refundStatus: 'completed',
+          refundProcessedAt: new Date().toISOString(),
+          refundCompletedAt: new Date().toISOString(),
+          storeCreditBalance: refundAmount
+        });
 
-          // Notify customer about successful refund
-          await storage.createNotification({
-            userId: order.userId,
-            type: 'refund_processed',
-            title: 'Return Complete & Refund Processed',
-            message: `Your return has been delivered successfully! Your refund of $${(order.totalPrice || 0).toFixed(2)} has been processed and will appear in your account within 5-10 business days.`,
-            orderId: orderId,
-            metadata: {
-              refundAmount: order.totalPrice || 0,
-              refundId: refund.id,
-              deliveredBy: driverId,
-              deliveredAt: new Date().toISOString()
-            }
-          });
-
-          console.log(`Automatic refund processed: ${refund.id} for completed order ${orderId}`);
-          
-          res.json({ 
-            success: true, 
-            message: "Order completed and customer refund automatically processed",
-            order: completedOrder,
-            refund: {
-              amount: order.totalPrice || 0,
-              refundId: refund.id,
-              estimatedArrival: '5-10 business days'
-            }
-          });
-
-        } catch (refundError: any) {
-          console.error('Automatic refund failed:', refundError);
-          
-          // Order is still marked as delivered even if refund fails
-          // Admin can manually process refund later
-          res.json({ 
-            success: true, 
-            message: "Order completed successfully, but automatic refund failed - admin will process manually",
-            order: completedOrder,
-            refundError: refundError.message
+        // Add store credit to customer account
+        const customer = await storage.getUser(order.userId.toString());
+        if (customer) {
+          await storage.updateUser(order.userId, {
+            storeCreditBalance: (customer.storeCreditBalance || 0) + refundAmount
           });
         }
-      } else {
-        // No payment to refund or already refunded
-        res.json({ 
-          success: true, 
-          message: "Order completed successfully",
-          order: completedOrder
+
+        // Notify customer about store credit
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'refund_completed',
+          title: 'Return Complete & Store Credit Added',
+          message: `Your return has been delivered successfully! $${refundAmount.toFixed(2)} in store credit has been added to your account and is ready to use.`,
+          orderId: orderId,
+          metadata: {
+            refundAmount,
+            refundMethod: 'store_credit',
+            deliveredBy: driverId,
+            deliveredAt: new Date().toISOString()
+          }
         });
+
+        refundResult = {
+          amount: refundAmount,
+          method: 'store_credit',
+          status: 'completed',
+          message: 'Store credit added instantly'
+        };
+
+      } else if (refundMethod === 'cash') {
+        // Cash refund - requires admin approval but mark as pending
+        await storage.updateOrder(orderId, {
+          paymentStatus: 'refund_processing',
+          status: 'delivered', // Keep as delivered until cash is provided
+          refundStatus: 'pending',
+          refundProcessedAt: new Date().toISOString(),
+          refundNotes: `Cash refund requested by driver ${driverId}`
+        });
+
+        // Notify admin about cash refund request
+        await storage.createNotification({
+          userId: 1, // Admin user ID
+          type: 'cash_refund_request',
+          title: 'Cash Refund Request',
+          message: `Driver requested cash refund of $${refundAmount.toFixed(2)} for order ${orderId}. Admin approval required.`,
+          orderId: orderId,
+          metadata: {
+            refundAmount,
+            refundMethod: 'cash',
+            requestedBy: driverId,
+            requestedAt: new Date().toISOString()
+          }
+        });
+
+        refundResult = {
+          amount: refundAmount,
+          method: 'cash',
+          status: 'pending_approval',
+          message: 'Cash refund request submitted for admin approval'
+        };
+
+      } else {
+        // Original payment method via Stripe
+        if (order.stripePaymentIntentId && order.paymentStatus !== 'refunded') {
+          try {
+            const refund = await stripe.refunds.create({
+              payment_intent: order.stripePaymentIntentId,
+              amount: Math.round(refundAmount * 100), // Convert to cents
+              metadata: {
+                orderId,
+                refundReason: refundReason || 'return_delivered',
+                processedBy: 'driver_completion',
+                driverId: driverId.toString(),
+                refundMethod: 'original_payment'
+              }
+            });
+
+            // Update order with refund details
+            await storage.updateOrder(orderId, {
+              paymentStatus: 'refund_processing',
+              status: 'refunded',
+              stripeRefundId: refund.id,
+              refundStatus: 'processing',
+              refundProcessedAt: new Date().toISOString()
+            });
+
+            // Notify customer about refund
+            await storage.createNotification({
+              userId: order.userId,
+              type: 'refund_processed',
+              title: 'Return Complete & Refund Processed',
+              message: `Your return has been delivered successfully! Your refund of $${refundAmount.toFixed(2)} has been processed and will appear in your original payment method within 5-10 business days.`,
+              orderId: orderId,
+              metadata: {
+                refundAmount,
+                refundId: refund.id,
+                refundMethod: 'original_payment',
+                deliveredBy: driverId,
+                deliveredAt: new Date().toISOString()
+              }
+            });
+
+            refundResult = {
+              amount: refundAmount,
+              method: 'original_payment',
+              refundId: refund.id,
+              status: 'processing',
+              estimatedArrival: '5-10 business days'
+            };
+
+          } catch (refundError: any) {
+            console.error('Stripe refund failed:', refundError);
+            
+            // Mark refund as failed but order still delivered
+            await storage.updateOrder(orderId, {
+              refundStatus: 'failed',
+              refundNotes: `Stripe refund failed: ${refundError.message}`
+            });
+
+            refundResult = {
+              amount: refundAmount,
+              method: 'original_payment',
+              status: 'failed',
+              error: refundError.message,
+              message: 'Automatic refund failed - admin will process manually'
+            };
+          }
+        }
       }
+
+      console.log(`Order ${orderId} completed by driver ${driverId}, refund: ${JSON.stringify(refundResult)}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Order completed successfully",
+        order: completedOrder,
+        refund: refundResult
+      });
 
     } catch (error: any) {
       console.error("Error completing order:", error);
       res.status(500).json({ message: "Failed to complete order: " + error.message });
+    }
+  });
+
+  // Customer refund preferences endpoint
+  app.patch("/api/user/refund-preferences", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user?.id;
+      const { customerRefundPreference } = req.body;
+      
+      // Validate refund preference
+      const validPreferences = ['original_payment', 'store_credit'];
+      if (!validPreferences.includes(customerRefundPreference)) {
+        return res.status(400).json({ message: "Invalid refund preference" });
+      }
+      
+      const updatedUser = await storage.updateUser(userId, {
+        customerRefundPreference
+      });
+      
+      res.json({ 
+        success: true, 
+        message: "Refund preferences updated successfully",
+        user: updatedUser
+      });
+    } catch (error: any) {
+      console.error("Error updating refund preferences:", error);
+      res.status(500).json({ message: "Failed to update refund preferences" });
+    }
+  });
+
+  // Admin cash refund approval endpoint
+  app.post("/api/admin/approve-cash-refund/:orderId", requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { approved, adminNotes } = req.body;
+      
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (approved) {
+        // Approve cash refund
+        await storage.updateOrder(orderId, {
+          refundStatus: 'completed',
+          paymentStatus: 'refunded',
+          status: 'refunded',
+          refundCompletedAt: new Date().toISOString(),
+          adminNotes: `Cash refund approved: ${adminNotes || 'No additional notes'}`
+        });
+        
+        // Notify customer
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'refund_completed',
+          title: 'Cash Refund Approved',
+          message: `Your cash refund of $${(order.refundAmount || 0).toFixed(2)} has been approved and processed.`,
+          orderId: orderId,
+          metadata: {
+            refundAmount: order.refundAmount || 0,
+            refundMethod: 'cash',
+            approvedBy: 'admin'
+          }
+        });
+        
+        res.json({ success: true, message: "Cash refund approved" });
+      } else {
+        // Deny cash refund - revert to original payment method
+        await storage.updateOrder(orderId, {
+          refundStatus: 'failed',
+          adminNotes: `Cash refund denied: ${adminNotes || 'No reason provided'}`
+        });
+        
+        res.json({ success: true, message: "Cash refund denied" });
+      }
+    } catch (error: any) {
+      console.error("Error processing cash refund approval:", error);
+      res.status(500).json({ message: "Failed to process cash refund approval" });
     }
   });
 

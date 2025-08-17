@@ -57,6 +57,7 @@ import EmployeeDocuments from "@/pages/employee-documents";
 import DriverFeedbackSystem from "@/pages/driver-feedback-system";
 import PrintableTemplates from "@/pages/printable-templates";
 import CancellationAlerts from "@/pages/cancellation-alerts";
+import RefundDemo from "@/pages/refund-demo";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -271,6 +272,7 @@ function Router() {
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <CancellationAlerts /> : <NotFound />;
         }}
       </Route>
+      <Route path="/refund-demo" component={RefundDemo} />
 
       <Route component={NotFound} />
     </Switch>

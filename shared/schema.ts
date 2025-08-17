@@ -265,7 +265,25 @@ export const orders = pgTable("orders", {
   // Stripe Connect payment fields
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
-  paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded
+  paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded, refund_processing, refund_failed
+  paymentMethod: text("payment_method").default("stripe"), // stripe, paypal, apple_pay, google_pay
+  originalPaymentMethod: text("original_payment_method"), // card, bank_account, paypal, etc.
+  
+  // Refund tracking fields
+  stripeRefundId: text("stripe_refund_id"),
+  refundAmount: real("refund_amount"),
+  refundMethod: text("refund_method"), // original_payment, store_credit, cash, check
+  refundStatus: text("refund_status"), // pending, processing, completed, failed
+  refundProcessedAt: timestamp("refund_processed_at"),
+  refundCompletedAt: timestamp("refund_completed_at"),
+  refundReason: text("refund_reason"), // return_delivered, damaged_item, customer_request, admin_override
+  refundNotes: text("refund_notes"),
+  
+  // Customer refund preferences
+  customerRefundPreference: text("customer_refund_preference").default("original_payment"), // original_payment, store_credit
+  storeCreditBalance: real("store_credit_balance").default(0),
+  storeCreditUsed: real("store_credit_used").default(0),
+  
   peakSeasonBonus: real("peak_season_bonus").default(0),
   multiStopBonus: real("multi_stop_bonus").default(0),
   driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid
