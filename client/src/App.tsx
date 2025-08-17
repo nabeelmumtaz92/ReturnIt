@@ -191,7 +191,7 @@ function Router() {
 
       {/* Admin Section Routes - Dynamic Content */}
       <Route path="/admin-orders">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="orders" /> : <NotFound />}
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="order-management" /> : <NotFound />}
       </Route>
       <Route path="/admin-drivers">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="driver-management" /> : <NotFound />}
@@ -221,13 +221,13 @@ function Router() {
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-support" /> : <NotFound />}
       </Route>
       <Route path="/admin-customers">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customers" /> : <NotFound />}
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-management" /> : <NotFound />}
       </Route>
       <Route path="/admin-driver-applications">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="driver-management" /> : <NotFound />}
       </Route>
       <Route path="/admin-access">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="settings" /> : <NotFound />}
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="admin-access" /> : <NotFound />}
       </Route>
       <Route path="/admin-settings">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="settings" /> : <NotFound />}

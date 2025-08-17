@@ -52,14 +52,30 @@ const Analytics = () => (
 
 interface AdminContentProps {
   section?: string;
+  splitView?: boolean;
+  primarySection?: string;
+  secondarySection?: string;
 }
 
-export function AdminContent({ section }: AdminContentProps) {
+export function AdminContent({ section, splitView, primarySection, secondarySection }: AdminContentProps) {
   const [location, setLocation] = useLocation();
+  const [selectedSections, setSelectedSections] = useState<string[]>([]);
 
   // Back to main dashboard
   const handleBack = () => {
     setLocation('/admin-dashboard');
+  };
+
+  // Toggle split view for a section
+  const toggleSplitView = (sectionName: string) => {
+    if (selectedSections.includes(sectionName)) {
+      setSelectedSections(selectedSections.filter(s => s !== sectionName));
+    } else if (selectedSections.length < 2) {
+      setSelectedSections([...selectedSections, sectionName]);
+    } else {
+      // Replace the first section if we already have 2
+      setSelectedSections([selectedSections[1], sectionName]);
+    }
   };
 
   // Main dashboard content (Live Orders)
@@ -181,99 +197,134 @@ export function AdminContent({ section }: AdminContentProps) {
     </div>
   );
 
+  // Render section content with optional split view controls
+  const renderSectionContent = (sectionName: string, showHeader: boolean = true) => {
+    const getSectionTitle = (name: string) => {
+      const titles: Record<string, string> = {
+        'driver-management': 'Driver Management',
+        'business-intelligence': 'Business Intelligence', 
+        'payment-tracking': 'Payment Tracking',
+        'real-time-tracking': 'Real-Time Tracking',
+        'customer-support': 'Customer Support',
+        'analytics': 'Analytics Dashboard',
+        'order-management': 'Order Management',
+        'route-optimization': 'Route Optimization',
+        'quality-assurance': 'Quality Assurance',
+        'driver-incentives': 'Driver Incentives',
+        'multi-city': 'Multi-City Management',
+        'notifications': 'Notification Center',
+        'admin-access': 'Admin Access Control',
+        'settings': 'System Settings',
+        'business-profile': 'Business Profile'
+      };
+      return titles[name] || name.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    };
+
+    const getSectionComponent = (name: string) => {
+      switch (name) {
+        case 'driver-management':
+          return renderDriverManagement();
+        case 'business-intelligence':
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8"><BusinessIntelligence /></CardContent></Card>;
+        case 'payment-tracking':
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8"><PaymentTracking /></CardContent></Card>;
+        case 'real-time-tracking':
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8"><RealTimeTracking /></CardContent></Card>;
+        case 'customer-support':
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8"><CustomerSupport /></CardContent></Card>;
+        case 'analytics':
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8"><Analytics /></CardContent></Card>;
+        default:
+          return <Card className="bg-white border-amber-200"><CardContent className="p-8">
+            <div className="text-center py-8">
+              <Settings className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+              <p className="text-lg font-medium text-amber-900">{getSectionTitle(name)}</p>
+              <p className="text-sm text-amber-600">Section content coming soon</p>
+            </div>
+          </CardContent></Card>;
+      }
+    };
+
+    return (
+      <div className="h-full">
+        {showHeader && (
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-amber-900">{getSectionTitle(sectionName)}</h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => toggleSplitView(sectionName)}
+              className="border-amber-300"
+            >
+              {selectedSections.includes(sectionName) ? 'Remove Split' : 'Add Split'}
+            </Button>
+          </div>
+        )}
+        {getSectionComponent(sectionName)}
+      </div>
+    );
+  };
+
   // Content router based on section
   const renderContent = () => {
-    switch (section) {
-      case 'driver-management':
-        return renderDriverManagement();
-      case 'business-intelligence':
-        return (
-          <div>
-            <div className="flex items-center mb-6">
-              <Button variant="ghost" onClick={handleBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="text-2xl font-bold text-amber-900">Business Intelligence</h1>
-            </div>
-            <Card className="bg-white border-amber-200">
-              <CardContent className="p-8">
-                <BusinessIntelligence />
-              </CardContent>
-            </Card>
+    // Split view mode
+    if (selectedSections.length === 2) {
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between mb-6">
+            <Button variant="ghost" onClick={handleBack} className="mr-4">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-2xl font-bold text-amber-900">Split View Mode</h1>
+            <Button
+              variant="outline"
+              onClick={() => setSelectedSections([])}
+              className="border-amber-300"
+            >
+              Exit Split View
+            </Button>
           </div>
-        );
-      case 'payment-tracking':
-        return (
-          <div>
-            <div className="flex items-center mb-6">
-              <Button variant="ghost" onClick={handleBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="text-2xl font-bold text-amber-900">Payment Tracking</h1>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-12rem)]">
+            <div className="border border-amber-200 rounded-lg p-4 overflow-y-auto">
+              {renderSectionContent(selectedSections[0], true)}
             </div>
-            <Card className="bg-white border-amber-200">
-              <CardContent className="p-8">
-                <PaymentTracking />
-              </CardContent>
-            </Card>
-          </div>
-        );
-      case 'real-time-tracking':
-        return (
-          <div>
-            <div className="flex items-center mb-6">
-              <Button variant="ghost" onClick={handleBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="text-2xl font-bold text-amber-900">Real-Time Tracking</h1>
+            <div className="border border-amber-200 rounded-lg p-4 overflow-y-auto">
+              {renderSectionContent(selectedSections[1], true)}
             </div>
-            <Card className="bg-white border-amber-200">
-              <CardContent className="p-8">
-                <RealTimeTracking />
-              </CardContent>
-            </Card>
           </div>
-        );
-      case 'customer-support':
-        return (
-          <div>
-            <div className="flex items-center mb-6">
-              <Button variant="ghost" onClick={handleBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="text-2xl font-bold text-amber-900">Customer Support</h1>
-            </div>
-            <Card className="bg-white border-amber-200">
-              <CardContent className="p-8">
-                <CustomerSupport />
-              </CardContent>
-            </Card>
-          </div>
-        );
-      case 'analytics':
-        return (
-          <div>
-            <div className="flex items-center mb-6">
-              <Button variant="ghost" onClick={handleBack} className="mr-4">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Dashboard
-              </Button>
-              <h1 className="text-2xl font-bold text-amber-900">Analytics Dashboard</h1>
-            </div>
-            <Card className="bg-white border-amber-200">
-              <CardContent className="p-8">
-                <Analytics />
-              </CardContent>
-            </Card>
-          </div>
-        );
-      default:
-        return renderMainDashboard();
+        </div>
+      );
     }
+
+    // Single section view
+    if (section && section !== 'main') {
+      return (
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <Button variant="ghost" onClick={handleBack} className="mr-4">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-2xl font-bold text-amber-900">
+              {section.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </h1>
+            <Button
+              variant="outline"
+              onClick={() => toggleSplitView(section)}
+              className="border-amber-300"
+            >
+              Add to Split View
+            </Button>
+          </div>
+          {renderSectionContent(section, false)}
+        </div>
+      );
+    }
+
+    // Default main dashboard
+    return renderMainDashboard();
   };
 
   return (
