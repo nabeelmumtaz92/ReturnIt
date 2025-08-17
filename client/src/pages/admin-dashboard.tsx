@@ -97,7 +97,7 @@ interface Driver {
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -122,6 +122,15 @@ export default function AdminDashboard() {
   const queryClient = useQueryClient();
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
   const [showAddEmployeeModal, setShowAddEmployeeModal] = useState(false);
+  
+  // Messaging system state
+  const [showMessagingSystem, setShowMessagingSystem] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [messageText, setMessageText] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [emailRecipients, setEmailRecipients] = useState<string[]>([]);
+  const [showComposeEmail, setShowComposeEmail] = useState(false);
   
   // Fetch employees from API
   // Disable API calls that require authentication for now
@@ -711,11 +720,19 @@ export default function AdminDashboard() {
               
               <div className="flex items-center justify-end space-x-1 sm:space-x-3">
                 <div className="order-1 sm:order-none">
-                  <RoleSwitcher />
-                </div>
-                <div className="order-2 sm:order-none">
                   <NotificationBell />
                 </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    logout();
+                  }}
+                  className="text-xs sm:text-sm px-2 sm:px-3 order-2 sm:order-none"
+                >
+                  <span className="hidden sm:inline">Sign Out</span>
+                  <span className="sm:hidden">Out</span>
+                </Button>
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -878,6 +895,11 @@ export default function AdminDashboard() {
                 <span className="hidden sm:inline">Employees</span>
                 <span className="sm:hidden">Staff</span>
               </TabsTrigger>
+              <TabsTrigger value="messaging" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
+                <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Messaging</span>
+                <span className="sm:hidden">Messages</span>
+              </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
                 <Settings className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">Settings</span>
@@ -925,6 +947,9 @@ export default function AdminDashboard() {
                             <div>
                               <p className="font-semibold text-amber-900 text-sm sm:text-base">{order.id}</p>
                               <p className="text-xs sm:text-sm text-amber-700">{order.customer}</p>
+                              <div className="mt-1">
+                                <RoleSwitcher />
+                              </div>
                             </div>
                             <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
                               {order.priority.toUpperCase()}
@@ -1669,6 +1694,245 @@ export default function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Messaging System Tab */}
+            <TabsContent value="messaging">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Conversations List */}
+                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-amber-900">Communications</CardTitle>
+                      <Button 
+                        size="sm" 
+                        onClick={() => setShowComposeEmail(true)}
+                        className="bg-amber-700 hover:bg-amber-800 text-white"
+                      >
+                        <Send className="h-4 w-4 mr-2" />
+                        Compose
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      { id: 'drivers', name: 'All Drivers', count: 12, type: 'group' },
+                      { id: 'customers', name: 'All Customers', count: 45, type: 'group' },
+                      { id: 'support', name: 'Support Team', count: 3, type: 'group' },
+                      { id: 'john_driver', name: 'John Driver', status: 'online', type: 'individual' },
+                      { id: 'sarah_customer', name: 'Sarah Customer', status: 'offline', type: 'individual' },
+                    ].map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                          selectedConversation === conversation.id 
+                            ? 'bg-amber-100 border-amber-300' 
+                            : 'bg-white border-amber-200 hover:bg-amber-50'
+                        }`}
+                        onClick={() => setSelectedConversation(conversation.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="relative">
+                              {conversation.type === 'group' ? (
+                                <Users className="h-8 w-8 text-amber-600" />
+                              ) : (
+                                <User className="h-8 w-8 text-amber-600" />
+                              )}
+                              {conversation.type === 'individual' && (
+                                <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
+                                  conversation.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
+                                }`} />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-amber-900">{conversation.name}</p>
+                              {conversation.type === 'group' && (
+                                <p className="text-xs text-amber-600">{conversation.count} members</p>
+                              )}
+                            </div>
+                          </div>
+                          {conversation.type === 'individual' && (
+                            <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Message Thread */}
+                <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-amber-200">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-amber-900">
+                        {selectedConversation ? 
+                          (selectedConversation === 'drivers' ? 'All Drivers' :
+                           selectedConversation === 'customers' ? 'All Customers' :
+                           selectedConversation === 'support' ? 'Support Team' :
+                           selectedConversation === 'john_driver' ? 'John Driver' :
+                           'Sarah Customer') 
+                          : 'Select a conversation'
+                        }
+                      </CardTitle>
+                      {selectedConversation && (
+                        <div className="flex items-center space-x-2">
+                          <Button size="sm" variant="outline">
+                            <Phone className="h-4 w-4" />
+                          </Button>
+                          <Button size="sm" variant="outline">
+                            <Bell className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedConversation ? (
+                      <div className="space-y-4">
+                        {/* Message History */}
+                        <div className="h-96 overflow-y-auto space-y-4 p-4 bg-amber-50 rounded-lg">
+                          {[
+                            { id: 1, sender: 'Admin', message: 'Weekly driver meeting scheduled for Friday at 2 PM', time: '10:30 AM', isOwn: true },
+                            { id: 2, sender: selectedConversation === 'john_driver' ? 'John' : 'Driver Team', message: 'Received. Will there be parking available?', time: '10:32 AM', isOwn: false },
+                            { id: 3, sender: 'Admin', message: 'Yes, reserved spaces in the north lot', time: '10:35 AM', isOwn: true },
+                          ].map((msg) => (
+                            <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                                msg.isOwn 
+                                  ? 'bg-amber-600 text-white' 
+                                  : 'bg-white border border-amber-200 text-amber-900'
+                              }`}>
+                                <p className="text-sm">{msg.message}</p>
+                                <p className={`text-xs mt-1 ${msg.isOwn ? 'text-amber-100' : 'text-amber-500'}`}>
+                                  {msg.time}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Message Input */}
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            placeholder="Type your message..."
+                            value={messageText}
+                            onChange={(e) => setMessageText(e.target.value)}
+                            className="flex-1"
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                // Send message logic
+                                setMessageText('');
+                                toast({
+                                  title: "Message sent",
+                                  description: "Your message has been delivered",
+                                });
+                              }
+                            }}
+                          />
+                          <Button 
+                            size="sm"
+                            onClick={() => {
+                              setMessageText('');
+                              toast({
+                                title: "Message sent",
+                                description: "Your message has been delivered",
+                              });
+                            }}
+                          >
+                            <Send className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-96 flex items-center justify-center text-amber-600">
+                        <div className="text-center">
+                          <MessageCircle className="h-12 w-12 mx-auto mb-4" />
+                          <p>Select a conversation to start messaging</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Email Compose Modal */}
+              {showComposeEmail && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <Card className="w-full max-w-2xl mx-4 bg-white">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-amber-900">Compose Email</CardTitle>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => setShowComposeEmail(false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div>
+                        <Label htmlFor="email-recipients">Recipients</Label>
+                        <Select>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select recipients..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all_drivers">All Drivers (12)</SelectItem>
+                            <SelectItem value="all_customers">All Customers (45)</SelectItem>
+                            <SelectItem value="active_drivers">Active Drivers (8)</SelectItem>
+                            <SelectItem value="vip_customers">VIP Customers (12)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="email-subject">Subject</Label>
+                        <Input
+                          id="email-subject"
+                          value={emailSubject}
+                          onChange={(e) => setEmailSubject(e.target.value)}
+                          placeholder="Enter email subject..."
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email-body">Message</Label>
+                        <textarea
+                          id="email-body"
+                          className="w-full h-32 p-3 border border-amber-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          value={emailBody}
+                          onChange={(e) => setEmailBody(e.target.value)}
+                          placeholder="Type your message here..."
+                        />
+                      </div>
+                      <div className="flex justify-end space-x-2">
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setShowComposeEmail(false)}
+                        >
+                          Cancel
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setShowComposeEmail(false);
+                            setEmailSubject('');
+                            setEmailBody('');
+                            toast({
+                              title: "Email sent",
+                              description: "Your email has been sent to the selected recipients",
+                            });
+                          }}
+                          className="bg-amber-700 hover:bg-amber-800 text-white"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          Send Email
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
