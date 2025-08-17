@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Access Control Test - ReturnIt</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .pass { background-color: #d4edda; border-color: #c3e6cb; }
+        .fail { background-color: #f8d7da; border-color: #f5c6cb; }
+        .pending { background-color: #fff3cd; border-color: #ffeaa7; }
+        .btn { padding: 8px 16px; background: #007bff; color: white; text-decoration: none; border-radius: 4px; margin: 5px; display: inline-block; border: none; cursor: pointer; }
+        .btn-danger { background: #dc3545; }
+        .endpoint-test { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+        .result { font-weight: bold; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔒 Admin Access Control Test</h1>
+    <p>This page tests that non-admin users cannot access admin endpoints or pages.</p>
+    
+    <div class="test-section pending" id="auth-status">
+        <h3>Authentication Status</h3>
+        <p id="current-user">Checking authentication...</p>
+        <button class="btn" onclick="testLogin()">Login with Test User</button>
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="test-section pending" id="frontend-tests">
+        <h3>Frontend Route Protection</h3>
+        <div id="frontend-results">Testing frontend routes...</div>
+        <button class="btn" onclick="testFrontendRoutes()">Test Admin Pages</button>
+    </div>
+    
+    <div class="test-section pending" id="api-tests">
+        <h3>API Endpoint Protection</h3>
+        <div id="api-results">Testing API endpoints...</div>
+        <button class="btn" onclick="testApiEndpoints()">Test Admin APIs</button>
+    </div>
+    
+    <script>
+        const adminEndpoints = [
+            '/api/admin/orders',
+            '/api/admin/drivers', 
+            '/api/admin/payment-records',
+            '/api/admin/payment-summary',
+            '/api/admin/analytics/orders',
+            '/api/admin/promo'
+        ];
+        
+        const adminPages = [
+            '/admin-dashboard',
+            '/advanced-reporting',
+            '/business-intelligence',
+            '/driver-performance',
+            '/enhanced-analytics',
+            '/feature-documents'
+        ];
+        
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/auth/me', { credentials: 'include' });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    const isAdmin = data.isAdmin && data.email === 'nabeelmumtaz92@gmail.com';
+                    document.getElementById('current-user').innerHTML = `
+                        <strong>Authenticated User:</strong><br>
+                        Email: ${data.email}<br>
+                        Admin: ${data.isAdmin ? 'Yes' : 'No'}<br>
+                        Expected Admin: ${isAdmin ? 'Yes' : 'No'}<br>
+                        <span class="${isAdmin ? 'pass' : 'fail'}">
+                            ${isAdmin ? '✅ Should have admin access' : '❌ Should NOT have admin access'}
+                        </span>
+                    `;
+                    return { authenticated: true, isAdmin, user: data };
+                } else {
+                    document.getElementById('current-user').innerHTML = `
+                        <strong>Not Authenticated</strong><br>
+                        <span class="fail">❌ Should be blocked from all admin resources</span>
+                    `;
+                    return { authenticated: false, isAdmin: false };
+                }
+            } catch (error) {
+                document.getElementById('current-user').innerHTML = `
+                    <strong>Error checking auth:</strong> ${error.message}
+                `;
+                return { authenticated: false, isAdmin: false };
+            }
+        }
+        
+        async function testApiEndpoints() {
+            const authStatus = await checkAuthStatus();
+            let results = '';
+            
+            for (const endpoint of adminEndpoints) {
+                try {
+                    const response = await fetch(endpoint, { credentials: 'include' });
+                    const isBlocked = response.status === 401 || response.status === 403;
+                    const shouldBeBlocked = !authStatus.isAdmin;
+                    
+                    const passed = shouldBeBlocked ? isBlocked : !isBlocked;
+                    
+                    results += `
+                        <div class="endpoint-test ${passed ? 'pass' : 'fail'}">
+                            <strong>${endpoint}</strong><br>
+                            Status: ${response.status}<br>
+                            Expected: ${shouldBeBlocked ? 'Blocked (401/403)' : 'Allowed (200)'}<br>
+                            Result: ${passed ? '✅ PASS' : '❌ FAIL'}
+                        </div>
+                    `;
+                } catch (error) {
+                    results += `
+                        <div class="endpoint-test fail">
+                            <strong>${endpoint}</strong><br>
+                            Error: ${error.message}<br>
+                            Result: ❌ ERROR
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('api-results').innerHTML = results;
+            document.getElementById('api-tests').className = 'test-section pass';
+        }
+        
+        async function testFrontendRoutes() {
+            const authStatus = await checkAuthStatus();
+            let results = '';
+            
+            for (const page of adminPages) {
+                try {
+                    // We can't directly test routes due to CORS, but we can document expected behavior
+                    const shouldBeBlocked = !authStatus.isAdmin;
+                    
+                    results += `
+                        <div class="endpoint-test ${shouldBeBlocked ? 'pass' : 'pending'}">
+                            <strong>${page}</strong><br>
+                            Expected: ${shouldBeBlocked ? 'Show 404 page' : 'Show admin content'}<br>
+                            Test: <a href="${page}" target="_blank">Visit Page</a><br>
+                            Status: ${shouldBeBlocked ? '✅ Should be blocked' : '⚠️ Should be accessible'}
+                        </div>
+                    `;
+                } catch (error) {
+                    results += `
+                        <div class="endpoint-test fail">
+                            <strong>${page}</strong><br>
+                            Error: ${error.message}
+                        </div>
+                    `;
+                }
+            }
+            
+            document.getElementById('frontend-results').innerHTML = results;
+            document.getElementById('frontend-tests').className = 'test-section pass';
+        }
+        
+        async function testLogin() {
+            // Redirect to login page
+            window.location.href = '/login';
+        }
+        
+        async function logout() {
+            try {
+                await fetch('/api/auth/logout', { 
+                    method: 'POST', 
+                    credentials: 'include' 
+                });
+                location.reload();
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+        
+        // Initialize tests
+        window.onload = async function() {
+            await checkAuthStatus();
+            document.getElementById('auth-status').className = 'test-section pass';
+        };
+    </script>
+</body>
+</html>

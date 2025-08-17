@@ -111,12 +111,23 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/admin-dashboard">
         {() => {
-          // Always allow admin dashboard access for nabeelmumtaz92@gmail.com
+          // Strict admin access control - only nabeelmumtaz92@gmail.com
+          if (!user?.isAdmin || user?.email !== "nabeelmumtaz92@gmail.com") {
+            return <NotFound />;
+          }
           return <AdminDashboard />;
         }}
       </Route>
       <Route path="/payment-structure" component={PaymentStructure} />
-      <Route path="/admin-payment-tracking" component={AdminPaymentTracking} />
+      <Route path="/admin-payment-tracking">
+        {() => {
+          // Admin only access
+          if (!user?.isAdmin || user?.email !== "nabeelmumtaz92@gmail.com") {
+            return <NotFound />;
+          }
+          return <AdminPaymentTracking />;
+        }}
+      </Route>
       <Route path="/about" component={About} />
 
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
@@ -128,23 +139,55 @@ function Router() {
       <Route path="/real-time-tracking" component={RealTimeTracking} />
       <Route path="/driver-analytics" component={DriverAnalytics} />
       <Route path="/customer-rating" component={CustomerRating} />
-      <Route path="/advanced-reporting" component={AdvancedReporting} />
-      <Route path="/multi-city-management" component={MultiCityManagement} />
-      <Route path="/customer-service-tickets" component={CustomerServiceTickets} />
-      <Route path="/bulk-order-import" component={BulkOrderImport} />
-      <Route path="/loyalty-dashboard" component={LoyaltyDashboard} />
-      <Route path="/driver-safety-center" component={DriverSafetyCenter} />
-      <Route path="/driver-performance" component={DriverPerformance} />
-      <Route path="/route-optimization" component={RouteOptimization} />
-      <Route path="/chat-center" component={ChatCenter} />
-      <Route path="/real-time-tracking-advanced" component={RealTimeTrackingAdvanced} />
-      <Route path="/business-intelligence" component={BusinessIntelligence} />
-      <Route path="/notification-center" component={NotificationCenter} />
-      <Route path="/quality-assurance" component={QualityAssurance} />
-      <Route path="/driver-incentives" component={DriverIncentives} />
-      <Route path="/enhanced-analytics" component={EnhancedAnalyticsDashboard} />
+      <Route path="/advanced-reporting">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdvancedReporting /> : <NotFound />}
+      </Route>
+      <Route path="/multi-city-management">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <MultiCityManagement /> : <NotFound />}
+      </Route>
+      <Route path="/customer-service-tickets">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <CustomerServiceTickets /> : <NotFound />}
+      </Route>
+      <Route path="/bulk-order-import">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <BulkOrderImport /> : <NotFound />}
+      </Route>
+      <Route path="/loyalty-dashboard">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <LoyaltyDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/driver-safety-center">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <DriverSafetyCenter /> : <NotFound />}
+      </Route>
+      <Route path="/driver-performance">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <DriverPerformance /> : <NotFound />}
+      </Route>
+      <Route path="/route-optimization">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <RouteOptimization /> : <NotFound />}
+      </Route>
+      <Route path="/chat-center">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <ChatCenter /> : <NotFound />}
+      </Route>
+      <Route path="/real-time-tracking-advanced">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <RealTimeTrackingAdvanced /> : <NotFound />}
+      </Route>
+      <Route path="/business-intelligence">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <BusinessIntelligence /> : <NotFound />}
+      </Route>
+      <Route path="/notification-center">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <NotificationCenter /> : <NotFound />}
+      </Route>
+      <Route path="/quality-assurance">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <QualityAssurance /> : <NotFound />}
+      </Route>
+      <Route path="/driver-incentives">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <DriverIncentives /> : <NotFound />}
+      </Route>
+      <Route path="/enhanced-analytics">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <EnhancedAnalyticsDashboard /> : <NotFound />}
+      </Route>
       <Route path="/profile" component={Profile} />
-      <Route path="/feature-documents" component={FeatureDocumentGenerator} />
+      <Route path="/feature-documents">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <FeatureDocumentGenerator /> : <NotFound />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
