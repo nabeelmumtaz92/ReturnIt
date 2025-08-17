@@ -13,11 +13,14 @@ export default function RefundDemo() {
   const [deliveryNotes, setDeliveryNotes] = useState("");
   const [refundProcessed, setRefundProcessed] = useState(false);
 
-  // Mock order data
+  // Mock order data with pricing breakdown
   const order = {
     id: "RET-2025-001",
     customerName: "Sarah Johnson",
-    totalPrice: 24.99,
+    totalPrice: 24.99, // Full amount paid by customer
+    itemCost: 18.50, // Refundable amount (what customer gets back)
+    serviceFee: 4.99, // Not refunded (ReturnIt keeps this)
+    taxAmount: 1.50, // Not refunded (paid to government)
     retailer: "Target",
     items: "2 × M Clothing Items",
     pickupAddress: "123 Main St, St. Louis, MO 63101",
@@ -81,7 +84,12 @@ export default function RefundDemo() {
                 <div className="space-y-2 text-sm">
                   <p><strong>Customer:</strong> {order.customerName}</p>
                   <p><strong>Items:</strong> {order.items}</p>
-                  <p><strong>Total Paid:</strong> <span className="text-green-600 font-bold">${order.totalPrice}</span></p>
+                  <p><strong>Total Paid:</strong> <span className="font-bold">${order.totalPrice}</span></p>
+                  <div className="ml-4 text-xs text-gray-600 space-y-1">
+                    <p>• Item Cost: ${order.itemCost} <span className="text-green-600">(refundable)</span></p>
+                    <p>• Service Fee: ${order.serviceFee} <span className="text-orange-600">(non-refundable)</span></p>
+                    <p>• Tax: ${order.taxAmount} <span className="text-orange-600">(non-refundable)</span></p>
+                  </div>
                   <p><strong>Retailer:</strong> {order.retailer}</p>
                 </div>
               </div>
@@ -186,7 +194,10 @@ export default function RefundDemo() {
                       <span className="font-semibold text-green-800">Delivery Completed</span>
                     </div>
                     <p className="text-sm text-green-700">
-                      Customer refund of ${order.totalPrice} has been {refundProcessed ? 'processed' : 'initiated'}
+                      Customer refund of ${order.itemCost} has been {refundProcessed ? 'processed' : 'initiated'}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Service fee and tax are retained by ReturnIt
                     </p>
                   </div>
                   
@@ -200,6 +211,7 @@ export default function RefundDemo() {
                           'Cash (Pending Admin Approval)'
                         }</p>
                         <p><strong>Amount:</strong> ${order.totalPrice}</p>
+                        <p><strong>Amount:</strong> ${order.itemCost}</p>
                         <p><strong>Status:</strong> {
                           refundMethod === 'store_credit' ? 'Completed - Available Now' :
                           refundMethod === 'original_payment' ? 'Processing - 5-10 business days' :
@@ -259,10 +271,13 @@ export default function RefundDemo() {
                 {currentStep >= 4 && (
                   <div className="bg-green-50 border-l-4 border-green-400 p-3">
                     <p className="text-sm">
-                      💰 Your refund of ${order.totalPrice} has been processed! 
+                      💰 Your refund of ${order.itemCost} has been processed! 
                       {refundMethod === 'store_credit' ? ' Store credit is available now.' :
                        refundMethod === 'original_payment' ? ' Money will appear in your account within 5-10 business days.' :
                        ' Cash refund is pending admin approval.'}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Service fee (${order.serviceFee}) and tax (${order.taxAmount}) are non-refundable.
                     </p>
                   </div>
                 )}
@@ -272,8 +287,11 @@ export default function RefundDemo() {
               {refundProcessed && refundMethod === 'store_credit' && (
                 <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                   <h4 className="font-semibold text-green-800">Store Credit Balance</h4>
-                  <p className="text-2xl font-bold text-green-600">${order.totalPrice}</p>
+                  <p className="text-2xl font-bold text-green-600">${order.itemCost}</p>
                   <p className="text-sm text-green-700">Available for your next ReturnIt service</p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    Service fee and tax from original order are non-refundable
+                  </p>
                 </div>
               )}
 
@@ -282,10 +300,13 @@ export default function RefundDemo() {
                 <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
                   <h4 className="font-semibold text-blue-800">Refund to Original Payment</h4>
                   <p className="text-sm text-blue-700 mb-2">
-                    ${order.totalPrice} will be refunded to your credit card ending in •••• 4567
+                    ${order.itemCost} will be refunded to your credit card ending in •••• 4567
                   </p>
                   <p className="text-xs text-blue-600">
                     Refunds typically take 5-10 business days to appear on your statement
+                  </p>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Service fee (${order.serviceFee}) and tax (${order.taxAmount}) are non-refundable
                   </p>
                 </div>
               )}

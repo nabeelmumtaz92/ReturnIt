@@ -1342,10 +1342,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Order already completed" });
       }
 
-      // Determine refund amount
-      const refundAmount = customRefundAmount && customRefundAmount > 0 && customRefundAmount <= (order.totalPrice || 0)
+      // Determine refund amount - only refund the item cost, not service fee or taxes
+      const itemCost = (order.itemCost) || ((order.totalPrice || 0) - (order.serviceFee || 0) - (order.taxAmount || 0));
+      const refundAmount = customRefundAmount && customRefundAmount > 0 && customRefundAmount <= itemCost
         ? customRefundAmount
-        : (order.totalPrice || 0);
+        : itemCost;
 
       // 2. Mark order as delivered to retailer
       const completedOrder = await storage.updateOrder(orderId, {

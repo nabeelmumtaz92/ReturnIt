@@ -237,6 +237,7 @@ export const orders = pgTable("orders", {
   sizeUpcharge: real("size_upcharge").default(0), // L: +$2, XL: +$4
   multiItemFee: real("multi_item_fee").default(0), // $1.00 per additional item
   serviceFee: real("service_fee").default(0), // 15% of subtotal
+  taxAmount: real("tax_amount").default(0), // Sales tax on service
   
   // Optional fees and discounts
   rushFee: real("rush_fee").default(0), // Same-day pickup +$3
@@ -244,7 +245,8 @@ export const orders = pgTable("orders", {
   discountCode: text("discount_code"),
   discountAmount: real("discount_amount").default(0),
   tip: real("tip").default(0),
-  totalPrice: real("total_price"),
+  totalPrice: real("total_price"), // Full amount paid by customer
+  itemRefundAmount: real("item_refund_amount"), // Calculated refundable amount (excludes service fee/tax)
   
   // Payment breakdown
   customerPaid: real("customer_paid"),
@@ -271,7 +273,9 @@ export const orders = pgTable("orders", {
   
   // Refund tracking fields
   stripeRefundId: text("stripe_refund_id"),
-  refundAmount: real("refund_amount"),
+  refundAmount: real("refund_amount"), // Actual amount refunded (item cost only)
+  itemCost: real("item_cost"), // Item cost only (excludes service fee and taxes)
+  taxAmount: real("tax_amount").default(0), // Taxes charged (non-refundable)
   refundMethod: text("refund_method"), // original_payment, store_credit, cash, check
   refundStatus: text("refund_status"), // pending, processing, completed, failed
   refundProcessedAt: timestamp("refund_processed_at"),
