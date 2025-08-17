@@ -58,6 +58,7 @@ import DriverFeedbackSystem from "@/pages/driver-feedback-system";
 import PrintableTemplates from "@/pages/printable-templates";
 import CancellationAlerts from "@/pages/cancellation-alerts";
 import RefundDemo from "@/pages/refund-demo";
+import PricingDemo from "@/pages/pricing-demo";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -273,6 +274,7 @@ function Router() {
         }}
       </Route>
       <Route path="/refund-demo" component={RefundDemo} />
+      <Route path="/pricing-demo" component={PricingDemo} />
 
       <Route component={NotFound} />
     </Switch>
