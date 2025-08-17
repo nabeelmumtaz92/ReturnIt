@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Link } from 'wouter';
-import { AdminNavigation } from '@/components/AdminNavigation';
+import { AdminLayout } from '@/components/AdminLayout';
 import { 
   TrendingUp, TrendingDown, DollarSign, Users, Package, 
   Calendar, MapPin, Target, BarChart3, PieChart, LineChart,
@@ -119,9 +119,15 @@ export default function BusinessIntelligence() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
-      <AdminNavigation />
-      <div className="max-w-7xl mx-auto px-4">
+    <AdminLayout
+      pageTitle="Business Intelligence"
+      tabs={[
+        { label: "Overview", href: "/business-intelligence", current: true },
+        { label: "Market Analysis", href: "/business-intelligence#market", current: false },
+        { label: "Forecasting", href: "/business-intelligence#forecast", current: false }
+      ]}
+    >
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -510,6 +516,6 @@ export default function BusinessIntelligence() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

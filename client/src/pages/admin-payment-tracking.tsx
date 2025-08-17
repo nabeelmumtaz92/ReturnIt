@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar, Download, DollarSign, FileSpreadsheet, Filter, Search, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { generateSamplePaymentRecords, generatePaymentSummary } from "@/lib/demoPaymentData";
-import { AdminNavigation } from "@/components/AdminNavigation";
+import { AdminLayout } from "@/components/AdminLayout";
 
 interface PaymentRecord {
   id: string;
@@ -120,14 +120,30 @@ export default function AdminPaymentTracking() {
     }
   };
 
+  const paymentTabs = [
+    {
+      label: "Payment Records",
+      href: "/admin-payment-tracking",
+      current: true
+    },
+    {
+      label: "Tax Reports",
+      href: "/admin-payment-tracking#tax",
+      current: false
+    },
+    {
+      label: "Driver Payouts", 
+      href: "/admin-payment-tracking#payouts",
+      current: false
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
-      <AdminNavigation />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-amber-900 mb-2">Payment Tracking & Tax Management</h1>
-          <p className="text-amber-700">Comprehensive financial oversight for tax compliance and business analytics</p>
-        </div>
+    <AdminLayout
+      pageTitle="Payment Tracking & Tax Management"
+      tabs={paymentTabs}
+    >
+      <div className="max-w-7xl mx-auto">
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -557,6 +573,6 @@ export default function AdminPaymentTracking() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

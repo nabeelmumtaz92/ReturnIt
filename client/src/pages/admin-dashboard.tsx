@@ -57,7 +57,7 @@ import { apiRequest } from "@/lib/queryClient";
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import ContactSupportButton from "@/components/ContactSupportButton";
-import { AdminNavigation } from "@/components/AdminNavigation";
+import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { ReturnItLogo } from '@/components/LogoIcon';
@@ -604,10 +604,29 @@ export default function AdminDashboard() {
     return completedOrders;
   };
 
+  const dashboardTabs = [
+    {
+      label: "Overview",
+      href: "/admin-dashboard",
+      current: true
+    },
+    {
+      label: "Payment Tracking", 
+      href: "/admin-payment-tracking",
+      current: false
+    },
+    {
+      label: "Analytics",
+      href: "/enhanced-analytics-dashboard", 
+      current: false
+    }
+  ];
+
   return (
-    <div className="min-h-screen relative">
-      {/* Admin Navigation */}
-      <AdminNavigation />
+    <AdminLayout
+      pageTitle="Admin Dashboard"
+      tabs={dashboardTabs}
+    >
       
       {/* Background Image */}
       <div 
@@ -1986,7 +2005,7 @@ export default function AdminDashboard() {
         <ContactSupportButton 
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
-        </div>
       </div>
+    </AdminLayout>
   );
 }
