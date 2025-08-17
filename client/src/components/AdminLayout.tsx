@@ -250,7 +250,6 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
             <ReturnItLogo className="h-8 w-8 text-amber-600" />
             {sidebarOpen && (
               <div>
-                <h1 className="text-lg font-bold text-amber-900">ReturnIt</h1>
                 <p className="text-xs text-amber-600">Admin Panel</p>
               </div>
             )}

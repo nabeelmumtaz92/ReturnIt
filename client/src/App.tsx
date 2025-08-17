@@ -188,6 +188,54 @@ function Router() {
       <Route path="/feature-documents">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <FeatureDocumentGenerator /> : <NotFound />}
       </Route>
+
+      {/* Missing Admin Routes */}
+      <Route path="/admin-orders">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-drivers">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-tracking">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <RealTimeTrackingAdvanced /> : <NotFound />}
+      </Route>
+      <Route path="/admin-support">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <CustomerServiceTickets /> : <NotFound />}
+      </Route>
+      <Route path="/admin-analytics">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <EnhancedAnalyticsDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-payments">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminPaymentTracking /> : <NotFound />}
+      </Route>
+      <Route path="/admin-payouts">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminPaymentTracking /> : <NotFound />}
+      </Route>
+      <Route path="/admin-chat">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <ChatCenter /> : <NotFound />}
+      </Route>
+      <Route path="/admin-support-analytics">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <EnhancedAnalyticsDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-reviews">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <CustomerRating /> : <NotFound />}
+      </Route>
+      <Route path="/admin-customers">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-driver-applications">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <DriverOnboarding /> : <NotFound />}
+      </Route>
+      <Route path="/admin-access">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/admin-settings">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/business-profile">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <About /> : <NotFound />}
+      </Route>
+
       <Route component={NotFound} />
     </Switch>
   );
