@@ -628,17 +628,7 @@ export default function AdminDashboard() {
       tabs={dashboardTabs}
     >
       
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/3184398/pexels-photo-3184398.jpeg?auto=compress&cs=tinysrgb&w=5120&h=3413&dpr=3&fit=crop&crop=center&q=100)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      <div className="absolute inset-0 bg-white/90"></div>
+
       <div className="relative z-10">
         {/* Main Content */}
         <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -1051,11 +1041,10 @@ export default function AdminDashboard() {
               </Card>
             </TabsContent>
 
-            {/* Drivers Tab */}
+            {/* Key Metrics Overview */}
             <TabsContent value="drivers">
-              {/* Key Metrics Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <Card className="bg-white border-amber-200">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1068,7 +1057,7 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <Card className="bg-white border-amber-200">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1081,7 +1070,7 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <Card className="bg-white border-amber-200">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1094,7 +1083,7 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <Card className="bg-white border-amber-200">
                   <CardContent className="p-4 sm:p-6">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1107,101 +1096,63 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
               </div>
-              
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <CardTitle className="text-amber-900">Driver Management</CardTitle>
-                    <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-400 h-4 w-4" />
-                        <Input
-                          placeholder="Search drivers..."
-                          value={driverSearchTerm}
-                          onChange={(e) => setDriverSearchTerm(e.target.value)}
-                          className="pl-10 border-amber-300 focus:border-amber-500 w-full sm:w-64"
-                          data-testid="input-driver-search"
-                        />
+            </TabsContent>
+
+            {/* Business Controls */}
+            <TabsContent value="employees">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                <Card className="bg-white border-amber-200">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Total Revenue</p>
+                        <p className="text-xl sm:text-2xl font-bold text-amber-900">$12,847</p>
                       </div>
-                      <Select value={driverStatusFilter} onValueChange={setDriverStatusFilter}>
-                        <SelectTrigger className="border-amber-300 w-full sm:w-40" data-testid="select-driver-status">
-                          <SelectValue placeholder="Filter by status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Drivers</SelectItem>
-                          <SelectItem value="active">Active Only</SelectItem>
-                          <SelectItem value="inactive">Inactive Only</SelectItem>
-                          <SelectItem value="suspended">Suspended Only</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
                     </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                    {(drivers || []).map((driver) => (
-                      <Card key={driver.id} className="border-amber-200">
-                        <CardContent className="p-3 sm:p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center space-x-2">
-                              {getDriverStatusIcon(driver.status)}
-                              <p className="font-semibold text-amber-900 text-sm sm:text-base">{driver.name}</p>
-                            </div>
-                            <Badge className={`text-xs ${driver.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                              {driver.status}
-                            </Badge>
-                          </div>
-                          <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-amber-700">
-                            <p className="truncate">📧 {driver.email}</p>
-                            <p>📱 {driver.phone}</p>
-                            <p className="truncate">📍 {driver.location}</p>
-                            <div className="flex justify-between pt-2 border-t border-amber-200 text-xs">
-                              <span>Orders: {driver.completedOrders}</span>
-                              <span>⭐ {driver.rating}</span>
-                            </div>
-                            <p className="font-semibold text-amber-900 text-xs sm:text-sm">
-                              Earnings: ${driver.earnings.toLocaleString()}
-                            </p>
-                          </div>
-                          <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-4">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 text-xs px-2 py-1"
-                              onClick={() => {
-                                setSelectedDriver(driver);
-                                setShowDriverDetail(true);
-                              }}
-                            >
-                              <Eye className="h-3 w-3 mr-1" />
-                              View
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 text-green-700 border-green-300 text-xs px-2 py-1"
-                              onClick={() => handleDriverPayout(driver)}
-                              disabled={driver.pendingPayouts === 0}
-                            >
-                              <CreditCard className="h-3 w-3 mr-1" />
-                              Pay
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
-                              className="flex-1 text-blue-700 border-blue-300 text-xs px-2 py-1"
-                              onClick={() => handleDriverSupport(driver)}
-                            >
-                              <HeadphonesIcon className="h-3 w-3 mr-1" />
-                              Help
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    <p className="text-xs text-amber-700 mt-2">This month</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-amber-200">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Customer Satisfaction</p>
+                        <p className="text-xl sm:text-2xl font-bold text-amber-900">4.8⭐</p>
+                      </div>
+                      <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                    </div>
+                    <p className="text-xs text-amber-700 mt-2">Average rating</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-amber-200">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Completed Orders</p>
+                        <p className="text-xl sm:text-2xl font-bold text-amber-900">1,247</p>
+                      </div>
+                      <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                    </div>
+                    <p className="text-xs text-amber-700 mt-2">All time</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border-amber-200">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-amber-600 text-xs sm:text-sm font-medium">System Health</p>
+                        <p className="text-xl sm:text-2xl font-bold text-green-700">Online</p>
+                      </div>
+                      <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-green-600" />
+                    </div>
+                    <p className="text-xs text-amber-700 mt-2">All systems operational</p>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
 
             {/* Analytics Tab */}
