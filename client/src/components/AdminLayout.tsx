@@ -22,18 +22,7 @@ interface AdminLayoutProps {
 
 const navigationSections = [
   {
-    title: "Dashboard",
-    items: [
-      {
-        label: "Overview",
-        href: "/admin-dashboard",
-        icon: Home,
-        description: "Main dashboard and overview"
-      }
-    ]
-  },
-  {
-    title: "Operations",
+    title: "Business Operations Center",
     items: [
       {
         label: "Order Management",
@@ -58,6 +47,17 @@ const navigationSections = [
         href: "/quality-assurance",
         icon: Shield,
         description: "Photo verification and disputes"
+      }
+    ]
+  },
+  {
+    title: "Dashboard",
+    items: [
+      {
+        label: "Overview",
+        href: "/admin-dashboard",
+        icon: Home,
+        description: "Main dashboard and overview"
       }
     ]
   },
