@@ -86,7 +86,8 @@ function Router() {
       <Route path="/">
         {() => {
           // Check if admin user should go directly to dashboard
-          if (user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com") {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          if (user?.isAdmin && masterAdmins.includes(user?.email)) {
             // Use location.replace to avoid back button issues
             window.location.replace('/admin-dashboard');
             return null;
@@ -114,12 +115,10 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/admin-dashboard">
         {() => {
-          // Strict admin access control - only nabeelmumtaz92@gmail.com
-          if (!user?.isAdmin || user?.email !== "nabeelmumtaz92@gmail.com") {
-            return <NotFound />;
-          }
-          return <AdminDashboard />;
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
         }}
+      </Route>
       </Route>
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking">

@@ -12,8 +12,11 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
   const user = req.session.user;
   
-  // Strict admin check - only nabeelmumtaz92@gmail.com
-  if (!user.isAdmin || user.email !== 'nabeelmumtaz92@gmail.com') {
+  // Master admin list
+  const masterAdmins = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
+  
+  // Strict admin check - only master admins
+  if (!user.isAdmin || !masterAdmins.includes(user.email)) {
     console.log(`Unauthorized admin access attempt by: ${user.email} (isAdmin: ${user.isAdmin})`);
     return res.status(403).json({ 
       message: "Admin access required. Unauthorized access denied.",
@@ -29,6 +32,7 @@ export function requireAdmin(req: Request, res: Response, next: NextFunction) {
 // Middleware to check if user is admin (without blocking)
 export function isAdmin(req: Request, res: Response, next: NextFunction) {
   const user = req.session?.user;
-  (req as any).isAdmin = user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com';
+  const masterAdmins = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
+  (req as any).isAdmin = user?.isAdmin && masterAdmins.includes(user?.email);
   next();
 }
