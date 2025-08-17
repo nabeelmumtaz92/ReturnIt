@@ -319,7 +319,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.redirect('/login?error=session_failed');
           }
           console.log('Session user saved successfully:', userData);
-          res.redirect('/?auth=success');
+          
+          // Redirect admin users directly to admin dashboard
+          if (userData.isAdmin) {
+            res.redirect('/admin-dashboard');
+          } else if (userData.isDriver) {
+            res.redirect('/driver-portal');
+          } else {
+            res.redirect('/');
+          }
         });
       } else {
         console.log('Google callback - no user found');
@@ -338,13 +346,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     (req, res) => {
       // Set up session for authenticated user
       if (req.user) {
-        (req.session as any).user = { 
-          id: (req.user as any).id, 
-          email: (req.user as any).email, 
-          phone: (req.user as any).phone || '', 
-          isDriver: (req.user as any).isDriver || false 
+        const user = req.user as any;
+        const userData = {
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone || '', 
+          isDriver: user.isDriver || false,
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName || '',
+          lastName: user.lastName || ''
         };
-        res.redirect('/?auth=success');
+        
+        (req.session as any).user = userData;
+        
+        // Redirect based on user role
+        if (userData.isAdmin) {
+          res.redirect('/admin-dashboard');
+        } else if (userData.isDriver) {
+          res.redirect('/driver-portal');
+        } else {
+          res.redirect('/');
+        }
       } else {
         res.redirect('/login?error=auth_failed');
       }
