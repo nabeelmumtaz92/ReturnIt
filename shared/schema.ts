@@ -15,6 +15,10 @@ export const users = pgTable("users", {
   isDriver: boolean("is_driver").default(false).notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   isActive: boolean("is_active").default(true).notNull(),
+  role: text("role").default("customer"), // customer, driver, support, admin, manager
+  department: text("department"), // support, operations, management, etc.
+  employeeId: text("employee_id"),
+  permissions: jsonb("permissions").default([]), // Array of specific permissions
   profileImage: text("profile_image"),
   preferences: jsonb("preferences").default({}),
   addresses: jsonb("addresses").default([]),

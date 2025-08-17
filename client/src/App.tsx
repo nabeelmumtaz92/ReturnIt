@@ -51,9 +51,11 @@ import QualityAssurance from "@/pages/quality-assurance";
 import DriverIncentives from "@/pages/driver-incentives";
 import Profile from "@/pages/profile";
 import FeatureDocumentGenerator from "@/pages/feature-document-generator";
+import EmployeeGuide from "@/pages/employee-guide";
+import EmployeeDashboard from "@/pages/employee-dashboard";
 
 function Router() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isAuthenticated } = useAuth();
   
   // Only show loading if actually loading
   if (isLoading) {
@@ -234,6 +236,17 @@ function Router() {
       </Route>
       <Route path="/business-profile">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="business-profile" /> : <NotFound />}
+      </Route>
+
+      {/* Employee Routes */}
+      <Route path="/employee-guide">
+        {() => user ? <EmployeeGuide /> : <NotFound />}
+      </Route>
+      <Route path="/employee-dashboard">
+        {() => user ? <EmployeeDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/support-dashboard">
+        {() => user ? <EmployeeDashboard role="support" /> : <NotFound />}
       </Route>
 
       <Route component={NotFound} />
