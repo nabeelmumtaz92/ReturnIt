@@ -188,9 +188,54 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      {/* Top Admin Bar */}
+      <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex justify-end items-center space-x-3 relative z-50">
+        {/* Admin Tools Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="border-amber-300 text-amber-700">
+              <Menu className="h-4 w-4 mr-2" />
+              Admin Tools
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem>
+              <Settings className="h-4 w-4 mr-2" />
+              System Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Users className="h-4 w-4 mr-2" />
+              User Management  
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <FileText className="h-4 w-4 mr-2" />
+              Reports
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        {/* Notification Bell */}
+        <Button variant="ghost" size="sm" className="relative">
+          <Bell className="h-4 w-4" />
+          <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+        </Button>
+
+        {/* Sign Out */}
+        <Button variant="outline" size="sm">
+          Sign Out
+        </Button>
+
+        {/* Back to Site */}
+        <Link href="/">
+          <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
+            Back to Site
+          </Button>
+        </Link>
+      </div>
+
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 z-40 h-full bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
+        "fixed left-0 top-12 z-40 h-[calc(100vh-3rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
         sidebarOpen ? "w-80" : "w-16"
       )}>
         {/* Sidebar Header */}
@@ -268,9 +313,9 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         )}
       </div>
 
-      {/* Page Header - Moved to Top */}
+      {/* Page Header */}
       <div className={cn(
-        "bg-white border-b border-amber-200 shadow-sm transition-all duration-300",
+        "bg-white border-b border-amber-200 shadow-sm transition-all duration-300 pt-12",
         sidebarOpen ? "ml-80" : "ml-16"
       )}>
         <div className="px-6 py-4">
@@ -280,50 +325,6 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
               <div className="text-sm text-amber-600 mt-1">
                 {getCurrentSection()} • {new Date().toLocaleDateString()}
               </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              {/* Admin Tools Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="border-amber-300 text-amber-700">
-                    <Menu className="h-4 w-4 mr-2" />
-                    Admin Tools
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem>
-                    <Settings className="h-4 w-4 mr-2" />
-                    System Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Users className="h-4 w-4 mr-2" />
-                    User Management  
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <FileText className="h-4 w-4 mr-2" />
-                    Reports
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Notification Bell */}
-              <Button variant="ghost" size="sm" className="relative">
-                <Bell className="h-4 w-4" />
-                <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-              </Button>
-
-              {/* Sign Out */}
-              <Button variant="outline" size="sm">
-                Sign Out
-              </Button>
-
-              {/* Back to Site */}
-              <Link href="/">
-                <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
-                  Back to Site
-                </Button>
-              </Link>
             </div>
           </div>
           
