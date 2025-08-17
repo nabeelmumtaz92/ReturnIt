@@ -187,18 +187,14 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-white">
       {/* Top Admin Bar */}
-      <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex items-center justify-between relative z-50">
-        {/* Left side labels */}
-        <div className="flex items-center space-x-4 text-sm text-amber-700">
-          <span className="font-semibold">Admin Dashboard</span>
-          <span>•</span>
-          <span>Business Operations Center</span>
-        </div>
-        
-        {/* Right side controls */}
+      <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex justify-end items-center relative z-50">
+        {/* Right side controls with labels */}
         <div className="flex items-center space-x-3">
+          <span className="font-semibold text-sm text-amber-700">Admin Dashboard</span>
+          <span className="text-sm text-amber-700">•</span>
+          <span className="text-sm text-amber-700">Business Operations Center</span>
           {/* Admin Tools Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
