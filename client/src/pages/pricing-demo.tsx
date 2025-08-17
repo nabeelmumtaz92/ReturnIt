@@ -44,23 +44,54 @@ export default function PricingDemo() {
     };
   };
 
-  // Value-based pricing structure
-  const calculateValueBasedPricing = () => {
+  // Tiered value-based pricing structure
+  const calculateTieredPricing = () => {
     const basePrice = 3.99;
     const distanceFee = distance[0] * 0.50;
     const sizeUpcharge = itemSize === "L" ? 2.00 : itemSize === "XL" ? 4.00 : 0;
     
-    // Value-based component (0.5% of item value, capped at $15)
-    const valueComponent = Math.min(itemValue[0] * 0.005, 15);
+    // Tiered value components based on item value
+    let valueComponent = 0;
+    let driverValueBonus = 0;
+    let tier = "Standard";
+    
+    const value = itemValue[0];
+    
+    if (value >= 10000) {
+      // Tier 5: $10,000+ - Premium handling
+      valueComponent = 25.00;
+      driverValueBonus = 8.00;
+      tier = "Ultra Premium ($10K+)";
+    } else if (value >= 5000) {
+      // Tier 4: $5,000-$9,999 - High-value handling
+      valueComponent = 15.00;
+      driverValueBonus = 5.00;
+      tier = "Premium ($5K-$10K)";
+    } else if (value >= 1000) {
+      // Tier 3: $1,000-$4,999 - Enhanced care
+      valueComponent = 8.00;
+      driverValueBonus = 3.00;
+      tier = "Enhanced ($1K-$5K)";
+    } else if (value >= 500) {
+      // Tier 2: $500-$999 - Moderate value
+      valueComponent = 4.00;
+      driverValueBonus = 1.50;
+      tier = "Value ($500-$1K)";
+    } else if (value >= 100) {
+      // Tier 1: $100-$499 - Basic premium
+      valueComponent = 2.00;
+      driverValueBonus = 1.00;
+      tier = "Basic+ ($100-$500)";
+    }
+    // Under $100: No value surcharge (standard pricing)
     
     const serviceFee = (basePrice + distanceFee + sizeUpcharge + valueComponent) * 0.15;
     const total = basePrice + distanceFee + sizeUpcharge + valueComponent + serviceFee;
     
-    // Driver earnings with value bonus
+    // Driver earnings with tiered value bonus
     const driverBasePay = 3.00;
     const driverDistancePay = distance[0] * 0.35;
     const driverSizeBonus = itemSize === "L" ? 1.00 : itemSize === "XL" ? 2.00 : 0;
-    const driverValueBonus = Math.min(itemValue[0] * 0.002, 5); // 0.2% of value, capped at $5
     const driverTotal = driverBasePay + driverDistancePay + driverSizeBonus + driverValueBonus;
     
     // Company revenue
@@ -76,14 +107,16 @@ export default function PricingDemo() {
         serviceFee
       },
       driverEarnings: driverTotal,
+      driverValueBonus,
       companyRevenue,
-      itemValue: itemValue[0]
+      itemValue: itemValue[0],
+      tier
     };
   };
 
   const currentPricing = calculateCurrentPricing();
-  const valuePricing = calculateValueBasedPricing();
-  const selectedPricing = pricingModel === "current" ? currentPricing : valuePricing;
+  const tieredPricing = calculateTieredPricing();
+  const selectedPricing = pricingModel === "current" ? currentPricing : tieredPricing;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
@@ -164,7 +197,7 @@ export default function PricingDemo() {
               <Tabs value={pricingModel} onValueChange={setPricingModel} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="current">Current (Flat Rate)</TabsTrigger>
-                  <TabsTrigger value="value-based">Value-Based</TabsTrigger>
+                  <TabsTrigger value="value-based">Tiered Pricing</TabsTrigger>
                 </TabsList>
               </Tabs>
             </div>
@@ -219,51 +252,68 @@ export default function PricingDemo() {
             </CardContent>
           </Card>
 
-          {/* Value-Based Pricing */}
+          {/* Tiered Pricing */}
           <Card className={pricingModel === "value-based" ? "ring-2 ring-green-500" : ""}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="w-5 h-5" />
-                Value-Based Pricing Model
+                Tiered Value Pricing Model
               </CardTitle>
               <CardDescription>
-                Pricing scales with item value + base service costs
+                {tieredPricing.tier} - Fixed tiers based on item value
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Tier Badge */}
+              <div className="text-center">
+                <Badge 
+                  variant={tieredPricing.tier.includes("Ultra") ? "destructive" : 
+                          tieredPricing.tier.includes("Premium") ? "default" : 
+                          tieredPricing.tier.includes("Enhanced") ? "secondary" : 
+                          "outline"}
+                  className="text-lg px-3 py-1"
+                >
+                  {tieredPricing.tier}
+                </Badge>
+              </div>
+              
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Base Price:</span>
-                  <span>${valuePricing.breakdown.basePrice.toFixed(2)}</span>
+                  <span>${tieredPricing.breakdown.basePrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Distance Fee ({distance[0]} mi):</span>
-                  <span>${valuePricing.breakdown.distanceFee.toFixed(2)}</span>
+                  <span>${tieredPricing.breakdown.distanceFee.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Size Upcharge ({itemSize}):</span>
-                  <span>${valuePricing.breakdown.sizeUpcharge.toFixed(2)}</span>
+                  <span>${tieredPricing.breakdown.sizeUpcharge.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm text-green-600">
-                  <span>Value Component (0.5%):</span>
-                  <span>${valuePricing.breakdown.valueComponent.toFixed(2)}</span>
+                  <span>Value Tier Fee:</span>
+                  <span>${tieredPricing.breakdown.valueComponent.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Service Fee (15%):</span>
-                  <span>${valuePricing.breakdown.serviceFee.toFixed(2)}</span>
+                  <span>${tieredPricing.breakdown.serviceFee.toFixed(2)}</span>
                 </div>
                 <hr />
                 <div className="flex justify-between font-bold">
                   <span>Customer Total:</span>
-                  <span>${valuePricing.customerTotal.toFixed(2)}</span>
+                  <span>${tieredPricing.customerTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-green-600">
                   <span>Driver Earnings:</span>
-                  <span>${valuePricing.driverEarnings.toFixed(2)}</span>
+                  <span>${tieredPricing.driverEarnings.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-green-500">
+                  <span>Driver Value Bonus:</span>
+                  <span>+${tieredPricing.driverValueBonus.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-blue-600">
                   <span>Company Revenue:</span>
-                  <span>${valuePricing.companyRevenue.toFixed(2)}</span>
+                  <span>${tieredPricing.companyRevenue.toFixed(2)}</span>
                 </div>
               </div>
             </CardContent>
@@ -281,17 +331,17 @@ export default function PricingDemo() {
               {/* Price Difference */}
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-gray-900">
-                  ${Math.abs(valuePricing.customerTotal - currentPricing.customerTotal).toFixed(2)}
+                  ${Math.abs(tieredPricing.customerTotal - currentPricing.customerTotal).toFixed(2)}
                 </div>
                 <div className="text-sm text-gray-600">
-                  {valuePricing.customerTotal > currentPricing.customerTotal ? "Higher" : "Lower"} with value-based
+                  {tieredPricing.customerTotal > currentPricing.customerTotal ? "Higher" : "Lower"} with tiered pricing
                 </div>
               </div>
 
               {/* Driver Impact */}
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <div className="text-2xl font-bold text-green-600">
-                  +${(valuePricing.driverEarnings - currentPricing.driverEarnings).toFixed(2)}
+                  +${(tieredPricing.driverEarnings - currentPricing.driverEarnings).toFixed(2)}
                 </div>
                 <div className="text-sm text-gray-600">
                   Additional driver earnings
@@ -301,7 +351,7 @@ export default function PricingDemo() {
               {/* Company Impact */}
               <div className="text-center p-4 bg-blue-50 rounded-lg">
                 <div className="text-2xl font-bold text-blue-600">
-                  +${(valuePricing.companyRevenue - currentPricing.companyRevenue).toFixed(2)}
+                  +${(tieredPricing.companyRevenue - currentPricing.companyRevenue).toFixed(2)}
                 </div>
                 <div className="text-sm text-gray-600">
                   Additional company revenue
@@ -309,21 +359,33 @@ export default function PricingDemo() {
               </div>
             </div>
 
-            {/* Scenarios */}
+            {/* Pricing Tiers */}
             <div className="mt-6 space-y-4">
-              <h4 className="font-semibold">Pricing Scenarios:</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                <div className="p-3 border rounded-lg">
-                  <div className="font-medium text-green-600">Low-Value Items ($10-50)</div>
-                  <p>Current model may be more competitive for basic returns</p>
+              <h4 className="font-semibold">Pricing Tier Breakdown:</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                <div className="p-3 border rounded-lg bg-gray-50">
+                  <div className="font-medium text-gray-600">Standard (Under $100)</div>
+                  <p className="text-xs">No surcharge - competitive base pricing</p>
                 </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="font-medium text-blue-600">Mid-Value Items ($50-200)</div>
-                  <p>Value-based pricing provides modest premium while staying competitive</p>
+                <div className="p-3 border rounded-lg bg-green-50">
+                  <div className="font-medium text-green-600">Basic+ ($100-$499)</div>
+                  <p className="text-xs">+$2.00 service, +$1.00 driver bonus</p>
                 </div>
-                <div className="p-3 border rounded-lg">
-                  <div className="font-medium text-purple-600">High-Value Items ($200+)</div>
-                  <p>Value-based pricing significantly increases revenue and driver pay</p>
+                <div className="p-3 border rounded-lg bg-blue-50">
+                  <div className="font-medium text-blue-600">Value ($500-$999)</div>
+                  <p className="text-xs">+$4.00 service, +$1.50 driver bonus</p>
+                </div>
+                <div className="p-3 border rounded-lg bg-purple-50">
+                  <div className="font-medium text-purple-600">Enhanced ($1K-$5K)</div>
+                  <p className="text-xs">+$8.00 service, +$3.00 driver bonus</p>
+                </div>
+                <div className="p-3 border rounded-lg bg-orange-50">
+                  <div className="font-medium text-orange-600">Premium ($5K-$10K)</div>
+                  <p className="text-xs">+$15.00 service, +$5.00 driver bonus</p>
+                </div>
+                <div className="p-3 border rounded-lg bg-red-50">
+                  <div className="font-medium text-red-600">Ultra Premium ($10K+)</div>
+                  <p className="text-xs">+$25.00 service, +$8.00 driver bonus</p>
                 </div>
               </div>
             </div>
@@ -341,28 +403,29 @@ export default function PricingDemo() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-blue-600 mb-2">Hybrid Model</h4>
+                <h4 className="font-semibold text-blue-600 mb-2">Tiered Implementation</h4>
                 <p className="text-sm text-gray-600 mb-3">
-                  Use value-based pricing only for items over $100 to maintain competitiveness
+                  Clear pricing tiers provide predictable costs and incentivize careful handling
                 </p>
                 <Badge variant="outline">Recommended</Badge>
               </div>
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-green-600 mb-2">Premium Service Tier</h4>
+                <h4 className="font-semibold text-green-600 mb-2">Enhanced Insurance</h4>
                 <p className="text-sm text-gray-600 mb-3">
-                  Offer value-based pricing as a premium option with additional insurance
+                  Higher tiers include automatic coverage up to item value
                 </p>
-                <Badge variant="secondary">Alternative</Badge>
+                <Badge variant="secondary">Added Value</Badge>
               </div>
             </div>
 
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-800 mb-2">Market Considerations</h4>
+              <h4 className="font-semibold text-amber-800 mb-2">Implementation Benefits</h4>
               <ul className="text-sm text-amber-700 space-y-1">
-                <li>• Customer willingness to pay more for expensive items</li>
-                <li>• Competitive positioning vs. flat-rate services</li>
-                <li>• Driver incentives for handling valuable items</li>
-                <li>• Insurance and liability coverage scaling</li>
+                <li>• Predictable pricing tiers vs. percentage calculations</li>
+                <li>• Driver incentives scale with handling responsibility</li>
+                <li>• Maintains competitiveness for everyday items</li>
+                <li>• Higher margins on premium items fund service improvements</li>
+                <li>• Clear value proposition for expensive item returns</li>
               </ul>
             </div>
           </CardContent>

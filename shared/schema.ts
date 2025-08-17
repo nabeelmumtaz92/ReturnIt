@@ -239,6 +239,12 @@ export const orders = pgTable("orders", {
   serviceFee: real("service_fee").default(0), // 15% of subtotal
   taxAmount: real("tax_amount").default(0), // Sales tax on service
   
+  // Tiered value-based pricing
+  itemValue: real("item_value"), // Declared value of item being returned
+  valueTier: text("value_tier"), // Standard, Basic+, Value, Enhanced, Premium, Ultra Premium
+  valueTierFee: real("value_tier_fee").default(0), // Fixed fee based on value tier
+  driverValueBonus: real("driver_value_bonus").default(0), // Driver bonus for value tier
+  
   // Optional fees and discounts
   rushFee: real("rush_fee").default(0), // Same-day pickup +$3
   surcharges: jsonb("surcharges").default([]),
