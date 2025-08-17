@@ -1041,118 +1041,136 @@ export default function AdminDashboard() {
               </Card>
             </TabsContent>
 
-            {/* Key Metrics Overview */}
+            {/* Drivers Tab */}
             <TabsContent value="drivers">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Today's Orders</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">47</p>
-                      </div>
-                      <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">+12% from yesterday</p>
-                  </CardContent>
-                </Card>
+              <Card className="bg-white border-amber-200">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <CardTitle className="text-amber-900">Key Metrics</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Today's Orders</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">47</p>
+                          </div>
+                          <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">+12% from yesterday</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Active Drivers</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">28</p>
-                      </div>
-                      <Truck className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">3 on break</p>
-                  </CardContent>
-                </Card>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Active Drivers</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">28</p>
+                          </div>
+                          <Truck className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">3 on break</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Revenue Today</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">$1,247</p>
-                      </div>
-                      <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">+8% from yesterday</p>
-                  </CardContent>
-                </Card>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Revenue Today</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">$1,247</p>
+                          </div>
+                          <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">+8% from yesterday</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Avg Pickup Time</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">14min</p>
-                      </div>
-                      <Clock className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">-2min from yesterday</p>
-                  </CardContent>
-                </Card>
-              </div>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Avg Pickup Time</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">14min</p>
+                          </div>
+                          <Clock className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">-2min from yesterday</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
-            {/* Business Controls */}
+            {/* Employees Tab */}
             <TabsContent value="employees">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Total Revenue</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">$12,847</p>
-                      </div>
-                      <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">This month</p>
-                  </CardContent>
-                </Card>
+              <Card className="bg-white border-amber-200">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <CardTitle className="text-amber-900">Business Overview</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Total Revenue</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">$12,847</p>
+                          </div>
+                          <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">This month</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Customer Satisfaction</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">4.8⭐</p>
-                      </div>
-                      <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">Average rating</p>
-                  </CardContent>
-                </Card>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Customer Satisfaction</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">4.8⭐</p>
+                          </div>
+                          <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">Average rating</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">Completed Orders</p>
-                        <p className="text-xl sm:text-2xl font-bold text-amber-900">1,247</p>
-                      </div>
-                      <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">All time</p>
-                  </CardContent>
-                </Card>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Completed Orders</p>
+                            <p className="text-xl sm:text-2xl font-bold text-amber-900">1,247</p>
+                          </div>
+                          <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">All time</p>
+                      </CardContent>
+                    </Card>
 
-                <Card className="bg-white border-amber-200">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-amber-600 text-xs sm:text-sm font-medium">System Health</p>
-                        <p className="text-xl sm:text-2xl font-bold text-green-700">Online</p>
-                      </div>
-                      <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-green-600" />
-                    </div>
-                    <p className="text-xs text-amber-700 mt-2">All systems operational</p>
-                  </CardContent>
-                </Card>
-              </div>
+                    <Card className="bg-white border-amber-200">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-amber-600 text-xs sm:text-sm font-medium">System Health</p>
+                            <p className="text-xl sm:text-2xl font-bold text-green-700">Online</p>
+                          </div>
+                          <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-green-600" />
+                        </div>
+                        <p className="text-xs text-amber-700 mt-2">All systems operational</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* Analytics Tab */}
