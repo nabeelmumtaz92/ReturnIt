@@ -347,7 +347,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     passport.authenticate('google', { 
       failureRedirect: '/login?error=google_auth_failed' 
-    })(req, res, (err) => {
+    })(req, res, (err: any) => {
       if (err) {
         console.error('Passport authentication error:', err);
         return res.redirect('/login?error=auth_error');

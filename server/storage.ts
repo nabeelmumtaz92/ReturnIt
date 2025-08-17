@@ -23,8 +23,11 @@ export interface IStorage {
   getAllOrders(): Promise<Order[]>;
   getDriverOrders(driverId: number): Promise<Order[]>;
   getAvailableOrders(): Promise<Order[]>;
+  getOrdersByStatus(status: OrderStatus): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
+  assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined>;
+  updateDriverStatus(driverId: number, status: string): Promise<User | undefined>;
   
   // Promo code operations
   getPromoCode(code: string): Promise<PromoCode | undefined>;
@@ -337,6 +340,40 @@ export class MemStorage implements IStorage {
     }
     
     return updatedOrder;
+  }
+
+  async getOrdersByStatus(status: OrderStatus): Promise<Order[]> {
+    return Array.from(this.orders.values()).filter(order => order.status === status);
+  }
+
+  async assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined> {
+    const order = this.orders.get(orderId);
+    if (!order) return undefined;
+
+    const updatedOrder = {
+      ...order,
+      driverId,
+      driverAssignedAt: new Date().toISOString(),
+      status: OrderStatus.ASSIGNED as OrderStatus,
+      updatedAt: new Date()
+    };
+
+    this.orders.set(orderId, updatedOrder);
+    return updatedOrder;
+  }
+
+  async updateDriverStatus(driverId: number, status: string): Promise<User | undefined> {
+    const user = this.users.get(driverId);
+    if (!user) return undefined;
+
+    const updatedUser = {
+      ...user,
+      status: status as any, // We'll need to add this to the User type if needed
+      updatedAt: new Date()
+    };
+
+    this.users.set(driverId, updatedUser);
+    return updatedUser;
   }
 
   // Payment tracking methods

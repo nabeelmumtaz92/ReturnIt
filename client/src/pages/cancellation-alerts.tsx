@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   AlertTriangle, TrendingUp, TrendingDown, Bell, Settings,
   User, Calendar, BarChart3, Filter, Search, Mail, Phone,
-  ExternalLink, Clock, MapPin, Package, Target, Warning
+  ExternalLink, Clock, MapPin, Package, Target
 } from 'lucide-react';
 import { ReturnItLogo } from '@/components/LogoIcon';
 import { useToast } from '@/hooks/use-toast';
@@ -228,7 +228,7 @@ export default function CancellationAlerts() {
                 <p className="text-sm font-medium text-orange-600">High Priority</p>
                 <p className="text-3xl font-bold text-orange-900">{summaryStats.highPriorityAlerts}</p>
               </div>
-              <Warning className="h-8 w-8 text-orange-600" />
+              <AlertTriangle className="h-8 w-8 text-orange-600" />
             </div>
           </CardContent>
         </Card>
