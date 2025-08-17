@@ -640,11 +640,9 @@ export default function AdminDashboard() {
       />
       <div className="absolute inset-0 bg-white/90"></div>
       <div className="relative z-10">
-
-
-        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-          {/* Key Metrics */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        {/* Key Metrics at Top */}
+        <div className="bg-white border-b border-amber-200 px-4 sm:px-6 py-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-7xl mx-auto">
             <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4 sm:p-6">
                 <div className="flex items-center justify-between">
@@ -697,7 +695,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </div>
+        </div>
 
+        {/* Main Content */}
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Mobile Quick Navigation */}
           <div className="lg:hidden mb-6">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
