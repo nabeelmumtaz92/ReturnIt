@@ -53,6 +53,7 @@ import Profile from "@/pages/profile";
 import FeatureDocumentGenerator from "@/pages/feature-document-generator";
 import EmployeeGuide from "@/pages/employee-guide";
 import EmployeeDashboard from "@/pages/employee-dashboard";
+import EmployeeDocuments from "@/pages/employee-documents";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -247,6 +248,9 @@ function Router() {
       </Route>
       <Route path="/support-dashboard">
         {() => user ? <EmployeeDashboard role="support" /> : <NotFound />}
+      </Route>
+      <Route path="/employee-documents">
+        {() => user ? <EmployeeDocuments /> : <NotFound />}
       </Route>
 
       <Route component={NotFound} />
