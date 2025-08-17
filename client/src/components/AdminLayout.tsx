@@ -319,12 +319,10 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         sidebarOpen ? "ml-80" : "ml-16"
       )}>
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-amber-900">{pageTitle}</h1>
-              <div className="text-sm text-amber-600 mt-1">
-                {getCurrentSection()} • {new Date().toLocaleDateString()}
-              </div>
+          <div>
+            <h1 className="text-2xl font-bold text-amber-900">{pageTitle}</h1>
+            <div className="text-sm text-amber-600 mt-1">
+              {getCurrentSection()} • {new Date().toLocaleDateString()}
             </div>
           </div>
           
