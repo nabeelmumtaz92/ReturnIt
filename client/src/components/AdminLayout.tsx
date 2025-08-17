@@ -223,17 +223,9 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
-      {/* Top Header Bar */}
-      <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-3 flex items-center justify-between relative z-50">
-        <div className="flex items-center space-x-4">
-          <ReturnItLogo className="h-8 w-8" />
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
-            <p className="text-sm text-amber-600">Business Operations Center</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center space-x-3">
+      {/* Top Header Bar - Right Side Only */}
+      <div className="bg-white shadow-sm border-b border-gray-200 py-3 relative z-50">
+        <div className="flex justify-end items-center space-x-3 px-6" style={{ marginLeft: '320px' }}>
           {/* Admin Tools Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -279,7 +271,7 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
       </div>
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
+        "fixed left-0 top-0 z-40 h-full bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
         sidebarOpen ? "w-80" : "w-16"
       )}>
         {/* Sidebar Header */}
