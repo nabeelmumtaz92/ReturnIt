@@ -313,16 +313,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // OAuth Test Page
+  app.get('/test-oauth', (req, res) => {
+    const path = require('path');
+    res.sendFile(path.join(__dirname, '../test-oauth.html'));
+  });
+
   // Social Authentication Routes
   
   // Google Auth
-  app.get('/api/auth/google', passport.authenticate('google', { 
-    scope: ['profile', 'email'] 
-  }));
+  app.get('/api/auth/google', (req, res, next) => {
+    console.log('Google OAuth initiated');
+    console.log('Request hostname:', req.hostname);
+    console.log('Request protocol:', req.protocol);
+    console.log('Full URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
+    
+    passport.authenticate('google', { 
+      scope: ['profile', 'email'] 
+    })(req, res, next);
+  });
 
-  app.get('/api/auth/google/callback',
-    passport.authenticate('google', { failureRedirect: '/login?error=google_auth_failed' }),
-    (req, res) => {
+  app.get('/api/auth/google/callback', (req, res, next) => {
+    console.log('Google OAuth callback hit');
+    console.log('Query params:', req.query);
+    console.log('Request URL:', req.url);
+    
+    passport.authenticate('google', { 
+      failureRedirect: '/login?error=google_auth_failed' 
+    })(req, res, (err) => {
+      if (err) {
+        console.error('Passport authentication error:', err);
+        return res.redirect('/login?error=auth_error');
+      }
+      next();
+    });
+  }, (req, res) => {
       // Set up session for authenticated user
       if (req.user) {
         const user = req.user as any;

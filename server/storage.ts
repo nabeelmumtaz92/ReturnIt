@@ -106,6 +106,7 @@ export class MemStorage implements IStorage {
       firstName: 'Nabeel',
       lastName: 'Mumtaz',
       phone: '6362544821',
+      dateOfBirth: '1990-01-01',
       isDriver: true,  // Driver access for testing
       tutorialCompleted: true, // Tutorial already completed
       isAdmin: true,   // Admin access
@@ -143,13 +144,17 @@ export class MemStorage implements IStorage {
       isOnline: true,
       currentLocation: {
         latitude: 38.6270,
-        longitude: -90.1994,
-        address: 'Downtown St. Louis, MO'
+        longitude: -90.1994
       },
-      stripeConnectAccountId: 'acct_master123',
-      stripeOnboardingComplete: true,
-      paymentPreference: 'instant',
-      instantPayFeePreference: 0.50,
+      stripeConnectAccountId: null,
+      stripeOnboardingComplete: false,
+      paymentPreference: 'weekly',
+      instantPayFeePreference: 1.00,
+      hireDate: new Date('2025-01-01'),
+      assignedCity: 'st-louis',
+      serviceZones: ['downtown', 'midtown', 'west_end'],
+      emergencyContacts: [],
+      lastSafetyCheck: null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -180,6 +185,7 @@ export class MemStorage implements IStorage {
       firstName: insertUser.firstName || null,
       lastName: insertUser.lastName || null,
       phone: insertUser.phone || null,
+      dateOfBirth: insertUser.dateOfBirth || null,
       isDriver: insertUser.isDriver ?? false,
       isAdmin: insertUser.isAdmin ?? false,
       isActive: insertUser.isActive ?? true,
@@ -195,6 +201,16 @@ export class MemStorage implements IStorage {
       completedDeliveries: insertUser.completedDeliveries ?? 0,
       isOnline: insertUser.isOnline ?? false,
       currentLocation: insertUser.currentLocation || null,
+      stripeConnectAccountId: insertUser.stripeConnectAccountId || null,
+      stripeOnboardingComplete: insertUser.stripeOnboardingComplete ?? false,
+      paymentPreference: insertUser.paymentPreference || 'weekly',
+      instantPayFeePreference: insertUser.instantPayFeePreference ?? 1.00,
+      tutorialCompleted: insertUser.tutorialCompleted ?? false,
+      hireDate: insertUser.hireDate || null,
+      assignedCity: insertUser.assignedCity || 'st-louis',
+      serviceZones: insertUser.serviceZones || [],
+      emergencyContacts: insertUser.emergencyContacts || [],
+      lastSafetyCheck: insertUser.lastSafetyCheck || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };

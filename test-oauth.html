@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google OAuth Test - ReturnIt Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 10px 20px; background: #4285f4; color: white; text-decoration: none; border-radius: 4px; }
+        .status { margin: 20px 0; padding: 10px; background: #f0f0f0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>Google OAuth Test</h1>
+    <p>Click the button below to test Google OAuth login for admin user:</p>
+    
+    <a href="/api/auth/google" class="btn">Login with Google</a>
+    
+    <div class="status" id="status">
+        <strong>Current Status:</strong> <span id="auth-status">Checking...</span>
+    </div>
+    
+    <div id="user-info"></div>
+    
+    <script>
+        // Check current authentication status
+        fetch('/api/auth/me', { credentials: 'include' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    document.getElementById('auth-status').textContent = 'Not authenticated';
+                } else {
+                    document.getElementById('auth-status').textContent = 'Authenticated';
+                    document.getElementById('user-info').innerHTML = `
+                        <h3>User Information:</h3>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>Name:</strong> ${data.firstName} ${data.lastName}</p>
+                        <p><strong>Admin:</strong> ${data.isAdmin ? 'Yes' : 'No'}</p>
+                        <p><strong>Driver:</strong> ${data.isDriver ? 'Yes' : 'No'}</p>
+                    `;
+                    
+                    // If admin user, show redirect information
+                    if (data.isAdmin && data.email === 'nabeelmumtaz92@gmail.com') {
+                        document.getElementById('user-info').innerHTML += `
+                            <p><strong>Admin Access:</strong> ✅ Should redirect to admin dashboard</p>
+                            <a href="/admin-dashboard" class="btn">Go to Admin Dashboard</a>
+                        `;
+                    }
+                }
+            })
+            .catch(error => {
+                document.getElementById('auth-status').textContent = 'Error checking status';
+                console.error('Auth check error:', error);
+            });
+    </script>
+</body>
+</html>

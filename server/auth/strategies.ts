@@ -5,12 +5,24 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { storage } from '../storage';
 
 // Google OAuth Strategy
+console.log('Google OAuth Configuration:', {
+  hasClientId: !!process.env.GOOGLE_CLIENT_ID,
+  hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
+  clientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0
+});
+
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: 'https://returnit.online/api/auth/google/callback'
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
+    console.log('Google OAuth strategy callback triggered');
+    console.log('Profile data:', {
+      id: profile.id,
+      email: profile.emails?.[0]?.value,
+      name: profile.displayName
+    });
     try {
       // Check if user exists
       const existingUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
@@ -21,6 +33,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
       // Create new user with Google profile data
       const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
+      console.log('Creating new Google user:', userEmail);
+      
       const newUser = await storage.createUser({
         email: userEmail,
         phone: userEmail === 'nabeelmumtaz92@gmail.com' ? '6362544821' : '', // Admin gets phone number
@@ -30,6 +44,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         isDriver: userEmail === 'nabeelmumtaz92@gmail.com', // Admin is also driver for testing
         isAdmin: userEmail === 'nabeelmumtaz92@gmail.com' // Exclusive admin access
       });
+      
+      console.log('New user created:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
 
       return done(null, newUser);
     } catch (error) {
