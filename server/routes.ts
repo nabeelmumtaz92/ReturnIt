@@ -521,7 +521,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const orderId = paymentIntent.metadata?.orderId;
           if (orderId && orderId !== 'unknown') {
             await storage.updateOrder(orderId, { 
-              status: 'paid'
+              status: 'paid',
+              stripePaymentIntentId: paymentIntent.id,
+              paymentStatus: 'completed'
             });
           }
           break;
@@ -534,8 +536,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const failedOrderId = failedPayment.metadata?.orderId;
           if (failedOrderId && failedOrderId !== 'unknown') {
             await storage.updateOrder(failedOrderId, { 
-              status: 'payment_failed'
+              status: 'payment_failed',
+              paymentStatus: 'failed'
             });
+          }
+          break;
+
+        case 'refund.created':
+          const refund = event.data.object;
+          console.log(`Refund created: ${refund.id}`);
+          
+          // Find order by refund metadata
+          const refundOrderId = refund.metadata?.orderId;
+          if (refundOrderId) {
+            await storage.updateOrder(refundOrderId, {
+              paymentStatus: 'refund_processing',
+              stripeRefundId: refund.id
+            });
+          }
+          break;
+
+        case 'refund.updated':
+          const updatedRefund = event.data.object;
+          console.log(`Refund updated: ${updatedRefund.id}, status: ${updatedRefund.status}`);
+          
+          const refundUpdateOrderId = updatedRefund.metadata?.orderId;
+          if (refundUpdateOrderId) {
+            if (updatedRefund.status === 'succeeded') {
+              await storage.updateOrder(refundUpdateOrderId, {
+                paymentStatus: 'refunded',
+                status: 'refunded',
+                refundAmount: updatedRefund.amount / 100
+              });
+              
+              // Notify customer that refund is complete
+              const order = await storage.getOrder(refundUpdateOrderId);
+              if (order) {
+                await storage.createNotification({
+                  userId: order.userId,
+                  type: 'refund_completed',
+                  title: 'Refund Complete',
+                  message: `Your refund of $${(updatedRefund.amount / 100).toFixed(2)} has been processed and will appear in your account within 5-10 business days.`,
+                  orderId: refundUpdateOrderId,
+                  metadata: {
+                    refundAmount: updatedRefund.amount / 100,
+                    refundId: updatedRefund.id
+                  }
+                });
+              }
+            } else if (updatedRefund.status === 'failed') {
+              await storage.updateOrder(refundUpdateOrderId, {
+                paymentStatus: 'refund_failed'
+              });
+            }
           }
           break;
 
@@ -1268,6 +1321,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver completes return delivery - automatically triggers customer refund
+  app.post("/api/driver/orders/:orderId/complete", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const driverId = (req.session as any).user?.id;
+      const { deliveryNotes, photosUploaded } = req.body;
+      
+      // 1. Verify driver is assigned to this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (order.driverId !== driverId) {
+        return res.status(403).json({ message: "Not authorized for this order" });
+      }
+      
+      if (order.status === 'delivered' || order.status === 'completed' || order.status === 'refunded') {
+        return res.status(400).json({ message: "Order already completed" });
+      }
+
+      // 2. Mark order as delivered to retailer
+      const completedOrder = await storage.updateOrder(orderId, {
+        status: 'delivered',
+        actualDeliveryTime: new Date().toISOString(),
+        driverNotes: deliveryNotes,
+        completedAt: new Date().toISOString(),
+        deliveryConfirmed: true,
+        photosUploaded: photosUploaded || false
+      });
+
+      // 3. Automatically process customer refund since return is complete
+      if (order.stripePaymentIntentId && order.paymentStatus !== 'refunded') {
+        try {
+          const refund = await stripe.refunds.create({
+            payment_intent: order.stripePaymentIntentId,
+            amount: Math.round((order.totalPrice || 0) * 100), // Full refund in cents
+            metadata: {
+              orderId,
+              refundReason: 'return_delivered',
+              processedBy: 'automatic_driver_completion',
+              driverId: driverId.toString()
+            }
+          });
+
+          // Update order with refund details
+          await storage.updateOrder(orderId, {
+            paymentStatus: 'refunded',
+            status: 'refunded',
+            stripeRefundId: refund.id,
+            refundProcessedAt: new Date().toISOString(),
+            refundAmount: order.totalPrice || 0
+          });
+
+          // Notify customer about successful refund
+          await storage.createNotification({
+            userId: order.userId,
+            type: 'refund_processed',
+            title: 'Return Complete & Refund Processed',
+            message: `Your return has been delivered successfully! Your refund of $${(order.totalPrice || 0).toFixed(2)} has been processed and will appear in your account within 5-10 business days.`,
+            orderId: orderId,
+            metadata: {
+              refundAmount: order.totalPrice || 0,
+              refundId: refund.id,
+              deliveredBy: driverId,
+              deliveredAt: new Date().toISOString()
+            }
+          });
+
+          console.log(`Automatic refund processed: ${refund.id} for completed order ${orderId}`);
+          
+          res.json({ 
+            success: true, 
+            message: "Order completed and customer refund automatically processed",
+            order: completedOrder,
+            refund: {
+              amount: order.totalPrice || 0,
+              refundId: refund.id,
+              estimatedArrival: '5-10 business days'
+            }
+          });
+
+        } catch (refundError: any) {
+          console.error('Automatic refund failed:', refundError);
+          
+          // Order is still marked as delivered even if refund fails
+          // Admin can manually process refund later
+          res.json({ 
+            success: true, 
+            message: "Order completed successfully, but automatic refund failed - admin will process manually",
+            order: completedOrder,
+            refundError: refundError.message
+          });
+        }
+      } else {
+        // No payment to refund or already refunded
+        res.json({ 
+          success: true, 
+          message: "Order completed successfully",
+          order: completedOrder
+        });
+      }
+
+    } catch (error: any) {
+      console.error("Error completing order:", error);
+      res.status(500).json({ message: "Failed to complete order: " + error.message });
+    }
+  });
+
   // Duplicate admin routes removed - using requireAdmin middleware versions above
 
   // Promo code validation endpoint
@@ -1598,6 +1760,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Payment intent creation error:", error);
       res.status(500).json({ message: "Error creating payment intent: " + error.message });
+    }
+  });
+
+  // Customer refund endpoint - processes refund when return is completed
+  app.post("/api/process-customer-refund", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      
+      // 1. Verify the order exists and is completed return
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(400).json({ message: "Order not found" });
+      }
+
+      // Check if this is a return order that was delivered to retailer
+      if (order.status !== 'delivered' && order.status !== 'completed') {
+        return res.status(400).json({ message: "Order must be delivered to retailer before refund" });
+      }
+
+      // Check if refund was already processed
+      if (order.paymentStatus === 'refunded') {
+        return res.status(400).json({ message: "Refund already processed for this order" });
+      }
+
+      // Check if there's a valid Stripe payment to refund
+      if (!order.stripePaymentIntentId) {
+        return res.status(400).json({ message: "No payment intent found for this order" });
+      }
+
+      try {
+        // 2. Process refund through Stripe
+        const refund = await stripe.refunds.create({
+          payment_intent: order.stripePaymentIntentId,
+          amount: Math.round((order.totalPrice || 0) * 100), // Convert to cents, refund full amount
+          metadata: {
+            orderId,
+            refundReason: 'return_completed',
+            processedBy: 'automatic_system'
+          }
+        });
+
+        // 3. Update order status with refund info
+        await storage.updateOrder(orderId, { 
+          paymentStatus: 'refunded',
+          status: 'refunded',
+          stripeRefundId: refund.id,
+          refundProcessedAt: new Date().toISOString(),
+          refundAmount: order.totalPrice || 0
+        });
+
+        // 4. Create notification for customer
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'refund_processed',
+          title: 'Refund Processed',
+          message: `Your refund of $${(order.totalPrice || 0).toFixed(2)} has been processed and will appear in your account within 5-10 business days.`,
+          orderId: orderId,
+          metadata: {
+            refundAmount: order.totalPrice || 0,
+            refundId: refund.id,
+            estimatedArrival: '5-10 business days'
+          }
+        });
+
+        console.log(`Customer refund processed: ${refund.id} for order ${orderId}`);
+        
+        res.json({ 
+          success: true, 
+          message: "Customer refund processed successfully",
+          refundAmount: order.totalPrice || 0,
+          refundId: refund.id,
+          estimatedArrival: '5-10 business days'
+        });
+
+      } catch (stripeError: any) {
+        console.error('Stripe refund failed:', stripeError);
+        return res.status(500).json({ 
+          message: "Refund processing failed", 
+          error: stripeError.message 
+        });
+      }
+      
+    } catch (error: any) {
+      console.error("Customer refund error:", error);
+      res.status(500).json({ message: "Error processing customer refund: " + error.message });
     }
   });
 
