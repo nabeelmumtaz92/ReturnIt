@@ -58,30 +58,35 @@ export default function PricingDemo() {
     const value = itemValue[0];
     
     if (value >= 10000) {
-      // Tier 5: $10,000+ - Premium handling
-      valueComponent = 25.00;
-      driverValueBonus = 8.00;
+      // Tier 6: $10,000+ - Ultra Premium (Luxury items, Art, Jewelry)
+      valueComponent = 35.00;
+      driverValueBonus = 12.00;
       tier = "Ultra Premium ($10K+)";
     } else if (value >= 5000) {
-      // Tier 4: $5,000-$9,999 - High-value handling
-      valueComponent = 15.00;
-      driverValueBonus = 5.00;
+      // Tier 5: $5,000-$9,999 - Premium (High-end electronics, Designer items)
+      valueComponent = 20.00;
+      driverValueBonus = 7.00;
       tier = "Premium ($5K-$10K)";
     } else if (value >= 1000) {
-      // Tier 3: $1,000-$4,999 - Enhanced care
-      valueComponent = 8.00;
-      driverValueBonus = 3.00;
+      // Tier 4: $1,000-$4,999 - Enhanced (Phones, Laptops, Designer clothing)
+      valueComponent = 10.00;
+      driverValueBonus = 3.50;
       tier = "Enhanced ($1K-$5K)";
     } else if (value >= 500) {
-      // Tier 2: $500-$999 - Moderate value
-      valueComponent = 4.00;
-      driverValueBonus = 1.50;
+      // Tier 3: $500-$999 - Value (Tablets, Mid-range electronics)
+      valueComponent = 5.00;
+      driverValueBonus = 2.00;
       tier = "Value ($500-$1K)";
     } else if (value >= 100) {
-      // Tier 1: $100-$499 - Basic premium
-      valueComponent = 2.00;
+      // Tier 2: $100-$499 - Basic+ (Shoes, Basic electronics, Small appliances)
+      valueComponent = 2.50;
       driverValueBonus = 1.00;
       tier = "Basic+ ($100-$500)";
+    } else if (value >= 50) {
+      // Tier 1: $50-$99 - Express (Quality clothing, accessories)
+      valueComponent = 1.00;
+      driverValueBonus = 0.50;
+      tier = "Express ($50-$100)";
     }
     // Under $100: No value surcharge (standard pricing)
     
@@ -362,30 +367,34 @@ export default function PricingDemo() {
             {/* Pricing Tiers */}
             <div className="mt-6 space-y-4">
               <h4 className="font-semibold">Pricing Tier Breakdown:</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
                 <div className="p-3 border rounded-lg bg-gray-50">
-                  <div className="font-medium text-gray-600">Standard (Under $100)</div>
+                  <div className="font-medium text-gray-600">Standard (Under $50)</div>
                   <p className="text-xs">No surcharge - competitive base pricing</p>
+                </div>
+                <div className="p-3 border rounded-lg bg-emerald-50">
+                  <div className="font-medium text-emerald-600">Express ($50-$99)</div>
+                  <p className="text-xs">+$1.00 service, +$0.50 driver bonus</p>
                 </div>
                 <div className="p-3 border rounded-lg bg-green-50">
                   <div className="font-medium text-green-600">Basic+ ($100-$499)</div>
-                  <p className="text-xs">+$2.00 service, +$1.00 driver bonus</p>
+                  <p className="text-xs">+$2.50 service, +$1.00 driver bonus</p>
                 </div>
                 <div className="p-3 border rounded-lg bg-blue-50">
                   <div className="font-medium text-blue-600">Value ($500-$999)</div>
-                  <p className="text-xs">+$4.00 service, +$1.50 driver bonus</p>
+                  <p className="text-xs">+$5.00 service, +$2.00 driver bonus</p>
                 </div>
                 <div className="p-3 border rounded-lg bg-purple-50">
                   <div className="font-medium text-purple-600">Enhanced ($1K-$5K)</div>
-                  <p className="text-xs">+$8.00 service, +$3.00 driver bonus</p>
+                  <p className="text-xs">+$10.00 service, +$3.50 driver bonus</p>
                 </div>
                 <div className="p-3 border rounded-lg bg-orange-50">
                   <div className="font-medium text-orange-600">Premium ($5K-$10K)</div>
-                  <p className="text-xs">+$15.00 service, +$5.00 driver bonus</p>
+                  <p className="text-xs">+$20.00 service, +$7.00 driver bonus</p>
                 </div>
                 <div className="p-3 border rounded-lg bg-red-50">
                   <div className="font-medium text-red-600">Ultra Premium ($10K+)</div>
-                  <p className="text-xs">+$25.00 service, +$8.00 driver bonus</p>
+                  <p className="text-xs">+$35.00 service, +$12.00 driver bonus</p>
                 </div>
               </div>
             </div>
