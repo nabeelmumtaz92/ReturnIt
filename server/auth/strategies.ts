@@ -11,9 +11,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.NODE_ENV === 'production'
       ? 'https://returnit.online/api/auth/google/callback'
-      : process.env.REPLIT_DEV_DOMAIN 
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/google/callback`
-        : `http://localhost:5000/api/auth/google/callback`
+      : 'https://returnly.tech/api/auth/google/callback'
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Check if user exists
@@ -50,9 +48,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: process.env.NODE_ENV === 'production'
       ? 'https://returnit.online/api/auth/facebook/callback'
-      : process.env.REPLIT_DEV_DOMAIN 
-        ? 'https://' + process.env.REPLIT_DEV_DOMAIN + '/api/auth/facebook/callback'
-        : 'http://localhost:5000/api/auth/facebook/callback',
+      : 'https://returnly.tech/api/auth/facebook/callback',
     profileFields: ['id', 'emails', 'name', 'picture']
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
