@@ -248,11 +248,6 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         <div className="flex items-center justify-between p-4 border-b border-amber-200">
           <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
             <ReturnItLogo className="h-8 w-8 text-amber-600" />
-            {sidebarOpen && (
-              <div>
-                <p className="text-xs text-amber-600">Admin Panel</p>
-              </div>
-            )}
           </div>
           <Button
             variant="ghost"
@@ -265,7 +260,7 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         </div>
 
         {/* Sidebar Navigation */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 space-y-6 max-h-[calc(100vh-8rem)]">
           {navigationSections.map((section) => (
             <div key={section.title}>
               {sidebarOpen && (

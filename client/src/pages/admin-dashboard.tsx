@@ -63,6 +63,7 @@ import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { ReturnItLogo } from '@/components/LogoIcon';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
+import { AdminContent } from "@/components/AdminContent";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -96,7 +97,11 @@ interface Driver {
   supportTickets: number;
 }
 
-export default function AdminDashboard() {
+interface AdminDashboardProps {
+  section?: string;
+}
+
+export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
@@ -621,6 +626,17 @@ export default function AdminDashboard() {
       current: false
     }
   ];
+
+  // If a section is provided, use AdminContent to render it
+  if (section) {
+    return (
+      <AdminLayout pageTitle="Admin Dashboard" tabs={dashboardTabs}>
+        <div className="relative z-10">
+          <AdminContent section={section} />
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout
