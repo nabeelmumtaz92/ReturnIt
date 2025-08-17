@@ -15,8 +15,8 @@ interface User {
   completedDeliveries?: number;
 }
 
-const STORAGE_KEY = 'returnly_auth_user';
-const AUTH_TIMESTAMP_KEY = 'returnly_auth_timestamp';
+const STORAGE_KEY = 'returnit_auth_user';
+const AUTH_TIMESTAMP_KEY = 'returnit_auth_timestamp';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(() => {

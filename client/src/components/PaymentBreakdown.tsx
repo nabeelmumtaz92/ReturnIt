@@ -50,7 +50,7 @@ export function PaymentBreakdown({
               <span className="float-right font-medium text-green-600">+${itemValue.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-gray-600">Returnly service fee:</span>
+              <span className="text-gray-600">ReturnIt service fee:</span>
               <span className="float-right font-medium text-red-600">-${breakdown.totalPrice.toFixed(2)}</span>
             </div>
             <Separator className="col-span-2" />

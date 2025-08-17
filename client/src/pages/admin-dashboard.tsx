@@ -714,7 +714,7 @@ export default function AdminDashboard() {
                   <RoleSwitcher />
                 </div>
                 <div className="order-2 sm:order-none">
-                  <NotificationBell userType="admin" />
+                  <NotificationBell />
                 </div>
                 <Button 
                   variant="outline" 
@@ -1021,7 +1021,7 @@ export default function AdminDashboard() {
                         />
                       </div>
                       
-                      <Select value={completedOrdersDateRange} onValueChange={setCompletedOrdersDateRange}>
+                      <Select value={completedOrdersDateRange} onValueChange={(value) => setCompletedOrdersDateRange(value as 'all' | 'today' | 'week' | 'month')}>
                         <SelectTrigger data-testid="select-date-range">
                           <Calendar className="h-4 w-4 mr-2" />
                           <SelectValue />
@@ -1034,7 +1034,7 @@ export default function AdminDashboard() {
                         </SelectContent>
                       </Select>
                       
-                      <Select value={completedOrdersSort} onValueChange={setCompletedOrdersSort}>
+                      <Select value={completedOrdersSort} onValueChange={(value) => setCompletedOrdersSort(value as 'date' | 'amount' | 'driver')}>
                         <SelectTrigger data-testid="select-sort-by">
                           <ArrowUpDown className="h-4 w-4 mr-2" />
                           <SelectValue />
@@ -1046,7 +1046,7 @@ export default function AdminDashboard() {
                         </SelectContent>
                       </Select>
                       
-                      <Select value={completedOrdersSortOrder} onValueChange={setCompletedOrdersSortOrder}>
+                      <Select value={completedOrdersSortOrder} onValueChange={(value) => setCompletedOrdersSortOrder(value as 'asc' | 'desc')}>
                         <SelectTrigger data-testid="select-sort-order">
                           <ChevronDown className="h-4 w-4 mr-2" />
                           <SelectValue />

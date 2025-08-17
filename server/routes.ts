@@ -192,13 +192,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
-      console.log('=== LOGIN DEBUG ===');
-      console.log('Login attempt for:', email);
-      console.log('User found:', user ? 'Yes' : 'No');
-      if (user) {
-        console.log('User isAdmin:', user.isAdmin);
-        console.log('User email matches:', user.email === 'nabeelmumtaz92@gmail.com');
-      }
       
       // Verify credentials
       if (!user || !await AuthService.verifyPassword(password, user.password)) {
@@ -213,9 +206,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Clear failed attempts on successful login
       AuthService.clearFailedAttempts(email);
-      
-      console.log('User isAdmin property:', user.isAdmin);
-      console.log('User object keys:', Object.keys(user));
 
       // Create secure session
       req.session.user = AuthService.sanitizeUserData({ 

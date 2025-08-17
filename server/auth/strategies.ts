@@ -49,7 +49,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
     callbackURL: process.env.NODE_ENV === 'production'
-      ? 'https://returnly.tech/api/auth/facebook/callback'
+      ? 'https://returnit.online/api/auth/facebook/callback'
       : process.env.REPLIT_DEV_DOMAIN 
         ? 'https://' + process.env.REPLIT_DEV_DOMAIN + '/api/auth/facebook/callback'
         : 'http://localhost:5000/api/auth/facebook/callback',
