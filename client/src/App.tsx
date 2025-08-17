@@ -50,6 +50,7 @@ import NotificationCenter from "@/pages/notification-center";
 import QualityAssurance from "@/pages/quality-assurance";
 import DriverIncentives from "@/pages/driver-incentives";
 import Profile from "@/pages/profile";
+import FeatureDocumentGenerator from "@/pages/feature-document-generator";
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -141,6 +142,7 @@ function Router() {
       <Route path="/driver-incentives" component={DriverIncentives} />
       <Route path="/enhanced-analytics" component={EnhancedAnalyticsDashboard} />
       <Route path="/profile" component={Profile} />
+      <Route path="/feature-documents" component={FeatureDocumentGenerator} />
       <Route component={NotFound} />
     </Switch>
   );
