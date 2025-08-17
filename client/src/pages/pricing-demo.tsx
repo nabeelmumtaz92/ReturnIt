@@ -8,9 +8,10 @@ import { Calculator, TrendingUp, DollarSign, Truck } from "lucide-react";
 import { useState } from "react";
 
 export default function PricingDemo() {
-  const [itemValue, setItemValue] = useState([100]);
+  const [itemValue, setItemValue] = useState([500]); // Total order value in dollars
   const [distance, setDistance] = useState([5]);
   const [itemSize, setItemSize] = useState("M");
+  const [numberOfItems, setNumberOfItems] = useState(1); // Number of items in order
   const [pricingModel, setPricingModel] = useState("current");
 
   // Current flat-rate pricing structure
@@ -44,54 +45,100 @@ export default function PricingDemo() {
     };
   };
 
-  // Tiered value-based pricing structure
+  // Advanced tiered pricing structure based on total order value
   const calculateTieredPricing = () => {
     const basePrice = 3.99;
     const distanceFee = distance[0] * 0.50;
     const sizeUpcharge = itemSize === "L" ? 2.00 : itemSize === "XL" ? 4.00 : 0;
     
-    // Tiered value components based on item value
+    // Calculate subtotal before value tier
+    const subtotal = basePrice + distanceFee + sizeUpcharge;
+    
+    // Tiered value components based on total order value (not individual item)
     let valueComponent = 0;
     let driverValueBonus = 0;
+    let serviceFeeRate = 0.15; // Base service fee rate
     let tier = "Standard";
     
-    const value = itemValue[0];
+    const totalOrderValue = itemValue[0]; // Total value of all items in this order
     
-    if (value >= 10000) {
-      // Tier 6: $10,000+ - Ultra Premium (Luxury items, Art, Jewelry)
+    if (totalOrderValue >= 25000) {
+      // Tier 12: $25,000+ - Elite Luxury (Art, Collectibles, Ultra-luxury items)
+      valueComponent = 150.00;
+      driverValueBonus = 45.00;
+      serviceFeeRate = 0.35; // 35% service fee for elite handling
+      tier = "Elite Luxury ($25K+)";
+    } else if (totalOrderValue >= 15000) {
+      // Tier 11: $15,000-$24,999 - Ultra Premium Plus (High-end luxury)
+      valueComponent = 100.00;
+      driverValueBonus = 30.00;
+      serviceFeeRate = 0.30; // 30% service fee
+      tier = "Ultra Premium+ ($15K-$25K)";
+    } else if (totalOrderValue >= 10000) {
+      // Tier 10: $10,000-$14,999 - Ultra Premium (Luxury items, Jewelry)
+      valueComponent = 75.00;
+      driverValueBonus = 22.00;
+      serviceFeeRate = 0.28; // 28% service fee
+      tier = "Ultra Premium ($10K-$15K)";
+    } else if (totalOrderValue >= 7500) {
+      // Tier 9: $7,500-$9,999 - Premium Plus (High-end electronics)
+      valueComponent = 50.00;
+      driverValueBonus = 16.00;
+      serviceFeeRate = 0.25; // 25% service fee
+      tier = "Premium+ ($7.5K-$10K)";
+    } else if (totalOrderValue >= 5000) {
+      // Tier 8: $5,000-$7,499 - Premium (Luxury electronics, Designer items)
       valueComponent = 35.00;
       driverValueBonus = 12.00;
-      tier = "Ultra Premium ($10K+)";
-    } else if (value >= 5000) {
-      // Tier 5: $5,000-$9,999 - Premium (High-end electronics, Designer items)
-      valueComponent = 20.00;
-      driverValueBonus = 7.00;
-      tier = "Premium ($5K-$10K)";
-    } else if (value >= 1000) {
-      // Tier 4: $1,000-$4,999 - Enhanced (Phones, Laptops, Designer clothing)
-      valueComponent = 10.00;
-      driverValueBonus = 3.50;
-      tier = "Enhanced ($1K-$5K)";
-    } else if (value >= 500) {
-      // Tier 3: $500-$999 - Value (Tablets, Mid-range electronics)
-      valueComponent = 5.00;
-      driverValueBonus = 2.00;
+      serviceFeeRate = 0.23; // 23% service fee
+      tier = "Premium ($5K-$7.5K)";
+    } else if (totalOrderValue >= 3000) {
+      // Tier 7: $3,000-$4,999 - Enhanced Plus (Multiple high-value items)
+      valueComponent = 25.00;
+      driverValueBonus = 8.00;
+      serviceFeeRate = 0.21; // 21% service fee
+      tier = "Enhanced+ ($3K-$5K)";
+    } else if (totalOrderValue >= 2000) {
+      // Tier 6: $2,000-$2,999 - Enhanced (High-end devices)
+      valueComponent = 18.00;
+      driverValueBonus = 6.00;
+      serviceFeeRate = 0.19; // 19% service fee
+      tier = "Enhanced ($2K-$3K)";
+    } else if (totalOrderValue >= 1000) {
+      // Tier 5: $1,000-$1,999 - Value Plus (Phones, Laptops)
+      valueComponent = 12.00;
+      driverValueBonus = 4.00;
+      serviceFeeRate = 0.18; // 18% service fee
+      tier = "Value+ ($1K-$2K)";
+    } else if (totalOrderValue >= 500) {
+      // Tier 4: $500-$999 - Value (Tablets, Mid-range electronics)
+      valueComponent = 8.00;
+      driverValueBonus = 2.50;
+      serviceFeeRate = 0.17; // 17% service fee
       tier = "Value ($500-$1K)";
-    } else if (value >= 100) {
-      // Tier 2: $100-$499 - Basic+ (Shoes, Basic electronics, Small appliances)
+    } else if (totalOrderValue >= 250) {
+      // Tier 3: $250-$499 - Basic Plus (Multiple items, small appliances)
+      valueComponent = 5.00;
+      driverValueBonus = 1.50;
+      serviceFeeRate = 0.16; // 16% service fee
+      tier = "Basic+ ($250-$500)";
+    } else if (totalOrderValue >= 100) {
+      // Tier 2: $100-$249 - Express (Quality clothing, accessories)
       valueComponent = 2.50;
       driverValueBonus = 1.00;
-      tier = "Basic+ ($100-$500)";
-    } else if (value >= 50) {
-      // Tier 1: $50-$99 - Express (Quality clothing, accessories)
+      serviceFeeRate = 0.155; // 15.5% service fee
+      tier = "Express ($100-$250)";
+    } else if (totalOrderValue >= 50) {
+      // Tier 1: $50-$99 - Basic (Standard clothing)
       valueComponent = 1.00;
       driverValueBonus = 0.50;
-      tier = "Express ($50-$100)";
+      serviceFeeRate = 0.15; // 15% service fee (base rate)
+      tier = "Basic ($50-$100)";
     }
-    // Under $100: No value surcharge (standard pricing)
+    // Under $50: Standard pricing with base 15% service fee
     
-    const serviceFee = (basePrice + distanceFee + sizeUpcharge + valueComponent) * 0.15;
-    const total = basePrice + distanceFee + sizeUpcharge + valueComponent + serviceFee;
+    const serviceFee = (subtotal + valueComponent) * serviceFeeRate;
+    const total = subtotal + valueComponent + serviceFee;
     
     // Driver earnings with tiered value bonus
     const driverBasePay = 3.00;
@@ -109,7 +156,8 @@ export default function PricingDemo() {
         distanceFee,
         sizeUpcharge,
         valueComponent,
-        serviceFee
+        serviceFee,
+        serviceFeeRate
       },
       driverEarnings: driverTotal,
       driverValueBonus,
@@ -144,21 +192,40 @@ export default function PricingDemo() {
             <CardDescription>Adjust parameters to see how pricing changes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Item Value */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Item Value: ${itemValue[0]}</label>
+                <label className="text-sm font-medium">Total Order Value: ${itemValue[0]}</label>
                 <Slider
                   value={itemValue}
                   onValueChange={setItemValue}
-                  max={1000}
+                  max={50000}
                   min={10}
                   step={10}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>$10</span>
-                  <span>$1000</span>
+                  <span>$50,000</span>
+                </div>
+                <p className="text-xs text-gray-600">
+                  Combined value of all {numberOfItems} item{numberOfItems !== 1 ? 's' : ''} in this order
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Number of Items: {numberOfItems}</label>
+                <Slider
+                  value={[numberOfItems]}
+                  onValueChange={(value) => setNumberOfItems(value[0])}
+                  max={10}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>1 item</span>
+                  <span>10 items</span>
                 </div>
               </div>
 
@@ -300,7 +367,7 @@ export default function PricingDemo() {
                   <span>${tieredPricing.breakdown.valueComponent.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span>Service Fee (15%):</span>
+                  <span>Service Fee ({(tieredPricing.breakdown.serviceFeeRate * 100).toFixed(1)}%):</span>
                   <span>${tieredPricing.breakdown.serviceFee.toFixed(2)}</span>
                 </div>
                 <hr />
@@ -367,34 +434,58 @@ export default function PricingDemo() {
             {/* Pricing Tiers */}
             <div className="mt-6 space-y-4">
               <h4 className="font-semibold">Pricing Tier Breakdown:</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
-                <div className="p-3 border rounded-lg bg-gray-50">
-                  <div className="font-medium text-gray-600">Standard (Under $50)</div>
-                  <p className="text-xs">No surcharge - competitive base pricing</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 text-sm">
+                <div className="p-2 border rounded bg-gray-50">
+                  <div className="font-medium text-gray-600 text-xs">Standard (Under $50)</div>
+                  <p className="text-xs">15% service fee</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-emerald-50">
-                  <div className="font-medium text-emerald-600">Express ($50-$99)</div>
-                  <p className="text-xs">+$1.00 service, +$0.50 driver bonus</p>
+                <div className="p-2 border rounded bg-slate-50">
+                  <div className="font-medium text-slate-600 text-xs">Basic ($50-$100)</div>
+                  <p className="text-xs">+$1, +$0.50 driver, 15%</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-green-50">
-                  <div className="font-medium text-green-600">Basic+ ($100-$499)</div>
-                  <p className="text-xs">+$2.50 service, +$1.00 driver bonus</p>
+                <div className="p-2 border rounded bg-emerald-50">
+                  <div className="font-medium text-emerald-600 text-xs">Express ($100-$250)</div>
+                  <p className="text-xs">+$2.50, +$1 driver, 15.5%</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-blue-50">
-                  <div className="font-medium text-blue-600">Value ($500-$999)</div>
-                  <p className="text-xs">+$5.00 service, +$2.00 driver bonus</p>
+                <div className="p-2 border rounded bg-green-50">
+                  <div className="font-medium text-green-600 text-xs">Basic+ ($250-$500)</div>
+                  <p className="text-xs">+$5, +$1.50 driver, 16%</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-purple-50">
-                  <div className="font-medium text-purple-600">Enhanced ($1K-$5K)</div>
-                  <p className="text-xs">+$10.00 service, +$3.50 driver bonus</p>
+                <div className="p-2 border rounded bg-blue-50">
+                  <div className="font-medium text-blue-600 text-xs">Value ($500-$1K)</div>
+                  <p className="text-xs">+$8, +$2.50 driver, 17%</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-orange-50">
-                  <div className="font-medium text-orange-600">Premium ($5K-$10K)</div>
-                  <p className="text-xs">+$20.00 service, +$7.00 driver bonus</p>
+                <div className="p-2 border rounded bg-indigo-50">
+                  <div className="font-medium text-indigo-600 text-xs">Value+ ($1K-$2K)</div>
+                  <p className="text-xs">+$12, +$4 driver, 18%</p>
                 </div>
-                <div className="p-3 border rounded-lg bg-red-50">
-                  <div className="font-medium text-red-600">Ultra Premium ($10K+)</div>
-                  <p className="text-xs">+$35.00 service, +$12.00 driver bonus</p>
+                <div className="p-2 border rounded bg-purple-50">
+                  <div className="font-medium text-purple-600 text-xs">Enhanced ($2K-$3K)</div>
+                  <p className="text-xs">+$18, +$6 driver, 19%</p>
+                </div>
+                <div className="p-2 border rounded bg-violet-50">
+                  <div className="font-medium text-violet-600 text-xs">Enhanced+ ($3K-$5K)</div>
+                  <p className="text-xs">+$25, +$8 driver, 21%</p>
+                </div>
+                <div className="p-2 border rounded bg-pink-50">
+                  <div className="font-medium text-pink-600 text-xs">Premium ($5K-$7.5K)</div>
+                  <p className="text-xs">+$35, +$12 driver, 23%</p>
+                </div>
+                <div className="p-2 border rounded bg-orange-50">
+                  <div className="font-medium text-orange-600 text-xs">Premium+ ($7.5K-$10K)</div>
+                  <p className="text-xs">+$50, +$16 driver, 25%</p>
+                </div>
+                <div className="p-2 border rounded bg-red-50">
+                  <div className="font-medium text-red-600 text-xs">Ultra Premium ($10K-$15K)</div>
+                  <p className="text-xs">+$75, +$22 driver, 28%</p>
+                </div>
+                <div className="p-2 border rounded bg-rose-50">
+                  <div className="font-medium text-rose-600 text-xs">Ultra Premium+ ($15K-$25K)</div>
+                  <p className="text-xs">+$100, +$30 driver, 30%</p>
+                </div>
+                <div className="p-2 border rounded bg-amber-50">
+                  <div className="font-medium text-amber-600 text-xs">Elite Luxury ($25K+)</div>
+                  <p className="text-xs">+$150, +$45 driver, 35%</p>
                 </div>
               </div>
             </div>
@@ -428,13 +519,14 @@ export default function PricingDemo() {
             </div>
 
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-800 mb-2">Implementation Benefits</h4>
+              <h4 className="font-semibold text-amber-800 mb-2">Total Order Value Benefits</h4>
               <ul className="text-sm text-amber-700 space-y-1">
-                <li>• Predictable pricing tiers vs. percentage calculations</li>
-                <li>• Driver incentives scale with handling responsibility</li>
-                <li>• Maintains competitiveness for everyday items</li>
-                <li>• Higher margins on premium items fund service improvements</li>
-                <li>• Clear value proposition for expensive item returns</li>
+                <li>• Pricing scales with combined value of all items in order</li>
+                <li>• Multiple low-value items can reach higher tiers together</li>
+                <li>• Encourages customers to bundle returns for efficiency</li>
+                <li>• Higher service fees on high-value orders fund premium handling</li>
+                <li>• Driver bonuses increase significantly for valuable shipments</li>
+                <li>• Service fees scale from 15% to 35% based on order value</li>
               </ul>
             </div>
           </CardContent>
