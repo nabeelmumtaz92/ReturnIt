@@ -4,9 +4,15 @@ import {
   Home, Users, Truck, DollarSign, FileText, BarChart3, 
   Settings, MessageSquare, Star, Package, UserCheck, 
   Activity, Clock, Shield, Globe, Heart, Headphones,
-  ChevronRight, Menu, X, Building2
+  ChevronRight, Menu, X, Building2, Bell
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from '@/components/ui/dropdown-menu';
 import { ReturnItLogo } from '@/components/LogoIcon';
 import { cn } from '@/lib/utils';
 
@@ -217,9 +223,63 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      {/* Top Header Bar */}
+      <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-3 flex items-center justify-between relative z-50">
+        <div className="flex items-center space-x-4">
+          <ReturnItLogo className="h-8 w-8" />
+          <div>
+            <h1 className="text-lg font-semibold text-gray-900">Admin Dashboard</h1>
+            <p className="text-sm text-amber-600">Business Operations Center</p>
+          </div>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          {/* Admin Tools Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="border-amber-300 text-amber-700">
+                <Menu className="h-4 w-4 mr-2" />
+                Admin Tools
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem>
+                <Settings className="h-4 w-4 mr-2" />
+                System Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Users className="h-4 w-4 mr-2" />
+                User Management  
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <FileText className="h-4 w-4 mr-2" />
+                Reports
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Notification Bell */}
+          <Button variant="ghost" size="sm" className="relative">
+            <Bell className="h-4 w-4" />
+            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+          </Button>
+
+          {/* Sign Out */}
+          <Button variant="outline" size="sm">
+            Sign Out
+          </Button>
+
+          {/* Back to Site */}
+          <Link href="/">
+            <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
+              Back to Site
+            </Button>
+          </Link>
+        </div>
+      </div>
       {/* Sidebar */}
       <div className={cn(
-        "fixed left-0 top-0 z-40 h-full bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
+        "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
         sidebarOpen ? "w-80" : "w-16"
       )}>
         {/* Sidebar Header */}
@@ -299,7 +359,7 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
 
       {/* Main Content */}
       <div className={cn(
-        "transition-all duration-300",
+        "transition-all duration-300 pt-16",
         sidebarOpen ? "ml-80" : "ml-16"
       )}>
         {/* Page Header */}
