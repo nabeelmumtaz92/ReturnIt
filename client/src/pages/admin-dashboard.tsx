@@ -646,15 +646,7 @@ export default function AdminDashboard() {
           <div className="px-4 sm:px-6 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
               <div className="flex items-center space-x-3 sm:space-x-4">
-                <Link href="/">
-                  <div className="cursor-pointer hover:opacity-80 transition-opacity">
-                    <ReturnItLogo size={32} variant="default" />
-                  </div>
-                </Link>
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-amber-900">Admin Dashboard</h1>
-                  <p className="text-sm sm:text-base text-amber-700 hidden sm:block">Business Operations Center</p>
-                </div>
+                {/* Removed duplicate ReturnIt logo and Admin Dashboard text */}
               </div>
               
               {/* Advanced Features Navigation - Responsive */}
