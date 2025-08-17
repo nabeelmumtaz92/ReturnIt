@@ -54,6 +54,9 @@ import FeatureDocumentGenerator from "@/pages/feature-document-generator";
 import EmployeeGuide from "@/pages/employee-guide";
 import EmployeeDashboard from "@/pages/employee-dashboard";
 import EmployeeDocuments from "@/pages/employee-documents";
+import DriverFeedbackSystem from "@/pages/driver-feedback-system";
+import PrintableTemplates from "@/pages/printable-templates";
+import CancellationAlerts from "@/pages/cancellation-alerts";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -118,7 +121,6 @@ function Router() {
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
         }}
-      </Route>
       </Route>
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking">
@@ -250,6 +252,24 @@ function Router() {
       </Route>
       <Route path="/employee-documents">
         {() => user ? <EmployeeDocuments /> : <NotFound />}
+      </Route>
+      <Route path="/driver-feedback-system">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <DriverFeedbackSystem /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/printable-templates">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <PrintableTemplates /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/cancellation-alerts">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <CancellationAlerts /> : <NotFound />;
+        }}
       </Route>
 
       <Route component={NotFound} />
