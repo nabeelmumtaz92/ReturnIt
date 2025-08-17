@@ -326,6 +326,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set up session for authenticated user
       if (req.user) {
         const user = req.user as any;
+        console.log('Google OAuth user data:', user);
+        
         const userData = {
           id: user.id, 
           email: user.email, 
@@ -335,6 +337,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           firstName: user.firstName || '',
           lastName: user.lastName || ''
         };
+        
+        console.log('Processed user data for session:', userData);
         
         // Store user data in session
         (req.session as any).user = userData;
@@ -346,14 +350,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.redirect('/login?error=session_failed');
           }
           console.log('Session user saved successfully:', userData);
+          console.log('User isAdmin:', userData.isAdmin, 'Type:', typeof userData.isAdmin);
+          console.log('User email:', userData.email);
           
           // Redirect admin users directly to admin dashboard
           if (userData.isAdmin) {
-            res.redirect('/admin-dashboard');
+            console.log('Redirecting admin user to /admin-dashboard');
+            res.redirect('/admin-dashboard?oauth=success');
           } else if (userData.isDriver) {
-            res.redirect('/driver-portal');
+            console.log('Redirecting driver user to /driver-portal');
+            res.redirect('/driver-portal?oauth=success');
           } else {
-            res.redirect('/');
+            console.log('Redirecting regular user to /');
+            res.redirect('/?oauth=success');
           }
         });
       } else {

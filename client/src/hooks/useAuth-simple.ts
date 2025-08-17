@@ -58,12 +58,20 @@ export function useAuth() {
         
         if (response.ok && mounted) {
           const userData = await response.json();
+          console.log('Auth check successful, user data:', userData);
           setUser(userData);
           setIsAuthenticated(true);
           
           // Persist user data and timestamp
           localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
           localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
+          
+          // Check if this is after OAuth and redirect admin users
+          const urlParams = new URLSearchParams(window.location.search);
+          if (urlParams.get('oauth') === 'success' && userData.isAdmin) {
+            console.log('OAuth success detected for admin user, redirecting to dashboard');
+            window.location.replace('/admin-dashboard');
+          }
         } else if (mounted) {
           // Don't clear admin users - they use client-side auth
           if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {

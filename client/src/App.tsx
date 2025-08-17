@@ -84,7 +84,9 @@ function Router() {
         {() => {
           // Check if admin user should go directly to dashboard
           if (user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com") {
-            return <AdminDashboard />;
+            // Use location.replace to avoid back button issues
+            window.location.replace('/admin-dashboard');
+            return null;
           }
           // Show welcome page for all other users (logged in or not)
           return <Welcome />;

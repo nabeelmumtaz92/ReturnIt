@@ -9,9 +9,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production'
-      ? 'https://returnit.online/api/auth/google/callback'
-      : 'https://returnly.tech/api/auth/google/callback'
+    callbackURL: 'https://returnit.online/api/auth/google/callback'
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
       // Check if user exists
