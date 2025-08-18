@@ -60,6 +60,7 @@ import CancellationAlerts from "@/pages/cancellation-alerts";
 import RefundDemo from "@/pages/refund-demo";
 import PricingDemo from "@/pages/pricing-demo";
 import PricingAnalysis from "@/pages/pricing-analysis";
+import FailedReturnDemo from "@/pages/failed-return-demo";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -277,6 +278,7 @@ function Router() {
       <Route path="/refund-demo" component={RefundDemo} />
       <Route path="/pricing-demo" component={PricingDemo} />
       <Route path="/pricing-analysis" component={PricingAnalysis} />
+      <Route path="/failed-return-demo" component={FailedReturnDemo} />
 
       <Route component={NotFound} />
     </Switch>

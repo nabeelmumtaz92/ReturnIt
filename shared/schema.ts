@@ -212,7 +212,7 @@ export const orderItems = pgTable("order_items", {
 export const orders = pgTable("orders", {
   id: text("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  status: text("status").notNull().default("created"), // created, confirmed, assigned, pickup_scheduled, picked_up, in_transit, delivered, completed, cancelled, refunded
+  status: text("status").notNull().default("created"), // created, confirmed, assigned, pickup_scheduled, picked_up, in_transit, delivered, completed, cancelled, refunded, return_refused
   trackingNumber: text("tracking_number").unique(),
   
   // Pickup details
@@ -302,7 +302,16 @@ export const orders = pgTable("orders", {
   refundStatus: text("refund_status"), // pending, processing, completed, failed
   refundProcessedAt: timestamp("refund_processed_at"),
   refundCompletedAt: timestamp("refund_completed_at"),
-  refundReason: text("refund_reason"), // return_delivered, damaged_item, customer_request, admin_override
+  refundReason: text("refund_reason"), // return_delivered, damaged_item, customer_request, admin_override, return_refused
+  
+  // Failed return handling
+  returnRefused: boolean("return_refused").default(false), // Store refused to accept return
+  returnRefusedReason: text("return_refused_reason"), // Why store refused (expired return window, no receipt, damaged, policy violation)
+  returnRefusedPhotos: jsonb("return_refused_photos").default([]), // Photos of refused return attempt
+  returnToCustomer: boolean("return_to_customer").default(false), // Driver returned items to customer
+  returnToCustomerTime: timestamp("return_to_customer_time"), // When items were returned to customer
+  returnToCustomerPhotos: jsonb("return_to_customer_photos").default([]), // Photos of customer return
+  additionalDeliveryFee: real("additional_delivery_fee").default(0), // Extra fee for return to customer trip
   refundNotes: text("refund_notes"),
   
   // Customer refund preferences
