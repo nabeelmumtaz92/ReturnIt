@@ -145,32 +145,7 @@ export default function Welcome() {
               Book Pickup
             </Button>
           </Link>
-          
-          {/* Show Sign In and Sign Up buttons only if login is allowed */}
-          {envConfig?.allowPublicLogin && (
-            <div className="flex gap-2 justify-center w-full">
-              <Link href="/login">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
-                  data-testid="button-sign-in"
-                >
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/login?tab=register">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
-                  data-testid="button-sign-up"
-                >
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
-          )}
+
         </div>
 
         {/* Environment Notice for Restricted Access */}
