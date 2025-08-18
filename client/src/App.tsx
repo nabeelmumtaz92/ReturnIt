@@ -281,8 +281,20 @@ function Router() {
       <Route path="/pricing-demo" component={PricingDemo} />
       <Route path="/pricing-analysis" component={PricingAnalysis} />
       <Route path="/failed-return-demo" component={FailedReturnDemo} />
-      <Route path="/comprehensive-pricing" component={ComprehensivePricingExamples} />
-      <Route path="/comprehensive-guidebook" component={ComprehensiveGuidebook} />
+
+      {/* Internal Only Routes - Master Admin Access Only */}
+      <Route path="/internal/pricing-examples">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <ComprehensivePricingExamples /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/internal/guidebooks">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <ComprehensiveGuidebook /> : <NotFound />;
+        }}
+      </Route>
 
       <Route component={NotFound} />
     </Switch>
