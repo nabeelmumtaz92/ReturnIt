@@ -148,26 +148,24 @@ export default function Welcome() {
           
           {/* Show Sign In and Sign Up buttons only if login is allowed */}
           {envConfig?.allowPublicLogin && (
-            <div className="flex gap-3 justify-center w-full">
+            <div className="flex gap-2 justify-center w-full">
               <Link href="/login">
                 <Button 
                   variant="outline" 
-                  size="default" 
-                  className="border-primary text-primary hover:bg-primary/10 px-6 py-2"
+                  size="sm" 
+                  className="border-white/30 text-white hover:bg-white/10 px-4 py-1.5 text-sm"
                   data-testid="button-sign-in"
                 >
-                  <User className="h-4 w-4 mr-2" />
                   Sign In
                 </Button>
               </Link>
               <Link href="/login?tab=register">
                 <Button 
-                  variant="default" 
-                  size="default" 
-                  className="bg-primary hover:bg-primary/90 text-white px-6 py-2"
+                  variant="outline" 
+                  size="sm" 
+                  className="border-white/30 text-white hover:bg-white/10 px-4 py-1.5 text-sm"
                   data-testid="button-sign-up"
                 >
-                  <User className="h-4 w-4 mr-2" />
                   Sign Up
                 </Button>
               </Link>
