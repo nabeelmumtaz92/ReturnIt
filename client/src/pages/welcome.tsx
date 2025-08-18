@@ -175,15 +175,13 @@ export default function Welcome() {
 
         {/* Environment Notice for Restricted Access */}
         {envConfig && !envConfig.allowPublicLogin && (
-          <div className="text-center p-4 bg-amber-50 border border-amber-200 rounded-lg max-w-md">
-            <p className="text-amber-800 text-sm">
-              This is a demonstration platform. Public authentication is currently disabled.
+          <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg max-w-md">
+            <p className="text-red-800 text-sm font-medium">
+              Access Restricted
             </p>
-            {envConfig.enableDemoMode && (
-              <p className="text-amber-700 text-xs mt-2">
-                Environment: {envConfig.environment}
-              </p>
-            )}
+            <p className="text-red-700 text-xs mt-1">
+              This platform is for authorized personnel only.
+            </p>
           </div>
         )}
 

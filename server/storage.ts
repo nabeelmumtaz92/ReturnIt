@@ -163,9 +163,71 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, masterAdmin);
     
+    // Second Master Administrator account
+    const masterAdmin2: User = {
+      id: 2,
+      email: 'durremumtaz@gmail.com',
+      password: '$2b$12$aPORhavz.6yYMICwNn7cz.CMM2w/s/s3yM.Aqs1hbUpDdx/OxItYu', // hashed 'dsm1208'
+      firstName: 'Durre',
+      lastName: 'Mumtaz',
+      phone: '6362544822',
+      dateOfBirth: '1988-12-08',
+      isDriver: true,  // Driver access for testing
+      tutorialCompleted: true, // Tutorial already completed
+      isAdmin: true,   // Admin access
+      isActive: true,
+      profileImage: null,
+      preferences: { role: 'master_admin' },
+      addresses: [
+        {
+          type: 'home',
+          street: '5678 Oak Ave',
+          city: 'St. Louis',
+          state: 'MO',
+          zipCode: '63102',
+          isDefault: true
+        }
+      ],
+      paymentMethods: [],
+      driverLicense: 'DL98765433',
+      vehicleInfo: {
+        make: 'Honda',
+        model: 'Accord',
+        year: 2021,
+        color: 'Blue',
+        licensePlate: 'RET-002',
+        capacity: 'Large'
+      },
+      bankInfo: {
+        routingNumber: '123456788',
+        accountNumber: '*****5678',
+        accountType: 'checking'
+      },
+      driverRating: 4.8,
+      totalEarnings: 1950.75,
+      completedDeliveries: 98,
+      isOnline: false,
+      currentLocation: {
+        latitude: 38.6350,
+        longitude: -90.2044
+      },
+      stripeConnectAccountId: null,
+      stripeOnboardingComplete: false,
+      paymentPreference: 'weekly',
+      instantPayFeePreference: 1.00,
+      hireDate: new Date('2025-01-01'),
+      assignedCity: 'st-louis',
+      serviceZones: ['downtown', 'central', 'south_side'],
+      emergencyContacts: [],
+      lastSafetyCheck: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(2, masterAdmin2);
+    
     // Production data only - no demo content
     
-    this.nextUserId = 2;
+    this.nextUserId = 3;
   }
 
   // User operations

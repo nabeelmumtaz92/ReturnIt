@@ -127,6 +127,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Enhanced validation using Zod schema
       const validatedData = registrationSchema.parse(req.body);
       
+      // Restrict registration to only authorized accounts
+      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
+      if (!authorizedEmails.includes(validatedData.email)) {
+        return res.status(403).json({ 
+          message: "Registration is restricted to authorized accounts only",
+          field: "email"
+        });
+      }
+      
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);
       
@@ -157,8 +166,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName: validatedData.lastName,
         password: hashedPassword,
         dateOfBirth: validatedData.dateOfBirth,
-        isDriver: false,
-        isAdmin: validatedData.email === 'nabeelmumtaz92@gmail.com' // Admin access
+        isDriver: true,  // Both accounts have driver access
+        isAdmin: true    // Both accounts have admin access
       });
       
       // Log user in with secure session
@@ -209,6 +218,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Enhanced validation
       const validatedData = loginSchema.parse(req.body);
       const { email, password } = validatedData;
+      
+      // Restrict login to only authorized accounts
+      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
+      if (!authorizedEmails.includes(email)) {
+        return res.status(403).json({ 
+          message: "Access restricted to authorized accounts only"
+        });
+      }
       
       // Check for lockout
       if (AuthService.isUserLockedOut(email)) {
@@ -2502,10 +2519,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Environment configuration endpoint
   app.get("/api/config/environment", (req, res) => {
     res.json({
-      allowPublicRegistration: true,
-      allowPublicLogin: true,
-      allowGoogleAuth: true,
-      allowDriverSignup: true,
+      allowPublicRegistration: false,
+      allowPublicLogin: false,
+      allowGoogleAuth: false,
+      allowDriverSignup: false,
       enableDemoMode: false,
       environment: process.env.NODE_ENV || 'development'
     });
