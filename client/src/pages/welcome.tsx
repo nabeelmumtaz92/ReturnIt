@@ -153,7 +153,7 @@ export default function Welcome() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="border-white/30 text-white hover:bg-white/10 px-4 py-1.5 text-sm"
+                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
                   data-testid="button-sign-in"
                 >
                   Sign In
@@ -163,7 +163,7 @@ export default function Welcome() {
                 <Button 
                   variant="outline" 
                   size="sm" 
-                  className="border-white/30 text-white hover:bg-white/10 px-4 py-1.5 text-sm"
+                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
                   data-testid="button-sign-up"
                 >
                   Sign Up
