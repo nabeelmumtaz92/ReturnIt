@@ -335,8 +335,8 @@ export default function PricingDemo() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Base Price:</span>
+                <div className="flex justify-between text-sm font-medium text-blue-600">
+                  <span>Base Service Fee:</span>
                   <span>${currentPricing.breakdown.basePrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -394,8 +394,8 @@ export default function PricingDemo() {
               </div>
               
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Base Price:</span>
+                <div className="flex justify-between text-sm font-medium text-blue-600">
+                  <span>Base Service Fee:</span>
                   <span>${tieredPricing.breakdown.basePrice.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -481,55 +481,55 @@ export default function PricingDemo() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 text-sm">
                 <div className="p-2 border rounded bg-gray-50">
                   <div className="font-medium text-gray-600 text-xs">Standard (Under $50)</div>
-                  <p className="text-xs">15% service fee</p>
+                  <p className="text-xs">$3.99 base + 15% service fee</p>
                 </div>
                 <div className="p-2 border rounded bg-slate-50">
                   <div className="font-medium text-slate-600 text-xs">Basic ($50-$100)</div>
-                  <p className="text-xs">+$1, +$0.50 driver, 15%</p>
+                  <p className="text-xs">$3.99 base +$1, +$0.50 driver, 15%</p>
                 </div>
                 <div className="p-2 border rounded bg-emerald-50">
                   <div className="font-medium text-emerald-600 text-xs">Express ($100-$250)</div>
-                  <p className="text-xs">+$2.50, +$1 driver, 15.5%</p>
+                  <p className="text-xs">$3.99 base +$2.50, +$1 driver, 15.5%</p>
                 </div>
                 <div className="p-2 border rounded bg-green-50">
                   <div className="font-medium text-green-600 text-xs">Basic+ ($250-$500)</div>
-                  <p className="text-xs">+$5, +$1.50 driver, 16%</p>
+                  <p className="text-xs">$3.99 base +$5, +$1.50 driver, 16%</p>
                 </div>
                 <div className="p-2 border rounded bg-blue-50">
                   <div className="font-medium text-blue-600 text-xs">Value ($500-$1K)</div>
-                  <p className="text-xs">+$8, +$2.50 driver, 17%</p>
+                  <p className="text-xs">$3.99 base +$8, +$2.50 driver, 17%</p>
                 </div>
                 <div className="p-2 border rounded bg-indigo-50">
                   <div className="font-medium text-indigo-600 text-xs">Value+ ($1K-$2K)</div>
-                  <p className="text-xs">+$12, +$4 driver, 18%</p>
+                  <p className="text-xs">$3.99 base +$12, +$4 driver, 18%</p>
                 </div>
                 <div className="p-2 border rounded bg-purple-50">
                   <div className="font-medium text-purple-600 text-xs">Enhanced ($2K-$3K)</div>
-                  <p className="text-xs">+$18, +$6 driver, 19%</p>
+                  <p className="text-xs">$3.99 base +$18, +$6 driver, 19%</p>
                 </div>
                 <div className="p-2 border rounded bg-violet-50">
                   <div className="font-medium text-violet-600 text-xs">Enhanced+ ($3K-$5K)</div>
-                  <p className="text-xs">+$25, +$8 driver, 21%</p>
+                  <p className="text-xs">$3.99 base +$25, +$8 driver, 21%</p>
                 </div>
                 <div className="p-2 border rounded bg-pink-50">
                   <div className="font-medium text-pink-600 text-xs">Premium ($5K-$7.5K)</div>
-                  <p className="text-xs">+$35, +$12 driver, 23%</p>
+                  <p className="text-xs">$3.99 base +$35, +$12 driver, 23%</p>
                 </div>
                 <div className="p-2 border rounded bg-orange-50">
                   <div className="font-medium text-orange-600 text-xs">Premium+ ($7.5K-$10K)</div>
-                  <p className="text-xs">+$50, +$16 driver, 25%</p>
+                  <p className="text-xs">$3.99 base +$50, +$16 driver, 25%</p>
                 </div>
                 <div className="p-2 border rounded bg-red-50">
                   <div className="font-medium text-red-600 text-xs">Ultra Premium ($10K-$15K)</div>
-                  <p className="text-xs">+$75, +$22 driver, 28%</p>
+                  <p className="text-xs">$3.99 base +$75, +$22 driver, 28%</p>
                 </div>
                 <div className="p-2 border rounded bg-rose-50">
                   <div className="font-medium text-rose-600 text-xs">Ultra Premium+ ($15K-$25K)</div>
-                  <p className="text-xs">+$100, +$30 driver, 30%</p>
+                  <p className="text-xs">$3.99 base +$100, +$30 driver, 30%</p>
                 </div>
                 <div className="p-2 border rounded bg-amber-50">
                   <div className="font-medium text-amber-600 text-xs">Elite Luxury ($25K+)</div>
-                  <p className="text-xs">+$150, +$45 driver, 35%</p>
+                  <p className="text-xs">$3.99 base +$150, +$45 driver, 35%</p>
                 </div>
               </div>
             </div>
@@ -563,14 +563,14 @@ export default function PricingDemo() {
             </div>
 
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-800 mb-2">Total Order Value Benefits</h4>
+              <h4 className="font-semibold text-amber-800 mb-2">Pricing Structure</h4>
               <ul className="text-sm text-amber-700 space-y-1">
-                <li>• Pricing scales with combined value of all items in order</li>
-                <li>• Multiple low-value items can reach higher tiers together</li>
-                <li>• Encourages customers to bundle returns for efficiency</li>
-                <li>• Higher service fees on high-value orders fund premium handling</li>
-                <li>• Driver bonuses increase significantly for valuable shipments</li>
+                <li>• <strong>$3.99 base fee</strong> applies to every order regardless of value</li>
+                <li>• Value tier fees add to base fee based on total order value</li>
+                <li>• Distance fees ($0.50/mile) and size upcharges apply</li>
                 <li>• Service fees scale from 15% to 35% based on order value</li>
+                <li>• Driver bonuses increase significantly for valuable shipments</li>
+                <li>• Multiple items going to different stores use combined value</li>
               </ul>
             </div>
           </CardContent>

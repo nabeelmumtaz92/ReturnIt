@@ -246,7 +246,7 @@ export const orders = pgTable("orders", {
   packagingType: text("packaging_type").default("bag"), // bag, box, envelope, none
   
   // Pricing breakdown
-  basePrice: real("base_price").default(3.99), // Minimum service fee
+  basePrice: real("base_price").default(3.99), // Base service fee (always applied)
   distanceFee: real("distance_fee").default(0), // $0.50 per mile
   timeFee: real("time_fee").default(0), // $12/hour estimated time
   sizeUpcharge: real("size_upcharge").default(0), // L: +$2, XL: +$4
