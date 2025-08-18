@@ -37,6 +37,10 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  // Master admins have full access to employee dashboard
+  const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+  const isMasterAdmin = user?.isAdmin && masterAdmins.includes(user?.email);
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<SupportTicket | null>(null);
   const [filterStatus, setFilterStatus] = useState('all');

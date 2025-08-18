@@ -61,6 +61,8 @@ import RefundDemo from "@/pages/refund-demo";
 import PricingDemo from "@/pages/pricing-demo";
 import PricingAnalysis from "@/pages/pricing-analysis";
 import FailedReturnDemo from "@/pages/failed-return-demo";
+import ComprehensivePricingExamples from "@/pages/comprehensive-pricing-examples";
+import ComprehensiveGuidebook from "@/pages/comprehensive-guidebook";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -279,6 +281,8 @@ function Router() {
       <Route path="/pricing-demo" component={PricingDemo} />
       <Route path="/pricing-analysis" component={PricingAnalysis} />
       <Route path="/failed-return-demo" component={FailedReturnDemo} />
+      <Route path="/comprehensive-pricing" component={ComprehensivePricingExamples} />
+      <Route path="/comprehensive-guidebook" component={ComprehensiveGuidebook} />
 
       <Route component={NotFound} />
     </Switch>
