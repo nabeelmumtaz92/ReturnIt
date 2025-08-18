@@ -194,17 +194,17 @@ export const driverDocuments = pgTable("driver_documents", {
 });
 
 // Enhanced Orders table with comprehensive tracking
-// Individual Items within Orders
+// Individual Items within Orders (all items go to same store per order)
 export const orderItems = pgTable("order_items", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   orderId: text("order_id").notNull(),
   itemName: text("item_name"),
+  itemDescription: text("item_description"),
   itemValue: real("item_value").notNull(), // Individual item value
-  storeName: text("store_name"), // Store where item will be returned
-  storeAddress: text("store_address"),
   category: text("category"), // Electronics, Clothing, etc.
   condition: text("condition"), // New, Used, Damaged
   reason: text("reason"), // Reason for return
+  originalOrderNumber: text("original_order_number"), // Customer's original order number for this item
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -228,11 +228,11 @@ export const orders = pgTable("orders", {
   scheduledPickupTime: timestamp("scheduled_pickup_time"),
   actualPickupTime: timestamp("actual_pickup_time"),
   
-  // Return details
-  retailer: text("retailer").notNull(),
+  // Return details (single store per order)
+  retailer: text("retailer").notNull(), // Store name where ALL items will be returned
   retailerLocation: jsonb("retailer_location"), // Store location data
-  returnAddress: text("return_address"),
-  returnCoordinates: jsonb("return_coordinates"),
+  returnAddress: text("return_address"), // Physical store address
+  returnCoordinates: jsonb("return_coordinates"), // Store GPS coordinates
   itemCategory: text("item_category").notNull(), // Electronics, Clothing, Home & Garden, Beauty & Health, Books & Media, Other
   itemDescription: text("item_description"),
   estimatedWeight: text("estimated_weight"), // Optional weight estimate for logistics

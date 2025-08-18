@@ -9,7 +9,8 @@ import { Calculator, TrendingUp, DollarSign, Truck, Plus, Trash2 } from "lucide-
 import { useState } from "react";
 
 export default function PricingDemo() {
-  const [items, setItems] = useState([{ value: 500, store: "Target" }]); // Individual items with their values
+  const [items, setItems] = useState([{ value: 500, description: "iPhone 12" }]); // Individual items with their values
+  const [storeName, setStoreName] = useState("Target"); // Single store for all items in order
   const [distance, setDistance] = useState([5]);
   const [itemSize, setItemSize] = useState("M");
   const [pricingModel, setPricingModel] = useState("current");
@@ -19,7 +20,7 @@ export default function PricingDemo() {
 
   // Helper functions for item management
   const addItem = () => {
-    setItems([...items, { value: 100, store: "Store" }]);
+    setItems([...items, { value: 100, description: "Item" }]);
   };
 
   const removeItem = (index: number) => {
@@ -34,9 +35,9 @@ export default function PricingDemo() {
     setItems(newItems);
   };
 
-  const updateItemStore = (index: number, store: string) => {
+  const updateItemDescription = (index: number, description: string) => {
     const newItems = [...items];
-    newItems[index] = { ...newItems[index], store };
+    newItems[index] = { ...newItems[index], description };
     setItems(newItems);
   };
 
@@ -220,54 +221,67 @@ export default function PricingDemo() {
             <CardDescription>Adjust parameters to see how pricing changes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Individual Items Management */}
+            {/* Single Store + Multiple Items Management */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="font-semibold">Items to Return (Total: ${totalOrderValue.toLocaleString()})</h4>
-                <Button 
-                  onClick={addItem}
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Item
-                </Button>
+              <div className="p-4 border rounded-lg bg-blue-50">
+                <h4 className="font-semibold mb-3">Return Store</h4>
+                <Input
+                  placeholder="Store name (e.g., Target, Best Buy, Amazon)"
+                  value={storeName}
+                  onChange={(e) => setStoreName(e.target.value)}
+                  className="mb-2"
+                />
+                <p className="text-sm text-blue-700">All items in this order will be returned to this store</p>
               </div>
 
-              <div className="space-y-3">
-                {items.map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
-                    <div className="flex-1">
-                      <Input
-                        placeholder="Store name"
-                        value={item.store}
-                        onChange={(e) => updateItemStore(index, e.target.value)}
-                        className="mb-2"
-                      />
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">$</span>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-semibold">Items to Return (Total: ${totalOrderValue.toLocaleString()})</h4>
+                  <Button 
+                    onClick={addItem}
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Item
+                  </Button>
+                </div>
+
+                <div className="space-y-3">
+                  {items.map((item, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+                      <div className="flex-1">
                         <Input
-                          type="number"
-                          value={item.value}
-                          onChange={(e) => updateItemValue(index, parseInt(e.target.value) || 0)}
-                          className="flex-1"
-                          min="0"
-                          step="10"
+                          placeholder="Item description"
+                          value={item.description}
+                          onChange={(e) => updateItemDescription(index, e.target.value)}
+                          className="mb-2"
                         />
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">$</span>
+                          <Input
+                            type="number"
+                            value={item.value}
+                            onChange={(e) => updateItemValue(index, parseInt(e.target.value) || 0)}
+                            className="flex-1"
+                            min="0"
+                            step="10"
+                          />
+                        </div>
                       </div>
+                      {items.length > 1 && (
+                        <Button
+                          onClick={() => removeItem(index)}
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      )}
                     </div>
-                    {items.length > 1 && (
-                      <Button
-                        onClick={() => removeItem(index)}
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -570,7 +584,7 @@ export default function PricingDemo() {
                 <li>• Distance fees ($0.50/mile) and size upcharges apply</li>
                 <li>• Service fees scale from 15% to 35% based on order value</li>
                 <li>• Driver bonuses increase significantly for valuable shipments</li>
-                <li>• Multiple items going to different stores use combined value</li>
+                <li>• All items in one order go to the same store for efficiency</li>
               </ul>
             </div>
           </CardContent>
