@@ -194,6 +194,21 @@ export const driverDocuments = pgTable("driver_documents", {
 });
 
 // Enhanced Orders table with comprehensive tracking
+// Individual Items within Orders
+export const orderItems = pgTable("order_items", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").notNull(),
+  itemName: text("item_name"),
+  itemValue: real("item_value").notNull(), // Individual item value
+  storeName: text("store_name"), // Store where item will be returned
+  storeAddress: text("store_address"),
+  category: text("category"), // Electronics, Clothing, etc.
+  condition: text("condition"), // New, Used, Damaged
+  reason: text("reason"), // Reason for return
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const orders = pgTable("orders", {
   id: text("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),

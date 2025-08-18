@@ -4,15 +4,41 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Calculator, TrendingUp, DollarSign, Truck } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Calculator, TrendingUp, DollarSign, Truck, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 export default function PricingDemo() {
-  const [itemValue, setItemValue] = useState([500]); // Total order value in dollars
+  const [items, setItems] = useState([{ value: 500, store: "Target" }]); // Individual items with their values
   const [distance, setDistance] = useState([5]);
   const [itemSize, setItemSize] = useState("M");
-  const [numberOfItems, setNumberOfItems] = useState(1); // Number of items in order
   const [pricingModel, setPricingModel] = useState("current");
+
+  // Calculate total order value from all items
+  const totalOrderValue = items.reduce((sum, item) => sum + item.value, 0);
+
+  // Helper functions for item management
+  const addItem = () => {
+    setItems([...items, { value: 100, store: "Store" }]);
+  };
+
+  const removeItem = (index: number) => {
+    if (items.length > 1) {
+      setItems(items.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateItemValue = (index: number, value: number) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], value };
+    setItems(newItems);
+  };
+
+  const updateItemStore = (index: number, store: string) => {
+    const newItems = [...items];
+    newItems[index] = { ...newItems[index], store };
+    setItems(newItems);
+  };
 
   // Current flat-rate pricing structure
   const calculateCurrentPricing = () => {
@@ -41,7 +67,8 @@ export default function PricingDemo() {
       },
       driverEarnings: driverTotal,
       companyRevenue,
-      itemValue: itemValue[0]
+      totalOrderValue,
+      items
     };
   };
 
@@ -60,7 +87,7 @@ export default function PricingDemo() {
     let serviceFeeRate = 0.15; // Base service fee rate
     let tier = "Standard";
     
-    const totalOrderValue = itemValue[0]; // Total value of all items in this order
+    // totalOrderValue is already calculated from items array
     
     if (totalOrderValue >= 25000) {
       // Tier 12: $25,000+ - Elite Luxury (Art, Collectibles, Ultra-luxury items)
@@ -162,7 +189,8 @@ export default function PricingDemo() {
       driverEarnings: driverTotal,
       driverValueBonus,
       companyRevenue,
-      itemValue: itemValue[0],
+      totalOrderValue,
+      items,
       tier
     };
   };
@@ -192,42 +220,58 @@ export default function PricingDemo() {
             <CardDescription>Adjust parameters to see how pricing changes</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Item Value */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Total Order Value: ${itemValue[0]}</label>
-                <Slider
-                  value={itemValue}
-                  onValueChange={setItemValue}
-                  max={50000}
-                  min={10}
-                  step={10}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>$10</span>
-                  <span>$50,000</span>
-                </div>
-                <p className="text-xs text-gray-600">
-                  Combined value of all {numberOfItems} item{numberOfItems !== 1 ? 's' : ''} in this order
-                </p>
+            {/* Individual Items Management */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold">Items to Return (Total: ${totalOrderValue.toLocaleString()})</h4>
+                <Button 
+                  onClick={addItem}
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Item
+                </Button>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Number of Items: {numberOfItems}</label>
-                <Slider
-                  value={[numberOfItems]}
-                  onValueChange={(value) => setNumberOfItems(value[0])}
-                  max={10}
-                  min={1}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>1 item</span>
-                  <span>10 items</span>
-                </div>
+              <div className="space-y-3">
+                {items.map((item, index) => (
+                  <div key={index} className="flex items-center gap-3 p-3 border rounded-lg bg-gray-50">
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Store name"
+                        value={item.store}
+                        onChange={(e) => updateItemStore(index, e.target.value)}
+                        className="mb-2"
+                      />
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">$</span>
+                        <Input
+                          type="number"
+                          value={item.value}
+                          onChange={(e) => updateItemValue(index, parseInt(e.target.value) || 0)}
+                          className="flex-1"
+                          min="0"
+                          step="10"
+                        />
+                      </div>
+                    </div>
+                    {items.length > 1 && (
+                      <Button
+                        onClick={() => removeItem(index)}
+                        size="sm"
+                        variant="outline"
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
               {/* Distance */}
               <div className="space-y-2">
