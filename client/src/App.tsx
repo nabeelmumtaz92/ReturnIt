@@ -277,10 +277,31 @@ function Router() {
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <CancellationAlerts /> : <NotFound />;
         }}
       </Route>
-      <Route path="/refund-demo" component={RefundDemo} />
-      <Route path="/pricing-demo" component={PricingDemo} />
-      <Route path="/pricing-analysis" component={PricingAnalysis} />
-      <Route path="/failed-return-demo" component={FailedReturnDemo} />
+      {/* Demo Routes - Master Admin Access Only */}
+      <Route path="/refund-demo">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <RefundDemo /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/pricing-demo">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <PricingDemo /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/pricing-analysis">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <PricingAnalysis /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/failed-return-demo">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <FailedReturnDemo /> : <NotFound />;
+        }}
+      </Route>
 
       {/* Internal Only Routes - Master Admin Access Only */}
       <Route path="/internal/pricing-examples">

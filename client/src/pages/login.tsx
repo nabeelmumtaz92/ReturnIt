@@ -46,8 +46,8 @@ export default function Login() {
 
   // Login form state
   const [loginData, setLoginData] = useState<LoginData>({
-    email: 'nabeelmumtaz92@gmail.com',
-    password: 'Test123'
+    email: '',
+    password: ''
   });
 
   // Register form state

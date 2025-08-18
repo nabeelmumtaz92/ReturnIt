@@ -76,7 +76,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/order-status/demo">
+                <Link href="/track-order">
                   <Button 
                     variant="link" 
                     className="text-amber-100 hover:text-white p-0 h-auto justify-start"
