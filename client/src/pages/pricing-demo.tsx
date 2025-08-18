@@ -9,7 +9,7 @@ import { Calculator, TrendingUp, DollarSign, Truck, Plus, Trash2 } from "lucide-
 import { useState } from "react";
 
 export default function PricingDemo() {
-  const [items, setItems] = useState([{ value: 500, description: "iPhone 12" }]); // Individual items with their values
+  const [items, setItems] = useState([{ value: 30, description: "T-shirt" }]); // Individual items with their values
   const [storeName, setStoreName] = useState("Target"); // Single store for all items in order
   const [distance, setDistance] = useState([5]);
   const [itemSize, setItemSize] = useState("M");
@@ -20,7 +20,7 @@ export default function PricingDemo() {
 
   // Helper functions for item management
   const addItem = () => {
-    setItems([...items, { value: 100, description: "Item" }]);
+    setItems([...items, { value: 75, description: "Item" }]);
   };
 
   const removeItem = (index: number) => {
