@@ -2519,8 +2519,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Environment configuration endpoint
   app.get("/api/config/environment", (req, res) => {
     res.json({
-      allowPublicRegistration: false,
-      allowPublicLogin: false,
+      allowPublicRegistration: true,
+      allowPublicLogin: true,
       allowGoogleAuth: false,
       allowDriverSignup: false,
       enableDemoMode: false,
