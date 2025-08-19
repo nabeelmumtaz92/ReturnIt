@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
-  // Session middleware
+  // Session middleware with production-optimized settings
   app.use(session({
     secret: process.env.SESSION_SECRET || 'returnly-secret-key-fallback',
     resave: false,
@@ -92,7 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     cookie: { 
       secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
       httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // Lax for same-site navigation
+      // Don't set domain - let browser handle it automatically for returnit.online
     }
   }));
 

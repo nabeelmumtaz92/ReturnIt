@@ -4,10 +4,16 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 // import { Strategy as AppleStrategy } from 'passport-apple'; // Apple strategy requires custom setup
 import { storage } from '../storage';
 
-// Google OAuth Strategy
-const callbackURL = process.env.REPLIT_DEV_DOMAIN 
-  ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/google/callback`
-  : `https://${process.env.REPL_ID}.${process.env.REPLIT_CLUSTER || 'id'}.replit.dev/api/auth/google/callback`;
+// Google OAuth Strategy - Support production domain
+let callbackURL: string;
+
+if (process.env.NODE_ENV === 'production') {
+  callbackURL = 'https://returnit.online/api/auth/google/callback';
+} else if (process.env.REPLIT_DEV_DOMAIN) {
+  callbackURL = `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/google/callback`;
+} else {
+  callbackURL = `https://${process.env.REPL_ID}.${process.env.REPLIT_CLUSTER || 'id'}.replit.dev/api/auth/google/callback`;
+}
 
 console.log('Google OAuth Configuration:', {
   hasClientId: !!process.env.GOOGLE_CLIENT_ID,
