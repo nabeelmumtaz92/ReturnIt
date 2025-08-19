@@ -2713,6 +2713,22 @@ Always explain what you're doing and confirm potentially destructive operations.
 
           let aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
           
+          // First check if learning system can handle this request
+          const { AIAssistant } = await import('./ai-assistant');
+          let learningResult = null;
+          
+          try {
+            learningResult = await AIAssistant.processWithLearning(prompt, 'console-user');
+            if (learningResult && learningResult.success) {
+              // If learning system handled it successfully, enhance the OpenAI response
+              if (learningResult.message && learningResult.message !== "Processing your request...") {
+                aiResponse += `\n\n🧠 **Learning System**: ${learningResult.message}`;
+              }
+            }
+          } catch (learningError) {
+            console.log('Learning system error:', learningError);
+          }
+          
           // Process administrative commands
           let adminResults = null;
           let codeChanges = [];
@@ -2726,7 +2742,6 @@ Always explain what you're doing and confirm potentially destructive operations.
             const emailMatch = prompt.match(/delete user ([^\s]+)/i);
             if (emailMatch) {
               const userIdentifier = emailMatch[1];
-              const { AIAssistant } = await import('./ai-assistant');
               adminResults = await AIAssistant.deleteUser(userIdentifier);
               
               if (adminResults.success) {
@@ -2743,7 +2758,6 @@ Always explain what you're doing and confirm potentially destructive operations.
           
           // Check for list users command
           if (lowerPrompt.includes('list users') || lowerPrompt.includes('show users')) {
-            const { AIAssistant } = await import('./ai-assistant');
             adminResults = await AIAssistant.listUsers(10);
             
             if (adminResults.success) {
@@ -2752,6 +2766,19 @@ Always explain what you're doing and confirm potentially destructive operations.
                 query: "SELECT * FROM users ORDER BY created_at DESC LIMIT 10",
                 description: "Retrieved user list from database"
               });
+            }
+          }
+          
+          // Check for learning insights request
+          if (lowerPrompt.includes('learning insights') || lowerPrompt.includes('ai learning')) {
+            adminResults = await AIAssistant.getLearningInsights();
+            
+            if (adminResults.success) {
+              const insights = adminResults.insights;
+              aiResponse += `\n\n🧠 **AI Learning Insights**\n• Total Interactions: ${insights.totalInteractions}\n• Success Rate: ${insights.successRate}%\n• Active Users: ${insights.activeUsers}\n• Learning Entries: ${insights.learningEntries}`;
+              if (insights.topContexts && insights.topContexts.length > 0) {
+                aiResponse += `\n• Top Commands: ${insights.topContexts.map((c: any) => c.context).join(', ')}`;
+              }
             }
           }
           

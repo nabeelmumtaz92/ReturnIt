@@ -43,7 +43,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi! I\'m your AI assistant with full administrative access to the ReturnIt platform.\n\n🔧 **Development Tasks**\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Code analysis and improvements\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Execute custom SQL queries\n• System statistics and analytics\n\n📊 **Administrative Operations**\n• Recent activity monitoring\n• Platform performance diagnostics\n• User and order management\n• Real-time system monitoring\n\n**Command Examples:**\n• "Delete user john@example.com"\n• "Generate report on orders"\n• "Performance analysis" \n• "Backup data"\n• "Bulk delete users inactive"\n• "SQL query: SELECT COUNT(*) FROM users"\n\nWhat would you like me to help you with?',
+      content: 'Hi! I\'m your AI assistant with learning capabilities and full administrative access to the ReturnIt platform.\n\n🧠 **Adaptive Learning**\n• I learn from every interaction and adapt responses\n• Track user patterns and provide personalized suggestions\n• Remember successful commands and suggest similar operations\n• Analyze usage patterns to improve recommendations\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Execute custom SQL queries\n• System statistics and analytics\n\n📊 **Administrative Operations**\n• Recent activity monitoring\n• Platform performance diagnostics\n• User and order management\n• AI learning insights and patterns\n\n**Command Examples:**\n• "Delete user john@example.com"\n• "Learning insights" - See AI learning patterns\n• "Generate report on orders"\n• "Performance analysis" \n• "Backup data"\n• "SQL query: SELECT COUNT(*) FROM users"\n\nI learn from your commands and get better over time. What would you like me to help you with?',
       timestamp: new Date(),
       status: 'completed'
     }
@@ -143,9 +143,9 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
 
   const quickActions = [
     { label: 'System Stats', prompt: 'Show me system statistics and dashboard data' },
+    { label: 'Learning Insights', prompt: 'Show me AI learning insights and patterns' },
     { label: 'Generate Report', prompt: 'Generate report on users' },
-    { label: 'Performance Analysis', prompt: 'Analyze system performance and metrics' },
-    { label: 'Recent Activity', prompt: 'Show recent activity and platform usage' }
+    { label: 'Performance Analysis', prompt: 'Analyze system performance and metrics' }
   ];
 
   if (isMinimized) {

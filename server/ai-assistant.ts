@@ -94,6 +94,186 @@ COMMON REQUESTS:
 
 Remember: You're making real changes to a live platform. Be thorough and safe.`;
 
+// Learning system for adaptive AI capabilities
+interface LearningEntry {
+  id: string;
+  userInput: string;
+  systemResponse: string;
+  context: string;
+  outcome: 'success' | 'error' | 'partial';
+  timestamp: Date;
+  userId?: string;
+  tags: string[];
+}
+
+interface UserPattern {
+  userId: string;
+  commonCommands: string[];
+  preferences: Record<string, any>;
+  expertise_level: 'beginner' | 'intermediate' | 'advanced';
+  interaction_count: number;
+  last_active: Date;
+}
+
+class LearningSystem {
+  private static learningData: LearningEntry[] = [];
+  private static userPatterns: Map<string, UserPattern> = new Map();
+
+  static async recordInteraction(input: string, response: string, outcome: 'success' | 'error' | 'partial', userId?: string): Promise<void> {
+    const entry: LearningEntry = {
+      id: Date.now().toString(),
+      userInput: input.toLowerCase(),
+      systemResponse: response,
+      context: this.extractContext(input),
+      outcome,
+      timestamp: new Date(),
+      userId,
+      tags: this.extractTags(input)
+    };
+
+    this.learningData.push(entry);
+    if (userId) {
+      this.updateUserPattern(userId, input, outcome);
+    }
+
+    // Keep only last 1000 entries for memory efficiency
+    if (this.learningData.length > 1000) {
+      this.learningData = this.learningData.slice(-1000);
+    }
+  }
+
+  private static extractContext(input: string): string {
+    if (input.includes('delete')) return 'user_management';
+    if (input.includes('report') || input.includes('generate')) return 'reporting';
+    if (input.includes('performance') || input.includes('analyze')) return 'analytics';
+    if (input.includes('backup') || input.includes('sql')) return 'database_ops';
+    if (input.includes('order') || input.includes('status')) return 'order_management';
+    return 'general';
+  }
+
+  private static extractTags(input: string): string[] {
+    const tags = [];
+    if (input.includes('delete')) tags.push('delete');
+    if (input.includes('create')) tags.push('create');
+    if (input.includes('update')) tags.push('update');
+    if (input.includes('list') || input.includes('show')) tags.push('read');
+    if (input.includes('user')) tags.push('user');
+    if (input.includes('order')) tags.push('order');
+    if (input.includes('report')) tags.push('report');
+    if (input.includes('performance')) tags.push('performance');
+    return tags;
+  }
+
+  private static updateUserPattern(userId: string, input: string, outcome: 'success' | 'error' | 'partial'): void {
+    let pattern = this.userPatterns.get(userId);
+    
+    if (!pattern) {
+      pattern = {
+        userId,
+        commonCommands: [],
+        preferences: {},
+        expertise_level: 'beginner',
+        interaction_count: 0,
+        last_active: new Date()
+      };
+    }
+
+    pattern.interaction_count++;
+    pattern.last_active = new Date();
+
+    // Track common commands
+    const commandType = this.extractContext(input);
+    const existingCommand = pattern.commonCommands.find(cmd => cmd === commandType);
+    if (!existingCommand) {
+      pattern.commonCommands.push(commandType);
+    }
+
+    // Determine expertise level based on interaction patterns
+    if (pattern.interaction_count > 50 && pattern.commonCommands.length > 5) {
+      pattern.expertise_level = 'advanced';
+    } else if (pattern.interaction_count > 15 && pattern.commonCommands.length > 3) {
+      pattern.expertise_level = 'intermediate';
+    }
+
+    this.userPatterns.set(userId, pattern);
+  }
+
+  static getSimilarInteractions(input: string, limit = 5): LearningEntry[] {
+    const inputWords = input.toLowerCase().split(' ');
+    
+    return this.learningData
+      .filter(entry => entry.outcome === 'success')
+      .map(entry => ({
+        ...entry,
+        similarity: this.calculateSimilarity(inputWords, entry.userInput.split(' '))
+      }))
+      .sort((a, b) => (b as any).similarity - (a as any).similarity)
+      .slice(0, limit);
+  }
+
+  private static calculateSimilarity(words1: string[], words2: string[]): number {
+    const commonWords = words1.filter(word => words2.includes(word));
+    return commonWords.length / Math.max(words1.length, words2.length);
+  }
+
+  static adaptResponse(originalResponse: string, input: string, userId?: string): string {
+    const similar = this.getSimilarInteractions(input, 3);
+    let adaptedResponse = originalResponse;
+
+    // Add learning insights if similar patterns found
+    if (similar.length > 0) {
+      adaptedResponse += "\n\n🧠 **Learning Insights**: Based on similar requests, you might also want to:\n";
+      similar.forEach((entry, index) => {
+        if (index < 2) { // Show top 2 suggestions
+          adaptedResponse += `• Try: "${entry.userInput}"\n`;
+        }
+      });
+    }
+
+    // Add personalized suggestions for known users
+    if (userId) {
+      const pattern = this.userPatterns.get(userId);
+      if (pattern) {
+        adaptedResponse += `\n🎯 **Personalized**: As an ${pattern.expertise_level} user, you might find these commands useful:\n`;
+        pattern.commonCommands.slice(0, 3).forEach(cmd => {
+          adaptedResponse += `• Explore more ${cmd} operations\n`;
+        });
+      }
+    }
+
+    return adaptedResponse;
+  }
+
+  static getSystemInsights(): any {
+    const totalInteractions = this.learningData.length;
+    const successRate = this.learningData.filter(e => e.outcome === 'success').length / totalInteractions;
+    const topContexts = this.getTopContexts();
+    const activeUsers = Array.from(this.userPatterns.values()).filter(p => 
+      (Date.now() - p.last_active.getTime()) < 7 * 24 * 60 * 60 * 1000 // Last 7 days
+    ).length;
+
+    return {
+      totalInteractions,
+      successRate: (successRate * 100).toFixed(1),
+      topContexts,
+      activeUsers,
+      learningEntries: this.learningData.length
+    };
+  }
+
+  private static getTopContexts(): Array<{context: string, count: number}> {
+    const contextCounts: Record<string, number> = {};
+    this.learningData.forEach(entry => {
+      contextCounts[entry.context] = (contextCounts[entry.context] || 0) + 1;
+    });
+
+    return Object.entries(contextCounts)
+      .map(([context, count]) => ({context, count}))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }
+}
+
 export class AIAssistant {
   
   static async processRequest(prompt: string): Promise<AIResponse> {
@@ -561,6 +741,98 @@ export class AIAssistant {
       };
     } catch (error) {
       return { error: `Backup failed: ${error}` };
+    }
+  }
+
+  // Learning and adaptation methods
+  static async processWithLearning(prompt: string, userId?: string): Promise<any> {
+    try {
+      let result: any = { message: "Processing your request...", success: true };
+      const lowerPrompt = prompt.toLowerCase();
+
+      // Process command and record the interaction
+      if (lowerPrompt.includes('delete user')) {
+        const emailMatch = prompt.match(/delete user ([^\s]+)/i);
+        if (emailMatch) {
+          result = await this.deleteUser(emailMatch[1]);
+        }
+      } else if (lowerPrompt.includes('list users')) {
+        result = await this.listUsers();
+      } else if (lowerPrompt.includes('system stats')) {
+        result = await this.getSystemStats();
+      } else if (lowerPrompt.includes('generate report')) {
+        const reportMatch = prompt.match(/report(?:\s+on\s+|\s+)(\w+)/i);
+        if (reportMatch) {
+          result = await this.generateReport(reportMatch[1]);
+        }
+      } else if (lowerPrompt.includes('performance analysis')) {
+        result = await this.analyzePerformance();
+      } else if (lowerPrompt.includes('backup data')) {
+        result = await this.backupData();
+      } else if (lowerPrompt.includes('sql query')) {
+        const sqlMatch = prompt.match(/sql query\s*[:=]?\s*(.+)/i);
+        if (sqlMatch) {
+          result = await this.executeCustomQuery(sqlMatch[1]);
+        }
+      } else {
+        // Check for learned patterns
+        const similarInteractions = LearningSystem.getSimilarInteractions(prompt);
+        if (similarInteractions.length > 0) {
+          result.message = `Based on similar requests, I suggest trying: "${similarInteractions[0].userInput}"`;
+          result.learningSuggestion = true;
+        } else {
+          result.message = "I'm learning from this new type of request. Could you be more specific about what you'd like me to do?";
+          result.needsMoreInfo = true;
+        }
+      }
+
+      // Record the interaction for learning
+      const outcome = result.error ? 'error' : result.success ? 'success' : 'partial';
+      await LearningSystem.recordInteraction(prompt, result.message || '', outcome, userId);
+
+      // Adapt the response based on learning
+      if (result.message) {
+        result.message = LearningSystem.adaptResponse(result.message, prompt, userId);
+      }
+
+      return result;
+    } catch (error) {
+      await LearningSystem.recordInteraction(prompt, `Error: ${error}`, 'error', userId);
+      return { error: `Processing failed: ${error}` };
+    }
+  }
+
+  static async getLearningInsights(): Promise<any> {
+    try {
+      const insights = LearningSystem.getSystemInsights();
+      
+      return {
+        success: true,
+        insights,
+        message: "Learning system analysis completed"
+      };
+    } catch (error) {
+      return { error: `Failed to get learning insights: ${error}` };
+    }
+  }
+
+  static async trainOnFeedback(originalPrompt: string, feedback: 'helpful' | 'not_helpful', userId?: string): Promise<any> {
+    try {
+      // Find the recent interaction and update its outcome based on feedback
+      const recentEntry = LearningSystem.learningData
+        .filter(entry => entry.userInput.includes(originalPrompt.toLowerCase()) && entry.userId === userId)
+        .pop();
+
+      if (recentEntry) {
+        recentEntry.outcome = feedback === 'helpful' ? 'success' : 'error';
+      }
+
+      return {
+        success: true,
+        message: `Thank you for the feedback! I'm learning from this interaction to improve future responses.`
+      };
+    } catch (error) {
+      return { error: `Failed to process feedback: ${error}` };
     }
   }
 
