@@ -73,10 +73,34 @@ export function useAuth() {
             window.location.replace('/admin-dashboard');
           }
         } else if (mounted) {
-          // Don't clear admin users - they use client-side auth
+          // Check if we have a stored admin user and try to create server session
           const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
           if (user?.isAdmin && adminEmails.includes(user?.email)) {
-            console.log('Admin user detected - keeping client-side auth');
+            console.log('Admin user detected - attempting to sync with server');
+            // Try to create a server session for the admin user
+            try {
+              await fetch('/api/auth/dev-admin-login', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              // After creating session, try auth check again
+              const retryResponse = await fetch('/api/auth/me', {
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' }
+              });
+              if (retryResponse.ok) {
+                const userData = await retryResponse.json();
+                setUser(userData);
+                setIsAuthenticated(true);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+                localStorage.setItem(AUTH_TIMESTAMP_KEY, Date.now().toString());
+                setIsLoading(false);
+                return;
+              }
+            } catch (error) {
+              console.log('Failed to sync admin session, keeping client-side auth');
+            }
             setIsLoading(false);
             return;
           }
@@ -90,6 +114,7 @@ export function useAuth() {
           }
         }
       } catch (error) {
+        console.error('Auth check failed:', error);
         // Don't clear admin users on network errors
         const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
         if (user?.isAdmin && adminEmails.includes(user?.email)) {
@@ -154,11 +179,28 @@ export function useAuth() {
     window.location.href = '/';
   };
 
+  const syncAdminSession = async () => {
+    const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
+    if (user?.isAdmin && adminEmails.includes(user?.email)) {
+      try {
+        await fetch('/api/auth/dev-admin-login', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        console.log('Admin session synchronized with server');
+      } catch (error) {
+        console.error('Failed to sync admin session:', error);
+      }
+    }
+  };
+
   return {
     user,
     isLoading,
     isAuthenticated,
     login,
     logout,
+    syncAdminSession,
   };
 }

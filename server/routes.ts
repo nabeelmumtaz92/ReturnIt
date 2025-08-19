@@ -318,30 +318,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Development admin login for testing
+  // Development admin login for testing and client sync
   app.post("/api/auth/dev-admin-login", async (req, res) => {
-    if (process.env.NODE_ENV !== 'development') {
-      return res.status(404).json({ message: "Not found" });
-    }
-    
     try {
-      // Create admin session for testing
-      const adminUser = {
-        id: 1,
-        email: "nabeelmumtaz92@gmail.com",
-        firstName: "Admin",
-        lastName: "User",
-        isAdmin: true,
-        isDriver: false
+      // Get or create admin user from database
+      let adminUser = await storage.getUserByEmail("nabeelmumtaz92@gmail.com");
+      
+      if (!adminUser) {
+        // Create admin user if doesn't exist
+        adminUser = await storage.createUser({
+          email: "nabeelmumtaz92@gmail.com",
+          firstName: "Nabeel",
+          lastName: "Mumtaz", 
+          phone: "6362544821",
+          password: await AuthService.hashPassword("TempPassword123!"),
+          isDriver: true,
+          isAdmin: true
+        });
+      }
+      
+      // Create server session
+      req.session.user = {
+        id: adminUser.id,
+        email: adminUser.email,
+        firstName: adminUser.firstName,
+        lastName: adminUser.lastName,
+        isAdmin: adminUser.isAdmin,
+        isDriver: adminUser.isDriver
       };
       
-      req.session.user = adminUser;
-      console.log('Development admin session created for testing');
+      console.log('Admin session synchronized:', adminUser.email);
       res.json({
         message: "Admin session created",
-        user: adminUser
+        user: {
+          id: adminUser.id,
+          email: adminUser.email,
+          firstName: adminUser.firstName,
+          lastName: adminUser.lastName,
+          isAdmin: adminUser.isAdmin,
+          isDriver: adminUser.isDriver
+        }
       });
     } catch (error) {
+      console.error('Admin session creation error:', error);
       res.status(500).json({ message: "Failed to create admin session" });
     }
   });
