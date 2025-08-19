@@ -240,6 +240,18 @@ export const orders = pgTable("orders", {
   returnReason: text("return_reason"),
   originalOrderNumber: text("original_order_number"),
   
+  // Return Authorization Fields
+  purchaseType: text("purchase_type").notNull(), // "online" or "in_store" 
+  hasOriginalTags: boolean("has_original_tags").default(false).notNull(),
+  receiptUploaded: boolean("receipt_uploaded").default(false).notNull(),
+  receiptUrl: text("receipt_url"), // URL to uploaded receipt/proof of purchase
+  returnLabelUrl: text("return_label_url"), // For online returns - uploaded label or QR
+  authorizationSigned: boolean("authorization_signed").default(false).notNull(),
+  authorizationSignature: text("authorization_signature"), // Digital signature data
+  authorizationTimestamp: timestamp("authorization_timestamp"),
+  requiresInStoreReturn: boolean("requires_in_store_return").default(false).notNull(),
+  requiresCarrierDropoff: boolean("requires_carrier_dropoff").default(false).notNull(),
+  
   // Item and pricing details
   numberOfItems: integer("number_of_items").default(1).notNull(),
   itemSize: text("item_size").notNull(), // S, M, L, XL (individual item size)
@@ -297,7 +309,6 @@ export const orders = pgTable("orders", {
   stripeRefundId: text("stripe_refund_id"),
   refundAmount: real("refund_amount"), // Actual amount refunded (item cost only)
   itemCost: real("item_cost"), // Item cost only (excludes service fee and taxes)
-  taxAmount: real("tax_amount").default(0), // Taxes charged (non-refundable)
   refundMethod: text("refund_method"), // original_payment, store_credit, cash, check
   refundStatus: text("refund_status"), // pending, processing, completed, failed
   refundProcessedAt: timestamp("refund_processed_at"),

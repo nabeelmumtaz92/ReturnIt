@@ -80,7 +80,14 @@ export default function BookPickup() {
     // Receipt upload
     receiptPhoto: null as File | null,
     // Liability acceptance
-    acceptsLiabilityTerms: false
+    acceptsLiabilityTerms: false,
+    
+    // Return Authorization Fields
+    purchaseType: '', // 'online' or 'in_store'
+    hasOriginalTags: false,
+    receiptUploaded: false,
+    returnLabelFile: null as File | null, // For online returns
+    authorizationSigned: false
   });
 
   // Location and routing state
@@ -254,6 +261,43 @@ export default function BookPickup() {
     if (formData.itemCategories.length === 0) {
       missing.push('itemCategories');
     }
+
+    // Validate return authorization requirements
+    if (!formData.purchaseType) {
+      toast({
+        title: "Purchase Type Required",
+        description: "Please specify if this was an online or in-store purchase",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.hasOriginalTags) {
+      toast({
+        title: "Tags Required",
+        description: "Please confirm that original tags are still attached",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.receiptUploaded) {
+      toast({
+        title: "Receipt Required",
+        description: "Please upload your receipt or order confirmation",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.authorizationSigned) {
+      toast({
+        title: "Authorization Required",
+        description: "Please authorize ReturnIt to process this return on your behalf",
+        variant: "destructive",
+      });
+      return;
+    }
     
     // Validate outside pickup requirements
     if (formData.pickupLocation === 'outside') {
@@ -308,7 +352,15 @@ export default function BookPickup() {
       acceptsLiabilityTerms: formData.acceptsLiabilityTerms,
       paymentMethod: method,
       paymentDetails: details,
-      totalAmount
+      totalAmount,
+      
+      // Return Authorization Fields
+      purchaseType: formData.purchaseType,
+      hasOriginalTags: formData.hasOriginalTags,
+      receiptUploaded: formData.receiptUploaded,
+      authorizationSigned: formData.authorizationSigned,
+      requiresInStoreReturn: formData.purchaseType === 'in_store',
+      requiresCarrierDropoff: formData.purchaseType === 'online'
     };
 
     createOrderMutation.mutate(orderData);
@@ -316,11 +368,42 @@ export default function BookPickup() {
     // Navigate to checkout page with order details after successful order creation
   };
 
-  const handleInputChange = (field: string, value: string | number) => {
+  const handleInputChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: field === 'numberOfItems' ? parseInt(value as string) : value
     }));
+  };
+
+  // Handle receipt upload for return authorization
+  const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        receiptPhoto: file,
+        receiptUploaded: true
+      }));
+      toast({
+        title: "Receipt uploaded",
+        description: "Your receipt has been attached to this return",
+      });
+    }
+  };
+
+  // Handle return label upload for online purchases
+  const handleReturnLabelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        returnLabelFile: file
+      }));
+      toast({
+        title: "Return label uploaded",
+        description: "Your return label/QR code has been attached",
+      });
+    }
   };
 
   // Handle multiple item category selection
@@ -512,6 +595,161 @@ export default function BookPickup() {
                     </Select>
                   </div>
                 </div>
+              </div>
+
+              {/* Return Authorization Section */}
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2 mb-3">
+                  <Shield className="h-5 w-5 text-amber-600" />
+                  <Label className="text-amber-800 font-semibold text-lg">Return Authorization</Label>
+                </div>
+                
+                {/* Purchase Type Question */}
+                <div className="space-y-3 p-4 bg-amber-50/80 rounded-lg border border-amber-200">
+                  <Label className="text-amber-800 font-medium text-base">
+                    Was this purchase made online? *
+                  </Label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="purchaseType"
+                        value="online"
+                        checked={formData.purchaseType === 'online'}
+                        onChange={(e) => handleInputChange('purchaseType', e.target.value)}
+                        className="text-amber-600 focus:ring-amber-500"
+                        data-testid="radio-purchase-online"
+                      />
+                      <span className="text-amber-800">Yes - Online Purchase</span>
+                    </label>
+                    <label className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="purchaseType"
+                        value="in_store"
+                        checked={formData.purchaseType === 'in_store'}
+                        onChange={(e) => handleInputChange('purchaseType', e.target.value)}
+                        className="text-amber-600 focus:ring-amber-500"
+                        data-testid="radio-purchase-store"
+                      />
+                      <span className="text-amber-800">No - In-Store Purchase</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Conditional Requirements based on Purchase Type */}
+                {formData.purchaseType && (
+                  <div className="space-y-4 p-4 bg-white/60 rounded-lg border border-amber-200">
+                    {/* Tag Requirement - Always Required */}
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="hasOriginalTags"
+                        checked={formData.hasOriginalTags}
+                        onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked)}
+                        className="border-amber-400 text-amber-600"
+                        data-testid="checkbox-original-tags"
+                      />
+                      <Label htmlFor="hasOriginalTags" className="text-amber-800 font-medium">
+                        Original tags are still attached *
+                      </Label>
+                    </div>
+                    <p className="text-amber-700 text-sm ml-6">
+                      Most stores require items to be in "like new" condition with original tags.
+                    </p>
+
+                    {/* Receipt Upload - Always Required */}
+                    <div className="space-y-2">
+                      <Label className="text-amber-800 font-medium">
+                        {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation *' : 'Upload Store Receipt *'}
+                      </Label>
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        onChange={handleReceiptUpload}
+                        className="block w-full text-sm text-amber-800 
+                                   file:mr-4 file:py-2 file:px-4 
+                                   file:rounded-md file:border-0
+                                   file:text-sm file:font-medium
+                                   file:bg-amber-100 file:text-amber-800
+                                   hover:file:bg-amber-200"
+                        data-testid="input-receipt-upload"
+                      />
+                      <p className="text-amber-700 text-sm">
+                        {formData.purchaseType === 'online' 
+                          ? 'Upload a screenshot of your email receipt or order confirmation.'
+                          : 'Upload a photo of your store receipt for proof of purchase.'
+                        }
+                      </p>
+                    </div>
+
+                    {/* Return Label Upload - Only for Online Purchases */}
+                    {formData.purchaseType === 'online' && (
+                      <div className="space-y-2">
+                        <Label className="text-amber-800 font-medium">
+                          Upload Return Label or QR Code (Optional)
+                        </Label>
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf"
+                          onChange={handleReturnLabelUpload}
+                          className="block w-full text-sm text-amber-800 
+                                     file:mr-4 file:py-2 file:px-4 
+                                     file:rounded-md file:border-0
+                                     file:text-sm file:font-medium
+                                     file:bg-amber-100 file:text-amber-800
+                                     hover:file:bg-amber-200"
+                          data-testid="input-return-label-upload"
+                        />
+                        <p className="text-amber-700 text-sm">
+                          If you have a return label or QR code from the retailer, upload it here. 
+                          Otherwise, our driver will help process the return at the carrier location.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Authorization Signature */}
+                    <div className="space-y-3 p-3 bg-amber-50/50 rounded border border-amber-300">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="authorizationSigned"
+                          checked={formData.authorizationSigned}
+                          onCheckedChange={(checked) => handleInputChange('authorizationSigned', checked)}
+                          className="border-amber-400 text-amber-600"
+                          data-testid="checkbox-authorization"
+                        />
+                        <Label htmlFor="authorizationSigned" className="text-amber-800 font-medium">
+                          I authorize ReturnIt to process this return on my behalf *
+                        </Label>
+                      </div>
+                      <p className="text-amber-700 text-xs ml-6">
+                        This digital authorization allows our driver to act as your proxy when returning items 
+                        {formData.purchaseType === 'online' ? ' to carrier locations.' : ' to the store.'}
+                      </p>
+                    </div>
+
+                    {/* Requirements Summary */}
+                    <div className="p-3 bg-green-50/80 rounded border border-green-200">
+                      <h4 className="text-green-800 font-medium mb-2">
+                        {formData.purchaseType === 'online' ? 'Online Return Process:' : 'In-Store Return Process:'}
+                      </h4>
+                      <ul className="text-green-700 text-sm space-y-1">
+                        <li>• Driver will carry your receipt and authorization</li>
+                        {formData.purchaseType === 'online' ? (
+                          <>
+                            <li>• Item will be taken to UPS/FedEx/USPS drop-off location</li>
+                            <li>• Return label will be printed or attached by carrier</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>• Driver will take item to the store counter</li>
+                            <li>• Store associate will process the return using your receipt</li>
+                          </>
+                        )}
+                        <li>• You'll receive updates on the return status</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Enhanced Retailer Selection with Store Locator */}
