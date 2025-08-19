@@ -1325,6 +1325,90 @@ Let me know if you'd like me to conduct this research and provide detailed recom
     }
   }
 
+  // Complete the missing intelligent methods
+  static async intelligentUserListing(): Promise<any> {
+    try {
+      const result = await this.listUsers();
+      if (result.success) {
+        result.message = `📊 **User Analysis**\n${result.message}\n\n💡 **Insights**: Active users indicate healthy platform engagement. Monitor for growth trends and user retention patterns.`;
+      }
+      return result;
+    } catch (error) {
+      return { error: `Intelligent user listing failed: ${error}` };
+    }
+  }
+
+  static async intelligentReportGeneration(reportType: string): Promise<any> {
+    try {
+      const result = await this.generateReport(reportType);
+      if (result.success) {
+        result.message = `📈 **Strategic Report Analysis**\n${result.message}\n\n🎯 **Recommendations**: Use this data to identify trends, optimize operations, and drive business growth.`;
+      }
+      return result;
+    } catch (error) {
+      return { error: `Intelligent report generation failed: ${error}` };
+    }
+  }
+
+  static async intelligentPerformanceAnalysis(): Promise<any> {
+    try {
+      const result = await this.analyzePerformance();
+      if (result.success) {
+        result.message = `⚡ **Performance Intelligence**\n${result.message}\n\n🔧 **Optimization Strategy**: Focus on database indexing and caching for immediate performance gains.`;
+      }
+      return result;
+    } catch (error) {
+      return { error: `Intelligent performance analysis failed: ${error}` };
+    }
+  }
+
+  static async intelligentBackupStrategy(): Promise<any> {
+    try {
+      const result = await this.backupData();
+      if (result.success) {
+        result.message = `💾 **Backup Strategy**\n${result.message}\n\n🛡️ **Data Protection**: Regular backups ensure business continuity. Schedule automated backups for production systems.`;
+      }
+      return result;
+    } catch (error) {
+      return { error: `Intelligent backup strategy failed: ${error}` };
+    }
+  }
+
+  static async intelligentQueryExecution(sqlQuery: string): Promise<any> {
+    try {
+      const result = await this.executeCustomQuery(sqlQuery);
+      if (result.success) {
+        result.message = `🗄️ **Query Analysis**\n${result.message}\n\n⚠️ **Safety Note**: Review query impact before execution. Consider indexing for better performance on large datasets.`;
+      }
+      return result;
+    } catch (error) {
+      return { error: `Intelligent query execution failed: ${error}` };
+    }
+  }
+
+  static async intelligentPatternAnalysis(prompt: string): Promise<any> {
+    try {
+      // Check for learned patterns
+      const similarInteractions = LearningSystem.getSimilarInteractions(prompt);
+      if (similarInteractions.length > 0) {
+        const bestMatch = similarInteractions[0];
+        return {
+          success: true,
+          message: `🧠 **Learning Pattern Match**: Based on similar requests, I suggest: "${bestMatch.systemResponse}"\n\nThis approach worked well in the past. Would you like me to apply this solution?`,
+          learningSuggestion: true
+        };
+      } else {
+        return {
+          success: true,
+          message: `🤔 **New Pattern Detected**: This is a new type of request I haven't seen before. I'm learning from this interaction to improve future responses.\n\nCould you provide more specific details about what you'd like me to help with?`,
+          needsMoreInfo: true
+        };
+      }
+    } catch (error) {
+      return { error: `Pattern analysis failed: ${error}` };
+    }
+  }
+
   static async getDatabaseSchema(): Promise<string> {
     try {
       const result = await db.execute("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position" as any);
