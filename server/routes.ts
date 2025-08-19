@@ -232,8 +232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (AuthService.isUserLockedOut(email)) {
         const remainingTime = AuthService.getRemainingLockoutTime(email);
         return res.status(429).json({ 
-          message: `Account temporarily locked due to multiple failed attempts. Try again in ${remainingTime} minutes.`,
-          lockoutTime: remainingTime
+          message: `Too many login attempts. Please try again in ${remainingTime} minutes for security.`
         });
       }
 
@@ -244,9 +243,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Record failed attempt
         AuthService.recordFailedAttempt(email);
         
+        const isNowLocked = AuthService.isUserLockedOut(email);
         return res.status(401).json({ 
-          message: "Invalid email or password",
-          attempts: AuthService.isUserLockedOut(email) ? "Account locked" : "Invalid credentials"
+          message: isNowLocked 
+            ? "Too many failed attempts. Your account has been temporarily locked for security."
+            : "The email or password you entered is incorrect. Please try again."
         });
       }
 
@@ -287,7 +288,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).json({ message: "Login failed" });
+      res.status(500).json({ message: "Something went wrong. Please try again later." });
+    }
+  });
+
+  // Clear account lockout endpoint (for admin debugging)
+  app.post("/api/auth/clear-lockout", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (email) {
+        AuthService.clearFailedAttempts(email);
+        console.log(`Cleared lockout for: ${email}`);
+        res.json({ message: "Lockout cleared successfully" });
+      } else {
+        res.status(400).json({ message: "Email is required" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to clear lockout" });
     }
   });
 
