@@ -2520,7 +2520,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       allowPublicRegistration: true,
       allowPublicLogin: true,
-      allowGoogleAuth: false,
+      allowGoogleAuth: true, // Enable Google Auth in production
       allowDriverSignup: false,
       enableDemoMode: false,
       environment: process.env.NODE_ENV || 'development'
