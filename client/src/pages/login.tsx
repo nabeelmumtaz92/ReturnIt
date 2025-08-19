@@ -206,17 +206,13 @@ export default function Login() {
   };
 
   const handleAppleAuth = () => {
-    toast({
-      title: "Coming Soon", 
-      description: "Apple sign-in will be available in the next update.",
-    });
+    // Redirect to Apple OAuth endpoint when available
+    window.location.href = '/api/auth/apple';
   };
 
   const handleFacebookAuth = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Facebook sign-in will be available in the next update.",
-    });
+    // Redirect to Facebook OAuth endpoint
+    window.location.href = '/api/auth/facebook';
   };
 
   // Social button component
