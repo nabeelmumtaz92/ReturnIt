@@ -40,14 +40,15 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
       console.log('Creating new Google user:', userEmail);
       
+      const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
       const newUser = await storage.createUser({
         email: userEmail,
-        phone: userEmail === 'nabeelmumtaz92@gmail.com' ? '6362544821' : '', // Admin gets phone number
+        phone: adminEmails.includes(userEmail) ? '6362544821' : '', // Admin gets phone number
         password: 'GOOGLE_AUTH_USER', // Social auth placeholder
         firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
         lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
-        isDriver: userEmail === 'nabeelmumtaz92@gmail.com', // Admin is also driver for testing
-        isAdmin: userEmail === 'nabeelmumtaz92@gmail.com' // Exclusive admin access
+        isDriver: adminEmails.includes(userEmail), // Admins are also drivers for testing
+        isAdmin: adminEmails.includes(userEmail) // Admin access for both emails
       });
       
       console.log('New user created:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });

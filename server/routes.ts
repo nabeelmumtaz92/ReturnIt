@@ -221,7 +221,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { email, password } = validatedData;
       
       // Restrict login to only authorized accounts
-      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
+      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
       if (!authorizedEmails.includes(email)) {
         return res.status(403).json({ 
           message: "Access restricted to authorized accounts only"
