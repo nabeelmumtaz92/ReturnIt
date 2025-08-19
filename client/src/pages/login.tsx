@@ -90,14 +90,19 @@ export default function Login() {
       return response;
     },
     onSuccess: async (data) => {
-      login(data);
+      console.log('Login response data:', data);
+      const user = data.user; // Extract user from response
+      login(user);
       
       // Redirect based on user role
-      if (data.isAdmin) {
+      if (user.isAdmin) {
+        console.log('Redirecting admin user to dashboard');
         setLocation('/admin-dashboard');
-      } else if (data.isDriver) {
+      } else if (user.isDriver) {
+        console.log('Redirecting driver user to portal');
         setLocation('/driver-portal');
       } else {
+        console.log('Redirecting regular user to home');
         setLocation('/');
       }
       
