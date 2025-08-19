@@ -318,6 +318,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Development admin login for testing
+  app.post("/api/auth/dev-admin-login", async (req, res) => {
+    if (process.env.NODE_ENV !== 'development') {
+      return res.status(404).json({ message: "Not found" });
+    }
+    
+    try {
+      // Create admin session for testing
+      const adminUser = {
+        id: 1,
+        email: "nabeelmumtaz92@gmail.com",
+        firstName: "Admin",
+        lastName: "User",
+        isAdmin: true,
+        isDriver: false
+      };
+      
+      req.session.user = adminUser;
+      console.log('Development admin session created for testing');
+      res.json({
+        message: "Admin session created",
+        user: adminUser
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create admin session" });
+    }
+  });
+
   app.post("/api/auth/logout", (req, res) => {
     req.session?.destroy(() => {
       res.json({ message: "Logged out successfully" });
