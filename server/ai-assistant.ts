@@ -1,6 +1,10 @@
 import OpenAI from "openai";
 import fs from "fs/promises";
 import path from "path";
+import { exec } from "child_process";
+import { promisify } from "util";
+import { db } from "./db";
+import { storage } from "./storage";
 
 // Initialize OpenAI (will be configured when API key is available)
 let openai: OpenAI | null = null;
@@ -11,6 +15,8 @@ if (process.env.OPENAI_API_KEY) {
   });
 }
 
+const execAsync = promisify(exec);
+
 interface CodeChange {
   file: string;
   description: string;
@@ -18,9 +24,23 @@ interface CodeChange {
   fullContent?: string;
 }
 
+interface DatabaseQuery {
+  query: string;
+  result: any;
+  description: string;
+}
+
+interface CommandResult {
+  command: string;
+  output: string;
+  description: string;
+}
+
 interface AIResponse {
   message: string;
   codeChanges: CodeChange[];
+  databaseQueries?: DatabaseQuery[];
+  commandResults?: CommandResult[];
   needsConfirmation?: boolean;
 }
 
@@ -35,13 +55,14 @@ CODEBASE STRUCTURE:
 - Theme: Cardboard/shipping theme with amber colors
 
 CURRENT CAPABILITIES:
-- Change themes and colors
-- Toggle maintenance mode
-- Update UI components and layouts  
-- Modify database schemas
-- Add/remove features
-- Update business logic
-- Configure access controls
+- **File System Access**: Read/write any file in the codebase
+- **Database Operations**: Query, modify, and analyze PostgreSQL data
+- **Command Execution**: Run npm scripts, git commands, system operations
+- **Code Analysis**: Search codebase, detect patterns, find dependencies
+- **Real-time Debugging**: Access logs, check server status, monitor performance
+- **Full Stack Changes**: Modify frontend, backend, database, and configurations
+- **Testing & Validation**: Run tests, verify changes, check for errors
+- **Deployment Operations**: Build, deploy, manage environments
 
 SAFETY RULES:
 - Always explain what changes you're making
@@ -71,7 +92,9 @@ export class AIAssistant {
     if (!openai) {
       return {
         message: "OpenAI API key is not configured. Please add OPENAI_API_KEY to environment variables to enable AI assistance.",
-        codeChanges: []
+        codeChanges: [],
+        databaseQueries: [],
+        commandResults: []
       };
     }
 
@@ -111,8 +134,98 @@ export class AIAssistant {
       console.error('AI Assistant error:', error);
       return {
         message: `Error processing request: ${error.message}`,
-        codeChanges: []
+        codeChanges: [],
+        databaseQueries: [],
+        commandResults: []
       };
+    }
+  }
+
+  // Add comprehensive tool capabilities
+  static async executeTools(prompt: string): Promise<any> {
+    const tools = {
+      searchCodebase: this.searchCodebase,
+      readFile: this.readFile,
+      writeFile: this.writeFile,
+      runCommand: this.runCommand,
+      queryDatabase: this.queryDatabase,
+      analyzeProject: this.analyzeProject
+    };
+
+    // Simple tool detection - can be enhanced with OpenAI function calling
+    const results: any = {};
+    
+    if (prompt.includes('search') || prompt.includes('find')) {
+      results.codebaseFiles = await this.analyzeProject();
+    }
+    
+    if (prompt.includes('database') || prompt.includes('SQL')) {
+      results.databaseSchema = await this.getDatabaseSchema();
+    }
+    
+    return results;
+  }
+
+  static async searchCodebase(query: string): Promise<string[]> {
+    try {
+      const { stdout } = await execAsync(`find . -name "*.tsx" -o -name "*.ts" -o -name "*.js" | head -20`);
+      return stdout.split('\n').filter(Boolean);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  static async readFile(filePath: string): Promise<string> {
+    try {
+      return await fs.readFile(filePath, 'utf8');
+    } catch (error) {
+      return `Error reading file: ${error}`;
+    }
+  }
+
+  static async writeFile(filePath: string, content: string): Promise<boolean> {
+    try {
+      await fs.writeFile(filePath, content, 'utf8');
+      return true;
+    } catch (error) {
+      console.error(`Error writing file ${filePath}:`, error);
+      return false;
+    }
+  }
+
+  static async runCommand(command: string): Promise<string> {
+    try {
+      const { stdout, stderr } = await execAsync(command);
+      return stdout || stderr;
+    } catch (error: any) {
+      return `Command failed: ${error.message}`;
+    }
+  }
+
+  static async queryDatabase(sql: string): Promise<any> {
+    try {
+      const result = await db.execute(sql as any);
+      return result;
+    } catch (error) {
+      return { error: `Database query failed: ${error}` };
+    }
+  }
+
+  static async getDatabaseSchema(): Promise<string> {
+    try {
+      const result = await db.execute("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position" as any);
+      return JSON.stringify(result, null, 2);
+    } catch (error) {
+      return `Schema query failed: ${error}`;
+    }
+  }
+
+  static async analyzeProject(): Promise<string> {
+    try {
+      const { stdout } = await execAsync(`find . -type f -name "*.ts" -o -name "*.tsx" -o -name "*.js" | grep -v node_modules | head -30`);
+      return `Project files:\n${stdout}`;
+    } catch (error) {
+      return 'Project analysis failed';
     }
   }
 

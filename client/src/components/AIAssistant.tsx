@@ -21,6 +21,16 @@ interface AIMessage {
     description: string;
     preview: string;
   }[];
+  databaseQueries?: {
+    query: string;
+    result: any;
+    description: string;
+  }[];
+  commandResults?: {
+    command: string;
+    output: string;
+    description: string;
+  }[];
 }
 
 interface AIAssistantProps {
@@ -33,7 +43,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     {
       id: '1',
       type: 'assistant',
-      content: 'Hello! I can help you make changes to your ReturnIt platform. Try commands like:\n\n• "Change the theme to dark mode"\n• "Make the website offline for maintenance"\n• "Add a new status filter for drivers"\n• "Update the booking form layout"\n\nWhat would you like me to help with?',
+      content: 'Hello! I\'m your enhanced AI development assistant with full access to your ReturnIt codebase. I can:\n\n🔧 **Development Tools**\n• Search and analyze your entire codebase\n• Read/write any file in your project\n• Run terminal commands and scripts\n• Query and modify your PostgreSQL database\n\n💻 **Code Operations**\n• "Change the theme to dark mode"\n• "Add a new feature for driver ratings"\n• "Fix the login authentication issue"\n• "Update the database schema for orders"\n• "Deploy the latest changes"\n• "Run tests and check for errors"\n\n📊 **Analysis & Debugging**\n• "Analyze the performance bottlenecks"\n• "Check for security vulnerabilities"\n• "Review the recent error logs"\n• "Show me the database statistics"\n\nWhat would you like me to help you build or fix?',
       timestamp: new Date()
     }
   ]);
@@ -45,20 +55,34 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     mutationFn: async (prompt: string) => {
       return apiRequest('/api/ai/assistant', 'POST', { prompt });
     },
-    onSuccess: (response) => {
+    onSuccess: (data: any) => {
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
         type: 'assistant',
-        content: response.message,
+        content: data.message,
         timestamp: new Date(),
         status: 'completed',
-        codeChanges: response.codeChanges
+        codeChanges: data.codeChanges
       }]);
       
-      if (response.codeChanges?.length > 0) {
+      if (data.codeChanges?.length > 0) {
         toast({
           title: "Changes Applied",
-          description: `Updated ${response.codeChanges.length} file(s) successfully`,
+          description: `Updated ${data.codeChanges.length} file(s) successfully`,
+        });
+      }
+      
+      if (data.databaseQueries?.length > 0) {
+        toast({
+          title: "Database Operations",
+          description: `Executed ${data.databaseQueries.length} database query(s)`,
+        });
+      }
+      
+      if (data.commandResults?.length > 0) {
+        toast({
+          title: "Commands Executed",
+          description: `Ran ${data.commandResults.length} system command(s)`,
         });
       }
     },
