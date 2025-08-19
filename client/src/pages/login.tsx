@@ -44,7 +44,7 @@ export default function Login() {
     }
   }, []);
 
-  // Login form state
+  // Login form state - no pre-filled values
   const [loginData, setLoginData] = useState<LoginData>({
     email: '',
     password: ''
@@ -92,9 +92,11 @@ export default function Login() {
     onSuccess: async (data) => {
       login(data);
       
-      // Check if user is admin and redirect accordingly
-      if (data.email === 'nabeelmumtaz92@gmail.com') {
-        setLocation('/admin');
+      // Redirect based on user role
+      if (data.isAdmin) {
+        setLocation('/admin-dashboard');
+      } else if (data.isDriver) {
+        setLocation('/driver-portal');
       } else {
         setLocation('/');
       }
@@ -199,10 +201,8 @@ export default function Login() {
 
   // Social authentication handlers
   const handleGoogleAuth = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Google sign-in will be available in the next update.",
-    });
+    // Redirect to actual Google OAuth endpoint
+    window.location.href = '/api/auth/google';
   };
 
   const handleAppleAuth = () => {
@@ -269,12 +269,12 @@ export default function Login() {
           <p className="text-white/90">Returns made easy</p>
         </div>
 
-        {/* Admin Login Only */}
+        {/* Sign In Form */}
         <Card className="bg-white border-amber-200 shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-amber-900">Admin Sign In</CardTitle>
+            <CardTitle className="text-amber-900">Sign In</CardTitle>
             <CardDescription className="text-amber-700">
-              Admin access only
+              Access your ReturnIt account
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleLogin}>

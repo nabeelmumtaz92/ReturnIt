@@ -1865,8 +1865,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
 
-        {/* AI Assistant - Available only for master admin */}
-        {user?.email === 'nabeelmumtaz92@gmail.com' && (
+        {/* AI Assistant - Available for admin users */}
+        {user?.isAdmin && (
           <AIAssistant 
             isMinimized={!showAIAssistant}
             onClose={() => setShowAIAssistant(!showAIAssistant)}

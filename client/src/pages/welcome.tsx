@@ -71,7 +71,7 @@ export default function Welcome() {
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               {isAuthenticated ? (
                 <>
-                  {user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? (
+                  {user?.isAdmin ? (
                     <Link href="/admin-dashboard">
                       <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
                         <User className="h-4 w-4 mr-2" />

@@ -131,8 +131,8 @@ function Router() {
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking">
         {() => {
-          // Admin only access
-          if (!user?.isAdmin || user?.email !== "nabeelmumtaz92@gmail.com") {
+          // Admin access required
+          if (!user?.isAdmin) {
             return <NotFound />;
           }
           return <AdminPaymentTracking />;

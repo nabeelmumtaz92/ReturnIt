@@ -113,7 +113,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
   const quickActions = [
     { label: 'Dark Mode', prompt: 'Change the website theme to dark mode' },
     { label: 'Maintenance Mode', prompt: 'Put the website in maintenance mode with a message' },
-    { label: 'Admin Only', prompt: 'Hide all public features, make it admin-only access' },
+    { label: 'Secure Mode', prompt: 'Enable secure mode with enhanced authentication' },
     { label: 'Light Theme', prompt: 'Change back to light theme' }
   ];
 
