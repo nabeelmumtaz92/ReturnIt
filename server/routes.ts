@@ -2675,19 +2675,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const OpenAI = (await import('openai')).default;
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-          const systemPrompt = `You are an AI assistant helping developers work on ReturnIt, a delivery/pickup platform. 
+          const systemPrompt = `You are an AI assistant with full administrative access to ReturnIt, a delivery/pickup platform.
 
-Key project details:
-- React + TypeScript frontend with Shadcn/UI components
-- Express + Node.js backend with PostgreSQL database
-- Drizzle ORM for database operations
-- Authentication with Google OAuth and sessions
-- Stripe for payments, driver management system
-- Currently production-ready on returnit.online
+PROJECT CAPABILITIES:
+- Frontend: React + TypeScript with Shadcn/UI components  
+- Backend: Express + Node.js with PostgreSQL database
+- Database: Full read/write access with Drizzle ORM
+- Authentication: Google OAuth and session management
+- Payments: Stripe integration for transactions
+- Production: Live on returnit.online
 
-Respond conversationally and naturally, like a helpful coding partner. Be specific about what you'd implement and keep responses engaging but professional. Always acknowledge their request and explain your approach clearly.
+ADMINISTRATIVE FUNCTIONS YOU CAN PERFORM:
+- User Management: Create, update, delete, and list users
+- Order Management: Update status, delete orders, track deliveries  
+- Database Operations: Run any SQL queries and modifications
+- Code Changes: Modify frontend and backend files
+- System Commands: Execute npm scripts, deployments, diagnostics
 
-Include realistic code changes and command results in your response when relevant.`;
+EXAMPLE COMMANDS:
+- "Delete user john@example.com" → Remove user and all data
+- "List all users" → Show recent users from database
+- "Update order 123 status to delivered" → Change order status
+- "Create user with email test@example.com" → Add new user
+- "Show me all pending orders" → Query orders table
+
+Always explain what you're doing and confirm potentially destructive operations. Be conversational but professional in your responses.`;
 
           const completion = await openai.chat.completions.create({
             model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
@@ -2699,26 +2711,74 @@ Include realistic code changes and command results in your response when relevan
             temperature: 0.7
           });
 
-          const aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
-
-          // Generate realistic code changes and command results
-          const codeChanges = [
-            { file: "client/src/components/AdminDashboard.tsx", description: "Enhanced dashboard functionality" },
-            { file: "server/routes.ts", description: "Added new API endpoints" }
-          ];
-
-          const commandResults = [
-            { command: "npm run build", output: "✓ Build successful - all checks passed" },
-            { command: "npm run test", output: "✓ All tests passing" }
-          ];
+          let aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
+          
+          // Process administrative commands
+          let adminResults = null;
+          let codeChanges = [];
+          let commandResults = [];
+          let databaseQueries = [];
+          
+          const lowerPrompt = prompt.toLowerCase();
+          
+          // Check for user management commands
+          if (lowerPrompt.includes('delete user')) {
+            const emailMatch = prompt.match(/delete user ([^\s]+)/i);
+            if (emailMatch) {
+              const userIdentifier = emailMatch[1];
+              const { AIAssistant } = await import('./ai-assistant');
+              adminResults = await AIAssistant.deleteUser(userIdentifier);
+              
+              if (adminResults.success) {
+                aiResponse += `\n\n✅ **User Deleted Successfully**\n${adminResults.message}`;
+                databaseQueries.push({
+                  query: `DELETE FROM users WHERE email = '${userIdentifier}'`,
+                  description: "Removed user and associated data"
+                });
+              } else {
+                aiResponse += `\n\n❌ **Error**: ${adminResults.error}`;
+              }
+            }
+          }
+          
+          // Check for list users command
+          if (lowerPrompt.includes('list users') || lowerPrompt.includes('show users')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            adminResults = await AIAssistant.listUsers(10);
+            
+            if (adminResults.success) {
+              aiResponse += `\n\n📋 **Current Users**\n${adminResults.message}`;
+              databaseQueries.push({
+                query: "SELECT * FROM users ORDER BY created_at DESC LIMIT 10",
+                description: "Retrieved user list from database"
+              });
+            }
+          }
+          
+          // Check for order management commands
+          if (lowerPrompt.includes('update order') && lowerPrompt.includes('status')) {
+            const orderMatch = prompt.match(/update order (\d+) status to (\w+)/i);
+            if (orderMatch) {
+              const orderId = orderMatch[1];
+              const status = orderMatch[2];
+              const { AIAssistant } = await import('./ai-assistant');
+              adminResults = await AIAssistant.updateOrderStatus(orderId, status);
+              
+              if (adminResults.success) {
+                aiResponse += `\n\n📦 **Order Updated**\n${adminResults.message}`;
+                databaseQueries.push({
+                  query: `UPDATE orders SET status = '${status}' WHERE id = ${orderId}`,
+                  description: "Updated order status in database"
+                });
+              }
+            }
+          }
 
           res.json({
             message: aiResponse,
             codeChanges,
             commandResults,
-            databaseQueries: [
-              { query: "SELECT COUNT(*) FROM orders WHERE status = 'active'", rows: 1 }
-            ]
+            databaseQueries
           });
 
         } catch (openaiError) {

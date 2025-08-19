@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Send, Code, Zap, AlertTriangle, CheckCircle, Clock, X } from "lucide-react";
+import { Bot, Send, Code, Zap, AlertTriangle, CheckCircle, Clock, X, Database } from "lucide-react";
 
 interface AIMessage {
   id: string;
@@ -43,7 +43,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi there! I\'m your AI development assistant for the ReturnIt platform. I have full access to your codebase and can help you with:\n\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Database operations and optimizations\n• Code analysis and improvements\n• Running commands and deployments\n\nJust tell me what you\'d like to work on in plain English. For example:\n• "Add a dark mode toggle"\n• "Fix the authentication bug"\n• "Create a new admin dashboard widget"\n• "Optimize the database queries"\n\nWhat would you like me to help you with today?',
+      content: 'Hi! I\'m your AI assistant with full administrative access to the ReturnIt platform. I can help you with:\n\n🔧 **Development Tasks**\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Code analysis and improvements\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Run database queries and optimizations\n\n📊 **Administrative Operations**\n• List users, orders, and system data\n• Deploy changes and run diagnostics\n• Monitor performance and analytics\n\nJust tell me what you need in plain English:\n• "Delete user john@example.com"\n• "List all pending orders"\n• "Add a dark mode feature"\n• "Show me database statistics"\n\nWhat would you like me to help you with?',
       timestamp: new Date(),
       status: 'completed'
     }
@@ -142,10 +142,10 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
   };
 
   const quickActions = [
+    { label: 'List Users', prompt: 'Show me all users in the database' },
+    { label: 'Show Orders', prompt: 'List all pending orders' },
     { label: 'Add Dark Mode', prompt: 'Add a dark mode toggle to the website' },
-    { label: 'Fix Bugs', prompt: 'Check for and fix any bugs in the application' },
-    { label: 'Optimize Performance', prompt: 'Analyze and optimize the website performance' },
-    { label: 'Add Feature', prompt: 'Help me add a new feature to the ReturnIt platform' }
+    { label: 'Optimize Database', prompt: 'Analyze and optimize database performance' }
   ];
 
   if (isMinimized) {

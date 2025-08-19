@@ -57,12 +57,15 @@ CODEBASE STRUCTURE:
 CURRENT CAPABILITIES:
 - **File System Access**: Read/write any file in the codebase
 - **Database Operations**: Query, modify, and analyze PostgreSQL data
+- **User Management**: Create, update, delete, and list users
+- **Order Management**: Update order status, delete orders, track deliveries
 - **Command Execution**: Run npm scripts, git commands, system operations
 - **Code Analysis**: Search codebase, detect patterns, find dependencies
 - **Real-time Debugging**: Access logs, check server status, monitor performance
 - **Full Stack Changes**: Modify frontend, backend, database, and configurations
 - **Testing & Validation**: Run tests, verify changes, check for errors
 - **Deployment Operations**: Build, deploy, manage environments
+- **Administrative Tasks**: Manage users, orders, drivers, payments, and platform settings
 
 SAFETY RULES:
 - Always explain what changes you're making
@@ -83,6 +86,11 @@ COMMON REQUESTS:
 - "Admin only" -> Hide public features, restrict access
 - "Update colors" -> Modify theme colors in tailwind.config and CSS
 - "Add feature" -> Create new components and routes
+- "Delete user [email/id]" -> Remove user and all associated data from database
+- "List users" -> Show recent users from database
+- "Create user [email]" -> Add new user to the system
+- "Update order status [id] to [status]" -> Change order status in database
+- "Delete order [id]" -> Remove order from system
 
 Remember: You're making real changes to a live platform. Be thorough and safe.`;
 
@@ -208,6 +216,128 @@ export class AIAssistant {
       return result;
     } catch (error) {
       return { error: `Database query failed: ${error}` };
+    }
+  }
+
+  // Enhanced administrative functions
+  static async deleteUser(userIdOrEmail: string): Promise<any> {
+    try {
+      const { storage } = await import('./storage');
+      
+      // Find user by ID or email
+      let user;
+      if (userIdOrEmail.includes('@')) {
+        user = await storage.getUserByEmail(userIdOrEmail);
+      } else {
+        user = await storage.getUser(parseInt(userIdOrEmail));
+      }
+      
+      if (!user) {
+        return { error: 'User not found' };
+      }
+      
+      // Delete user's orders first (cascade)
+      await db.execute(`DELETE FROM orders WHERE user_id = ${user.id}` as any);
+      
+      // Delete user's notifications
+      await db.execute(`DELETE FROM notifications WHERE user_id = ${user.id}` as any);
+      
+      // Delete the user
+      await db.execute(`DELETE FROM users WHERE id = ${user.id}` as any);
+      
+      return { 
+        success: true, 
+        message: `User ${user.email} (ID: ${user.id}) has been successfully deleted along with all associated data.`,
+        deletedUser: { id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName }
+      };
+    } catch (error) {
+      return { error: `Failed to delete user: ${error}` };
+    }
+  }
+
+  static async createUser(userData: any): Promise<any> {
+    try {
+      const { storage } = await import('./storage');
+      const bcrypt = await import('bcrypt');
+      
+      // Hash password if provided
+      if (userData.password) {
+        userData.password = await bcrypt.hash(userData.password, 10);
+      }
+      
+      const newUser = await storage.createUser(userData);
+      return { 
+        success: true, 
+        message: `User ${newUser.email} has been created successfully.`,
+        user: newUser 
+      };
+    } catch (error) {
+      return { error: `Failed to create user: ${error}` };
+    }
+  }
+
+  static async updateUser(userIdOrEmail: string, updates: any): Promise<any> {
+    try {
+      const { storage } = await import('./storage');
+      
+      // Find user
+      let user;
+      if (userIdOrEmail.includes('@')) {
+        user = await storage.getUserByEmail(userIdOrEmail);
+      } else {
+        user = await storage.getUser(parseInt(userIdOrEmail));
+      }
+      
+      if (!user) {
+        return { error: 'User not found' };
+      }
+      
+      // Update user
+      const updatedUser = await storage.updateUser(user.id, updates);
+      return { 
+        success: true, 
+        message: `User ${user.email} has been updated successfully.`,
+        user: updatedUser 
+      };
+    } catch (error) {
+      return { error: `Failed to update user: ${error}` };
+    }
+  }
+
+  static async listUsers(limit: number = 10): Promise<any> {
+    try {
+      const result = await db.execute(`SELECT id, email, first_name, last_name, phone, is_admin, is_driver, created_at FROM users ORDER BY created_at DESC LIMIT ${limit}` as any);
+      return { 
+        success: true, 
+        users: result,
+        message: `Retrieved ${Array.isArray(result) ? result.length : 0} users from the database.`
+      };
+    } catch (error) {
+      return { error: `Failed to list users: ${error}` };
+    }
+  }
+
+  static async deleteOrder(orderId: string): Promise<any> {
+    try {
+      const result = await db.execute(`DELETE FROM orders WHERE id = ${orderId}` as any);
+      return { 
+        success: true, 
+        message: `Order ${orderId} has been deleted successfully.`
+      };
+    } catch (error) {
+      return { error: `Failed to delete order: ${error}` };
+    }
+  }
+
+  static async updateOrderStatus(orderId: string, status: string): Promise<any> {
+    try {
+      const result = await db.execute(`UPDATE orders SET status = '${status}' WHERE id = ${orderId}` as any);
+      return { 
+        success: true, 
+        message: `Order ${orderId} status updated to ${status}.`
+      };
+    } catch (error) {
+      return { error: `Failed to update order status: ${error}` };
     }
   }
 
