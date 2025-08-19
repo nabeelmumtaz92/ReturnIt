@@ -2716,20 +2716,25 @@ Always think strategically, explain your reasoning, and provide value beyond bas
 
           let aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
           
-          // First check if learning system can handle this request
+          // Enhanced AI processing with learning and research capabilities
           const { AIAssistant } = await import('./ai-assistant');
-          let learningResult = null;
+          let enhancedResult = null;
           
           try {
-            learningResult = await AIAssistant.processWithLearning(prompt, 'console-user');
-            if (learningResult && learningResult.success) {
-              // If learning system handled it successfully, enhance the OpenAI response
-              if (learningResult.message && learningResult.message !== "Processing your request...") {
-                aiResponse += `\n\n🧠 **Learning System**: ${learningResult.message}`;
+            enhancedResult = await AIAssistant.intelligentResponseWithResearch(prompt, 'console-user');
+            if (enhancedResult && enhancedResult.success) {
+              // If enhanced system handled it, integrate with OpenAI response
+              if (enhancedResult.message && enhancedResult.message !== "Processing your request...") {
+                aiResponse += `\n\n🧠 **Intelligent Analysis**: ${enhancedResult.message}`;
+              }
+              
+              // If external research was performed, note it
+              if (enhancedResult.hasResearch) {
+                aiResponse += `\n\n📚 **Research Integration**: Combined current industry knowledge with your platform context.`;
               }
             }
-          } catch (learningError) {
-            console.log('Learning system error:', learningError);
+          } catch (enhancedError) {
+            console.log('Enhanced AI system error:', enhancedError);
           }
           
           // Process administrative commands

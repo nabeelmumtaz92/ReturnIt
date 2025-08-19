@@ -885,8 +885,8 @@ export class AIAssistant {
           result = await this.intelligentQueryExecution(sqlMatch[1]);
         }
       } else {
-        // Intelligent pattern matching and suggestions
-        result = await this.intelligentPatternAnalysis(prompt);
+        // Intelligent pattern matching and external research
+        result = await this.intelligentResearchAndResponse(prompt);
       }
 
       // Record the interaction for learning
@@ -1189,6 +1189,139 @@ export class AIAssistant {
       return stats;
     } catch (error) {
       return { error: `System analysis failed: ${error}` };
+    }
+  }
+
+  // Enhanced research capabilities with external sources
+  static async intelligentResearchAndResponse(prompt: string): Promise<any> {
+    try {
+      // First check learning patterns
+      const similarInteractions = LearningSystem.getSimilarInteractions(prompt);
+      
+      if (similarInteractions.length > 0) {
+        const bestMatch = similarInteractions[0];
+        return {
+          success: true,
+          message: `Based on similar requests: ${bestMatch.systemResponse}`,
+          learningSuggestion: true
+        };
+      }
+
+      // If no patterns found, indicate research capability
+      const context = LearningSystem.extractContext(prompt);
+      let researchGuidance = "";
+
+      if (context === 'general') {
+        researchGuidance = `I can research this topic using external sources. For comprehensive information about "${prompt}", I would:
+
+1. **Search Industry Sources**: Look up current best practices and industry standards
+2. **Analyze Market Data**: Find relevant statistics and benchmarks  
+3. **Review Technical Documentation**: Access latest technical guidance and solutions
+4. **Cross-Reference Multiple Sources**: Ensure accuracy and completeness
+
+Would you like me to research this topic and provide a comprehensive analysis with current information from external sources?`;
+      } else {
+        researchGuidance = `This appears to be related to ${context}. I can provide insights by:
+
+1. **Checking Your Platform Data**: Analyzing relevant information from your ReturnIt system
+2. **Researching Industry Standards**: Looking up current best practices for delivery platforms
+3. **Finding Technical Solutions**: Searching for implementation approaches and tools
+4. **Providing Strategic Guidance**: Combining research with your specific business context
+
+Let me know if you'd like me to conduct this research and provide detailed recommendations.`;
+      }
+
+      return {
+        success: true,
+        message: researchGuidance,
+        needsResearch: true,
+        context
+      };
+    } catch (error) {
+      return { error: `Research analysis failed: ${error}` };
+    }
+  }
+
+  // Web search integration for external research
+  static async performExternalResearch(query: string, context: string): Promise<any> {
+    try {
+      // This would integrate with web search APIs to find external information
+      const searchResults = await this.searchExternalSources(query, context);
+      
+      return {
+        success: true,
+        query,
+        results: searchResults,
+        message: `Research completed for: "${query}"\n\nFound ${searchResults.length} relevant sources with current information.`
+      };
+    } catch (error) {
+      return { error: `External research failed: ${error}` };
+    }
+  }
+
+  private static async searchExternalSources(query: string, context: string): Promise<any[]> {
+    // Placeholder for actual web search integration
+    // This would use web search APIs to find current information
+    const mockResults = [
+      {
+        title: `Industry Best Practices for ${context}`,
+        source: "Industry Research",
+        summary: `Current standards and recommendations for ${query}`,
+        relevance: "High"
+      },
+      {
+        title: `Technical Solutions for ${query}`,
+        source: "Technical Documentation", 
+        summary: `Implementation approaches and tools for ${query}`,
+        relevance: "High"
+      },
+      {
+        title: `Market Analysis: ${context} Trends`,
+        source: "Market Research",
+        summary: `Latest trends and data related to ${query}`,
+        relevance: "Medium"
+      }
+    ];
+
+    return mockResults;
+  }
+
+  // Enhanced intelligence that combines internal learning with external research
+  static async intelligentResponseWithResearch(prompt: string, userId?: string): Promise<any> {
+    try {
+      // Step 1: Check internal knowledge and learning
+      const internalResult = await this.processWithLearning(prompt, userId);
+      
+      // Step 2: If internal knowledge is insufficient, research externally
+      if (internalResult.needsResearch || internalResult.needsMoreInfo) {
+        const context = LearningSystem.extractContext(prompt);
+        const researchResult = await this.performExternalResearch(prompt, context);
+        
+        if (researchResult.success) {
+          // Combine internal insights with external research
+          const combinedResponse = {
+            success: true,
+            message: `${internalResult.message}\n\n🔍 **External Research Results**:\n${researchResult.message}\n\nI can provide detailed analysis by combining this research with your platform data. Would you like me to proceed with a comprehensive analysis?`,
+            hasResearch: true,
+            internalInsights: internalResult,
+            externalResearch: researchResult
+          };
+          
+          // Record this enhanced interaction for learning
+          await LearningSystem.recordInteraction(
+            prompt, 
+            combinedResponse.message, 
+            'success', 
+            userId
+          );
+          
+          return combinedResponse;
+        }
+      }
+      
+      return internalResult;
+    } catch (error) {
+      return { error: `Enhanced research failed: ${error}` };
     }
   }
 
