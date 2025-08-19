@@ -33,7 +33,7 @@ export default function DriverTutorial() {
         <div className="space-y-4">
           <div className="text-center">
             <img 
-              src="/logo-cardboard-deep.png" 
+              src="/returnit-logo.png" 
               alt="ReturnIt Logo" 
               className="h-16 w-auto mx-auto mb-4"
             />

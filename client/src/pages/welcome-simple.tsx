@@ -9,7 +9,7 @@ export default function WelcomeSimple() {
     <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100">
       <div className="container mx-auto px-4 py-16 text-center">
         <img 
-          src="/logo-cardboard-deep.png" 
+          src="/returnit-logo.png" 
           alt="ReturnIt Logo" 
           className="h-20 w-auto mx-auto mb-8"
         />

@@ -11,8 +11,8 @@ export default function NotFound() {
         <div className="text-center">
           <Link href="/">
             <img 
-              src="/logo-cardboard-deep.png" 
-              alt="Returnly Logo" 
+              src="/returnit-logo.png" 
+              alt="ReturnIt Logo" 
               className="h-12 w-auto mx-auto cursor-pointer hover:opacity-80 transition-opacity"
             />
           </Link>

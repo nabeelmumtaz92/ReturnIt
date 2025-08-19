@@ -56,8 +56,8 @@ export default function About() {
               </Button>
               <Link href="/">
                 <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
+                  src="/returnit-logo.png" 
+                  alt="ReturnIt Logo" 
                   className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
                 />
               </Link>
@@ -86,8 +86,8 @@ export default function About() {
             <div className="text-center lg:text-left">
               <div className="mb-8 flex justify-center lg:justify-start">
                 <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
+                  src="/returnit-logo.png" 
+                  alt="ReturnIt Logo" 
                   className="h-20 w-auto logo-enhanced"
                   data-testid="img-logo"
                 />
