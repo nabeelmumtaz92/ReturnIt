@@ -15,9 +15,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production' 
-      ? 'https://returnit.online/api/auth/google/callback'
-      : 'https://returnly.tech/api/auth/google/callback'
+    callbackURL: 'http://localhost:5000/api/auth/google/callback'
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     console.log('Google OAuth strategy callback triggered');
     console.log('Profile data:', {
