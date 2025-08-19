@@ -2,6 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { AIAssistant } from "./ai-assistant";
 import Stripe from "stripe";
 import session from "express-session";
 import passport from "./auth/strategies";
@@ -2587,6 +2588,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/performance/clear-cache", isAuthenticated, (req, res) => {
     PerformanceService.clearCache();
     res.json({ message: "Cache cleared successfully" });
+  });
+
+  // AI Assistant API endpoint (admin only)
+  app.post("/api/ai/assistant", requireAdmin, async (req, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      if (!prompt || typeof prompt !== 'string') {
+        return res.status(400).json({ error: 'Prompt is required' });
+      }
+
+      const response = await AIAssistant.processRequest(prompt);
+      res.json(response);
+    } catch (error: any) {
+      console.error("AI Assistant error:", error);
+      res.status(500).json({ error: error.message || "AI processing failed" });
+    }
+  });
+
+  // Quick AI actions (admin only)
+  app.post("/api/ai/maintenance-mode", requireAdmin, async (req, res) => {
+    try {
+      const response = await AIAssistant.enableMaintenanceMode();
+      res.json(response);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/ai/dark-mode", requireAdmin, async (req, res) => {
+    try {
+      const response = await AIAssistant.setDarkMode();
+      res.json(response);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   });
 
   const httpServer = createServer(app);

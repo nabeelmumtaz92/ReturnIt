@@ -64,6 +64,7 @@ import { ReturnItLogo } from '@/components/LogoIcon';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import { AdminContent } from "@/components/AdminContent";
+import AIAssistant from "@/components/AIAssistant";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -115,6 +116,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [driverStatusFilter, setDriverStatusFilter] = useState<string>('all');
   const [showSupportChat, setShowSupportChat] = useState(false);
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
   
   // Enhanced completed orders state
@@ -1862,6 +1864,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <ContactSupportButton 
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
+
+        {/* AI Assistant - Available only for master admin */}
+        {user?.email === 'nabeelmumtaz92@gmail.com' && (
+          <AIAssistant 
+            isMinimized={!showAIAssistant}
+            onClose={() => setShowAIAssistant(!showAIAssistant)}
+          />
+        )}
       </div>
     </AdminLayout>
   );
