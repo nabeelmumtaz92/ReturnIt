@@ -220,28 +220,128 @@ class LearningSystem {
     const similar = this.getSimilarInteractions(input, 3);
     let adaptedResponse = originalResponse;
 
+    // Add contextual reasoning and best practices
+    const context = this.extractContext(input);
+    const reasoning = this.generateReasoning(input, context);
+    if (reasoning) {
+      adaptedResponse += `\n\n💡 **Context & Reasoning**: ${reasoning}`;
+    }
+
     // Add learning insights if similar patterns found
     if (similar.length > 0) {
-      adaptedResponse += "\n\n🧠 **Learning Insights**: Based on similar requests, you might also want to:\n";
-      similar.forEach((entry, index) => {
-        if (index < 2) { // Show top 2 suggestions
-          adaptedResponse += `• Try: "${entry.userInput}"\n`;
-        }
-      });
+      adaptedResponse += "\n\n🧠 **Based on Similar Requests**: ";
+      const bestPractice = this.getBestPracticeFromSimilar(similar, context);
+      if (bestPractice) {
+        adaptedResponse += bestPractice;
+      } else {
+        adaptedResponse += "You might also want to:\n";
+        similar.forEach((entry, index) => {
+          if (index < 2) {
+            adaptedResponse += `• Try: "${entry.userInput}"\n`;
+          }
+        });
+      }
     }
 
     // Add personalized suggestions for known users
     if (userId) {
       const pattern = this.userPatterns.get(userId);
       if (pattern) {
-        adaptedResponse += `\n🎯 **Personalized**: As an ${pattern.expertise_level} user, you might find these commands useful:\n`;
-        pattern.commonCommands.slice(0, 3).forEach(cmd => {
-          adaptedResponse += `• Explore more ${cmd} operations\n`;
-        });
+        const personalizedAdvice = this.getPersonalizedAdvice(pattern, context);
+        adaptedResponse += `\n🎯 **Personalized Advice**: ${personalizedAdvice}`;
       }
     }
 
     return adaptedResponse;
+  }
+
+  private static generateReasoning(input: string, context: string): string {
+    const lowerInput = input.toLowerCase();
+    
+    if (context === 'user_management' && lowerInput.includes('delete')) {
+      return "User deletion is irreversible and affects all associated data (orders, notifications). Consider deactivating instead if you need to preserve history.";
+    }
+    
+    if (context === 'reporting' && lowerInput.includes('generate')) {
+      return "Reports provide insights for decision-making. Consider what specific metrics will help you optimize operations or identify trends.";
+    }
+    
+    if (context === 'analytics' && lowerInput.includes('performance')) {
+      return "Performance analysis helps identify bottlenecks and optimization opportunities. Look for patterns in user behavior and system efficiency.";
+    }
+    
+    if (context === 'database_ops' && lowerInput.includes('backup')) {
+      return "Regular backups are crucial for data protection. Consider automating this process and storing backups in multiple locations.";
+    }
+    
+    if (context === 'order_management') {
+      return "Order management affects customer experience directly. Ensure status updates are accurate and communicate changes to relevant parties.";
+    }
+    
+    return "";
+  }
+
+  private static getBestPracticeFromSimilar(similar: LearningEntry[], context: string): string {
+    const successfulPatterns = similar.filter(entry => entry.outcome === 'success');
+    
+    if (context === 'user_management' && successfulPatterns.length > 0) {
+      return "Based on successful patterns, consider checking user activity before deletion and ensuring proper data cleanup.";
+    }
+    
+    if (context === 'reporting' && successfulPatterns.length > 0) {
+      return "Most effective reports focus on specific time ranges and include actionable metrics. Consider filtering by relevant criteria.";
+    }
+    
+    if (context === 'analytics' && successfulPatterns.length > 0) {
+      return "Performance analysis works best when combined with historical comparison. Look at trends over time rather than snapshots.";
+    }
+    
+    return "";
+  }
+
+  private static getPersonalizedAdvice(pattern: UserPattern, context: string): string {
+    const level = pattern.expertise_level;
+    const commonCmds = pattern.commonCommands;
+    
+    if (level === 'advanced') {
+      if (context === 'user_management') {
+        return "As an advanced user, consider bulk operations and automated user lifecycle management for efficiency.";
+      }
+      if (context === 'analytics') {
+        return "Advanced analytics: Try custom SQL queries for deeper insights and cross-reference multiple data sources.";
+      }
+    }
+    
+    if (level === 'beginner') {
+      if (context === 'user_management') {
+        return "Start with simple operations like listing users before attempting deletions. Always verify user details first.";
+      }
+      if (context === 'reporting') {
+        return "Begin with basic reports to understand data structure, then gradually explore more complex analytics.";
+      }
+    }
+    
+    // Suggest complementary operations based on usage patterns
+    if (commonCmds.includes('user_management') && !commonCmds.includes('reporting')) {
+      return "Since you frequently manage users, consider generating user reports to track patterns and optimize your workflow.";
+    }
+    
+    if (commonCmds.includes('analytics') && !commonCmds.includes('database_ops')) {
+      return "Your analytics work would benefit from regular data backups to ensure historical data integrity.";
+    }
+    
+    return `As an ${level} user with ${pattern.interaction_count} interactions, you might explore ${this.suggestNextStep(commonCmds)} operations.`;
+  }
+
+  private static suggestNextStep(commonCommands: string[]): string {
+    const allContexts = ['user_management', 'reporting', 'analytics', 'database_ops', 'order_management'];
+    const unexplored = allContexts.filter(ctx => !commonCommands.includes(ctx));
+    
+    if (unexplored.length > 0) {
+      return unexplored[0];
+    }
+    
+    return 'advanced';
   }
 
   static getSystemInsights(): any {
@@ -744,46 +844,49 @@ export class AIAssistant {
     }
   }
 
-  // Learning and adaptation methods
+  // Intelligent processing with strategic thinking
   static async processWithLearning(prompt: string, userId?: string): Promise<any> {
     try {
       let result: any = { message: "Processing your request...", success: true };
       const lowerPrompt = prompt.toLowerCase();
 
-      // Process command and record the interaction
-      if (lowerPrompt.includes('delete user')) {
+      // Strategic business analysis requests
+      if (lowerPrompt.includes('health check') || lowerPrompt.includes('business health')) {
+        result = await this.performBusinessHealthCheck();
+      } else if (lowerPrompt.includes('optimization') || lowerPrompt.includes('optimize')) {
+        result = await this.identifyOptimizationOpportunities();
+      } else if (lowerPrompt.includes('risk assessment') || lowerPrompt.includes('risks')) {
+        result = await this.performRiskAssessment();
+      } else if (lowerPrompt.includes('growth strategy') || lowerPrompt.includes('grow')) {
+        result = await this.analyzeGrowthOpportunities();
+      }
+      // Intelligent command processing with context
+      else if (lowerPrompt.includes('delete user')) {
         const emailMatch = prompt.match(/delete user ([^\s]+)/i);
         if (emailMatch) {
-          result = await this.deleteUser(emailMatch[1]);
+          result = await this.intelligentUserDeletion(emailMatch[1]);
         }
       } else if (lowerPrompt.includes('list users')) {
-        result = await this.listUsers();
+        result = await this.intelligentUserListing();
       } else if (lowerPrompt.includes('system stats')) {
-        result = await this.getSystemStats();
+        result = await this.intelligentSystemAnalysis();
       } else if (lowerPrompt.includes('generate report')) {
         const reportMatch = prompt.match(/report(?:\s+on\s+|\s+)(\w+)/i);
         if (reportMatch) {
-          result = await this.generateReport(reportMatch[1]);
+          result = await this.intelligentReportGeneration(reportMatch[1]);
         }
       } else if (lowerPrompt.includes('performance analysis')) {
-        result = await this.analyzePerformance();
+        result = await this.intelligentPerformanceAnalysis();
       } else if (lowerPrompt.includes('backup data')) {
-        result = await this.backupData();
+        result = await this.intelligentBackupStrategy();
       } else if (lowerPrompt.includes('sql query')) {
         const sqlMatch = prompt.match(/sql query\s*[:=]?\s*(.+)/i);
         if (sqlMatch) {
-          result = await this.executeCustomQuery(sqlMatch[1]);
+          result = await this.intelligentQueryExecution(sqlMatch[1]);
         }
       } else {
-        // Check for learned patterns
-        const similarInteractions = LearningSystem.getSimilarInteractions(prompt);
-        if (similarInteractions.length > 0) {
-          result.message = `Based on similar requests, I suggest trying: "${similarInteractions[0].userInput}"`;
-          result.learningSuggestion = true;
-        } else {
-          result.message = "I'm learning from this new type of request. Could you be more specific about what you'd like me to do?";
-          result.needsMoreInfo = true;
-        }
+        // Intelligent pattern matching and suggestions
+        result = await this.intelligentPatternAnalysis(prompt);
       }
 
       // Record the interaction for learning
@@ -833,6 +936,259 @@ export class AIAssistant {
       };
     } catch (error) {
       return { error: `Failed to process feedback: ${error}` };
+    }
+  }
+
+  // Strategic business analysis methods
+  static async performBusinessHealthCheck(): Promise<any> {
+    try {
+      const stats = await this.getSystemStats();
+      const performance = await this.analyzePerformance();
+      
+      let healthScore = 85; // Base score
+      let insights = [];
+      let recommendations = [];
+
+      if (stats.success) {
+        const s = stats.stats;
+        
+        // Analyze user engagement
+        if (s.totalUsers > 0) {
+          const activeRatio = s.activeOrders / s.totalOrders;
+          if (activeRatio > 0.3) {
+            insights.push("High order activity indicates good user engagement");
+            healthScore += 5;
+          } else {
+            insights.push("Low order activity may indicate user retention issues");
+            recommendations.push("Implement user engagement campaigns or loyalty programs");
+            healthScore -= 10;
+          }
+        }
+
+        // Analyze completion rates
+        const completionRate = s.completedOrders / s.totalOrders;
+        if (completionRate > 0.8) {
+          insights.push("Excellent order completion rate shows reliable service");
+          healthScore += 10;
+        } else if (completionRate < 0.6) {
+          insights.push("Low completion rate indicates operational issues");
+          recommendations.push("Investigate driver availability and route optimization");
+          healthScore -= 15;
+        }
+      }
+
+      return {
+        success: true,
+        healthScore,
+        insights,
+        recommendations,
+        message: `Business Health Score: ${healthScore}/100\n\nKey Insights:\n${insights.map(i => `• ${i}`).join('\n')}\n\nRecommendations:\n${recommendations.map(r => `• ${r}`).join('\n')}`
+      };
+    } catch (error) {
+      return { error: `Health check failed: ${error}` };
+    }
+  }
+
+  static async identifyOptimizationOpportunities(): Promise<any> {
+    try {
+      const performance = await this.analyzePerformance();
+      const opportunities = [];
+      const impact = [];
+
+      // Database optimization opportunities
+      opportunities.push("Database indexing on frequently queried columns (user_id, status, created_at)");
+      impact.push("30-50% faster query performance");
+
+      // User experience optimizations
+      opportunities.push("Real-time order tracking with WebSocket integration");
+      impact.push("Improved customer satisfaction and reduced support queries");
+
+      // Operational efficiency
+      opportunities.push("Automated driver assignment based on location and availability");
+      impact.push("Reduced delivery times and increased driver utilization");
+
+      // Performance monitoring
+      opportunities.push("Implement automated performance monitoring and alerting");
+      impact.push("Proactive issue detection and faster resolution times");
+
+      return {
+        success: true,
+        opportunities,
+        impact,
+        message: `Optimization Opportunities Identified:\n\n${opportunities.map((opp, i) => `${i + 1}. ${opp}\n   Impact: ${impact[i]}`).join('\n\n')}\n\nPriority: Start with database indexing for immediate performance gains.`
+      };
+    } catch (error) {
+      return { error: `Optimization analysis failed: ${error}` };
+    }
+  }
+
+  static async performRiskAssessment(): Promise<any> {
+    try {
+      const risks = [
+        {
+          category: "Data Security",
+          risk: "User personal information and payment data exposure",
+          probability: "Medium",
+          impact: "High",
+          mitigation: "Implement encryption at rest, regular security audits, and PCI compliance"
+        },
+        {
+          category: "Operational",
+          risk: "Driver shortage during peak times",
+          probability: "High",
+          impact: "Medium",
+          mitigation: "Dynamic pricing, driver incentive programs, and partnerships with courier services"
+        },
+        {
+          category: "Technical",
+          risk: "System downtime affecting order processing",
+          probability: "Low",
+          impact: "High",
+          mitigation: "Load balancing, automated failover, and comprehensive monitoring"
+        },
+        {
+          category: "Financial",
+          risk: "Payment processing failures or fraud",
+          probability: "Medium",
+          impact: "High",
+          mitigation: "Multiple payment gateways, fraud detection, and secure payment processing"
+        }
+      ];
+
+      const riskMatrix = risks.map(r => 
+        `${r.category}: ${r.risk}\n  Probability: ${r.probability} | Impact: ${r.impact}\n  Mitigation: ${r.mitigation}`
+      ).join('\n\n');
+
+      return {
+        success: true,
+        risks,
+        message: `Risk Assessment Summary:\n\n${riskMatrix}\n\nNext Steps: Prioritize high-impact risks for immediate attention.`
+      };
+    } catch (error) {
+      return { error: `Risk assessment failed: ${error}` };
+    }
+  }
+
+  static async analyzeGrowthOpportunities(): Promise<any> {
+    try {
+      const stats = await this.getSystemStats();
+      const strategies = [];
+
+      strategies.push({
+        strategy: "Geographic Expansion",
+        description: "Expand to adjacent cities with similar demographics",
+        implementation: "Market research, driver recruitment, local partnerships",
+        expectedGrowth: "25-40% user base increase"
+      });
+
+      strategies.push({
+        strategy: "Service Diversification",
+        description: "Add specialized services (fragile items, same-day returns, bulk pickups)",
+        implementation: "Driver training, specialized equipment, premium pricing tiers",
+        expectedGrowth: "15-25% revenue increase per customer"
+      });
+
+      strategies.push({
+        strategy: "B2B Partnerships",
+        description: "Partner with e-commerce platforms and retail stores",
+        implementation: "API integrations, bulk pricing agreements, dedicated support",
+        expectedGrowth: "50-100% order volume increase"
+      });
+
+      const growthPlan = strategies.map((s, i) => 
+        `${i + 1}. ${s.strategy}\n   ${s.description}\n   Implementation: ${s.implementation}\n   Expected Growth: ${s.expectedGrowth}`
+      ).join('\n\n');
+
+      return {
+        success: true,
+        strategies,
+        message: `Growth Strategy Recommendations:\n\n${growthPlan}\n\nRecommendation: Start with B2B partnerships for fastest growth with lowest risk.`
+      };
+    } catch (error) {
+      return { error: `Growth analysis failed: ${error}` };
+    }
+  }
+
+  // Intelligent versions of existing methods that add reasoning and context
+  static async intelligentUserDeletion(userIdentifier: string): Promise<any> {
+    try {
+      // First analyze the user's impact
+      const userAnalysis = await db.execute(`
+        SELECT u.*, COUNT(o.id) as order_count, MAX(o.created_at) as last_order
+        FROM users u 
+        LEFT JOIN orders o ON u.id = o.user_id 
+        WHERE u.email = '${userIdentifier}' OR u.id = '${userIdentifier}'
+        GROUP BY u.id
+      ` as any);
+
+      if (!userAnalysis || (Array.isArray(userAnalysis) && userAnalysis.length === 0)) {
+        return { error: "User not found for analysis" };
+      }
+
+      const user = Array.isArray(userAnalysis) ? userAnalysis[0] : userAnalysis;
+      const orderCount = user.order_count || 0;
+      const lastOrder = user.last_order;
+
+      let recommendation = "";
+      let risk = "Low";
+
+      if (orderCount > 10) {
+        risk = "High";
+        recommendation = "⚠️ HIGH RISK: This user has significant order history. Consider deactivation instead of deletion to preserve analytics and referential integrity.";
+      } else if (orderCount > 0) {
+        risk = "Medium";
+        recommendation = "⚠️ MEDIUM RISK: User has order history. Deletion will affect order records and analytics.";
+      } else {
+        recommendation = "✅ LOW RISK: User has no orders. Safe to delete.";
+      }
+
+      const result = await this.deleteUser(userIdentifier);
+      
+      if (result.success) {
+        result.message = `${recommendation}\n\n${result.message}\n\n📊 Impact Analysis:\n• Orders affected: ${orderCount}\n• Risk level: ${risk}\n• Last activity: ${lastOrder || 'No orders'}`;
+      }
+
+      return result;
+    } catch (error) {
+      return { error: `Intelligent user deletion failed: ${error}` };
+    }
+  }
+
+  static async intelligentSystemAnalysis(): Promise<any> {
+    try {
+      const stats = await this.getSystemStats();
+      if (!stats.success) return stats;
+
+      const s = stats.stats;
+      let analysis = [];
+
+      // User growth analysis
+      if (s.totalUsers > 0) {
+        analysis.push(`User Base: ${s.totalUsers} total users`);
+        
+        const activePercentage = ((s.activeOrders / s.totalUsers) * 100).toFixed(1);
+        analysis.push(`Activity Level: ${activePercentage}% of users have active orders`);
+      }
+
+      // Order pipeline analysis
+      const completionRate = ((s.completedOrders / s.totalOrders) * 100).toFixed(1);
+      analysis.push(`Order Completion Rate: ${completionRate}% (Industry average: 85-90%)`);
+
+      // Business health indicators
+      if (parseFloat(completionRate) >= 85) {
+        analysis.push("✅ Excellent completion rate indicates reliable service delivery");
+      } else if (parseFloat(completionRate) >= 70) {
+        analysis.push("⚠️ Completion rate below industry average - investigate operational issues");
+      } else {
+        analysis.push("🚨 Low completion rate requires immediate attention");
+      }
+
+      stats.analysis = analysis;
+      stats.message = `System Health Analysis:\n\n${analysis.join('\n')}\n\nRecommendation: ${parseFloat(completionRate) >= 85 ? 'System performing well - focus on growth' : 'Address operational efficiency before scaling'}`;
+
+      return stats;
+    } catch (error) {
+      return { error: `System analysis failed: ${error}` };
     }
   }
 

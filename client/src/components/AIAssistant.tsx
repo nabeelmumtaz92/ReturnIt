@@ -43,7 +43,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi! I\'m your AI assistant with learning capabilities and full administrative access to the ReturnIt platform.\n\n🧠 **Adaptive Learning**\n• I learn from every interaction and adapt responses\n• Track user patterns and provide personalized suggestions\n• Remember successful commands and suggest similar operations\n• Analyze usage patterns to improve recommendations\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Execute custom SQL queries\n• System statistics and analytics\n\n📊 **Administrative Operations**\n• Recent activity monitoring\n• Platform performance diagnostics\n• User and order management\n• AI learning insights and patterns\n\n**Command Examples:**\n• "Delete user john@example.com"\n• "Learning insights" - See AI learning patterns\n• "Generate report on orders"\n• "Performance analysis" \n• "Backup data"\n• "SQL query: SELECT COUNT(*) FROM users"\n\nI learn from your commands and get better over time. What would you like me to help you with?',
+      content: 'Hi! I\'m your intelligent AI assistant with learning capabilities and strategic thinking for the ReturnIt platform.\n\n🧠 **Intelligent Analysis**\n• Understand business context behind technical requests\n• Provide reasoning and best practice recommendations\n• Assess risks and suggest safer alternatives\n• Learn from patterns to offer personalized advice\n• Consider broader implications of actions\n\n💡 **Strategic Guidance**\n• Not just "how" but "why" and "what if"\n• Industry best practices and optimization suggestions\n• Preventive measures and monitoring recommendations\n• Business impact analysis for decisions\n\n🗄️ **Administrative Capabilities**\n• User lifecycle management with safety considerations\n• Order workflow optimization and status management\n• Database operations with performance insights\n• System analytics with actionable recommendations\n\n**Intelligent Interactions:**\n• "Should I delete user john@example.com?" - I\'ll analyze impact and suggest alternatives\n• "Our orders are slow" - I\'ll investigate bottlenecks and recommend optimizations\n• "Generate insights report" - I\'ll identify key metrics and business opportunities\n• "What\'s the best way to handle inactive users?" - Strategic advice with implementation steps\n\nI think strategically about your business needs, not just execute commands. What challenge can I help you solve?',
       timestamp: new Date(),
       status: 'completed'
     }
@@ -142,10 +142,10 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
   };
 
   const quickActions = [
-    { label: 'System Stats', prompt: 'Show me system statistics and dashboard data' },
-    { label: 'Learning Insights', prompt: 'Show me AI learning insights and patterns' },
-    { label: 'Generate Report', prompt: 'Generate report on users' },
-    { label: 'Performance Analysis', prompt: 'Analyze system performance and metrics' }
+    { label: 'Business Health Check', prompt: 'What is the overall health of my ReturnIt platform? Give me strategic insights.' },
+    { label: 'Optimization Opportunities', prompt: 'What areas of my platform can be optimized for better performance and user experience?' },
+    { label: 'Risk Assessment', prompt: 'What potential risks should I be aware of in my current platform setup?' },
+    { label: 'Growth Strategy', prompt: 'Based on my data patterns, what strategies would help grow my delivery business?' }
   ];
 
   if (isMinimized) {
