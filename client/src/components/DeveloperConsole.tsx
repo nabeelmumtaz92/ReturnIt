@@ -54,7 +54,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     {
       id: '1',
       type: 'ai-response',
-      content: 'Developer Console Initialized\n\nAI Assistant ready for development tasks:\n• Full codebase access and modification\n• Database operations and queries\n• System command execution\n• Real-time debugging and analysis\n\nType your development request or use AI commands...',
+      content: 'Hey! Developer Console is ready to go.\n\nI can help you with pretty much anything:\n• Build new features or fix bugs\n• Update the database or optimize queries\n• Run commands and debug issues\n• Make architectural changes\n\nJust tell me what you need in plain English - no need for formal commands. What should we work on?',
       timestamp: new Date()
     }
   ]);
@@ -350,7 +350,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
             {aiMutation.isPending && (
               <div className="flex items-center gap-3 text-yellow-400">
                 <Clock className="w-4 h-4 animate-spin" />
-                <span className="text-sm">AI processing request...</span>
+                <span className="text-sm">Let me work on that for you...</span>
               </div>
             )}
           </div>
@@ -369,7 +369,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Enter AI development command (e.g., 'add dark mode toggle', 'fix login bug', 'optimize database')"
+              placeholder="What should we build? (e.g., 'add a dark mode toggle', 'there's a bug in the login', 'make the database faster')"
               className="flex-1 bg-gradient-to-r from-slate-900 to-black border-emerald-500/30 text-emerald-300 placeholder-slate-400 focus:border-emerald-400 focus:ring-emerald-400 transition-all duration-200"
               data-testid="input-console-command"
             />
@@ -388,7 +388,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
           </div>
           
           <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
-            <span className="font-mono">Use ↑/↓ for command history • Enter to execute • Shift+Enter for new line</span>
+            <span className="font-mono">Press ↑/↓ for previous requests • Enter to send • Just talk naturally!</span>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-emerald-400 font-semibold">AI Assistant Active</span>
