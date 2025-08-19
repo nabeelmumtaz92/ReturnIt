@@ -74,7 +74,8 @@ export function useAuth() {
           }
         } else if (mounted) {
           // Don't clear admin users - they use client-side auth
-          if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
+          const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
+          if (user?.isAdmin && adminEmails.includes(user?.email)) {
             console.log('Admin user detected - keeping client-side auth');
             setIsLoading(false);
             return;
@@ -90,7 +91,8 @@ export function useAuth() {
         }
       } catch (error) {
         // Don't clear admin users on network errors
-        if (user?.isAdmin && user?.email === 'nabeelmumtaz92@gmail.com') {
+        const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
+        if (user?.isAdmin && adminEmails.includes(user?.email)) {
           console.log('Admin user detected - keeping auth despite network error');
           setIsLoading(false);
           return;
@@ -116,7 +118,8 @@ export function useAuth() {
       setIsLoading(false);
       
       // Skip server validation for admin users - they use client-side auth
-      if (user.isAdmin && user.email === 'nabeelmumtaz92@gmail.com') {
+      const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
+      if (user.isAdmin && adminEmails.includes(user.email)) {
         console.log('Admin user from localStorage - skipping server check');
       } else {
         checkAuth();

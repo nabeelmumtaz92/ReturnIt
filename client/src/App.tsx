@@ -95,7 +95,7 @@ function Router() {
       <Route path="/">
         {() => {
           // Check if admin user should go directly to dashboard
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
           if (user?.isAdmin && masterAdmins.includes(user?.email)) {
             // Use location.replace to avoid back button issues
             window.location.replace('/admin-dashboard');
@@ -124,7 +124,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/admin-dashboard">
         {() => {
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
         }}
       </Route>
