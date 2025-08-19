@@ -921,6 +921,166 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// DatabaseStorage implementation
+import { db } from "./db";
+import { eq, and, sql, desc, asc } from "drizzle-orm";
+import { users, orders, promoCodes } from "@shared/schema";
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(userData)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  // Order operations
+  async createOrder(orderData: InsertOrder): Promise<Order> {
+    const [order] = await db
+      .insert(orders)
+      .values(orderData)
+      .returning();
+    return order;
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order;
+  }
+
+  async updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set(updates)
+      .where(eq(orders.id, id))
+      .returning();
+    return order;
+  }
+
+  async deleteOrder(id: string): Promise<boolean> {
+    const result = await db.delete(orders).where(eq(orders.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return db.select().from(orders).orderBy(desc(orders.createdAt));
+  }
+
+  async getUserOrders(userId: number): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
+  }
+
+  async getDriverOrders(driverId: number): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.driverId, driverId)).orderBy(desc(orders.createdAt));
+  }
+
+  async getOrdersByStatus(status: string): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.status, status)).orderBy(desc(orders.createdAt));
+  }
+
+  // Implement other IStorage methods as needed...
+  async createPromoCode(promoData: InsertPromoCode): Promise<PromoCode> {
+    const [promo] = await db.insert(promoCodes).values(promoData).returning();
+    return promo;
+  }
+
+  async getPromoCode(code: string): Promise<PromoCode | undefined> {
+    const [promo] = await db.select().from(promoCodes).where(eq(promoCodes.code, code));
+    return promo;
+  }
+
+  async updatePromoCode(code: string, updates: Partial<PromoCode>): Promise<PromoCode | undefined> {
+    const [promo] = await db.update(promoCodes).set(updates).where(eq(promoCodes.code, code)).returning();
+    return promo;
+  }
+
+  async deletePromoCode(code: string): Promise<boolean> {
+    const result = await db.delete(promoCodes).where(eq(promoCodes.code, code));
+    return result.rowCount > 0;
+  }
+
+  async getAllPromoCodes(): Promise<PromoCode[]> {
+    return db.select().from(promoCodes);
+  }
+
+  // Add stubs for other methods to satisfy interface
+  async getDriverEarnings(driverId: number): Promise<DriverEarning[]> { return []; }
+  async createDriverEarning(earning: InsertDriverEarning): Promise<DriverEarning> { 
+    return {} as DriverEarning; 
+  }
+  async getNotifications(userId: number): Promise<Notification[]> { return []; }
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    return {} as Notification;
+  }
+  async markNotificationAsRead(id: number): Promise<boolean> { return true; }
+  async deleteNotification(id: number): Promise<boolean> { return true; }
+  async createAnalytics(analytics: InsertAnalytics): Promise<Analytics> {
+    return {} as Analytics;
+  }
+  async getAnalytics(startDate?: Date, endDate?: Date): Promise<Analytics[]> { return []; }
+  async updateAnalytics(id: number, updates: Partial<Analytics>): Promise<Analytics | undefined> {
+    return {} as Analytics;
+  }
+  async deleteAnalytics(id: number): Promise<boolean> { return true; }
+  async createDriverPayout(payout: InsertDriverPayout): Promise<DriverPayout> {
+    return {} as DriverPayout;
+  }
+  async getDriverPayouts(driverId: number): Promise<DriverPayout[]> { return []; }
+  async getAllDriverPayouts(): Promise<DriverPayout[]> { return []; }
+  async updateDriverPayout(id: number, updates: Partial<DriverPayout>): Promise<DriverPayout | undefined> {
+    return {} as DriverPayout;
+  }
+  async createDriverIncentive(incentive: InsertDriverIncentive): Promise<DriverIncentive> {
+    return {} as DriverIncentive;
+  }
+  async getDriverIncentives(driverId: number): Promise<DriverIncentive[]> { return []; }
+  async calculateOrderBonuses(order: Order, driver: User): Promise<number> { return 0; }
+  async getBusinessInfo(): Promise<BusinessInfo | undefined> { return undefined; }
+  async updateBusinessInfo(info: InsertBusinessInfo): Promise<BusinessInfo> {
+    return {} as BusinessInfo;
+  }
+  async createDriverApplication(application: InsertDriverApplication): Promise<DriverApplication> {
+    return {} as DriverApplication;
+  }
+  async getDriverApplication(id: string): Promise<DriverApplication | undefined> { return undefined; }
+  async getUserDriverApplication(userId: number): Promise<DriverApplication | undefined> { return undefined; }
+  async updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined> {
+    return undefined;
+  }
+  async getAllDriverApplications(): Promise<DriverApplication[]> { return []; }
+}
+
+// Switch to DatabaseStorage
+export const storage = new DatabaseStorage();
 
 // Production storage initialized
