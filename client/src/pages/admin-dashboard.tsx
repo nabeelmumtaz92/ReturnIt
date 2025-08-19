@@ -48,7 +48,8 @@ import {
   MessageSquare,
   Menu,
   ExternalLink,
-  Mail
+  Mail,
+  Terminal
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -65,6 +66,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import { AdminContent } from "@/components/AdminContent";
 import AIAssistant from "@/components/AIAssistant";
+import DeveloperConsole from "@/components/DeveloperConsole";
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 
@@ -117,6 +119,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [showSupportChat, setShowSupportChat] = useState(false);
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showDeveloperConsole, setShowDeveloperConsole] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
   
   // Enhanced completed orders state
@@ -702,6 +705,29 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </Card>
               </Link>
             </div>
+            
+            {/* AI Development Tools */}
+            {user?.isAdmin && (
+              <div className="mt-4 flex gap-2">
+                <Button
+                  onClick={() => setShowAIAssistant(!showAIAssistant)}
+                  className="bg-purple-600 hover:bg-purple-700 text-white flex-1"
+                  data-testid="button-ai-assistant"
+                >
+                  <Bot className="w-4 h-4 mr-2" />
+                  AI Assistant
+                </Button>
+                
+                <Button
+                  onClick={() => setShowDeveloperConsole(!showDeveloperConsole)}
+                  className="bg-slate-700 hover:bg-slate-800 text-white flex-1"
+                  data-testid="button-developer-console"
+                >
+                  <Terminal className="w-4 h-4 mr-2" />
+                  Dev Console
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Main Content Tabs */}
@@ -1052,7 +1078,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   {/* Advanced Analytics Section */}
                   {showAdvancedAnalytics && (
                     <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-                      <CompletedOrdersAnalytics completedOrders={getFilteredCompletedOrders()} />
+                      <CompletedOrdersAnalytics completedOrders={getFilteredCompletedOrders() as any} />
                     </div>
                   )}
                 </CardContent>
@@ -1870,6 +1896,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <AIAssistant 
             isMinimized={!showAIAssistant}
             onClose={() => setShowAIAssistant(!showAIAssistant)}
+          />
+        )}
+
+        {/* Developer Console - Available for admin users */}
+        {user?.isAdmin && (
+          <DeveloperConsole 
+            isMinimized={!showDeveloperConsole}
+            onClose={() => setShowDeveloperConsole(!showDeveloperConsole)}
           />
         )}
       </div>
