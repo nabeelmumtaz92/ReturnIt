@@ -58,8 +58,7 @@ export default function Login() {
     firstName: '',
     lastName: '',
     phone: '',
-    dateOfBirth: '',
-    role: 'customer'
+    dateOfBirth: ''
   });
 
   // Random background image logic
@@ -87,9 +86,9 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
       const response = await apiRequest("POST", "/api/auth/login", credentials);
-      return response;
+      return await response.json();
     },
-    onSuccess: async (data) => {
+    onSuccess: async (data: any) => {
       console.log('Login response data:', data);
       const user = data.user; // Extract user from response
       login(user);
@@ -126,7 +125,7 @@ export default function Login() {
   const registerMutation = useMutation({
     mutationFn: async (userData: RegistrationData) => {
       const response = await apiRequest("POST", "/api/auth/register", userData);
-      return response;
+      return await response.json();
     },
     onSuccess: async (data) => {
       toast({
