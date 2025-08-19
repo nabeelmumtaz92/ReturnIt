@@ -9,8 +9,9 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Terminal, 
+  Bot, 
   Send, 
+  User, 
   Code, 
   Database, 
   FileText, 
@@ -23,20 +24,26 @@ import {
   X,
   Cpu,
   Move,
-  Monitor
+  Monitor,
+  MessageCircle,
+  Loader2,
+  Terminal
 } from "lucide-react";
 
-interface ConsoleEntry {
+interface ChatMessage {
   id: string;
-  type: 'command' | 'output' | 'error' | 'ai-response';
+  type: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
+  status?: 'sending' | 'processing' | 'completed' | 'error';
   metadata?: {
     duration?: number;
     filesModified?: number;
     commandsExecuted?: number;
     databaseQueries?: number;
+    codeChanges?: string[];
   };
+  isTyping?: boolean;
 }
 
 interface DeveloperConsoleProps {
@@ -50,24 +57,18 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [position, setPosition] = useState({ x: 50, y: 50 });
   const consoleRef = useRef<HTMLDivElement>(null);
-  const [entries, setEntries] = useState<ConsoleEntry[]>([
+  const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      type: 'ai-response',
-      content: 'Hey there! AI Developer Console is online and ready to help. 🤖\n\nI can assist you with the ReturnIt platform:\n• Build new features or fix existing bugs\n• Optimize database queries and performance\n• Debug issues and troubleshoot problems\n• Make architectural improvements\n• Help with frontend/backend development\n\nJust describe what you need in natural language - no technical commands required. What would you like to work on today?',
+      type: 'assistant',
+      content: 'Hi! I\'m your AI development assistant for the ReturnIt platform. I\'m here to help you build, debug, and enhance your delivery service application.\n\nI can help you with:\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Optimizing database queries and performance\n• Code analysis and architecture improvements\n• Running commands and checking logs\n\nJust tell me what you\'d like to work on in plain English. What can I help you with today?',
       timestamp: new Date(),
-      metadata: {
-        duration: 0,
-        filesModified: 0,
-        commandsExecuted: 0,
-        databaseQueries: 0
-      }
+      status: 'completed'
     }
   ]);
   
   const [input, setInput] = useState('');
-  const [commandHistory, setCommandHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isProcessing, setIsProcessing] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -79,69 +80,81 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
       return { ...response, duration };
     },
     onSuccess: (data: any) => {
-      setEntries(prev => [...prev, {
-        id: Date.now().toString(),
-        type: 'ai-response',
-        content: data.message,
-        timestamp: new Date(),
-        metadata: {
-          duration: data.duration,
-          filesModified: data.codeChanges?.length || 0,
-          databaseQueries: data.databaseQueries?.length || 0,
-          commandsExecuted: data.commandResults?.length || 0
-        }
-      }]);
+      setMessages(prev => prev.map(msg => 
+        msg.id === 'processing' 
+          ? {
+              ...msg,
+              id: Date.now().toString(),
+              type: 'assistant',
+              content: data.message || data.response || 'Task completed successfully',
+              status: 'completed',
+              isTyping: false,
+              metadata: {
+                duration: data.duration || 0,
+                filesModified: data.codeChanges?.length || 0,
+                commandsExecuted: data.commandResults?.length || 0,
+                databaseQueries: data.databaseQueries?.length || 0,
+                codeChanges: data.codeChanges?.map((c: any) => c.file) || []
+              }
+            }
+          : msg
+      ));
       
-      // Show individual operation results
       if (data.codeChanges?.length > 0) {
-        data.codeChanges.forEach((change: any) => {
-          setEntries(prev => [...prev, {
-            id: `${Date.now()}-${Math.random()}`,
-            type: 'output',
-            content: `✓ Modified: ${change.file}\n  ${change.description}`,
-            timestamp: new Date()
-          }]);
-        });
-      }
-      
-      if (data.commandResults?.length > 0) {
-        data.commandResults.forEach((cmd: any) => {
-          setEntries(prev => [...prev, {
-            id: `${Date.now()}-${Math.random()}`,
-            type: 'output',
-            content: `$ ${cmd.command}\n${cmd.output}`,
-            timestamp: new Date()
-          }]);
+        toast({
+          title: "Code Changes Applied",
+          description: `Modified ${data.codeChanges.length} file(s)`,
         });
       }
     },
     onError: (error: any) => {
-      setEntries(prev => [...prev, {
-        id: Date.now().toString(),
-        type: 'error',
-        content: `Error: ${error.message}`,
-        timestamp: new Date()
-      }]);
+      setMessages(prev => prev.map(msg => 
+        msg.id === 'processing' 
+          ? {
+              ...msg,
+              id: Date.now().toString(),
+              type: 'assistant',
+              content: `I encountered an error: ${error.message || 'Request failed'}. Please try rephrasing your request or check if the service is available.`,
+              status: 'error',
+              isTyping: false
+            }
+          : msg
+      ));
+      
+      toast({
+        title: "Request Failed",
+        description: error.message || 'An error occurred while processing your request',
+        variant: "destructive",
+      });
     }
   });
 
   const handleSend = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isProcessing) return;
 
-    // Add command to entries
-    setEntries(prev => [...prev, {
+    const userMessage = input.trim();
+    
+    // Add user message
+    setMessages(prev => [...prev, {
       id: Date.now().toString(),
-      type: 'command',
-      content: input,
-      timestamp: new Date()
+      type: 'user',
+      content: userMessage,
+      timestamp: new Date(),
+      status: 'completed'
     }]);
 
-    // Update command history
-    setCommandHistory(prev => [input, ...prev.slice(0, 49)]);
-    setHistoryIndex(-1);
+    // Add processing message
+    setMessages(prev => [...prev, {
+      id: 'processing',
+      type: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      status: 'processing',
+      isTyping: true
+    }]);
 
-    // Process AI request
-    aiMutation.mutate(input);
+    setIsProcessing(true);
+    aiMutation.mutate(userMessage);
     setInput('');
   };
 
@@ -149,23 +162,6 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (historyIndex < commandHistory.length - 1) {
-        const newIndex = historyIndex + 1;
-        setHistoryIndex(newIndex);
-        setInput(commandHistory[newIndex]);
-      }
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (historyIndex > 0) {
-        const newIndex = historyIndex - 1;
-        setHistoryIndex(newIndex);
-        setInput(commandHistory[newIndex]);
-      } else if (historyIndex === 0) {
-        setHistoryIndex(-1);
-        setInput('');
-      }
     }
   };
 
@@ -208,7 +204,11 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
-  }, [entries]);
+  }, [messages]);
+
+  useEffect(() => {
+    setIsProcessing(aiMutation.isPending);
+  }, [aiMutation.isPending]);
 
   if (isMinimized) {
     return (
@@ -247,8 +247,8 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
               <Monitor className="w-6 h-6 text-emerald-400" />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
             </div>
-            <span className="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent font-bold">
-              Developer Console
+            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-bold">
+              AI Development Chat
             </span>
             <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white border-emerald-400 shadow-lg">
               <Cpu className="w-3 h-3 mr-1 animate-pulse" />
@@ -288,105 +288,110 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
 
       <CardContent className="flex flex-col h-full p-0 bg-gradient-to-b from-slate-900 via-black to-slate-900 text-emerald-400 font-mono border-t border-slate-600">
         <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
-          <div className="space-y-3">
-            {entries.map((entry) => (
-              <div key={entry.id} className="group">
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {entry.type === 'command' && <Terminal className="w-4 h-4 text-blue-400" />}
-                    {entry.type === 'output' && <CheckCircle className="w-4 h-4 text-green-400" />}
-                    {entry.type === 'error' && <AlertTriangle className="w-4 h-4 text-red-400" />}
-                    {entry.type === 'ai-response' && <Cpu className="w-4 h-4 text-purple-400" />}
-                  </div>
+          <div className="space-y-4">
+            {messages.map((message) => (
+              <div key={message.id} className="group">
+                <div className={`flex items-start gap-3 ${message.type === 'user' ? 'justify-end' : ''}`}>
+                  {message.type === 'assistant' && (
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                      <Bot className="w-4 h-4 text-white" />
+                    </div>
+                  )}
                   
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className={`flex-1 min-w-0 max-w-[80%] ${message.type === 'user' ? 'text-right' : ''}`}>
+                    <div className="flex items-center gap-2 mb-2">
                       <span className="text-xs text-slate-500">
-                        {entry.timestamp.toLocaleTimeString()}
+                        {message.timestamp.toLocaleTimeString()}
                       </span>
                       
-                      {entry.metadata && (
+                      {message.metadata && (
                         <div className="flex items-center gap-2 text-xs">
-                          {entry.metadata.duration && (
+                          {message.metadata.duration && message.metadata.duration > 0 && (
                             <Badge variant="outline" className="text-xs bg-slate-800 text-slate-300">
                               <Clock className="w-3 h-3 mr-1" />
-                              {entry.metadata.duration}ms
+                              {message.metadata.duration}ms
                             </Badge>
                           )}
-                          {entry.metadata.filesModified! > 0 && (
+                          {message.metadata.filesModified! > 0 && (
                             <Badge variant="outline" className="text-xs bg-blue-900 text-blue-300">
                               <FileText className="w-3 h-3 mr-1" />
-                              {entry.metadata.filesModified} files
+                              {message.metadata.filesModified} files
                             </Badge>
                           )}
-                          {entry.metadata.databaseQueries! > 0 && (
+                          {message.metadata.databaseQueries! > 0 && (
                             <Badge variant="outline" className="text-xs bg-yellow-900 text-yellow-300">
                               <Database className="w-3 h-3 mr-1" />
-                              {entry.metadata.databaseQueries} queries
+                              {message.metadata.databaseQueries} queries
                             </Badge>
                           )}
-                          {entry.metadata.commandsExecuted! > 0 && (
+                          {message.metadata.commandsExecuted! > 0 && (
                             <Badge variant="outline" className="text-xs bg-green-900 text-green-300">
                               <Play className="w-3 h-3 mr-1" />
-                              {entry.metadata.commandsExecuted} commands
+                              {message.metadata.commandsExecuted} commands
+                            </Badge>
+                          )}
+                          {message.metadata.codeChanges && message.metadata.codeChanges.length > 0 && (
+                            <Badge variant="outline" className="text-xs bg-purple-900 text-purple-300">
+                              <Code className="w-3 h-3 mr-1" />
+                              {message.metadata.codeChanges.length} files changed
                             </Badge>
                           )}
                         </div>
                       )}
                     </div>
                     
-                    <pre className={`whitespace-pre-wrap text-sm leading-relaxed ${
-                      entry.type === 'command' ? 'text-blue-300' :
-                      entry.type === 'error' ? 'text-red-300' :
-                      entry.type === 'ai-response' ? 'text-purple-300' :
-                      'text-green-300'
+                    <div className={`rounded-lg p-3 ${
+                      message.type === 'user' 
+                        ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white ml-auto'
+                        : message.status === 'error'
+                        ? 'bg-gradient-to-r from-red-900 to-red-800 text-red-100 border border-red-600'
+                        : 'bg-gradient-to-r from-slate-800 to-slate-700 text-slate-100 border border-slate-600'
                     }`}>
-                      {entry.type === 'command' && '$ '}
-                      {entry.content}
-                    </pre>
+                      {message.isTyping ? (
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="text-sm">Thinking...</span>
+                        </div>
+                      ) : (
+                        <div className="prose prose-sm max-w-none text-inherit">
+                          <pre className="whitespace-pre-wrap text-sm leading-relaxed font-sans">
+                            {message.content}
+                          </pre>
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  
+                  {message.type === 'user' && (
+                    <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                  )}
                 </div>
-                
-                {entry !== entries[entries.length - 1] && (
-                  <Separator className="mt-3 bg-slate-700" />
-                )}
               </div>
             ))}
-            
-            {aiMutation.isPending && (
-              <div className="flex items-center gap-3 text-yellow-400">
-                <Clock className="w-4 h-4 animate-spin" />
-                <span className="text-sm">Let me work on that for you...</span>
-              </div>
-            )}
           </div>
         </ScrollArea>
 
         <div className="p-4 border-t border-slate-600 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800">
-          <div className="flex gap-3">
-            <div className="flex items-center text-emerald-400 mr-2">
-              <div className="relative">
-                <Terminal className="w-5 h-5 mr-2" />
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-              </div>
-              <span className="text-sm font-mono bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">AI&gt;</span>
-            </div>
+          <div className="flex gap-3 items-end">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="What should we build? (e.g., 'add a dark mode toggle', 'there's a bug in the login', 'make the database faster')"
-              className="flex-1 bg-gradient-to-r from-slate-900 to-black border-emerald-500/30 text-emerald-300 placeholder-slate-400 focus:border-emerald-400 focus:ring-emerald-400 transition-all duration-200"
+              placeholder="Ask me anything about your ReturnIt project... (e.g., 'add a dark mode toggle', 'fix the login bug', 'optimize the database')"
+              className="flex-1 bg-gradient-to-r from-slate-900 to-black border-slate-600 text-slate-100 placeholder-slate-400 focus:border-purple-400 focus:ring-purple-400 transition-all duration-200 rounded-lg"
               data-testid="input-console-command"
+              disabled={isProcessing}
             />
             <Button 
               onClick={handleSend}
-              disabled={!input.trim() || aiMutation.isPending}
-              className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg border border-emerald-500/30 transition-all duration-200"
+              disabled={!input.trim() || isProcessing}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg transition-all duration-200 rounded-lg px-4"
               data-testid="button-execute-console"
             >
-              {aiMutation.isPending ? (
-                <Clock className="w-4 h-4 animate-spin" />
+              {isProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Send className="w-4 h-4" />
               )}
@@ -394,10 +399,12 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
           </div>
           
           <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
-            <span className="font-mono">Press ↑/↓ for previous requests • Enter to send • Just talk naturally!</span>
+            <span>Message your AI development assistant • Press Enter to send</span>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <span className="text-emerald-400 font-semibold">AI Assistant Active</span>
+              <div className={`w-2 h-2 rounded-full ${isProcessing ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}></div>
+              <span className={`font-semibold ${isProcessing ? 'text-yellow-400' : 'text-green-400'}`}>
+                {isProcessing ? 'AI Working...' : 'AI Ready'}
+              </span>
             </div>
           </div>
         </div>
