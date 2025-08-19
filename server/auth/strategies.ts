@@ -5,17 +5,22 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { storage } from '../storage';
 
 // Google OAuth Strategy
+const callbackURL = process.env.REPLIT_DEV_DOMAIN 
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/google/callback`
+  : `https://${process.env.REPL_ID}.${process.env.REPLIT_CLUSTER || 'id'}.replit.dev/api/auth/google/callback`;
+
 console.log('Google OAuth Configuration:', {
   hasClientId: !!process.env.GOOGLE_CLIENT_ID,
   hasClientSecret: !!process.env.GOOGLE_CLIENT_SECRET,
-  clientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0
+  clientIdLength: process.env.GOOGLE_CLIENT_ID?.length || 0,
+  callbackURL: callbackURL
 });
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: 'http://localhost:5000/api/auth/google/callback'
+    callbackURL: callbackURL
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     console.log('Google OAuth strategy callback triggered');
     console.log('Profile data:', {
