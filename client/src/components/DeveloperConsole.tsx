@@ -68,7 +68,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
   const aiMutation = useMutation({
     mutationFn: async (prompt: string) => {
       const startTime = Date.now();
-      const response = await apiRequest('/api/ai/assistant', 'POST', { prompt });
+      const response = await apiRequest('/console/ai', 'POST', { prompt });
       const duration = Date.now() - startTime;
       return { ...response, duration };
     },

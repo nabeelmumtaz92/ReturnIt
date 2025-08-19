@@ -1,0 +1,125 @@
+Totally common headache. If logins work on your dev (Replit) URL but fail on your custom domain, it’s almost always one of these deployment-specific issues:
+
+### Usual culprits (and how to check/fix)
+
+1. **OAuth redirect / callback URLs don’t match**
+
+   * Providers (Google, GitHub, Auth0, etc.) must list your **exact** production domain (including `https`, `www` vs apex, and paths).
+   * Fix: Add your prod domain to “Authorized redirect URIs” and “Authorized origins.” Redeploy with the correct `NEXTAUTH_URL`, `AUTH_URL`, `SITE_URL`, etc.
+
+2. **Cookie issues (domain / Secure / SameSite)**
+
+   * On prod over HTTPS, many frameworks set `SameSite=None; Secure`. If you’re not on HTTPS, those cookies are rejected.
+   * If you’re on a subdomain, your cookie `Domain` might be wrong (`.example.com` vs `app.example.com`).
+   * Check: DevTools → Application → Cookies; watch the login response’s `Set-Cookie`.
+   * Fix: Serve HTTPS; align cookie domain; for cross-site flows set `SameSite=None; Secure`.
+
+3. **Different secrets between environments**
+
+   * Session/JWT cookies become invalid if `JWT_SECRET` / `SESSION_SECRET` / encryption keys differ.
+   * Fix: Use the **same** secret(s) in Replit and production.
+
+4. **CORS or CSRF misconfig**
+
+   * In prod, your domain might not be whitelisted for CORS or CSRF origin checks.
+   * Check: Network tab for failed **preflight** (OPTIONS) or 403 on POST /login.
+   * Fix: Add your prod domain to CORS allowed origins and CSRF allowed origins.
+
+5. **HTTP↔HTTPS / proxy headers**
+
+   * Behind a proxy/CDN (Cloudflare, Nginx, Vercel), your app may think it’s HTTP and refuse Secure cookies or generate wrong callback URLs.
+   * Fix: Set `X-Forwarded-Proto https`, `trust proxy`/`app.set('trust proxy', 1)`, or the equivalent in your framework.
+
+6. **Database/env mismatch**
+
+   * Prod could be pointing at an empty DB or a different schema, so users can’t be found or sessions break.
+   * Fix: Verify the prod DB URL and run migrations. Check logs for “relation/table doesn’t exist”.
+
+7. **Wrong base URL in app config**
+
+   * Hardcoded `localhost` or Replit URL in auth client, API client, or env like `BASE_URL`.
+   * Fix: Use environment variables and set them for production.
+
+8. **Time skew**
+
+   * If server time is off, JWTs or signed cookies look “not yet valid/expired.”
+   * Fix: Sync NTP; check server time vs browser time.
+
+9. **CDN / browser caching a stale script**
+
+   * Old JS calling old endpoints.
+   * Fix: Bust caches (new build/versioned assets) and purge CDN.
+
+10. **DNS / domain variants**
+
+* Logging in at `www.example.com` but cookies scoped to `example.com` (or vice versa), or DNS still propagating.
+* Fix: Pick one canonical domain, redirect the other, align cookie domain.
+
+11. **Adblockers / third-party cookie restrictions**
+
+* Some setups (embedded iframes, 3rd-party domains) block cookies.
+* Fix: Avoid cross-site iframes for auth; use first-party domain for the auth pages.
+
+12. **Rate limits / WAF rules**
+
+* Cloudflare or host security rules might block callback or POSTs.
+* Check: Firewall/WAF logs.
+
+---
+
+### Quick 10-minute diagnostic flow
+
+1. **Try a clean login in an incognito window on your domain.**
+2. **DevTools → Network**: watch the login request(s).
+
+   * Does the auth callback return **200**? Any **CORS** errors?
+   * Does the response include **`Set-Cookie`**? Are cookies actually **stored**?
+3. **DevTools → Application → Cookies**:
+
+   * Inspect `Domain`, `Secure`, `SameSite`, `Expires`. Are they viable for your domain and HTTPS?
+4. **Server logs** (prod):
+
+   * Look for CSRF, “invalid signature,” “token expired,” or DB errors.
+5. **Verify env vars**: `SITE_URL / BASE_URL`, secrets, DB URL match prod expectations.
+6. **OAuth settings**:
+
+   * Add your exact prod URLs to **Authorized redirect URIs** & **origins**.
+7. **Proxy/hosting config**:
+
+   * Ensure `X-Forwarded-Proto: https` and app trusts the proxy.
+
+---
+
+### Copy-paste fixes (common stacks)
+
+* **Express / Node (behind proxy):**
+
+  ```js
+  app.set('trust proxy', 1); // so Secure cookies work behind proxy
+  app.use(session({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+      secure: true,            // only over HTTPS
+      sameSite: 'none',        // if doing cross-site OAuth
+      domain: '.example.com',  // if using subdomains; otherwise omit
+    }
+  }));
+  ```
+
+* **NextAuth:**
+
+  * Set `NEXTAUTH_URL=https://yourdomain.com`
+  * Ensure `NEXTAUTH_SECRET` is identical across environments.
+  * In provider config, add prod callback URLs.
+
+* **Nginx proxy snippet:**
+
+  ```
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $host;
+  ```
+
+---
+
+If you want, tell me your stack (framework, auth method/provider, hosting, and your domain) and I’ll pinpoint the exact changes to make.
