@@ -54,8 +54,14 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     {
       id: '1',
       type: 'ai-response',
-      content: 'Hey! Developer Console is ready to go.\n\nI can help you with pretty much anything:\n• Build new features or fix bugs\n• Update the database or optimize queries\n• Run commands and debug issues\n• Make architectural changes\n\nJust tell me what you need in plain English - no need for formal commands. What should we work on?',
-      timestamp: new Date()
+      content: 'Hey there! AI Developer Console is online and ready to help. 🤖\n\nI can assist you with the ReturnIt platform:\n• Build new features or fix existing bugs\n• Optimize database queries and performance\n• Debug issues and troubleshoot problems\n• Make architectural improvements\n• Help with frontend/backend development\n\nJust describe what you need in natural language - no technical commands required. What would you like to work on today?',
+      timestamp: new Date(),
+      metadata: {
+        duration: 0,
+        filesModified: 0,
+        commandsExecuted: 0,
+        databaseQueries: 0
+      }
     }
   ]);
   
