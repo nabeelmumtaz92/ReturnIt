@@ -2773,6 +2773,144 @@ Always explain what you're doing and confirm potentially destructive operations.
               }
             }
           }
+          
+          // Check for system statistics request
+          if (lowerPrompt.includes('system stats') || lowerPrompt.includes('statistics') || lowerPrompt.includes('dashboard stats')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            adminResults = await AIAssistant.getSystemStats();
+            
+            if (adminResults.success) {
+              const stats = adminResults.stats;
+              aiResponse += `\n\n📊 **System Statistics**\n• Total Users: ${stats.totalUsers}\n• Total Orders: ${stats.totalOrders}\n• Active Orders: ${stats.activeOrders}\n• Completed Orders: ${stats.completedOrders}`;
+              databaseQueries.push({
+                query: "SELECT COUNT(*) FROM users, orders",
+                description: "Retrieved system statistics"
+              });
+            }
+          }
+          
+          // Check for order search commands
+          if (lowerPrompt.includes('show orders') || lowerPrompt.includes('list orders')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            let status = null;
+            
+            if (lowerPrompt.includes('pending')) status = 'created';
+            if (lowerPrompt.includes('active')) status = 'assigned';
+            if (lowerPrompt.includes('delivered')) status = 'delivered';
+            
+            adminResults = await AIAssistant.searchOrders(status, 10);
+            
+            if (adminResults.success) {
+              aiResponse += `\n\n📋 **Orders Found**\n${adminResults.message}`;
+              databaseQueries.push({
+                query: status ? `SELECT * FROM orders WHERE status = '${status}'` : "SELECT * FROM orders",
+                description: "Retrieved order information"
+              });
+            }
+          }
+          
+          // Check for recent activity request
+          if (lowerPrompt.includes('recent activity') || lowerPrompt.includes('activity log')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            adminResults = await AIAssistant.getRecentActivity(15);
+            
+            if (adminResults.success) {
+              aiResponse += `\n\n📈 **Recent Activity**\n${adminResults.message}`;
+              databaseQueries.push({
+                query: "SELECT * FROM orders, users ORDER BY created_at DESC",
+                description: "Retrieved recent platform activity"
+              });
+            }
+          }
+          
+          // Check for custom SQL queries
+          if (lowerPrompt.includes('sql query') || lowerPrompt.includes('execute query')) {
+            const sqlMatch = prompt.match(/(?:sql query|execute query)\s*[:=]?\s*(.+)/i);
+            if (sqlMatch) {
+              const sqlQuery = sqlMatch[1].trim();
+              const { AIAssistant } = await import('./ai-assistant');
+              adminResults = await AIAssistant.executeCustomQuery(sqlQuery);
+              
+              if (adminResults.success) {
+                aiResponse += `\n\n🔍 **Custom Query Results**\n${adminResults.message}`;
+                databaseQueries.push({
+                  query: sqlQuery,
+                  description: "Executed custom SQL query"
+                });
+              } else {
+                aiResponse += `\n\n❌ **Query Error**: ${adminResults.error}`;
+              }
+            }
+          }
+          
+          // Check for report generation
+          if (lowerPrompt.includes('generate report') || lowerPrompt.includes('report')) {
+            const reportMatch = prompt.match(/(?:generate )?report(?:\s+on\s+|\s+)(\w+)/i);
+            if (reportMatch) {
+              const reportType = reportMatch[1];
+              const { AIAssistant } = await import('./ai-assistant');
+              adminResults = await AIAssistant.generateReport(reportType);
+              
+              if (adminResults.success) {
+                aiResponse += `\n\n📊 **${adminResults.reportName}**\n${adminResults.message}`;
+                databaseQueries.push({
+                  query: `Generated ${reportType} report`,
+                  description: `Created detailed ${reportType} report`
+                });
+              } else {
+                aiResponse += `\n\n❌ **Report Error**: ${adminResults.error}`;
+              }
+            }
+          }
+          
+          // Check for performance analysis
+          if (lowerPrompt.includes('performance analysis') || lowerPrompt.includes('analyze performance')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            adminResults = await AIAssistant.analyzePerformance();
+            
+            if (adminResults.success) {
+              aiResponse += `\n\n⚡ **Performance Analysis**\n${adminResults.message}`;
+              databaseQueries.push({
+                query: "Performance metrics analysis",
+                description: "Analyzed system performance and user patterns"
+              });
+            }
+          }
+          
+          // Check for data backup requests
+          if (lowerPrompt.includes('backup data') || lowerPrompt.includes('create backup')) {
+            const { AIAssistant } = await import('./ai-assistant');
+            adminResults = await AIAssistant.backupData();
+            
+            if (adminResults.success) {
+              aiResponse += `\n\n💾 **Data Backup**\n${adminResults.message}`;
+              commandResults.push({
+                command: "Data backup",
+                output: `Backup created: ${adminResults.filename}`,
+                description: "Created database backup"
+              });
+            }
+          }
+          
+          // Check for bulk operations
+          if (lowerPrompt.includes('bulk delete') && lowerPrompt.includes('users')) {
+            const criteriaMatch = prompt.match(/bulk delete users?\s+(.+)/i);
+            if (criteriaMatch) {
+              const criteria = criteriaMatch[1].trim();
+              const { AIAssistant } = await import('./ai-assistant');
+              adminResults = await AIAssistant.bulkDeleteUsers(criteria);
+              
+              if (adminResults.success) {
+                aiResponse += `\n\n⚠️ **Bulk User Deletion**\n${adminResults.message}`;
+                databaseQueries.push({
+                  query: `Bulk deletion with criteria: ${criteria}`,
+                  description: "Performed bulk user deletion operation"
+                });
+              } else {
+                aiResponse += `\n\n❌ **Bulk Operation Error**: ${adminResults.error}`;
+              }
+            }
+          }
 
           res.json({
             message: aiResponse,

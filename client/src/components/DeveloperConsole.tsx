@@ -61,7 +61,7 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi! I\'m your AI development assistant for the ReturnIt platform. I\'m here to help you build, debug, and enhance your delivery service application.\n\nI can help you with:\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Optimizing database queries and performance\n• Code analysis and architecture improvements\n• Running commands and checking logs\n\nJust tell me what you\'d like to work on in plain English. What can I help you with today?',
+      content: 'Hi! I\'m your AI development assistant with full administrative access to the ReturnIt platform.\n\n🔧 **Development Capabilities**\n• Build new features and components\n• Fix bugs and troubleshoot issues\n• Optimize database queries and performance\n• Code analysis and architecture improvements\n\n🗄️ **Administrative Powers**\n• Delete user [email] - Remove users from system\n• List users - Show all platform users\n• Show orders [status] - Display order information\n• System stats - Get platform statistics\n• SQL query: [query] - Execute custom database queries\n\n📊 **Advanced Commands**\n• "Delete user test@example.com"\n• "Generate report on users" \n• "Performance analysis"\n• "Backup data"\n• "Bulk delete users inactive"\n• "SQL query: SELECT * FROM orders WHERE status = \'active\'"\n\nWhat would you like me to help you with today?',
       timestamp: new Date(),
       status: 'completed'
     }

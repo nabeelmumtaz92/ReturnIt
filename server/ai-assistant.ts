@@ -341,6 +341,229 @@ export class AIAssistant {
     }
   }
 
+  static async getSystemStats(): Promise<any> {
+    try {
+      const userCount = await db.execute("SELECT COUNT(*) as count FROM users" as any);
+      const orderCount = await db.execute("SELECT COUNT(*) as count FROM orders" as any);
+      const activeOrders = await db.execute("SELECT COUNT(*) as count FROM orders WHERE status IN ('created', 'assigned', 'picked_up')" as any);
+      const completedOrders = await db.execute("SELECT COUNT(*) as count FROM orders WHERE status = 'delivered'" as any);
+      
+      return {
+        success: true,
+        stats: {
+          totalUsers: Array.isArray(userCount) ? userCount[0]?.count : userCount.count,
+          totalOrders: Array.isArray(orderCount) ? orderCount[0]?.count : orderCount.count,
+          activeOrders: Array.isArray(activeOrders) ? activeOrders[0]?.count : activeOrders.count,
+          completedOrders: Array.isArray(completedOrders) ? completedOrders[0]?.count : completedOrders.count
+        },
+        message: "System statistics retrieved successfully"
+      };
+    } catch (error) {
+      return { error: `Failed to get system stats: ${error}` };
+    }
+  }
+
+  static async searchOrders(status?: string, limit: number = 10): Promise<any> {
+    try {
+      let query = "SELECT id, user_id, status, pickup_address, delivery_address, created_at FROM orders";
+      if (status) {
+        query += ` WHERE status = '${status}'`;
+      }
+      query += ` ORDER BY created_at DESC LIMIT ${limit}`;
+      
+      const result = await db.execute(query as any);
+      return {
+        success: true,
+        orders: result,
+        message: `Retrieved ${Array.isArray(result) ? result.length : 0} orders${status ? ` with status '${status}'` : ''}`
+      };
+    } catch (error) {
+      return { error: `Failed to search orders: ${error}` };
+    }
+  }
+
+  static async executeCustomQuery(sql: string): Promise<any> {
+    try {
+      // Basic safety checks for destructive operations
+      const safeSql = sql.toLowerCase().trim();
+      if (safeSql.includes('drop table') || safeSql.includes('truncate') || safeSql.includes('delete from users')) {
+        return { error: "Potentially destructive query blocked for safety. Use specific user deletion commands instead." };
+      }
+      
+      const result = await db.execute(sql as any);
+      return {
+        success: true,
+        result: result,
+        message: `Query executed successfully. Returned ${Array.isArray(result) ? result.length : 1} result(s).`
+      };
+    } catch (error) {
+      return { error: `Query failed: ${error}` };
+    }
+  }
+
+  static async getRecentActivity(limit: number = 20): Promise<any> {
+    try {
+      const activities = await db.execute(`
+        SELECT 'order' as type, id, status, created_at, pickup_address as details FROM orders 
+        UNION ALL 
+        SELECT 'user' as type, id, email as status, created_at, first_name as details FROM users 
+        ORDER BY created_at DESC LIMIT ${limit}
+      ` as any);
+      
+      return {
+        success: true,
+        activities: activities,
+        message: `Retrieved ${Array.isArray(activities) ? activities.length : 0} recent activities`
+      };
+    } catch (error) {
+      return { error: `Failed to get recent activity: ${error}` };
+    }
+  }
+
+  static async toggleUserStatus(userIdOrEmail: string, isActive: boolean): Promise<any> {
+    try {
+      const { storage } = await import('./storage');
+      
+      let user;
+      if (userIdOrEmail.includes('@')) {
+        user = await storage.getUserByEmail(userIdOrEmail);
+      } else {
+        user = await storage.getUser(parseInt(userIdOrEmail));
+      }
+      
+      if (!user) {
+        return { error: 'User not found' };
+      }
+      
+      await db.execute(`UPDATE users SET is_active = ${isActive} WHERE id = ${user.id}` as any);
+      
+      return {
+        success: true,
+        message: `User ${user.email} has been ${isActive ? 'activated' : 'deactivated'}.`
+      };
+    } catch (error) {
+      return { error: `Failed to toggle user status: ${error}` };
+    }
+  }
+
+  static async bulkDeleteUsers(criteria: string): Promise<any> {
+    try {
+      // Safety check for bulk operations
+      if (!criteria || criteria.toLowerCase().includes('*') || criteria.toLowerCase().includes('all')) {
+        return { error: "Bulk deletion requires specific criteria for safety. Avoid wildcard operations." };
+      }
+      
+      let query = "DELETE FROM users WHERE ";
+      
+      if (criteria.includes('@')) {
+        // Email domain deletion
+        const domain = criteria.replace('@', '');
+        query += `email LIKE '%@${domain}'`;
+      } else if (criteria.includes('inactive')) {
+        query += "is_active = false";
+      } else if (criteria.includes('no_orders')) {
+        query += "id NOT IN (SELECT DISTINCT user_id FROM orders WHERE user_id IS NOT NULL)";
+      } else {
+        return { error: "Invalid criteria. Use email domain (@example.com), 'inactive', or 'no_orders'" };
+      }
+      
+      const result = await db.execute(query as any);
+      return {
+        success: true,
+        message: `Bulk deletion completed based on criteria: ${criteria}`,
+        affectedRows: result
+      };
+    } catch (error) {
+      return { error: `Bulk deletion failed: ${error}` };
+    }
+  }
+
+  static async generateReport(reportType: string): Promise<any> {
+    try {
+      let reportData: any = {};
+      let reportName = '';
+      
+      switch (reportType.toLowerCase()) {
+        case 'users':
+          reportData = await db.execute("SELECT id, email, first_name, last_name, created_at, is_admin, is_driver FROM users ORDER BY created_at DESC" as any);
+          reportName = 'User Report';
+          break;
+          
+        case 'orders':
+          reportData = await db.execute("SELECT id, user_id, status, pickup_address, delivery_address, amount, created_at FROM orders ORDER BY created_at DESC" as any);
+          reportName = 'Orders Report';
+          break;
+          
+        case 'revenue':
+          reportData = await db.execute("SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(amount) as revenue FROM orders WHERE status = 'delivered' GROUP BY DATE(created_at) ORDER BY date DESC LIMIT 30" as any);
+          reportName = 'Revenue Report (Last 30 Days)';
+          break;
+          
+        case 'drivers':
+          reportData = await db.execute("SELECT id, email, first_name, last_name, created_at FROM users WHERE is_driver = true ORDER BY created_at DESC" as any);
+          reportName = 'Driver Report';
+          break;
+          
+        default:
+          return { error: "Invalid report type. Available: users, orders, revenue, drivers" };
+      }
+      
+      return {
+        success: true,
+        reportName,
+        data: reportData,
+        recordCount: Array.isArray(reportData) ? reportData.length : 1,
+        message: `Generated ${reportName} with ${Array.isArray(reportData) ? reportData.length : 1} records`
+      };
+    } catch (error) {
+      return { error: `Report generation failed: ${error}` };
+    }
+  }
+
+  static async analyzePerformance(): Promise<any> {
+    try {
+      const metrics = {
+        avgOrderTime: await db.execute("SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at))/3600) as avg_hours FROM orders WHERE status = 'delivered'" as any),
+        ordersByStatus: await db.execute("SELECT status, COUNT(*) as count FROM orders GROUP BY status" as any),
+        topUsers: await db.execute("SELECT u.email, COUNT(o.id) as order_count FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id, u.email ORDER BY order_count DESC LIMIT 10" as any),
+        revenueByDay: await db.execute("SELECT DATE(created_at) as date, SUM(amount) as daily_revenue FROM orders WHERE status = 'delivered' AND created_at >= NOW() - INTERVAL '7 days' GROUP BY DATE(created_at) ORDER BY date" as any)
+      };
+      
+      return {
+        success: true,
+        metrics,
+        message: "Performance analysis completed successfully"
+      };
+    } catch (error) {
+      return { error: `Performance analysis failed: ${error}` };
+    }
+  }
+
+  static async backupData(tables?: string[]): Promise<any> {
+    try {
+      const tablesToBackup = tables || ['users', 'orders', 'notifications'];
+      const backupData: any = {};
+      
+      for (const table of tablesToBackup) {
+        const data = await db.execute(`SELECT * FROM ${table}` as any);
+        backupData[table] = data;
+      }
+      
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/[:]/g, '-');
+      const backupFilename = `backup_${timestamp}.json`;
+      
+      return {
+        success: true,
+        backupData,
+        filename: backupFilename,
+        tables: tablesToBackup,
+        message: `Data backup completed for tables: ${tablesToBackup.join(', ')}`
+      };
+    } catch (error) {
+      return { error: `Backup failed: ${error}` };
+    }
+  }
+
   static async getDatabaseSchema(): Promise<string> {
     try {
       const result = await db.execute("SELECT table_name, column_name, data_type FROM information_schema.columns WHERE table_schema = 'public' ORDER BY table_name, ordinal_position" as any);

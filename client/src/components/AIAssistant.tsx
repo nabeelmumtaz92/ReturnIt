@@ -43,7 +43,7 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     {
       id: '1',
       type: 'assistant',
-      content: 'Hi! I\'m your AI assistant with full administrative access to the ReturnIt platform. I can help you with:\n\n🔧 **Development Tasks**\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Code analysis and improvements\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Run database queries and optimizations\n\n📊 **Administrative Operations**\n• List users, orders, and system data\n• Deploy changes and run diagnostics\n• Monitor performance and analytics\n\nJust tell me what you need in plain English:\n• "Delete user john@example.com"\n• "List all pending orders"\n• "Add a dark mode feature"\n• "Show me database statistics"\n\nWhat would you like me to help you with?',
+      content: 'Hi! I\'m your AI assistant with full administrative access to the ReturnIt platform.\n\n🔧 **Development Tasks**\n• Building new features and components\n• Fixing bugs and troubleshooting issues\n• Code analysis and improvements\n\n🗄️ **Database & User Management**\n• Create, update, or delete users\n• Manage orders and update statuses\n• Execute custom SQL queries\n• System statistics and analytics\n\n📊 **Administrative Operations**\n• Recent activity monitoring\n• Platform performance diagnostics\n• User and order management\n• Real-time system monitoring\n\n**Command Examples:**\n• "Delete user john@example.com"\n• "Generate report on orders"\n• "Performance analysis" \n• "Backup data"\n• "Bulk delete users inactive"\n• "SQL query: SELECT COUNT(*) FROM users"\n\nWhat would you like me to help you with?',
       timestamp: new Date(),
       status: 'completed'
     }
@@ -142,10 +142,10 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
   };
 
   const quickActions = [
-    { label: 'List Users', prompt: 'Show me all users in the database' },
-    { label: 'Show Orders', prompt: 'List all pending orders' },
-    { label: 'Add Dark Mode', prompt: 'Add a dark mode toggle to the website' },
-    { label: 'Optimize Database', prompt: 'Analyze and optimize database performance' }
+    { label: 'System Stats', prompt: 'Show me system statistics and dashboard data' },
+    { label: 'Generate Report', prompt: 'Generate report on users' },
+    { label: 'Performance Analysis', prompt: 'Analyze system performance and metrics' },
+    { label: 'Recent Activity', prompt: 'Show recent activity and platform usage' }
   ];
 
   if (isMinimized) {
