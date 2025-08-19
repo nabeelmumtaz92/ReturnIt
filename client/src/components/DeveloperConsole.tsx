@@ -21,7 +21,9 @@ import {
   Minimize2,
   Maximize2,
   X,
-  Cpu
+  Cpu,
+  Move,
+  Monitor
 } from "lucide-react";
 
 interface ConsoleEntry {
@@ -43,6 +45,11 @@ interface DeveloperConsoleProps {
 }
 
 export default function DeveloperConsole({ onClose, isMinimized }: DeveloperConsoleProps) {
+  // Dragging state
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 50, y: 50 });
+  const consoleRef = useRef<HTMLDivElement>(null);
   const [entries, setEntries] = useState<ConsoleEntry[]>([
     {
       id: '1',
@@ -156,6 +163,41 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
     }
   };
 
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget || (e.target as HTMLElement).closest('[data-drag-handle]')) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
+      });
+    }
+  };
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return;
+    
+    const newX = Math.max(0, Math.min(window.innerWidth - 800, e.clientX - dragStart.x));
+    const newY = Math.max(0, Math.min(window.innerHeight - 500, e.clientY - dragStart.y));
+    
+    setPosition({ x: newX, y: newY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragStart]);
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
@@ -178,41 +220,67 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
   }
 
   return (
-    <Card className="fixed bottom-4 left-4 w-[800px] h-[500px] shadow-2xl border-slate-200 z-40 bg-slate-50">
-      <CardHeader className="pb-3 bg-slate-800 text-white">
+    <Card 
+      ref={consoleRef}
+      className={`fixed w-[800px] h-[500px] shadow-2xl border-slate-300 z-40 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-2 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      style={{ 
+        left: `${position.x}px`, 
+        top: `${position.y}px`,
+        transform: isDragging ? 'scale(1.02)' : 'scale(1)',
+        transition: isDragging ? 'none' : 'transform 0.2s ease-out'
+      }}
+      onMouseDown={handleMouseDown}
+    >
+      <CardHeader 
+        className="pb-3 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 text-white border-b border-slate-600 cursor-grab active:cursor-grabbing"
+        data-drag-handle
+      >
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Terminal className="w-5 h-5" />
-            Developer Console
-            <Badge variant="secondary" className="ml-2 bg-green-600 text-white">
-              <Cpu className="w-3 h-3 mr-1" />
+          <CardTitle className="flex items-center gap-3">
+            <div className="relative">
+              <Monitor className="w-6 h-6 text-emerald-400" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
+            </div>
+            <span className="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent font-bold">
+              Developer Console
+            </span>
+            <Badge variant="secondary" className="ml-2 bg-gradient-to-r from-emerald-600 to-blue-600 text-white border-emerald-400 shadow-lg">
+              <Cpu className="w-3 h-3 mr-1 animate-pulse" />
               AI Powered
             </Badge>
+            <div className="flex gap-1 ml-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+            </div>
           </CardTitle>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-white hover:bg-slate-700"
-              data-testid="button-minimize-console"
-            >
-              <Minimize2 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-white hover:bg-slate-700"
-              data-testid="button-close-console"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+          <div className="flex items-center gap-2">
+            <Move className="w-4 h-4 text-slate-400" />
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-slate-300 hover:bg-slate-600 hover:text-white transition-all duration-200"
+                data-testid="button-minimize-console"
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onClose}
+                className="text-slate-300 hover:bg-red-600 hover:text-white transition-all duration-200"
+                data-testid="button-close-console"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-col h-full p-0 bg-slate-900 text-green-400 font-mono">
+      <CardContent className="flex flex-col h-full p-0 bg-gradient-to-b from-slate-900 via-black to-slate-900 text-emerald-400 font-mono border-t border-slate-600">
         <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
           <div className="space-y-3">
             {entries.map((entry) => (
@@ -288,35 +356,42 @@ export default function DeveloperConsole({ onClose, isMinimized }: DeveloperCons
           </div>
         </ScrollArea>
 
-        <div className="p-4 border-t border-slate-700 bg-slate-800">
-          <div className="flex gap-2">
-            <div className="flex items-center text-blue-400 mr-2">
-              <Terminal className="w-4 h-4 mr-1" />
-              <span className="text-sm">AI&gt;</span>
+        <div className="p-4 border-t border-slate-600 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800">
+          <div className="flex gap-3">
+            <div className="flex items-center text-emerald-400 mr-2">
+              <div className="relative">
+                <Terminal className="w-5 h-5 mr-2" />
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
+              </div>
+              <span className="text-sm font-mono bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">AI&gt;</span>
             </div>
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Enter AI development command (e.g., 'add dark mode toggle', 'fix login bug', 'optimize database')"
-              className="flex-1 bg-slate-900 border-slate-600 text-green-400 placeholder-slate-500"
+              className="flex-1 bg-gradient-to-r from-slate-900 to-black border-emerald-500/30 text-emerald-300 placeholder-slate-400 focus:border-emerald-400 focus:ring-emerald-400 transition-all duration-200"
               data-testid="input-console-command"
             />
             <Button 
               onClick={handleSend}
               disabled={!input.trim() || aiMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 shadow-lg border border-emerald-500/30 transition-all duration-200"
               data-testid="button-execute-console"
             >
-              <Send className="w-4 h-4" />
+              {aiMutation.isPending ? (
+                <Clock className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
             </Button>
           </div>
           
-          <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
-            <span>Use ↑/↓ for command history • Enter to execute • Shift+Enter for new line</span>
+          <div className="flex items-center justify-between mt-3 text-xs text-slate-400">
+            <span className="font-mono">Use ↑/↓ for command history • Enter to execute • Shift+Enter for new line</span>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span>AI Assistant Active</span>
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+              <span className="text-emerald-400 font-semibold">AI Assistant Active</span>
             </div>
           </div>
         </div>
