@@ -20,15 +20,17 @@ https://returnly.tech/api/auth/google/callback
 https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev/api/auth/google/callback
 ```
 
-### 3. Update Authorized Origins
+### 3. Update Authorized JavaScript Origins (CRITICAL)
 
-Add these **Authorized JavaScript origins**:
+Add these **Authorized JavaScript origins** - this is essential for frontend OAuth to work:
 
 ```
 https://returnit.online
 https://returnly.tech
 https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev
 ```
+
+**Why this matters**: Without these origins, the Google OAuth popup/redirect will be blocked by CORS policy, causing authentication to fail silently.
 
 ## Code Changes Made
 
@@ -56,11 +58,17 @@ https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev
 **Issue**: "redirect_uri_mismatch" error
 **Solution**: Ensure exact URL match in Google Cloud Console (including https:// and trailing path)
 
+**Issue**: "origin_mismatch" or CORS errors  
+**Solution**: Add your domain to **Authorized JavaScript Origins** (not just redirect URIs)
+
+**Issue**: Google OAuth popup blocked or fails silently
+**Solution**: Missing JavaScript origins - add all your domains to origins list
+
 **Issue**: Cookies not being set
 **Solution**: Verify HTTPS is working and `trust proxy` setting is active
 
-**Issue**: CORS errors
-**Solution**: Check that returnit.online is in Authorized Origins
+**Issue**: "Access blocked" errors
+**Solution**: Check that returnit.online is in BOTH Authorized Origins AND Redirect URIs
 
 ## Environment Variables Needed
 
@@ -70,10 +78,25 @@ Make sure these are set in production:
 - `GOOGLE_CLIENT_SECRET` (your Google OAuth client secret)
 - `SESSION_SECRET` (same secret used in development)
 
-## Next Steps
+## Complete Setup Checklist
 
-1. Add the redirect URIs to Google Cloud Console
-2. Test the login flow on returnit.online
-3. Verify that admin accounts (nabeelmumtaz92@gmail.com, nabeelmumtaz4.2@gmail.com) can access the admin dashboard
+### In Google Cloud Console:
+- [ ] Add `https://returnit.online/api/auth/google/callback` to **Authorized redirect URIs**
+- [ ] Add `https://returnly.tech/api/auth/google/callback` to **Authorized redirect URIs**  
+- [ ] Add `https://returnit.online` to **Authorized JavaScript origins**
+- [ ] Add `https://returnly.tech` to **Authorized JavaScript origins**
+- [ ] Add your dev URL to both redirect URIs and origins
+
+### In Production:
+- [ ] Deploy the updated code with trust proxy settings
+- [ ] Verify `NODE_ENV=production` is set
+- [ ] Test OAuth login flow at https://returnit.online
+
+### Testing:
+- [ ] Try Google OAuth login on returnit.online
+- [ ] Verify admin accounts (nabeelmumtaz92@gmail.com, nabeelmumtaz4.2@gmail.com) get admin access
+- [ ] Check that session cookies persist properly
+
+**Critical**: Both redirect URIs AND JavaScript origins must be configured, or OAuth will fail with CORS/origin errors.
 
 The backend is now configured to handle production authentication properly!
