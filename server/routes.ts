@@ -237,9 +237,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
+      console.log('Debug - User lookup for email:', email);
+      console.log('Debug - User found:', user ? { id: user.id, email: user.email, hasPassword: !!user.password } : 'null');
       
       // Verify credentials
-      if (!user || !await AuthService.verifyPassword(password, user.password)) {
+      let passwordValid = false;
+      if (user && user.password) {
+        passwordValid = await AuthService.verifyPassword(password, user.password);
+        console.log('Debug - Password verification result:', passwordValid);
+      }
+      
+      if (!user || !passwordValid) {
         // Record failed attempt
         AuthService.recordFailedAttempt(email);
         
