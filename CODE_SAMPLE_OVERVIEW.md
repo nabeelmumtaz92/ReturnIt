@@ -20,30 +20,62 @@ This code sample demonstrates a production-ready delivery logistics platform tha
 
 ### Section 1: Customer Web Application
 **Primary Files:**
-- `client/src/pages/welcome.tsx` - Landing page with authentication
-- `client/src/pages/book-pickup.tsx` - Return booking interface  
+- `client/src/pages/welcome.tsx` - Landing page with authentication (125+ lines)
+- `client/src/pages/book-pickup.tsx` - Return booking interface (800+ lines)
 - `client/src/components/PaymentMethods.tsx` - Payment processing
 - `shared/paymentCalculator.ts` - Business logic for pricing
 
 **Key Features Demonstrated:**
-- React 18 with TypeScript
-- Form handling with validation
-- Payment integration (Stripe)
-- Location services and mapping
-- Responsive design with Tailwind CSS
+- React 18 with TypeScript - Advanced hooks and component patterns
+- Complex form handling - 20+ fields with real-time validation
+- Payment integration (Stripe) - Multiple payment methods, real-time pricing
+- Location services and mapping - GPS integration, route optimization
+- Responsive design with Tailwind CSS - Mobile-first approach
+
+**Code Highlights:**
+```typescript
+// Advanced form state management with validation
+const [formData, setFormData] = useState({
+  streetAddress: '', retailer: '', itemValue: '', 
+  numberOfItems: 1, // ... 20+ form fields
+});
+
+// Real-time payment calculation
+const calculatePaymentWithValue = (itemValue: number, numberOfItems: number): PaymentBreakdown => {
+  const basePrice = 3.99;
+  const valueBasedFee = itemValue > 100 ? Math.min(itemValue * 0.01, 5.00) : 0;
+  return { basePrice, valueBasedFee, totalAmount: basePrice + valueBasedFee };
+};
+```
 
 ### Section 2: Driver Web Portal  
 **Primary Files:**
-- `client/src/pages/driver-portal.tsx` - Driver dashboard
+- `client/src/pages/driver-portal.tsx` - Driver dashboard (200+ lines)
 - `client/src/components/DriverOrderCard.tsx` - Order management UI
 - `client/src/components/DriverOnlineToggle.tsx` - Status management
 - `server/routes/driver.ts` - Driver API endpoints
 
 **Key Features Demonstrated:**
-- Real-time order updates with React Query
-- Geolocation integration
-- Status management and notifications
-- Earnings calculations and display
+- Real-time order updates with React Query - Optimistic updates, automatic cache invalidation
+- Geolocation integration - GPS tracking for order assignment
+- Status management and notifications - Online/offline toggle affects order visibility
+- Earnings calculations and display - Real-time totals with pending/completed breakdown
+
+**Code Highlights:**
+```typescript
+// Real-time order management with React Query
+const { data: availableOrders = [] } = useQuery<Order[]>({
+  queryKey: ["/api/driver/orders/available"],
+  enabled: isAuthenticated && user?.isDriver
+});
+
+const acceptOrderMutation = useMutation({
+  mutationFn: async (orderId: string) => {
+    await apiRequest("POST", `/api/driver/orders/${orderId}/accept`);
+  },
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/driver/orders"] })
+});
+```
 
 ### Section 3: Mobile Driver Application
 **Primary Files:**
@@ -61,17 +93,42 @@ This code sample demonstrates a production-ready delivery logistics platform tha
 
 ### Section 4: Administrative Dashboard
 **Primary Files:**
-- `client/src/pages/admin-dashboard.tsx` - Main admin interface
-- `client/src/components/AdminLayout.tsx` - Admin UI framework
+- `client/src/pages/admin-dashboard.tsx` - Main admin interface (2000+ lines)
+- `client/src/components/AdminLayout.tsx` - Admin UI framework (200+ lines)
 - `client/src/components/AnalyticsDashboard.tsx` - Business intelligence
 - `server/middleware/adminAuth.ts` - Admin authentication
 
 **Key Features Demonstrated:**
-- Role-based access control
-- Data visualization and analytics
-- Excel export functionality
-- Real-time operational monitoring
-- Multi-section navigation system
+- Role-based access control - Secure admin-only access with session management
+- Data visualization and analytics - Real-time business metrics with calculated fields
+- Excel export functionality - Multi-sheet reports with complex business data
+- Real-time operational monitoring - Live order tracking and driver management
+- Multi-section navigation system - 15+ admin sections with hierarchical organization
+
+**Code Highlights:**
+```typescript
+// Complex admin navigation with role-based access
+const navigationSections = [
+  {
+    title: "Business Operations Center",
+    items: [
+      { label: "Order Management", href: "/admin-orders", icon: Package },
+      { label: "Driver Management", href: "/admin-drivers", icon: Truck },
+      { label: "Real-time Tracking", href: "/admin-tracking", icon: Activity }
+    ]
+  }
+];
+
+// Advanced data processing for business intelligence
+const { data: completedOrders = [] } = useQuery<Order[]>({
+  queryKey: ["/api/admin/orders/completed"],
+  select: (data) => data.map(order => ({
+    ...order,
+    revenue: calculateOrderRevenue(order),
+    driverEarning: calculateDriverEarning(order)
+  }))
+});
+```
 
 ## Shared Architecture Components
 
