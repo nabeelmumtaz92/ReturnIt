@@ -1,0 +1,53 @@
+
+Code Sample
+Overview
+At Major League Hacking we don’t believe in whiteboarding interviews. Instead, we prefer to talk about the code you’ve written. As part of your application you should submit a code sample that you feel demonstrates your abilities. We’ll review this sample ourselves while looking over your application. If you’re invited to a tech interview, you’ll talk about this specific code with your interviewer.
+
+
+Code Sample Requirements:
+Representative: The sample should be representative of your abilities. If you’re submitting a group project, make sure you contributed a substantial amount of code. Projects that are based mostly on a tutorial aren’t representative of your own abilities.
+
+Existing sample: This is code that you wrote for a purpose other than this application.
+
+Public on GitHub: Your sample should be viewable on GitHub publicly. If you can’t make the repository public, convert your code to a secret GitHub Gist instead.
+
+Multiple files: Your sample should consist of multiple files and be of substance. It’s hard to have a conversation about a single function.
+
+Not too large: It’s difficult to have a conversation about a mono-repo with dozens of microservices. It should be immediately clear what you contributed to the sample. Dense frameworks with lots of boilerplate such as Django or Laravel don’t usually make for good code samples. Lightweight frameworks such as Flask and Express are good examples.
+
+Real problem: Your sample should solve a real problem or accomplish a real goal. While some class projects will meet this criteria, most won’t. There’s nothing wrong with the binary search tree you wrote, but it’ll be hard for your interviewers to get to know you through that kind of sample.
+
+No Jupyter notebooks: We need to see your ability to write a project that an end user can use. It should be deployable. We don’t accept Jupyter notebooks or other exploratory code samples because it’s difficult to have a conversation about your coding skills with these.
+
+Aligned with our available tracks: The Fellowship currently supports projects primarily in the following coding languages: JavaScript, TypeScript, Python (especially the SRE track), and Rust (especially the Web3 track). You will give yourself the best chance of admission if you submit a project in one of those languages. You may still submit in any language you like, but you may be asked to provide a supplemental code sample later in the admissions process in order for us to assess your proficiency.
+Examples of good code samples
+A web app with JavaScript
+A web server (backend only)
+A desktop app
+A command line app
+Examples of poor code samples
+Jupyter notebooks
+Tutorials
+Simple static sites with no logic (i.e. without JavaScript / similar)
+Algorithm implementations / competitive coding solutions
+University or bootcamp coursework (as these often contain too much boilerplate and aren’t representative of your own abilities)
+
+What to do if you don’t have an appropriate code sample:
+
+If you don’t have a relevant code sample, our best advice is to attend one of the upcoming MLH hackathons and submit whatever you build there. MLH has hackathons taking place every weekend of the year and they are open to both students and professionals.
+
+Code Sample
+Code Sample GitHub URL
+http://github.com/...
+ Which programming language/technology are your contributions to this code sample primarily written in?
+
+Please select...
+ Appropriate Code Sample Confirmation
+I understand that the MLH Fellowship tracks primarily require proficiency in JavaScript, TypeScript, Python, or Rust, and that if I have submitted a code sample in another language, I may be asked to provide a supplemental code sample.
+
+The MLH admissions team may also explore my publicly-available GitHub repos to learn more about my experience with relevant technologies (libraries, APIs, etc.)
+ Briefly describe what this code sample does:
+ Briefly describe what you learned when you created this code sample:
+Save my progress and resume later | Resume a previously saved form
+
+
