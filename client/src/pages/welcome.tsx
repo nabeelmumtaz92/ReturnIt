@@ -119,11 +119,50 @@ export default function Welcome() {
       {/* Main Content - Mobile Optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 space-y-8">
         
-        {/* ReturnIt Title - Centered */}
+        {/* ReturnIt Logo - Centered */}
         <div className="text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-light text-white mb-4">
-            ReturnIt
-          </h1>
+          <div className="flex justify-center mb-4">
+            <svg width="300" height="120" viewBox="0 0 200 80" className="filter drop-shadow-lg">
+              {/* "returnit" text */}
+              <text x="10" y="55" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="600" fill="#FFFFFF">
+                returnit
+              </text>
+              
+              {/* 3D Box Icon */}
+              <g transform="translate(155, 15)">
+                {/* Box outline */}
+                <path d="M5 25 L25 15 L45 25 L45 45 L25 55 L5 45 Z" 
+                      fill="none" 
+                      stroke="#FFFFFF" 
+                      strokeWidth="3" 
+                      strokeLinejoin="round"/>
+                
+                {/* Top face */}
+                <path d="M5 25 L25 15 L45 25 L25 35 Z" 
+                      fill="none" 
+                      stroke="#FFFFFF" 
+                      strokeWidth="3" 
+                      strokeLinejoin="round"/>
+                
+                {/* Left face */}
+                <path d="M5 25 L5 45 L25 55 L25 35 Z" 
+                      fill="none" 
+                      stroke="#FFFFFF" 
+                      strokeWidth="3" 
+                      strokeLinejoin="round"/>
+                
+                {/* Right face */}
+                <path d="M25 35 L25 55 L45 45 L45 25 Z" 
+                      fill="none" 
+                      stroke="#FFFFFF" 
+                      strokeWidth="3" 
+                      strokeLinejoin="round"/>
+                
+                {/* Small dot on front face */}
+                <circle cx="15" cy="40" r="2" fill="#FFFFFF"/>
+              </g>
+            </svg>
+          </div>
         </div>
 
         {/* Hassle Free - Centered */}

@@ -69,14 +69,48 @@ export function LogoIcon({ size = 24, className = "", variant = 'default' }: Log
 }
 
 export function ReturnItLogo({ size = 32, className = "", variant = 'default' }: LogoIconProps) {
+  const color = variant === 'white' ? '#FFFFFF' : '#1e3a5f';
+  
   return (
-    <div className={`flex items-center ${className}`}>
-      <img 
-        src="/returnit-logo.png" 
-        alt="ReturnIt Logo" 
-        className="h-8 w-auto"
-        style={{ height: `${size}px` }}
-      />
-    </div>
+    <svg width={size * 2.5} height={size} viewBox="0 0 200 80" className={className}>
+      {/* "returnit" text */}
+      <text x="10" y="55" fontFamily="Arial, sans-serif" fontSize="32" fontWeight="600" fill={color}>
+        returnit
+      </text>
+      
+      {/* 3D Box Icon */}
+      <g transform="translate(155, 15)">
+        {/* Box outline */}
+        <path d="M5 25 L25 15 L45 25 L45 45 L25 55 L5 45 Z" 
+              fill="none" 
+              stroke={color} 
+              strokeWidth="3" 
+              strokeLinejoin="round"/>
+        
+        {/* Top face */}
+        <path d="M5 25 L25 15 L45 25 L25 35 Z" 
+              fill="none" 
+              stroke={color} 
+              strokeWidth="3" 
+              strokeLinejoin="round"/>
+        
+        {/* Left face */}
+        <path d="M5 25 L5 45 L25 55 L25 35 Z" 
+              fill="none" 
+              stroke={color} 
+              strokeWidth="3" 
+              strokeLinejoin="round"/>
+        
+        {/* Right face */}
+        <path d="M25 35 L25 55 L45 45 L45 25 Z" 
+              fill="none" 
+              stroke={color} 
+              strokeWidth="3" 
+              strokeLinejoin="round"/>
+        
+        {/* Small dot on front face */}
+        <circle cx="15" cy="40" r="2" fill={color}/>
+      </g>
+    </svg>
   );
 }

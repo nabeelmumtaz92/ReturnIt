@@ -13,7 +13,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
-import { ReturnItLogo } from '@/components/LogoIcon';
+import { ReturnItLogo } from '@/components/ReturnItLogo';
 import { cn } from '@/lib/utils';
 
 interface AdminLayoutProps {

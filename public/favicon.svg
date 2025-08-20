@@ -1,0 +1,39 @@
+<svg width="32" height="32" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <!-- ReturnIt Box Icon for Favicon -->
+  <g transform="translate(5, 5)">
+    <!-- Box outline -->
+    <path d="M5 25 L25 15 L45 25 L45 45 L25 55 L5 45 Z" 
+          fill="none" 
+          stroke="#1e3a5f" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          transform="scale(0.8)"/>
+    
+    <!-- Top face -->
+    <path d="M5 25 L25 15 L45 25 L25 35 Z" 
+          fill="none" 
+          stroke="#1e3a5f" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          transform="scale(0.8)"/>
+    
+    <!-- Left face -->
+    <path d="M5 25 L5 45 L25 55 L25 35 Z" 
+          fill="none" 
+          stroke="#1e3a5f" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          transform="scale(0.8)"/>
+    
+    <!-- Right face -->
+    <path d="M25 35 L25 55 L45 45 L45 25 Z" 
+          fill="none" 
+          stroke="#1e3a5f" 
+          stroke-width="3" 
+          stroke-linejoin="round"
+          transform="scale(0.8)"/>
+    
+    <!-- Small dot on front face -->
+    <circle cx="12" cy="32" r="1.5" fill="#1e3a5f" transform="scale(0.8)"/>
+  </g>
+</svg>
