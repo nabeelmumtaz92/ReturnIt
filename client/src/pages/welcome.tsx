@@ -123,9 +123,9 @@ export default function Welcome() {
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <svg width="400" height="120" viewBox="0 0 400 120" className="filter drop-shadow-lg">
-              {/* "returnit" text - exact match to your image */}
+              {/* "ReturnIt" text - exact match to your image */}
               <text x="20" y="80" fontFamily="Arial, Helvetica, sans-serif" fontSize="48" fontWeight="700" fill="#FFFFFF">
-                returnit
+                ReturnIt
               </text>
               
               {/* 3D Box Icon - exact match to your image */}

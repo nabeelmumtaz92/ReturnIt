@@ -1,9 +1,9 @@
 <svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
   <!-- Exact recreation of the returnit logo from the provided image -->
   
-  <!-- "returnit" text - matching the exact styling -->
+  <!-- "ReturnIt" text - matching the exact styling -->
   <text x="20" y="80" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="700" fill="#1A3B5C">
-    returnit
+    ReturnIt
   </text>
   
   <!-- 3D Box Icon - positioned to match the image exactly -->

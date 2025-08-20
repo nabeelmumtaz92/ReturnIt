@@ -8,9 +8,9 @@ interface ReturnItLogoProps {
 export function ReturnItLogo({ size = 32, className = "" }: ReturnItLogoProps) {
   return (
     <svg width={size * 3.3} height={size} viewBox="0 0 400 120" className={className}>
-      {/* "returnit" text - exact match to your image */}
+      {/* "ReturnIt" text - exact match to your image */}
       <text x="20" y="80" fontFamily="Arial, Helvetica, sans-serif" fontSize="48" fontWeight="700" fill="#1A3B5C">
-        returnit
+        ReturnIt
       </text>
       
       {/* 3D Box Icon - exact match to your image */}

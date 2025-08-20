@@ -73,9 +73,9 @@ export function ReturnItLogo({ size = 32, className = "", variant = 'default' }:
   
   return (
     <svg width={size * 3.3} height={size} viewBox="0 0 400 120" className={className}>
-      {/* "returnit" text - exact match to image */}
+      {/* "ReturnIt" text - exact match to image */}
       <text x="20" y="80" fontFamily="Arial, Helvetica, sans-serif" fontSize="48" fontWeight="700" fill={color}>
-        returnit
+        ReturnIt
       </text>
       
       {/* 3D Box Icon - exact match to image */}
