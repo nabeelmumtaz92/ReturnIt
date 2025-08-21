@@ -56,13 +56,13 @@ export function AdminNavigation() {
         },
         {
           label: "Business Intelligence",
-          href: "/business-intelligence",
+          href: "/admin-dashboard?section=analytics",
           icon: TrendingUp,
           description: "Advanced analytics and insights"
         },
         {
           label: "Enhanced Analytics",
-          href: "/enhanced-analytics",
+          href: "/admin-dashboard?section=enhanced-analytics",
           icon: BarChart3,
           description: "Real-time performance metrics"
         }
@@ -73,26 +73,26 @@ export function AdminNavigation() {
       items: [
         {
           label: "Live Orders",
-          href: "/admin-dashboard",
+          href: "/admin-dashboard?section=orders",
           icon: Package,
           description: "Real-time order management",
           badge: "Live"
         },
         {
-          label: "Driver Management",
-          href: "/admin-dashboard",
+          label: "Driver Management", 
+          href: "/admin-dashboard?section=drivers",
           icon: Users,
           description: "Driver oversight and performance"
         },
         {
           label: "Route Optimization",
-          href: "/route-optimization",
+          href: "/admin-dashboard?section=routes",
           icon: Truck,
           description: "Optimize delivery routes"
         },
         {
           label: "Quality Assurance",
-          href: "/quality-assurance",
+          href: "/admin-dashboard?section=quality",
           icon: Shield,
           description: "Service quality monitoring"
         }
@@ -103,19 +103,19 @@ export function AdminNavigation() {
       items: [
         {
           label: "Payment Tracking",
-          href: "/admin-payment-tracking",
+          href: "/admin-dashboard?section=payments",
           icon: DollarSign,
           description: "Payment and payout management"
         },
         {
           label: "Driver Incentives",
-          href: "/driver-incentives",
+          href: "/admin-dashboard?section=incentives",
           icon: Star,
           description: "Bonus and reward programs"
         },
         {
           label: "Advanced Reporting",
-          href: "/advanced-reporting",
+          href: "/admin-dashboard?section=reporting",
           icon: FileText,
           description: "Financial reports and exports"
         }
@@ -126,25 +126,25 @@ export function AdminNavigation() {
       items: [
         {
           label: "Customer Service",
-          href: "/customer-service-tickets",
+          href: "/admin-dashboard?section=tickets",
           icon: MessageSquare,
           description: "Support ticket management"
         },
         {
           label: "Chat Center",
-          href: "/chat-center",
+          href: "/admin-dashboard?section=chat",
           icon: MessageSquare,
           description: "Live customer support"
         },
         {
           label: "Customer Rating",
-          href: "/customer-rating",
+          href: "/admin-dashboard?section=ratings",
           icon: Star,
           description: "Customer feedback system"
         },
         {
           label: "Notification Center",
-          href: "/notification-center",
+          href: "/admin-dashboard?section=notifications",
           icon: Activity,
           description: "System notifications"
         }
@@ -155,7 +155,7 @@ export function AdminNavigation() {
       items: [
         {
           label: "Employee Management",
-          href: "/admin-dashboard",
+          href: "/admin-dashboard?section=employees",
           icon: UserCheck,
           description: "Staff and permissions"
         },

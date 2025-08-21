@@ -105,8 +105,12 @@ interface AdminDashboardProps {
 }
 
 export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
+  
+  // Get current section from URL parameters
+  const urlParams = new URLSearchParams(window.location.search);
+  const currentSection = urlParams.get('section') || section || 'overview';
   const { toast } = useToast();
   const [orders, setOrders] = useState<Order[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -614,6 +618,468 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return completedOrders;
   };
 
+  // Function to render section-based content
+  const renderSectionContent = () => {
+    switch (currentSection) {
+      case 'orders':
+        return renderOrdersSection();
+      case 'drivers':
+        return renderDriversSection();
+      case 'payments':
+        return renderPaymentsSection();
+      case 'analytics':
+        return renderAnalyticsSection();
+      case 'enhanced-analytics':
+        return renderEnhancedAnalyticsSection();
+      case 'routes':
+        return renderRoutesSection();
+      case 'quality':
+        return renderQualitySection();
+      case 'incentives':
+        return renderIncentivesSection();
+      case 'reporting':
+        return renderReportingSection();
+      case 'tickets':
+        return renderTicketsSection();
+      case 'chat':
+        return renderChatSection();
+      case 'ratings':
+        return renderRatingsSection();
+      case 'notifications':
+        return renderNotificationsSection();
+      case 'employees':
+        return renderEmployeesSection();
+      case 'overview':
+      default:
+        return renderOverviewSection();
+    }
+  };
+
+  // Section render functions
+  const renderOverviewSection = () => (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <Card className="bg-white border-amber-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-600 text-sm font-medium">Today's Orders</p>
+                <p className="text-2xl font-bold text-amber-900">47</p>
+              </div>
+              <Package className="h-8 w-8 text-amber-600" />
+            </div>
+            <p className="text-xs text-amber-700 mt-2">+12% from yesterday</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-amber-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-600 text-sm font-medium">Active Drivers</p>
+                <p className="text-2xl font-bold text-amber-900">28</p>
+              </div>
+              <Users className="h-8 w-8 text-amber-600" />
+            </div>
+            <p className="text-xs text-amber-700 mt-2">3 on break</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-amber-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-600 text-sm font-medium">Revenue Today</p>
+                <p className="text-2xl font-bold text-amber-900">$1,847</p>
+              </div>
+              <DollarSign className="h-8 w-8 text-amber-600" />
+            </div>
+            <p className="text-xs text-amber-700 mt-2">+8% from yesterday</p>
+          </CardContent>
+        </Card>
+        <Card className="bg-white border-amber-200">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-600 text-sm font-medium">Avg Rating</p>
+                <p className="text-2xl font-bold text-amber-900">4.9</p>
+              </div>
+              <TrendingUp className="h-8 w-8 text-amber-600" />
+            </div>
+            <p className="text-xs text-amber-700 mt-2">98% satisfaction</p>
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="bg-white border-amber-200">
+        <CardHeader>
+          <CardTitle className="text-amber-900">Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col space-y-2"
+              onClick={() => window.location.href = '/admin-dashboard?section=orders'}
+            >
+              <Package className="h-6 w-6 text-amber-600" />
+              <span>Manage Orders</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col space-y-2"
+              onClick={() => window.location.href = '/admin-dashboard?section=drivers'}
+            >
+              <Users className="h-6 w-6 text-amber-600" />
+              <span>View Drivers</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col space-y-2"
+              onClick={() => window.location.href = '/admin-dashboard?section=analytics'}
+            >
+              <BarChart3 className="h-6 w-6 text-amber-600" />
+              <span>Analytics</span>
+            </Button>
+            <Button 
+              variant="outline" 
+              className="h-auto p-4 flex flex-col space-y-2"
+              onClick={() => window.location.href = '/admin-dashboard?section=chat'}
+            >
+              <MessageCircle className="h-6 w-6 text-amber-600" />
+              <span>Support Chat</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderOrdersSection = () => (
+    <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+      <CardHeader>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <CardTitle className="text-amber-900 text-lg sm:text-xl">Live Orders</CardTitle>
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-24 sm:w-32 text-xs sm:text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="assigned">Assigned</SelectItem>
+                <SelectItem value="picked_up">Picked Up</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button size="sm" variant="outline" className="px-2 sm:px-3">
+              <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
+              Refresh
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {filteredOrders.map((order) => (
+            <div 
+              key={order.id} 
+              className="p-4 border border-amber-200 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
+              onClick={() => setSelectedOrder(order)}
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+                <div className="flex items-center space-x-3 sm:space-x-4">
+                  <div>
+                    <p className="font-semibold text-amber-900 text-sm sm:text-base">{order.id}</p>
+                    <p className="text-xs sm:text-sm text-amber-700">{order.customer}</p>
+                  </div>
+                  <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
+                    {order.priority.toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between sm:flex-col sm:items-end sm:text-right">
+                  <Badge className={`${getStatusBadge(order.status)} text-xs mb-0 sm:mb-2`}>
+                    {order.status.replace('_', ' ').toUpperCase()}
+                  </Badge>
+                  <p className="text-sm font-semibold text-amber-900">${order.amount}</p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-amber-700">
+                <p><MapPin className="h-3 w-3 inline mr-1" />{order.pickupAddress}</p>
+                <p><Package className="h-3 w-3 inline mr-1" />{order.destination}</p>
+              </div>
+              {order.driver && (
+                <p className="mt-2 text-xs text-amber-600">
+                  <Truck className="h-3 w-3 inline mr-1" />
+                  Assigned to: {order.driver}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderDriversSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Driver Management</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <Input
+              placeholder="Search drivers..."
+              value={driverSearchTerm}
+              onChange={(e) => setDriverSearchTerm(e.target.value)}
+              className="max-w-sm"
+            />
+            <Select value={driverStatusFilter} onValueChange={setDriverStatusFilter}>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+                <SelectItem value="suspended">Suspended</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid gap-4">
+            {drivers.map((driver) => (
+              <div key={driver.id} className="p-4 border border-amber-200 rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-semibold text-amber-900">{driver.name}</h3>
+                    <p className="text-sm text-amber-700">{driver.email}</p>
+                    <p className="text-xs text-amber-600">{driver.phone}</p>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {getDriverStatusIcon(driver.status)}
+                    <span className="text-sm font-medium">{driver.status}</span>
+                  </div>
+                </div>
+                <div className="mt-3 grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-amber-600">Orders</p>
+                    <p className="font-semibold">{driver.completedOrders}</p>
+                  </div>
+                  <div>
+                    <p className="text-amber-600">Rating</p>
+                    <p className="font-semibold">{driver.rating}★</p>
+                  </div>
+                  <div>
+                    <p className="text-amber-600">Earnings</p>
+                    <p className="font-semibold">${driver.earnings}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderPaymentsSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Payment Tracking</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-green-50 border-green-200">
+              <CardContent className="p-4 text-center">
+                <p className="text-sm font-medium text-green-600">Total Revenue</p>
+                <p className="text-2xl font-bold text-green-700">$12,847</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-blue-50 border-blue-200">
+              <CardContent className="p-4 text-center">
+                <p className="text-sm font-medium text-blue-600">Driver Payouts</p>
+                <p className="text-2xl font-bold text-blue-700">$8,993</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-amber-50 border-amber-200">
+              <CardContent className="p-4 text-center">
+                <p className="text-sm font-medium text-amber-600">Pending Payouts</p>
+                <p className="text-2xl font-bold text-amber-700">$1,254</p>
+              </CardContent>
+            </Card>
+          </div>
+          <div className="text-center py-8">
+            <CreditCard className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+            <p className="text-lg font-medium text-amber-900">Payment management system ready</p>
+            <p className="text-sm text-amber-700">Track revenue, payouts, and financial metrics</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderAnalyticsSection = () => (
+    <div className="space-y-6">
+      <AnalyticsDashboard />
+    </div>
+  );
+
+  const renderEnhancedAnalyticsSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Enhanced Analytics</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <CompletedOrdersAnalytics completedOrders={getFilteredCompletedOrders() as any} />
+      </CardContent>
+    </Card>
+  );
+
+  // Placeholder sections for other navigation items
+  const renderRoutesSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Route Optimization</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <Truck className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Route optimization tools</p>
+          <p className="text-sm text-amber-700">Optimize delivery routes for efficiency</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderQualitySection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Quality Assurance</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <Shield className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Quality monitoring system</p>
+          <p className="text-sm text-amber-700">Monitor service quality and performance</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderIncentivesSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Driver Incentives</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <Trophy className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Incentive management</p>
+          <p className="text-sm text-amber-700">Manage driver bonuses and rewards</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderReportingSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Advanced Reporting</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          <Button 
+            onClick={exportToExcel}
+            className="w-full bg-amber-600 hover:bg-amber-700"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export Full Analytics Report
+          </Button>
+          <div className="text-center py-8">
+            <BarChart3 className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+            <p className="text-lg font-medium text-amber-900">Financial reports and exports</p>
+            <p className="text-sm text-amber-700">Generate detailed business reports</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderTicketsSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Customer Service</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <MessageSquare className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Support ticket management</p>
+          <p className="text-sm text-amber-700">Handle customer service requests</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderChatSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Chat Center</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <MessageCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Live customer support</p>
+          <p className="text-sm text-amber-700">Real-time chat with customers</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderRatingsSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Customer Ratings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <TrendingUp className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Customer feedback system</p>
+          <p className="text-sm text-amber-700">Monitor ratings and reviews</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderNotificationsSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Notification Center</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <Bell className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">System notifications</p>
+          <p className="text-sm text-amber-700">Manage alerts and notifications</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderEmployeesSection = () => (
+    <Card className="bg-white border-amber-200">
+      <CardHeader>
+        <CardTitle className="text-amber-900">Employee Management</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-center py-8">
+          <UserCheck className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-lg font-medium text-amber-900">Staff and permissions</p>
+          <p className="text-sm text-amber-700">Manage employee access and roles</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   const dashboardTabs = [
     {
       label: "Overview",
@@ -730,1153 +1196,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             )}
           </div>
 
-          {/* Main Content Tabs */}
-          <Tabs defaultValue="orders" className="space-y-4 sm:space-y-6">
-            <TabsList className="bg-white border-amber-200 h-auto flex-wrap gap-1 sm:gap-0 p-1">
-              <TabsTrigger value="orders" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <Package className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Live Orders</span>
-                <span className="sm:hidden">Live</span>
-              </TabsTrigger>
-              <TabsTrigger value="completed" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <CheckCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Completed</span>
-                <span className="sm:hidden">Done</span>
-              </TabsTrigger>
-              <TabsTrigger value="drivers" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <Truck className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Drivers</span>
-                <span className="sm:hidden">Drivers</span>
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <BarChart3 className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Analytics</span>
-                <span className="sm:hidden">Stats</span>
-              </TabsTrigger>
-              <TabsTrigger value="support" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <MessageCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Support Tickets</span>
-                <span className="sm:hidden">Support</span>
-              </TabsTrigger>
-              <TabsTrigger value="advanced" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <Target className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Advanced Features</span>
-                <span className="sm:hidden">Advanced</span>
-              </TabsTrigger>
-              <TabsTrigger value="employees" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <UserCheck className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Employees</span>
-                <span className="sm:hidden">Staff</span>
-              </TabsTrigger>
-              <TabsTrigger value="messaging" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2 relative">
-                <div className="relative">
-                  <Mail className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                  {hasNewMessages && (
-                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                  )}
-                </div>
-                <span className="hidden sm:inline">Messaging</span>
-                <span className="sm:hidden">Messages</span>
-                {unreadCount > 0 && (
-                  <Badge className="ml-1 bg-red-500 text-white text-xs h-4 w-4 p-0 flex items-center justify-center">
-                    {unreadCount}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="data-[state=active]:bg-amber-100 text-xs sm:text-sm px-2 sm:px-3 py-2">
-                <Settings className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Settings</span>
-                <span className="sm:hidden">Settings</span>
-              </TabsTrigger>
-            </TabsList>
+          {/* Section-Based Content */}
+          <div className="space-y-4 sm:space-y-6">
+            {/* Section Header */}
+            <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4">
+              <h1 className="text-2xl font-bold text-amber-900 capitalize">
+                {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
+              </h1>
+              <p className="text-amber-700 text-sm mt-1">
+                {currentSection === 'overview' && 'Complete system overview and quick actions'}
+                {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
+                {currentSection === 'drivers' && 'Monitor driver performance and status'}
+                {currentSection === 'payments' && 'Track payments, payouts, and financial metrics'}
+                {currentSection === 'analytics' && 'Advanced business intelligence and insights'}
+                {currentSection === 'enhanced-analytics' && 'Real-time performance metrics and analytics'}
+                {currentSection === 'routes' && 'Optimize delivery routes for efficiency'}
+                {currentSection === 'quality' && 'Monitor service quality and performance standards'}
+                {currentSection === 'incentives' && 'Manage driver bonuses and reward programs'}
+                {currentSection === 'reporting' && 'Generate detailed financial and operational reports'}
+                {currentSection === 'tickets' && 'Handle customer service requests and support tickets'}
+                {currentSection === 'chat' && 'Live customer support and communication'}
+                {currentSection === 'ratings' && 'Monitor customer feedback and service ratings'}
+                {currentSection === 'notifications' && 'System alerts and notification management'}
+                {currentSection === 'employees' && 'Staff management and access control'}
+              </p>
+            </div>
 
-            {/* Orders Tab */}
-            <TabsContent value="orders">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                    <CardTitle className="text-amber-900 text-lg sm:text-xl">Live Orders</CardTitle>
-                    <div className="flex items-center space-x-2 sm:space-x-3">
-                      <Select value={filterStatus} onValueChange={setFilterStatus}>
-                        <SelectTrigger className="w-24 sm:w-32 text-xs sm:text-sm">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Status</SelectItem>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="assigned">Assigned</SelectItem>
-                          <SelectItem value="picked_up">Picked Up</SelectItem>
-                          <SelectItem value="delivered">Delivered</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button size="sm" variant="outline" className="px-2 sm:px-3">
-                        <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                        <span className="hidden sm:inline">Refresh</span>
-                        <span className="sm:hidden text-xs">Sync</span>
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {filteredOrders.map((order) => (
-                      <div 
-                        key={order.id} 
-                        className="p-4 border border-amber-200 rounded-lg hover:bg-amber-50 cursor-pointer transition-colors"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
-                          <div className="flex items-center space-x-3 sm:space-x-4">
-                            <div>
-                              <p className="font-semibold text-amber-900 text-sm sm:text-base">{order.id}</p>
-                              <p className="text-xs sm:text-sm text-amber-700">{order.customer}</p>
-                              <div className="mt-1">
-                                <RoleSwitcher />
-                              </div>
-                            </div>
-                            <Badge className={`${getPriorityBadge(order.priority)} text-xs`}>
-                              {order.priority.toUpperCase()}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-between sm:flex-col sm:items-end sm:text-right">
-                            <Badge className={`${getStatusBadge(order.status)} text-xs mb-0 sm:mb-2`}>
-                              {order.status.replace('_', ' ').toUpperCase()}
-                            </Badge>
-                            <p className="text-sm font-semibold text-amber-900">${order.amount}</p>
-                          </div>
-                        </div>
-                        <div className="mt-3 grid grid-cols-1 gap-2 text-xs text-amber-700">
-                          <p><MapPin className="h-3 w-3 inline mr-1" />{order.pickupAddress}</p>
-                          <p><Package className="h-3 w-3 inline mr-1" />{order.destination}</p>
-                        </div>
-                        {order.driver && (
-                          <p className="mt-2 text-xs text-amber-600">
-                            <Truck className="h-3 w-3 inline mr-1" />
-                            Assigned to: {order.driver}
-                          </p>
-                        )}
-                        <div className="flex justify-end mt-3">
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="text-blue-700 border-blue-300 text-xs px-2 py-1"
-                            onClick={() => handleCustomerSupport(order)}
-                          >
-                            <HeadphonesIcon className="h-3 w-3 mr-1" />
-                            <span className="hidden sm:inline">Support</span>
-                            <span className="sm:hidden">Help</span>
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Enhanced Completed Orders Tab */}
-            <TabsContent value="completed">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                      <CardTitle className="text-amber-900 text-lg sm:text-xl">
-                        Completed Orders ({getFilteredCompletedOrders().length})
-                      </CardTitle>
-                      <div className="flex items-center space-x-2 sm:space-x-3">
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          className="px-2 sm:px-3"
-                          onClick={exportToExcel}
-                          data-testid="button-export-excel"
-                        >
-                          <Download className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Export Analytics</span>
-                          <span className="sm:hidden text-xs">Export</span>
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant={showAdvancedAnalytics ? "default" : "outline"}
-                          className="px-2 sm:px-3"
-                          onClick={() => setShowAdvancedAnalytics(!showAdvancedAnalytics)}
-                          data-testid="button-toggle-analytics"
-                        >
-                          <BarChart3 className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">
-                            {showAdvancedAnalytics ? 'Hide Analytics' : 'Advanced Analytics'}
-                          </span>
-                          <span className="sm:hidden text-xs">Analytics</span>
-                        </Button>
-                        <Button size="sm" variant="outline" className="px-2 sm:px-3">
-                          <RefreshCw className="h-3 sm:h-4 w-3 sm:w-4 mr-1 sm:mr-2" />
-                          <span className="hidden sm:inline">Refresh</span>
-                          <span className="sm:hidden text-xs">Sync</span>
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Search and Filters */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          placeholder="Search orders..."
-                          value={completedOrdersSearch}
-                          onChange={(e) => setCompletedOrdersSearch(e.target.value)}
-                          className="pl-10"
-                          data-testid="input-search-completed-orders"
-                        />
-                      </div>
-                      
-                      <Select value={completedOrdersDateRange} onValueChange={(value) => setCompletedOrdersDateRange(value as 'all' | 'today' | 'week' | 'month')}>
-                        <SelectTrigger data-testid="select-date-range">
-                          <Calendar className="h-4 w-4 mr-2" />
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All Time</SelectItem>
-                          <SelectItem value="today">Today</SelectItem>
-                          <SelectItem value="week">This Week</SelectItem>
-                          <SelectItem value="month">This Month</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select value={completedOrdersSort} onValueChange={(value) => setCompletedOrdersSort(value as 'date' | 'amount' | 'driver')}>
-                        <SelectTrigger data-testid="select-sort-by">
-                          <ArrowUpDown className="h-4 w-4 mr-2" />
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="date">Sort by Date</SelectItem>
-                          <SelectItem value="amount">Sort by Amount</SelectItem>
-                          <SelectItem value="driver">Sort by Driver</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select value={completedOrdersSortOrder} onValueChange={(value) => setCompletedOrdersSortOrder(value as 'asc' | 'desc')}>
-                        <SelectTrigger data-testid="select-sort-order">
-                          <ChevronDown className="h-4 w-4 mr-2" />
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="desc">Newest First</SelectItem>
-                          <SelectItem value="asc">Oldest First</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {getFilteredCompletedOrders().length === 0 ? (
-                    <div className="text-center py-8 text-amber-600">
-                      <CheckCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-                      <p className="text-lg font-medium">No completed orders found</p>
-                      <p className="text-sm">
-                        {completedOrdersSearch ? 'Try adjusting your search or filters' : 'Completed deliveries and refunds will appear here'}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="border rounded-lg overflow-hidden">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-amber-50">
-                            <TableHead className="font-semibold text-amber-900">Order ID</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Customer</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Driver</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Status</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Amount</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Revenue</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Date</TableHead>
-                            <TableHead className="font-semibold text-amber-900">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {getFilteredCompletedOrders().map((order) => (
-                            <TableRow 
-                              key={order.id} 
-                              className="hover:bg-amber-50/50 cursor-pointer transition-colors"
-                              onClick={() => setSelectedOrder(order)}
-                              data-testid={`row-completed-order-${order.id}`}
-                            >
-                              <TableCell className="font-medium text-amber-900">{order.id}</TableCell>
-                              <TableCell>{order.customer}</TableCell>
-                              <TableCell>
-                                {order.driver ? (
-                                  <span className="flex items-center text-green-700">
-                                    <CheckCircle className="h-4 w-4 mr-1" />
-                                    {order.driver}
-                                  </span>
-                                ) : (
-                                  <span className="text-gray-400">N/A</span>
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                <Badge className={`${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'} text-xs`}>
-                                  {order.status.replace('_', ' ').toUpperCase()}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="font-semibold">${order.amount.toFixed(2)}</TableCell>
-                              <TableCell className="font-semibold text-green-700">
-                                ${(order.amount - 3.99).toFixed(2)}
-                              </TableCell>
-                              <TableCell className="text-sm text-gray-600">{order.createdAt}</TableCell>
-                              <TableCell>
-                                <div className="flex space-x-2">
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    className="text-amber-700 border-amber-300 text-xs px-2 py-1"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleCustomerSupport(order);
-                                    }}
-                                    data-testid={`button-view-details-${order.id}`}
-                                  >
-                                    <Eye className="h-3 w-3 mr-1" />
-                                    Details
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  )}
-                  
-                  {/* Summary Statistics */}
-                  {getFilteredCompletedOrders().length > 0 && (
-                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <Card className="bg-green-50 border-green-200">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-sm font-medium text-green-600">Total Revenue</p>
-                          <p className="text-2xl font-bold text-green-700">
-                            ${getFilteredCompletedOrders().reduce((sum, order) => sum + (order.amount - 3.99), 0).toFixed(2)}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-blue-50 border-blue-200">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-sm font-medium text-blue-600">Driver Earnings</p>
-                          <p className="text-2xl font-bold text-blue-700">
-                            ${getFilteredCompletedOrders().reduce((sum, order) => sum + (order.amount * 0.7), 0).toFixed(2)}
-                          </p>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-amber-50 border-amber-200">
-                        <CardContent className="p-4 text-center">
-                          <p className="text-sm font-medium text-amber-600">Service Fees</p>
-                          <p className="text-2xl font-bold text-amber-700">
-                            ${(getFilteredCompletedOrders().length * 3.99).toFixed(2)}
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
-
-                  {/* Advanced Analytics Section */}
-                  {showAdvancedAnalytics && (
-                    <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
-                      <CompletedOrdersAnalytics completedOrders={getFilteredCompletedOrders() as any} />
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Drivers Tab */}
-            <TabsContent value="drivers">
-              <Card className="bg-white border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <CardTitle className="text-amber-900">Key Metrics</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Today's Orders</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">47</p>
-                          </div>
-                          <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">+12% from yesterday</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Active Drivers</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">28</p>
-                          </div>
-                          <Truck className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">3 on break</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Revenue Today</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">$1,247</p>
-                          </div>
-                          <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">+8% from yesterday</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Avg Pickup Time</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">14min</p>
-                          </div>
-                          <Clock className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">-2min from yesterday</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Employees Tab */}
-            <TabsContent value="employees">
-              <Card className="bg-white border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                    <CardTitle className="text-amber-900">Business Overview</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Total Revenue</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">$12,847</p>
-                          </div>
-                          <DollarSign className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">This month</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Customer Satisfaction</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">4.8⭐</p>
-                          </div>
-                          <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">Average rating</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">Completed Orders</p>
-                            <p className="text-xl sm:text-2xl font-bold text-amber-900">1,247</p>
-                          </div>
-                          <Package className="h-6 sm:h-8 w-6 sm:w-8 text-amber-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">All time</p>
-                      </CardContent>
-                    </Card>
-
-                    <Card className="bg-white border-amber-200">
-                      <CardContent className="p-4 sm:p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-amber-600 text-xs sm:text-sm font-medium">System Health</p>
-                            <p className="text-xl sm:text-2xl font-bold text-green-700">Online</p>
-                          </div>
-                          <CheckCircle className="h-6 sm:h-8 w-6 sm:w-8 text-green-600" />
-                        </div>
-                        <p className="text-xs text-amber-700 mt-2">All systems operational</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Analytics Tab */}
-            <TabsContent value="analytics">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                  <CardHeader>
-                    <CardTitle className="text-amber-900">Performance Metrics</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Orders This Week</span>
-                      <span className="font-bold text-amber-900">327</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Average Rating</span>
-                      <span className="font-bold text-amber-900">4.8⭐</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Customer Retention</span>
-                      <span className="font-bold text-amber-900">87%</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Revenue Growth</span>
-                      <span className="font-bold text-green-700">+23%</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                  <CardHeader>
-                    <CardTitle className="text-amber-900">System Health</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Server Status</span>
-                      <span className="flex items-center text-green-700">
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Healthy
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Payment Processing</span>
-                      <span className="flex items-center text-green-700">
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Online
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-700">Driver Mobile App</span>
-                      <span className="flex items-center text-green-700">
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Connected
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            {/* Settings Tab */}
-            {/* Employee Management Tab */}
-            <TabsContent value="employees">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-                    <CardTitle className="text-amber-900">Employee Management</CardTitle>
-                    <Button 
-                      onClick={() => setShowAddEmployeeModal(true)}
-                      className="bg-amber-700 hover:bg-amber-800 text-white"
-                      data-testid="button-add-employee"
-                    >
-                      <User className="h-4 w-4 mr-2" />
-                      Add Employee
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {/* Search */}
-                  <div className="mb-6">
-                    <div className="relative max-w-md">
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        placeholder="Search employees..."
-                        value={employeeSearchTerm}
-                        onChange={(e) => setEmployeeSearchTerm(e.target.value)}
-                        className="pl-10"
-                        data-testid="input-search-employees"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Employee List */}
-                  <div className="border rounded-lg overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-amber-50">
-                          <TableHead className="font-semibold text-amber-900">Name</TableHead>
-                          <TableHead className="font-semibold text-amber-900">Email</TableHead>
-                          <TableHead className="font-semibold text-amber-900">Role</TableHead>
-                          <TableHead className="font-semibold text-amber-900">Status</TableHead>
-                          <TableHead className="font-semibold text-amber-900">Join Date</TableHead>
-                          <TableHead className="font-semibold text-amber-900">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {filteredEmployees.map((employee) => (
-                          <TableRow 
-                            key={employee.id} 
-                            className="hover:bg-amber-50/50"
-                            data-testid={`row-employee-${employee.id}`}
-                          >
-                            <TableCell className="font-medium">{employee.name}</TableCell>
-                            <TableCell>{employee.email}</TableCell>
-                            <TableCell>
-                              <Badge 
-                                className={employee.isAdmin ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}
-                              >
-                                {employee.role}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <Badge 
-                                className={employee.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}
-                              >
-                                {employee.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>{employee.joinDate}</TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                {!employee.isAdmin && employee.email !== 'nabeelmumtaz92@gmail.com' ? (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleGrantAdminAccess(employee)}
-                                    className="text-green-700 border-green-300 hover:bg-green-50"
-                                    data-testid={`button-grant-admin-${employee.id}`}
-                                  >
-                                    <UserCheck className="h-3 w-3 mr-1" />
-                                    Grant Admin
-                                  </Button>
-                                ) : employee.email !== 'nabeelmumtaz92@gmail.com' ? (
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => handleRevokeAdminAccess(employee)}
-                                    className="text-red-700 border-red-300 hover:bg-red-50"
-                                    data-testid={`button-revoke-admin-${employee.id}`}
-                                  >
-                                    <X className="h-3 w-3 mr-1" />
-                                    Revoke Admin
-                                  </Button>
-                                ) : (
-                                  <Badge className="bg-purple-100 text-purple-800">
-                                    Master Admin
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-
-                  {/* Add Employee Modal */}
-                  {showAddEmployeeModal && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                      <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-                        <div className="flex justify-between items-center mb-4">
-                          <h3 className="text-lg font-semibold text-amber-900">Add New Employee</h3>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowAddEmployeeModal(false)}
-                            data-testid="button-close-add-employee"
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                        <div className="space-y-4">
-                          <div>
-                            <Label htmlFor="employee-email" className="text-amber-800 font-medium">
-                              Employee Email
-                            </Label>
-                            <Input
-                              id="employee-email"
-                              type="email"
-                              placeholder="employee@company.com"
-                              value={newEmployeeEmail}
-                              onChange={(e) => setNewEmployeeEmail(e.target.value)}
-                              className="mt-1 border-amber-300 focus:border-amber-500"
-                              data-testid="input-employee-email"
-                            />
-                            <p className="text-sm text-amber-600 mt-1">
-                              They'll receive an invitation to join Returnly
-                            </p>
-                          </div>
-                          <div className="flex space-x-3">
-                            <Button
-                              onClick={handleAddEmployee}
-                              className="bg-amber-700 hover:bg-amber-800 text-white flex-1"
-                              disabled={!newEmployeeEmail}
-                              data-testid="button-confirm-add-employee"
-                            >
-                              Send Invitation
-                            </Button>
-                            <Button
-                              variant="outline"
-                              onClick={() => setShowAddEmployeeModal(false)}
-                              className="border-amber-300 text-amber-700"
-                              data-testid="button-cancel-add-employee"
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="settings">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <CardTitle className="text-amber-900">Business Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <Label htmlFor="pickup-fee" className="text-amber-800 font-medium">Base Pickup Fee ($)</Label>
-                      <Input 
-                        id="pickup-fee" 
-                        defaultValue="6.99" 
-                        className="mt-1 border-amber-300 focus:border-amber-500"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="service-area" className="text-amber-800 font-medium">Service Area (miles)</Label>
-                      <Input 
-                        id="service-area" 
-                        defaultValue="25" 
-                        className="mt-1 border-amber-300 focus:border-amber-500"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="max-wait" className="text-amber-800 font-medium">Max Wait Time (hours)</Label>
-                      <Input 
-                        id="max-wait" 
-                        defaultValue="4" 
-                        className="mt-1 border-amber-300 focus:border-amber-500"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="driver-commission" className="text-amber-800 font-medium">Driver Commission (%)</Label>
-                      <Input 
-                        id="driver-commission" 
-                        defaultValue="70" 
-                        className="mt-1 border-amber-300 focus:border-amber-500"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex space-x-3">
-                    <Button className="bg-amber-700 hover:bg-amber-800 text-white">
-                      Save Settings
-                    </Button>
-                    <Button variant="outline" className="border-amber-300 text-amber-700">
-                      Reset to Defaults
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            {/* Advanced Features Tab */}
-            <TabsContent value="advanced" className="space-y-4 sm:space-y-6">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                <CardHeader>
-                  <CardTitle className="text-amber-900 flex items-center">
-                    <Target className="h-5 w-5 mr-2" />
-                    Advanced Business Features
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    
-                    {/* Real-Time Tracking */}
-                    <Link href="/real-time-tracking-advanced" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <MapPin className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Live Driver Tracking</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Real-time GPS monitoring, ETA calculations, and driver location visualization
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                    {/* Business Intelligence */}
-                    <Link href="/business-intelligence" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <BarChart3 className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Business Intelligence</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Revenue forecasting, demand prediction, and market expansion analysis
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                    {/* Automated Communications */}
-                    <Link href="/notification-center" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <MessageSquare className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Auto Communications</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            SMS/email notifications, templates, and delivery settings management
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                    {/* Quality Assurance */}
-                    <Link href="/quality-assurance" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <Shield className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Quality Assurance</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Photo verification, damage claims, and insurance integration
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                    {/* Driver Incentives */}
-                    <Link href="/driver-incentives" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <Trophy className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Driver Incentives</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Performance bonuses, challenges, rewards, and analytics tracking
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                    {/* Advanced Reporting */}
-                    <Link href="/advanced-reporting" className="block">
-                      <Card className="border-amber-200 hover:border-amber-300 hover:shadow-md transition-all cursor-pointer h-full">
-                        <CardContent className="p-4">
-                          <div className="flex items-center mb-3">
-                            <PieChart className="h-6 w-6 text-amber-600 mr-3" />
-                            <h3 className="font-semibold text-amber-900">Advanced Reporting</h3>
-                          </div>
-                          <p className="text-sm text-amber-700 mb-3">
-                            Comprehensive analytics, custom reports, and data exports
-                          </p>
-                          <Badge className="bg-green-100 text-green-800">Active</Badge>
-                        </CardContent>
-                      </Card>
-                    </Link>
-
-                  </div>
-                  
-                  <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                    <h4 className="font-semibold text-amber-900 mb-2">Business Scaling Features</h4>
-                    <p className="text-sm text-amber-700">
-                      These advanced features provide enterprise-grade capabilities for scaling your delivery operations, 
-                      improving customer satisfaction, and optimizing business performance.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Messaging System Tab */}
-            <TabsContent value="messaging">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Conversations List */}
-                <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-amber-900">Communications</CardTitle>
-                      <Button 
-                        size="sm" 
-                        onClick={() => setShowComposeEmail(true)}
-                        className="bg-amber-700 hover:bg-amber-800 text-white"
-                      >
-                        <Send className="h-4 w-4 mr-2" />
-                        Compose
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {[
-                      { id: 'all_admins', name: 'All Admins', count: 3, type: 'group' },
-                      { id: 'operations_team', name: 'Operations Team', count: 5, type: 'group' },
-                      { id: 'management', name: 'Management', count: 2, type: 'group' },
-                      { id: 'sarah_admin', name: 'Sarah (Admin)', status: 'online', type: 'individual' },
-                      { id: 'mike_operations', name: 'Mike (Operations)', status: 'offline', type: 'individual' },
-                      { id: 'john_manager', name: 'John (Manager)', status: 'online', type: 'individual' },
-                    ].map((conversation) => (
-                      <div
-                        key={conversation.id}
-                        className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                          selectedConversation === conversation.id 
-                            ? 'bg-amber-100 border-amber-300' 
-                            : 'bg-white border-amber-200 hover:bg-amber-50'
-                        }`}
-                        onClick={() => setSelectedConversation(conversation.id)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className="relative">
-                              {conversation.type === 'group' ? (
-                                <Users className="h-8 w-8 text-amber-600" />
-                              ) : (
-                                <User className="h-8 w-8 text-amber-600" />
-                              )}
-                              {conversation.type === 'individual' && (
-                                <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                                  conversation.status === 'online' ? 'bg-green-500' : 'bg-gray-400'
-                                }`} />
-                              )}
-                            </div>
-                            <div>
-                              <p className="font-medium text-amber-900">{conversation.name}</p>
-                              {conversation.type === 'group' && (
-                                <p className="text-xs text-amber-600">{conversation.count} members</p>
-                              )}
-                            </div>
-                          </div>
-                          {conversation.type === 'individual' && (
-                            <div className="flex items-center space-x-1">
-                              <div className="w-2 h-2 bg-amber-500 rounded-full" />
-                              {Math.random() > 0.5 && (
-                                <div className="relative">
-                                  <Mail className="h-4 w-4 text-amber-600" />
-                                  <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-
-                {/* Message Thread */}
-                <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-amber-200">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-amber-900">
-                        {selectedConversation ? 
-                          (selectedConversation === 'all_admins' ? 'All Admins' :
-                           selectedConversation === 'operations_team' ? 'Operations Team' :
-                           selectedConversation === 'management' ? 'Management' :
-                           selectedConversation === 'sarah_admin' ? 'Sarah (Admin)' :
-                           selectedConversation === 'mike_operations' ? 'Mike (Operations)' :
-                           'John (Manager)') 
-                          : 'Select a conversation'
-                        }
-                      </CardTitle>
-                      {selectedConversation && (
-                        <div className="flex items-center space-x-2">
-                          <Button size="sm" variant="outline">
-                            <Phone className="h-4 w-4" />
-                          </Button>
-                          <Button size="sm" variant="outline">
-                            <Bell className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedConversation ? (
-                      <div className="space-y-4">
-                        {/* Message History */}
-                        <div className="h-96 overflow-y-auto space-y-4 p-4 bg-amber-50 rounded-lg">
-                          {[
-                            { id: 1, sender: 'You', message: 'Team meeting scheduled for Friday at 2 PM in conference room A', time: '10:30 AM', isOwn: true },
-                            { id: 2, sender: selectedConversation === 'sarah_admin' ? 'Sarah' : selectedConversation === 'mike_operations' ? 'Mike' : 'John', message: 'Perfect! Should we prepare quarterly reports beforehand?', time: '10:32 AM', isOwn: false },
-                            { id: 3, sender: 'You', message: 'Yes, please have Q3 performance data ready for review', time: '10:35 AM', isOwn: true },
-                            { id: 4, sender: selectedConversation === 'sarah_admin' ? 'Sarah' : selectedConversation === 'mike_operations' ? 'Mike' : 'John', message: 'Will do. Any specific metrics you want highlighted?', time: '10:40 AM', isOwn: false },
-                          ].map((msg) => (
-                            <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                                msg.isOwn 
-                                  ? 'bg-amber-600 text-white' 
-                                  : 'bg-white border border-amber-200 text-amber-900'
-                              }`}>
-                                <p className="text-sm">{msg.message}</p>
-                                <p className={`text-xs mt-1 ${msg.isOwn ? 'text-amber-100' : 'text-amber-500'}`}>
-                                  {msg.time}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Message Input */}
-                        <div className="flex items-center space-x-2">
-                          <Input
-                            placeholder="Type your message..."
-                            value={messageText}
-                            onChange={(e) => setMessageText(e.target.value)}
-                            className="flex-1"
-                            onKeyPress={(e) => {
-                              if (e.key === 'Enter') {
-                                // Send message logic
-                                setMessageText('');
-                                // Mark conversation as read and decrease unread count
-                                if (hasNewMessages && unreadCount > 0) {
-                                  setUnreadCount(prev => Math.max(0, prev - 1));
-                                  if (unreadCount <= 1) {
-                                    setHasNewMessages(false);
-                                  }
-                                }
-                                toast({
-                                  title: "Message sent",
-                                  description: "Your message has been delivered",
-                                });
-                              }
-                            }}
-                          />
-                          <Button 
-                            size="sm"
-                            onClick={() => {
-                              setMessageText('');
-                              // Mark conversation as read and decrease unread count
-                              if (hasNewMessages && unreadCount > 0) {
-                                setUnreadCount(prev => Math.max(0, prev - 1));
-                                if (unreadCount <= 1) {
-                                  setHasNewMessages(false);
-                                }
-                              }
-                              toast({
-                                title: "Message sent",
-                                description: "Your message has been delivered",
-                              });
-                            }}
-                          >
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="h-96 flex items-center justify-center text-amber-600">
-                        <div className="text-center">
-                          <MessageCircle className="h-12 w-12 mx-auto mb-4" />
-                          <p>Select a conversation to start messaging</p>
-                        </div>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Email Compose Modal */}
-              {showComposeEmail && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                  <Card className="w-full max-w-2xl mx-4 bg-white">
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-amber-900">Compose Email</CardTitle>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => setShowComposeEmail(false)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div>
-                        <Label htmlFor="email-recipients">Recipients</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select recipients..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all_drivers">All Drivers (12)</SelectItem>
-                            <SelectItem value="all_customers">All Customers (45)</SelectItem>
-                            <SelectItem value="active_drivers">Active Drivers (8)</SelectItem>
-                            <SelectItem value="vip_customers">VIP Customers (12)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label htmlFor="email-subject">Subject</Label>
-                        <Input
-                          id="email-subject"
-                          value={emailSubject}
-                          onChange={(e) => setEmailSubject(e.target.value)}
-                          placeholder="Enter email subject..."
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="email-body">Message</Label>
-                        <textarea
-                          id="email-body"
-                          className="w-full h-32 p-3 border border-amber-300 rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
-                          value={emailBody}
-                          onChange={(e) => setEmailBody(e.target.value)}
-                          placeholder="Type your message here..."
-                        />
-                      </div>
-                      <div className="flex justify-end space-x-2">
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setShowComposeEmail(false)}
-                        >
-                          Cancel
-                        </Button>
-                        <Button 
-                          onClick={() => {
-                            setShowComposeEmail(false);
-                            setEmailSubject('');
-                            setEmailBody('');
-                            toast({
-                              title: "Email sent",
-                              description: "Your email has been sent to the selected recipients",
-                            });
-                          }}
-                          className="bg-amber-700 hover:bg-amber-800 text-white"
-                        >
-                          <Send className="h-4 w-4 mr-2" />
-                          Send Email
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
+            {/* Render Section Content */}
+            {renderSectionContent()}
+          </div>
         </div>
 
         {/* Admin Support Modal */}
