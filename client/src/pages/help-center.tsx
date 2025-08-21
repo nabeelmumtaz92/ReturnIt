@@ -545,7 +545,7 @@ export default function HelpCenter() {
               <h2 className="text-2xl font-bold mb-2">Still Need Help?</h2>
               <p className="text-amber-100">Our support team is available 24/7 to assist you</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="bg-white/10 backdrop-blur border-0">
                 <CardContent className="p-4 text-center">
                   <MessageCircle className="h-8 w-8 mx-auto mb-2" />
@@ -561,9 +561,11 @@ export default function HelpCenter() {
                   <Phone className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Phone Support</h3>
                   <p className="text-sm text-amber-100 mb-3">(636) 254-4821</p>
-                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-call-support">
-                    Call Now
-                  </Button>
+                  <a href="tel:6362544821">
+                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-call-support">
+                      Call Specialist
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
               <Card className="bg-white/10 backdrop-blur border-0">
@@ -574,6 +576,18 @@ export default function HelpCenter() {
                   <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-email-support">
                     Send Email
                   </Button>
+                </CardContent>
+              </Card>
+              <Card className="bg-white/10 backdrop-blur border-0">
+                <CardContent className="p-4 text-center">
+                  <MessageCircle className="h-8 w-8 mx-auto mb-2" />
+                  <h3 className="font-semibold mb-1">Message Specialist</h3>
+                  <p className="text-sm text-amber-100 mb-3">Text message support</p>
+                  <a href="sms:6362544821?body=Hi, I need help with ReturnIt:">
+                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-sms-support">
+                      Send Message
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
             </div>

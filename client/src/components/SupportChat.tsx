@@ -253,6 +253,34 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
     // Add user's selection
     addMessage(option, 'user');
     
+    // Handle special support options
+    if (option.includes('Call Specialist')) {
+      addMessage("Opening phone dialer to call our specialist at (636) 254-4821...", 'ai');
+      setTimeout(() => {
+        window.open('tel:+16362544821');
+      }, 1000);
+      return;
+    }
+    
+    if (option.includes('Text Message Support')) {
+      addMessage("Opening SMS to text our specialist. Message will include your issue details...", 'ai');
+      setTimeout(() => {
+        const messageBody = `Hi, I need help with ReturnIt. Context: ${context?.type || 'customer'} - ${context?.name || 'User'} - Current issue from chat.`;
+        window.open(`sms:+16362544821?body=${encodeURIComponent(messageBody)}`);
+      }, 1000);
+      return;
+    }
+    
+    if (option.includes('Continue with AI Chat')) {
+      addMessage("Perfect! I'm here to help. Please tell me more details about your issue and I'll provide step-by-step assistance.", 'ai');
+      return;
+    }
+    
+    if (option.includes('Connect to Live Agent')) {
+      handleEscalation();
+      return;
+    }
+    
     // Find the selected option from current step
     const currentQuestion = currentStep === 'initial' 
       ? CONVERSATION_FLOW.questions.initial[context?.type || 'customer']
@@ -366,9 +394,10 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
       // Offer specific next steps
       setTimeout(() => {
         addMessage(
-          "Would you like me to:\n\n1. Provide immediate assistance with this issue\n2. Connect you with a specialist for personalized help\n3. Call our support team directly\n\nI'm here to make sure we solve this for you today.",
+          "I can help you right away! Choose your preferred option:",
           'ai',
-          'escalation'
+          'options',
+          ['📞 Call Specialist: (636) 254-4821', '💬 Text Message Support', '🤖 Continue with AI Chat', '👨‍💼 Connect to Live Agent']
         );
       }, 1500);
     }, 1800);
@@ -574,6 +603,37 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
             <div ref={messagesEndRef} />
           </div>
         </div>
+
+        {/* Quick Actions Bar */}
+        {isEscalated && (
+          <div style={{ 
+            padding: '8px 16px',
+            borderTop: '1px solid #e5e7eb',
+            backgroundColor: '#f8f9fa',
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap'
+          }}>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => window.open('tel:+16362544821')}
+              className="text-xs"
+            >
+              <Phone className="h-3 w-3 mr-1" />
+              Call Now
+            </Button>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => window.open(`sms:+16362544821?body=${encodeURIComponent('Hi, I need help with ReturnIt: ')}`)}
+              className="text-xs"
+            >
+              <MessageCircle className="h-3 w-3 mr-1" />
+              Text Us
+            </Button>
+          </div>
+        )}
 
         {/* Input Area */}
         <div style={{ 
