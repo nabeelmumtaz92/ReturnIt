@@ -7,14 +7,15 @@ interface ReturnItLogoProps {
 
 export function ReturnItLogo({ size = 32, className = "" }: ReturnItLogoProps) {
   return (
-    <img 
-      src="/returnit-logo.png" 
-      alt="returnit" 
-      width={size * 6} 
-      height={size * 3} 
-      className={className}
-      style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
-    />
+    <div 
+      className={`text-amber-900 font-bold flex items-center ${className}`}
+      style={{ 
+        fontSize: `${size * 0.8}px`,
+        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+      }}
+    >
+      ReturnIt
+    </div>
   );
 }
 

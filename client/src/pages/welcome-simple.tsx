@@ -8,11 +8,11 @@ export default function WelcomeSimple() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100">
       <div className="container mx-auto px-4 py-16 text-center">
-        <img 
-          src="/returnit-logo.png" 
-          alt="ReturnIt Logo" 
-          className="h-20 w-auto mx-auto mb-8"
-        />
+        <div 
+          className="text-amber-900 font-bold text-5xl mx-auto mb-8"
+        >
+          ReturnIt
+        </div>
         
         <h1 className="text-6xl font-bold text-amber-900 mb-6">
           ReturnIt

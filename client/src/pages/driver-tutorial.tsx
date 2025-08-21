@@ -32,11 +32,11 @@ export default function DriverTutorial() {
       content: (
         <div className="space-y-4">
           <div className="text-center">
-            <img 
-              src="/returnit-logo.png" 
-              alt="ReturnIt Logo" 
-              className="h-16 w-auto mx-auto mb-4"
-            />
+            <div 
+              className="text-amber-900 font-bold text-4xl mx-auto mb-4"
+            >
+              ReturnIt
+            </div>
             <h3 className="text-2xl font-bold text-amber-900">Welcome to the ReturnIt Driver Team!</h3>
             <p className="text-amber-700 mt-2">Congratulations on joining St. Louis's premier return logistics service</p>
           </div>

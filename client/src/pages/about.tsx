@@ -55,11 +55,11 @@ export default function About() {
                 </Link>
               </Button>
               <Link href="/">
-                <img 
-                  src="/returnit-logo.png" 
-                  alt="ReturnIt Logo" 
-                  className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                />
+                <div 
+                  className="text-amber-900 font-bold text-2xl cursor-pointer hover:opacity-80 transition-opacity"
+                >
+                  ReturnIt
+                </div>
               </Link>
               <h1 className="text-2xl font-bold text-amber-900">About Us</h1>
             </div>
@@ -85,12 +85,12 @@ export default function About() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
               <div className="mb-8 flex justify-center lg:justify-start">
-                <img 
-                  src="/returnit-logo.png" 
-                  alt="ReturnIt Logo" 
-                  className="h-20 w-auto logo-enhanced"
-                  data-testid="img-logo"
-                />
+                <div 
+                  className="text-amber-900 font-bold text-5xl logo-enhanced"
+                  data-testid="text-logo"
+                >
+                  ReturnIt
+                </div>
               </div>
               <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200" data-testid="badge-company">
                 {businessInfo?.companyName || "Returnly"}

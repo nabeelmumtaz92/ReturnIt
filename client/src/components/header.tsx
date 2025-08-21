@@ -31,11 +31,11 @@ export function Header({ title, subtitle, showBack = false, backUrl = "/", class
             )}
             
             <Link href="/">
-              <img 
-                src="/returnit-logo.png" 
-                alt="ReturnIt Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-              />
+              <div 
+                className="text-amber-900 font-bold text-2xl cursor-pointer hover:opacity-80 transition-opacity"
+              >
+                ReturnIt
+              </div>
             </Link>
             
             <div>

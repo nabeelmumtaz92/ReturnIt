@@ -10,11 +10,11 @@ export default function NotFound() {
         {/* Logo */}
         <div className="text-center">
           <Link href="/">
-            <img 
-              src="/returnit-logo.png" 
-              alt="ReturnIt Logo" 
-              className="h-12 w-auto mx-auto cursor-pointer hover:opacity-80 transition-opacity"
-            />
+            <div 
+              className="text-amber-900 font-bold text-3xl mx-auto cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              ReturnIt
+            </div>
           </Link>
         </div>
 
