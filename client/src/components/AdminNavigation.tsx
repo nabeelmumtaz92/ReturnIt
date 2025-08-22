@@ -283,13 +283,13 @@ export function AdminNavigation() {
   );
 
   return (
-    <div className="fixed top-4 left-4 z-50">
+    <div className="fixed top-4 left-4 z-[100]">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button 
             variant="outline" 
             size="icon"
-            className="bg-white/90 backdrop-blur-sm border-amber-200 hover:bg-amber-50 shadow-lg"
+            className="bg-white/90 backdrop-blur-sm border-amber-200 hover:bg-amber-50 shadow-lg z-[100]"
           >
             <Menu className="h-4 w-4" />
           </Button>
