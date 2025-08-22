@@ -24,7 +24,8 @@ import {
   Star,
   Terminal,
   RefreshCw,
-  Loader2
+  Loader2,
+  ArrowLeft
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -63,6 +64,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showDeveloperConsole, setShowDeveloperConsole] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
+  const [navigationHistory, setNavigationHistory] = useState<string[]>(['overview']);
   
   // Real-time data state
   const [dashboardStats, setDashboardStats] = useState({
@@ -77,6 +79,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   
   // Function to change sections
   const changeSection = (newSection: string) => {
+    // Add current section to history before changing
+    setNavigationHistory(prev => [...prev, currentSection]);
+    
     const url = new URL(window.location.href);
     if (newSection === 'overview') {
       url.searchParams.delete('section');
@@ -84,6 +89,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     } else {
       url.searchParams.set('section', newSection);
       setLocation(`/admin-dashboard?section=${newSection}`);
+    }
+  };
+
+  // Function to go back to previous section
+  const goBack = () => {
+    if (navigationHistory.length > 1) {
+      const previousSection = navigationHistory[navigationHistory.length - 1];
+      setNavigationHistory(prev => prev.slice(0, -1));
+      
+      if (previousSection === 'overview') {
+        setLocation('/admin-dashboard');
+      } else {
+        setLocation(`/admin-dashboard?section=${previousSection}`);
+      }
     }
   };
 
@@ -178,9 +197,56 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     }
   };
 
+  // Quick Actions Component
+  const QuickActions = () => (
+    <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-6 mb-6">
+      <h2 className="text-lg font-semibold text-amber-900 mb-4">Quick Actions</h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Button 
+          onClick={() => changeSection('orders')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <Package className="h-8 w-8" />
+          <span className="text-sm font-medium">Manage Orders</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('drivers')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <Truck className="h-8 w-8" />
+          <span className="text-sm font-medium">View Drivers</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('analytics')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <BarChart3 className="h-8 w-8" />
+          <span className="text-sm font-medium">Analytics</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('chat')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <MessageCircle className="h-8 w-8" />
+          <span className="text-sm font-medium">Support Chat</span>
+        </Button>
+      </div>
+    </div>
+  );
+
   // Individual section components
   const OverviewContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Quick Actions - Moved to top */}
+      <QuickActions />
+
       {/* Update Controls */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
@@ -273,50 +339,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </CardContent>
         </Card>
       </div>
-
-      {/* Quick Action Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Button 
-          onClick={() => changeSection('orders')}
-          className="h-auto p-6 bg-white/90 backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
-          variant="outline"
-        >
-          <Package className="h-8 w-8" />
-          <span>Manage Orders</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('drivers')}
-          className="h-auto p-6 bg-white/90 backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
-          variant="outline"
-        >
-          <Truck className="h-8 w-8" />
-          <span>Driver Management</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('analytics')}
-          className="h-auto p-6 bg-white/90 backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
-          variant="outline"
-        >
-          <BarChart3 className="h-8 w-8" />
-          <span>Analytics</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('chat')}
-          className="h-auto p-6 bg-white/90 backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
-          variant="outline"
-        >
-          <MessageCircle className="h-8 w-8" />
-          <span>Support Chat</span>
-        </Button>
-      </div>
     </div>
   );
 
   const OrdersContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-amber-900 text-xl">Live Orders Management</CardTitle>
@@ -383,6 +424,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const DriversContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-amber-900 text-xl">Driver Management</CardTitle>
@@ -457,6 +512,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const PaymentsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-amber-900 text-xl">Payment Tracking</CardTitle>
@@ -523,6 +592,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const AnalyticsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-amber-900 text-xl">Business Intelligence</CardTitle>
@@ -550,6 +633,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const EnhancedAnalyticsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-amber-900 text-xl">Enhanced Analytics</CardTitle>
