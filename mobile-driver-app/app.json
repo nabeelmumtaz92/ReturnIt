@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Returnly Driver",
-    "slug": "returnly-driver",
+    "name": "ReturnIt - Return Delivery",
+    "slug": "returnit-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,21 +9,22 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F59E0B"
+      "backgroundColor": "#D2691E"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": false,
-      "bundleIdentifier": "com.returnly.driver"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.returnit.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F59E0B"
+        "backgroundColor": "#D2691E"
       },
-      "package": "com.returnly.driver"
+      "package": "com.returnit.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
