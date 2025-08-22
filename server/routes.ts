@@ -2,6 +2,7 @@ import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { smsService } from "./sms-notifications";
 import { AIAssistant } from "./ai-assistant";
 import Stripe from "stripe";
 import session from "express-session";
@@ -921,6 +922,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
+      
+      // Send SMS notification for new order
+      try {
+        await smsService.sendOrderNotification({
+          customerName: `${order.customerFirstName || 'New'} ${order.customerLastName || 'Customer'}`,
+          pickupAddress: order.pickupStreetAddress,
+          totalAmount: order.totalPrice,
+          orderId: order.id
+        });
+      } catch (smsError) {
+        console.error('SMS notification failed:', smsError);
+        // Continue with order creation even if SMS fails
+      }
       res.status(201).json(order);
     } catch (error) {
       console.error('Order creation error:', error);

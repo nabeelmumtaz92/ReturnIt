@@ -101,7 +101,7 @@ export class MemStorage implements IStorage {
     this.driverApplications = new Map();
     this.paymentRecords = new Map();
     
-    // Master Administrator account
+    // Master Administrator account (real data only)
     const masterAdmin: User = {
       id: 1,
       email: 'nabeelmumtaz92@gmail.com',
@@ -110,52 +110,33 @@ export class MemStorage implements IStorage {
       lastName: 'Mumtaz',
       phone: '6362544821',
       dateOfBirth: '1990-01-01',
-      isDriver: true,  // Driver access for testing
-      tutorialCompleted: true, // Tutorial already completed
-      isAdmin: true,   // Admin access
+      isDriver: true,
+      tutorialCompleted: true,
+      isAdmin: true,
       isActive: true,
+      role: 'admin',
+      department: 'management',
+      employeeId: 'ADM001',
+      permissions: ['admin', 'driver', 'customer'],
       profileImage: null,
       preferences: { role: 'master_admin' },
-      addresses: [
-        {
-          type: 'home',
-          street: '1234 Main St',
-          city: 'St. Louis',
-          state: 'MO',
-          zipCode: '63101',
-          isDefault: true
-        }
-      ],
+      addresses: [],
       paymentMethods: [],
-      driverLicense: 'DL98765432',
-      vehicleInfo: {
-        make: 'Toyota',
-        model: 'Camry',
-        year: 2022,
-        color: 'Silver',
-        licensePlate: 'RET-001',
-        capacity: 'Large'
-      },
-      bankInfo: {
-        routingNumber: '123456789',
-        accountNumber: '*****1234',
-        accountType: 'checking'
-      },
-      driverRating: 4.9,
-      totalEarnings: 2847.50,
-      completedDeliveries: 156,
-      isOnline: true,
-      currentLocation: {
-        latitude: 38.6270,
-        longitude: -90.1994
-      },
+      driverLicense: null,
+      vehicleInfo: null,
+      bankInfo: null,
+      driverRating: 5.0,
+      totalEarnings: 0,
+      completedDeliveries: 0,
+      isOnline: false,
+      currentLocation: null,
       stripeConnectAccountId: null,
       stripeOnboardingComplete: false,
       paymentPreference: 'weekly',
       instantPayFeePreference: 1.00,
       hireDate: new Date('2025-01-01'),
       assignedCity: 'st-louis',
-      serviceZones: ['downtown', 'midtown', 'west_end'],
+      serviceZones: [],
       emergencyContacts: [],
       lastSafetyCheck: null,
       createdAt: new Date(),
@@ -172,52 +153,33 @@ export class MemStorage implements IStorage {
       lastName: 'Mumtaz',
       phone: '6362544822',
       dateOfBirth: '1988-12-08',
-      isDriver: true,  // Driver access for testing
-      tutorialCompleted: true, // Tutorial already completed
-      isAdmin: true,   // Admin access
+      isDriver: false,
+      tutorialCompleted: true,
+      isAdmin: true,
       isActive: true,
+      role: 'admin',
+      department: 'management',
+      employeeId: 'ADM002',
+      permissions: ['admin', 'customer'],
       profileImage: null,
       preferences: { role: 'master_admin' },
-      addresses: [
-        {
-          type: 'home',
-          street: '5678 Oak Ave',
-          city: 'St. Louis',
-          state: 'MO',
-          zipCode: '63102',
-          isDefault: true
-        }
-      ],
+      addresses: [],
       paymentMethods: [],
-      driverLicense: 'DL98765433',
-      vehicleInfo: {
-        make: 'Honda',
-        model: 'Accord',
-        year: 2021,
-        color: 'Blue',
-        licensePlate: 'RET-002',
-        capacity: 'Large'
-      },
-      bankInfo: {
-        routingNumber: '123456788',
-        accountNumber: '*****5678',
-        accountType: 'checking'
-      },
-      driverRating: 4.8,
-      totalEarnings: 1950.75,
-      completedDeliveries: 98,
+      driverLicense: null,
+      vehicleInfo: null,
+      bankInfo: null,
+      driverRating: 5.0,
+      totalEarnings: 0,
+      completedDeliveries: 0,
       isOnline: false,
-      currentLocation: {
-        latitude: 38.6350,
-        longitude: -90.2044
-      },
+      currentLocation: null,
       stripeConnectAccountId: null,
       stripeOnboardingComplete: false,
       paymentPreference: 'weekly',
       instantPayFeePreference: 1.00,
       hireDate: new Date('2025-01-01'),
       assignedCity: 'st-louis',
-      serviceZones: ['downtown', 'central', 'south_side'],
+      serviceZones: [],
       emergencyContacts: [],
       lastSafetyCheck: null,
       createdAt: new Date(),
@@ -254,6 +216,10 @@ export class MemStorage implements IStorage {
       isDriver: insertUser.isDriver ?? false,
       isAdmin: insertUser.isAdmin ?? false,
       isActive: insertUser.isActive ?? true,
+      role: insertUser.role || 'customer',
+      department: insertUser.department || null,
+      employeeId: insertUser.employeeId || null,
+      permissions: insertUser.permissions || [],
       profileImage: insertUser.profileImage || null,
       preferences: insertUser.preferences || {},
       addresses: insertUser.addresses || [],
