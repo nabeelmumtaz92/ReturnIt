@@ -1,0 +1,19 @@
+# Ignore files to reduce build size
+node_modules/
+.git/
+.DS_Store
+*.log
+.env*
+coverage/
+.nyc_output/
+dist/
+build/
+*.tgz
+*.tar.gz
+.cache/
+.expo/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

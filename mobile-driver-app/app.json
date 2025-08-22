@@ -4,33 +4,23 @@
     "slug": "returnit-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "https://via.placeholder.com/1024x1024/D2691E/FFFFFF?text=R",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "https://via.placeholder.com/1284x2778/D2691E/FFFFFF?text=ReturnIt",
       "resizeMode": "contain",
       "backgroundColor": "#D2691E"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": [],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.app"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#D2691E"
-      },
-      "package": "com.returnit.app",
-      "versionCode": 1
+      "package": "com.returnit.app"
     },
     "cli": {
       "appVersionSource": "remote"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     },
     "plugins": [],
     "extra": {
