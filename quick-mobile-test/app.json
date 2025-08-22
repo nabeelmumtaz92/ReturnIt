@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Returnly Mobile Demo",
-    "slug": "returnly-demo",
+    "name": "ReturnIt Mobile Test",
+    "slug": "returnit-mobile-test",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,15 +9,18 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F59E0B"
+      "backgroundColor": "#FEF3E2"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F59E0B"
+        "backgroundColor": "#FEF3E2"
       }
     },
     "web": {
