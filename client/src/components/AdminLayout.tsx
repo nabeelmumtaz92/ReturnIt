@@ -4,7 +4,7 @@ import {
   Home, Users, Truck, DollarSign, FileText, BarChart3, 
   Settings, MessageSquare, Star, Package, UserCheck, 
   Activity, Clock, Shield, Globe, Heart, Headphones,
-  ChevronRight, Menu, X, Building2, Bell
+  ChevronRight, Menu, X, Building2, Bell, LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ReturnItLogo } from '@/components/ReturnItLogo';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth-simple';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -170,6 +171,7 @@ const navigationSections = [
 export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [location] = useLocation();
+  const { logout } = useAuth();
 
   const getCurrentSection = () => {
     for (const section of navigationSections) {
@@ -226,7 +228,14 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         </Button>
 
         {/* Sign Out */}
-        <Button variant="outline" size="sm">
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={logout}
+          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          data-testid="button-signout-admin"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
           Sign Out
         </Button>
 

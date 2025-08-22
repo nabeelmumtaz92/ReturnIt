@@ -75,48 +75,218 @@ export default function AdminPaymentTracking() {
     return matchesSearch && matchesStatus;
   });
 
+  // Function to convert data to CSV format
+  const convertToCSV = (data: any[], headers: string[]) => {
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(header => {
+        const value = row[header] || '';
+        return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(','))
+    ].join('\n');
+    return csvContent;
+  };
+
+  // Function to trigger download
+  const downloadFile = (content: string, filename: string, type: string = 'text/csv') => {
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
   const handleExportToExcel = async () => {
     try {
-      const response = await apiRequest("POST", "/api/admin/export-payments", {
-        format: 'excel',
-        dateRange: dateFilter,
-        status: statusFilter
-      });
+      // Generate CSV data from the filtered records
+      const exportData = filteredRecords.map(record => ({
+        order_id: record.orderId,
+        transaction_date: format(new Date(record.transactionDate), 'yyyy-MM-dd HH:mm:ss'),
+        driver_name: record.driverName,
+        driver_id: record.driverId,
+        status: record.status,
+        payment_method: record.paymentMethod,
+        customer_total: record.customerPayment.total.toFixed(2),
+        customer_base_price: record.customerPayment.basePrice.toFixed(2),
+        customer_surcharges: record.customerPayment.surcharges.toFixed(2),
+        customer_taxes: record.customerPayment.taxes.toFixed(2),
+        driver_total_earnings: record.driverEarnings.total.toFixed(2),
+        driver_base_pay: record.driverEarnings.basePay.toFixed(2),
+        driver_distance_pay: record.driverEarnings.distancePay.toFixed(2),
+        driver_time_pay: record.driverEarnings.timePay.toFixed(2),
+        driver_size_bonus: record.driverEarnings.sizeBonus.toFixed(2),
+        driver_tip: record.driverEarnings.tip.toFixed(2),
+        company_total_revenue: record.companyRevenue.total.toFixed(2),
+        company_service_fee: record.companyRevenue.serviceFee.toFixed(2),
+        company_distance_fee: record.companyRevenue.distanceFee.toFixed(2),
+        company_time_fee: record.companyRevenue.timeFee.toFixed(2),
+        tax_year: record.taxYear,
+        quarter: record.quarter
+      }));
+
+      const headers = Object.keys(exportData[0] || {});
+      const filename = `payment-records-${dateFilter}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
       
-      // Create download link
-      const blob = new Blob([response], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `returnly-payments-${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const csvContent = convertToCSV(exportData, headers);
+      downloadFile(csvContent, filename);
+      
     } catch (error) {
       console.error('Export failed:', error);
     }
   };
 
-  const generateTaxReport = async (year: number) => {
+  const generateTaxReport = async (year: number = new Date().getFullYear()) => {
     try {
-      const response = await apiRequest("POST", "/api/admin/tax-report", { year });
+      // Generate comprehensive tax report data
+      const taxReportData = paymentRecords
+        .filter(record => record.taxYear === year)
+        .map(record => ({
+          tax_year: year,
+          order_id: record.orderId,
+          transaction_date: format(new Date(record.transactionDate), 'yyyy-MM-dd'),
+          driver_name: record.driverName,
+          driver_id: record.driverId,
+          quarter: record.quarter,
+          driver_1099_compensation: record.driverEarnings.total.toFixed(2),
+          federal_tax_withheld: '0.00', // Independent contractors
+          state_tax_withheld: '0.00',
+          backup_withholding: '0.00',
+          payer_name: 'ReturnIt Logistics LLC',
+          payer_tin: '12-3456789',
+          payer_address: '123 Business Ave, City, State 12345',
+          recipient_address: 'Driver Address (To be filled)',
+          form_1099_required: record.driverEarnings.total >= 600 ? 'Yes' : 'No'
+        }));
+
+      // Add summary data
+      const summaryData = [{
+        report_type: 'Tax Summary',
+        tax_year: year,
+        total_drivers_requiring_1099: taxReportData.filter(r => r.form_1099_required === 'Yes').length,
+        total_1099_compensation: taxReportData.reduce((sum, r) => sum + parseFloat(r.driver_1099_compensation), 0).toFixed(2),
+        total_transactions: taxReportData.length,
+        q1_compensation: taxReportData.filter(r => r.quarter === 1).reduce((sum, r) => sum + parseFloat(r.driver_1099_compensation), 0).toFixed(2),
+        q2_compensation: taxReportData.filter(r => r.quarter === 2).reduce((sum, r) => sum + parseFloat(r.driver_1099_compensation), 0).toFixed(2),
+        q3_compensation: taxReportData.filter(r => r.quarter === 3).reduce((sum, r) => sum + parseFloat(r.driver_1099_compensation), 0).toFixed(2),
+        q4_compensation: taxReportData.filter(r => r.quarter === 4).reduce((sum, r) => sum + parseFloat(r.driver_1099_compensation), 0).toFixed(2),
+        report_generated: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+      }];
+
+      const combinedData = [...summaryData, ...taxReportData];
+      const headers = Object.keys(combinedData[0]);
+      const filename = `tax-report-${year}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
       
-      const blob = new Blob([response], { 
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `returnly-tax-report-${year}.xlsx`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      const csvContent = convertToCSV(combinedData, headers);
+      downloadFile(csvContent, filename);
+      
     } catch (error) {
       console.error('Tax report generation failed:', error);
+    }
+  };
+
+  const generate1099Forms = async (year: number = new Date().getFullYear()) => {
+    try {
+      // Generate 1099-NEC forms data
+      const forms1099 = paymentRecords
+        .filter(record => record.taxYear === year && record.driverEarnings.total >= 600)
+        .reduce((acc, record) => {
+          const driverId = record.driverId;
+          if (!acc[driverId]) {
+            acc[driverId] = {
+              driver_id: driverId,
+              driver_name: record.driverName,
+              tax_year: year,
+              total_compensation: 0,
+              quarters: { q1: 0, q2: 0, q3: 0, q4: 0 },
+              form_type: '1099-NEC',
+              payer_info: {
+                name: 'ReturnIt Logistics LLC',
+                tin: '12-3456789',
+                address: '123 Business Ave, City, State 12345',
+                phone: '(555) 123-4567'
+              }
+            };
+          }
+          acc[driverId].total_compensation += record.driverEarnings.total;
+          acc[driverId].quarters[`q${record.quarter}`] += record.driverEarnings.total;
+          return acc;
+        }, {});
+
+      const formsData = Object.values(forms1099).map((form: any) => ({
+        ...form,
+        total_compensation: form.total_compensation.toFixed(2),
+        q1_compensation: form.quarters.q1.toFixed(2),
+        q2_compensation: form.quarters.q2.toFixed(2),
+        q3_compensation: form.quarters.q3.toFixed(2),
+        q4_compensation: form.quarters.q4.toFixed(2),
+        federal_tax_withheld: '0.00',
+        state_tax_withheld: '0.00',
+        backup_withholding: '0.00',
+        generated_date: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+      }));
+
+      const headers = Object.keys(formsData[0] || {}).filter(key => key !== 'quarters');
+      const filename = `1099-nec-forms-${year}-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      
+      const csvContent = convertToCSV(formsData, headers);
+      downloadFile(csvContent, filename);
+      
+    } catch (error) {
+      console.error('1099 forms generation failed:', error);
+    }
+  };
+
+  const exportAllTaxData = async () => {
+    try {
+      // Comprehensive tax data export
+      const allTaxData = paymentRecords.map(record => ({
+        record_id: record.id,
+        order_id: record.orderId,
+        transaction_date: format(new Date(record.transactionDate), 'yyyy-MM-dd HH:mm:ss'),
+        tax_year: record.taxYear,
+        quarter: record.quarter,
+        driver_id: record.driverId,
+        driver_name: record.driverName,
+        status: record.status,
+        payment_method: record.paymentMethod,
+        // Customer payments
+        customer_total: record.customerPayment.total.toFixed(2),
+        customer_base_price: record.customerPayment.basePrice.toFixed(2),
+        customer_surcharges: record.customerPayment.surcharges.toFixed(2),
+        customer_taxes: record.customerPayment.taxes.toFixed(2),
+        // Driver 1099 reportable income
+        driver_1099_compensation: record.driverEarnings.total.toFixed(2),
+        driver_base_pay: record.driverEarnings.basePay.toFixed(2),
+        driver_distance_pay: record.driverEarnings.distancePay.toFixed(2),
+        driver_time_pay: record.driverEarnings.timePay.toFixed(2),
+        driver_size_bonus: record.driverEarnings.sizeBonus.toFixed(2),
+        driver_tip: record.driverEarnings.tip.toFixed(2),
+        // Company revenue  
+        company_total_revenue: record.companyRevenue.total.toFixed(2),
+        company_service_fee: record.companyRevenue.serviceFee.toFixed(2),
+        company_distance_fee: record.companyRevenue.distanceFee.toFixed(2),
+        company_time_fee: record.companyRevenue.timeFee.toFixed(2),
+        // Tax calculations
+        requires_1099: record.driverEarnings.total >= 600 ? 'Yes' : 'No',
+        estimated_driver_tax_liability: (record.driverEarnings.total * 0.25).toFixed(2),
+        company_tax_deduction: record.driverEarnings.total.toFixed(2),
+        export_timestamp: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+      }));
+
+      const headers = Object.keys(allTaxData[0] || {});
+      const filename = `complete-tax-data-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      
+      const csvContent = convertToCSV(allTaxData, headers);
+      downloadFile(csvContent, filename);
+      
+    } catch (error) {
+      console.error('Tax data export failed:', error);
     }
   };
 
