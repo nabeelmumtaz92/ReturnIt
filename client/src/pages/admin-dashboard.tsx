@@ -753,22 +753,97 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
-  const QualityContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Quality Assurance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Shield className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Quality Control</p>
-            <p className="text-sm text-amber-600">Monitor service quality and performance standards</p>
+  const QualityContent = () => {
+    const [qualityMetrics, setQualityMetrics] = useState({
+      averageRating: 4.7,
+      completedDeliveries: 1247,
+      onTimeRate: 89,
+      customerSatisfaction: 92,
+      issueReports: 8
+    });
+
+    const [recentIssues, setRecentIssues] = useState([
+      { id: 1, type: 'delivery_delay', driver: 'John Smith', customer: 'Alice Johnson', status: 'resolved', time: '2 hours ago' },
+      { id: 2, type: 'damaged_item', driver: 'Sarah Wilson', customer: 'Bob Davis', status: 'investigating', time: '4 hours ago' },
+      { id: 3, type: 'wrong_address', driver: 'Mike Chen', customer: 'Carol White', status: 'resolved', time: '6 hours ago' }
+    ]);
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Quality Assurance Dashboard</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-green-700">{qualityMetrics.averageRating}</p>
+                  <p className="text-sm text-amber-600">Avg Rating</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-blue-700">{qualityMetrics.completedDeliveries}</p>
+                  <p className="text-sm text-amber-600">Completed</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-amber-700">{qualityMetrics.onTimeRate}%</p>
+                  <p className="text-sm text-amber-600">On Time</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-green-700">{qualityMetrics.customerSatisfaction}%</p>
+                  <p className="text-sm text-amber-600">Satisfaction</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-red-700">{qualityMetrics.issueReports}</p>
+                  <p className="text-sm text-amber-600">Issues</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Recent Quality Issues</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentIssues.map(issue => (
+                  <div key={issue.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-amber-900">{issue.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                      <p className="text-sm text-amber-600">Driver: {issue.driver} • Customer: {issue.customer}</p>
+                      <p className="text-xs text-amber-500">{issue.time}</p>
+                    </div>
+                    <Badge className={
+                      issue.status === 'resolved' ? 'bg-green-100 text-green-800' :
+                      issue.status === 'investigating' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-red-100 text-red-800'
+                    }>
+                      {issue.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
   const IncentivesContent = () => {
     const [incentives, setIncentives] = useState([
@@ -884,73 +959,568 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
-  const ReportingContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Advanced Reporting</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <PieChart className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Reporting System</p>
-            <p className="text-sm text-amber-600">Generate detailed financial and operational reports</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  const ReportingContent = () => {
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [reportStatus, setReportStatus] = useState('');
 
-  const TicketsContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Support Tickets</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <HeadphonesIcon className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Customer Support</p>
-            <p className="text-sm text-amber-600">Handle customer service requests and support tickets</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    const generateReport = async (reportType: string) => {
+      setIsGenerating(true);
+      setReportStatus(`Generating ${reportType} report...`);
+      
+      try {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        setReportStatus(`✅ ${reportType} report generated successfully`);
+        setTimeout(() => setReportStatus(''), 3000);
+      } catch (error) {
+        setReportStatus(`❌ Failed to generate ${reportType} report`);
+      }
+      setIsGenerating(false);
+    };
 
-  const ChatContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Live Chat Center</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <MessageCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Communication Hub</p>
-            <p className="text-sm text-amber-600">Live customer support and communication</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+    const reports = [
+      { name: 'Daily Operations', description: 'Orders, deliveries, and performance metrics', icon: BarChart3 },
+      { name: 'Financial Summary', description: 'Revenue, payouts, and profit analysis', icon: DollarSign },
+      { name: 'Driver Performance', description: 'Individual driver statistics and ratings', icon: Users },
+      { name: 'Customer Analytics', description: 'Customer behavior and satisfaction data', icon: Star }
+    ];
 
-  const RatingsContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Customer Ratings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Star className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Rating System</p>
-            <p className="text-sm text-amber-600">Monitor customer feedback and service ratings</p>
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        {reportStatus && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 text-sm font-medium">{reportStatus}</p>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Report Generation Center</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {reports.map((report, index) => {
+                  const IconComponent = report.icon;
+                  return (
+                    <div key={index} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <IconComponent className="h-5 w-5 text-amber-600" />
+                          <p className="font-medium text-amber-900">{report.name}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-amber-600 mb-3">{report.description}</p>
+                      <Button 
+                        onClick={() => generateReport(report.name)}
+                        disabled={isGenerating}
+                        size="sm"
+                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                        data-testid={`button-generate-${report.name.toLowerCase().replace(' ', '-')}`}
+                      >
+                        {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <PieChart className="h-4 w-4 mr-2" />}
+                        Generate Report
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Recent Reports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3 border border-amber-200 rounded-lg">
+                  <div>
+                    <p className="font-medium text-amber-900">Daily Operations Report - Jan 22</p>
+                    <p className="text-sm text-amber-600">Generated 2 hours ago • 847 KB</p>
+                  </div>
+                  <Button variant="outline" size="sm">Download</Button>
+                </div>
+                <div className="flex items-center justify-between p-3 border border-amber-200 rounded-lg">
+                  <div>
+                    <p className="font-medium text-amber-900">Weekly Financial Summary</p>
+                    <p className="text-sm text-amber-600">Generated yesterday • 1.2 MB</p>
+                  </div>
+                  <Button variant="outline" size="sm">Download</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
+
+  const TicketsContent = () => {
+    const [tickets, setTickets] = useState([
+      { id: 1, customer: 'Alice Johnson', issue: 'Package not delivered', status: 'open', priority: 'high', time: '1 hour ago', assigned: 'Support Team' },
+      { id: 2, customer: 'Bob Davis', issue: 'Damaged item received', status: 'in_progress', priority: 'medium', time: '3 hours ago', assigned: 'Sarah M.' },
+      { id: 3, customer: 'Carol White', issue: 'Wrong pickup time', status: 'resolved', priority: 'low', time: '5 hours ago', assigned: 'Mike R.' },
+      { id: 4, customer: 'David Brown', issue: 'Driver was rude', status: 'open', priority: 'high', time: '6 hours ago', assigned: 'Unassigned' }
+    ]);
+
+    const [filterStatus, setFilterStatus] = useState('all');
+
+    const updateTicketStatus = (id, newStatus) => {
+      setTickets(prev => prev.map(ticket => 
+        ticket.id === id ? { ...ticket, status: newStatus } : ticket
+      ));
+    };
+
+    const filteredTickets = filterStatus === 'all' 
+      ? tickets 
+      : tickets.filter(ticket => ticket.status === filterStatus);
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-amber-900 text-xl">Support Ticket Management</CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setFilterStatus('all')}
+                  variant={filterStatus === 'all' ? 'default' : 'outline'}
+                  size="sm"
+                >
+                  All ({tickets.length})
+                </Button>
+                <Button
+                  onClick={() => setFilterStatus('open')}
+                  variant={filterStatus === 'open' ? 'default' : 'outline'}
+                  size="sm"
+                >
+                  Open ({tickets.filter(t => t.status === 'open').length})
+                </Button>
+                <Button
+                  onClick={() => setFilterStatus('in_progress')}
+                  variant={filterStatus === 'in_progress' ? 'default' : 'outline'}
+                  size="sm"
+                >
+                  In Progress ({tickets.filter(t => t.status === 'in_progress').length})
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {filteredTickets.map(ticket => (
+                  <div key={ticket.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-medium text-amber-900">#{ticket.id} - {ticket.customer}</p>
+                          <Badge className={
+                            ticket.priority === 'high' ? 'bg-red-100 text-red-800' :
+                            ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                          }>
+                            {ticket.priority}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-amber-700 mb-1">{ticket.issue}</p>
+                        <div className="flex items-center gap-4 text-xs text-amber-600">
+                          <span>{ticket.time}</span>
+                          <span>Assigned: {ticket.assigned}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge className={
+                          ticket.status === 'open' ? 'bg-red-100 text-red-800' :
+                          ticket.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
+                        }>
+                          {ticket.status.replace('_', ' ')}
+                        </Badge>
+                        {ticket.status !== 'resolved' && (
+                          <Button
+                            onClick={() => updateTicketStatus(ticket.id, 
+                              ticket.status === 'open' ? 'in_progress' : 'resolved'
+                            )}
+                            variant="outline"
+                            size="sm"
+                            data-testid={`button-update-ticket-${ticket.id}`}
+                          >
+                            {ticket.status === 'open' ? 'Start Work' : 'Resolve'}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ticket Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-700">{tickets.filter(t => t.status === 'open').length}</p>
+                  <p className="text-sm text-amber-600">Open Tickets</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-yellow-700">{tickets.filter(t => t.status === 'in_progress').length}</p>
+                  <p className="text-sm text-amber-600">In Progress</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-700">{tickets.filter(t => t.status === 'resolved').length}</p>
+                  <p className="text-sm text-amber-600">Resolved</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-amber-700">{Math.round((tickets.filter(t => t.status === 'resolved').length / tickets.length) * 100)}%</p>
+                  <p className="text-sm text-amber-600">Resolution Rate</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const ChatContent = () => {
+    const [activeChats, setActiveChats] = useState([
+      { id: 1, customer: 'Alice Johnson', lastMessage: 'When will my package be delivered?', status: 'active', time: '2 min ago', unread: 2 },
+      { id: 2, customer: 'Bob Davis', lastMessage: 'The driver was very helpful!', status: 'resolved', time: '15 min ago', unread: 0 },
+      { id: 3, customer: 'Carol White', lastMessage: 'I need to reschedule my pickup', status: 'waiting', time: '1 hour ago', unread: 1 }
+    ]);
+
+    const [selectedChat, setSelectedChat] = useState(null);
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-amber-900 text-xl">Live Chat Center</CardTitle>
+              <Badge variant="outline" className="text-green-700">
+                {activeChats.filter(chat => chat.status === 'active').length} Active
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Chat List */}
+                <div className="space-y-3">
+                  <h3 className="font-medium text-amber-900 mb-3">Active Conversations</h3>
+                  {activeChats.map(chat => (
+                    <div 
+                      key={chat.id} 
+                      className="p-4 border border-amber-200 rounded-lg bg-amber-50/30 cursor-pointer hover:bg-amber-50/50"
+                      onClick={() => setSelectedChat(chat)}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-medium text-amber-900">{chat.customer}</p>
+                            {chat.unread > 0 && (
+                              <Badge className="bg-red-100 text-red-800 text-xs">
+                                {chat.unread} new
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-sm text-amber-700 mb-1">{chat.lastMessage}</p>
+                          <p className="text-xs text-amber-500">{chat.time}</p>
+                        </div>
+                        <Badge className={
+                          chat.status === 'active' ? 'bg-green-100 text-green-800' :
+                          chat.status === 'waiting' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }>
+                          {chat.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Chat Window */}
+                <div className="border border-amber-200 rounded-lg bg-amber-50/30 p-4 h-96">
+                  {selectedChat ? (
+                    <div className="flex flex-col h-full">
+                      <div className="border-b border-amber-200 pb-2 mb-4">
+                        <h4 className="font-medium text-amber-900">{selectedChat.customer}</h4>
+                        <p className="text-sm text-amber-600">Status: {selectedChat.status}</p>
+                      </div>
+                      
+                      <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                        <div className="text-right">
+                          <div className="inline-block bg-blue-100 text-blue-800 p-2 rounded-lg text-sm max-w-xs">
+                            How can I help you today?
+                          </div>
+                          <p className="text-xs text-amber-500 mt-1">Support Agent</p>
+                        </div>
+                        <div className="text-left">
+                          <div className="inline-block bg-amber-100 text-amber-800 p-2 rounded-lg text-sm max-w-xs">
+                            {selectedChat.lastMessage}
+                          </div>
+                          <p className="text-xs text-amber-500 mt-1">{selectedChat.customer}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Type your response..." 
+                          className="flex-1 px-3 py-2 border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                        <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                          <MessageCircle className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <div className="text-center">
+                        <MessageCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+                        <p className="text-amber-700">Select a conversation to start chatting</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Chat Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-700">{activeChats.filter(c => c.status === 'active').length}</p>
+                  <p className="text-sm text-amber-600">Active Chats</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-yellow-700">{activeChats.filter(c => c.status === 'waiting').length}</p>
+                  <p className="text-sm text-amber-600">Waiting</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-700">{activeChats.reduce((total, chat) => total + chat.unread, 0)}</p>
+                  <p className="text-sm text-amber-600">Unread Messages</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-amber-700">2.3 min</p>
+                  <p className="text-sm text-amber-600">Avg Response</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const RatingsContent = () => {
+    const [ratingStats, setRatingStats] = useState({
+      averageRating: 4.7,
+      totalReviews: 1247,
+      fiveStars: 876,
+      fourStars: 245,
+      threeStars: 89,
+      twoStars: 25,
+      oneStars: 12
+    });
+
+    const [recentRatings, setRecentRatings] = useState([
+      { id: 1, customer: 'Alice Johnson', driver: 'John Smith', rating: 5, comment: 'Excellent service! Very professional.', time: '2 hours ago' },
+      { id: 2, customer: 'Bob Davis', driver: 'Sarah Wilson', rating: 4, comment: 'Good delivery, on time.', time: '4 hours ago' },
+      { id: 3, customer: 'Carol White', driver: 'Mike Chen', rating: 5, comment: 'Great communication and care with package.', time: '6 hours ago' },
+      { id: 4, customer: 'David Brown', driver: 'Lisa Park', rating: 3, comment: 'Package was slightly damaged but service was okay.', time: '8 hours ago' }
+    ]);
+
+    const renderStars = (rating) => {
+      return Array.from({ length: 5 }, (_, i) => (
+        <Star 
+          key={i} 
+          className={`h-4 w-4 ${i < rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`} 
+        />
+      ));
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          {/* Rating Overview */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Rating Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center mb-6">
+                  <p className="text-4xl font-bold text-amber-900 mb-2">{ratingStats.averageRating}</p>
+                  <div className="flex justify-center mb-2">
+                    {renderStars(Math.round(ratingStats.averageRating))}
+                  </div>
+                  <p className="text-amber-600">Based on {ratingStats.totalReviews} reviews</p>
+                </div>
+                
+                <div className="space-y-3">
+                  {[5, 4, 3, 2, 1].map(stars => {
+                    const count = ratingStats[`${['', 'one', 'two', 'three', 'four', 'five'][stars]}Stars`];
+                    const percentage = Math.round((count / ratingStats.totalReviews) * 100);
+                    
+                    return (
+                      <div key={stars} className="flex items-center gap-2">
+                        <span className="text-sm text-amber-700 w-8">{stars}★</span>
+                        <div className="flex-1 bg-amber-100 rounded-full h-2">
+                          <div 
+                            className="bg-yellow-400 h-2 rounded-full" 
+                            style={{ width: `${percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-sm text-amber-600 w-12">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Rating Statistics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <p className="text-2xl font-bold text-green-700">{Math.round((ratingStats.fiveStars / ratingStats.totalReviews) * 100)}%</p>
+                    <p className="text-sm text-amber-600">5-Star Ratings</p>
+                  </div>
+                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <p className="text-2xl font-bold text-blue-700">{Math.round(((ratingStats.fiveStars + ratingStats.fourStars) / ratingStats.totalReviews) * 100)}%</p>
+                    <p className="text-sm text-amber-600">4+ Star Ratings</p>
+                  </div>
+                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <p className="text-2xl font-bold text-amber-700">{Math.round(((ratingStats.oneStars + ratingStats.twoStars) / ratingStats.totalReviews) * 100)}%</p>
+                    <p className="text-sm text-amber-600">Low Ratings</p>
+                  </div>
+                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <p className="text-2xl font-bold text-purple-700">4.2</p>
+                    <p className="text-sm text-amber-600">Driver Avg</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Ratings */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Recent Customer Reviews</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentRatings.map(rating => (
+                  <div key={rating.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">{rating.customer}</p>
+                          <div className="flex">
+                            {renderStars(rating.rating)}
+                          </div>
+                        </div>
+                        <p className="text-sm text-amber-700 mb-1">"{rating.comment}"</p>
+                        <div className="flex items-center gap-4 text-xs text-amber-600">
+                          <span>Driver: {rating.driver}</span>
+                          <span>{rating.time}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
   const NotificationsContent = () => {
     const [notifications, setNotifications] = useState([
@@ -1106,22 +1676,164 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
-  const EmployeesContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Employee Management</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <UserCheck className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Staff Management</p>
-            <p className="text-sm text-amber-600">Staff management and access control</p>
+  const EmployeesContent = () => {
+    const [employees, setEmployees] = useState([
+      { id: 1, name: 'Sarah Mitchell', role: 'Customer Support Manager', status: 'active', lastLogin: '2 hours ago', permissions: ['support', 'chat', 'tickets'] },
+      { id: 2, name: 'Mike Rodriguez', role: 'Operations Supervisor', status: 'active', lastLogin: '4 hours ago', permissions: ['drivers', 'routes', 'quality'] },
+      { id: 3, name: 'Lisa Chen', role: 'Financial Analyst', status: 'active', lastLogin: '1 hour ago', permissions: ['payouts', 'reports', 'analytics'] },
+      { id: 4, name: 'David Wilson', role: 'IT Administrator', status: 'offline', lastLogin: '1 day ago', permissions: ['all'] }
+    ]);
+
+    const toggleEmployeeStatus = (id) => {
+      setEmployees(prev => prev.map(emp => 
+        emp.id === id 
+          ? { ...emp, status: emp.status === 'active' ? 'offline' : 'active' }
+          : emp
+      ));
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-amber-900 text-xl">Employee Management</CardTitle>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-add-employee">
+                <UserCheck className="h-4 w-4 mr-2" />
+                Add Employee
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {employees.map(employee => (
+                  <div key={employee.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">{employee.name}</p>
+                          <Badge className={employee.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                            {employee.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-amber-700 mb-1">{employee.role}</p>
+                        <p className="text-xs text-amber-600">Last login: {employee.lastLogin}</p>
+                        <div className="mt-2">
+                          <p className="text-xs text-amber-500 mb-1">Permissions:</p>
+                          <div className="flex flex-wrap gap-1">
+                            {employee.permissions.map((permission, index) => (
+                              <Badge key={index} variant="outline" className="text-xs">
+                                {permission}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => toggleEmployeeStatus(employee.id)}
+                          variant="outline"
+                          size="sm"
+                          className={employee.status === 'active' ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}
+                          data-testid={`button-toggle-employee-${employee.id}`}
+                        >
+                          {employee.status === 'active' ? 'Deactivate' : 'Activate'}
+                        </Button>
+                        <Button variant="outline" size="sm" data-testid={`button-edit-employee-${employee.id}`}>
+                          Edit
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Employee Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-700">{employees.filter(e => e.status === 'active').length}</p>
+                  <p className="text-sm text-amber-600">Active Employees</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-700">{employees.filter(e => e.status === 'offline').length}</p>
+                  <p className="text-sm text-amber-600">Offline</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-700">{employees.length}</p>
+                  <p className="text-sm text-amber-600">Total Staff</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-amber-700">4</p>
+                  <p className="text-sm text-amber-600">Departments</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Access Control */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Access Control Settings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">Customer Support Access</p>
+                    <p className="text-sm text-amber-600">View tickets, chat, and customer data</p>
+                  </div>
+                  <Button variant="outline" size="sm">Manage</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">Financial Data Access</p>
+                    <p className="text-sm text-amber-600">View payouts, reports, and analytics</p>
+                  </div>
+                  <Button variant="outline" size="sm">Manage</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">Driver Management Access</p>
+                    <p className="text-sm text-amber-600">Manage drivers, routes, and operations</p>
+                  </div>
+                  <Button variant="outline" size="sm">Manage</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
   const PayoutsManagementContent = () => {
     const [isProcessing, setIsProcessing] = useState(false);
