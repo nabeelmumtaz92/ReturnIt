@@ -39,6 +39,141 @@ interface CompletedOrdersAnalyticsProps {
 export default function CompletedOrdersAnalytics({ completedOrders }: CompletedOrdersAnalyticsProps) {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter' | 'year'>('month');
   const [analyticsView, setAnalyticsView] = useState<'overview' | 'drivers' | 'customers' | 'locations'>('overview');
+  const [isExporting, setIsExporting] = useState(false);
+
+  // Function to convert data to CSV format
+  const convertToCSV = (data: any[], headers: string[]) => {
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(header => {
+        const value = row[header] || '';
+        // Escape commas and quotes in CSV
+        return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(','))
+    ].join('\n');
+    return csvContent;
+  };
+
+  // Function to trigger download
+  const downloadFile = (content: string, filename: string, type: string = 'text/csv') => {
+    const blob = new Blob([content], { type });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleExportExcel = async () => {
+    setIsExporting(true);
+    
+    try {
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Generate comprehensive analytics data for export
+      const analyticsData = [
+        // Summary metrics
+        {
+          sheet: 'Summary',
+          metric: 'Total Orders',
+          value: completedOrders.length,
+          details: 'All completed orders',
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        },
+        {
+          sheet: 'Summary',
+          metric: 'Net Revenue',
+          value: `$${totalRevenue.toFixed(2)}`,
+          details: 'Revenue after service fees',
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        },
+        {
+          sheet: 'Summary',
+          metric: 'Service Fees',
+          value: `$${totalServiceFees.toFixed(2)}`,
+          details: `${completedOrders.length} orders × $3.99`,
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        },
+        {
+          sheet: 'Summary',
+          metric: 'Driver Payouts',
+          value: `$${totalDriverEarnings.toFixed(2)}`,
+          details: '70% commission to drivers',
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        },
+        {
+          sheet: 'Summary',
+          metric: 'Average Order Value',
+          value: `$${averageOrderValue.toFixed(2)}`,
+          details: 'Per completed order',
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        },
+        // Individual orders data
+        ...completedOrders.map(order => ({
+          sheet: 'Orders',
+          order_id: order.id,
+          customer: order.customer,
+          driver: order.driver || 'Unassigned',
+          status: order.status,
+          amount: `$${order.amount.toFixed(2)}`,
+          driver_earning: `$${(order.driverEarning || order.amount * 0.7).toFixed(2)}`,
+          service_fee: '$3.99',
+          net_revenue: `$${(order.amount - 3.99).toFixed(2)}`,
+          priority: order.priority,
+          pickup_address: order.pickupAddress,
+          destination: order.destination,
+          created_date: new Date(order.createdAt).toLocaleDateString(),
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        })),
+        // Driver performance data
+        ...Object.values(driverStats).map((driver: any) => ({
+          sheet: 'Drivers',
+          driver_name: driver.name,
+          total_orders: driver.orders,
+          delivered_orders: driver.deliveredCount,
+          refunded_orders: driver.refundedCount,
+          success_rate: `${driver.successRate.toFixed(1)}%`,
+          total_earnings: `$${driver.earnings.toFixed(2)}`,
+          average_order_value: `$${driver.avgOrderValue.toFixed(2)}`,
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        })),
+        // Location performance data
+        ...Object.values(locationStats).map((location: any) => ({
+          sheet: 'Locations',
+          location_name: location.location,
+          total_orders: location.orders,
+          total_revenue: `$${location.revenue.toFixed(2)}`,
+          average_order_value: `$${location.avgOrderValue.toFixed(2)}`,
+          time_range: timeRange,
+          export_date: new Date().toISOString().split('T')[0]
+        }))
+      ];
+
+      const headers = Object.keys(analyticsData[0]);
+      const filename = `analytics_export_${timeRange}_${new Date().toISOString().split('T')[0]}.csv`;
+      
+      const csvContent = convertToCSV(analyticsData, headers);
+      downloadFile(csvContent, filename);
+      
+    } catch (error) {
+      console.error('Error exporting data:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // Calculate key metrics
   const totalRevenue = completedOrders.reduce((sum, order) => sum + (order.amount - 3.99), 0);
@@ -122,18 +257,38 @@ export default function CompletedOrdersAnalytics({ completedOrders }: CompletedO
           <h2 className="text-2xl font-bold text-amber-900">Advanced Analytics</h2>
           <p className="text-amber-700">Comprehensive completed orders analysis</p>
         </div>
-        <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
-          <SelectTrigger className="w-40">
-            <Calendar className="h-4 w-4 mr-2" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">Last Week</SelectItem>
-            <SelectItem value="month">Last Month</SelectItem>
-            <SelectItem value="quarter">Last Quarter</SelectItem>
-            <SelectItem value="year">Last Year</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-3">
+          <Button 
+            onClick={handleExportExcel}
+            disabled={isExporting}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            data-testid="button-export-analytics-excel"
+          >
+            {isExporting ? (
+              <>
+                <Clock className="h-4 w-4 mr-2 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Export Excel
+              </>
+            )}
+          </Button>
+          <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+            <SelectTrigger className="w-40">
+              <Calendar className="h-4 w-4 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">Last Week</SelectItem>
+              <SelectItem value="month">Last Month</SelectItem>
+              <SelectItem value="quarter">Last Quarter</SelectItem>
+              <SelectItem value="year">Last Year</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Key Performance Indicators */}
