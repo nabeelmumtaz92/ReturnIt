@@ -25,7 +25,8 @@ import {
   Terminal,
   RefreshCw,
   Loader2,
-  ArrowLeft
+  ArrowLeft,
+  FileText
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -235,7 +236,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const QuickActions = () => (
     <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-6 mb-6">
       <h2 className="text-lg font-semibold text-amber-900 mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <Button 
           onClick={() => changeSection('orders')}
           className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
@@ -261,6 +262,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         >
           <BarChart3 className="h-8 w-8" />
           <span className="text-sm font-medium">Analytics</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('payouts')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <DollarSign className="h-8 w-8" />
+          <span className="text-sm font-medium">Driver Payouts</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('tax-reports')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <FileText className="h-8 w-8" />
+          <span className="text-sm font-medium">Tax Reports</span>
         </Button>
         
         <Button 
@@ -3366,8 +3385,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'ratings' && 'Monitor customer feedback and service ratings'}
               {currentSection === 'notifications' && 'System alerts and notification management'}
               {currentSection === 'employees' && 'Staff management and access control'}
-              {currentSection === 'payouts' && 'Driver payment management and bulk payouts'}
-              {currentSection === 'tax-reports' && 'Tax reporting and 1099 form generation'}
+              {currentSection === 'payouts' && 'Driver payment processing, instant pay ($0.50 fee), and bulk payouts'}
+              {currentSection === 'tax-reports' && '1099-NEC form generation, tax compliance, and IRS reporting'}
             </p>
           </div>
         </div>

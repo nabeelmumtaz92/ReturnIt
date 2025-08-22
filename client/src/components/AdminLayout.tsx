@@ -91,9 +91,15 @@ const navigationSections = [
       },
       {
         label: "Driver Payouts",
-        href: "/admin-payouts", 
+        href: "/admin-dashboard?section=payouts", 
         icon: UserCheck,
-        description: "Driver payment processing"
+        description: "Driver payment processing & instant pay"
+      },
+      {
+        label: "Tax Reports",
+        href: "/admin-dashboard?section=tax-reports",
+        icon: FileText,
+        description: "1099 forms & tax compliance"
       },
       {
         label: "Payment Tracking",
