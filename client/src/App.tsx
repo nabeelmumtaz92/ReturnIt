@@ -19,6 +19,7 @@ import About from "@/pages/about";
 
 import MobileAppDemo from "@/pages/mobile-app-demo";
 import MobileSimulator from "@/pages/mobile-simulator";
+import MobileDriver from "@/pages/mobile-driver";
 import LogoColors from "@/pages/logo-colors";
 import BackgroundColors from "@/pages/background-colors";
 import AdminPaymentTracking from "@/pages/admin-payment-tracking";
@@ -154,6 +155,7 @@ function Router() {
 
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
       <Route path="/mobile-simulator" component={MobileSimulator} />
+      <Route path="/mobile-driver" component={MobileDriver} />
       <Route path="/customer-mobile-app" component={CustomerMobileApp} />
       <Route path="/driver-mobile-app" component={ReturnlyDriverApp} />
       <Route path="/logo-colors" component={LogoColors} />

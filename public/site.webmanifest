@@ -54,6 +54,30 @@
           "sizes": "192x192"
         }
       ]
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "description": "Access admin controls",
+      "url": "/admin-dashboard",
+      "icons": [
+        {
+          "src": "/returnit-logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Track Returns",
+      "short_name": "Track",
+      "description": "Track return status",
+      "url": "/track-return",
+      "icons": [
+        {
+          "src": "/returnit-logo.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }
