@@ -834,6 +834,269 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
+  const PayoutsManagementContent = () => (
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {/* Payout Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Total Payouts Today</p>
+                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 500 + 200).toFixed(2)}</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Pending Payouts</p>
+                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 15 + 5)}</p>
+                </div>
+                <Users className="h-8 w-8 text-amber-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Instant Fees Collected</p>
+                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 25 + 5).toFixed(2)}</p>
+                </div>
+                <CreditCard className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Weekly Payouts</p>
+                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 25 + 10)}</p>
+                  <p className="text-xs text-green-600">No fees</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Payout Management */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-amber-900 text-xl">Driver Payout Management</CardTitle>
+            <div className="flex gap-2">
+              <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Data
+              </Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                Process Bulk Payouts
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h3 className="font-semibold text-amber-900 mb-2">Fee Structure</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <strong>Instant Payouts:</strong> $0.50 transaction fee
+                    <br />
+                    <span className="text-amber-700">Processed immediately via Stripe</span>
+                  </div>
+                  <div>
+                    <strong>Weekly Payouts:</strong> No fees
+                    <br />
+                    <span className="text-amber-700">Processed every Sunday at midnight</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center py-8">
+                <DollarSign className="h-12 w-12 text-amber-600 mx-auto mb-4" />
+                <p className="text-lg font-medium text-amber-900">Payout Management System</p>
+                <p className="text-sm text-amber-600 mt-2">
+                  Track all driver payments, fees, and manage bulk payouts efficiently
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const TaxReportsContent = () => (
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+      {/* Back Button */}
+      {navigationHistory.length > 1 && (
+        <div className="mb-4">
+          <Button 
+            onClick={goBack}
+            variant="outline"
+            className="border-amber-200 hover:bg-amber-50"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+          </Button>
+        </div>
+      )}
+
+      <div className="space-y-6">
+        {/* Tax Year Selection */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">Tax Reports & 1099 Forms</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="text-sm font-medium text-amber-900">Tax Year</label>
+                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                  <option value="2025">2025</option>
+                  <option value="2024">2024</option>
+                  <option value="2023">2023</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-amber-900">Quarter (Optional)</label>
+                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                  <option value="">All Year</option>
+                  <option value="1">Q1 (Jan-Mar)</option>
+                  <option value="2">Q2 (Apr-Jun)</option>
+                  <option value="3">Q3 (Jul-Sep)</option>
+                  <option value="4">Q4 (Oct-Dec)</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-amber-900">Export Format</label>
+                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                  <option value="csv">CSV File</option>
+                  <option value="xlsx">Excel File</option>
+                  <option value="pdf">PDF Report</option>
+                </select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tax Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Drivers Requiring 1099</p>
+                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 15 + 8)}</p>
+                  <p className="text-xs text-amber-700">$600+ earnings</p>
+                </div>
+                <Users className="h-8 w-8 text-amber-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Total Contractor Payments</p>
+                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 50000 + 25000).toFixed(2)}</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Forms Generated</p>
+                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 20 + 5)}</p>
+                </div>
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Tax Year</p>
+                  <p className="text-2xl font-bold text-amber-900">2025</p>
+                  <p className="text-xs text-amber-700">Current</p>
+                </div>
+                <Badge className="bg-amber-100 text-amber-800">Active</Badge>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Actions */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">Tax Report Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button className="h-auto p-6 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center space-y-2">
+                <BarChart3 className="h-8 w-8" />
+                <span>Generate Tax Report</span>
+                <span className="text-xs opacity-80">Download comprehensive report</span>
+              </Button>
+              
+              <Button className="h-auto p-6 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center space-y-2">
+                <CheckCircle className="h-8 w-8" />
+                <span>Generate 1099 Forms</span>
+                <span className="text-xs opacity-80">For drivers over $600</span>
+              </Button>
+              
+              <Button className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2">
+                <RefreshCw className="h-4 w-4" />
+                <span>Export All Data</span>
+                <span className="text-xs opacity-80">CSV/Excel export</span>
+              </Button>
+            </div>
+
+            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <h4 className="font-semibold text-amber-900 mb-2">IRS Requirements</h4>
+              <ul className="text-sm text-amber-800 space-y-1">
+                <li>• 1099-NEC forms required for contractors earning $600+ per year</li>
+                <li>• Forms must be sent to contractors by January 31st</li>
+                <li>• Filed with IRS by February 28th (March 31st if filing electronically)</li>
+                <li>• Keep records for at least 4 years after filing</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
   const dashboardTabs = [
     {
       label: "Overview",

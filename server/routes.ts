@@ -1740,7 +1740,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Driver access required" });
       }
 
-      const { orderIds, feeAmount = 1.00 } = req.body;
+      const { orderIds, feeAmount = 0.50 } = req.body;
       
       // Get pending earnings for specified orders
       const driverOrders = await storage.getDriverOrders(driverId.toString());
@@ -1754,6 +1754,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverEarning || 0), 0);
       const netAmount = totalEarnings - feeAmount;
+
+      // Minimum payout validation
+      if (netAmount < 1.00) {
+        return res.status(400).json({ 
+          message: `Minimum payout is $${(1.00 + feeAmount).toFixed(2)} (including $${feeAmount.toFixed(2)} instant fee)`,
+          totalEarnings,
+          feeAmount,
+          netAmount: 0,
+          minimumRequired: 1.00 + feeAmount
+        });
+      }
 
       // Get driver's Stripe Connect account
       if (!driver?.stripeConnectAccountId) {

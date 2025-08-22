@@ -176,6 +176,18 @@ export function AdminNavigation() {
           href: "/loyalty-dashboard",
           icon: Star,
           description: "Customer retention programs"
+        },
+        {
+          label: "Driver Payouts",
+          href: "/admin-dashboard?section=payouts",
+          icon: DollarSign,
+          description: "Manage driver payments and fees"
+        },
+        {
+          label: "Tax Reports",
+          href: "/admin-dashboard?section=tax-reports",
+          icon: BarChart3,
+          description: "1099 forms and tax reporting"
         }
       ]
     }
