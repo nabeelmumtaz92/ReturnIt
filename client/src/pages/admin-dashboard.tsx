@@ -2549,6 +2549,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       setIsProcessing(false);
     };
 
+    const handleUpdatePayouts = async () => {
+      setIsProcessing(true);
+      setProcessingStatus('Updating payout settings...');
+      try {
+        // Simulate updating payout data/settings
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        setProcessingStatus('✅ Payout settings updated successfully');
+        setTimeout(() => setProcessingStatus(''), 3000);
+      } catch (error) {
+        setProcessingStatus('❌ Error updating payout settings');
+      }
+      setIsProcessing(false);
+    };
+
     return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Back Button */}
@@ -2646,6 +2660,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 data-testid="button-bulk-payouts"
               >
                 Process Bulk Payouts
+              </Button>
+              <Button 
+                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                onClick={handleUpdatePayouts}
+                disabled={isProcessing}
+                data-testid="button-update-payouts"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Update
               </Button>
             </div>
           </CardHeader>
