@@ -125,22 +125,26 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Button 
-                  variant="link" 
-                  className="text-amber-100 hover:text-white p-0 h-auto justify-start"
-                >
-
-                  Terms of Service
-                </Button>
+                <Link href="/terms-of-service">
+                  <Button 
+                    variant="link" 
+                    className="text-amber-100 hover:text-white p-0 h-auto justify-start"
+                    data-testid="link-terms-of-service"
+                  >
+                    Terms of Service
+                  </Button>
+                </Link>
               </li>
               <li>
-                <Button 
-                  variant="link" 
-                  className="text-amber-100 hover:text-white p-0 h-auto justify-start"
-                >
-
-                  Privacy Policy
-                </Button>
+                <Link href="/privacy-policy">
+                  <Button 
+                    variant="link" 
+                    className="text-amber-100 hover:text-white p-0 h-auto justify-start"
+                    data-testid="link-privacy-policy"
+                  >
+                    Privacy Policy
+                  </Button>
+                </Link>
               </li>
             </ul>
           </div>

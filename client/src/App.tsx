@@ -63,6 +63,8 @@ import PricingAnalysis from "@/pages/pricing-analysis";
 import FailedReturnDemo from "@/pages/failed-return-demo";
 import ComprehensivePricingExamples from "@/pages/comprehensive-pricing-examples";
 import ComprehensiveGuidebook from "@/pages/comprehensive-guidebook";
+import TermsOfService from "@/pages/terms-of-service";
+import PrivacyPolicy from "@/pages/privacy-policy";
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -122,6 +124,8 @@ function Router() {
         {(params) => <HelpArticle />}
       </Route>
       <Route path="/faq" component={FAQ} />
+      <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/admin-dashboard">
         {() => {
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
