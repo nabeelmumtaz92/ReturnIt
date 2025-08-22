@@ -52,6 +52,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const urlParams = new URLSearchParams(window.location.search);
   const currentSection = urlParams.get('section') || section || 'overview';
   
+  // Re-render when location changes
+  const [, forceUpdate] = useState({});
+  useEffect(() => {
+    forceUpdate({});
+  }, [location]);
+  
   // State for various features
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
@@ -74,12 +80,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const url = new URL(window.location.href);
     if (newSection === 'overview') {
       url.searchParams.delete('section');
+      setLocation('/admin-dashboard');
     } else {
       url.searchParams.set('section', newSection);
+      setLocation(`/admin-dashboard?section=${newSection}`);
     }
-    window.history.pushState({}, '', url.toString());
-    // Force a re-render by reloading
-    window.location.reload();
   };
 
   // Function to update dashboard statistics

@@ -234,7 +234,10 @@ export function AdminNavigation() {
           </h3>
           <div className="space-y-1">
             {section.items.map((item) => {
-              const isActive = location === item.href;
+              // Better active state detection for section-based URLs
+              const isActive = location === item.href || 
+                (item.href.includes('?section=') && 
+                 window.location.search.includes(item.href.split('?section=')[1]));
               return (
                 <Link key={item.href} href={item.href}>
                   <Button
