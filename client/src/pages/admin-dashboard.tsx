@@ -681,22 +681,77 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
-  const RoutesContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Route Optimization</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <MapPin className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Route Management</p>
-            <p className="text-sm text-amber-600">Optimize delivery routes for efficiency</p>
+  const RoutesContent = () => {
+    const [routes, setRoutes] = useState([
+      { id: 1, driver: 'John Smith', stops: 5, distance: '12.3 mi', eta: '2:45 PM', status: 'active' },
+      { id: 2, driver: 'Sarah Johnson', stops: 3, distance: '8.7 mi', eta: '3:15 PM', status: 'pending' },
+      { id: 3, driver: 'Mike Wilson', stops: 7, distance: '15.2 mi', eta: '4:00 PM', status: 'completed' }
+    ]);
+
+    const optimizeRoutes = async () => {
+      setIsUpdating(true);
+      // Simulate route optimization
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setRoutes(prev => prev.map(route => ({
+        ...route,
+        distance: `${(parseFloat(route.distance) * 0.9).toFixed(1)} mi`,
+        eta: route.status === 'active' ? '2:30 PM' : route.eta
+      })));
+      setIsUpdating(false);
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="text-amber-900 text-xl">Route Optimization</CardTitle>
+            <Button 
+              onClick={optimizeRoutes}
+              disabled={isUpdating}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              data-testid="button-optimize-routes"
+            >
+              {isUpdating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <MapPin className="h-4 w-4 mr-2" />}
+              Optimize Routes
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {routes.map(route => (
+                <div key={route.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg">
+                  <div className="flex-1">
+                    <p className="font-medium text-amber-900">{route.driver}</p>
+                    <p className="text-sm text-amber-600">{route.stops} stops • {route.distance} • ETA: {route.eta}</p>
+                  </div>
+                  <Badge className={
+                    route.status === 'active' ? 'bg-green-100 text-green-800' :
+                    route.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }>
+                    {route.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
 
   const QualityContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -715,22 +770,119 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
-  const IncentivesContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Driver Incentives</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Trophy className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Incentive Programs</p>
-            <p className="text-sm text-amber-600">Manage driver bonuses and reward programs</p>
+  const IncentivesContent = () => {
+    const [incentives, setIncentives] = useState([
+      { id: 1, name: 'Peak Hours Bonus', amount: '$2.50', active: true, description: 'Extra pay during 5-7 PM rush' },
+      { id: 2, name: 'Weekend Warrior', amount: '$5.00', active: true, description: 'Saturday & Sunday premium' },
+      { id: 3, name: 'Multi-Stop Master', amount: '$1.00', active: false, description: 'Per additional stop after 3' },
+      { id: 4, name: 'Perfect Rating', amount: '$10.00', active: true, description: 'Monthly bonus for 5-star ratings' }
+    ]);
+
+    const toggleIncentive = (id) => {
+      setIncentives(prev => prev.map(inc => 
+        inc.id === id ? { ...inc, active: !inc.active } : inc
+      ));
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-amber-900 text-xl">Driver Incentive Programs</CardTitle>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-add-incentive">
+                <Trophy className="h-4 w-4 mr-2" />
+                Add New Incentive
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {incentives.map(incentive => (
+                  <div key={incentive.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="font-medium text-amber-900">{incentive.name}</p>
+                        <Trophy className="h-4 w-4 text-yellow-600" />
+                      </div>
+                      <p className="text-sm text-amber-600 mb-2">{incentive.description}</p>
+                      <p className="text-lg font-bold text-green-700">{incentive.amount} per delivery</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className={incentive.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                        {incentive.active ? 'Active' : 'Disabled'}
+                      </Badge>
+                      <Button 
+                        onClick={() => toggleIncentive(incentive.id)}
+                        variant="outline"
+                        size="sm"
+                        className={incentive.active ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}
+                        data-testid={`button-toggle-incentive-${incentive.id}`}
+                      >
+                        {incentive.active ? 'Disable' : 'Enable'}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Incentive Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-amber-600">Active Incentives</p>
+                    <p className="text-2xl font-bold text-amber-900">{incentives.filter(i => i.active).length}</p>
+                  </div>
+                  <Trophy className="h-8 w-8 text-yellow-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-amber-600">Monthly Bonus Paid</p>
+                    <p className="text-2xl font-bold text-green-700">${(Math.random() * 2000 + 1500).toFixed(0)}</p>
+                  </div>
+                  <DollarSign className="h-8 w-8 text-green-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-amber-600">Drivers Earning Bonuses</p>
+                    <p className="text-2xl font-bold text-blue-700">{Math.floor(Math.random() * 15 + 8)}</p>
+                  </div>
+                  <Users className="h-8 w-8 text-blue-600" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const ReportingContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -800,22 +952,159 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
-  const NotificationsContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader>
-          <CardTitle className="text-amber-900 text-xl">Notification Center</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <Bell className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Alert Management</p>
-            <p className="text-sm text-amber-600">System alerts and notification management</p>
+  const NotificationsContent = () => {
+    const [notifications, setNotifications] = useState([
+      { id: 1, type: 'system', title: 'Server Maintenance Scheduled', message: 'Planned maintenance window on Sunday 3 AM', priority: 'medium', time: '2 hours ago', read: false },
+      { id: 2, type: 'alert', title: 'High Order Volume Alert', message: '15% increase in orders vs last week', priority: 'high', time: '4 hours ago', read: false },
+      { id: 3, type: 'info', title: 'New Driver Application', message: 'Sarah Miller applied for driver position', priority: 'low', time: '6 hours ago', read: true },
+      { id: 4, type: 'warning', title: 'Payment Processing Delay', message: 'Stripe API experiencing delays', priority: 'high', time: '1 day ago', read: true }
+    ]);
+
+    const markAsRead = (id) => {
+      setNotifications(prev => prev.map(notif => 
+        notif.id === id ? { ...notif, read: true } : notif
+      ));
+    };
+
+    const markAllAsRead = () => {
+      setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
+    };
+
+    const deleteNotification = (id) => {
+      setNotifications(prev => prev.filter(notif => notif.id !== id));
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
+
+        <div className="space-y-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-amber-900 text-xl">System Notifications</CardTitle>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={markAllAsRead}
+                  variant="outline"
+                  size="sm"
+                  data-testid="button-mark-all-read"
+                >
+                  Mark All Read
+                </Button>
+                <Badge variant="outline" className="text-amber-700">
+                  {notifications.filter(n => !n.read).length} unread
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {notifications.map(notification => (
+                  <div 
+                    key={notification.id} 
+                    className={`p-4 border rounded-lg transition-all ${
+                      notification.read 
+                        ? 'border-gray-200 bg-gray-50/50' 
+                        : 'border-amber-200 bg-amber-50/50'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Bell className={`h-4 w-4 ${
+                            notification.priority === 'high' ? 'text-red-600' :
+                            notification.priority === 'medium' ? 'text-yellow-600' :
+                            'text-blue-600'
+                          }`} />
+                          <p className="font-medium text-amber-900">{notification.title}</p>
+                          {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
+                        </div>
+                        <p className="text-sm text-amber-700 mb-2">{notification.message}</p>
+                        <div className="flex items-center gap-2">
+                          <Badge className={
+                            notification.priority === 'high' ? 'bg-red-100 text-red-800' :
+                            notification.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                          }>
+                            {notification.priority}
+                          </Badge>
+                          <span className="text-xs text-amber-600">{notification.time}</span>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        {!notification.read && (
+                          <Button 
+                            onClick={() => markAsRead(notification.id)}
+                            variant="ghost"
+                            size="sm"
+                            data-testid={`button-mark-read-${notification.id}`}
+                          >
+                            Mark Read
+                          </Button>
+                        )}
+                        <Button 
+                          onClick={() => deleteNotification(notification.id)}
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          data-testid={`button-delete-${notification.id}`}
+                        >
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Notification Settings */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Notification Preferences</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">System Alerts</p>
+                    <p className="text-sm text-amber-600">Get notified about system issues</p>
+                  </div>
+                  <Button variant="outline" size="sm">Enabled</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">Order Notifications</p>
+                    <p className="text-sm text-amber-600">New orders and status updates</p>
+                  </div>
+                  <Button variant="outline" size="sm">Enabled</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-amber-900">Driver Applications</p>
+                    <p className="text-sm text-amber-600">New driver registrations</p>
+                  </div>
+                  <Button variant="outline" size="sm">Enabled</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
   const EmployeesContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
