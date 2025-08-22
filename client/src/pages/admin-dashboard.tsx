@@ -191,6 +191,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <NotificationsContent />;
       case 'employees':
         return <EmployeesContent />;
+      case 'operations':
+        return <OperationsContent />;
       case 'payouts':
         return <PayoutsManagementContent />;
       case 'tax-reports':
@@ -346,173 +348,520 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
-  const OrdersContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+  const OrdersContent = () => {
+    const [orders, setOrders] = useState([
+      { id: 1, customer: 'Alice Johnson', status: 'in_progress', driver: 'John Smith', pickup: '123 Main St', dropoff: 'Walmart Returns', priority: 'standard', time: '2:30 PM', type: 'return' },
+      { id: 2, customer: 'Bob Davis', status: 'pending_assignment', driver: null, pickup: '456 Oak Ave', dropoff: 'Target Returns', priority: 'urgent', time: '3:00 PM', type: 'exchange' },
+      { id: 3, customer: 'Carol White', status: 'completed', driver: 'Sarah Wilson', pickup: '789 Pine St', dropoff: 'Amazon Returns', priority: 'standard', time: '1:45 PM', type: 'return' },
+      { id: 4, customer: 'David Brown', status: 'requested', driver: null, pickup: '321 Elm St', dropoff: 'Best Buy Returns', priority: 'standard', time: '3:15 PM', type: 'return' }
+    ]);
 
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-amber-900 text-xl">Live Orders Management</CardTitle>
-          <div className="flex items-center gap-2">
+    const [selectedTab, setSelectedTab] = useState('active');
+    const [showBulkUpload, setShowBulkUpload] = useState(false);
+
+    const assignDriver = (orderId, driverName = 'Available Driver') => {
+      setOrders(prev => prev.map(order => 
+        order.id === orderId 
+          ? { ...order, status: 'in_progress', driver: driverName }
+          : order
+      ));
+    };
+
+    const activeOrders = orders.filter(o => o.status === 'in_progress' || o.status === 'pending_assignment' || o.status === 'requested');
+    const completedOrders = orders.filter(o => o.status === 'completed');
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
             <Button 
-              onClick={updateDashboardStats}
-              disabled={isUpdating}
-              size="sm"
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
             >
-              {isUpdating ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              Refresh Orders
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
             </Button>
-            <Badge variant="outline" className="text-green-600 border-green-200">
-              Live Updates
-            </Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-amber-700 mb-4">Monitor and manage all active orders with real-time updates.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="border-amber-200">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-900">{dashboardStats.activeOrders}</p>
-                  <p className="text-sm text-amber-600">Active Orders</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-amber-200">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-green-700">
-                    {Math.floor(dashboardStats.activeOrders * 0.8)}
-                  </p>
-                  <p className="text-sm text-green-600">In Progress</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-amber-200">
-              <CardContent className="p-4">
-                <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-700">
-                    {Math.floor(dashboardStats.activeOrders * 0.2)}
-                  </p>
-                  <p className="text-sm text-blue-600">Pending Assignment</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="text-center py-8">
-            <Package className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Live Orders Dashboard</p>
-            <p className="text-sm text-amber-600">Real-time order tracking and management with automatic updates</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+        )}
 
-  const DriversContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
+        <div className="space-y-6">
+          {/* Order Pipeline Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-gray-700">{orders.filter(o => o.status === 'requested').length}</p>
+                  <p className="text-sm text-amber-600">Requested</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-yellow-700">{orders.filter(o => o.status === 'pending_assignment').length}</p>
+                  <p className="text-sm text-amber-600">Assigned</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-700">{orders.filter(o => o.status === 'in_progress').length}</p>
+                  <p className="text-sm text-amber-600">In Progress</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-700">{completedOrders.length}</p>
+                  <p className="text-sm text-amber-600">Completed</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-700">{orders.filter(o => o.priority === 'urgent').length}</p>
+                  <p className="text-sm text-amber-600">Urgent</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Order Management */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-amber-900 text-xl">Order Pipeline: Requested → Assigned → In Progress → Completed</CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => setShowBulkUpload(!showBulkUpload)}
+                    variant="outline"
+                    size="sm"
+                    data-testid="button-bulk-upload"
+                  >
+                    <Package className="h-4 w-4 mr-2" />
+                    Bulk Upload
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedTab('active')}
+                    variant={selectedTab === 'active' ? 'default' : 'outline'}
+                    size="sm"
+                  >
+                    Active ({activeOrders.length})
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedTab('completed')}
+                    variant={selectedTab === 'completed' ? 'default' : 'outline'}
+                    size="sm"
+                  >
+                    Completed ({completedOrders.length})
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {showBulkUpload && (
+                <div className="mb-6 p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <h4 className="font-medium text-amber-900 mb-2">Bulk Upload for Enterprise Clients</h4>
+                  <p className="text-sm text-amber-600 mb-3">Upload CSV with columns: customer_name, pickup_address, dropoff_address, priority, type</p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="file" 
+                      accept=".csv"
+                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-amber-100"
+                    />
+                    <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-upload-orders">
+                      Process Upload
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {(selectedTab === 'active' ? activeOrders : completedOrders).map(order => (
+                  <div key={order.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">#{order.id} - {order.customer}</p>
+                          <Badge className={
+                            order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            order.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                            order.status === 'pending_assignment' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {order.status.replace('_', ' ')}
+                          </Badge>
+                          {order.priority === 'urgent' && (
+                            <Badge className="bg-red-100 text-red-800">URGENT</Badge>
+                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {order.type}
+                          </Badge>
+                          <span className="text-sm text-amber-600">{order.time}</span>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-amber-600">Pickup</p>
+                            <p className="font-medium text-amber-900">{order.pickup}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Drop-off</p>
+                            <p className="font-medium text-amber-900">{order.dropoff}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Driver</p>
+                            <p className="font-medium text-amber-900">{order.driver || 'Unassigned'}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {order.status === 'pending_assignment' && (
+                          <Button
+                            onClick={() => assignDriver(order.id)}
+                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            size="sm"
+                            data-testid={`button-assign-driver-${order.id}`}
+                          >
+                            Assign Driver
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm" data-testid={`button-view-order-${order.id}`}>
+                          Track Live
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Assignment System */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Manual & Automated Assignment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-3 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <h4 className="font-medium text-amber-900 mb-2">Auto-Assignment Rules</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-amber-600">Distance-based routing</span>
+                        <Badge className="bg-green-100 text-green-800">Active</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-amber-600">Load balancing</span>
+                        <Badge className="bg-green-100 text-green-800">Active</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-amber-600">Priority queue</span>
+                        <Badge className="bg-green-100 text-green-800">Active</Badge>
+                      </div>
+                    </div>
+                  </div>
+                  <Button variant="outline" className="w-full">
+                    Configure Assignment Rules
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Live Dashboard with Map</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-6 border border-amber-200 rounded-lg bg-amber-50/30 text-center">
+                  <div className="h-32 bg-amber-100 rounded-lg mb-4 flex items-center justify-center">
+                    <p className="text-amber-600 text-sm">Interactive Map View</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="text-center">
+                      <p className="font-bold text-blue-700">{orders.filter(o => o.status === 'in_progress').length}</p>
+                      <p className="text-amber-600">Live Tracking</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-green-700">94%</p>
+                      <p className="text-amber-600">On-Time Rate</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      )}
+      </div>
+    );
+  };
 
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-amber-900 text-xl">Driver Management</CardTitle>
-          <div className="flex items-center gap-2">
+  const DriversContent = () => {
+    const [drivers, setDrivers] = useState([
+      { 
+        id: 1, 
+        name: 'John Smith', 
+        status: 'active', 
+        availability: 'online',
+        completedOrders: 247,
+        rating: 4.8,
+        punctuality: 95,
+        onboardingStatus: 'completed',
+        documents: { license: 'verified', insurance: 'verified', vehicle: 'verified' },
+        currentDelivery: 'Order #1247'
+      },
+      { 
+        id: 2, 
+        name: 'Sarah Wilson', 
+        status: 'active', 
+        availability: 'offline',
+        completedOrders: 189,
+        rating: 4.6,
+        punctuality: 92,
+        onboardingStatus: 'completed',
+        documents: { license: 'verified', insurance: 'verified', vehicle: 'verified' },
+        currentDelivery: null
+      },
+      { 
+        id: 3, 
+        name: 'Mike Chen', 
+        status: 'pending_approval', 
+        availability: 'offline',
+        completedOrders: 0,
+        rating: 0,
+        punctuality: 0,
+        onboardingStatus: 'documents_pending',
+        documents: { license: 'verified', insurance: 'pending', vehicle: 'not_submitted' },
+        currentDelivery: null
+      }
+    ]);
+
+    const [selectedTab, setSelectedTab] = useState('active');
+
+    const toggleDriverStatus = (id) => {
+      setDrivers(prev => prev.map(driver => 
+        driver.id === id 
+          ? { 
+              ...driver, 
+              availability: driver.availability === 'online' ? 'offline' : 'online' 
+            }
+          : driver
+      ));
+    };
+
+    const approveDriver = (id) => {
+      setDrivers(prev => prev.map(driver => 
+        driver.id === id 
+          ? { 
+              ...driver, 
+              status: 'active',
+              onboardingStatus: 'completed'
+            }
+          : driver
+      ));
+    };
+
+    const activeDrivers = drivers.filter(d => d.status === 'active');
+    const pendingDrivers = drivers.filter(d => d.status === 'pending_approval');
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
             <Button 
-              onClick={updateDashboardStats}
-              disabled={isUpdating}
-              size="sm"
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
             >
-              {isUpdating ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <RefreshCw className="h-4 w-4 mr-2" />
-              )}
-              Update Driver Data
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
             </Button>
-            <Badge variant="outline" className="text-blue-600 border-blue-200">
-              {dashboardStats.activeDrivers} Online
-            </Badge>
           </div>
-        </CardHeader>
-        <CardContent>
-          <p className="text-amber-700 mb-4">Monitor driver performance, status, and manage driver operations with live tracking.</p>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="border-amber-200">
+        )}
+
+        <div className="space-y-6">
+          {/* Driver Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-green-700">{dashboardStats.activeDrivers}</p>
-                  <p className="text-sm text-green-600">Active Drivers</p>
+                  <p className="text-2xl font-bold text-green-700">{activeDrivers.filter(d => d.availability === 'online').length}</p>
+                  <p className="text-sm text-amber-600">Online Now</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-blue-700">
-                    {Math.floor(dashboardStats.activeDrivers * 0.75)}
-                  </p>
-                  <p className="text-sm text-blue-600">On Delivery</p>
+                  <p className="text-2xl font-bold text-blue-700">{activeDrivers.filter(d => d.currentDelivery).length}</p>
+                  <p className="text-sm text-amber-600">On Delivery</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-yellow-700">
-                    {Math.floor(dashboardStats.activeDrivers * 0.2)}
-                  </p>
-                  <p className="text-sm text-yellow-600">Available</p>
+                  <p className="text-2xl font-bold text-amber-700">{activeDrivers.length}</p>
+                  <p className="text-sm text-amber-600">Total Active</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-900">{dashboardStats.completionRate}%</p>
-                  <p className="text-sm text-amber-600">Success Rate</p>
+                  <p className="text-2xl font-bold text-red-700">{pendingDrivers.length}</p>
+                  <p className="text-sm text-amber-600">Pending Approval</p>
                 </div>
               </CardContent>
             </Card>
           </div>
-          <div className="text-center py-8">
-            <Truck className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Driver Operations Center</p>
-            <p className="text-sm text-amber-600">Driver monitoring, performance tracking, and management with real-time updates</p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+
+          {/* Driver Management Tabs */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="text-amber-900 text-xl">Driver Directory</CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => setSelectedTab('active')}
+                    variant={selectedTab === 'active' ? 'default' : 'outline'}
+                    size="sm"
+                  >
+                    Active ({activeDrivers.length})
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedTab('pending')}
+                    variant={selectedTab === 'pending' ? 'default' : 'outline'}
+                    size="sm"
+                  >
+                    Pending ({pendingDrivers.length})
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {(selectedTab === 'active' ? activeDrivers : pendingDrivers).map(driver => (
+                  <div key={driver.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">{driver.name}</p>
+                          <Badge className={
+                            driver.availability === 'online' ? 'bg-green-100 text-green-800' : 
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {driver.availability}
+                          </Badge>
+                          {driver.status === 'pending_approval' && (
+                            <Badge className="bg-yellow-100 text-yellow-800">
+                              Needs Approval
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        {driver.status === 'active' ? (
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+                            <div>
+                              <p className="text-amber-600">Completed Orders</p>
+                              <p className="font-bold text-amber-900">{driver.completedOrders}</p>
+                            </div>
+                            <div>
+                              <p className="text-amber-600">Rating</p>
+                              <p className="font-bold text-amber-900">{driver.rating}/5.0</p>
+                            </div>
+                            <div>
+                              <p className="text-amber-600">Punctuality</p>
+                              <p className="font-bold text-amber-900">{driver.punctuality}%</p>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            <p className="text-sm text-amber-600">Onboarding Status: {driver.onboardingStatus.replace('_', ' ')}</p>
+                            <div className="flex gap-2">
+                              <Badge variant={driver.documents.license === 'verified' ? 'default' : 'secondary'}>
+                                License: {driver.documents.license}
+                              </Badge>
+                              <Badge variant={driver.documents.insurance === 'verified' ? 'default' : 'secondary'}>
+                                Insurance: {driver.documents.insurance}
+                              </Badge>
+                              <Badge variant={driver.documents.vehicle === 'verified' ? 'default' : 'secondary'}>
+                                Vehicle: {driver.documents.vehicle}
+                              </Badge>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {driver.currentDelivery && (
+                          <p className="text-xs text-blue-600 mt-1">Currently delivering: {driver.currentDelivery}</p>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        {driver.status === 'active' && (
+                          <Button
+                            onClick={() => toggleDriverStatus(driver.id)}
+                            variant="outline"
+                            size="sm"
+                            className={driver.availability === 'online' ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}
+                            data-testid={`button-toggle-driver-${driver.id}`}
+                          >
+                            {driver.availability === 'online' ? 'Set Offline' : 'Set Online'}
+                          </Button>
+                        )}
+                        {driver.status === 'pending_approval' && (
+                          <Button
+                            onClick={() => approveDriver(driver.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                            size="sm"
+                            data-testid={`button-approve-driver-${driver.id}`}
+                          >
+                            Approve Driver
+                          </Button>
+                        )}
+                        <Button variant="outline" size="sm" data-testid={`button-view-driver-${driver.id}`}>
+                          View Details
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Driver Performance Overview */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Performance Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-green-700">{(activeDrivers.reduce((sum, d) => sum + d.rating, 0) / activeDrivers.length).toFixed(1)}</p>
+                  <p className="text-sm text-amber-600">Average Rating</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-blue-700">{Math.round(activeDrivers.reduce((sum, d) => sum + d.punctuality, 0) / activeDrivers.length)}%</p>
+                  <p className="text-sm text-amber-600">Average Punctuality</p>
+                </div>
+                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <p className="text-2xl font-bold text-amber-700">{activeDrivers.reduce((sum, d) => sum + d.completedOrders, 0)}</p>
+                  <p className="text-sm text-amber-600">Total Completions</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
 
   const PaymentsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -1667,6 +2016,240 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     <p className="text-sm text-amber-600">New driver registrations</p>
                   </div>
                   <Button variant="outline" size="sm">Enabled</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  };
+
+  const OperationsContent = () => {
+    const [serviceAreas, setServiceAreas] = useState([
+      { id: 1, name: 'Downtown', status: 'active', drivers: 8, coverage: '95%', avgDeliveryTime: '32 min' },
+      { id: 2, name: 'Midtown', status: 'active', drivers: 6, coverage: '87%', avgDeliveryTime: '28 min' },
+      { id: 3, name: 'Suburbs North', status: 'limited', drivers: 3, coverage: '65%', avgDeliveryTime: '45 min' },
+      { id: 4, name: 'Industrial Area', status: 'inactive', drivers: 0, coverage: '0%', avgDeliveryTime: 'N/A' }
+    ]);
+
+    const [shifts, setShifts] = useState([
+      { id: 1, name: 'Morning Rush', time: '7:00-11:00 AM', driversNeeded: 12, driversAssigned: 10, status: 'understaffed' },
+      { id: 2, name: 'Midday', time: '11:00 AM-3:00 PM', driversNeeded: 8, driversAssigned: 8, status: 'fully_staffed' },
+      { id: 3, name: 'Evening Peak', time: '3:00-7:00 PM', driversNeeded: 15, driversAssigned: 13, status: 'understaffed' },
+      { id: 4, name: 'Night', time: '7:00-11:00 PM', driversNeeded: 6, driversAssigned: 7, status: 'overstaffed' }
+    ]);
+
+    const toggleServiceArea = (id) => {
+      setServiceAreas(prev => prev.map(area => 
+        area.id === id 
+          ? { 
+              ...area, 
+              status: area.status === 'active' ? 'inactive' : area.status === 'inactive' ? 'active' : 'limited'
+            }
+          : area
+      ));
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        <div className="space-y-6">
+          {/* Operations Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-green-700">{serviceAreas.filter(a => a.status === 'active').length}</p>
+                  <p className="text-sm text-amber-600">Active Areas</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-blue-700">{serviceAreas.reduce((sum, a) => sum + a.drivers, 0)}</p>
+                  <p className="text-sm text-amber-600">Total Coverage</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-amber-700">{shifts.reduce((sum, s) => sum + s.driversNeeded, 0)}</p>
+                  <p className="text-sm text-amber-600">Drivers Needed</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardContent className="p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-red-700">{shifts.filter(s => s.status === 'understaffed').length}</p>
+                  <p className="text-sm text-amber-600">Understaffed Shifts</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Service Areas Management */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Service Area Management</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {serviceAreas.map(area => (
+                  <div key={area.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">{area.name}</p>
+                          <Badge className={
+                            area.status === 'active' ? 'bg-green-100 text-green-800' :
+                            area.status === 'limited' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {area.status}
+                          </Badge>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-amber-600">Active Drivers</p>
+                            <p className="font-bold text-amber-900">{area.drivers}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Coverage</p>
+                            <p className="font-bold text-amber-900">{area.coverage}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Avg Delivery Time</p>
+                            <p className="font-bold text-amber-900">{area.avgDeliveryTime}</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => toggleServiceArea(area.id)}
+                          variant="outline"
+                          size="sm"
+                          data-testid={`button-toggle-area-${area.id}`}
+                        >
+                          {area.status === 'active' ? 'Deactivate' : 'Activate'}
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          Edit Coverage
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Capacity Planning */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Capacity Planning - Driver Shifts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {shifts.map(shift => (
+                  <div key={shift.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900">{shift.name}</p>
+                          <Badge className={
+                            shift.status === 'fully_staffed' ? 'bg-green-100 text-green-800' :
+                            shift.status === 'understaffed' ? 'bg-red-100 text-red-800' :
+                            'bg-blue-100 text-blue-800'
+                          }>
+                            {shift.status.replace('_', ' ')}
+                          </Badge>
+                          <span className="text-sm text-amber-600">{shift.time}</span>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <div>
+                            <p className="text-amber-600">Needed: {shift.driversNeeded}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Assigned: {shift.driversAssigned}</p>
+                          </div>
+                          <div>
+                            <p className={`font-medium ${
+                              shift.driversAssigned >= shift.driversNeeded ? 'text-green-700' : 'text-red-700'
+                            }`}>
+                              {shift.driversAssigned >= shift.driversNeeded 
+                                ? `+${shift.driversAssigned - shift.driversNeeded}` 
+                                : `${shift.driversAssigned - shift.driversNeeded}`
+                              } drivers
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm">
+                          Adjust Staff
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          View Schedule
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Real-time Communication Hub */}
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900 text-xl">Real-Time Communication Hub</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <h4 className="font-medium text-amber-900 mb-2">Driver Broadcasts</h4>
+                  <p className="text-sm text-amber-600 mb-3">Send messages to all active drivers</p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Broadcast message..." 
+                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm"
+                    />
+                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                      Send
+                    </Button>
+                  </div>
+                </div>
+                <div className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <h4 className="font-medium text-amber-900 mb-2">Customer Updates</h4>
+                  <p className="text-sm text-amber-600 mb-3">Send service notifications</p>
+                  <div className="flex gap-2">
+                    <input 
+                      type="text" 
+                      placeholder="Customer notification..." 
+                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm"
+                    />
+                    <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                      Notify
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>

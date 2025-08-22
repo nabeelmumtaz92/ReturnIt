@@ -95,6 +95,12 @@ export function AdminNavigation() {
           href: "/admin-dashboard?section=quality",
           icon: Shield,
           description: "Service quality monitoring"
+        },
+        {
+          label: "Service Management",
+          href: "/admin-dashboard?section=operations",
+          icon: Settings,
+          description: "Service areas & capacity planning"
         }
       ]
     },
