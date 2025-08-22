@@ -1,0 +1,138 @@
+Perfect — you’ve now got a **fully functional build inventory** with no placeholders, which is a huge milestone. Let’s merge that with the **prioritized roadmap and operational essentials** we structured earlier, then **enhance it into a polished, investor- and team-ready Admin Dashboard Feature Inventory**.
+
+I’ll structure this into **Core Sections, Functional Enhancements, and Operational Roadmap** so it’s easy to use both as an internal checklist and as a reference for developers/designers.
+
+---
+
+# 🚀 **Complete Admin Dashboard Feature Inventory (Unified & Enhanced)**
+
+---
+
+## 🔴 **Tier 1: Launch-Critical (Day 1 / Week 1–2)**
+
+These are **essential for live operations** — drivers, customers, and finance all rely on them.
+
+### 1. **Driver Management**
+
+* Onboarding workflow (verification, docs, status setup)
+* Driver directory with availability & status toggles
+* Performance tracking (completed orders, punctuality, ratings)
+* Driver payouts: instant fee structure (\$0.50), bulk processing
+* Incentives: real-time incentive programs, toggle controls
+
+### 2. **Order Management**
+
+* Order pipeline: requested → assigned → in progress → completed → returned
+* Live dashboard with map tracking
+* Manual & automated assignment system
+* Bulk upload for enterprise clients
+* Route optimization (10% distance optimization, live adjustments)
+
+### 3. **Customer Support**
+
+* Ticket system with filtering, assignment tracking, status updates
+* Live Chat Center with conversation selection, unread tracking, and agent response
+* Escalation workflows for failed returns/delays
+* Customer profiles: history, preferences, support logs
+
+### 4. **Financial Systems**
+
+* Revenue tracking (real-time financial metrics + fee collection)
+* Driver payouts (instant + scheduled)
+* Tax management: 1099 generation + reporting
+* Refund tracking & customer fee processing
+
+---
+
+## 🟡 **Tier 2: Stabilization (First Month)**
+
+Adds **quality assurance and operational efficiency**.
+
+### 5. **Operations Management**
+
+* Service area management (zones, delivery limits)
+* Capacity planning (driver shifts, peak loads, coverage)
+* Notifications hub (alerts, read/delete, preference settings)
+* Real-time communication hub for drivers/customers
+
+### 6. **Quality Assurance**
+
+* Performance metrics dashboard:
+
+  * 4.7 avg rating
+  * 89% on-time delivery
+  * 92% satisfaction
+* Quality control: issue tracking, resolution management
+* Photo evidence handling (damaged/failed returns)
+* Audit logs (changes, by whom, when)
+
+---
+
+## 🟢 **Tier 3: Growth & Optimization (2–3 Months)**
+
+Scales business through **intelligence, engagement, and workforce growth**.
+
+### 7. **Analytics & Reporting**
+
+* Business Intelligence dashboard with auto-refresh
+* Report generation (4 types: Operations, Financial, Driver Performance, Customer Analytics)
+* Exportable reports (CSV, PDF, Excel)
+* Performance tracking (drivers, customers, operations)
+
+### 8. **Customer Experience**
+
+* Ratings dashboard with star distribution & recent reviews
+* Customer insights (repeat users, churn risk, order frequency)
+* Marketing support: promos, referral integration
+* Customer satisfaction tracking (CSAT/NPS > 4.5/5)
+
+### 9. **Employee & Role Management**
+
+* Staff directory with role assignment, permissions, and access control
+* Status toggles for active/inactive staff
+* Multi-role permissions (admin, ops, finance, support)
+* Controlled impersonation mode (support can view accounts with audit logs & notifications to user)
+
+---
+
+## ⚙️ **Cross-Tier Technical Features (Always-On)**
+
+* Mobile-responsive design (driver + admin views)
+* Real-time state management with loading states
+* Full error handling & user feedback loops
+* Back-button navigation across all sections
+* Complete `data-testid` coverage for testing and QA
+* Secure authentication (MFA for admins, session tracking)
+* GDPR/data compliance (data deletion, consent tracking)
+
+---
+
+# 📅 **Implementation Roadmap**
+
+* **Week 1–2:** Driver onboarding, payouts, live orders dashboard, customer support tickets
+* **Week 3–4:** Route optimization, service areas, live chat, monitoring dashboards
+* **Month 1:** Quality assurance metrics, notifications hub, issue resolution workflows
+* **Month 2–3:** Advanced analytics, customer insights, incentives system, BI expansion
+
+---
+
+# ✅ **Success Metrics**
+
+* Order completion rate: **>95%**
+* Avg. delivery/return cycle time: **<45 min**
+* Driver retention: **>85% within 3 months**
+* Customer satisfaction: **>4.5/5**
+
+---
+
+✨ **Enhancements Added in This Merge**:
+
+* Clear separation of **live launch features vs. scaling features**.
+* Integrated **real metrics (ratings, % on-time, satisfaction)** into QA.
+* Combined your **financial system details (tax, payouts, revenue)** with operational metrics.
+* Added **controlled impersonation mode** for compliance & support.
+* Enhanced **analytics/reporting section** into 4 concrete report types + BI dashboard.
+
+---
+
+Would you like me to **map this into a visual “Admin Dashboard Blueprint” (sidebar menu → sections → sub-features)** so your dev team can build the navigation directly from it?
