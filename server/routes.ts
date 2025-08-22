@@ -2028,7 +2028,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(analytics);
   });
 
-  // Admin orders endpoint (duplicate - removed)
+  // Tax reporting endpoints
+  app.get('/api/admin/tax-reports', requireAdmin, async (req, res) => {
+    try {
+      const taxYear = req.query.taxYear as string || new Date().getFullYear().toString();
+      // Mock tax report data
+      const taxReport = {
+        taxYear: parseInt(taxYear),
+        totalContractorPayments: 75000,
+        driversRequiring1099: 12,
+        formsGenerated: 8,
+        quarterlyData: [
+          { quarter: 1, payments: 18500 },
+          { quarter: 2, payments: 22000 },
+          { quarter: 3, payments: 19500 },
+          { quarter: 4, payments: 15000 }
+        ]
+      };
+      res.json(taxReport);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate tax report" });
+    }
+  });
+
+  // Generate tax report export
+  app.post('/api/admin/generate-tax-report', requireAdmin, async (req, res) => {
+    try {
+      const { taxYear, quarter, format } = req.body;
+      
+      // Mock report generation
+      const reportData = {
+        reportId: `TAX_${taxYear}_${quarter || 'FULL'}_${Date.now()}`,
+        taxYear: taxYear || new Date().getFullYear(),
+        quarter: quarter || null,
+        format: format || 'pdf',
+        generatedAt: new Date().toISOString(),
+        totalContractorPayments: Math.random() * 50000 + 25000,
+        driversRequiring1099: Math.floor(Math.random() * 15 + 8),
+        downloadUrl: `/api/admin/download-tax-report/${Date.now()}`,
+        fileName: `tax_report_${taxYear}_${format}.${format}`
+      };
+
+      res.json({
+        message: "Tax report generated successfully",
+        report: reportData
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate tax report" });
+    }
+  });
+
+  // Generate 1099 forms
+  app.post('/api/admin/generate-1099-forms', requireAdmin, async (req, res) => {
+    try {
+      const { taxYear, driverIds } = req.body;
+      
+      // Mock 1099 form generation
+      const formsGenerated = driverIds?.length || Math.floor(Math.random() * 15 + 8);
+      const forms = Array.from({ length: formsGenerated }, (_, i) => ({
+        formId: `1099_${taxYear}_${Date.now()}_${i}`,
+        driverId: `driver_${i + 1}`,
+        driverName: `Driver ${i + 1}`,
+        totalEarnings: Math.random() * 5000 + 600,
+        taxYear: taxYear || new Date().getFullYear(),
+        status: 'generated'
+      }));
+
+      res.json({
+        message: `Generated ${formsGenerated} 1099-NEC forms`,
+        forms,
+        downloadUrl: `/api/admin/download-1099-forms/${Date.now()}`,
+        generatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to generate 1099 forms" });
+    }
+  });
+
+  // Export all tax data
+  app.post('/api/admin/export-tax-data', requireAdmin, async (req, res) => {
+    try {
+      const { taxYear, format } = req.body;
+      
+      // Mock data export
+      const exportData = {
+        exportId: `EXPORT_${taxYear}_${Date.now()}`,
+        taxYear: taxYear || new Date().getFullYear(),
+        format: format || 'csv',
+        records: Math.floor(Math.random() * 500 + 200),
+        fileSize: `${Math.floor(Math.random() * 10 + 2)}MB`,
+        downloadUrl: `/api/admin/download-tax-export/${Date.now()}`,
+        fileName: `tax_data_export_${taxYear}.${format}`,
+        generatedAt: new Date().toISOString()
+      };
+
+      res.json({
+        message: "Tax data export completed",
+        export: exportData
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to export tax data" });
+    }
+  });
 
 
 

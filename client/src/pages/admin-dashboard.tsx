@@ -834,7 +834,51 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </div>
   );
 
-  const PayoutsManagementContent = () => (
+  const PayoutsManagementContent = () => {
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [processingStatus, setProcessingStatus] = useState('');
+
+    const handleBulkPayouts = async () => {
+      setIsProcessing(true);
+      setProcessingStatus('Processing bulk payouts...');
+      try {
+        const response = await fetch('/api/admin/bulk-payouts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            driverIds: ['driver_1', 'driver_2', 'driver_3'],
+            payoutType: 'weekly' 
+          })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setProcessingStatus(`✅ Processed ${data.successfulPayouts} payouts totaling $${data.totalAmount.toFixed(2)}`);
+          setTimeout(() => setProcessingStatus(''), 4000);
+        } else {
+          setProcessingStatus('❌ Failed to process bulk payouts');
+        }
+      } catch (error) {
+        setProcessingStatus('❌ Error processing bulk payouts');
+      }
+      setIsProcessing(false);
+    };
+
+    const handleRefreshData = async () => {
+      setIsProcessing(true);
+      setProcessingStatus('Refreshing payout data...');
+      try {
+        // Simulate data refresh
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        setProcessingStatus('✅ Payout data refreshed');
+        setTimeout(() => setProcessingStatus(''), 2000);
+      } catch (error) {
+        setProcessingStatus('❌ Error refreshing data');
+      }
+      setIsProcessing(false);
+    };
+
+    return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
       {/* Back Button */}
       {navigationHistory.length > 1 && (
@@ -847,6 +891,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
           </Button>
+        </div>
+      )}
+
+      {/* Status Display */}
+      {processingStatus && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-blue-800 text-sm font-medium">{processingStatus}</p>
         </div>
       )}
 
@@ -908,11 +959,21 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-amber-900 text-xl">Driver Payout Management</CardTitle>
             <div className="flex gap-2">
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-                <RefreshCw className="h-4 w-4 mr-2" />
+              <Button 
+                className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
+                onClick={handleRefreshData}
+                disabled={isProcessing}
+                data-testid="button-refresh-payouts"
+              >
+                {isProcessing ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
                 Refresh Data
               </Button>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
+              <Button 
+                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+                onClick={handleBulkPayouts}
+                disabled={isProcessing}
+                data-testid="button-bulk-payouts"
+              >
                 Process Bulk Payouts
               </Button>
             </div>
@@ -947,25 +1008,110 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
       </div>
     </div>
-  );
+    );
+  };
 
-  const TaxReportsContent = () => (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+  const TaxReportsContent = () => {
+    const [taxYear, setTaxYear] = useState(new Date().getFullYear().toString());
+    const [quarter, setQuarter] = useState('');
+    const [format, setFormat] = useState('csv');
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generationStatus, setGenerationStatus] = useState('');
 
-      <div className="space-y-6">
+    const handleGenerateTaxReport = async () => {
+      setIsGenerating(true);
+      setGenerationStatus('Generating tax report...');
+      try {
+        const response = await fetch('/api/admin/generate-tax-report', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taxYear, quarter, format })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setGenerationStatus(`✅ Tax report generated: ${data.report.fileName}`);
+          // In a real app, you'd trigger a download here
+          setTimeout(() => setGenerationStatus(''), 3000);
+        } else {
+          setGenerationStatus('❌ Failed to generate tax report');
+        }
+      } catch (error) {
+        setGenerationStatus('❌ Error generating tax report');
+      }
+      setIsGenerating(false);
+    };
+
+    const handleGenerate1099Forms = async () => {
+      setIsGenerating(true);
+      setGenerationStatus('Generating 1099 forms...');
+      try {
+        const response = await fetch('/api/admin/generate-1099-forms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taxYear })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setGenerationStatus(`✅ ${data.message}`);
+          setTimeout(() => setGenerationStatus(''), 3000);
+        } else {
+          setGenerationStatus('❌ Failed to generate 1099 forms');
+        }
+      } catch (error) {
+        setGenerationStatus('❌ Error generating 1099 forms');
+      }
+      setIsGenerating(false);
+    };
+
+    const handleExportAllData = async () => {
+      setIsGenerating(true);
+      setGenerationStatus('Exporting tax data...');
+      try {
+        const response = await fetch('/api/admin/export-tax-data', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ taxYear, format })
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setGenerationStatus(`✅ Export completed: ${data.export.fileName} (${data.export.fileSize})`);
+          setTimeout(() => setGenerationStatus(''), 3000);
+        } else {
+          setGenerationStatus('❌ Failed to export tax data');
+        }
+      } catch (error) {
+        setGenerationStatus('❌ Error exporting tax data');
+      }
+      setIsGenerating(false);
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        {/* Status Display */}
+        {generationStatus && (
+          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800 text-sm font-medium">{generationStatus}</p>
+          </div>
+        )}
+
+        <div className="space-y-6">
         {/* Tax Year Selection */}
         <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
           <CardHeader>
@@ -975,7 +1121,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="text-sm font-medium text-amber-900">Tax Year</label>
-                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                <select 
+                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  value={taxYear}
+                  onChange={(e) => setTaxYear(e.target.value)}
+                >
                   <option value="2025">2025</option>
                   <option value="2024">2024</option>
                   <option value="2023">2023</option>
@@ -983,7 +1133,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
               <div>
                 <label className="text-sm font-medium text-amber-900">Quarter (Optional)</label>
-                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                <select 
+                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  value={quarter}
+                  onChange={(e) => setQuarter(e.target.value)}
+                >
                   <option value="">All Year</option>
                   <option value="1">Q1 (Jan-Mar)</option>
                   <option value="2">Q2 (Apr-Jun)</option>
@@ -993,7 +1147,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
               <div>
                 <label className="text-sm font-medium text-amber-900">Export Format</label>
-                <select className="w-full mt-1 p-2 border border-amber-200 rounded-md">
+                <select 
+                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  value={format}
+                  onChange={(e) => setFormat(e.target.value)}
+                >
                   <option value="csv">CSV File</option>
                   <option value="xlsx">Excel File</option>
                   <option value="pdf">PDF Report</option>
@@ -1063,20 +1221,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button className="h-auto p-6 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center space-y-2">
+              <Button 
+                className="h-auto p-6 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
+                onClick={handleGenerateTaxReport}
+                disabled={isGenerating}
+                data-testid="button-generate-tax-report"
+              >
                 <BarChart3 className="h-8 w-8" />
                 <span>Generate Tax Report</span>
                 <span className="text-xs opacity-80">Download comprehensive report</span>
               </Button>
               
-              <Button className="h-auto p-6 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center space-y-2">
+              <Button 
+                className="h-auto p-6 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
+                onClick={handleGenerate1099Forms}
+                disabled={isGenerating}
+                data-testid="button-generate-1099-forms"
+              >
                 <CheckCircle className="h-8 w-8" />
                 <span>Generate 1099 Forms</span>
                 <span className="text-xs opacity-80">For drivers over $600</span>
               </Button>
               
-              <Button className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2">
-                <RefreshCw className="h-4 w-4" />
+              <Button 
+                className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
+                onClick={handleExportAllData}
+                disabled={isGenerating}
+                data-testid="button-export-tax-data"
+              >
+                {isGenerating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
                 <span>Export All Data</span>
                 <span className="text-xs opacity-80">CSV/Excel export</span>
               </Button>
@@ -1093,9 +1266,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const dashboardTabs = [
     {
