@@ -5,7 +5,7 @@
 [![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![React Native](https://img.shields.io/badge/React_Native-20232A?logo=react&logoColor=61DAFB)](https://reactnative.dev/)
 
-**Returnly** is a comprehensive return logistics platform that simplifies returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with professional drivers capable of providing the service.
+**ReturnIt** is a comprehensive return logistics platform that simplifies returns, exchanges, and donations by managing the pickup and return process for customers. The platform connects customers needing returns handled with professional drivers capable of providing the service.
 
 ## 🚀 Features
 

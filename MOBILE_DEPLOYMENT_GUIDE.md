@@ -1,4 +1,4 @@
-# Returnly Driver App - Google Play Store Deployment Guide
+# ReturnIt Driver App - Google Play Store Deployment Guide
 
 ## Prerequisites
 

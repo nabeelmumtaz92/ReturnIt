@@ -2,7 +2,7 @@
 
 ## Download the Complete Brand Pack
 
-The **Returnly Brand & Asset Pack** is now ready! You can download it from your project files:
+The **ReturnIt Brand & Asset Pack** is now ready! You can download it from your project files:
 
 ### 📥 Download File
 **`returnly-brand-pack.tar.gz`** - Complete brand package (compressed)

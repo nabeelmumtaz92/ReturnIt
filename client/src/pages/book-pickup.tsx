@@ -1083,7 +1083,7 @@ export default function BookPickup() {
                         <p><strong>By choosing outside pickup, you acknowledge and agree that:</strong></p>
                         <ul className="list-disc pl-5 space-y-1">
                           <li>Items will be left unattended outside your residence</li>
-                          <li>Returnly and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
+                          <li>ReturnIt and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
                           <li>Weather, theft, or other external factors may affect your items</li>
                           <li>You assume full risk and responsibility for items left outside</li>
                           <li>Photo documentation will be provided as proof of pickup attempt</li>

@@ -1,8 +1,8 @@
-# 🚀 Returnly Driver App - Google Play Store Ready for Launch!
+# 🚀 ReturnIt Driver App - Google Play Store Ready for Launch!
 
 ## ✅ Current Status: DEPLOYMENT READY
 
-Your Returnly Driver mobile app is fully configured and ready for Google Play Store deployment. All required files and configurations are in place.
+Your ReturnIt Driver mobile app is fully configured and ready for Google Play Store deployment. All required files and configurations are in place.
 
 ## 📱 App Details
 - **App Name**: Returnly Driver

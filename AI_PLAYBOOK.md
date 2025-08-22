@@ -1,4 +1,4 @@
-# Returnly – AI Playbook
+# ReturnIt – AI Playbook
 
 ## Mission
 Help build ReturnIt (customer app + website) using React Native Web (Expo) and Next.js, sharing a single design system (tokens). Keep code plain JS.

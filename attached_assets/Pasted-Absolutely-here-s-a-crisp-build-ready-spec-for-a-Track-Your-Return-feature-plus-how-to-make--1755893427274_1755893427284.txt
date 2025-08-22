@@ -1,0 +1,198 @@
+Absolutely—here’s a crisp, build-ready spec for a **“Track Your Return”** feature, plus how to make *any* return trackable and whether you need a tracking number.
+
+# Track Your Return — Product & Tech Spec
+
+## Goals
+
+* Let customers see real-time status/ETA of a return without logging in.
+* Give support/drivers a single source of truth.
+* Work for **ReturnIt network returns** and **3rd-party carrier returns** (UPS/FedEx/etc.).
+
+---
+
+## Customer UX (what they see)
+
+* **Entry options (any one works):**
+
+  1. **ReturnIt Tracking ID** (recommended)
+  2. **Order # + ZIP/Phone last-4** (fallback)
+  3. **Magic link** from email/SMS (no code to type)
+* **Tracker page shows:**
+
+  * Status chip (e.g., *Scheduled*, *Picked Up*, *In Transit*, *Handed to Retailer*, *Refund Initiated*, *Refund Completed*, *Exception*).
+  * **Timeline** of events with timestamps and icons.
+  * **Live map** + ETA (when a driver is assigned/active).
+  * **Driver first name + initial** and masked phone (only while en route).
+  * **Photos** (pickup/dropoff proof), notes, and any exception reason.
+  * **If handed to carrier:** show carrier + their tracking # with deep link.
+  * **Subscribe** to updates (SMS/email/push).
+  * **Help**: one-tap contact or file a support ticket on this return.
+
+---
+
+## Do you need a tracking number?
+
+**Yes—for your own network, issue a unique ReturnIt Tracking ID.**
+It’s the most reliable way to let anyone (customer/support/driver) reference the same return. Still support alternative lookups (Order+ZIP, magic link) for convenience. If a return is transferred to a **carrier**, store and show the **carrier tracking** alongside your ID.
+
+### Recommended Identifier Design
+
+* **Public, short code:** `RT-AB12-3CD4`
+
+  * 10–12 chars, Base32 alphanumerics, with a **check digit** (Luhn mod10) to catch typos.
+* **Internal, stable ID:** ULID/UUID (never exposed).
+* **QR code payload** (for labels/app scan):
+  `https://returnit.online/trk/RT-AB12-3CD4?token={short_signed_token}`
+
+> Customer sees the short code; staff systems reference the internal ID.
+> Magic links include `token` to bypass manual entry safely.
+
+---
+
+## Status Model (normalized)
+
+Use one internal enum; map carrier/driver events into it.
+
+* `CREATED`
+* `SCHEDULED`
+* `DRIVER_ASSIGNED`
+* `EN_ROUTE_TO_PICKUP`
+* `PICKED_UP` (include photo)
+* `IN_TRANSIT`
+* `AT_SORT_CENTER` (optional)
+* `HANDED_TO_CARRIER` (store carrier + tracking)
+* `DELIVERED_TO_RETAILER`
+* `REFUND_INITIATED`
+* `REFUND_COMPLETED`
+* `CANCELLED`
+* `EXCEPTION` (with reason code: *Customer Unavailable*, *Address Issue*, *Item Rejected*, etc.)
+
+Each event: `{ status, occurred_at, actor_type(driver/system/support), lat/lng?, note?, photos[] }`.
+
+---
+
+## Data Model (simplified)
+
+* **returns**
+
+  * `id` (UUID), `public_code` (RT-…)
+  * `order_id`, `customer_id`, `store/brand`, `items[]`
+  * `contact_email`, `contact_phone_last4`, `pickup_address`, `dropoff_target`
+  * `carrier_name?`, `carrier_tracking?`
+  * `current_status`, `eta?`, `created_at`
+* **return\_events** (append-only timeline)
+
+  * `return_id`, `status`, `occurred_at`, `actor`, `geo`, `note`, `media[]`
+* **subscriptions**
+
+  * `return_id`, `channel` (sms/email/push), `address`, `verified`, `created_at`
+
+---
+
+## APIs (example)
+
+**Public (rate-limited, PII-safe)**
+
+* `GET /track/:publicCode` → sanitized JSON (no full PII)
+* `GET /track?order=12345&zip=63017` → same response
+* `GET /track/:publicCode/map` → signed tile/driver position (optional)
+* `POST /track/:publicCode/subscribe` → {sms/email}
+
+**Private (auth required)**
+
+* `POST /returns` → create return, generate `public_code`
+* `POST /returns/:id/events` → append status events (driver app, ops)
+* `POST /returns/:id/hand-off` → attach `carrier_name` + `carrier_tracking`
+* `POST /returns/:id/notify` → trigger notifications
+* Webhooks: `/webhooks/carrier` (AfterShip/EasyPost/Shippo), `/webhooks/payments`, etc.
+
+---
+
+## Identifier Generation (TypeScript sketch)
+
+```ts
+import { ulid } from 'ulid';
+
+const ALPH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no O/0/I/1
+function luhnDigit(s: string) {
+  let sum = 0, alt = false;
+  for (let i = s.length - 1; i >= 0; i--) {
+    let n = ALPH.indexOf(s[i]);
+    if (alt) { n = n * 2; if (n > 9) n = (n % 10) + 1; }
+    sum += n; alt = !alt;
+  }
+  return String((10 - (sum % 10)) % 10);
+}
+
+export function makePublicCode() {
+  // derive 8 random symbols from ULID
+  const base = ulid().slice(-12).split('')
+    .map(ch => ALPH[Math.floor(Math.random()*ALPH.length)]).slice(0,8).join('');
+  const code = `${base}${luhnDigit(base)}`;       // add check digit
+  return `RT-${code.slice(0,4)}-${code.slice(4)}`; // RT-AB12-3CD4
+}
+```
+
+---
+
+## Driver App Flow (how updates happen)
+
+* Scan **QR** or tap the assigned job → **`PICKED_UP`** (attach photo).
+* Movement auto-updates **`IN_TRANSIT`** (GPS, background pings).
+* At handoff: mark **`DELIVERED_TO_RETAILER`** or **`HANDED_TO_CARRIER`** (enter carrier #).
+* Exceptions require a reason + photo/note.
+
+---
+
+## Carrier Integration (to track *any* return)
+
+* Use an aggregator (e.g., **AfterShip**, **EasyPost**, **Shippo**) or direct APIs per carrier.
+* When `carrier_tracking` exists:
+
+  * Start a watch.
+  * Normalize inbound statuses to your enum.
+  * Surface both timelines: **ReturnIt events** + **Carrier events** in one feed.
+
+---
+
+## Notifications
+
+* Event triggers → **email/SMS/push** (customer-opted).
+* Smart rules: pickup window reminder, “driver nearby,” exception alerts, “refund completed.”
+* Digest throttling (avoid spam), quiet hours.
+
+---
+
+## Security & Privacy
+
+* Public tracking is **read-only**, PII-light (no full address/phone).
+* **Anti-enumeration**: rate limits, CAPTCHA after N attempts, check-digit codes, magic links include a short-lived signed token.
+* Only show driver identity while actively assigned to this return.
+* All admin/impersonation actions **audit-logged**.
+
+---
+
+## Edge Cases to handle
+
+* **Partial returns** (some items rejected) → show item-level outcomes.
+* **Reassignment** (driver swap) → keep timeline intact.
+* **Cancel after pickup** → surface policy and support route.
+* **No code entered** → allow Order+ZIP/Phone-4 or magic link.
+
+---
+
+## Quick UI copy
+
+* Form title: **Track your return**
+* Inputs: `Tracking ID` *or* `Order #` + `ZIP`
+* Empty state: “Enter your ReturnIt Tracking ID (e.g., RT-AB12-3CD4) or your Order # and ZIP.”
+* Timeline labels: **Created → Scheduled → Driver Assigned → Picked Up → In Transit → Handoff → Refund Completed**.
+
+---
+
+### Bottom line
+
+* **Yes**, issue a **ReturnIt Tracking ID** for every return.
+* Also support **Order# + ZIP**, and **magic links** so *any* return can be tracked—even when it leaves your network—by attaching **carrier tracking** and normalizing statuses into one clean timeline.
+
+If you want, I can drop a small React widget (input + timeline mock + map stub) that plugs into your app shell so your engineers can wire it to the above APIs.
