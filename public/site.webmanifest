@@ -1,0 +1,59 @@
+{
+  "name": "ReturnIt - Return Delivery Service",
+  "short_name": "ReturnIt",
+  "description": "Professional return delivery service for online purchases and package returns",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEF3E2",
+  "theme_color": "#D2691E",
+  "orientation": "portrait-primary",
+  "categories": ["business", "shopping", "utilities"],
+  "lang": "en-US",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/returnit-logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/returnit-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Pickup",
+      "short_name": "Book",
+      "description": "Schedule a return pickup",
+      "url": "/book-pickup",
+      "icons": [
+        {
+          "src": "/returnit-logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Driver Portal",
+      "short_name": "Driver",
+      "description": "Access driver dashboard",
+      "url": "/driver-portal",
+      "icons": [
+        {
+          "src": "/returnit-logo.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
