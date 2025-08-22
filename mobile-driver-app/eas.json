@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 0.34.0"
+    "version": ">= 0.34.0",
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -9,27 +10,19 @@
     },
     "preview": {
       "distribution": "internal",
-      "ios": {
-        "simulator": true
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
-      "ios": {
-        "distribution": "store"
-      },
       "android": {
-        "distribution": "store"
+        "buildType": "app-bundle"
       }
     }
   },
   "submit": {
     "production": {
-      "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890"
-      },
       "android": {
-        "serviceAccountKeyPath": "./service-account-key.json",
         "track": "production"
       }
     }

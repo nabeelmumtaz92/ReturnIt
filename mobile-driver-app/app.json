@@ -26,9 +26,17 @@
       "package": "com.returnit.app",
       "versionCode": 1
     },
+    "cli": {
+      "appVersionSource": "remote"
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": []
+    "plugins": [],
+    "extra": {
+      "eas": {
+        "projectId": "9225a988-ab9f-4a64-824a-06b91366c3ee"
+      }
+    }
   }
 }
