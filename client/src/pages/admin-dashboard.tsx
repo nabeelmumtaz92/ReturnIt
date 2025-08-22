@@ -31,6 +31,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { faker } from '@faker-js/faker';
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import ContactSupportButton from "@/components/ContactSupportButton";
@@ -2535,6 +2536,65 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const PayoutsManagementContent = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [processingStatus, setProcessingStatus] = useState('');
+    const [payoutData, setPayoutData] = useState(() => {
+      // Generate realistic payout data using faker
+      return Array.from({ length: 20 }, (_, i) => ({
+        id: i + 1,
+        driverName: faker.person.fullName(),
+        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
+        totalEarnings: faker.number.int({ min: 800, max: 3500 }),
+        platformFees: faker.number.int({ min: 40, max: 175 }), // 5% commission
+        netPayoutAmount: 0, // Calculated below
+        paymentMethod: faker.helpers.arrayElement([
+          'Bank Transfer', 'PayPal', 'Stripe Connect', 'Cash Card', 'Check'
+        ]),
+        payoutDate: faker.date.recent({ days: 7 }),
+        status: faker.helpers.arrayElement([
+          'Scheduled', 'Processing', 'Completed', 'Failed', 'Pending'
+        ]),
+        instantPayAvailable: faker.datatype.boolean(),
+        lastPayout: faker.date.recent({ days: 30 }),
+        weeklySchedule: faker.helpers.arrayElement(['Monday', 'Friday', 'Bi-weekly']),
+        deliveriesCompleted: faker.number.int({ min: 15, max: 85 }),
+        averageRating: faker.number.float({ min: 4.2, max: 5.0, multipleOf: 0.1 }),
+        joinDate: faker.date.past({ years: 2 })
+      })).map(item => ({
+        ...item,
+        netPayoutAmount: item.totalEarnings - item.platformFees
+      }));
+    });
+
+    const regeneratePayoutData = () => {
+      const newData = Array.from({ length: 20 }, (_, i) => ({
+        id: i + 1,
+        driverName: faker.person.fullName(),
+        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
+        totalEarnings: faker.number.int({ min: 800, max: 3500 }),
+        platformFees: faker.number.int({ min: 40, max: 175 }),
+        netPayoutAmount: 0,
+        paymentMethod: faker.helpers.arrayElement([
+          'Bank Transfer', 'PayPal', 'Stripe Connect', 'Cash Card', 'Check'
+        ]),
+        payoutDate: faker.date.recent({ days: 7 }),
+        status: faker.helpers.arrayElement([
+          'Scheduled', 'Processing', 'Completed', 'Failed', 'Pending'
+        ]),
+        instantPayAvailable: faker.datatype.boolean(),
+        lastPayout: faker.date.recent({ days: 30 }),
+        weeklySchedule: faker.helpers.arrayElement(['Monday', 'Friday', 'Bi-weekly']),
+        deliveriesCompleted: faker.number.int({ min: 15, max: 85 }),
+        averageRating: faker.number.float({ min: 4.2, max: 5.0, multipleOf: 0.1 }),
+        joinDate: faker.date.past({ years: 2 })
+      })).map(item => ({
+        ...item,
+        netPayoutAmount: item.totalEarnings - item.platformFees
+      }));
+      setPayoutData(newData);
+      toast({
+        title: "Payout Data Refreshed",
+        description: "Generated new sample payout data with updated driver information",
+      });
+    };
 
     const handleBulkPayouts = async () => {
       setIsProcessing(true);
@@ -2660,13 +2720,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardTitle className="text-amber-900 text-xl">Driver Payout Management</CardTitle>
             <div className="flex gap-2">
               <Button 
-                className="bg-amber-600 hover:bg-amber-700 text-white disabled:opacity-50"
-                onClick={handleRefreshData}
-                disabled={isProcessing}
-                data-testid="button-refresh-payouts"
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={regeneratePayoutData}
+                data-testid="button-regenerate-payout-data"
               >
-                {isProcessing ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
-                Refresh Data
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Regenerate Data
               </Button>
               <Button 
                 className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
@@ -2697,12 +2756,60 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               </div>
 
-              <div className="text-center py-8">
-                <DollarSign className="h-12 w-12 text-amber-600 mx-auto mb-4" />
-                <p className="text-lg font-medium text-amber-900">Payout Management System</p>
-                <p className="text-sm text-amber-600 mt-2">
-                  Track all driver payments, fees, and manage bulk payouts efficiently
-                </p>
+              {/* Driver Payout Table */}
+              <div className="mt-6">
+                <h4 className="font-medium text-amber-900 mb-4">Driver Payout Overview</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-amber-200">
+                        <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">ID</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Earnings</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Fees</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Net Payout</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Method</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Status</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Instant Pay</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payoutData.slice(0, 12).map((driver) => (
+                        <tr key={driver.id} className="border-b border-amber-100 hover:bg-amber-50/30">
+                          <td className="p-3 text-amber-900 font-medium">{driver.driverName}</td>
+                          <td className="p-3 text-amber-600 font-mono text-xs">{driver.driverId}</td>
+                          <td className="p-3 text-amber-900">${driver.totalEarnings.toLocaleString()}</td>
+                          <td className="p-3 text-amber-600">${driver.platformFees}</td>
+                          <td className="p-3 text-amber-900 font-bold">${driver.netPayoutAmount.toLocaleString()}</td>
+                          <td className="p-3 text-amber-600 text-xs">{driver.paymentMethod}</td>
+                          <td className="p-3">
+                            <Badge className={
+                              driver.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                              driver.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                              driver.status === 'Scheduled' ? 'bg-yellow-100 text-yellow-800' :
+                              driver.status === 'Failed' ? 'bg-red-100 text-red-800' :
+                              'bg-gray-100 text-gray-600'
+                            }>
+                              {driver.status}
+                            </Badge>
+                          </td>
+                          <td className="p-3">
+                            <Badge className={driver.instantPayAvailable ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}>
+                              {driver.instantPayAvailable ? 'Available ($0.50)' : 'Weekly Only'}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-amber-600">
+                      Showing {Math.min(12, payoutData.length)} of {payoutData.length} drivers
+                      • {payoutData.filter(d => d.instantPayAvailable).length} eligible for instant pay
+                      • ${payoutData.reduce((sum, d) => sum + d.netPayoutAmount, 0).toLocaleString()} total pending
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -2718,6 +2825,59 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [format, setFormat] = useState('csv');
     const [isGenerating, setIsGenerating] = useState(false);
     const [generationStatus, setGenerationStatus] = useState('');
+    const [taxReportData, setTaxReportData] = useState(() => {
+      // Generate realistic tax report data using faker
+      return Array.from({ length: 15 }, (_, i) => ({
+        id: i + 1,
+        driverName: faker.person.fullName(),
+        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
+        grossEarnings: faker.number.int({ min: 15000, max: 45000 }),
+        platformFees: faker.number.int({ min: 750, max: 2250 }),
+        netTaxableIncome: 0, // Calculated below
+        federalWithheld: faker.number.int({ min: 0, max: 500 }),
+        stateWithheld: faker.number.int({ min: 0, max: 300 }),
+        q1Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q2Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q3Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q4Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        status: faker.helpers.arrayElement(['Filed', 'Pending', 'Draft', 'Processing']),
+        lastUpdated: faker.date.recent({ days: 30 }),
+        paymentMethod: faker.helpers.arrayElement(['Bank Transfer', 'PayPal', 'Stripe', 'Check']),
+        ssn: `XXX-XX-${faker.number.int({ min: 1000, max: 9999 })}` // Masked SSN for privacy
+      })).map(item => ({
+        ...item,
+        netTaxableIncome: item.grossEarnings - item.platformFees
+      }));
+    });
+
+    const regenerateTaxData = () => {
+      const newData = Array.from({ length: 15 }, (_, i) => ({
+        id: i + 1,
+        driverName: faker.person.fullName(),
+        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
+        grossEarnings: faker.number.int({ min: 15000, max: 45000 }),
+        platformFees: faker.number.int({ min: 750, max: 2250 }),
+        netTaxableIncome: 0,
+        federalWithheld: faker.number.int({ min: 0, max: 500 }),
+        stateWithheld: faker.number.int({ min: 0, max: 300 }),
+        q1Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q2Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q3Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        q4Earnings: faker.number.int({ min: 3000, max: 12000 }),
+        status: faker.helpers.arrayElement(['Filed', 'Pending', 'Draft', 'Processing']),
+        lastUpdated: faker.date.recent({ days: 30 }),
+        paymentMethod: faker.helpers.arrayElement(['Bank Transfer', 'PayPal', 'Stripe', 'Check']),
+        ssn: `XXX-XX-${faker.number.int({ min: 1000, max: 9999 })}`
+      })).map(item => ({
+        ...item,
+        netTaxableIncome: item.grossEarnings - item.platformFees
+      }));
+      setTaxReportData(newData);
+      toast({
+        title: "Tax Data Refreshed",
+        description: "Generated new sample tax report data with updated driver information",
+      });
+    };
 
     // Function to convert data to CSV format
     const convertToCSV = (data: any[], headers: string[]) => {
@@ -2753,61 +2913,30 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       try {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Generate comprehensive tax report data
-        const taxData = [
-          { 
-            driver_name: 'John Smith', 
-            driver_id: 'DRV001', 
-            total_earnings: '$3,247.50', 
-            federal_tax_withheld: '$0.00',
-            state_tax_withheld: '$0.00',
-            quarter_1: '$812.25',
-            quarter_2: '$891.75',
-            quarter_3: '$776.50',
-            quarter_4: '$767.00',
-            form_1099_required: 'Yes'
-          },
-          { 
-            driver_name: 'Sarah Wilson', 
-            driver_id: 'DRV002', 
-            total_earnings: '$2,178.30', 
-            federal_tax_withheld: '$0.00',
-            state_tax_withheld: '$0.00',
-            quarter_1: '$624.80',
-            quarter_2: '$498.20',
-            quarter_3: '$612.90',
-            quarter_4: '$442.40',
-            form_1099_required: 'Yes'
-          },
-          { 
-            driver_name: 'Mike Chen', 
-            driver_id: 'DRV003', 
-            total_earnings: '$1,798.60', 
-            federal_tax_withheld: '$0.00',
-            state_tax_withheld: '$0.00',
-            quarter_1: '$445.20',
-            quarter_2: '$512.80',
-            quarter_3: '$398.40',
-            quarter_4: '$442.20',
-            form_1099_required: 'Yes'
-          },
-          { 
-            driver_name: 'Lisa Rodriguez', 
-            driver_id: 'DRV004', 
-            total_earnings: '$2,341.90', 
-            federal_tax_withheld: '$0.00',
-            state_tax_withheld: '$0.00',
-            quarter_1: '$567.20',
-            quarter_2: '$634.50',
-            quarter_3: '$598.80',
-            quarter_4: '$541.40',
-            form_1099_required: 'Yes'
-          }
-        ];
+        // Generate 1099-NEC forms with current tax data
+        const taxData = taxReportData.map(driver => ({
+          driver_name: driver.driverName,
+          driver_id: driver.driverId,
+          gross_earnings: `$${driver.grossEarnings.toLocaleString()}`,
+          platform_fees: `$${driver.platformFees.toLocaleString()}`,
+          net_taxable_income: `$${driver.netTaxableIncome.toLocaleString()}`,
+          federal_tax_withheld: `$${driver.federalWithheld}`,
+          state_tax_withheld: `$${driver.stateWithheld}`,
+          quarter_1: `$${driver.q1Earnings.toLocaleString()}`,
+          quarter_2: `$${driver.q2Earnings.toLocaleString()}`,
+          quarter_3: `$${driver.q3Earnings.toLocaleString()}`,
+          quarter_4: `$${driver.q4Earnings.toLocaleString()}`,
+          ssn_masked: driver.ssn,
+          status: driver.status,
+          payment_method: driver.paymentMethod,
+          last_updated: driver.lastUpdated.toLocaleDateString(),
+          form_1099_required: driver.netTaxableIncome >= 600 ? 'Yes' : 'No'
+        }));
 
         const headers = [
-          'driver_name', 'driver_id', 'total_earnings', 'federal_tax_withheld', 
-          'state_tax_withheld', 'quarter_1', 'quarter_2', 'quarter_3', 'quarter_4', 'form_1099_required'
+          'driver_name', 'driver_id', 'gross_earnings', 'platform_fees', 'net_taxable_income',
+          'federal_tax_withheld', 'state_tax_withheld', 'quarter_1', 'quarter_2', 'quarter_3', 
+          'quarter_4', 'ssn_masked', 'status', 'payment_method', 'last_updated', 'form_1099_required'
         ];
         
         const quarterText = quarter ? `_Q${quarter}` : '';
@@ -3109,14 +3238,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </Button>
               
               <Button 
-                className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
-                onClick={handleExportAllData}
-                disabled={isGenerating}
-                data-testid="button-export-tax-data"
+                className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2"
+                onClick={regenerateTaxData}
+                data-testid="button-regenerate-tax-data"
               >
-                {isGenerating ? <RefreshCw className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                <span>Export All Data</span>
-                <span className="text-xs opacity-80">CSV/Excel export</span>
+                <RefreshCw className="h-8 w-8" />
+                <span>Regenerate Data</span>
+                <span className="text-xs opacity-80">Refresh sample data</span>
               </Button>
             </div>
 
@@ -3128,6 +3256,65 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 <li>• Filed with IRS by February 28th (March 31st if filing electronically)</li>
                 <li>• Keep records for at least 4 years after filing</li>
               </ul>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Driver Tax Summary Table */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">Driver Tax Summary</CardTitle>
+            <p className="text-sm text-amber-600">Comprehensive tax information for all drivers</p>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-amber-200">
+                    <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">ID</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Gross Earnings</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Platform Fees</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Net Taxable</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">1099 Required</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Status</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Payment Method</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {taxReportData.slice(0, 10).map((driver) => (
+                    <tr key={driver.id} className="border-b border-amber-100 hover:bg-amber-50/30">
+                      <td className="p-3 text-amber-900 font-medium">{driver.driverName}</td>
+                      <td className="p-3 text-amber-600 font-mono text-xs">{driver.driverId}</td>
+                      <td className="p-3 text-amber-900">${driver.grossEarnings.toLocaleString()}</td>
+                      <td className="p-3 text-amber-600">${driver.platformFees.toLocaleString()}</td>
+                      <td className="p-3 text-amber-900 font-medium">${driver.netTaxableIncome.toLocaleString()}</td>
+                      <td className="p-3">
+                        <Badge className={driver.netTaxableIncome >= 600 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}>
+                          {driver.netTaxableIncome >= 600 ? 'Required' : 'Not Required'}
+                        </Badge>
+                      </td>
+                      <td className="p-3">
+                        <Badge className={
+                          driver.status === 'Filed' ? 'bg-green-100 text-green-800' :
+                          driver.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                          driver.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-600'
+                        }>
+                          {driver.status}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-amber-600 text-xs">{driver.paymentMethod}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-4 text-center">
+                <p className="text-sm text-amber-600">
+                  Showing {Math.min(10, taxReportData.length)} of {taxReportData.length} drivers
+                  • {taxReportData.filter(d => d.netTaxableIncome >= 600).length} require 1099-NEC forms
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>

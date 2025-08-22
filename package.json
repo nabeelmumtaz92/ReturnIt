@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@expo/cli": "^0.24.20",
+    "@faker-js/faker": "^9.9.0",
     "@google-cloud/storage": "^7.16.0",
     "@hookform/resolvers": "^3.10.0",
     "@jridgewell/trace-mapping": "^0.3.25",
