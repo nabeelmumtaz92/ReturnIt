@@ -435,9 +435,8 @@ export default function BookPickup() {
     return null; // Will redirect via useEffect
   }
 
-  // Random delivery image selection for this page
-  const bookingPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
-  const selectedImage = bookingPageImages[Math.floor(Math.random() * bookingPageImages.length)];
+  // Use single clear delivery handoff image for consistent professional appearance
+  const selectedImage = deliveryHandoffImg;
 
   return (
     <div className="min-h-screen relative">

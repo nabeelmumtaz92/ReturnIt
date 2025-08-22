@@ -30,7 +30,7 @@ As of January 22, 2025, ReturnIt is preparing for launch with comprehensive admi
 - **Routing**: Wouter for client-side routing.
 - **Form Handling**: React Hook Form with Zod validation.
 - **Design System**: Comprehensive Figma-based design system with mobile-first responsive components, including a full component library and design token system.
-- **UI/UX Decisions**: Refined white/beige aesthetic, sophisticated gradients, professional typography, and a distinctive cardboard/shipping theme with authentic stock photography. Pages feature randomized delivery driver background images. Admin dashboard is optimized for desktop and mobile responsiveness.
+- **UI/UX Decisions**: Refined white/beige aesthetic, sophisticated gradients, professional typography, and a distinctive cardboard/shipping theme with authentic stock photography. Customer booking page features a single clear delivery handoff background image for consistency. Admin dashboard is optimized for desktop and mobile responsiveness.
 
 ## Backend Architecture
 - **Runtime**: Node.js with Express.js.
