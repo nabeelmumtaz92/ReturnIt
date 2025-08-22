@@ -191,6 +191,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <NotificationsContent />;
       case 'employees':
         return <EmployeesContent />;
+      case 'payouts':
+        return <PayoutsManagementContent />;
+      case 'tax-reports':
+        return <TaxReportsContent />;
       case 'overview':
       default:
         return <OverviewContent />;
@@ -873,6 +877,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'ratings' && 'Monitor customer feedback and service ratings'}
               {currentSection === 'notifications' && 'System alerts and notification management'}
               {currentSection === 'employees' && 'Staff management and access control'}
+              {currentSection === 'payouts' && 'Driver payment management and bulk payouts'}
+              {currentSection === 'tax-reports' && 'Tax reporting and 1099 form generation'}
             </p>
           </div>
         </div>
