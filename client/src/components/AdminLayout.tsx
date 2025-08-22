@@ -4,7 +4,7 @@ import {
   Home, Users, Truck, DollarSign, FileText, BarChart3, 
   Settings, MessageSquare, Star, Package, UserCheck, 
   Activity, Clock, Shield, Globe, Heart, Headphones,
-  ChevronRight, Menu, X, Building2, Bell, LogOut
+  ChevronRight, Menu, X, Building2, Bell, LogOut, RefreshCw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -173,6 +173,23 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
   const [location] = useLocation();
   const { logout } = useAuth();
 
+  const handleGlobalUpdate = async () => {
+    // Trigger real-time updates across all dashboard components
+    const updateEvent = new CustomEvent('dashboardUpdate', {
+      detail: { timestamp: Date.now(), source: 'admin-tools' }
+    });
+    window.dispatchEvent(updateEvent);
+    
+    // Show visual feedback
+    const updateButton = document.querySelector('[data-testid="admin-update-button"]');
+    if (updateButton) {
+      updateButton.classList.add('animate-spin');
+      setTimeout(() => {
+        updateButton.classList.remove('animate-spin');
+      }, 1000);
+    }
+  };
+
   const getCurrentSection = () => {
     for (const section of navigationSections) {
       for (const item of section.items) {
@@ -217,6 +234,10 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
             <DropdownMenuItem>
               <FileText className="h-4 w-4 mr-2" />
               Reports
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleGlobalUpdate}>
+              <RefreshCw className="h-4 w-4 mr-2" data-testid="admin-update-button" />
+              Update
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

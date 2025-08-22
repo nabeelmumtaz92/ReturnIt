@@ -113,11 +113,22 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       // Simulate API call with realistic data variation
       await new Promise(resolve => setTimeout(resolve, 1500));
       
+      // Simulate real-time business changes with more dynamic variations
+      const baseOrders = 15;
+      const baseDrivers = 8;
+      const baseRevenue = 300;
+      
+      // More realistic fluctuations that could happen during business operations
+      const orderVariation = Math.floor(Math.random() * 25) + baseOrders; // 15-40 orders
+      const driverVariation = Math.floor(Math.random() * 15) + baseDrivers; // 8-23 drivers
+      const revenueVariation = Math.floor(Math.random() * 500) + baseRevenue; // $300-800
+      const completionVariation = Math.floor(Math.random() * 8) + 92; // 92-100%
+      
       setDashboardStats({
-        activeOrders: Math.floor(Math.random() * 20) + 15, // 15-35
-        activeDrivers: Math.floor(Math.random() * 10) + 8, // 8-18
-        todayRevenue: Math.floor(Math.random() * 300) + 300, // $300-600
-        completionRate: Math.floor(Math.random() * 10) + 90, // 90-100%
+        activeOrders: orderVariation,
+        activeDrivers: driverVariation,
+        todayRevenue: revenueVariation,
+        completionRate: completionVariation,
         lastUpdated: new Date()
       });
       
@@ -136,14 +147,30 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     }
   };
 
-  // Auto-refresh functionality
+  // Real-time event listener for admin tools updates
+  useEffect(() => {
+    const handleDashboardUpdate = (event: CustomEvent) => {
+      console.log('Dashboard update triggered:', event.detail);
+      updateDashboardStats();
+    };
+
+    // Listen for global update events from Admin Tools
+    window.addEventListener('dashboardUpdate', handleDashboardUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener('dashboardUpdate', handleDashboardUpdate as EventListener);
+    };
+  }, []);
+
+  // Auto-refresh functionality for real-time stats
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
-    if (autoRefresh && currentSection === 'overview') {
+    if (autoRefresh) {
+      // Update every 10 seconds for truly real-time experience
       interval = setInterval(() => {
         updateDashboardStats();
-      }, 30000); // Update every 30 seconds
+      }, 10000); 
     }
     
     return () => {
@@ -151,7 +178,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         clearInterval(interval);
       }
     };
-  }, [autoRefresh, currentSection]);
+  }, [autoRefresh]);
 
   // Initial data load
   useEffect(() => {
@@ -2549,19 +2576,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       setIsProcessing(false);
     };
 
-    const handleUpdatePayouts = async () => {
-      setIsProcessing(true);
-      setProcessingStatus('Updating payout settings...');
-      try {
-        // Simulate updating payout data/settings
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        setProcessingStatus('✅ Payout settings updated successfully');
-        setTimeout(() => setProcessingStatus(''), 3000);
-      } catch (error) {
-        setProcessingStatus('❌ Error updating payout settings');
-      }
-      setIsProcessing(false);
-    };
+
 
     return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -2661,15 +2676,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               >
                 Process Bulk Payouts
               </Button>
-              <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-                onClick={handleUpdatePayouts}
-                disabled={isProcessing}
-                data-testid="button-update-payouts"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Update
-              </Button>
+
             </div>
           </CardHeader>
           <CardContent>
