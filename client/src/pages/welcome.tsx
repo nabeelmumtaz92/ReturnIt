@@ -1,3 +1,4 @@
+import React from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -29,6 +30,22 @@ export default function Welcome() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [trackingNumber, setTrackingNumber] = useState('');
+
+  // Check if user is on mobile device
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const urlParams = new URLSearchParams(window.location.search);
+  const mobileParam = urlParams.get('mobile');
+
+  // Debug logging for mobile issues
+  React.useEffect(() => {
+    console.log('Welcome page loaded');
+    console.log('User agent:', navigator.userAgent);
+    console.log('Is mobile:', isMobile);
+    console.log('Mobile param:', mobileParam);
+    console.log('Current URL:', window.location.href);
+    console.log('User authenticated:', isAuthenticated);
+    console.log('User data:', user);
+  }, [isAuthenticated, user, isMobile, mobileParam]);
 
   // Fetch environment configuration
   const { data: envConfig } = useQuery<EnvironmentConfig>({

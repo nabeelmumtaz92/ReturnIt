@@ -96,15 +96,23 @@ function Router() {
     <Switch>
       <Route path="/">
         {() => {
-          // Check if admin user should go directly to dashboard
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
-          if (user?.isAdmin && masterAdmins.includes(user?.email)) {
-            // Use location.replace to avoid back button issues
-            window.location.replace('/admin-dashboard');
-            return null;
+          try {
+            // Check if admin user should go directly to dashboard
+            const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+            if (user?.isAdmin && masterAdmins.includes(user?.email)) {
+              // Use location.replace to avoid back button issues on mobile
+              if (typeof window !== 'undefined') {
+                window.location.replace('/admin-dashboard');
+                return null;
+              }
+            }
+            // Show welcome page for all other users (logged in or not)
+            return <Welcome />;
+          } catch (error) {
+            console.error('Root route error:', error);
+            // Fallback to welcome page
+            return <Welcome />;
           }
-          // Show welcome page for all other users (logged in or not)
-          return <Welcome />;
         }}
       </Route>
       <Route path="/login" component={Login} />
@@ -321,7 +329,31 @@ function Router() {
         }}
       </Route>
 
-      <Route component={NotFound} />
+      {/* Mobile App Fallback Route */}
+      <Route path="/mobile">
+        {() => {
+          // Detect if user is on mobile and redirect to appropriate experience
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          if (isMobile) {
+            return <BookPickup />;
+          }
+          return <Welcome />;
+        }}
+      </Route>
+      
+      {/* Catch-all route - always keep this last */}
+      <Route>
+        {(params) => {
+          console.log('404 route accessed:', params, window.location);
+          // For mobile devices, redirect to booking instead of showing 404
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          if (isMobile && window.location.pathname !== '/') {
+            window.location.replace('/');
+            return null;
+          }
+          return <NotFound />;
+        }}
+      </Route>
     </Switch>
   );
 }
