@@ -111,13 +111,49 @@ export default function Login() {
       });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Login error:', error);
-      toast({
-        title: "Login Failed",
-        description: error instanceof Error ? error.message : "Invalid credentials. Please try again.",
-        variant: "destructive",
-      });
+      
+      // Parse error response for better user guidance
+      try {
+        const errorData = error instanceof Error ? JSON.parse(error.message) : error;
+        
+        // Handle specific authentication scenarios
+        if (errorData.requiresSignup) {
+          toast({
+            title: "Account Required",
+            description: errorData.message || "Please sign up first to create an account.",
+            variant: "destructive",
+          });
+          
+          // Automatically switch to signup tab if user doesn't exist
+          setTimeout(() => {
+            setActiveTab("register");
+            setRegisterData(prev => ({ ...prev, email: loginData.email }));
+          }, 2000);
+          
+        } else if (errorData.wrongPassword) {
+          toast({
+            title: "Incorrect Password",
+            description: errorData.message || "The password you entered is incorrect.",
+            variant: "destructive",
+          });
+          
+        } else {
+          toast({
+            title: "Login Failed",
+            description: errorData.message || "Invalid credentials. Please try again.",
+            variant: "destructive",
+          });
+        }
+      } catch {
+        // Fallback for unparseable errors
+        toast({
+          title: "Login Failed",
+          description: error instanceof Error ? error.message : "Invalid credentials. Please try again.",
+          variant: "destructive",
+        });
+      }
     },
   });
 

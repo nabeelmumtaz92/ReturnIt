@@ -256,32 +256,89 @@ User Request: ${prompt}
     }
   });
 
+  // Enhanced AI command processing
+  const processCommand = (input: string): { isCommand: boolean; command?: string; params?: any } => {
+    const trimmed = input.trim();
+    
+    // Quick command shortcuts
+    const commands = {
+      '/health': { command: 'platform_health', params: {} },
+      '/performance': { command: 'performance_audit', params: {} },
+      '/revenue': { command: 'revenue_analysis', params: {} },
+      '/users': { command: 'user_analytics', params: {} },
+      '/security': { command: 'security_scan', params: {} },
+      '/optimize': { command: 'optimization_recommendations', params: {} },
+      '/predict': { command: 'growth_predictions', params: {} },
+      '/compare': { command: 'competitive_analysis', params: {} }
+    };
+    
+    for (const [trigger, config] of Object.entries(commands)) {
+      if (trimmed.startsWith(trigger)) {
+        return { isCommand: true, ...config };
+      }
+    }
+    
+    return { isCommand: false };
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isProcessing) return;
 
     const userInput = input.trim();
+    const commandResult = processCommand(userInput);
 
-    // Add user message
+    // Add user message with enhanced metadata
     setMessages(prev => [...prev, {
       id: Date.now().toString(),
       type: 'user',
       content: userInput,
-      timestamp: new Date()
+      timestamp: new Date(),
+      metadata: {
+        category: commandResult.isCommand ? 'command' : 'query',
+        priority: commandResult.isCommand ? 'high' : 'medium'
+      }
     }]);
     
-    // Add thinking message
+    // Add thinking/processing message with enhanced status
+    const statusMessage = commandResult.isCommand 
+      ? `🔄 Executing ${commandResult.command?.replace('_', ' ')} command...` 
+      : '🧠 Analyzing your request and gathering insights...';
+    
+    const processingStatus = commandResult.isCommand ? 'executing' : 'thinking';
+
     setMessages(prev => [...prev, {
       id: (Date.now() + 1).toString(),
       type: 'assistant',
-      content: '',
+      content: statusMessage,
       timestamp: new Date(),
-      status: 'thinking'
+      status: processingStatus,
+      metadata: {
+        category: 'processing',
+        priority: 'medium'
+      }
     }]);
     
     setIsProcessing(true);
     aiMutation.mutate(userInput);
     setInput('');
+  };
+
+  // Voice command handler (future enhancement placeholder)
+  const handleVoiceCommand = () => {
+    if (!isRecording) {
+      setIsRecording(true);
+      toast({
+        title: "🎤 Voice Recording Started",
+        description: "Speak your command clearly...",
+      });
+    } else {
+      setIsRecording(false);
+      toast({
+        title: "🎤 Recording Stopped",
+        description: "Processing your voice command...",
+      });
+    }
   };
 
   // Enhanced quick actions with categories
@@ -364,10 +421,15 @@ User Request: ${prompt}
       <div className="fixed bottom-4 right-4 z-50">
         <Button 
           onClick={onClose} 
-          className="rounded-full w-12 h-12 bg-blue-600 hover:bg-blue-700 shadow-lg"
+          className="rounded-full w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-xl transition-all duration-300 hover:scale-110 animate-pulse"
         >
-          <Bot className="h-6 w-6" />
+          <Sparkles className="h-7 w-7 text-white" />
         </Button>
+        {platformMetrics && (
+          <Badge className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 animate-bounce">
+            {platformMetrics.activeUsers} users
+          </Badge>
+        )}
       </div>
     );
   }
