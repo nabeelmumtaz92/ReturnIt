@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -3703,9 +3703,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Section Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 p-4">
           <div className="max-w-7xl mx-auto">
-            <h1 className="text-2xl font-bold text-amber-900 capitalize">
-              {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
-            </h1>
+            <Link href="/admin-dashboard">
+              <h1 className="text-2xl font-bold text-amber-900 capitalize cursor-pointer hover:text-amber-700 transition-colors">
+                {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
+              </h1>
+            </Link>
             <p className="text-amber-700 text-sm mt-1">
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
               {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
