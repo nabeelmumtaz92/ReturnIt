@@ -212,11 +212,19 @@ export default function Welcome() {
           </div>
         </div>
 
-        {/* Hassle Free - Centered */}
-        <div className="text-center">
+        {/* Service Area and Description - Centered */}
+        <div className="text-center space-y-3">
           <p className="text-xl sm:text-2xl text-white/90 font-medium">
             Hassle-free returns with professional pickup service
           </p>
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-block">
+            <p className="text-lg text-white font-semibold">
+              📍 St. Louis only right now
+            </p>
+            <p className="text-sm text-white/80 mt-1">
+              Coming to your city soon!
+            </p>
+          </div>
         </div>
 
         {/* Buttons - Vertical Stack on Mobile */}
