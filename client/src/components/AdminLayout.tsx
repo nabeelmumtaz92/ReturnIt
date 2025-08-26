@@ -1,5 +1,7 @@
 import { useState, ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 import { 
   Home, Users, Truck, DollarSign, FileText, BarChart3, 
   Settings, MessageSquare, Star, Package, UserCheck, 
@@ -16,6 +18,7 @@ import {
 import { ReturnItLogo } from '@/components/ReturnItLogo';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth-simple';
+import NotificationBell from '@/components/NotificationBell';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -251,10 +254,7 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         </DropdownMenu>
 
         {/* Notification Bell */}
-        <Button variant="ghost" size="sm" className="relative">
-          <Bell className="h-4 w-4" />
-          <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-        </Button>
+        <NotificationBell />
 
         {/* Sign Out */}
         <Button 
