@@ -65,6 +65,12 @@ export function AdminNavigation() {
           href: "/admin-dashboard?section=enhanced-analytics",
           icon: BarChart3,
           description: "Real-time performance metrics"
+        },
+        {
+          label: "System Metrics",
+          href: "/admin-dashboard?section=system-metrics",
+          icon: Activity,
+          description: "Server performance & visitor analytics"
         }
       ]
     },
