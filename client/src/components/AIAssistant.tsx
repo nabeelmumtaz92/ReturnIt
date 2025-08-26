@@ -436,7 +436,7 @@ User Request: ${prompt}
 
   return (
     <div className="fixed bottom-4 right-4 w-96 h-[600px] z-50">
-      <Card className="h-full shadow-2xl border-2 border-purple-200 bg-gradient-to-b from-white to-slate-50">
+      <Card className="h-full shadow-2xl border border-green-400 bg-black text-green-400 font-mono">
         <CardHeader className="pb-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-lg">

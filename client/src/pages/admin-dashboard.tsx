@@ -47,6 +47,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import AIAssistant from "@/components/AIAssistant";
+import TerminalAI from "@/components/TerminalAI";
 import DeveloperConsole from "@/components/DeveloperConsole";
 
 interface AdminDashboardProps {
@@ -71,6 +72,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   // State for various features
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showTerminalAI, setShowTerminalAI] = useState(false);
   const [showDeveloperConsole, setShowDeveloperConsole] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
   const [navigationHistory, setNavigationHistory] = useState<string[]>(['overview']);
@@ -3742,11 +3744,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
 
-        {/* AI Assistant - Available for admin users */}
+        {/* Terminal AI - Available for admin users */}
         {user?.isAdmin && (
-          <AIAssistant 
-            isMinimized={!showAIAssistant}
-            onClose={() => setShowAIAssistant(!showAIAssistant)}
+          <TerminalAI 
+            isMinimized={!showTerminalAI}
+            onClose={() => setShowTerminalAI(!showTerminalAI)}
           />
         )}
 

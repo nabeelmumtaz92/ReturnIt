@@ -1,0 +1,59 @@
+{
+  "name": "returnit-ai-terminal",
+  "version": "3.0.1",
+  "description": "Standalone AI terminal interface for ReturnIt platform management",
+  "main": "src/TerminalApp.tsx",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@tanstack/react-query": "^5.17.0",
+    "lucide-react": "^0.400.0",
+    "tailwindcss": "^3.4.0",
+    "@radix-ui/react-scroll-area": "^1.0.5",
+    "@radix-ui/react-toast": "^1.1.5",
+    "@radix-ui/react-slot": "^1.0.2",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.14.0",
+    "@typescript-eslint/parser": "^6.14.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.55.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.32",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
+  },
+  "keywords": [
+    "ai",
+    "terminal",
+    "returnit",
+    "admin",
+    "dashboard",
+    "react",
+    "typescript"
+  ],
+  "author": "ReturnIt Systems",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/returnit/ai-terminal"
+  },
+  "bugs": {
+    "url": "https://github.com/returnit/ai-terminal/issues"
+  },
+  "homepage": "https://returnit.online"
+}
