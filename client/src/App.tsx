@@ -72,6 +72,7 @@ const ComprehensivePricingExamples = lazy(() => import("@/pages/comprehensive-pr
 const ComprehensiveGuidebook = lazy(() => import("@/pages/comprehensive-guidebook"));
 const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+const CostMonitoring = lazy(() => import("@/pages/cost-monitoring"));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -286,6 +287,9 @@ function Router() {
       </Route>
       <Route path="/business-profile">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="business-profile" /> : <NotFound />}
+      </Route>
+      <Route path="/cost-monitoring">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <CostMonitoring /> : <NotFound />}
       </Route>
 
       {/* Employee Routes */}

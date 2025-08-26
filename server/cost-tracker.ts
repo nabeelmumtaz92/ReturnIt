@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 
-// OpenAI GPT-3.5-turbo pricing (cheapest model)
+// AI Model Pricing
 const OPENAI_PRICING = {
   'gpt-3.5-turbo': {
     input: 0.0005 / 1000,  // $0.50 per 1M tokens = $0.0005 per 1K tokens
@@ -10,6 +10,18 @@ const OPENAI_PRICING = {
   'gpt-4o': {
     input: 0.005 / 1000,   // $5.00 per 1M tokens
     output: 0.015 / 1000   // $15.00 per 1M tokens
+  }
+};
+
+// Google Gemini pricing (much cheaper than OpenAI)
+const GEMINI_PRICING = {
+  'gemini-2.5-flash': {
+    input: 0.000075 / 1000,  // $0.075 per 1M tokens (90% cheaper than GPT-3.5-turbo!)
+    output: 0.0003 / 1000    // $0.30 per 1M tokens (80% cheaper than GPT-3.5-turbo!)
+  },
+  'gemini-2.5-pro': {
+    input: 0.00125 / 1000,   // $1.25 per 1M tokens
+    output: 0.005 / 1000     // $5.00 per 1M tokens
   }
 };
 
@@ -95,6 +107,49 @@ class CostTracker {
     await this.logEntry(entry);
     
     console.log(`💰 OpenAI Cost: $${totalCost.toFixed(4)} (${inputTokens}+${outputTokens} tokens, ${model})`);
+  }
+
+  // Track Google Gemini API usage and costs (much cheaper!)
+  static async trackGemini(
+    model: string,
+    inputTokens: number,
+    outputTokens: number,
+    endpoint: string,
+    userId?: number,
+    duration?: number,
+    status: string = 'success',
+    metadata?: any
+  ): Promise<void> {
+    const pricing = GEMINI_PRICING[model as keyof typeof GEMINI_PRICING];
+    if (!pricing) {
+      console.warn(`Unknown Gemini model pricing: ${model}`);
+      return;
+    }
+
+    const inputCost = inputTokens * pricing.input;
+    const outputCost = outputTokens * pricing.output;
+    const totalCost = inputCost + outputCost;
+
+    const entry: CostEntry = {
+      id: `gemini_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date().toISOString(),
+      service: 'gemini',
+      operation: 'generateContent',
+      model,
+      inputTokens,
+      outputTokens,
+      totalTokens: inputTokens + outputTokens,
+      costUsd: totalCost,
+      userId,
+      endpoint,
+      duration,
+      status,
+      metadata
+    };
+
+    await this.logEntry(entry);
+    
+    console.log(`🧠 Gemini Cost: $${totalCost.toFixed(6)} (${inputTokens}+${outputTokens} tokens, ${model}) - 90% cheaper than OpenAI!`);
   }
 
   // Track Replit resource usage

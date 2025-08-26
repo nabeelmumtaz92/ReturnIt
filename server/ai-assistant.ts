@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 import fs from "fs/promises";
 import path from "path";
 import { exec } from "child_process";
@@ -6,12 +6,12 @@ import { promisify } from "util";
 import { db } from "./db";
 import { storage } from "./storage";
 
-// Initialize OpenAI (will be configured when API key is available)
-let openai: OpenAI | null = null;
+// Initialize Gemini (much cheaper than OpenAI)
+let genai: GoogleGenAI | null = null;
 
-if (process.env.OPENAI_API_KEY) {
-  openai = new OpenAI({ 
-    apiKey: process.env.OPENAI_API_KEY 
+if (process.env.GEMINI_API_KEY) {
+  genai = new GoogleGenAI({ 
+    apiKey: process.env.GEMINI_API_KEY 
   });
 }
 
@@ -377,9 +377,9 @@ class LearningSystem {
 export class AIAssistant {
   
   static async processRequest(prompt: string): Promise<AIResponse> {
-    if (!openai) {
+    if (!genai) {
       return {
-        message: "OpenAI API key is not configured. Please add OPENAI_API_KEY to environment variables to enable AI assistance.",
+        message: "Gemini API key is not configured. Please add GEMINI_API_KEY to environment variables to enable AI assistance.",
         codeChanges: [],
         databaseQueries: [],
         commandResults: []
@@ -391,41 +391,40 @@ export class AIAssistant {
       const context = await this.getCodebaseContext();
       
       const startTime = Date.now();
-      const completion = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo", // Cost-optimized model
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "system", content: `Current codebase context:\n${context}` },
-          { role: "user", content: prompt }
+      const response = await genai.models.generateContent({
+        model: "gemini-2.5-flash", // Cost-optimized Gemini model (90% cheaper than OpenAI!)
+        contents: [
+          { role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\nCurrent codebase context:\n${context}\n\nUser request: ${prompt}\n\nPlease respond with valid JSON containing: message, codeChanges (array), needsConfirmation (boolean)` }] }
         ],
-        response_format: { type: "json_object" },
-        temperature: 0.3, // Lower temperature for more consistent code generation
+        config: {
+          responseMimeType: "application/json",
+          temperature: 0.3
+        }
       });
       
       const duration = Date.now() - startTime;
       
-      // Track OpenAI costs
+      // Track Gemini costs (much cheaper than OpenAI!)
       const CostTracker = (await import('./cost-tracker')).default;
-      const usage = completion.usage;
+      const usage = response.usageMetadata;
       if (usage) {
-        await CostTracker.trackOpenAI(
-          'gpt-3.5-turbo',
-          usage.prompt_tokens,
-          usage.completion_tokens,
+        await CostTracker.trackGemini(
+          'gemini-2.5-flash',
+          usage.promptTokenCount || 0,
+          usage.candidatesTokenCount || 0,
           '/api/ai/process',
           undefined, // No user ID in this context
-          completion.id,
           duration,
           'success',
           { prompt_length: prompt.length, has_context: true }
         );
       }
 
-      const response = JSON.parse(completion.choices[0].message.content || '{}');
+      const responseData = JSON.parse(response.text || '{}');
       
       // Validate and apply code changes
-      if (response.codeChanges && Array.isArray(response.codeChanges)) {
-        for (const change of response.codeChanges) {
+      if (responseData.codeChanges && Array.isArray(responseData.codeChanges)) {
+        for (const change of responseData.codeChanges) {
           if (change.fullContent) {
             await this.applyCodeChange(change);
           }
@@ -433,9 +432,9 @@ export class AIAssistant {
       }
 
       return {
-        message: response.message || "Request processed successfully",
-        codeChanges: response.codeChanges || [],
-        needsConfirmation: response.needsConfirmation || false
+        message: responseData.message || "Request processed successfully",
+        codeChanges: responseData.codeChanges || [],
+        needsConfirmation: responseData.needsConfirmation || false
       };
 
     } catch (error: any) {

@@ -162,6 +162,12 @@ const navigationSections = [
     title: "System Administration",
     items: [
       {
+        label: "Cost Monitoring",
+        href: "/cost-monitoring",
+        icon: DollarSign,
+        description: "Track AI and platform costs"
+      },
+      {
         label: "Platform Settings",
         href: "/admin-settings",
         icon: Settings,

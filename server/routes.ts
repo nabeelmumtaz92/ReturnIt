@@ -3002,11 +3002,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('AI Assistant request:', { prompt: prompt.substring(0, 50) + '...' });
 
-      // Use real OpenAI integration for conversational responses
-      if (process.env.OPENAI_API_KEY) {
+      // Use Gemini for much cheaper AI costs
+      if (process.env.GEMINI_API_KEY) {
         try {
-          const OpenAI = (await import('openai')).default;
-          const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const { GoogleGenAI } = await import('@google/genai');
+          const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
           const CostTracker = (await import('./cost-tracker')).default;
 
           const systemPrompt = `You are an intelligent AI assistant with administrative access to ReturnIt, a delivery/pickup platform. Beyond executing commands, you provide thoughtful analysis, best practices, and contextual reasoning.
@@ -3039,35 +3039,35 @@ EXAMPLES OF INTELLIGENT RESPONSES:
 Always think strategically, explain your reasoning, and provide value beyond basic command execution.`;
 
           const startTime = Date.now();
-          const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo", // Using cheapest model for cost optimization ($0.50/$1.50 per 1M tokens vs $5/$15)
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: prompt }
+          const response = await genai.models.generateContent({
+            model: "gemini-2.5-flash", // Cost-optimized Gemini model (much cheaper than OpenAI)
+            contents: [
+              { role: "user", parts: [{ text: `${systemPrompt}\n\nUser request: ${prompt}` }] }
             ],
-            max_tokens: 500, // Reduced for cost optimization
-            temperature: 0.7
+            config: {
+              maxOutputTokens: 500,
+              temperature: 0.7
+            }
           });
           
           const duration = Date.now() - startTime;
           
-          // Track OpenAI costs
-          const usage = completion.usage;
+          // Track Gemini costs (much lower than OpenAI)
+          const usage = response.usageMetadata;
           if (usage) {
-            await CostTracker.trackOpenAI(
-              'gpt-3.5-turbo',
-              usage.prompt_tokens,
-              usage.completion_tokens,
+            await CostTracker.trackGemini(
+              'gemini-2.5-flash',
+              usage.promptTokenCount || 0,
+              usage.candidatesTokenCount || 0,
               '/api/ai/assistant',
               req.user?.id,
-              completion.id,
               duration,
               'success',
               { prompt_length: prompt.length }
             );
           }
 
-          let aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
+          let aiResponse = response.text || "I'm having trouble generating a response right now.";
           
           // Enhanced AI processing with learning and research capabilities
           const { AIAssistant } = await import('./ai-assistant');
@@ -3307,8 +3307,8 @@ Always think strategically, explain your reasoning, and provide value beyond bas
             databaseQueries
           });
 
-        } catch (openaiError) {
-          console.error('OpenAI API error:', openaiError);
+        } catch (geminiError) {
+          console.error('Gemini API error:', geminiError);
           // Fallback to conversational mock response
           const fallbackResponse = {
             message: `I'm working on "${prompt}" for you!\n\nI'd love to help implement this, but I'm having trouble connecting to my AI services right now. Here's what I would typically do:\n\n• Analyze your ReturnIt codebase structure\n• Find the right components to modify\n• Make clean, maintainable changes\n• Test everything thoroughly\n\nCould you try again in a moment? The connection should be back up soon.`,
@@ -3324,14 +3324,14 @@ Always think strategically, explain your reasoning, and provide value beyond bas
           res.json(fallbackResponse);
         }
       } else {
-        // No OpenAI key available - provide helpful mock response
+        // No Gemini key available - provide helpful mock response
         const mockResponse = {
-          message: `Hey! I see you want help with: "${prompt}"\n\nI'd love to assist, but I need an OpenAI API key to provide intelligent responses. Here's what I would do once configured:\n\n• Analyze your request in context of the ReturnIt platform\n• Suggest specific code changes and improvements\n• Help debug issues and optimize performance\n• Provide architectural guidance\n\nTo enable full AI functionality, please add your OPENAI_API_KEY to the environment variables.`,
+          message: `Hey! I see you want help with: "${prompt}"\n\nI'd love to assist, but I need a Gemini API key to provide intelligent responses. Here's what I would do once configured:\n\n• Analyze your request in context of the ReturnIt platform\n• Suggest specific code changes and improvements\n• Help debug issues and optimize performance\n• Provide architectural guidance\n\nTo enable full AI functionality, please add your GEMINI_API_KEY to the environment variables.`,
           codeChanges: [
-            { file: "server/routes.ts", description: "AI console endpoint ready for OpenAI integration" }
+            { file: "server/routes.ts", description: "AI console endpoint ready for Gemini integration" }
           ],
           commandResults: [
-            { command: "echo 'OpenAI API key needed'", output: "Configure OPENAI_API_KEY for full AI features" }
+            { command: "echo 'Gemini API key needed'", output: "Configure GEMINI_API_KEY for full AI features" }
           ]
         };
         
