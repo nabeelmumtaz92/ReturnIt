@@ -217,7 +217,9 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
       <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex justify-end items-center relative z-50">
         {/* Right side controls with labels */}
         <div className="flex items-center space-x-3">
-          <span className="font-semibold text-sm text-amber-700">Admin Dashboard</span>
+          <Link href="/admin-dashboard">
+            <span className="font-semibold text-sm text-amber-700 cursor-pointer hover:text-amber-900 transition-colors">Admin Dashboard</span>
+          </Link>
           <span className="text-sm text-amber-700">•</span>
           <span className="text-sm text-amber-700">Business Operations Center</span>
           {/* Admin Tools Dropdown */}
