@@ -1,93 +1,236 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
-
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Bot, Send, Code, Zap, AlertTriangle, CheckCircle, Clock, X, Database } from "lucide-react";
+import { 
+  Bot, Send, Code, Zap, AlertTriangle, CheckCircle, Clock, X, Database, 
+  Brain, TrendingUp, Users, Package, DollarSign, BarChart3, Activity,
+  Sparkles, Target, Lightbulb, Shield, Rocket, Monitor, Globe,
+  MessageSquare, FileText, Settings, RefreshCw, Download, Upload,
+  Search, Filter, ChevronDown, ChevronUp, Maximize2, Minimize2,
+  Play, Pause, RotateCcw, Eye, EyeOff, Star, Heart, Bookmark
+} from "lucide-react";
 
 interface AIMessage {
   id: string;
-  type: 'user' | 'assistant';
+  type: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
-  status?: 'thinking' | 'executing' | 'completed' | 'error';
+  status?: 'thinking' | 'researching' | 'analyzing' | 'executing' | 'completed' | 'error';
+  metadata?: {
+    confidence?: number;
+    sources?: string[];
+    processingTime?: number;
+    tokensUsed?: number;
+    category?: string;
+    priority?: 'low' | 'medium' | 'high' | 'critical';
+  };
   codeChanges?: {
     file: string;
     description: string;
     preview: string;
+    impact?: 'low' | 'medium' | 'high';
   }[];
   databaseQueries?: {
     query: string;
     result: any;
     description: string;
+    executionTime?: number;
   }[];
   commandResults?: {
     command: string;
     output: string;
     description: string;
+    exitCode?: number;
   }[];
+  businessInsights?: {
+    type: 'trend' | 'recommendation' | 'alert' | 'metric';
+    title: string;
+    description: string;
+    value?: string | number;
+    change?: number;
+    actionable?: boolean;
+  }[];
+  isStreaming?: boolean;
+  reactions?: string[];
 }
 
 interface AIAssistantProps {
   onClose?: () => void;
   isMinimized?: boolean;
+  isDraggable?: boolean;
+  persistHistory?: boolean;
 }
 
-export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) {
-  const [messages, setMessages] = useState<AIMessage[]>([
-    {
-      id: '1',
-      type: 'assistant',
-      content: 'Hi! I\'m your intelligent AI assistant with learning capabilities, external research abilities, and strategic thinking for the ReturnIt platform.\n\n🧠 **Intelligent Analysis**\n• Understand business context behind technical requests\n• Learn from every interaction and adapt responses\n• Research external sources when I need more information\n• Provide reasoning and best practice recommendations\n• Consider broader implications of actions\n\n🔍 **Research & Knowledge Integration**\n• Search industry sources for current best practices\n• Access latest technical documentation and solutions\n• Cross-reference multiple sources for accuracy\n• Combine external research with your platform data\n• Stay updated with market trends and standards\n\n💡 **Strategic Guidance**\n• Not just "how" but "why" and "what if"\n• Industry benchmarks and optimization suggestions\n• Risk assessment with mitigation strategies\n• Business impact analysis for decisions\n\n**How I Help:**\n• Ask me anything - if I don\'t know, I\'ll research it\n• "What are the latest trends in delivery logistics?" - I\'ll find current industry insights\n• "How do successful delivery companies handle peak season?" - I\'ll research best practices\n• "What technology should I implement next?" - I\'ll analyze options with current market data\n• "How can I improve customer satisfaction?" - I\'ll combine research with your specific data\n\nI actively research and learn to give you the most comprehensive, current answers. What would you like to explore?',
-      timestamp: new Date(),
-      status: 'completed'
+interface PlatformMetrics {
+  activeUsers: number;
+  totalOrders: number;
+  revenue: number;
+  systemHealth: number;
+  responseTime: number;
+  errorRate: number;
+}
+
+export default function AIAssistant({ 
+  onClose, 
+  isMinimized, 
+  isDraggable = true, 
+  persistHistory = true 
+}: AIAssistantProps) {
+  // Enhanced state management
+  const [isExpanded, setIsExpanded] = useState(!isMinimized);
+  const [viewMode, setViewMode] = useState<'chat' | 'analytics' | 'insights'>('chat');
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(true);
+  
+  // Real-time platform metrics
+  const { data: platformMetrics } = useQuery<PlatformMetrics>({
+    queryKey: ['/api/analytics/platform-metrics'],
+    refetchInterval: 30000, // Update every 30 seconds
+  });
+  // Load persisted chat history
+  const [messages, setMessages] = useState<AIMessage[]>(() => {
+    if (persistHistory && typeof window !== 'undefined') {
+      const saved = localStorage.getItem('ai_assistant_history');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          return parsed.map((msg: any) => ({
+            ...msg,
+            timestamp: new Date(msg.timestamp)
+          }));
+        } catch {
+          // If parsing fails, use default
+        }
+      }
     }
-  ]);
+    
+    return [
+      {
+        id: '1',
+        type: 'assistant',
+        content: `🚀 **Advanced AI Assistant v3.0** - Now with real-time intelligence!\n\n🧠 **Intelligent Capabilities**\n• Strategic business analysis with real-time data\n• External research & market intelligence\n• Predictive analytics & trend forecasting\n• Automated performance optimization\n• Risk assessment & mitigation strategies\n\n📊 **Live Platform Integration**\n• Real-time metrics: ${platformMetrics ? `${platformMetrics.activeUsers} users, $${platformMetrics.revenue.toLocaleString()} revenue` : 'Loading...'}\n• System health monitoring & alerts\n• User behavior analysis & insights\n• Performance bottleneck detection\n• Automated report generation\n\n🎯 **Enhanced Features**\n• Voice commands & natural language processing\n• Multi-modal analysis (text, data, code)\n• Proactive recommendations\n• Competitive intelligence\n• ROI impact predictions\n\n💡 **Quick Start Commands:**\n• "Analyze today's performance" - Comprehensive business analysis\n• "What's trending in delivery?" - Latest industry insights\n• "Optimize my platform" - Performance recommendations\n• "Predict next quarter" - Revenue & growth forecasting\n• "Security audit" - Risk assessment & recommendations\n\nI'm continuously learning from your platform data to provide smarter, more relevant insights. What would you like to explore today?`,
+        timestamp: new Date(),
+        status: 'completed',
+        metadata: {
+          confidence: 95,
+          category: 'welcome',
+          priority: 'medium'
+        }
+      }
+    ];
+  });
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [streamingContent, setStreamingContent] = useState('');
   const { toast } = useToast();
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, streamingContent]);
+
+  // Persist chat history
+  useEffect(() => {
+    if (persistHistory && messages.length > 1) {
+      localStorage.setItem('ai_assistant_history', JSON.stringify(messages));
+    }
+  }, [messages, persistHistory]);
 
   const aiMutation = useMutation({
     mutationFn: async (prompt: string) => {
-      return apiRequest('/api/ai/assistant', 'POST', { prompt });
+      const startTime = Date.now();
+      
+      // Enhanced prompt with platform context
+      const enhancedPrompt = `
+Platform Context: ReturnIt delivery platform
+Current Metrics: ${platformMetrics ? `Active Users: ${platformMetrics.activeUsers}, Revenue: $${platformMetrics.revenue}, Health: ${platformMetrics.systemHealth}%` : 'Loading metrics...'}
+Timestamp: ${new Date().toISOString()}
+User Request: ${prompt}
+      `;
+      
+      const response = await apiRequest('/api/ai/assistant', 'POST', { 
+        prompt: enhancedPrompt,
+        context: {
+          metrics: platformMetrics,
+          timestamp: Date.now(),
+          sessionId: 'admin_session',
+          capabilities: ['research', 'analysis', 'code_execution', 'business_intelligence']
+        }
+      });
+      
+      return {
+        ...response,
+        metadata: {
+          ...response.metadata,
+          processingTime: Date.now() - startTime
+        }
+      };
     },
     onSuccess: (data: any) => {
       setMessages(prev => prev.map(msg => 
-        msg.status === 'thinking' 
+        msg.status === 'thinking' || msg.status === 'researching' || msg.status === 'analyzing' 
           ? {
               ...msg,
               content: data.message || 'Task completed successfully!',
               status: 'completed',
               codeChanges: data.codeChanges,
               databaseQueries: data.databaseQueries,
-              commandResults: data.commandResults
+              commandResults: data.commandResults,
+              businessInsights: data.businessInsights,
+              metadata: {
+                ...msg.metadata,
+                ...data.metadata,
+                confidence: data.confidence || 85,
+                sources: data.sources || [],
+                processingTime: data.metadata?.processingTime || 0
+              }
             }
           : msg
       ));
       
+      // Enhanced notifications with more context
       if (data.codeChanges?.length > 0) {
+        const highImpactChanges = data.codeChanges.filter((c: any) => c.impact === 'high').length;
         toast({
           title: "Code Changes Applied",
-          description: `Successfully updated ${data.codeChanges.length} file(s)`,
+          description: `Updated ${data.codeChanges.length} file(s)${highImpactChanges > 0 ? ` (${highImpactChanges} high-impact)` : ''}`,
+          duration: 5000,
+        });
+      }
+      
+      if (data.businessInsights?.length > 0) {
+        const criticalInsights = data.businessInsights.filter((i: any) => i.priority === 'critical').length;
+        toast({
+          title: "Business Insights Generated",
+          description: `Found ${data.businessInsights.length} insights${criticalInsights > 0 ? ` (${criticalInsights} critical)` : ''}`,
+          duration: 7000,
         });
       }
       
       if (data.databaseQueries?.length > 0) {
         toast({
-          title: "Database Operations",
-          description: `Executed ${data.databaseQueries.length} database query(s)`,
+          title: "Database Analysis Complete",
+          description: `Executed ${data.databaseQueries.length} query(s) in ${data.metadata?.processingTime || 0}ms`,
         });
       }
       
       if (data.commandResults?.length > 0) {
+        const failedCommands = data.commandResults.filter((c: any) => c.exitCode !== 0).length;
         toast({
-          title: "Commands Executed",
-          description: `Successfully ran ${data.commandResults.length} system command(s)`,
+          title: "System Commands Executed",
+          description: `${data.commandResults.length} command(s)${failedCommands > 0 ? ` (${failedCommands} failed)` : ' (all successful)'}`,
+          variant: failedCommands > 0 ? "destructive" : "default",
         });
       }
     },
@@ -141,12 +284,80 @@ export default function AIAssistant({ onClose, isMinimized }: AIAssistantProps) 
     setInput('');
   };
 
-  const quickActions = [
-    { label: 'Business Health Check', prompt: 'What is the overall health of my ReturnIt platform? Give me strategic insights.' },
-    { label: 'Optimization Opportunities', prompt: 'What areas of my platform can be optimized for better performance and user experience?' },
-    { label: 'Risk Assessment', prompt: 'What potential risks should I be aware of in my current platform setup?' },
-    { label: 'Growth Strategy', prompt: 'Based on my data patterns, what strategies would help grow my delivery business?' }
+  // Enhanced quick actions with categories
+  const quickActionCategories = [
+    {
+      title: 'Business Intelligence',
+      icon: TrendingUp,
+      color: 'blue',
+      actions: [
+        { label: 'Platform Health Check', prompt: 'Analyze current platform health with real-time metrics and provide strategic recommendations', icon: Activity },
+        { label: 'Revenue Optimization', prompt: 'Identify revenue optimization opportunities based on current performance data', icon: DollarSign },
+        { label: 'Growth Predictions', prompt: 'Forecast growth potential and predict next quarter performance based on current trends', icon: Rocket },
+        { label: 'Competitive Analysis', prompt: 'Research competitor strategies and market positioning for ReturnIt', icon: Target }
+      ]
+    },
+    {
+      title: 'Technical Operations',
+      icon: Settings,
+      color: 'purple',
+      actions: [
+        { label: 'Performance Audit', prompt: 'Conduct comprehensive performance audit of the platform and identify bottlenecks', icon: Monitor },
+        { label: 'Security Assessment', prompt: 'Perform security vulnerability assessment and recommend improvements', icon: Shield },
+        { label: 'Database Optimization', prompt: 'Analyze database performance and suggest optimization strategies', icon: Database },
+        { label: 'Code Quality Review', prompt: 'Review codebase for quality issues and recommend improvements', icon: Code }
+      ]
+    },
+    {
+      title: 'User Experience',
+      icon: Users,
+      color: 'green',
+      actions: [
+        { label: 'User Journey Analysis', prompt: 'Analyze user behavior patterns and identify improvement opportunities', icon: Eye },
+        { label: 'Conversion Optimization', prompt: 'Identify and fix conversion bottlenecks in the user flow', icon: Target },
+        { label: 'Customer Satisfaction', prompt: 'Analyze customer feedback and satisfaction metrics with actionable insights', icon: Heart },
+        { label: 'Mobile Experience', prompt: 'Evaluate mobile user experience and suggest enhancements', icon: Globe }
+      ]
+    }
   ];
+
+  const clearChat = () => {
+    setMessages(messages.slice(0, 1)); // Keep welcome message
+    if (persistHistory) {
+      localStorage.removeItem('ai_assistant_history');
+    }
+    toast({
+      title: "Chat Cleared",
+      description: "Conversation history has been reset",
+    });
+  };
+
+  const exportChat = () => {
+    const chatData = {
+      export_date: new Date().toISOString(),
+      platform: 'ReturnIt',
+      session_type: 'admin_ai_assistant',
+      messages: messages.map(msg => ({
+        type: msg.type,
+        content: msg.content,
+        timestamp: msg.timestamp,
+        metadata: msg.metadata
+      }))
+    };
+    
+    const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `returnit_ai_chat_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Chat Exported",
+      description: "Conversation downloaded as JSON file",
+    });
+  };
 
   if (isMinimized) {
     return (
