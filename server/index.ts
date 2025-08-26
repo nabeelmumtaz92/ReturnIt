@@ -1,14 +1,42 @@
 import express, { type Request, Response, NextFunction } from "express";
+import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { PerformanceService, performanceMiddleware } from "./performance";
 
 const app = express();
 
 // Trust proxy for HTTPS cookies behind Replit proxy
 app.set('trust proxy', 1);
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// Enable gzip compression for all responses
+app.use(compression({
+  threshold: 1024, // Only compress responses larger than 1KB
+  level: 6, // Compression level (1-9)
+  filter: (req: any, res: any) => {
+    // Don't compress if it's a cache miss for service worker
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
+// Add performance middleware
+app.use(performanceMiddleware);
+
+// Add caching headers for static assets
+app.use((req, res, next) => {
+  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+    res.set('Cache-Control', 'public, max-age=31536000'); // 1 year for static assets
+  } else if (req.url.startsWith('/api/')) {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  }
+  next();
+});
+
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();

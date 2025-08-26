@@ -17,6 +17,7 @@ import { AuthService } from "./auth";
 import { registrationSchema, loginSchema } from "@shared/validation";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
+import { checkDatabaseHealth } from "./db";
 import { requireAdmin, isAdmin } from "./middleware/adminAuth";
 // Removed environment restrictions - authentication always enabled
 

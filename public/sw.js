@@ -1,21 +1,34 @@
 // ReturnIt Service Worker for PWA functionality
-const CACHE_NAME = 'returnit-v1.0.0';
+const CACHE_NAME = 'returnit-v1.1.0';
 const STATIC_CACHE_URLS = [
   '/',
   '/book-pickup',
   '/driver-portal',
   '/favicon.svg',
-  '/returnit-logo.png',
+  '/logo-cardboard-deep.png',
   '/site.webmanifest'
 ];
 
 // Install event - cache static resources
 self.addEventListener('install', (event) => {
+  console.log('ReturnIt: Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('ReturnIt: Service Worker installed and caching static resources');
-        return cache.addAll(STATIC_CACHE_URLS);
+        console.log('ReturnIt: Service Worker caching static resources');
+        // Cache resources one by one to avoid failing on missing files
+        return Promise.allSettled(
+          STATIC_CACHE_URLS.map(url => 
+            cache.add(url).catch(err => {
+              console.log('ReturnIt: Failed to cache:', url, err);
+              return null;
+            })
+          )
+        );
+      })
+      .then(() => {
+        console.log('ReturnIt: Service Worker installed successfully');
+        return self.skipWaiting();
       })
       .catch((error) => {
         console.error('ReturnIt: Service Worker install failed:', error);
@@ -25,16 +38,22 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
+  console.log('ReturnIt: Service Worker activating...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('ReturnIt: Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    Promise.all([
+      caches.keys().then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (cacheName !== CACHE_NAME) {
+              console.log('ReturnIt: Deleting old cache:', cacheName);
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      }),
+      self.clients.claim()
+    ]).then(() => {
+      console.log('ReturnIt: Service Worker activated successfully');
     })
   );
 });

@@ -76,7 +76,7 @@ export class PerformanceService {
     const duration = Date.now() - startTime;
     
     this.trackMetric('db_query_time', duration);
-    this.cacheQuery(key);
+    this.cacheQuery(key, result);
     
     return result;
   }

@@ -5,67 +5,94 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/design-system";
 import { useAuth } from "@/hooks/useAuth-simple";
+import { Suspense, lazy } from "react";
+
+// Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
 import OrderStatus from "@/pages/order-status";
 import Checkout from "@/pages/checkout";
 import DriverPortal from "@/pages/driver-portal";
-import DriverPayments from "@/pages/driver-payments";
-import PaymentStructure from "@/pages/payment-structure";
-import AdminDashboard from "@/pages/admin-dashboard";
-import DriverOnboarding from "@/pages/driver-onboarding";
-import About from "@/pages/about";
-
-import MobileAppDemo from "@/pages/mobile-app-demo";
-import MobileSimulator from "@/pages/mobile-simulator";
-import MobileDriver from "@/pages/mobile-driver";
-import LogoColors from "@/pages/logo-colors";
-import BackgroundColors from "@/pages/background-colors";
-import AdminPaymentTracking from "@/pages/admin-payment-tracking";
-import DriverTutorial from "@/pages/driver-tutorial";
-import DriverDocuments from "@/pages/driver-documents";
-import HelpCenter from "@/pages/help-center";
-import HelpArticle from "@/pages/help-article";
-import FAQ from "@/pages/faq";
-import CustomerMobileApp from "@/pages/customer-mobile-app";
-import ReturnlyDriverApp from "@/pages/returnly-driver-app";
 import NotFound from "@/pages/not-found";
-import RealTimeTracking from "@/pages/real-time-tracking";
-import DriverAnalytics from "@/pages/driver-analytics";
-import CustomerRating from "@/pages/customer-rating";
-import AdvancedReporting from "@/pages/advanced-reporting";
-import MultiCityManagement from "@/pages/multi-city-management";
-import EnhancedAnalyticsDashboard from "@/pages/enhanced-analytics-dashboard";
-import CustomerServiceTickets from "@/pages/customer-service-tickets";
-import BulkOrderImport from "@/pages/bulk-order-import";
-import LoyaltyDashboard from "@/pages/loyalty-dashboard";
-import DriverSafetyCenter from "@/pages/driver-safety-center";
-import DriverPerformance from "@/pages/driver-performance";
-import RouteOptimization from "@/pages/route-optimization";
-import ChatCenter from "@/pages/chat-center";
-import DriverJob from "@/pages/driver-job";
-import RealTimeTrackingAdvanced from "@/pages/real-time-tracking-advanced";
-import BusinessIntelligence from "@/pages/business-intelligence";
-import NotificationCenter from "@/pages/notification-center";
-import QualityAssurance from "@/pages/quality-assurance";
-import DriverIncentives from "@/pages/driver-incentives";
-import Profile from "@/pages/profile";
-import FeatureDocumentGenerator from "@/pages/feature-document-generator";
-import EmployeeGuide from "@/pages/employee-guide";
-import EmployeeDashboard from "@/pages/employee-dashboard";
-import EmployeeDocuments from "@/pages/employee-documents";
-import DriverFeedbackSystem from "@/pages/driver-feedback-system";
-import PrintableTemplates from "@/pages/printable-templates";
-import CancellationAlerts from "@/pages/cancellation-alerts";
-import RefundDemo from "@/pages/refund-demo";
-import PricingDemo from "@/pages/pricing-demo";
-import PricingAnalysis from "@/pages/pricing-analysis";
-import FailedReturnDemo from "@/pages/failed-return-demo";
-import ComprehensivePricingExamples from "@/pages/comprehensive-pricing-examples";
-import ComprehensiveGuidebook from "@/pages/comprehensive-guidebook";
-import TermsOfService from "@/pages/terms-of-service";
-import PrivacyPolicy from "@/pages/privacy-policy";
+
+// Lazy-loaded components for better performance
+const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
+const DriverPayments = lazy(() => import("@/pages/driver-payments"));
+const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
+const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
+const About = lazy(() => import("@/pages/about"));
+
+// Admin and heavy components (lazy-loaded)
+const MobileAppDemo = lazy(() => import("@/pages/mobile-app-demo"));
+const MobileSimulator = lazy(() => import("@/pages/mobile-simulator"));
+const MobileDriver = lazy(() => import("@/pages/mobile-driver"));
+const LogoColors = lazy(() => import("@/pages/logo-colors"));
+const BackgroundColors = lazy(() => import("@/pages/background-colors"));
+const AdminPaymentTracking = lazy(() => import("@/pages/admin-payment-tracking"));
+const DriverTutorial = lazy(() => import("@/pages/driver-tutorial"));
+const DriverDocuments = lazy(() => import("@/pages/driver-documents"));
+const HelpCenter = lazy(() => import("@/pages/help-center"));
+const HelpArticle = lazy(() => import("@/pages/help-article"));
+const FAQ = lazy(() => import("@/pages/faq"));
+const CustomerMobileApp = lazy(() => import("@/pages/customer-mobile-app"));
+const ReturnlyDriverApp = lazy(() => import("@/pages/returnly-driver-app"));
+const RealTimeTracking = lazy(() => import("@/pages/real-time-tracking"));
+const DriverAnalytics = lazy(() => import("@/pages/driver-analytics"));
+const CustomerRating = lazy(() => import("@/pages/customer-rating"));
+const AdvancedReporting = lazy(() => import("@/pages/advanced-reporting"));
+const MultiCityManagement = lazy(() => import("@/pages/multi-city-management"));
+const EnhancedAnalyticsDashboard = lazy(() => import("@/pages/enhanced-analytics-dashboard"));
+const CustomerServiceTickets = lazy(() => import("@/pages/customer-service-tickets"));
+const BulkOrderImport = lazy(() => import("@/pages/bulk-order-import"));
+const LoyaltyDashboard = lazy(() => import("@/pages/loyalty-dashboard"));
+const DriverSafetyCenter = lazy(() => import("@/pages/driver-safety-center"));
+const DriverPerformance = lazy(() => import("@/pages/driver-performance"));
+const RouteOptimization = lazy(() => import("@/pages/route-optimization"));
+const ChatCenter = lazy(() => import("@/pages/chat-center"));
+const DriverJob = lazy(() => import("@/pages/driver-job"));
+const RealTimeTrackingAdvanced = lazy(() => import("@/pages/real-time-tracking-advanced"));
+const BusinessIntelligence = lazy(() => import("@/pages/business-intelligence"));
+const NotificationCenter = lazy(() => import("@/pages/notification-center"));
+const QualityAssurance = lazy(() => import("@/pages/quality-assurance"));
+const DriverIncentives = lazy(() => import("@/pages/driver-incentives"));
+const Profile = lazy(() => import("@/pages/profile"));
+const FeatureDocumentGenerator = lazy(() => import("@/pages/feature-document-generator"));
+const EmployeeGuide = lazy(() => import("@/pages/employee-guide"));
+const EmployeeDashboard = lazy(() => import("@/pages/employee-dashboard"));
+const EmployeeDocuments = lazy(() => import("@/pages/employee-documents"));
+const DriverFeedbackSystem = lazy(() => import("@/pages/driver-feedback-system"));
+const PrintableTemplates = lazy(() => import("@/pages/printable-templates"));
+const CancellationAlerts = lazy(() => import("@/pages/cancellation-alerts"));
+const RefundDemo = lazy(() => import("@/pages/refund-demo"));
+const PricingDemo = lazy(() => import("@/pages/pricing-demo"));
+const PricingAnalysis = lazy(() => import("@/pages/pricing-analysis"));
+const FailedReturnDemo = lazy(() => import("@/pages/failed-return-demo"));
+const ComprehensivePricingExamples = lazy(() => import("@/pages/comprehensive-pricing-examples"));
+const ComprehensiveGuidebook = lazy(() => import("@/pages/comprehensive-guidebook"));
+const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+
+// Loading component for Suspense
+const PageLoader = () => (
+  <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+    <div className="text-center space-y-4">
+      <div className="relative">
+        <img 
+          src="/logo-cardboard-deep.png" 
+          alt="ReturnIt Logo" 
+          className="h-16 w-auto mx-auto animate-pulse"
+        />
+      </div>
+      <div className="space-y-2">
+        <div className="w-32 h-2 bg-amber-200 rounded-full mx-auto overflow-hidden">
+          <div className="h-full bg-amber-600 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+        </div>
+        <p className="text-amber-800 text-sm font-medium">Loading page...</p>
+      </div>
+    </div>
+  </div>
+);
 
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
@@ -94,7 +121,8 @@ function Router() {
   }
 
   return (
-    <Switch>
+    <Suspense fallback={<PageLoader />}>
+      <Switch>
       <Route path="/">
         {() => {
           try {
@@ -356,7 +384,8 @@ function Router() {
           return <NotFound />;
         }}
       </Route>
-    </Switch>
+      </Switch>
+    </Suspense>
   );
 }
 
