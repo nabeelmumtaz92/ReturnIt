@@ -113,7 +113,7 @@ Command: ${command}
 Respond as a terminal AI assistant. Use technical language and provide concise, actionable responses.
       `;
       
-      const response = await apiRequest('/api/ai/assistant', 'POST', { 
+      const response = await apiRequest('POST', '/api/ai/assistant', { 
         prompt: terminalPrompt,
         context: {
           terminal: true,
@@ -123,8 +123,9 @@ Respond as a terminal AI assistant. Use technical language and provide concise, 
         }
       });
       
+      const data = await response.json();
       return {
-        ...response,
+        ...data,
         metadata: {
           processingTime: Date.now() - startTime,
           command
