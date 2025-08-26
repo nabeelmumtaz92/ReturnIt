@@ -26,7 +26,7 @@ interface EnvironmentConfig {
 
 export default function Welcome() {
   const [, setLocation] = useLocation();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [trackingNumber, setTrackingNumber] = useState('');
@@ -52,25 +52,13 @@ export default function Welcome() {
     queryKey: ['/api/config/environment'],
   });
 
-  const logoutMutation = useMutation({
-    mutationFn: async () => {
-      return await apiRequest('/api/auth/logout', 'POST', {});
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      toast({
-        title: "Goodbye!",
-        description: "You have been signed out successfully.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "Goodbye!",
+      description: "You have been signed out successfully.",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-cover bg-center bg-no-repeat" 
@@ -107,8 +95,8 @@ export default function Welcome() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => logoutMutation.mutate()}
-                    disabled={logoutMutation.isPending}
+                    onClick={handleLogout}
+                    data-testid="button-sign-out"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Sign Out
