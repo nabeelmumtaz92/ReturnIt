@@ -877,3 +877,51 @@ export const DocumentTypeEnum = {
   INSURANCE: 'insurance',
   SELFIE: 'selfie'
 } as const;
+
+// Cost Tracking for API Usage and Platform Costs
+export const costTracking = pgTable("cost_tracking", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  service: text("service").notNull(), // openai, replit, stripe, twilio, etc.
+  operation: text("operation").notNull(), // chat.completion, api.call, deployment, etc.
+  model: text("model"), // gpt-3.5-turbo, gpt-4o, etc.
+  inputTokens: integer("input_tokens").default(0),
+  outputTokens: integer("output_tokens").default(0),
+  totalTokens: integer("total_tokens").default(0),
+  costUsd: real("cost_usd").notNull().default(0),
+  requestId: text("request_id"),
+  userId: integer("user_id").references(() => users.id),
+  endpoint: text("endpoint"), // /api/ai/assistant, /api/notifications, etc.
+  duration: integer("duration_ms"), // Request duration in milliseconds
+  status: text("status").default("success"), // success, error, timeout
+  metadata: jsonb("metadata").default({}), // Additional context
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Daily Cost Summary for efficient querying
+export const dailyCostSummary = pgTable("daily_cost_summary", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  date: text("date").notNull(), // YYYY-MM-DD
+  service: text("service").notNull(),
+  totalRequests: integer("total_requests").default(0),
+  totalTokens: integer("total_tokens").default(0),
+  totalCostUsd: real("total_cost_usd").default(0),
+  avgCostPerRequest: real("avg_cost_per_request").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Cost tracking schemas
+export const insertCostTrackingSchema = createInsertSchema(costTracking).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDailyCostSummarySchema = createInsertSchema(dailyCostSummary).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type CostTracking = typeof costTracking.$inferSelect;
+export type InsertCostTracking = z.infer<typeof insertCostTrackingSchema>;
+export type DailyCostSummary = typeof dailyCostSummary.$inferSelect;
+export type InsertDailyCostSummary = z.infer<typeof insertDailyCostSummarySchema>;

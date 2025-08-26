@@ -390,8 +390,9 @@ export class AIAssistant {
       // Get current codebase context (key files)
       const context = await this.getCodebaseContext();
       
+      const startTime = Date.now();
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o", // Latest model for best code understanding
+        model: "gpt-3.5-turbo", // Cost-optimized model
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           { role: "system", content: `Current codebase context:\n${context}` },
@@ -400,6 +401,25 @@ export class AIAssistant {
         response_format: { type: "json_object" },
         temperature: 0.3, // Lower temperature for more consistent code generation
       });
+      
+      const duration = Date.now() - startTime;
+      
+      // Track OpenAI costs
+      const CostTracker = (await import('./cost-tracker')).default;
+      const usage = completion.usage;
+      if (usage) {
+        await CostTracker.trackOpenAI(
+          'gpt-3.5-turbo',
+          usage.prompt_tokens,
+          usage.completion_tokens,
+          '/api/ai/process',
+          undefined, // No user ID in this context
+          completion.id,
+          duration,
+          'success',
+          { prompt_length: prompt.length, has_context: true }
+        );
+      }
 
       const response = JSON.parse(completion.choices[0].message.content || '{}');
       

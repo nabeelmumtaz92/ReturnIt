@@ -3007,6 +3007,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         try {
           const OpenAI = (await import('openai')).default;
           const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+          const CostTracker = (await import('./cost-tracker')).default;
 
           const systemPrompt = `You are an intelligent AI assistant with administrative access to ReturnIt, a delivery/pickup platform. Beyond executing commands, you provide thoughtful analysis, best practices, and contextual reasoning.
 
@@ -3037,15 +3038,34 @@ EXAMPLES OF INTELLIGENT RESPONSES:
 
 Always think strategically, explain your reasoning, and provide value beyond basic command execution.`;
 
+          const startTime = Date.now();
           const completion = await openai.chat.completions.create({
-            model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+            model: "gpt-3.5-turbo", // Using cheapest model for cost optimization ($0.50/$1.50 per 1M tokens vs $5/$15)
             messages: [
               { role: "system", content: systemPrompt },
               { role: "user", content: prompt }
             ],
-            max_tokens: 1000,
+            max_tokens: 500, // Reduced for cost optimization
             temperature: 0.7
           });
+          
+          const duration = Date.now() - startTime;
+          
+          // Track OpenAI costs
+          const usage = completion.usage;
+          if (usage) {
+            await CostTracker.trackOpenAI(
+              'gpt-3.5-turbo',
+              usage.prompt_tokens,
+              usage.completion_tokens,
+              '/api/ai/assistant',
+              req.user?.id,
+              completion.id,
+              duration,
+              'success',
+              { prompt_length: prompt.length }
+            );
+          }
 
           let aiResponse = completion.choices[0]?.message?.content || "I'm having trouble generating a response right now.";
           
@@ -3323,6 +3343,85 @@ Always think strategically, explain your reasoning, and provide value beyond bas
       res.status(500).json({ 
         message: "AI Assistant encountered an error. Please try again." 
       });
+    }
+  });
+
+  // Cost Monitoring API Routes
+  app.get('/api/costs/summary', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const { startDate, endDate, service } = req.query;
+      
+      const summary = await CostTracker.getCostSummary(
+        startDate as string,
+        endDate as string,
+        service as string
+      );
+      
+      res.json(summary);
+    } catch (error) {
+      console.error('Cost summary error:', error);
+      res.status(500).json({ message: 'Failed to fetch cost summary' });
+    }
+  });
+
+  app.get('/api/costs/today', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const todayCosts = await CostTracker.getTodayCosts();
+      res.json(todayCosts);
+    } catch (error) {
+      console.error('Today costs error:', error);
+      res.status(500).json({ message: 'Failed to fetch today costs' });
+    }
+  });
+
+  app.get('/api/costs/monthly', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const monthlyCosts = await CostTracker.getCurrentMonthCosts();
+      res.json(monthlyCosts);
+    } catch (error) {
+      console.error('Monthly costs error:', error);
+      res.status(500).json({ message: 'Failed to fetch monthly costs' });
+    }
+  });
+
+  app.get('/api/costs/projections', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const projections = await CostTracker.getEstimatedMonthlyCosts();
+      res.json(projections);
+    } catch (error) {
+      console.error('Cost projections error:', error);
+      res.status(500).json({ message: 'Failed to fetch cost projections' });
+    }
+  });
+
+  // Manual cost tracking endpoints
+  app.post('/api/costs/track-replit', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const { operation, resourceType, amount, costUsd, metadata } = req.body;
+      
+      await CostTracker.trackReplit(operation, resourceType, amount, costUsd, metadata);
+      res.json({ success: true, message: 'Replit cost tracked successfully' });
+    } catch (error) {
+      console.error('Track Replit cost error:', error);
+      res.status(500).json({ message: 'Failed to track Replit cost' });
+    }
+  });
+
+  app.post('/api/costs/track-service', isAuthenticated, async (req: any, res) => {
+    try {
+      const CostTracker = (await import('./cost-tracker')).default;
+      const { service, operation, costUsd, metadata } = req.body;
+      
+      await CostTracker.trackService(service, operation, costUsd, metadata);
+      res.json({ success: true, message: 'Service cost tracked successfully' });
+    } catch (error) {
+      console.error('Track service cost error:', error);
+      res.status(500).json({ message: 'Failed to track service cost' });
     }
   });
 
