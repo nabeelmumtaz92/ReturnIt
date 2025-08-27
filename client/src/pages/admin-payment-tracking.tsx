@@ -602,11 +602,11 @@ export default function AdminPaymentTracking() {
                     <div className="space-y-2 text-xs">
                       <div className="flex justify-between">
                         <span>Tax Rate Applied:</span>
-                        <span>8.5%</span>
+                        <span>8.99%</span>
                       </div>
                       <div className="flex justify-between">
                         <span>Estimated Tax Liability:</span>
-                        <span>${((paymentSummary?.monthlyCompanyRevenue || 0) * 0.085).toFixed(2)}</span>
+                        <span>${((paymentSummary?.monthlyCompanyRevenue || 0) * 0.0899).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

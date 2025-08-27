@@ -35,7 +35,7 @@ export function generateSamplePaymentRecords() {
     const basePrice = 3.99;
     const surcharges = boxSize === 'Large' ? 2.00 : boxSize === 'XL' ? 4.00 : 0;
     const subtotal = basePrice + surcharges + distanceFee + timeFee + distancePay + timePay + sizeBonus;
-    const taxes = subtotal * 0.085;
+    const taxes = subtotal * 0.0899; // Missouri St. Louis County rate
     const customerTotal = subtotal + taxes + tip;
 
     records.push({

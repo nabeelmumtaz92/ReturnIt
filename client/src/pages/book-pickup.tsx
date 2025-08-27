@@ -1192,8 +1192,8 @@ export default function BookPickup() {
                         <span className="font-medium">$0.30</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-blue-700">Tax (8.5%):</span>
-                        <span className="font-medium">$0.42</span>
+                        <span className="text-blue-700">Tax (8.99%):</span>
+                        <span className="font-medium">$0.44</span>
                       </div>
                     </div>
                   </div>
@@ -1203,7 +1203,7 @@ export default function BookPickup() {
                     <div className="flex justify-between items-center">
                       <span className="text-green-900 font-bold text-lg">Total:</span>
                       <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">
-                        $5.31
+                        $5.33
                       </span>
                     </div>
                   </div>

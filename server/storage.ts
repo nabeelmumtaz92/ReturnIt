@@ -431,7 +431,7 @@ export class MemStorage implements IStorage {
       customerPayment: {
         basePrice: order.basePrice || 3.99,
         surcharges: order.surcharges?.reduce((sum, s) => sum + s.amount, 0) || 0,
-        taxes: (order.totalPrice || 3.99) * 0.085, // 8.5% tax rate
+        taxes: (order.totalPrice || 3.99) * 0.0899, // 8.99% Missouri St. Louis County tax rate
         total: order.totalPrice || 3.99
       },
       driverId: order.driverId!,
