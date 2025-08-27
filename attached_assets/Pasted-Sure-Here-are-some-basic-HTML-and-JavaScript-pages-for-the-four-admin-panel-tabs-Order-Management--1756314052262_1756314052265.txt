@@ -1,0 +1,116 @@
+Sure! Here are some basic HTML and JavaScript pages for the four admin panel tabs: Order Management, Driver Management, Real-time Tracking, and Customer Support.
+
+<xaiArtifact artifact_id="177c19a6-3826-4ba1-8310-5ff055f869a1" artifact_version_id="064f64be-a6f6-4a8f-bba9-f8d5b6510a4b" title="order_management.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Order Management</h1>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>001</td>
+            <td>John Doe</td>
+            <td>Pending</td>
+            <td><button>Update</button></td>
+        </tr>
+        <tr>
+            <td>002</td>
+            <td>Jane Smith</td>
+            <td>Completed</td>
+            <td><button>View</button></td>
+        </tr>
+    </table>
+</body>
+</html>
+</xaiArtifact>
+
+<xaiArtifact artifact_id="2193bcba-73fc-40e3-8e00-2e9218bb922e" artifact_version_id="5ef21c91-0fda-4711-ab6c-22755b73c2dc" title="driver_management.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Driver Management</h1>
+    <ul>
+        <li>Driver 1 - Onboarding: In Progress</li>
+        <li>Driver 2 - Active: 5 Deliveries Today</li>
+        <li>Driver 3 - Oversight Needed: Review Profile</li>
+    </ul>
+    <button>Add New Driver</button>
+</body>
+</html>
+</xaiArtifact>
+
+<xaiArtifact artifact_id="97825cb2-888a-4199-8778-0488b794530d" artifact_version_id="ebc3064e-2356-4798-823d-b36e69c8fca1" title="real_time_tracking.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Tracking</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .tracker { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Real-time Tracking</h1>
+    <div class="tracker">
+        <p>Order #001 - Driver: John - Location: En Route</p>
+    </div>
+    <div class="tracker">
+        <p>Order #002 - Driver: Jane - Location: Delivered</p>
+    </div>
+    <button>Refresh</button>
+</body>
+</html>
+</xaiArtifact>
+
+<xaiArtifact artifact_id="0268e548-c3c0-440b-b37e-e77ed654ed68" artifact_version_id="4e65203c-b4e4-47ad-84e4-f2a3daf00b56" title="customer_support.html" contentType="text/html">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .ticket { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Customer Support</h1>
+    <div class="ticket">
+        <p>Ticket #001 - Issue: Delayed Delivery - Status: Open</p>
+    </div>
+    <div class="ticket">
+        <p>Ticket #002 - Issue: Item Missing - Status: Resolved</p>
+    </div>
+    <button>Create New Ticket</button>
+</body>
+</html>
+</xaiArtifact>

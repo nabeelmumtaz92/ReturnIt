@@ -46,9 +46,7 @@ import ContactSupportButton from "@/components/ContactSupportButton";
 import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
-import AIAssistant from "@/components/AIAssistant";
-import TerminalAI from "@/components/TerminalAI";
-import DeveloperConsole from "@/components/DeveloperConsole";
+import UnifiedAI from "@/components/UnifiedAI";
 
 interface AdminDashboardProps {
   section?: string;
@@ -73,9 +71,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   
   // State for various features
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
-  const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [showTerminalAI, setShowTerminalAI] = useState(false);
-  const [showDeveloperConsole, setShowDeveloperConsole] = useState(false);
+  const [showUnifiedAI, setShowUnifiedAI] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
   const [navigationHistory, setNavigationHistory] = useState<string[]>(['overview']);
   
@@ -4223,21 +4219,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
 
-        {/* Terminal AI - Available for admin users */}
-        {user?.isAdmin && (
-          <TerminalAI 
-            isMinimized={!showTerminalAI}
-            onClose={() => setShowTerminalAI(!showTerminalAI)}
-          />
+        {/* Unified AI Interface */}
+        <UnifiedAI 
+          isMinimized={!showUnifiedAI}
+          onClose={() => setShowUnifiedAI(false)}
+          defaultMode="hybrid"
+        />
+
+        {/* Floating AI Button */}
+        {!showUnifiedAI && (
+          <Button
+            onClick={() => setShowUnifiedAI(true)}
+            className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-amber-500 hover:from-blue-600 hover:via-purple-600 hover:to-amber-600 text-white shadow-xl z-40 transition-all duration-300 hover:scale-110"
+            data-testid="button-unified-ai-toggle"
+          >
+            <Bot className="w-6 h-6" />
+          </Button>
         )}
 
-        {/* Developer Console - Available for admin users */}
-        {user?.isAdmin && (
-          <DeveloperConsole 
-            isMinimized={!showDeveloperConsole}
-            onClose={() => setShowDeveloperConsole(!showDeveloperConsole)}
-          />
-        )}
       </div>
     </AdminLayout>
   );
