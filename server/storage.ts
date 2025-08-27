@@ -5,7 +5,7 @@ import {
   type DriverPayout, type InsertDriverPayout, type DriverIncentive, type InsertDriverIncentive,
   type BusinessInfo, type InsertBusinessInfo,
   type DriverApplication, type InsertDriverApplication,
-  OrderStatus
+  OrderStatus, type OrderStatus as OrderStatusType
 } from "@shared/schema";
 
 export interface IStorage {
@@ -24,16 +24,18 @@ export interface IStorage {
   getAllOrders(): Promise<Order[]>;
   getDriverOrders(driverId: number): Promise<Order[]>;
   getAvailableOrders(): Promise<Order[]>;
-  getOrdersByStatus(status: OrderStatus): Promise<Order[]>;
+  getOrdersByStatus(status: OrderStatusType): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined>;
   assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined>;
   updateDriverStatus(driverId: number, status: string): Promise<User | undefined>;
+  getOrdersByDriver(driverId: number): Promise<Order[]>;
   
   // Promo code operations
   getPromoCode(code: string): Promise<PromoCode | undefined>;
   createPromoCode(promoCode: InsertPromoCode): Promise<PromoCode>;
   validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }>;
+  updatePromoCode(code: string, updates: Partial<PromoCode>): Promise<PromoCode | undefined>;
   
   // Driver earnings
   getDriverEarnings(driverId: number): Promise<DriverEarning[]>;
@@ -41,8 +43,17 @@ export interface IStorage {
   
   // Notifications
   getUserNotifications(userId: number): Promise<Notification[]>;
+  getNotifications(userId: number): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationRead(id: number): Promise<void>;
+  markNotificationAsRead(id: number): Promise<boolean>;
+  
+  // Payment methods
+  getPaymentRecords(): Promise<any[]>;
+  getPaymentSummary(): Promise<any>;
+  exportPaymentData(format: string, dateRange: string, status: string): Promise<Buffer>;
+  generateTaxReport(year: number): Promise<Buffer>;
+  generate1099Forms(year: number): Promise<Buffer>;
   
   // Analytics
   recordAnalytics(analytics: InsertAnalytics): Promise<Analytics>;
@@ -309,7 +320,10 @@ export class MemStorage implements IStorage {
       trackingNumber,
       userId: insertOrder.userId,
       status: OrderStatus.CREATED,
-      pickupAddress: insertOrder.pickupAddress,
+      pickupStreetAddress: insertOrder.pickupStreetAddress,
+      pickupCity: insertOrder.pickupCity,
+      pickupState: insertOrder.pickupState,
+      pickupZipCode: insertOrder.pickupZipCode,
       pickupCoordinates: insertOrder.pickupCoordinates || null,
       pickupInstructions: insertOrder.pickupInstructions || null,
       pickupWindow: insertOrder.pickupWindow || null,
@@ -377,7 +391,7 @@ export class MemStorage implements IStorage {
     return updatedOrder;
   }
 
-  async getOrdersByStatus(status: OrderStatus): Promise<Order[]> {
+  async getOrdersByStatus(status: OrderStatusType): Promise<Order[]> {
     return Array.from(this.orders.values()).filter(order => order.status === status);
   }
 
@@ -389,7 +403,7 @@ export class MemStorage implements IStorage {
       ...order,
       driverId,
       driverAssignedAt: new Date().toISOString(),
-      status: OrderStatus.ASSIGNED as OrderStatus,
+      status: OrderStatus.ASSIGNED as OrderStatusType,
       updatedAt: new Date()
     };
 
@@ -672,6 +686,7 @@ export class MemStorage implements IStorage {
     const notification: Notification = {
       id: this.nextNotificationId++,
       userId: insertNotification.userId,
+      orderId: insertNotification.orderId || null,
       type: insertNotification.type,
       title: insertNotification.title,
       message: insertNotification.message,

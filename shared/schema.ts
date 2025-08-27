@@ -397,6 +397,7 @@ export const driverEarnings = pgTable("driver_earnings", {
 export const notifications = pgTable("notifications", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   userId: integer("user_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id), // Optional reference to order
   type: text("type").notNull(), // order_update, payment, promotion, system
   title: text("title").notNull(),
   message: text("message").notNull(),
@@ -783,6 +784,8 @@ export const OrderStatus = {
   CANCELLED: 'cancelled',
   REFUNDED: 'refunded'
 } as const;
+
+export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
 export const NotificationType = {
   ORDER_UPDATE: 'order_update',

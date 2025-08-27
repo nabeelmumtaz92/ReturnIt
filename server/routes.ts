@@ -2683,7 +2683,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.get("/api/chat/messages/:conversationId", async (req, res) => {
-    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    if (!req.session?.user) return res.status(401).json({ error: "Not authenticated" });
     
     // Mock messages
     const messages = [
@@ -2701,14 +2701,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/chat/send", async (req, res) => {
-    if (!req.user) return res.status(401).json({ error: "Not authenticated" });
+    if (!req.session?.user) return res.status(401).json({ error: "Not authenticated" });
     
     const { conversationId, content, messageType = "text" } = req.body;
     
     // Mock message sending
     const message = {
       id: Date.now(),
-      senderId: req.user.id,
+      senderId: req.session.user.id,
       conversationId,
       content,
       messageType,
@@ -2721,7 +2721,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Route Optimization API
   app.get("/api/routes/current", async (req, res) => {
-    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
     // Mock current route
     const currentRoute = {
@@ -2740,7 +2740,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/routes/optimize", async (req, res) => {
-    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
     const { orderIds, preferences } = req.body;
     
@@ -2798,7 +2798,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Driver Safety API
   app.get("/api/safety/status", async (req, res) => {
-    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
     // Mock safety status
     const safetyStatus = {
@@ -2812,14 +2812,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/safety/panic", async (req, res) => {
-    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
     const { location, timestamp } = req.body;
     
     // Mock panic button response
     const safetyEvent = {
       id: Date.now(),
-      driverId: req.user.id,
+      driverId: req.session.user.id,
       eventType: "panic_button",
       location,
       timestamp,
@@ -2833,14 +2833,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/safety/checkin", async (req, res) => {
-    if (!req.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
+    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
     const { eventType, location, timestamp } = req.body;
     
     // Mock check-in/check-out
     const safetyEvent = {
       id: Date.now(),
-      driverId: req.user.id,
+      driverId: req.session.user.id,
       eventType,
       location,
       timestamp,
