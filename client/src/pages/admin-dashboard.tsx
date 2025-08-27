@@ -60,8 +60,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const { toast } = useToast();
   
   // Get current section from URL parameters or props
-  const urlParams = new URLSearchParams(window.location.search);
-  const currentSection = urlParams.get('section') || section || 'overview';
+  const [currentSection, setCurrentSection] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('section') || section || 'overview';
+  });
   
   // Re-render when location changes
   const [, forceUpdate] = useState({});
@@ -90,15 +92,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   
   // Function to change sections
   const changeSection = (newSection: string) => {
+    console.log('Changing section to:', newSection);
     // Add current section to history before changing
     setNavigationHistory(prev => [...prev, currentSection]);
+    setCurrentSection(newSection);
     
-    const url = new URL(window.location.href);
     if (newSection === 'overview') {
-      url.searchParams.delete('section');
       setLocation('/admin-dashboard');
     } else {
-      url.searchParams.set('section', newSection);
       setLocation(`/admin-dashboard?section=${newSection}`);
     }
   };
