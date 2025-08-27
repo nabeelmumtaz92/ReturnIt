@@ -47,6 +47,12 @@ const navigationSections = [
         description: "Driver onboarding and oversight"
       },
       {
+        label: "Customer Management",
+        href: "/admin-dashboard?section=customers",
+        icon: Users,
+        description: "Customer accounts and support"
+      },
+      {
         label: "Real-time Tracking",
         href: "/admin-tracking",
         icon: Activity,

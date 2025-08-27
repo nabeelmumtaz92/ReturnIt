@@ -251,6 +251,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <OrdersContent />;
       case 'drivers':
         return <DriversContent />;
+      case 'customers':
+        return <CustomersContent />;
       case 'payments':
         return <PaymentsContent />;
       case 'analytics':
@@ -1335,6 +1337,249 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  };
+
+  const CustomersContent = () => {
+    const [customers, setCustomers] = useState<any[]>([]);
+    const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
+    
+    // Fetch real customers from database
+    const fetchCustomers = async () => {
+      setIsLoadingCustomers(true);
+      try {
+        const response = await fetch('/api/admin/customers');
+        if (response.ok) {
+          const realCustomers = await response.json();
+          // Transform to expected format
+          const transformedCustomers = realCustomers.map(customer => ({
+            id: customer.id,
+            name: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Customer',
+            email: customer.email,
+            phone: customer.phone || 'Not provided',
+            status: customer.isActive ? 'active' : 'inactive',
+            joinDate: customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : 'Unknown',
+            totalOrders: 0, // Would need to query from orders
+            totalSpent: 0, // Would need to calculate from orders
+            lastOrder: 'No orders yet'
+          }));
+          setCustomers(transformedCustomers);
+        }
+      } catch (error) {
+        console.error('Error fetching customers:', error);
+        setCustomers([]);
+      } finally {
+        setIsLoadingCustomers(false);
+      }
+    };
+    
+    // Load customers on component mount
+    useEffect(() => {
+      fetchCustomers();
+    }, []);
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        {/* Customer Management Header */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Total Customers</p>
+                  <p className="text-2xl font-bold text-amber-900">{customers.length}</p>
+                </div>
+                <Users2 className="h-8 w-8 text-amber-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Active Customers</p>
+                  <p className="text-2xl font-bold text-green-700">{customers.filter(c => c.status === 'active').length}</p>
+                </div>
+                <UserCheck className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">New This Month</p>
+                  <p className="text-2xl font-bold text-blue-700">
+                    {customers.filter(c => {
+                      const joinDate = new Date(c.joinDate);
+                      const now = new Date();
+                      return joinDate.getMonth() === now.getMonth() && joinDate.getFullYear() === now.getFullYear();
+                    }).length}
+                  </p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Total Revenue</p>
+                  <p className="text-2xl font-bold text-purple-700">$0</p>
+                  <p className="text-xs text-amber-700">From customer orders</p>
+                </div>
+                <DollarSign className="h-8 w-8 text-purple-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Customer List */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-amber-900 text-xl">Customer Directory</CardTitle>
+              <p className="text-sm text-amber-600">Manage customer accounts and support</p>
+            </div>
+            <Button 
+              onClick={fetchCustomers}
+              disabled={isLoadingCustomers}
+              size="sm"
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              data-testid="button-refresh-customers"
+            >
+              {isLoadingCustomers ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Refresh
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {isLoadingCustomers ? (
+              <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-6 w-6 animate-spin text-amber-600" />
+                <span className="ml-2 text-amber-600">Loading customers...</span>
+              </div>
+            ) : customers.length === 0 ? (
+              <div className="text-center py-8">
+                <Users2 className="h-12 w-12 text-amber-300 mx-auto mb-4" />
+                <p className="text-amber-600">No customers found</p>
+                <p className="text-sm text-amber-500">Customer accounts will appear here once users register</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {customers.map(customer => (
+                  <div key={customer.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <p className="font-medium text-amber-900" data-testid={`text-customer-name-${customer.id}`}>
+                            {customer.name}
+                          </p>
+                          <span className="text-sm text-amber-600">({customer.email})</span>
+                          <Badge className={
+                            customer.status === 'active' ? 'bg-green-100 text-green-800' : 
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {customer.status}
+                          </Badge>
+                        </div>
+                        
+                        <div className="mb-2">
+                          <p className="text-sm text-amber-600">
+                            Phone: {customer.phone} • Joined: {customer.joinDate}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-4 text-sm">
+                          <div>
+                            <p className="text-amber-600">Total Orders</p>
+                            <p className="font-bold text-amber-900">{customer.totalOrders}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Total Spent</p>
+                            <p className="font-bold text-amber-900">${customer.totalSpent.toFixed(2)}</p>
+                          </div>
+                          <div>
+                            <p className="text-amber-600">Last Order</p>
+                            <p className="font-bold text-amber-900 text-xs">{customer.lastOrder}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          data-testid={`button-view-customer-${customer.id}`}
+                        >
+                          View Orders
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          data-testid={`button-contact-customer-${customer.id}`}
+                        >
+                          Contact
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Customer Analytics */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mt-6">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">Customer Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <p className="text-2xl font-bold text-green-700">
+                  {customers.length > 0 ? ((customers.filter(c => c.status === 'active').length / customers.length) * 100).toFixed(1) : '0'}%
+                </p>
+                <p className="text-sm text-amber-600">Active Rate</p>
+              </div>
+              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <p className="text-2xl font-bold text-blue-700">
+                  ${customers.reduce((sum, c) => sum + c.totalSpent, 0).toFixed(2)}
+                </p>
+                <p className="text-sm text-amber-600">Total Customer Value</p>
+              </div>
+              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <p className="text-2xl font-bold text-amber-700">
+                  {customers.reduce((sum, c) => sum + c.totalOrders, 0)}
+                </p>
+                <p className="text-sm text-amber-600">Total Customer Orders</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
@@ -3943,6 +4188,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
               {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
               {currentSection === 'drivers' && 'Monitor driver performance and status'}
+              {currentSection === 'customers' && 'View and manage customer accounts and support'}
               {currentSection === 'payments' && 'Track payments, payouts, and financial metrics'}
               {currentSection === 'analytics' && 'Advanced business intelligence and insights'}
               {currentSection === 'enhanced-analytics' && 'Real-time performance metrics and analytics'}

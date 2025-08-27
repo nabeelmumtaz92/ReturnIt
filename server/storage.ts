@@ -15,6 +15,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   getDrivers(isOnline?: boolean): Promise<User[]>;
+  getCustomers(): Promise<User[]>;
   getEmployees(): Promise<User[]>;
   
   // Order operations
@@ -264,6 +265,12 @@ export class MemStorage implements IStorage {
       return drivers.filter(driver => driver.isOnline === isOnline);
     }
     return drivers;
+  }
+
+  async getCustomers(): Promise<User[]> {
+    return Array.from(this.users.values()).filter(user => 
+      user.role === 'customer' || (!user.role && !user.isDriver && !user.isAdmin)
+    );
   }
 
   async getEmployees(): Promise<User[]> {
@@ -997,6 +1004,23 @@ export class DatabaseStorage implements IStorage {
 
   async getAllPromoCodes(): Promise<PromoCode[]> {
     return db.select().from(promoCodes);
+  }
+
+  // Driver and Customer operations for DatabaseStorage
+  async getDrivers(isOnline?: boolean): Promise<User[]> {
+    const drivers = await db.select().from(users).where(eq(users.isDriver, true));
+    if (isOnline !== undefined) {
+      return drivers.filter(driver => driver.isOnline === isOnline);
+    }
+    return drivers;
+  }
+
+  async getCustomers(): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.role, 'customer'));
+  }
+
+  async getEmployees(): Promise<User[]> {
+    return await db.select().from(users);
   }
 
   // Add stubs for other methods to satisfy interface
