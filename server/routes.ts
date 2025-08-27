@@ -2941,6 +2941,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get direct database counts to avoid schema issues
       const usersResult = await db.execute(sql`SELECT COUNT(*) as count FROM users WHERE is_active = true`);
       const totalUsersResult = await db.execute(sql`SELECT COUNT(*) as count FROM users`);
+      const driversResult = await db.execute(sql`SELECT COUNT(*) as count FROM users WHERE role = 'driver' AND is_active = true`);
+      const customersResult = await db.execute(sql`SELECT COUNT(*) as count FROM users WHERE role = 'customer' AND is_active = true`);
       const ordersResult = await db.execute(sql`SELECT COUNT(*) as count FROM orders`);
       const completedOrdersResult = await db.execute(sql`SELECT COUNT(*) as count FROM orders WHERE status = 'completed'`);
       const revenueResult = await db.execute(sql`SELECT COALESCE(SUM(total_price), 0) as revenue FROM orders WHERE status = 'completed'`);
@@ -2948,6 +2950,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract counts from database results
       const activeUsers = Number(usersResult.rows[0].count) || 0;
       const totalUsers = Number(totalUsersResult.rows[0].count) || 0;
+      const activeDrivers = Number(driversResult.rows[0].count) || 0;
+      const activeCustomers = Number(customersResult.rows[0].count) || 0;
       const totalOrders = Number(ordersResult.rows[0].count) || 0;
       const completedOrders = Number(completedOrdersResult.rows[0].count) || 0;
       const revenue = Number(revenueResult.rows[0].revenue) || 0;
@@ -2961,6 +2965,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json({
         activeUsers,
+        activeDrivers,
+        activeCustomers,
         totalOrders,
         revenue: Math.round(revenue * 100) / 100, // Round to 2 decimal places
         systemHealth,

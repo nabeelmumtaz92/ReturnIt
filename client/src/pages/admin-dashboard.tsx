@@ -118,6 +118,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     }
   };
 
+  // Admin login function
+  const handleAdminLogin = async () => {
+    try {
+      const response = await fetch('/api/auth/dev-admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        // Refresh the dashboard after successful login
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Admin login failed:', error);
+    }
+  };
+
   // Function to update dashboard statistics
   const updateDashboardStats = async () => {
     setIsUpdating(true);
@@ -173,7 +192,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           setDashboardStats(prev => ({
             ...prev,
             activeOrders: platformMetrics.totalOrders || prev.activeOrders,
-            activeDrivers: platformMetrics.activeUsers || prev.activeDrivers,
+            activeDrivers: platformMetrics.activeDrivers || prev.activeDrivers,
             lastUpdated: new Date()
           }));
         }
@@ -3902,11 +3921,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Section Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 p-4">
           <div className="max-w-7xl mx-auto">
-            <Link href="/admin-dashboard">
-              <h1 className="text-2xl font-bold text-amber-900 capitalize cursor-pointer hover:text-amber-700 transition-colors">
-                {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
-              </h1>
-            </Link>
+            <div className="flex items-center justify-between">
+              <div>
+                <Link href="/admin-dashboard">
+                  <h1 className="text-2xl font-bold text-amber-900 capitalize cursor-pointer hover:text-amber-700 transition-colors">
+                    {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
+                  </h1>
+                </Link>
+              </div>
+              
+              {/* Admin Login Button - Shows when authentication needed */}
+              <button
+                onClick={handleAdminLogin}
+                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+                data-testid="button-admin-login"
+              >
+                🔑 Admin Login
+              </button>
+            </div>
             <p className="text-amber-700 text-sm mt-1">
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
               {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
