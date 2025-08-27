@@ -160,17 +160,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         lastUpdated: new Date()
       });
       
-      toast({
-        title: "Dashboard Updated",
-        description: "All statistics have been refreshed with real data from database",
-      });
+      // Silent update - no toast notification
     } catch (error) {
       console.error('Error updating dashboard:', error);
-      toast({
-        title: "Update Failed",
-        description: "Could not refresh dashboard data. Please try again.",
-        variant: "destructive",
-      });
+      // Silent error handling - just log to console  
+      // Update with available data even if some requests fail
+      try {
+        const analyticsResponse = await fetch('/api/analytics/platform-metrics');
+        if (analyticsResponse.ok) {
+          const platformMetrics = await analyticsResponse.json();
+          setDashboardStats(prev => ({
+            ...prev,
+            activeOrders: platformMetrics.totalOrders || prev.activeOrders,
+            activeDrivers: platformMetrics.activeUsers || prev.activeDrivers,
+            lastUpdated: new Date()
+          }));
+        }
+      } catch (fallbackError) {
+        console.error('Fallback update failed:', fallbackError);
+      }
     } finally {
       setIsUpdating(false);
     }
