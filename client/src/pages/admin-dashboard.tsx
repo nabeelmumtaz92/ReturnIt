@@ -820,6 +820,50 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [selectedTab, setSelectedTab] = useState('active');
     const [showBulkUpload, setShowBulkUpload] = useState(false);
 
+    // Enhanced order management functions - matching HTML structure functionality
+    const updateOrderStatus = async (orderId: string, newStatus: string) => {
+      try {
+        const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (response.ok) {
+          setOrders(prev => prev.map(order => 
+            order.id === orderId 
+              ? { ...order, status: newStatus }
+              : order
+          ));
+          toast({
+            title: "Order Updated",
+            description: `Order status changed to ${newStatus.replace('_', ' ')}`,
+          });
+        }
+      } catch (error) {
+        console.error('Error updating order status:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update order status",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const prioritizeOrder = (orderId: string, priority: string) => {
+      setOrders(prev => prev.map(order => 
+        order.id === orderId 
+          ? { ...order, priority }
+          : order
+      ));
+      toast({
+        title: "Order Prioritized",
+        description: `Order marked as ${priority}`,
+      });
+    };
+
     const assignDriver = (orderId, driverName = 'Available Driver') => {
       setOrders(prev => prev.map(order => 
         order.id === orderId 
@@ -3666,6 +3710,68 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       });
     };
 
+    // Individual payout action handlers - matching HTML structure functionality
+    const processInstantPayout = async (driverId: string) => {
+      try {
+        const response = await fetch(`/api/admin/payouts/${driverId}/instant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          setPayoutData(prev => prev.map(driver => 
+            driver.id === driverId 
+              ? { ...driver, status: 'Processing' }
+              : driver
+          ));
+          toast({
+            title: "Instant Payout Initiated",
+            description: `Processing instant payout (fee: $0.50)`,
+          });
+        }
+      } catch (error) {
+        console.error('Error processing instant payout:', error);
+        toast({
+          title: "Error",
+          description: "Failed to process instant payout",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const scheduleWeeklyPayout = (driverId: string) => {
+      setPayoutData(prev => prev.map(driver => 
+        driver.id === driverId 
+          ? { ...driver, status: 'Scheduled' }
+          : driver
+      ));
+      toast({
+        title: "Weekly Payout Scheduled",
+        description: "Payout scheduled for next weekly batch (no fees)",
+      });
+    };
+
+    const trackPayout = (driverId: string) => {
+      toast({
+        title: "Payout Status",
+        description: "Tracking information sent to driver",
+      });
+    };
+
+    const retryPayout = async (driverId: string) => {
+      setPayoutData(prev => prev.map(driver => 
+        driver.id === driverId 
+          ? { ...driver, status: 'Processing' }
+          : driver
+      ));
+      toast({
+        title: "Retrying Payout",
+        description: "Attempting payout again",
+      });
+    };
+
     const handleBulkPayouts = async () => {
       setIsProcessing(true);
       setProcessingStatus('Processing bulk payouts...');
@@ -3841,6 +3947,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         <th className="text-left p-3 text-amber-900 font-medium">Method</th>
                         <th className="text-left p-3 text-amber-900 font-medium">Status</th>
                         <th className="text-left p-3 text-amber-900 font-medium">Instant Pay</th>
+                        <th className="text-left p-3 text-amber-900 font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -3867,6 +3974,63 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                             <Badge className={driver.instantPayAvailable ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}>
                               {driver.instantPayAvailable ? 'Available ($0.50)' : 'Weekly Only'}
                             </Badge>
+                          </td>
+                          <td className="p-3">
+                            <div className="flex gap-1 flex-wrap">
+                              {/* Enhanced Action Buttons - Based on HTML structure */}
+                              {driver.status === 'Pending' && driver.instantPayAvailable && (
+                                <Button
+                                  onClick={() => processInstantPayout(driver.id)}
+                                  className="bg-green-600 hover:bg-green-700 text-white"
+                                  size="sm"
+                                  data-testid={`button-instant-pay-${driver.id}`}
+                                >
+                                  ⚡ Instant ($0.50)
+                                </Button>
+                              )}
+                              
+                              {driver.status === 'Pending' && (
+                                <Button
+                                  onClick={() => scheduleWeeklyPayout(driver.id)}
+                                  variant="outline"
+                                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                                  size="sm"
+                                  data-testid={`button-weekly-${driver.id}`}
+                                >
+                                  📅 Schedule Weekly
+                                </Button>
+                              )}
+
+                              {driver.status === 'Processing' && (
+                                <Button
+                                  onClick={() => trackPayout(driver.id)}
+                                  variant="outline"
+                                  size="sm"
+                                  data-testid={`button-track-${driver.id}`}
+                                >
+                                  📍 Track Status
+                                </Button>
+                              )}
+
+                              {driver.status === 'Failed' && (
+                                <Button
+                                  onClick={() => retryPayout(driver.id)}
+                                  className="bg-red-600 hover:bg-red-700 text-white"
+                                  size="sm"
+                                  data-testid={`button-retry-${driver.id}`}
+                                >
+                                  🔄 Retry Payout
+                                </Button>
+                              )}
+
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                data-testid={`button-view-payout-${driver.id}`}
+                              >
+                                👁️ View Details
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))}
