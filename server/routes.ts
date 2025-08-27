@@ -17,8 +17,9 @@ import { AuthService } from "./auth";
 import { registrationSchema, loginSchema } from "@shared/validation";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
-import { checkDatabaseHealth } from "./db";
+import { checkDatabaseHealth, db } from "./db";
 import { requireAdmin, isAdmin } from "./middleware/adminAuth";
+import { sql } from "drizzle-orm";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
