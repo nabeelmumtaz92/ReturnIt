@@ -2943,7 +2943,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalUsersResult = await db.execute(sql`SELECT COUNT(*) as count FROM users`);
       const ordersResult = await db.execute(sql`SELECT COUNT(*) as count FROM orders`);
       const completedOrdersResult = await db.execute(sql`SELECT COUNT(*) as count FROM orders WHERE status = 'completed'`);
-      const revenueResult = await db.execute(sql`SELECT COALESCE(SUM(total_amount), 0) as revenue FROM orders WHERE status = 'completed'`);
+      const revenueResult = await db.execute(sql`SELECT COALESCE(SUM(total_price), 0) as revenue FROM orders WHERE status = 'completed'`);
       
       // Extract counts from database results
       const activeUsers = Number(usersResult.rows[0].count) || 0;
