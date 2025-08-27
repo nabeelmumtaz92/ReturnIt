@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, Download, DollarSign, FileSpreadsheet, Filter, Search, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
-import { generateSamplePaymentRecords, generatePaymentSummary } from "@/lib/demoPaymentData";
 import { AdminLayout } from "@/components/AdminLayout";
 
 interface PaymentRecord {
@@ -51,18 +50,15 @@ export default function AdminPaymentTracking() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Use demo data for now - in production this would fetch from API
-  const demoRecords = generateSamplePaymentRecords();
-  const demoSummary = generatePaymentSummary(demoRecords);
-
-  const { data: paymentRecords = demoRecords, isLoading = false } = useQuery<PaymentRecord[]>({
+  // Fetch real payment data from API
+  const { data: paymentRecords = [], isLoading } = useQuery<PaymentRecord[]>({
     queryKey: ["/api/admin/payment-records", dateFilter, statusFilter],
-    enabled: false, // Disable API call, use demo data
+    enabled: true, // Enable API call to fetch real data
   });
 
-  const { data: paymentSummary = demoSummary } = useQuery({
+  const { data: paymentSummary } = useQuery({
     queryKey: ["/api/admin/payment-summary"],
-    enabled: false, // Disable API call, use demo data
+    enabled: true, // Enable API call to fetch real data
   });
 
   const filteredRecords = paymentRecords.filter(record => {

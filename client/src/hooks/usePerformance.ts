@@ -51,7 +51,7 @@ export function usePerformance() {
 // HOC for performance optimization
 export function withPerformance<T extends object>(Component: React.ComponentType<T>) {
   return React.memo((props: T) => {
-    return <Component {...props} />;
+    return React.createElement(Component, props);
   });
 }
 

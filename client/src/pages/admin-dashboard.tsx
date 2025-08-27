@@ -80,6 +80,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     activeOrders: 0,
     activeDrivers: 0,
     todayRevenue: 0,
+    todayDriverPayouts: 0,
+    todayPlatformRevenue: 0,
     completionRate: 0,
     lastUpdated: new Date()
   });
@@ -168,10 +170,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       const totalToday = allOrders.filter(order => new Date(order.createdAt) >= todayStart).length;
       const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 100;
       
+      // Calculate real driver payouts and platform revenue from payment summary
+      const todayDriverPayouts = paymentSummary?.todayDriverEarnings || 0;
+      const todayPlatformRevenue = paymentSummary?.todayCompanyRevenue || 0;
+      
       setDashboardStats({
         activeOrders,
         activeDrivers,
         todayRevenue: Math.round(todayRevenue * 100) / 100,
+        todayDriverPayouts: Math.round(todayDriverPayouts * 100) / 100,
+        todayPlatformRevenue: Math.round(todayPlatformRevenue * 100) / 100,
         completionRate,
         lastUpdated: new Date()
       });
@@ -1932,7 +1940,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-purple-700">
-                    ${Math.round(dashboardStats.todayRevenue * 0.7 * 100) / 100}
+                    ${dashboardStats.todayDriverPayouts}
                   </p>
                   <p className="text-sm text-purple-600">Driver Payouts</p>
                 </div>
@@ -1942,7 +1950,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-amber-900">
-                    ${Math.round(dashboardStats.todayRevenue * 0.3 * 100) / 100}
+                    ${dashboardStats.todayPlatformRevenue}
                   </p>
                   <p className="text-sm text-amber-600">Platform Revenue</p>
                 </div>
