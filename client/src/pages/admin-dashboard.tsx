@@ -759,7 +759,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   };
 
   const OrdersContent = () => {
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState<any[]>([]);
     const [isLoadingOrders, setIsLoadingOrders] = useState(false);
     
     // Fetch real orders from database
@@ -1046,7 +1046,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   };
 
   const DriversContent = () => {
-    const [drivers, setDrivers] = useState([]);
+    const [drivers, setDrivers] = useState<any[]>([]);
     const [isLoadingDrivers, setIsLoadingDrivers] = useState(false);
     
     // Fetch real drivers from database
@@ -1480,7 +1480,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   );
 
   const RoutesContent = () => {
-    const [routes, setRoutes] = useState([]);
+    const [routes, setRoutes] = useState<any[]>([]);
     const [isLoadingRoutes, setIsLoadingRoutes] = useState(false);
     
     // Fetch real route data from active orders
@@ -1621,7 +1621,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       customerSatisfaction: 0,
       issueReports: 0
     });
-    const [recentIssues, setRecentIssues] = useState([]);
+    const [recentIssues, setRecentIssues] = useState<any[]>([]);
     const [isLoadingQuality, setIsLoadingQuality] = useState(false);
     
     // Fetch real quality metrics from database
@@ -2234,7 +2234,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 3, customer: 'Carol White', lastMessage: 'I need to reschedule my pickup', status: 'waiting', time: '1 hour ago', unread: 1 }
     ]);
 
-    const [selectedChat, setSelectedChat] = useState(null);
+    const [selectedChat, setSelectedChat] = useState<any>(null);
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -3076,7 +3076,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const PayoutsManagementContent = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [processingStatus, setProcessingStatus] = useState('');
-    const [payoutData, setPayoutData] = useState([]);
+    const [payoutData, setPayoutData] = useState<any[]>([]);
     const [isLoadingPayouts, setIsLoadingPayouts] = useState(false);
     
     // Fetch real payout data from payment records
@@ -3376,21 +3376,21 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       // Generate realistic tax report data using faker
       return Array.from({ length: 15 }, (_, i) => ({
         id: i + 1,
-        driverName: faker.person.fullName(),
+        driverName: `Driver ${i + 1}`,
         driverId: `DRV${String(i + 1).padStart(3, '0')}`,
-        grossEarnings: faker.number.int({ min: 15000, max: 45000 }),
-        platformFees: faker.number.int({ min: 750, max: 2250 }),
+        grossEarnings: 25000 + (i * 3000),
+        platformFees: 1250 + (i * 150),
         netTaxableIncome: 0, // Calculated below
-        federalWithheld: faker.number.int({ min: 0, max: 500 }),
-        stateWithheld: faker.number.int({ min: 0, max: 300 }),
-        q1Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q2Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q3Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q4Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        status: faker.helpers.arrayElement(['Filed', 'Pending', 'Draft', 'Processing']),
-        lastUpdated: faker.date.recent({ days: 30 }),
-        paymentMethod: faker.helpers.arrayElement(['Bank Transfer', 'PayPal', 'Stripe', 'Check']),
-        ssn: `XXX-XX-${faker.number.int({ min: 1000, max: 9999 })}` // Masked SSN for privacy
+        federalWithheld: 100 + (i * 50),
+        stateWithheld: 50 + (i * 25),
+        q1Earnings: 6000 + (i * 500),
+        q2Earnings: 6000 + (i * 500),
+        q3Earnings: 6000 + (i * 500),
+        q4Earnings: 6000 + (i * 500),
+        status: ['Filed', 'Pending', 'Draft', 'Processing'][i % 4],
+        lastUpdated: new Date(Date.now() - (i * 86400000)),
+        paymentMethod: ['Bank Transfer', 'PayPal', 'Stripe', 'Check'][i % 4],
+        ssn: `XXX-XX-${1000 + i}` // Masked SSN for privacy
       })).map(item => ({
         ...item,
         netTaxableIncome: item.grossEarnings - item.platformFees
@@ -3400,21 +3400,21 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const regenerateTaxData = () => {
       const newData = Array.from({ length: 15 }, (_, i) => ({
         id: i + 1,
-        driverName: faker.person.fullName(),
+        driverName: `Driver ${i + 1}`,
         driverId: `DRV${String(i + 1).padStart(3, '0')}`,
-        grossEarnings: faker.number.int({ min: 15000, max: 45000 }),
-        platformFees: faker.number.int({ min: 750, max: 2250 }),
+        grossEarnings: 25000 + (i * 3000),
+        platformFees: 1250 + (i * 150),
         netTaxableIncome: 0,
-        federalWithheld: faker.number.int({ min: 0, max: 500 }),
-        stateWithheld: faker.number.int({ min: 0, max: 300 }),
-        q1Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q2Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q3Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        q4Earnings: faker.number.int({ min: 3000, max: 12000 }),
-        status: faker.helpers.arrayElement(['Filed', 'Pending', 'Draft', 'Processing']),
-        lastUpdated: faker.date.recent({ days: 30 }),
-        paymentMethod: faker.helpers.arrayElement(['Bank Transfer', 'PayPal', 'Stripe', 'Check']),
-        ssn: `XXX-XX-${faker.number.int({ min: 1000, max: 9999 })}`
+        federalWithheld: 100 + (i * 50),
+        stateWithheld: 50 + (i * 25),
+        q1Earnings: 6000 + (i * 500),
+        q2Earnings: 6000 + (i * 500),
+        q3Earnings: 6000 + (i * 500),
+        q4Earnings: 6000 + (i * 500),
+        status: ['Filed', 'Pending', 'Draft', 'Processing'][i % 4],
+        lastUpdated: new Date(Date.now() - (i * 86400000)),
+        paymentMethod: ['Bank Transfer', 'PayPal', 'Stripe', 'Check'][i % 4],
+        ssn: `XXX-XX-${1000 + i}`
       })).map(item => ({
         ...item,
         netTaxableIncome: item.grossEarnings - item.platformFees
