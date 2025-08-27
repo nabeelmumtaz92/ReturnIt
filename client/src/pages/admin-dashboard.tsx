@@ -830,6 +830,47 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const activeOrders = orders.filter(o => o.status === 'in_progress' || o.status === 'pending_assignment' || o.status === 'requested');
     const completedOrders = orders.filter(o => o.status === 'completed');
+    const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'requested');
+
+    const updateOrderStatus = async (orderId: string, newStatus: string) => {
+      try {
+        const response = await fetch(`/api/admin/orders/${orderId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        
+        if (response.ok) {
+          // Update local state
+          setOrders(prev => prev.map(order => 
+            order.id === orderId 
+              ? { ...order, status: newStatus }
+              : order
+          ));
+          toast({
+            title: "Order Updated",
+            description: `Order ${orderId} status changed to ${newStatus}`,
+          });
+        }
+      } catch (error) {
+        console.error('Error updating order:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update order status",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const prioritizeOrder = (orderId: string, priority: 'high' | 'urgent' | 'standard') => {
+      setOrders(prev => prev.map(order => 
+        order.id === orderId 
+          ? { ...order, priority }
+          : order
+      ));
+    };
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -981,19 +1022,79 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        {order.status === 'pending_assignment' && (
+                      <div className="flex gap-2 flex-wrap">
+                        {/* Status Update Actions - Matching HTML structure */}
+                        {order.status === 'requested' || order.status === 'pending' ? (
+                          <>
+                            <Button
+                              onClick={() => updateOrderStatus(order.id, 'pending_assignment')}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              size="sm"
+                              data-testid={`button-approve-${order.id}`}
+                            >
+                              ✅ Approve
+                            </Button>
+                            <Button
+                              onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                              variant="outline"
+                              className="border-red-200 text-red-600 hover:bg-red-50"
+                              size="sm"
+                              data-testid={`button-reject-${order.id}`}
+                            >
+                              ❌ Reject
+                            </Button>
+                          </>
+                        ) : order.status === 'pending_assignment' ? (
                           <Button
-                            onClick={() => assignDriver(order.id)}
+                            onClick={() => {
+                              assignDriver(order.id);
+                              updateOrderStatus(order.id, 'in_progress');
+                            }}
                             className="bg-blue-600 hover:bg-blue-700 text-white"
                             size="sm"
                             data-testid={`button-assign-driver-${order.id}`}
                           >
-                            Assign Driver
+                            👤 Assign Driver
+                          </Button>
+                        ) : order.status === 'in_progress' ? (
+                          <Button
+                            onClick={() => updateOrderStatus(order.id, 'completed')}
+                            className="bg-purple-600 hover:bg-purple-700 text-white"
+                            size="sm"
+                            data-testid={`button-complete-${order.id}`}
+                          >
+                            🎯 Mark Complete
+                          </Button>
+                        ) : null}
+
+                        {/* Priority Controls */}
+                        {order.priority !== 'urgent' && order.status !== 'completed' && (
+                          <Button
+                            onClick={() => prioritizeOrder(order.id, 'urgent')}
+                            variant="outline"
+                            className="border-red-200 text-red-600 hover:bg-red-50"
+                            size="sm"
+                            data-testid={`button-prioritize-${order.id}`}
+                          >
+                            🚨 Urgent
                           </Button>
                         )}
-                        <Button variant="outline" size="sm" data-testid={`button-view-order-${order.id}`}>
-                          Track Live
+
+                        {/* Standard Actions - Based on HTML structure */}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          data-testid={`button-view-order-${order.id}`}
+                        >
+                          📋 View Details
+                        </Button>
+
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          data-testid={`button-track-${order.id}`}
+                        >
+                          📍 Track Live
                         </Button>
                       </div>
                     </div>
@@ -1136,6 +1237,70 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const activeDrivers = drivers.filter(d => d.status === 'active');
     const pendingDrivers = drivers.filter(d => d.status === 'pending_approval');
+    const onboardingDrivers = drivers.filter(d => d.onboardingStatus === 'pending' || d.onboardingStatus === 'in_progress');
+    const oversightNeededDrivers = drivers.filter(d => d.rating < 4.0 || d.punctuality < 85 || d.documents.license === 'pending');
+
+    const addNewDriver = () => {
+      // Add new driver to list
+      const newDriver = {
+        id: `driver-${Date.now()}`,
+        name: 'New Driver',
+        status: 'pending_approval',
+        availability: 'offline',
+        completedOrders: 0,
+        rating: 5.0,
+        punctuality: 100,
+        onboardingStatus: 'pending',
+        documents: {
+          license: 'pending',
+          insurance: 'pending', 
+          vehicle: 'pending'
+        },
+        email: 'newdriver@example.com',
+        phone: 'Not provided',
+        totalEarnings: 0
+      };
+      setDrivers(prev => [...prev, newDriver]);
+      toast({
+        title: "New Driver Added",
+        description: "Driver added to onboarding queue",
+      });
+    };
+
+    const updateDriverOversight = async (driverId: string, action: 'review' | 'suspend' | 'reactivate') => {
+      try {
+        const response = await fetch(`/api/admin/drivers/${driverId}/oversight`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action })
+        });
+        
+        if (response.ok) {
+          setDrivers(prev => prev.map(driver => 
+            driver.id === driverId 
+              ? { 
+                  ...driver, 
+                  status: action === 'suspend' ? 'suspended' : action === 'reactivate' ? 'active' : driver.status,
+                  oversightStatus: action === 'review' ? 'under_review' : 'resolved'
+                }
+              : driver
+          ));
+          toast({
+            title: "Driver Updated",
+            description: `Driver ${action} action completed`,
+          });
+        }
+      } catch (error) {
+        console.error('Error updating driver oversight:', error);
+        toast({
+          title: "Error",
+          description: "Failed to update driver status",
+          variant: "destructive",
+        });
+      }
+    };
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -1204,18 +1369,46 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     Active ({activeDrivers.length})
                   </Button>
                   <Button
+                    onClick={() => setSelectedTab('onboarding')}
+                    variant={selectedTab === 'onboarding' ? 'default' : 'outline'}
+                    size="sm"
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    📋 Onboarding ({onboardingDrivers.length})
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedTab('oversight')}
+                    variant={selectedTab === 'oversight' ? 'default' : 'outline'}
+                    size="sm"
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                  >
+                    ⚠️ Oversight ({oversightNeededDrivers.length})
+                  </Button>
+                  <Button
                     onClick={() => setSelectedTab('pending')}
                     variant={selectedTab === 'pending' ? 'default' : 'outline'}
                     size="sm"
                   >
                     Pending ({pendingDrivers.length})
                   </Button>
+                  <Button
+                    onClick={addNewDriver}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    size="sm"
+                    data-testid="button-add-driver"
+                  >
+                    ➕ Add New Driver
+                  </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {(selectedTab === 'active' ? activeDrivers : pendingDrivers).map(driver => (
+                {/* Driver List based on selected tab - matching HTML structure */}
+                {(selectedTab === 'active' ? activeDrivers : 
+                  selectedTab === 'onboarding' ? onboardingDrivers :
+                  selectedTab === 'oversight' ? oversightNeededDrivers :
+                  pendingDrivers).map(driver => (
                   <div key={driver.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -1277,30 +1470,92 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           <p className="text-xs text-blue-600 mt-1">Currently delivering: {driver.currentDelivery}</p>
                         )}
                       </div>
-                      <div className="flex gap-2">
-                        {driver.status === 'active' && (
-                          <Button
-                            onClick={() => toggleDriverStatus(driver.id)}
-                            variant="outline"
-                            size="sm"
-                            className={driver.availability === 'online' ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}
-                            data-testid={`button-toggle-driver-${driver.id}`}
-                          >
-                            {driver.availability === 'online' ? 'Set Offline' : 'Set Online'}
-                          </Button>
+                      <div className="flex gap-2 flex-wrap">
+                        {/* Actions based on tab - matching HTML structure */}
+                        {selectedTab === 'onboarding' && driver.onboardingStatus === 'pending' && (
+                          <>
+                            <Button
+                              onClick={() => updateDriverOversight(driver.id, 'review')}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                              size="sm"
+                              data-testid={`button-review-onboarding-${driver.id}`}
+                            >
+                              📋 Review Documents
+                            </Button>
+                            <Button
+                              onClick={() => approveDriver(driver.id)}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              size="sm"
+                              data-testid={`button-approve-onboarding-${driver.id}`}
+                            >
+                              ✅ Complete Onboarding
+                            </Button>
+                          </>
                         )}
-                        {driver.status === 'pending_approval' && (
+
+                        {selectedTab === 'oversight' && (
+                          <>
+                            <Button
+                              onClick={() => updateDriverOversight(driver.id, 'review')}
+                              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                              size="sm"
+                              data-testid={`button-review-profile-${driver.id}`}
+                            >
+                              🔍 Review Profile
+                            </Button>
+                            {driver.rating < 4.0 && (
+                              <Button
+                                onClick={() => updateDriverOversight(driver.id, 'suspend')}
+                                variant="outline"
+                                className="border-red-200 text-red-600 hover:bg-red-50"
+                                size="sm"
+                                data-testid={`button-suspend-${driver.id}`}
+                              >
+                                ⚠️ Suspend Driver
+                              </Button>
+                            )}
+                          </>
+                        )}
+
+                        {selectedTab === 'active' && (
+                          <>
+                            <Button
+                              onClick={() => toggleDriverStatus(driver.id)}
+                              variant="outline"
+                              size="sm"
+                              className={driver.availability === 'online' ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50'}
+                              data-testid={`button-toggle-driver-${driver.id}`}
+                            >
+                              {driver.availability === 'online' ? '🔴 Set Offline' : '🟢 Set Online'}
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              data-testid={`button-deliveries-${driver.id}`}
+                            >
+                              📦 {driver.completedOrders} Deliveries Today
+                            </Button>
+                          </>
+                        )}
+
+                        {selectedTab === 'pending' && driver.status === 'pending_approval' && (
                           <Button
                             onClick={() => approveDriver(driver.id)}
                             className="bg-green-600 hover:bg-green-700 text-white"
                             size="sm"
                             data-testid={`button-approve-driver-${driver.id}`}
                           >
-                            Approve Driver
+                            ✅ Approve Driver
                           </Button>
                         )}
-                        <Button variant="outline" size="sm" data-testid={`button-view-driver-${driver.id}`}>
-                          View Details
+
+                        {/* Standard Actions - Based on HTML structure */}
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          data-testid={`button-view-driver-${driver.id}`}
+                        >
+                          👁️ View Profile
                         </Button>
                       </div>
                     </div>
