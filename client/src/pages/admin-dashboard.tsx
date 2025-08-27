@@ -1203,6 +1203,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <p className="font-medium text-amber-900">{driver.name}</p>
+                          <span className="text-sm text-amber-600">({driver.email})</span>
                           <Badge className={
                             driver.availability === 'online' ? 'bg-green-100 text-green-800' : 
                             'bg-gray-100 text-gray-800'
@@ -1217,22 +1218,28 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         </div>
                         
                         {driver.status === 'active' ? (
-                          <div className="grid grid-cols-3 gap-4 text-sm">
-                            <div>
-                              <p className="text-amber-600">Completed Orders</p>
-                              <p className="font-bold text-amber-900">{driver.completedOrders}</p>
+                          <div>
+                            <div className="mb-2">
+                              <p className="text-sm text-amber-600">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
                             </div>
-                            <div>
-                              <p className="text-amber-600">Rating</p>
-                              <p className="font-bold text-amber-900">{driver.rating}/5.0</p>
-                            </div>
-                            <div>
-                              <p className="text-amber-600">Punctuality</p>
-                              <p className="font-bold text-amber-900">{driver.punctuality}%</p>
+                            <div className="grid grid-cols-3 gap-4 text-sm">
+                              <div>
+                                <p className="text-amber-600">Completed Orders</p>
+                                <p className="font-bold text-amber-900">{driver.completedOrders}</p>
+                              </div>
+                              <div>
+                                <p className="text-amber-600">Rating</p>
+                                <p className="font-bold text-amber-900">{driver.rating}/5.0</p>
+                              </div>
+                              <div>
+                                <p className="text-amber-600">Punctuality</p>
+                                <p className="font-bold text-amber-900">{driver.punctuality}%</p>
+                              </div>
                             </div>
                           </div>
                         ) : (
                           <div className="space-y-2">
+                            <p className="text-sm text-amber-600">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
                             <p className="text-sm text-amber-600">Onboarding Status: {driver.onboardingStatus.replace('_', ' ')}</p>
                             <div className="flex gap-2">
                               <Badge variant={driver.documents.license === 'verified' ? 'default' : 'secondary'}>
