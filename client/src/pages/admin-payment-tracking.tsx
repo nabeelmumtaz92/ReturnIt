@@ -56,7 +56,7 @@ export default function AdminPaymentTracking() {
     enabled: true, // Enable API call to fetch real data
   });
 
-  const { data: paymentSummary } = useQuery({
+  const { data: paymentSummary = {} } = useQuery({
     queryKey: ["/api/admin/payment-summary"],
     enabled: true, // Enable API call to fetch real data
   });

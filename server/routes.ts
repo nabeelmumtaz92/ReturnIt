@@ -3019,8 +3019,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use Gemini for much cheaper AI costs
       if (process.env.GEMINI_API_KEY) {
         try {
-          const { GoogleGenAI } = await import('@google/genai');
-          const genai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+          const { GoogleGenerativeAI } = await import('@google/generative-ai');
+          const genai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
           const CostTracker = (await import('./cost-tracker')).default;
 
           const systemPrompt = `You are an intelligent AI assistant with administrative access to ReturnIt, a delivery/pickup platform. Beyond executing commands, you provide thoughtful analysis, best practices, and contextual reasoning.
