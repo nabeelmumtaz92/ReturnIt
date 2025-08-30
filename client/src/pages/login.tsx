@@ -267,7 +267,7 @@ export default function Login() {
         style={{
           backgroundImage: `url(${selectedImage})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center center',
+          backgroundPosition: activeTab === 'register' ? 'right center' : 'center center',
           backgroundRepeat: 'no-repeat',
           filter: 'brightness(1.1) contrast(1.1)'
         }}
@@ -277,9 +277,7 @@ export default function Login() {
           ? 'bg-gradient-to-r from-black/50 via-black/30 to-transparent' 
           : 'bg-gradient-to-br from-black/35 via-black/20 to-black/35'
       }`}></div>
-      <div className={`w-full max-w-md relative z-10 transition-all duration-500 ${
-        activeTab === 'register' ? 'mr-auto ml-8' : ''
-      }`}>
+      <div className="w-full max-w-md relative z-10 transition-all duration-500">
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/">
