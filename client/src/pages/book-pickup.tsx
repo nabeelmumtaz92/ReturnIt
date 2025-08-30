@@ -472,7 +472,7 @@ export default function BookPickup() {
             <span className="text-xl font-bold text-amber-900">Book Pickup</span>
           </div>
           <div className="text-amber-800 text-sm">
-            Welcome, {user?.username}
+            Welcome, {user?.firstName || user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'User'}
           </div>
         </div>
       </header>

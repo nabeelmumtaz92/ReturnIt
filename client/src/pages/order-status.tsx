@@ -148,16 +148,14 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
               Back
             </Button>
             <Link href="/">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-              />
+              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">
+                Return It
+              </div>
             </Link>
             <span className="text-xl font-bold text-amber-900">Order Status</span>
           </div>
           <div className="text-amber-800 text-sm">
-            Welcome, {user?.username}
+            Welcome, {user?.firstName || user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'User'}
           </div>
         </div>
       </header>
