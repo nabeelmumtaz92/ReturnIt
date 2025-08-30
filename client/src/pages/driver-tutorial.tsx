@@ -227,7 +227,7 @@ export default function DriverTutorial() {
                 <h4 className="font-semibold text-gray-900">Contact Customer</h4>
                 <p className="text-sm text-gray-600">Call or text to announce your arrival</p>
                 <Badge variant="outline" className="bg-green-50 text-xs mt-1">
-                  "Hi! I'm your Returnly driver here for pickup"
+                  "Hi! I'm your Return It driver here for pickup"
                 </Badge>
               </div>
             </div>
@@ -280,7 +280,7 @@ export default function DriverTutorial() {
               ⚠️ CRITICAL RESPONSIBILITY: Complete Return Processing
             </h3>
             <p className="text-red-800 font-medium mt-2">
-              As a Returnly driver, you are responsible for completing the ENTIRE return process - not just delivering items to a store representative.
+              As a Return It driver, you are responsible for completing the ENTIRE return process - not just delivering items to a store representative.
               You must process the full return transaction yourself to ensure customer satisfaction and proper completion.
             </p>
           </div>
@@ -479,7 +479,7 @@ export default function DriverTutorial() {
           </div>
           
           <div className="text-center">
-            <p className="text-sm text-gray-600 mb-4">Welcome to the Returnly family! 🎉</p>
+            <p className="text-sm text-gray-600 mb-4">Welcome to the Return It family! 🎉</p>
             <Link href="/driver-portal">
               <Button 
                 className="bg-amber-600 hover:bg-amber-700 text-white" 
@@ -536,7 +536,7 @@ export default function DriverTutorial() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-amber-900 mb-2">Driver Training</h1>
-          <p className="text-amber-700">Complete this tutorial to start your journey as a Returnly driver</p>
+          <p className="text-amber-700">Complete this tutorial to start your journey as a Return It driver</p>
           
           {/* Progress Bar */}
           <div className="max-w-md mx-auto mt-6">

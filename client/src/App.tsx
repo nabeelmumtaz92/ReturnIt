@@ -79,11 +79,9 @@ const PageLoader = () => (
   <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
     <div className="text-center space-y-4">
       <div className="relative">
-        <img 
-          src="/logo-cardboard-deep.png" 
-          alt="ReturnIt Logo" 
-          className="h-16 w-auto mx-auto animate-pulse"
-        />
+        <div className="text-3xl font-bold text-amber-900 mx-auto animate-pulse">
+          Return It
+        </div>
       </div>
       <div className="space-y-2">
         <div className="w-32 h-2 bg-amber-200 rounded-full mx-auto overflow-hidden">
@@ -104,11 +102,9 @@ function Router() {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="relative">
-            <img 
-              src="/logo-cardboard-deep.png" 
-              alt="ReturnIt Logo" 
-              className="h-16 w-auto mx-auto animate-pulse"
-            />
+            <div className="text-3xl font-bold text-amber-900 mx-auto animate-pulse">
+              Return It
+            </div>
           </div>
           <div className="space-y-2">
             <div className="w-32 h-2 bg-amber-200 rounded-full mx-auto overflow-hidden">
