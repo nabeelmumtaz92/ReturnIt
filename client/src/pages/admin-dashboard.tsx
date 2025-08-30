@@ -884,46 +884,6 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const completedOrders = orders.filter(o => o.status === 'completed');
     const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'requested');
 
-    const updateOrderStatus = async (orderId: string, newStatus: string) => {
-      try {
-        const response = await fetch(`/api/admin/orders/${orderId}/status`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ status: newStatus })
-        });
-        
-        if (response.ok) {
-          // Update local state
-          setOrders(prev => prev.map(order => 
-            order.id === orderId 
-              ? { ...order, status: newStatus }
-              : order
-          ));
-          toast({
-            title: "Order Updated",
-            description: `Order ${orderId} status changed to ${newStatus}`,
-          });
-        }
-      } catch (error) {
-        console.error('Error updating order:', error);
-        toast({
-          title: "Error",
-          description: "Failed to update order status",
-          variant: "destructive",
-        });
-      }
-    };
-
-    const prioritizeOrder = (orderId: string, priority: 'high' | 'urgent' | 'standard') => {
-      setOrders(prev => prev.map(order => 
-        order.id === orderId 
-          ? { ...order, priority }
-          : order
-      ));
-    };
-
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
