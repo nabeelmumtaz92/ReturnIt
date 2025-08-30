@@ -61,23 +61,8 @@ export default function Login() {
     dateOfBirth: ''
   });
 
-  // Random background image logic
-  const backgroundImages = [
-    deliveryCarImg,
-    deliveryHandoffImg,
-    deliveryOutsideImg,
-    deliveryReceivingImg,
-    deliveryProfessionalImg,
-    deliveryDriverSignupImg
-  ];
-
-  const [selectedImage, setSelectedImage] = useState(backgroundImages[0]);
-
-  // Random image selection on mount
-  useEffect(() => {
-    const randomIndex = Math.floor(Math.random() * backgroundImages.length);
-    setSelectedImage(backgroundImages[randomIndex]);
-  }, []);
+  // Use the clearest, most professional background image
+  const [selectedImage, setSelectedImage] = useState(deliveryProfessionalImg);
 
   // Dynamic background positioning based on tab
   const backgroundPosition = activeTab === 'register' ? 'right center' : 'center center';
@@ -281,15 +266,16 @@ export default function Login() {
         className="absolute inset-0 z-0 bg-img-enhanced transition-all duration-500"
         style={{
           backgroundImage: `url(${selectedImage})`,
-          backgroundSize: activeTab === 'register' ? 'contain' : 'cover',
-          backgroundPosition: backgroundPosition,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
+          filter: 'brightness(1.1) contrast(1.1)'
         }}
       />
       <div className={`absolute inset-0 transition-all duration-500 ${
         activeTab === 'register' 
-          ? 'bg-gradient-to-r from-black/60 via-black/40 to-transparent' 
-          : 'bg-gradient-to-br from-black/45 via-black/30 to-black/45'
+          ? 'bg-gradient-to-r from-black/50 via-black/30 to-transparent' 
+          : 'bg-gradient-to-br from-black/35 via-black/20 to-black/35'
       }`}></div>
       <div className={`w-full max-w-md relative z-10 transition-all duration-500 ${
         activeTab === 'register' ? 'mr-auto ml-8' : ''
@@ -301,7 +287,7 @@ export default function Login() {
               <ReturnItLogo size={48} variant="white" />
             </div>
           </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome to ReturnIt</h1>
+          <h1 className="text-2xl font-bold text-white">Welcome to Return It</h1>
           <p className="text-white/90">Returns made easy</p>
         </div>
 
@@ -310,7 +296,7 @@ export default function Login() {
           <CardHeader className="text-center">
             <CardTitle className="text-amber-900">Sign In</CardTitle>
             <CardDescription className="text-amber-700">
-              Access your ReturnIt account
+              Access your Return It account
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleLogin}>
