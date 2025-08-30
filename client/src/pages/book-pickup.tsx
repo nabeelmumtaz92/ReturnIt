@@ -465,11 +465,9 @@ export default function BookPickup() {
               Back
             </Button>
             <Link href="/">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="ReturnIt Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
-              />
+              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">
+                Return It
+              </div>
             </Link>
             <span className="text-xl font-bold text-amber-900">Book Pickup</span>
           </div>

@@ -320,7 +320,7 @@ export function AdminNavigation() {
         </SheetTrigger>
         <SheetContent side="left" className="w-80 bg-white border-amber-200">
           <SheetHeader className="border-b border-amber-200 pb-4 mb-6">
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-col items-center space-y-2">
               <ReturnItLogo size={24} variant="default" />
               <SheetTitle className="text-amber-900">Admin Panel</SheetTitle>
             </div>

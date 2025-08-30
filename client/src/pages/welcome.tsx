@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { LogoIcon } from "@/components/LogoIcon";
+// LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
