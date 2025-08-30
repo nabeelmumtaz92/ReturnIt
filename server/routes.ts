@@ -429,6 +429,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update user profile
+  app.put("/api/auth/profile", async (req, res) => {
+    if (req.session?.user) {
+      try {
+        const userId = req.session.user.id;
+        const {
+          firstName,
+          lastName,
+          phone,
+          dateOfBirth,
+          streetAddress,
+          city,
+          state,
+          zipCode,
+          emergencyContactName,
+          emergencyContactPhone,
+          emergencyContactRelation,
+          preferences
+        } = req.body;
+
+        // Prepare the address data
+        const addresses = [];
+        if (streetAddress || city || state || zipCode) {
+          addresses.push({
+            type: 'primary',
+            streetAddress: streetAddress || '',
+            city: city || '',
+            state: state || '',
+            zipCode: zipCode || ''
+          });
+        }
+
+        // Prepare emergency contacts data
+        const emergencyContacts = [];
+        if (emergencyContactName || emergencyContactPhone) {
+          emergencyContacts.push({
+            name: emergencyContactName || '',
+            phone: emergencyContactPhone || '',
+            relationship: emergencyContactRelation || ''
+          });
+        }
+
+        // Update user with all the profile data
+        const updatedUser = await storage.updateUser(userId, {
+          firstName: firstName || '',
+          lastName: lastName || '',
+          phone: phone || '',
+          dateOfBirth: dateOfBirth || '',
+          addresses: addresses,
+          emergencyContacts: emergencyContacts,
+          preferences: preferences || {}
+        });
+
+        if (updatedUser) {
+          // Update session data
+          req.session.user = {
+            ...req.session.user,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            phone: updatedUser.phone,
+            dateOfBirth: updatedUser.dateOfBirth
+          };
+
+          res.json({
+            message: "Profile updated successfully",
+            user: {
+              id: updatedUser.id,
+              email: updatedUser.email,
+              firstName: updatedUser.firstName,
+              lastName: updatedUser.lastName,
+              phone: updatedUser.phone,
+              dateOfBirth: updatedUser.dateOfBirth,
+              isDriver: updatedUser.isDriver,
+              isAdmin: updatedUser.isAdmin
+            }
+          });
+        } else {
+          res.status(404).json({ message: "User not found" });
+        }
+      } catch (error) {
+        console.error('Profile update error:', error);
+        res.status(500).json({ message: "Failed to update profile" });
+      }
+    } else {
+      res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
   // OAuth Test Page
   app.get('/test-oauth', (req, res) => {
     const path = require('path');

@@ -1,6 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +11,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, User, Mail, Phone, Star, Package, DollarSign, Save, LogOut } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Star, Package, DollarSign, Save, LogOut, MapPin, Calendar, Heart, Shield, Building } from "lucide-react";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
@@ -22,11 +24,75 @@ export default function Profile() {
     lastName: user?.lastName || '',
     email: user?.email || '',
     phone: user?.phone || '',
+    dateOfBirth: user?.dateOfBirth || '',
+    streetAddress: (user?.addresses && user.addresses[0]?.streetAddress) || '',
+    city: (user?.addresses && user.addresses[0]?.city) || '',
+    state: (user?.addresses && user.addresses[0]?.state) || '',
+    zipCode: (user?.addresses && user.addresses[0]?.zipCode) || '',
+    emergencyContactName: (user?.emergencyContacts && user.emergencyContacts[0]?.name) || '',
+    emergencyContactPhone: (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || '',
+    emergencyContactRelation: (user?.emergencyContacts && user.emergencyContacts[0]?.relationship) || '',
+    preferences: {
+      notifications: user?.preferences?.notifications || true,
+      emailUpdates: user?.preferences?.emailUpdates || true,
+      smsUpdates: user?.preferences?.smsUpdates || true,
+      language: user?.preferences?.language || 'en',
+      timezone: user?.preferences?.timezone || 'America/Chicago'
+    }
+  });
+
+  // Update form data when user changes (important for data persistence)
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        dateOfBirth: user.dateOfBirth || '',
+        streetAddress: (user.addresses && user.addresses[0]?.streetAddress) || '',
+        city: (user.addresses && user.addresses[0]?.city) || '',
+        state: (user.addresses && user.addresses[0]?.state) || '',
+        zipCode: (user.addresses && user.addresses[0]?.zipCode) || '',
+        emergencyContactName: (user.emergencyContacts && user.emergencyContacts[0]?.name) || '',
+        emergencyContactPhone: (user.emergencyContacts && user.emergencyContacts[0]?.phone) || '',
+        emergencyContactRelation: (user.emergencyContacts && user.emergencyContacts[0]?.relationship) || '',
+        preferences: {
+          notifications: user.preferences?.notifications || true,
+          emailUpdates: user.preferences?.emailUpdates || true,
+          smsUpdates: user.preferences?.smsUpdates || true,
+          language: user.preferences?.language || 'en',
+          timezone: user.preferences?.timezone || 'America/Chicago'
+        }
+      });
+    }
+  }, [user]);
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (profileData: any) => {
+      const response = await apiRequest("PUT", "/api/auth/profile", profileData);
+      return await response.json();
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Profile Updated!",
+        description: "Your profile information has been saved successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+    },
+    onError: (error: any) => {
+      console.error('Profile update error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   });
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest('/api/auth/logout', 'POST', {});
+      return await apiRequest("POST", "/api/auth/logout", {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
@@ -44,6 +110,11 @@ export default function Profile() {
       });
     }
   });
+
+  const handleSaveProfile = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateProfileMutation.mutate(formData);
+  };
 
   // Redirect if not authenticated
   if (!isAuthenticated) {
@@ -180,56 +251,190 @@ export default function Profile() {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              <div className="grid grid-cols-1 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">First Name</Label>
-                  <Input
-                    id="firstName"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
-                    data-testid="input-first-name"
-                  />
+              <div className="grid grid-cols-1 gap-6">
+                {/* Basic Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Basic Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">First Name</Label>
+                      <Input
+                        id="firstName"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, firstName: e.target.value }))}
+                        data-testid="input-first-name"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName">Last Name</Label>
+                      <Input
+                        id="lastName"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
+                        data-testid="input-last-name"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="email">Email</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                        data-testid="input-email"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                        data-testid="input-phone"
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                      <Input
+                        id="dateOfBirth"
+                        type="date"
+                        value={formData.dateOfBirth}
+                        onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                        data-testid="input-date-of-birth"
+                      />
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">Last Name</Label>
-                  <Input
-                    id="lastName"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData(prev => ({ ...prev, lastName: e.target.value }))}
-                    data-testid="input-last-name"
-                  />
+
+                {/* Address Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Address Information
+                  </h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="streetAddress">Street Address</Label>
+                      <Input
+                        id="streetAddress"
+                        value={formData.streetAddress}
+                        onChange={(e) => setFormData(prev => ({ ...prev, streetAddress: e.target.value }))}
+                        data-testid="input-street-address"
+                        placeholder="123 Main Street"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="city">City</Label>
+                        <Input
+                          id="city"
+                          value={formData.city}
+                          onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                          data-testid="input-city"
+                          placeholder="St. Louis"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="state">State</Label>
+                        <Select value={formData.state} onValueChange={(value) => setFormData(prev => ({ ...prev, state: value }))}>
+                          <SelectTrigger data-testid="select-state">
+                            <SelectValue placeholder="Select state" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="MO">Missouri</SelectItem>
+                            <SelectItem value="IL">Illinois</SelectItem>
+                            <SelectItem value="KS">Kansas</SelectItem>
+                            <SelectItem value="AR">Arkansas</SelectItem>
+                            <SelectItem value="IA">Iowa</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="zipCode">ZIP Code</Label>
+                        <Input
+                          id="zipCode"
+                          value={formData.zipCode}
+                          onChange={(e) => setFormData(prev => ({ ...prev, zipCode: e.target.value }))}
+                          data-testid="input-zip-code"
+                          placeholder="63101"
+                          maxLength={5}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    data-testid="input-email"
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    data-testid="input-phone"
-                  />
+
+                {/* Emergency Contact */}
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                    <Heart className="h-5 w-5" />
+                    Emergency Contact
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="emergencyContactName">Contact Name</Label>
+                      <Input
+                        id="emergencyContactName"
+                        value={formData.emergencyContactName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, emergencyContactName: e.target.value }))}
+                        data-testid="input-emergency-contact-name"
+                        placeholder="Emergency contact full name"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="emergencyContactPhone">Contact Phone</Label>
+                      <Input
+                        id="emergencyContactPhone"
+                        type="tel"
+                        value={formData.emergencyContactPhone}
+                        onChange={(e) => setFormData(prev => ({ ...prev, emergencyContactPhone: e.target.value }))}
+                        data-testid="input-emergency-contact-phone"
+                        placeholder="(555) 123-4567"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="emergencyContactRelation">Relationship</Label>
+                      <Select value={formData.emergencyContactRelation} onValueChange={(value) => setFormData(prev => ({ ...prev, emergencyContactRelation: value }))}>
+                        <SelectTrigger data-testid="select-emergency-contact-relation">
+                          <SelectValue placeholder="Select relationship" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="spouse">Spouse</SelectItem>
+                          <SelectItem value="parent">Parent</SelectItem>
+                          <SelectItem value="sibling">Sibling</SelectItem>
+                          <SelectItem value="child">Child</SelectItem>
+                          <SelectItem value="friend">Friend</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               <Button 
+                type="submit"
                 className="w-full bg-primary hover:bg-primary/90"
                 data-testid="button-save-profile"
+                onClick={handleSaveProfile}
+                disabled={updateProfileMutation.isPending}
               >
                 <Save className="h-4 w-4 mr-2" />
-                Save Changes
+                {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
               </Button>
             </div>
           </CardContent>
