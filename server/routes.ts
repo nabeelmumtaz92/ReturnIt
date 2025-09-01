@@ -3000,6 +3000,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver location distribution analytics
+  app.get("/api/analytics/driver-locations", requireAdmin, async (req, res) => {
+    try {
+      // Get driver distribution by city and state from driver applications
+      const cityDistributionResult = await db.execute(sql`
+        SELECT 
+          city,
+          state,
+          zip_code,
+          COUNT(*) as driver_count
+        FROM driver_applications da
+        JOIN users u ON da.user_id = u.id
+        WHERE da.status = 'approved' AND u.is_driver = true AND u.is_active = true
+        GROUP BY city, state, zip_code
+        ORDER BY driver_count DESC, city ASC
+      `);
+
+      // Get summary statistics by city
+      const citySummaryResult = await db.execute(sql`
+        SELECT 
+          city,
+          state,
+          COUNT(*) as driver_count,
+          COUNT(DISTINCT zip_code) as zip_code_count
+        FROM driver_applications da
+        JOIN users u ON da.user_id = u.id
+        WHERE da.status = 'approved' AND u.is_driver = true AND u.is_active = true
+        GROUP BY city, state
+        ORDER BY driver_count DESC
+      `);
+
+      // Get summary statistics by state
+      const stateSummaryResult = await db.execute(sql`
+        SELECT 
+          state,
+          COUNT(*) as driver_count,
+          COUNT(DISTINCT city) as city_count,
+          COUNT(DISTINCT zip_code) as zip_code_count
+        FROM driver_applications da
+        JOIN users u ON da.user_id = u.id
+        WHERE da.status = 'approved' AND u.is_driver = true AND u.is_active = true
+        GROUP BY state
+        ORDER BY driver_count DESC
+      `);
+
+      // Calculate coverage metrics
+      const totalDriversResult = await db.execute(sql`
+        SELECT COUNT(*) as total_drivers
+        FROM users
+        WHERE is_driver = true AND is_active = true
+      `);
+
+      const totalDrivers = Number(totalDriversResult.rows[0]?.total_drivers) || 0;
+      
+      res.json({
+        locationDistribution: cityDistributionResult.rows.map(row => ({
+          city: row.city,
+          state: row.state,
+          zipCode: row.zip_code,
+          driverCount: Number(row.driver_count),
+          percentage: totalDrivers > 0 ? ((Number(row.driver_count) / totalDrivers) * 100).toFixed(1) : '0.0'
+        })),
+        citySummary: citySummaryResult.rows.map(row => ({
+          city: row.city,
+          state: row.state,
+          driverCount: Number(row.driver_count),
+          zipCodeCount: Number(row.zip_code_count),
+          percentage: totalDrivers > 0 ? ((Number(row.driver_count) / totalDrivers) * 100).toFixed(1) : '0.0'
+        })),
+        stateSummary: stateSummaryResult.rows.map(row => ({
+          state: row.state,
+          driverCount: Number(row.driver_count),
+          cityCount: Number(row.city_count),
+          zipCodeCount: Number(row.zip_code_count),
+          percentage: totalDrivers > 0 ? ((Number(row.driver_count) / totalDrivers) * 100).toFixed(1) : '0.0'
+        })),
+        totalDrivers,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error fetching driver location analytics:", error);
+      res.status(500).json({ error: "Failed to fetch driver location data" });
+    }
+  });
+
   // Performance metrics endpoint
   app.get("/api/performance/metrics", isAuthenticated, (req, res) => {
     res.json(PerformanceService.getMetrics());

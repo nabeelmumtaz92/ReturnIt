@@ -289,6 +289,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <TaxReportsContent />;
       case 'system-metrics':
         return <SystemMetricsContent />;
+      case 'driver-locations':
+        return <DriverLocationsContent />;
       case 'overview':
       default:
         return <OverviewContent />;
@@ -352,6 +354,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         >
           <MessageCircle className="h-8 w-8" />
           <span className="text-sm font-medium">Support Chat</span>
+        </Button>
+        
+        <Button 
+          onClick={() => changeSection('driver-locations')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <MapPin className="h-8 w-8" />
+          <span className="text-sm font-medium">Driver Locations</span>
         </Button>
       </div>
     </div>
@@ -4525,6 +4536,298 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
+  // Driver Location Analytics Content
+  const DriverLocationsContent = () => {
+    const [locationData, setLocationData] = useState({
+      locationDistribution: [],
+      citySummary: [],
+      stateSummary: [],
+      totalDrivers: 0,
+      lastUpdated: null
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedView, setSelectedView] = useState('city'); // city, state, zip
+
+    // Fetch driver location analytics
+    const fetchLocationAnalytics = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/analytics/driver-locations');
+        if (response.ok) {
+          const data = await response.json();
+          setLocationData(data);
+        } else {
+          throw new Error('Failed to fetch location data');
+        }
+      } catch (error) {
+        console.error('Error fetching driver location analytics:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load driver location data",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchLocationAnalytics();
+    }, []);
+
+    // Get data based on selected view
+    const getDisplayData = () => {
+      switch (selectedView) {
+        case 'state':
+          return locationData.stateSummary || [];
+        case 'zip':
+          return locationData.locationDistribution || [];
+        case 'city':
+        default:
+          return locationData.citySummary || [];
+      }
+    };
+
+    const displayData = getDisplayData();
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-amber-900">Driver Location Distribution</h1>
+            <p className="text-amber-700">Monitor driver coverage across cities and zip codes to avoid oversaturation</p>
+          </div>
+          <Button 
+            onClick={fetchLocationAnalytics}
+            disabled={isLoading}
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+            data-testid="button-refresh-locations"
+          >
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            {isLoading ? 'Loading...' : 'Refresh Data'}
+          </Button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Total Active Drivers</p>
+                  <p className="text-2xl font-bold text-amber-900">{locationData.totalDrivers}</p>
+                </div>
+                <Users className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Cities Covered</p>
+                  <p className="text-2xl font-bold text-amber-900">{locationData.citySummary?.length || 0}</p>
+                </div>
+                <MapPin className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">States</p>
+                  <p className="text-2xl font-bold text-amber-900">{locationData.stateSummary?.length || 0}</p>
+                </div>
+                <MapPin className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Zip Codes</p>
+                  <p className="text-2xl font-bold text-amber-900">{locationData.locationDistribution?.length || 0}</p>
+                </div>
+                <MapPin className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* View Selection and Data Table */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-amber-900 text-xl">Driver Distribution Analysis</CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => setSelectedView('city')}
+                  variant={selectedView === 'city' ? 'default' : 'outline'}
+                  size="sm"
+                  data-testid="button-view-city"
+                >
+                  By City
+                </Button>
+                <Button
+                  onClick={() => setSelectedView('state')}
+                  variant={selectedView === 'state' ? 'default' : 'outline'}
+                  size="sm"
+                  data-testid="button-view-state"
+                >
+                  By State
+                </Button>
+                <Button
+                  onClick={() => setSelectedView('zip')}
+                  variant={selectedView === 'zip' ? 'default' : 'outline'}
+                  size="sm"
+                  data-testid="button-view-zip"
+                >
+                  By Zip Code
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+                <span className="ml-2 text-amber-700">Loading location data...</span>
+              </div>
+            ) : displayData.length === 0 ? (
+              <div className="text-center py-8">
+                <MapPin className="h-12 w-12 text-amber-400 mx-auto mb-4" />
+                <p className="text-amber-700">No driver location data available</p>
+                <p className="text-sm text-amber-600 mt-2">Drivers need to complete their applications with address information</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-amber-200">
+                      {selectedView === 'state' && (
+                        <>
+                          <th className="text-left p-3 text-amber-900 font-medium">State</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Driver Count</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Cities</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Zip Codes</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Percentage</th>
+                        </>
+                      )}
+                      {selectedView === 'city' && (
+                        <>
+                          <th className="text-left p-3 text-amber-900 font-medium">City</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">State</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Driver Count</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Zip Codes</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Percentage</th>
+                        </>
+                      )}
+                      {selectedView === 'zip' && (
+                        <>
+                          <th className="text-left p-3 text-amber-900 font-medium">Zip Code</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">City</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">State</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Driver Count</th>
+                          <th className="text-left p-3 text-amber-900 font-medium">Percentage</th>
+                        </>
+                      )}
+                      <th className="text-left p-3 text-amber-900 font-medium">Coverage Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {displayData.map((item, index) => {
+                      const driverCount = item.driverCount || 0;
+                      const percentage = parseFloat(item.percentage || '0');
+                      const coverageLevel = 
+                        percentage > 20 ? 'High' :
+                        percentage > 10 ? 'Medium' :
+                        percentage > 5 ? 'Low' : 'Minimal';
+                      
+                      const coverageColor = 
+                        coverageLevel === 'High' ? 'bg-red-100 text-red-800' :
+                        coverageLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                        coverageLevel === 'Low' ? 'bg-blue-100 text-blue-800' :
+                        'bg-green-100 text-green-800';
+
+                      return (
+                        <tr key={index} className="border-b border-amber-100 hover:bg-amber-50/30">
+                          {selectedView === 'state' && (
+                            <>
+                              <td className="p-3 text-amber-900 font-medium">{item.state}</td>
+                              <td className="p-3 text-amber-900">{driverCount}</td>
+                              <td className="p-3 text-amber-600">{item.cityCount || 0}</td>
+                              <td className="p-3 text-amber-600">{item.zipCodeCount || 0}</td>
+                              <td className="p-3 text-amber-900">{percentage}%</td>
+                            </>
+                          )}
+                          {selectedView === 'city' && (
+                            <>
+                              <td className="p-3 text-amber-900 font-medium">{item.city}</td>
+                              <td className="p-3 text-amber-600">{item.state}</td>
+                              <td className="p-3 text-amber-900">{driverCount}</td>
+                              <td className="p-3 text-amber-600">{item.zipCodeCount || 0}</td>
+                              <td className="p-3 text-amber-900">{percentage}%</td>
+                            </>
+                          )}
+                          {selectedView === 'zip' && (
+                            <>
+                              <td className="p-3 text-amber-900 font-medium">{item.zipCode}</td>
+                              <td className="p-3 text-amber-600">{item.city}</td>
+                              <td className="p-3 text-amber-600">{item.state}</td>
+                              <td className="p-3 text-amber-900">{driverCount}</td>
+                              <td className="p-3 text-amber-900">{percentage}%</td>
+                            </>
+                          )}
+                          <td className="p-3">
+                            <Badge className={coverageColor}>
+                              {coverageLevel}
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+                
+                {locationData.lastUpdated && (
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-amber-600">
+                      Last updated: {new Date(locationData.lastUpdated).toLocaleString()}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const dashboardTabs = [
     {
       label: "Overview",
@@ -4587,6 +4890,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'payouts' && 'Driver payment processing, instant pay ($0.50 fee), and bulk payouts'}
               {currentSection === 'tax-reports' && '1099-NEC form generation, tax compliance, and IRS reporting'}
               {currentSection === 'system-metrics' && 'Real-time server performance, visitor analytics, and system health monitoring'}
+              {currentSection === 'driver-locations' && 'Monitor driver distribution across cities and zip codes to prevent oversaturation'}
             </p>
           </div>
         </div>
