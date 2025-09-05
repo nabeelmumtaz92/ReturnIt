@@ -44,6 +44,10 @@ import {
   Target,
   Bot
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -300,9 +304,39 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       case 'system-metrics':
         return <SystemMetricsContent />;
       case 'driver-locations':
-        return <DriverLocationsContent />;
+        return (
+          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Driver Locations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-8 text-center">
+                  <MapPin className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">Coming Soon</h3>
+                  <p className="text-amber-600">Real-time driver GPS tracking and location analytics will be available in a future update.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
       case 'zone-management':
-        return <ZoneManagementContent />;
+        return (
+          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Zone Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="p-8 text-center">
+                  <Target className="h-12 w-12 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">Coming Soon</h3>
+                  <p className="text-amber-600">Advanced zone management and territory assignment tools will be available in a future update.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
       case 'overview':
       default:
         return <OverviewContent />;
@@ -4557,16 +4591,21 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
-  // Driver Location Analytics Content
-  const DriverLocationsContent = () => {
-    const [locationData, setLocationData] = useState({
-      locationDistribution: [],
-      citySummary: [],
-      stateSummary: [],
+  // Main AdminDashboard component starts here
+  const dashboardTabs = [
       totalDrivers: 0,
       lastUpdated: null
     });
-    const [realtimeDrivers, setRealtimeDrivers] = useState([]);
+    interface RealtimeDriver {
+      id: string;
+      name: string;
+      isOnline: boolean;
+      currentLocation: { lat: number; lng: number; timestamp: number } | null;
+      status: string;
+      ordersToday: number;
+      lastUpdated: Date;
+    }
+    const [realtimeDrivers, setRealtimeDrivers] = useState<RealtimeDriver[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedView, setSelectedView] = useState('realtime'); // realtime, city, state, zip
     const [autoRefresh, setAutoRefresh] = useState(true);
