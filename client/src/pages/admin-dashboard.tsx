@@ -3489,7 +3489,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 4, name: 'David Wilson', role: 'IT Administrator', status: 'offline', lastLogin: '1 day ago', permissions: ['all'] }
     ]);
 
-    const toggleEmployeeStatus = (id) => {
+    const toggleEmployeeStatus = (id: number) => {
       setEmployees(prev => prev.map(emp => 
         emp.id === id 
           ? { ...emp, status: emp.status === 'active' ? 'offline' : 'active' }
