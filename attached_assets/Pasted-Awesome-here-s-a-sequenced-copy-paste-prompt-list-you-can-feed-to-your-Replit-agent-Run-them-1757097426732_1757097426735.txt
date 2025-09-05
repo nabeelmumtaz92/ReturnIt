@@ -1,0 +1,107 @@
+Awesome — here’s a **sequenced, copy-paste prompt list** you can feed to your Replit agent. Run them **in order**.
+
+---
+
+## Phase 0 — Initialize & Hygiene
+
+1. **“Create a monorepo layout with `/apps/api` (Node.js/Express + TypeScript) and `/apps/web` (React + TypeScript). Add a root README explaining the project, stack, and how to run locally.”**
+2. **“Add `.gitignore`, `.editorconfig`, ESLint + Prettier for a TypeScript monorepo. Enable strict TypeScript everywhere.”**
+3. **“Add PR and issue templates, CODEOWNERS (assign to me), and a CONTRIBUTING.md describing branch naming, commit style, and how to run tests.”**
+
+---
+
+## Phase 1 — Backend Bootstrap (Express + TS)
+
+4. **“In `/apps/api`, scaffold an Express app in TypeScript with proper project structure: `/src/core` (config, logger, errors, db), `/src/modules` (auth, users, restaurants, orders, payments, delivery, notifications), and `/src/modules/health`.”**
+5. **“Add a centralized error handler middleware that returns JSON errors, plus not-found handler. Include error codes and request correlation IDs.”**
+6. **“Implement `/healthz` (liveness) and `/readyz` (readiness) routes that report version, uptime, and verify DB/Redis connections.”**
+7. **“Integrate Pino + pino-http for structured JSON logging, include request IDs and response time; expose log level via env var.”**
+8. **“Add Zod validation for all request bodies/params/responses; create a small helper to standardize validation errors.”**
+
+---
+
+## Phase 2 — Database & Migrations
+
+9. **“Configure Postgres with a single `DATABASE_URL` env var. Use Prisma for schema, migrations, and type-safe client. Initialize Prisma in `/apps/api`.”**
+10. **“Model minimal tables for `users`, `restaurants`, `menu_items`, `orders`, `order_items`, and `payments` in Prisma schema; run an initial migration.”**
+11. **“Create a seed script to insert sample users (customer/courier/restaurant), a couple restaurants, menu items, and one demo order.”**
+
+---
+
+## Phase 3 — Auth & Security
+
+12. **“Implement JWT auth with access (short-lived) + refresh tokens. Store refresh tokens securely; add login/refresh/logout routes.”**
+13. **“Add RBAC roles: `customer`, `courier`, `restaurant`, `admin`. Create an authorization middleware to protect routes by role.”**
+14. **“Add Helmet for security headers, CORS with an allowlist, and basic rate limiting on public endpoints.”**
+
+---
+
+## Phase 4 — Core Domains (Modular Monolith)
+
+15. **“Implement the Orders module: create order, get order, list my orders, cancel order. Validate payloads with Zod and enforce role checks.”**
+16. **“Implement the Payments module: create a payment intent (mock provider for now), confirm payment, handle payment webhooks (simulate). Keep provider code in a separate adapter.”**
+17. **“Implement the Delivery module: assign courier, update courier location (for tracking), and mark delivered. Separate read/write endpoints with proper permissions.”**
+18. **“Harden the Restaurants module: CRUD for restaurant profile and menu items; customers can list and view menus.”**
+
+---
+
+## Phase 5 — Events & Background Jobs
+
+19. **“Create a lightweight in-process event bus with publish/subscribe (TypeScript). Define domain events: `OrderPlaced`, `PaymentCaptured`, `CourierAssigned`, `OrderDelivered`.”**
+20. **“Integrate Redis + BullMQ for background jobs. Add a `notifications` queue that listens for events and sends email/SMS (mock). Include retries with exponential backoff and idempotency keys.”**
+21. **“Implement a transactional outbox pattern for events from the Orders and Payments modules; ensure events are published reliably after DB commits.”**
+
+---
+
+## Phase 6 — Observability
+
+22. **“Integrate Sentry in `/apps/api` for error tracking (include request IDs). Add DSN via env var and document how to view errors.”**
+23. **“Expose basic metrics endpoints (Prometheus-friendly) with counters for requests per route, error rate, and histogram for latency.”**
+24. **“Add request logging for all routes (method, path, status, duration) and redact sensitive fields (passwords, tokens).”**
+
+---
+
+## Phase 7 — Frontend (React + TS)
+
+25. **“Scaffold `/apps/web` with Vite + React + TypeScript. Add React Router and basic pages: Home, Menu, Cart, Checkout, Orders, Login.”**
+26. **“Create environment configs (`.env.development`, `.env.staging`, `.env.production`) that point the web app to API base URLs.”**
+27. **“Implement login flow against the API with token handling (httpOnly cookie if feasible; otherwise secure storage). Show role-appropriate nav (customer vs restaurant vs courier).”**
+28. **“Add global error boundary, loading states, and a toast system for user feedback.”**
+
+---
+
+## Phase 8 — Docs & API Contract
+
+29. **“Generate OpenAPI/Swagger docs for all Express routes and expose them at `/docs` in non-production environments.”**
+30. **“Write `architecture.md` explaining the modular monolith, bounded contexts, event bus, and why the first service to split would be `notifications` or `payments`.”**
+31. **“Add runbooks: how to run migrations, rotate secrets, replay failed jobs, recover from a bad deployment.”**
+
+---
+
+## Phase 9 — CI/CD & Packaging
+
+32. **“Create a Dockerfile for `/apps/api` optimized for Node 20+ with multi-stage build (deps → build → run). Include a non-root user and proper `HEALTHCHECK`.”**
+33. **“Add a `docker-compose.yml` for local dev with API, Postgres, Redis. Provide a `.env.example` covering all required env vars.”**
+34. **“Create a GitHub Actions workflow to run typecheck, lint, tests on PR; and on `main` build and push a Docker image (artifact) ready for Cloud Run/ECS later.”**
+35. **“Add `/readyz` checks to verify DB and Redis connectivity; fail readiness if either is unavailable.”**
+
+---
+
+## Phase 10 — Hardening & UX polish
+
+36. **“Implement idempotency keys for payment endpoints and retry-safe job handlers; document the strategy.”**
+37. **“Add pagination and filtering to list endpoints (orders, restaurants, menu items) with consistent query params.”**
+38. **“Add feature flags for risky features (e.g., new checkout path) and implement a simple flag provider.”**
+39. **“Write basic E2E tests: Playwright for web (happy path: browse → add to cart → checkout → order appears).”**
+40. **“Create a ‘demo mode’ seed that populates enough data to showcase the app in staging.”**
+
+---
+
+### Optional (when you’re ready to deploy)
+
+41. **“Add a `cloud/` folder with Terraform skeleton for Cloud Run (API), Cloud SQL (Postgres), Memorystore (Redis), and Secret Manager (GCP).”**
+42. **“Add a GitHub Actions deploy job that builds the Docker image and deploys to Cloud Run on merges to `main` (staging), with manual promotion to prod.”**
+
+---
+
+If you want, I can also give you **one combined ‘super prompt’** that instructs the agent to execute Phases 0–2 automatically before pausing for your review.
