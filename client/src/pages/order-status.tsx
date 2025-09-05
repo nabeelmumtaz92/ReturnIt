@@ -82,11 +82,9 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
         <div className="text-center">
-          <img 
-            src="/logo-cardboard-deep.png" 
-            alt="Returnly Logo" 
-            className="h-16 w-auto mx-auto mb-4 animate-pulse"
-          />
+          <div className="text-3xl font-bold text-amber-900 mx-auto mb-4 animate-pulse">
+            ReturnIt
+          </div>
           <p className="text-amber-800">Loading order details...</p>
         </div>
       </div>

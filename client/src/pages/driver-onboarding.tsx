@@ -272,11 +272,9 @@ export default function DriverOnboarding() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-10 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 logo-enhanced"
-              />
+              <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
+                ReturnIt
+              </div>
             </Link>
             <div>
               <h1 className="text-2xl font-bold text-amber-900">Driver Application</h1>

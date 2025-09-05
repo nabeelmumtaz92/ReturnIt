@@ -23,11 +23,9 @@ export default function PrivacyPolicy() {
               </Button>
             </Link>
             <Link href="/">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="ReturnIt Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105"
-              />
+              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
+                ReturnIt
+              </div>
             </Link>
           </div>
         </div>

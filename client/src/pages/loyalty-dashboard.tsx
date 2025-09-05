@@ -70,11 +70,9 @@ export default function LoyaltyDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/">
-                <img 
-                  src="/logo-cardboard-deep.png" 
-                  alt="Returnly Logo" 
-                  className="h-10 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-                />
+                <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+                  ReturnIt
+                </div>
               </Link>
               <h1 className="text-3xl font-bold text-amber-900">Returnly Rewards</h1>
             </div>

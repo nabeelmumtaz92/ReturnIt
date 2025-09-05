@@ -186,11 +186,9 @@ export default function Checkout() {
               Back
             </Button>
             <Link href="/">
-              <img 
-                src="/logo-cardboard-deep.png" 
-                alt="Returnly Logo" 
-                className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity"
-              />
+              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+                ReturnIt
+              </div>
             </Link>
             <span className="text-xl font-bold text-amber-900">Secure Payment</span>
           </div>

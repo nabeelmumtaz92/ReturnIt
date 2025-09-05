@@ -329,7 +329,9 @@ export default function HelpCenter() {
                 </Link>
               </Button>
               <Link href="/">
-                <img src="/logo-cardboard-deep.png" alt="Returnly Logo" className="h-8 w-auto cursor-pointer hover:opacity-80 transition-opacity" />
+                <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+                  ReturnIt
+                </div>
               </Link>
               <h1 className="text-2xl font-bold text-amber-900">Help Center</h1>
             </div>
