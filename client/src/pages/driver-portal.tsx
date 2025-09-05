@@ -23,7 +23,7 @@ export default function DriverPortal() {
   const queryClient = useQueryClient();
   const [, setLocation] = useLocation();
   const [isOnline, setIsOnline] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number, accuracy?: number, timestamp?: number} | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
   const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt' | 'checking'>('checking');
   const [watchId, setWatchId] = useState<number | null>(null);
