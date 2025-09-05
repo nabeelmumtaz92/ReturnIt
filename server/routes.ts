@@ -3533,59 +3533,6 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  // OpenAI Assistant endpoint  
-  app.post("/api/ai/openai-assistant", async (req, res) => {
-    try {
-      const { prompt, action } = req.body;
-      
-      if (!prompt || typeof prompt !== 'string') {
-        return res.status(400).json({ 
-          message: "Invalid prompt provided" 
-        });
-      }
-
-      console.log('OpenAI Assistant request:', { prompt: prompt.substring(0, 50) + '...', action });
-
-      const { OpenAIAssistant } = await import('./openai-assistant');
-      
-      let response;
-      
-      switch (action) {
-        case 'insights':
-          response = await OpenAIAssistant.getBusinessInsights();
-          break;
-        case 'customer-summary':
-          // Extract user ID from prompt if possible
-          const userIdMatch = prompt.match(/user\s+(\d+)|id\s+(\d+)/i);
-          if (userIdMatch) {
-            const userId = parseInt(userIdMatch[1] || userIdMatch[2]);
-            response = await OpenAIAssistant.generateCustomerSummary(userId);
-          } else {
-            response = await OpenAIAssistant.processRequest(prompt);
-          }
-          break;
-        default:
-          response = await OpenAIAssistant.processRequest(prompt);
-      }
-
-      res.json({
-        message: response.message,
-        action: response.action,
-        data: response.data,
-        needsConfirmation: response.needsConfirmation,
-        timestamp: new Date().toISOString(),
-        model: 'gpt-5',
-        service: 'openai'
-      });
-
-    } catch (error) {
-      console.error('OpenAI Assistant error:', error);
-      res.status(500).json({ 
-        message: "AI Assistant encountered an error. Please try again." 
-      });
-    }
-  });
-
   // Cost Monitoring API Routes
   app.get('/api/costs/summary', isAuthenticated, async (req: any, res) => {
     try {
