@@ -25,6 +25,8 @@ export default function DriverPortal() {
   const [isOnline, setIsOnline] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt' | 'checking'>('checking');
+  const [watchId, setWatchId] = useState<number | null>(null);
 
   // Check if new driver needs tutorial
   useEffect(() => {
@@ -33,20 +35,108 @@ export default function DriverPortal() {
     }
   }, [user, setLocation]);
 
-  // Get current location
+  // Continuous GPS tracking when on duty
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
+    const initializeLocationTracking = async () => {
+      if (!navigator.geolocation) {
+        console.log("Geolocation not supported");
+        return;
+      }
+
+      // Check current permission status
+      if ('permissions' in navigator) {
+        try {
+          const result = await navigator.permissions.query({ name: 'geolocation' });
+          setLocationPermission(result.state);
+          
+          // Listen for permission changes
+          result.addEventListener('change', () => {
+            setLocationPermission(result.state);
           });
-        },
-        (error) => console.log("Location access denied")
-      );
+        } catch (error) {
+          console.log("Permission query failed");
+        }
+      }
+
+      // Start continuous tracking
+      if (user?.isDriver && isOnline) {
+        startLocationTracking();
+      }
+    };
+
+    initializeLocationTracking();
+
+    // Cleanup on unmount
+    return () => {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, [user?.isDriver, isOnline]);
+
+  // Location tracking functions
+  const startLocationTracking = () => {
+    if (!navigator.geolocation || watchId !== null) return;
+
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 30000 // Cache location for 30 seconds
+    };
+
+    const newWatchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const newLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+          timestamp: position.timestamp
+        };
+        
+        setCurrentLocation(newLocation);
+        
+        // Update server with new location if driver is online
+        if (isOnline) {
+          updateStatusMutation.mutate({ 
+            currentLocation: newLocation 
+          });
+        }
+      },
+      (error) => {
+        console.error("GPS tracking error:", error);
+        if (error.code === error.PERMISSION_DENIED) {
+          setLocationPermission('denied');
+        }
+      },
+      options
+    );
+
+    setWatchId(newWatchId);
+  };
+
+  const stopLocationTracking = () => {
+    if (watchId !== null) {
+      navigator.geolocation.clearWatch(watchId);
+      setWatchId(null);
     }
-  }, []);
+  };
+
+  // Handle online status changes
+  const handleOnlineToggle = async (online: boolean) => {
+    setIsOnline(online);
+    
+    if (online) {
+      startLocationTracking();
+    } else {
+      stopLocationTracking();
+    }
+    
+    // Update server
+    updateStatusMutation.mutate({ 
+      isOnline: online,
+      currentLocation: online ? currentLocation : null
+    });
+  };
 
   // Queries
   const { data: availableOrders = [], isLoading: loadingAvailable } = useQuery<Order[]>({
@@ -93,13 +183,7 @@ export default function DriverPortal() {
     }
   });
 
-  const handleOnlineToggle = (checked: boolean) => {
-    setIsOnline(checked);
-    updateStatusMutation.mutate({ 
-      isOnline: checked,
-      currentLocation: currentLocation 
-    });
-  };
+  // Remove duplicate function - already defined above
 
   if (!isAuthenticated || !user?.isDriver) {
     return (
@@ -226,6 +310,55 @@ export default function DriverPortal() {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {/* GPS Tracking Status */}
+            <div className="mb-4 p-3 rounded-lg border-2 border-dashed border-amber-200 bg-amber-50/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-3 h-3 rounded-full ${
+                    locationPermission === 'granted' && currentLocation 
+                      ? 'bg-green-500 animate-pulse' 
+                      : locationPermission === 'denied' 
+                        ? 'bg-red-500' 
+                        : 'bg-yellow-500'
+                  }`}></div>
+                  <div>
+                    <p className="text-sm font-medium text-amber-900">
+                      GPS Tracking Status: {
+                        locationPermission === 'granted' && currentLocation 
+                          ? 'Active' 
+                          : locationPermission === 'denied' 
+                            ? 'Permission Denied' 
+                            : 'Checking...'
+                      }
+                    </p>
+                    {currentLocation && (
+                      <p className="text-xs text-amber-700">
+                        Last update: {new Date(currentLocation.timestamp || Date.now()).toLocaleTimeString()}
+                        {currentLocation.accuracy && ` • Accuracy: ${Math.round(currentLocation.accuracy)}m`}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className={`h-4 w-4 ${
+                    locationPermission === 'granted' && currentLocation 
+                      ? 'text-green-600' 
+                      : 'text-amber-600'
+                  }`} />
+                  {locationPermission === 'denied' && (
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => window.location.reload()}
+                      className="text-xs"
+                    >
+                      Enable Location
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="bg-gradient-to-br from-green-50 to-emerald-100 p-4 rounded-lg border border-green-200">
                 <div className="text-2xl font-bold text-emerald-800">

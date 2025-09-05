@@ -32,7 +32,17 @@ import {
   Database,
   Zap,
   Clock,
-  Users2
+  Users2,
+  Plus,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Eye,
+  Edit,
+  Trash,
+  AlertTriangle,
+  Target,
+  Bot
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
@@ -291,6 +301,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <SystemMetricsContent />;
       case 'driver-locations':
         return <DriverLocationsContent />;
+      case 'zone-management':
+        return <ZoneManagementContent />;
       case 'overview':
       default:
         return <OverviewContent />;
@@ -363,6 +375,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         >
           <MapPin className="h-8 w-8" />
           <span className="text-sm font-medium">Driver Locations</span>
+        </Button>
+
+        <Button 
+          onClick={() => changeSection('zone-management')}
+          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          variant="outline"
+        >
+          <Target className="h-8 w-8" />
+          <span className="text-sm font-medium">Zone Management</span>
         </Button>
       </div>
     </div>
@@ -4545,8 +4566,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       totalDrivers: 0,
       lastUpdated: null
     });
+    const [realtimeDrivers, setRealtimeDrivers] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedView, setSelectedView] = useState('city'); // city, state, zip
+    const [selectedView, setSelectedView] = useState('realtime'); // realtime, city, state, zip
+    const [autoRefresh, setAutoRefresh] = useState(true);
 
     // Fetch driver location analytics
     const fetchLocationAnalytics = async () => {
@@ -4571,9 +4594,83 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       }
     };
 
+    // Fetch real-time driver locations
+    const fetchRealtimeDrivers = async () => {
+      try {
+        const response = await fetch('/api/admin/drivers/realtime-locations');
+        if (response.ok) {
+          const drivers = await response.json();
+          setRealtimeDrivers(drivers);
+        }
+      } catch (error) {
+        console.error('Error fetching real-time driver locations:', error);
+      }
+    };
+
+    // Mock real-time driver data for now
+    const mockRealtimeDrivers = [
+      {
+        id: 'driver-1',
+        name: 'John Smith',
+        isOnline: true,
+        currentLocation: { lat: 38.6270, lng: -90.1994, timestamp: Date.now() },
+        status: 'available',
+        ordersToday: 5,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'driver-2', 
+        name: 'Sarah Johnson',
+        isOnline: true,
+        currentLocation: { lat: 38.6400, lng: -90.2340, timestamp: Date.now() },
+        status: 'on_delivery',
+        ordersToday: 3,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'driver-3',
+        name: 'Mike Chen',
+        isOnline: true,
+        currentLocation: { lat: 38.6050, lng: -90.2650, timestamp: Date.now() },
+        status: 'en_route',
+        ordersToday: 7,
+        lastUpdated: new Date()
+      },
+      {
+        id: 'driver-4',
+        name: 'Lisa Wilson',
+        isOnline: false,
+        currentLocation: null,
+        status: 'offline',
+        ordersToday: 2,
+        lastUpdated: new Date(Date.now() - 3600000)
+      }
+    ];
+
     useEffect(() => {
       fetchLocationAnalytics();
+      setRealtimeDrivers(mockRealtimeDrivers);
     }, []);
+
+    // Auto-refresh real-time data
+    useEffect(() => {
+      let interval: NodeJS.Timeout;
+      if (autoRefresh && selectedView === 'realtime') {
+        interval = setInterval(() => {
+          fetchRealtimeDrivers();
+          // Update mock data timestamps
+          setRealtimeDrivers(prev => prev.map(driver => ({
+            ...driver,
+            currentLocation: driver.currentLocation ? {
+              ...driver.currentLocation,
+              timestamp: Date.now()
+            } : null,
+            lastUpdated: new Date()
+          })));
+        }, 10000); // Update every 10 seconds
+      }
+      return () => clearInterval(interval);
+    }, [autoRefresh, selectedView]);
 
     // Get data based on selected view
     const getDisplayData = () => {
@@ -4609,37 +4706,276 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-amber-900">Driver Location Distribution</h1>
-            <p className="text-amber-700">Monitor driver coverage across cities and zip codes to avoid oversaturation</p>
+            <h1 className="text-2xl font-bold text-amber-900">
+              {selectedView === 'realtime' ? 'Real-Time Driver GPS Tracking' : 'Driver Location Distribution'}
+            </h1>
+            <p className="text-amber-700">
+              {selectedView === 'realtime' 
+                ? 'Monitor all active drivers in real-time with continuous GPS tracking' 
+                : 'Monitor driver coverage across cities and zip codes to avoid oversaturation'
+              }
+            </p>
           </div>
-          <Button 
-            onClick={fetchLocationAnalytics}
-            disabled={isLoading}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
-            data-testid="button-refresh-locations"
-          >
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
+          <div className="flex items-center space-x-3">
+            {selectedView === 'realtime' && (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-amber-700">Auto-refresh:</span>
+                <Switch
+                  checked={autoRefresh}
+                  onCheckedChange={setAutoRefresh}
+                  data-testid="switch-auto-refresh"
+                />
+                <div className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
+              </div>
             )}
-            {isLoading ? 'Loading...' : 'Refresh Data'}
-          </Button>
+            <Button 
+              onClick={selectedView === 'realtime' ? fetchRealtimeDrivers : fetchLocationAnalytics}
+              disabled={isLoading}
+              className="bg-amber-600 hover:bg-amber-700 text-white"
+              data-testid="button-refresh-locations"
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              {isLoading ? 'Loading...' : 'Refresh Data'}
+            </Button>
+          </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-amber-600">Total Active Drivers</p>
-                  <p className="text-2xl font-bold text-amber-900">{locationData.totalDrivers}</p>
-                </div>
-                <Users className="h-8 w-8 text-amber-400" />
-              </div>
-            </CardContent>
-          </Card>
+        {/* View Selector */}
+        <div className="mb-6">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setSelectedView('realtime')}
+              variant={selectedView === 'realtime' ? 'default' : 'outline'}
+              className={selectedView === 'realtime' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}
+            >
+              <MapPin className="h-4 w-4 mr-2" />
+              Real-Time GPS
+            </Button>
+            <Button
+              onClick={() => setSelectedView('city')}
+              variant={selectedView === 'city' ? 'default' : 'outline'}
+              className={selectedView === 'city' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}
+            >
+              By City
+            </Button>
+            <Button
+              onClick={() => setSelectedView('state')}
+              variant={selectedView === 'state' ? 'default' : 'outline'}
+              className={selectedView === 'state' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}
+            >
+              By State
+            </Button>
+            <Button
+              onClick={() => setSelectedView('zip')}
+              variant={selectedView === 'zip' ? 'default' : 'outline'}
+              className={selectedView === 'zip' ? 'bg-amber-600 hover:bg-amber-700 text-white' : 'border-amber-200 text-amber-700 hover:bg-amber-50'}
+            >
+              By Zip Code
+            </Button>
+          </div>
+        </div>
+
+        {/* Real-Time GPS Tracking View */}
+        {selectedView === 'realtime' && (
+          <>
+            {/* Real-time Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-600">Online Drivers</p>
+                      <p className="text-2xl font-bold text-amber-900">{realtimeDrivers.filter(d => d.isOnline).length}</p>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <Users className="h-8 w-8 text-green-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-600">On Delivery</p>
+                      <p className="text-2xl font-bold text-amber-900">{realtimeDrivers.filter(d => d.status === 'on_delivery').length}</p>
+                    </div>
+                    <Truck className="h-8 w-8 text-blue-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-600">Available</p>
+                      <p className="text-2xl font-bold text-amber-900">{realtimeDrivers.filter(d => d.status === 'available').length}</p>
+                    </div>
+                    <CheckCircle className="h-8 w-8 text-green-400" />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-600">Total Orders Today</p>
+                      <p className="text-2xl font-bold text-amber-900">{realtimeDrivers.reduce((sum, d) => sum + d.ordersToday, 0)}</p>
+                    </div>
+                    <Package className="h-8 w-8 text-amber-400" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Real-Time Map and Driver List */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Live Map View */}
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 text-xl flex items-center">
+                    <MapPin className="h-5 w-5 mr-2" />
+                    Live Driver Map
+                  </CardTitle>
+                  <p className="text-amber-600 text-sm">Real-time positions of all active drivers</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-96 bg-gradient-to-br from-blue-50 to-green-50 rounded-lg border-2 border-dashed border-amber-200 relative overflow-hidden">
+                    {/* Map Background */}
+                    <div className="absolute inset-0 opacity-30">
+                      <svg viewBox="0 0 400 300" className="w-full h-full">
+                        <path d="M50 150 Q100 100 150 150 Q200 100 250 150 Q300 100 350 150 L350 250 Q300 200 250 250 Q200 200 150 250 Q100 200 50 250 Z" 
+                              fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="2"/>
+                      </svg>
+                    </div>
+
+                    {/* Driver Markers */}
+                    {realtimeDrivers.filter(d => d.isOnline && d.currentLocation).map((driver, index) => (
+                      <div
+                        key={driver.id}
+                        className="absolute w-6 h-6 cursor-pointer"
+                        style={{
+                          left: `${20 + (index * 15) + Math.random() * 40}%`,
+                          top: `${30 + (index * 10) + Math.random() * 30}%`,
+                        }}
+                        title={`${driver.name} - ${driver.status}`}
+                      >
+                        <div className={`w-6 h-6 rounded-full border-2 border-white shadow-lg ${
+                          driver.status === 'available' ? 'bg-green-500' :
+                          driver.status === 'on_delivery' ? 'bg-blue-500' :
+                          driver.status === 'en_route' ? 'bg-orange-500' : 'bg-gray-500'
+                        } animate-pulse`}>
+                          <Truck className="h-3 w-3 text-white m-0.5" />
+                        </div>
+                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs bg-white/90 px-1 rounded whitespace-nowrap">
+                          {driver.name.split(' ')[0]}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Map Legend */}
+                    <div className="absolute bottom-4 left-4 bg-white/95 rounded-lg p-3 border text-xs">
+                      <h4 className="font-bold text-gray-800 mb-2">Driver Status</h4>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                          <span>Available</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                          <span>On Delivery</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                          <span>En Route</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Live Update Indicator */}
+                    <div className="absolute top-4 right-4 flex items-center space-x-2 bg-white/95 rounded-lg px-3 py-2 border">
+                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs font-medium">Live</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Driver List */}
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 text-xl flex items-center">
+                    <Users className="h-5 w-5 mr-2" />
+                    Active Drivers
+                  </CardTitle>
+                  <p className="text-amber-600 text-sm">Real-time status and location data</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {realtimeDrivers.map(driver => (
+                      <div key={driver.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-3 h-3 rounded-full ${
+                            driver.isOnline ? 'bg-green-500 animate-pulse' : 'bg-gray-400'
+                          }`}></div>
+                          <div>
+                            <p className="font-medium text-amber-900">{driver.name}</p>
+                            <p className="text-xs text-amber-600">
+                              {driver.status.replace('_', ' ')} • {driver.ordersToday} orders today
+                            </p>
+                            {driver.currentLocation && (
+                              <p className="text-xs text-gray-500">
+                                Updated: {new Date(driver.lastUpdated).toLocaleTimeString()}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={
+                            driver.status === 'available' ? 'bg-green-100 text-green-800' :
+                            driver.status === 'on_delivery' ? 'bg-blue-100 text-blue-800' :
+                            driver.status === 'en_route' ? 'bg-orange-100 text-orange-800' :
+                            'bg-gray-100 text-gray-800'
+                          }>
+                            {driver.status.replace('_', ' ')}
+                          </Badge>
+                          {driver.currentLocation && (
+                            <MapPin className="h-4 w-4 text-green-600" />
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
+
+        {/* Analytics Views */}
+        {selectedView !== 'realtime' && (
+          <>
+            {/* Analytics Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-amber-600">Total Active Drivers</p>
+                      <p className="text-2xl font-bold text-amber-900">{locationData.totalDrivers}</p>
+                    </div>
+                    <Users className="h-8 w-8 text-amber-400" />
+                  </div>
+                </CardContent>
+              </Card>
 
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
             <CardContent className="p-6">
@@ -4828,6 +5164,448 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
+  // Zone Management Content
+  const ZoneManagementContent = () => {
+    const [zones, setZones] = useState([]);
+    const [managers, setManagers] = useState([]);
+    const [selectedZone, setSelectedZone] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [showCreateZone, setShowCreateZone] = useState(false);
+    const [newZone, setNewZone] = useState({
+      name: '',
+      managerId: '',
+      cities: [],
+      zipCodes: [],
+      color: '#3B82F6'
+    });
+
+    // Mock zone data for now
+    const mockZones = [
+      {
+        id: '1',
+        name: 'Central St. Louis',
+        managerId: 'mgr-001',
+        managerName: 'Sarah Johnson',
+        cities: ['St. Louis', 'Clayton', 'University City'],
+        zipCodes: ['63101', '63102', '63103', '63104', '63105'],
+        driverCount: 12,
+        color: '#3B82F6'
+      },
+      {
+        id: '2', 
+        name: 'West County',
+        managerId: 'mgr-002',
+        managerName: 'Mike Chen',
+        cities: ['Chesterfield', 'Ballwin', 'Wildwood'],
+        zipCodes: ['63017', '63011', '63040'],
+        driverCount: 8,
+        color: '#10B981'
+      },
+      {
+        id: '3',
+        name: 'North County',
+        managerId: null,
+        managerName: 'Unassigned',
+        cities: ['Florissant', 'Hazelwood', 'Ferguson'],
+        zipCodes: ['63031', '63042', '63135'],
+        driverCount: 5,
+        color: '#F59E0B'
+      }
+    ];
+
+    // Mock manager data
+    const mockManagers = [
+      { id: 'mgr-001', name: 'Sarah Johnson', email: 'sarah.j@returnit.com', zones: 1 },
+      { id: 'mgr-002', name: 'Mike Chen', email: 'mike.c@returnit.com', zones: 1 },
+      { id: 'mgr-003', name: 'Jessica Martinez', email: 'jessica.m@returnit.com', zones: 0 },
+      { id: 'mgr-004', name: 'David Wilson', email: 'david.w@returnit.com', zones: 0 }
+    ];
+
+    useEffect(() => {
+      setZones(mockZones);
+      setManagers(mockManagers);
+    }, []);
+
+    const createZone = () => {
+      const zone = {
+        ...newZone,
+        id: `zone-${Date.now()}`,
+        driverCount: 0,
+        managerName: managers.find(m => m.id === newZone.managerId)?.name || 'Unassigned'
+      };
+      setZones([...zones, zone]);
+      setNewZone({ name: '', managerId: '', cities: [], zipCodes: [], color: '#3B82F6' });
+      setShowCreateZone(false);
+      toast({
+        title: "Zone Created",
+        description: `${zone.name} has been created successfully`,
+      });
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 1 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+            </Button>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-amber-900">Zone Management</h1>
+            <p className="text-amber-700">Define and manage regional manager territories for optimal coverage</p>
+          </div>
+          <Button 
+            onClick={() => setShowCreateZone(true)}
+            className="bg-amber-600 hover:bg-amber-700 text-white"
+            data-testid="button-create-zone"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Create Zone
+          </Button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Total Zones</p>
+                  <p className="text-2xl font-bold text-amber-900">{zones.length}</p>
+                </div>
+                <MapPin className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Active Managers</p>
+                  <p className="text-2xl font-bold text-amber-900">{zones.filter(z => z.managerId).length}</p>
+                </div>
+                <Users className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Unassigned Zones</p>
+                  <p className="text-2xl font-bold text-amber-900">{zones.filter(z => !z.managerId).length}</p>
+                </div>
+                <AlertTriangle className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-amber-600">Total Coverage</p>
+                  <p className="text-2xl font-bold text-amber-900">{zones.reduce((sum, z) => sum + z.zipCodes.length, 0)} Zip Codes</p>
+                </div>
+                <Target className="h-8 w-8 text-amber-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Zone Map Visualization */}
+          <div className="lg:col-span-2">
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Zone Map</CardTitle>
+                <p className="text-amber-600 text-sm">Visual representation of manager territories</p>
+              </CardHeader>
+              <CardContent>
+                <div className="h-96 bg-gradient-to-br from-blue-50 to-green-50 rounded-lg border-2 border-dashed border-amber-200 flex items-center justify-center relative overflow-hidden">
+                  {/* Map Background */}
+                  <div className="absolute inset-0 opacity-20">
+                    <svg viewBox="0 0 400 300" className="w-full h-full">
+                      {/* St. Louis Metro Area Representation */}
+                      <path d="M50 150 Q100 100 150 150 Q200 100 250 150 Q300 100 350 150 L350 250 Q300 200 250 250 Q200 200 150 250 Q100 200 50 250 Z" 
+                            fill="#E5E7EB" stroke="#9CA3AF" strokeWidth="2"/>
+                    </svg>
+                  </div>
+
+                  {/* Zone Overlays */}
+                  <div className="absolute inset-0">
+                    {zones.map((zone, index) => (
+                      <div
+                        key={zone.id}
+                        className="absolute rounded-lg border-2 cursor-pointer transition-all hover:scale-105"
+                        style={{
+                          backgroundColor: `${zone.color}20`,
+                          borderColor: zone.color,
+                          left: `${20 + (index * 25)}%`,
+                          top: `${30 + (index * 15)}%`,
+                          width: '25%',
+                          height: '30%'
+                        }}
+                        onClick={() => setSelectedZone(zone)}
+                      >
+                        <div className="p-2 text-center">
+                          <div className="text-xs font-bold text-gray-800">{zone.name}</div>
+                          <div className="text-xs text-gray-600">{zone.driverCount} drivers</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Map Controls */}
+                  <div className="absolute top-4 right-4 space-y-2">
+                    <Button variant="outline" size="sm" className="bg-white/80">
+                      <ZoomIn className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" className="bg-white/80">
+                      <ZoomOut className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" className="bg-white/80">
+                      <RotateCcw className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="absolute bottom-4 left-4 bg-white/90 rounded-lg p-3 border">
+                    <h4 className="text-xs font-bold text-gray-800 mb-2">Zone Legend</h4>
+                    {zones.map(zone => (
+                      <div key={zone.id} className="flex items-center gap-2 text-xs">
+                        <div 
+                          className="w-3 h-3 rounded"
+                          style={{ backgroundColor: zone.color }}
+                        ></div>
+                        <span>{zone.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Zone Details & Management */}
+          <div className="space-y-6">
+            {/* Selected Zone Details */}
+            {selectedZone && (
+              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 text-lg">Zone Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label className="text-amber-800 font-medium">Zone Name</Label>
+                    <p className="text-amber-900 font-bold">{selectedZone.name}</p>
+                  </div>
+                  <div>
+                    <Label className="text-amber-800 font-medium">Manager</Label>
+                    <p className="text-amber-900">{selectedZone.managerName}</p>
+                  </div>
+                  <div>
+                    <Label className="text-amber-800 font-medium">Cities</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedZone.cities.map(city => (
+                        <Badge key={city} variant="outline" className="text-xs">
+                          {city}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-amber-800 font-medium">Zip Codes</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {selectedZone.zipCodes.map(zip => (
+                        <Badge key={zip} variant="outline" className="text-xs">
+                          {zip}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-amber-800 font-medium">Active Drivers</Label>
+                    <p className="text-2xl font-bold text-amber-900">{selectedZone.driverCount}</p>
+                  </div>
+                  <div className="pt-2 border-t">
+                    <Button variant="outline" size="sm" className="w-full mb-2">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Zone
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full text-red-600 border-red-200 hover:bg-red-50">
+                      <Trash className="h-4 w-4 mr-2" />
+                      Delete Zone
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Available Managers */}
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-lg">Available Managers</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {managers.map(manager => (
+                    <div key={manager.id} className="flex justify-between items-center p-3 bg-amber-50 rounded-lg">
+                      <div>
+                        <p className="font-medium text-amber-900">{manager.name}</p>
+                        <p className="text-xs text-amber-600">{manager.email}</p>
+                      </div>
+                      <Badge variant={manager.zones > 0 ? "secondary" : "outline"}>
+                        {manager.zones} zone{manager.zones !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Zone Management Table */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mt-8">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">Zone Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-amber-200">
+                    <th className="text-left p-3 text-amber-900 font-medium">Zone</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Manager</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Cities</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Zip Codes</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Drivers</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Status</th>
+                    <th className="text-left p-3 text-amber-900 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {zones.map(zone => (
+                    <tr key={zone.id} className="border-b border-amber-100 hover:bg-amber-50/30">
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-4 h-4 rounded"
+                            style={{ backgroundColor: zone.color }}
+                          ></div>
+                          <span className="font-medium text-amber-900">{zone.name}</span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-amber-900">{zone.managerName}</td>
+                      <td className="p-3 text-amber-600">{zone.cities.length} cities</td>
+                      <td className="p-3 text-amber-600">{zone.zipCodes.length} zip codes</td>
+                      <td className="p-3 text-amber-900 font-bold">{zone.driverCount}</td>
+                      <td className="p-3">
+                        <Badge className={zone.managerId ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}>
+                          {zone.managerId ? 'Assigned' : 'Unassigned'}
+                        </Badge>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex gap-1">
+                          <Button 
+                            onClick={() => setSelectedZone(zone)}
+                            variant="outline" 
+                            size="sm"
+                            data-testid={`button-view-zone-${zone.id}`}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Create Zone Modal */}
+        {showCreateZone && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md m-4">
+              <CardHeader>
+                <CardTitle className="text-amber-900">Create New Zone</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label className="text-amber-800 font-medium">Zone Name</Label>
+                  <Input
+                    value={newZone.name}
+                    onChange={(e) => setNewZone({...newZone, name: e.target.value})}
+                    placeholder="e.g., South County"
+                    className="border-amber-300 focus:border-amber-500"
+                  />
+                </div>
+                <div>
+                  <Label className="text-amber-800 font-medium">Assign Manager</Label>
+                  <Select value={newZone.managerId} onValueChange={(value) => setNewZone({...newZone, managerId: value})}>
+                    <SelectTrigger className="border-amber-300 focus:border-amber-500">
+                      <SelectValue placeholder="Select manager" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {managers.filter(m => m.zones === 0).map(manager => (
+                        <SelectItem key={manager.id} value={manager.id}>
+                          {manager.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-amber-800 font-medium">Zone Color</Label>
+                  <Input
+                    type="color"
+                    value={newZone.color}
+                    onChange={(e) => setNewZone({...newZone, color: e.target.value})}
+                    className="h-10 border-amber-300 focus:border-amber-500"
+                  />
+                </div>
+              </CardContent>
+              <CardContent className="flex gap-2">
+                <Button 
+                  onClick={createZone}
+                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                  disabled={!newZone.name}
+                >
+                  Create Zone
+                </Button>
+                <Button 
+                  onClick={() => setShowCreateZone(false)}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const dashboardTabs = [
     {
       label: "Overview",
@@ -4891,6 +5669,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'tax-reports' && '1099-NEC form generation, tax compliance, and IRS reporting'}
               {currentSection === 'system-metrics' && 'Real-time server performance, visitor analytics, and system health monitoring'}
               {currentSection === 'driver-locations' && 'Monitor driver distribution across cities and zip codes to prevent oversaturation'}
+              {currentSection === 'zone-management' && 'Interactive map for defining and managing regional manager territories'}
             </p>
           </div>
         </div>

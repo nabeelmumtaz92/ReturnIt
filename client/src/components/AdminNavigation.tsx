@@ -24,7 +24,6 @@ import {
   Home
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ReturnItLogo } from "./LogoIcon";
 
 interface NavigationItem {
   label: string;

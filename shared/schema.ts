@@ -816,6 +816,12 @@ export const driverApplications = pgTable("driver_applications", {
   state: text("state").notNull(),
   zipCode: text("zip_code").notNull(),
   
+  // Demographic Information (EEO Compliance)
+  gender: text("gender"), // Male, Female, Non-binary, Prefer not to answer
+  isVeteran: boolean("is_veteran"), // Yes, No, Prefer not to answer
+  hasDisability: boolean("has_disability"), // Yes, No, Prefer not to answer
+  ethnicityRace: text("ethnicity_race"), // Hispanic/Latino, White, Black/African American, Asian, Native American, Pacific Islander, Two or more races, Prefer not to answer
+  
   // Vehicle Information
   vehicleMake: text("vehicle_make").notNull(),
   vehicleModel: text("vehicle_model").notNull(),

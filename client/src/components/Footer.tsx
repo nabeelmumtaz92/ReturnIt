@@ -9,7 +9,6 @@ import {
   Instagram, 
   Linkedin
 } from "lucide-react";
-import { LogoIcon } from "@/components/LogoIcon";
 import { ReturnItIcon } from "@/components/ReturnItLogo";
 
 export default function Footer() {

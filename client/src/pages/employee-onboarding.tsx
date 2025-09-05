@@ -14,7 +14,6 @@ import {
   Truck, BarChart3, Target, Clock, Mail, Phone, MapPin, Calendar,
   Camera, Upload, Download, Star, Award, Zap, Gift, Heart
 } from 'lucide-react';
-import { ReturnItLogo } from '@/components/LogoIcon';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -40,6 +39,12 @@ interface EmployeeData {
   dateOfBirth: string;
   emergencyContactName: string;
   emergencyContactPhone: string;
+  
+  // Demographic Information (EEO Compliance)
+  gender?: string;
+  ethnicityRace?: string;
+  isVeteran?: boolean;
+  hasDisability?: boolean;
   
   // Professional Information
   position: string;
@@ -92,6 +97,10 @@ export default function EmployeeOnboarding() {
     dateOfBirth: '',
     emergencyContactName: '',
     emergencyContactPhone: '',
+    gender: '',
+    ethnicityRace: '',
+    isVeteran: false,
+    hasDisability: false,
     position: '',
     department: '',
     startDate: new Date().toISOString().split('T')[0],
@@ -289,7 +298,6 @@ export default function EmployeeOnboarding() {
         return (
           <div className="text-center space-y-6 py-8">
             <div className="mb-6">
-              <ReturnItLogo className="h-16 w-16 mx-auto mb-4" />
               <h2 className="text-3xl font-bold text-amber-900 mb-2">Welcome to ReturnIt!</h2>
               <p className="text-lg text-amber-700 mb-6">
                 We're excited to have you join our team. This onboarding wizard will help you get set up and ready to make an impact.
@@ -492,6 +500,87 @@ export default function EmployeeOnboarding() {
                     placeholder="(555) 987-6543"
                   />
                 </div>
+              </div>
+            </div>
+
+            {/* Demographic Information (EEO Compliance) */}
+            <div className="mt-8">
+              <h4 className="text-lg font-semibold text-amber-900 mb-2">Equal Employment Opportunity Information</h4>
+              <p className="text-amber-600 text-sm mb-4">
+                The following questions are asked for statistical purposes only and are used to comply with federal reporting requirements. 
+                Your responses are voluntary and will not affect your employment or advancement opportunities.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="gender" className="text-amber-800 font-medium">Gender (Optional)</Label>
+                  <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, gender: value}))}>
+                    <SelectTrigger data-testid="select-gender" className="border-amber-300 focus:border-amber-500">
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Male</SelectItem>
+                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="non-binary">Non-binary</SelectItem>
+                      <SelectItem value="prefer-not-to-answer">Prefer not to answer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ethnicityRace" className="text-amber-800 font-medium">Race/Ethnicity (Optional)</Label>
+                  <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, ethnicityRace: value}))}>
+                    <SelectTrigger data-testid="select-ethnicity" className="border-amber-300 focus:border-amber-500">
+                      <SelectValue placeholder="Select race/ethnicity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="hispanic-latino">Hispanic or Latino</SelectItem>
+                      <SelectItem value="white">White (Not Hispanic or Latino)</SelectItem>
+                      <SelectItem value="black-african-american">Black or African American</SelectItem>
+                      <SelectItem value="asian">Asian</SelectItem>
+                      <SelectItem value="american-indian-alaska-native">American Indian or Alaska Native</SelectItem>
+                      <SelectItem value="native-hawaiian-pacific-islander">Native Hawaiian or Other Pacific Islander</SelectItem>
+                      <SelectItem value="two-or-more-races">Two or More Races</SelectItem>
+                      <SelectItem value="prefer-not-to-answer">Prefer not to answer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="isVeteran" className="text-amber-800 font-medium">Veteran Status (Optional)</Label>
+                  <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, isVeteran: value === 'yes'}))}>
+                    <SelectTrigger data-testid="select-veteran" className="border-amber-300 focus:border-amber-500">
+                      <SelectValue placeholder="Select veteran status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Yes, I am a veteran</SelectItem>
+                      <SelectItem value="no">No, I am not a veteran</SelectItem>
+                      <SelectItem value="prefer-not-to-answer">Prefer not to answer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="hasDisability" className="text-amber-800 font-medium">Disability Status (Optional)</Label>
+                  <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, hasDisability: value === 'yes'}))}>
+                    <SelectTrigger data-testid="select-disability" className="border-amber-300 focus:border-amber-500">
+                      <SelectValue placeholder="Select disability status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="yes">Yes, I have a disability</SelectItem>
+                      <SelectItem value="no">No, I do not have a disability</SelectItem>
+                      <SelectItem value="prefer-not-to-answer">Prefer not to answer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-xs text-amber-700">
+                  <strong>Privacy Notice:</strong> This information is kept confidential and separate from your employment records. 
+                  It is used solely for compliance with Equal Employment Opportunity reporting requirements and to track our efforts 
+                  to provide equal employment opportunities to all individuals.
+                </p>
               </div>
             </div>
           </div>
@@ -1410,7 +1499,7 @@ export default function EmployeeOnboarding() {
         <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <ReturnItLogo className="h-10 w-10" />
+              <div className="h-10 w-10 bg-amber-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">R</div>
               <div>
                 <h1 className="text-3xl font-bold text-amber-900">Employee Onboarding</h1>
                 <p className="text-amber-700">Complete your setup and join the team</p>

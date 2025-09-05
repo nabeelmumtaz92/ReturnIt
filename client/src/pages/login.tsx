@@ -10,7 +10,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ReturnItLogo } from "@/components/LogoIcon";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
 import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
@@ -282,7 +281,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/">
             <div className="mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 inline-block">
-              <ReturnItLogo size={48} variant="white" />
+              <div className="text-4xl font-bold text-white">ReturnIt</div>
             </div>
           </Link>
           <h1 className="text-2xl font-bold text-white">Welcome to Return It</h1>
