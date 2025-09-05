@@ -4697,9 +4697,3 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     </AdminLayout>
   );
 }
-
-// Cleanup - Remove broken sections below
-// End of file
-    const fetchLocationAnalytics = async () => {
-      setIsLoading(true);
-      try {
