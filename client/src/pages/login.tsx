@@ -288,109 +288,289 @@ export default function Login() {
           <p className="text-white/90">Returns made easy</p>
         </div>
 
-        {/* Sign In Form */}
-        <Card className="bg-white border-amber-200 shadow-lg">
+        {/* Tab Navigation */}
+        <div className="flex bg-white/90 rounded-t-lg border border-b-0 border-amber-200 shadow-lg">
+          <button
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-tl-lg transition-colors ${
+              activeTab === 'login' 
+                ? 'bg-amber-800 text-white' 
+                : 'bg-white text-amber-800 hover:bg-amber-50'
+            }`}
+            onClick={() => setActiveTab('login')}
+            data-testid="tab-sign-in"
+          >
+            Sign In
+          </button>
+          <button
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-tr-lg transition-colors ${
+              activeTab === 'register' 
+                ? 'bg-amber-800 text-white' 
+                : 'bg-white text-amber-800 hover:bg-amber-50'
+            }`}
+            onClick={() => setActiveTab('register')}
+            data-testid="tab-sign-up"
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {/* Forms */}
+        <Card className="bg-white border-amber-200 shadow-lg rounded-t-none border-t-0">
           <CardHeader className="text-center">
-            <CardTitle className="text-amber-900">Sign In</CardTitle>
+            <CardTitle className="text-amber-900">
+              {activeTab === 'login' ? 'Sign In' : 'Create Account'}
+            </CardTitle>
             <CardDescription className="text-amber-700">
-              Access your Return It account
+              {activeTab === 'login' ? 'Access your Return It account' : 'Join Return It today'}
             </CardDescription>
           </CardHeader>
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="login-email" className="text-amber-800 font-medium">Email Address</Label>
-                <div className="relative">
+          {activeTab === 'login' ? (
+            <form onSubmit={handleLogin}>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email" className="text-amber-800 font-medium">Email Address</Label>
+                  <div className="relative">
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-3">
+                        <Mail className="h-5 w-5 text-amber-600" />
+                        <Input
+                          id="login-email"
+                          data-testid="input-login-email"
+                          type="email"
+                          value={loginData.email}
+                          onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+                          placeholder="Enter your email address"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        />
+                      </div>
+                    </div>
+                    {validationErrors.email && (
+                      <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password" className="text-amber-800 font-medium">Password</Label>
+                  <div className="relative">
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-3">
+                        <Lock className="h-5 w-5 text-amber-600" />
+                        <Input
+                          id="login-password"
+                          data-testid="input-login-password"
+                          type="password"
+                          value={loginData.password}
+                          onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
+                          placeholder="Enter your password"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        />
+                      </div>
+                    </div>
+                    {validationErrors.password && (
+                      <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-amber-800 hover:bg-amber-900 h-12"
+                  disabled={loginMutation.isPending}
+                  data-testid="button-login-submit"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  {loginMutation.isPending ? "Signing in..." : "Sign In"}
+                </Button>
+                
+                <div className="flex items-center my-8">
+                  <div className="flex-1 h-px bg-amber-200"></div>
+                  <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                    Or continue with
+                  </span>
+                  <div className="flex-1 h-px bg-amber-200"></div>
+                </div>
+                
+                <div className="space-y-2">
+                  <SocialButton 
+                    provider="Google" 
+                    icon={SiGoogle} 
+                    onClick={handleGoogleAuth}
+                    color="bg-red-50"
+                  />
+                  <SocialButton 
+                    provider="Apple" 
+                    icon={SiApple} 
+                    onClick={handleAppleAuth}
+                    color="bg-gray-50"
+                  />
+                  <SocialButton 
+                    provider="Facebook" 
+                    icon={SiFacebook} 
+                    onClick={handleFacebookAuth}
+                    color="bg-blue-50"
+                  />
+                </div>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => setLocation('/')}
+                  data-testid="button-back-home"
+                >
+                  Back to Home
+                </Button>
+              </CardFooter>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister}>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-firstName" className="text-amber-800 font-medium">First Name</Label>
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-3">
+                        <User className="h-5 w-5 text-amber-600" />
+                        <Input
+                          id="register-firstName"
+                          data-testid="input-register-firstName"
+                          type="text"
+                          value={registerData.firstName}
+                          onChange={(e) => setRegisterData(prev => ({...prev, firstName: e.target.value}))}
+                          placeholder="First name"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        />
+                      </div>
+                    </div>
+                    {validationErrors.firstName && (
+                      <p className="text-red-600 text-xs mt-1">{validationErrors.firstName}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-lastName" className="text-amber-800 font-medium">Last Name</Label>
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-3">
+                        <User className="h-5 w-5 text-amber-600" />
+                        <Input
+                          id="register-lastName"
+                          data-testid="input-register-lastName"
+                          type="text"
+                          value={registerData.lastName}
+                          onChange={(e) => setRegisterData(prev => ({...prev, lastName: e.target.value}))}
+                          placeholder="Last name"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        />
+                      </div>
+                    </div>
+                    {validationErrors.lastName && (
+                      <p className="text-red-600 text-xs mt-1">{validationErrors.lastName}</p>
+                    )}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-email" className="text-amber-800 font-medium">Email Address</Label>
                   <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
                     <div className="flex items-center space-x-3">
                       <Mail className="h-5 w-5 text-amber-600" />
                       <Input
-                        id="login-email"
-                        data-testid="input-login-email"
+                        id="register-email"
+                        data-testid="input-register-email"
                         type="email"
-                        value={loginData.email}
-                        onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+                        value={registerData.email}
+                        onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
                         placeholder="Enter your email address"
                         className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
                       />
                     </div>
                   </div>
+                  {validationErrors.email && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
+                  )}
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-password" className="text-amber-800 font-medium">Password</Label>
-                <div className="relative">
+                <div className="space-y-2">
+                  <Label htmlFor="register-password" className="text-amber-800 font-medium">Password</Label>
                   <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
                     <div className="flex items-center space-x-3">
                       <Lock className="h-5 w-5 text-amber-600" />
                       <Input
-                        id="login-password"
-                        data-testid="input-login-password"
-                        type="password"
-                        value={loginData.password}
-                        onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
-                        placeholder="Enter your password"
+                        id="register-password"
+                        data-testid="input-register-password"
+                        type={showPassword ? "text" : "password"}
+                        value={registerData.password}
+                        onChange={(e) => setRegisterData(prev => ({...prev, password: e.target.value}))}
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
+                        placeholder="Create a password"
                         className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="text-amber-600 hover:text-amber-800"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
                   </div>
+                  {(passwordFocused || registerData.password) && (
+                    <PasswordStrengthIndicator password={registerData.password} />
+                  )}
                   {validationErrors.password && (
                     <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
                   )}
                 </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <Button 
-                type="submit" 
-                className="w-full bg-amber-800 hover:bg-amber-900 h-12"
-                disabled={loginMutation.isPending}
-                data-testid="button-login-submit"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                {loginMutation.isPending ? "Signing in..." : "Sign In"}
-              </Button>
-              
-              <div className="flex items-center my-8">
-                <div className="flex-1 h-px bg-amber-200"></div>
-                <span className="px-4 text-sm font-medium text-amber-700 bg-white">
-                  Or continue with
-                </span>
-                <div className="flex-1 h-px bg-amber-200"></div>
-              </div>
-              
-              <div className="space-y-2">
-                <SocialButton 
-                  provider="Google" 
-                  icon={SiGoogle} 
-                  onClick={handleGoogleAuth}
-                  color="bg-red-50"
-                />
-                <SocialButton 
-                  provider="Apple" 
-                  icon={SiApple} 
-                  onClick={handleAppleAuth}
-                  color="bg-gray-50"
-                />
-                <SocialButton 
-                  provider="Facebook" 
-                  icon={SiFacebook} 
-                  onClick={handleFacebookAuth}
-                  color="bg-blue-50"
-                />
-              </div>
-              
-              <Button 
-                type="button" 
-                variant="outline" 
-                className="w-full" 
-                onClick={() => setLocation('/')}
-                data-testid="button-back-home"
-              >
-                Back to Home
-              </Button>
-            </CardFooter>
-          </form>
+                <div className="space-y-2">
+                  <Label htmlFor="register-confirmPassword" className="text-amber-800 font-medium">Confirm Password</Label>
+                  <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                    <div className="flex items-center space-x-3">
+                      <Lock className="h-5 w-5 text-amber-600" />
+                      <Input
+                        id="register-confirmPassword"
+                        data-testid="input-register-confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={registerData.confirmPassword}
+                        onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
+                        placeholder="Confirm your password"
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="text-amber-600 hover:text-amber-800"
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  {validationErrors.confirmPassword && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.confirmPassword}</p>
+                  )}
+                </div>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-4">
+                <Button 
+                  type="submit" 
+                  className="w-full bg-amber-800 hover:bg-amber-900 h-12"
+                  disabled={registerMutation.isPending}
+                  data-testid="button-register-submit"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  {registerMutation.isPending ? "Creating Account..." : "Create Account"}
+                </Button>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={() => setLocation('/')}
+                  data-testid="button-back-home"
+                >
+                  Back to Home
+                </Button>
+              </CardFooter>
+            </form>
+          )}
         </Card>
       </div>
     </div>

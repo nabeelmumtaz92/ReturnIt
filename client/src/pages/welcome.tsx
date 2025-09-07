@@ -84,12 +84,9 @@ export default function Welcome() {
                       </Button>
                     </Link>
                   ) : (
-                    <Link href="/profile">
-                      <Button variant="ghost" size="sm" data-testid="button-profile">
-                        <User className="h-4 w-4 mr-2" />
-                        Profile
-                      </Button>
-                    </Link>
+                    <span className="text-amber-800 font-medium">
+                      Welcome, {user?.firstName || user?.email?.split('@')[0] || 'User'}!
+                    </span>
                   )}
                   <RoleSwitcher />
                   <Button
@@ -127,83 +124,16 @@ export default function Welcome() {
         {/* ReturnIt Logo - Centered */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <svg width="400" height="120" viewBox="0 0 400 120" className="filter drop-shadow-lg">
-              {/* "ReturnIt" text - exact match to your image */}
-              <text x="20" y="80" fontFamily="Arial, Helvetica, sans-serif" fontSize="48" fontWeight="700" fill="#FFFFFF">
-                ReturnIt
-              </text>
-              
-              {/* 3D Box Icon - exact match to your image */}
-              <g transform="translate(300, 20)">
-                {/* Back top edge */}
-                <path d="M10 30 L50 15 L90 30" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinecap="round"
-                      strokeLinejoin="round"/>
-                
-                {/* Front top edge */}
-                <path d="M10 50 L50 35 L90 50" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinecap="round"
-                      strokeLinejoin="round"/>
-                
-                {/* Left face */}
-                <path d="M10 30 L10 50 L50 65 L50 45 Z" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinejoin="round"/>
-                
-                {/* Right face */}
-                <path d="M50 45 L50 65 L90 50 L90 30 Z" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinejoin="round"/>
-                
-                {/* Top face */}
-                <path d="M10 30 L50 15 L90 30 L50 45 Z" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinejoin="round"/>
-                
-                {/* Front face */}
-                <path d="M10 50 L50 35 L50 65 L10 80 Z" 
-                      fill="none" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinejoin="round"/>
-                
-                {/* Vertical connecting lines */}
-                <path d="M10 30 L10 50" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinecap="round"/>
-                <path d="M50 15 L50 35" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinecap="round"/>
-                <path d="M90 30 L90 50" 
-                      stroke="#FFFFFF" 
-                      strokeWidth="4" 
-                      strokeLinecap="round"/>
-                
-                {/* Small circular dot on front face */}
-                <circle cx="35" cy="55" r="3" fill="#FFFFFF"/>
-              </g>
-            </svg>
+            <div className="text-6xl font-bold text-white filter drop-shadow-lg">
+              ReturnIt
+            </div>
           </div>
         </div>
 
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
           <p className="text-xl sm:text-2xl text-white/90 font-medium">
-            Hassle-free returns with professional pickup service
+            Hassle-free returns with professional return delivery service
           </p>
           <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-block">
             <p className="text-lg text-white font-semibold">
@@ -217,42 +147,21 @@ export default function Welcome() {
 
         {/* Buttons - Vertical Stack on Mobile */}
         <div className="flex flex-col gap-4 w-full max-w-md">
-          <Link href="/book-pickup" className="w-full">
-            <Button 
-              size="lg" 
-              className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg"
-              data-testid="button-book-pickup"
-            >
-              <Package className="h-5 w-5 mr-2" />
-              Book Pickup
-            </Button>
-          </Link>
-          
-          {/* Show Sign In and Sign Up buttons only if login is allowed */}
-          {envConfig?.allowPublicLogin && (
-            <div className="flex gap-2 justify-center w-full">
-              <Link href="/login">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
-                  data-testid="button-sign-in"
-                >
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/login?tab=register">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="border-white/70 bg-white/10 text-white hover:bg-white/20 px-4 py-1.5 text-sm backdrop-blur-sm"
-                  data-testid="button-sign-up"
-                >
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
-          )}
+          <Button 
+            size="lg" 
+            className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg"
+            data-testid="button-book-pickup"
+            onClick={() => {
+              if (isAuthenticated) {
+                setLocation('/book-pickup');
+              } else {
+                setLocation('/login');
+              }
+            }}
+          >
+            <Package className="h-5 w-5 mr-2" />
+            Book Pickup
+          </Button>
         </div>
 
         {/* Environment Notice for Restricted Access */}

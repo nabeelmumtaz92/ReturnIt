@@ -26,7 +26,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">ReturnIt</span>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
-              Convenient return pickup service in St. Louis, MO. We handle your returns so you don't have to.
+              Professional return delivery service in St. Louis, MO. We handle your returns so you don't have to.
             </p>
             <div className="flex space-x-4">
               <Button 
