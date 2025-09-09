@@ -7,7 +7,6 @@ import {
   Headphones, MessageCircle, Users, Settings, BarChart3,
   User, Shield, Truck, Package, Bell, Clock, Star
 } from 'lucide-react';
-import { ReturnItLogo } from '@/components/LogoIcon';
 
 interface RoleBasedLayoutProps {
   children: React.ReactNode;
@@ -75,7 +74,7 @@ export function RoleBasedLayout({ children, userRole, userName, pageTitle }: Rol
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <ReturnItLogo className="h-8 w-8" />
+              
               <div>
                 <h1 className="text-xl font-bold text-amber-900">{pageTitle || config.title}</h1>
                 <p className="text-sm text-amber-700">Welcome back, {userName}</p>

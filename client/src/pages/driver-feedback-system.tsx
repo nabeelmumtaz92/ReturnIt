@@ -11,7 +11,6 @@ import {
   User, Clock, MapPin, Package, Filter, Search, TrendingUp,
   Award, Target, BarChart3, Calendar, Download
 } from 'lucide-react';
-import { ReturnItLogo } from '@/components/LogoIcon';
 import { useToast } from '@/hooks/use-toast';
 
 interface CustomerFeedback {
@@ -478,7 +477,7 @@ export default function DriverFeedbackSystem() {
         <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <ReturnItLogo className="h-10 w-10" />
+              
               <div>
                 <h1 className="text-3xl font-bold text-amber-900">Driver Feedback System</h1>
                 <p className="text-amber-700">Monitor performance and customer satisfaction</p>

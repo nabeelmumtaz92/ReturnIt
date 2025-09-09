@@ -12,7 +12,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
-import { ReturnItLogo } from '@/components/LogoIcon';
 import { RoleBasedLayout } from '@/components/RoleBasedLayout';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 

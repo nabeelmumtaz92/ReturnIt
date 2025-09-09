@@ -10,7 +10,6 @@ import {
   AlertTriangle, Star, Truck, Package, DollarSign, BarChart3,
   ArrowRight, User, Lightbulb, Target, Award
 } from 'lucide-react';
-import { ReturnItLogo } from '@/components/LogoIcon';
 
 export default function EmployeeGuide() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -226,12 +225,9 @@ export default function EmployeeGuide() {
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <ReturnItLogo className="h-10 w-10" />
-              <div>
-                <h1 className="text-3xl font-bold text-amber-900">Employee Guide</h1>
-                <p className="text-amber-700">Complete guide to using the ReturnIt platform</p>
-              </div>
+            <div>
+              <h1 className="text-3xl font-bold text-amber-900">Employee Guide</h1>
+              <p className="text-amber-700">Complete guide to using the ReturnIt platform</p>
             </div>
             <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
               <BookOpen className="h-4 w-4 mr-1" />

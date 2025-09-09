@@ -297,7 +297,7 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-amber-200">
           <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
-            <ReturnItLogo className="h-8 w-8 text-amber-600" />
+            
           </div>
           <Button
             variant="ghost"
