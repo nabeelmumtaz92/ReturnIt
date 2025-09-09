@@ -67,18 +67,7 @@ export default function About() {
         </div>
       </header>
       
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-img-enhanced"
-        style={{
-          backgroundImage: 'url(https://images.pexels.com/photos/8001186/pexels-photo-8001186.jpeg?auto=compress&cs=tinysrgb&w=5120&h=3413&dpr=3&fit=crop&crop=center&q=100)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}
-      />
-      <div className="absolute inset-0 bg-white/80"></div>
-      <div className="relative z-10">
+      <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
       {/* Hero Section */}
       <section className="py-20 px-6">
         <div className="container mx-auto max-w-6xl">

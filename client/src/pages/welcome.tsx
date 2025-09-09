@@ -61,10 +61,51 @@ export default function Welcome() {
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center bg-no-repeat" 
-      style={{ 
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(${deliveryDriverImage})`
-      }}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      {/* Professional Hero Section */}
+      <div className="w-full bg-white/95 border-b border-amber-100">
+        <div className="container mx-auto px-4 py-12">
+          <div className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
+            {/* Hero Content */}
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-5xl lg:text-6xl font-bold text-amber-900 mb-6">
+                ReturnIt
+              </h1>
+              <p className="text-2xl text-amber-700 mb-8">
+                Professional pickup service for returns, exchanges, and donations
+              </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mb-8">
+                <div className="flex items-center gap-3 text-amber-600">
+                  <Package className="h-6 w-6" />
+                  <span className="text-lg">Fast & Reliable</span>
+                </div>
+                <div className="flex items-center gap-3 text-amber-600">
+                  <Truck className="h-6 w-6" />
+                  <span className="text-lg">Professional Drivers</span>
+                </div>
+              </div>
+            </div>
+            {/* Hero Image Card */}
+            <div className="flex-1 max-w-lg">
+              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
+                <img 
+                  src={deliveryDriverImage} 
+                  alt="Professional delivery service" 
+                  className="w-full h-80 object-cover"
+                />
+                <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
+                  <h3 className="text-lg font-semibold text-amber-900 mb-2">
+                    Professional Service
+                  </h3>
+                  <p className="text-amber-700">
+                    Trusted by customers for reliable pickup and delivery
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       {/* Top Navigation Bar */}
       <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-primary/20 sticky top-0 z-50">

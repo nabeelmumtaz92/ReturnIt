@@ -259,33 +259,43 @@ export default function Login() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Hero Image */}
-      <div 
-        className="absolute inset-0 z-0 bg-img-enhanced transition-all duration-500"
-        style={{
-          backgroundImage: `url(${selectedImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: activeTab === 'register' ? 'right center' : 'center center',
-          backgroundRepeat: 'no-repeat',
-          filter: 'brightness(1.1) contrast(1.1)'
-        }}
-      />
-      <div className={`absolute inset-0 transition-all duration-500 ${
-        activeTab === 'register' 
-          ? 'bg-gradient-to-r from-black/50 via-black/30 to-transparent' 
-          : 'bg-gradient-to-br from-black/35 via-black/20 to-black/35'
-      }`}></div>
-      <div className="w-full max-w-md relative z-10 transition-all duration-500">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/">
-            <div className="mb-4 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105 inline-block">
-              <div className="text-4xl font-bold text-white">ReturnIt</div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col lg:flex-row">
+      {/* Left side - Hero Card */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="max-w-lg">
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200 mb-8">
+            <img 
+              src={selectedImage} 
+              alt="Professional delivery service" 
+              className="w-full h-64 object-cover"
+            />
+            <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
+              <h3 className="text-xl font-bold text-amber-900 mb-2">
+                Professional Return Service
+              </h3>
+              <p className="text-amber-700">
+                Trusted by thousands for fast, reliable pickup and delivery
+              </p>
             </div>
-          </Link>
-          <h1 className="text-2xl font-bold text-white">Welcome to Return It</h1>
-          <p className="text-white/90">Returns made easy</p>
+          </div>
+          <div className="text-center">
+            <Link href="/">
+              <div className="text-4xl font-bold text-amber-900 mb-2 cursor-pointer hover:opacity-80 transition-opacity">
+                ReturnIt
+              </div>
+            </Link>
+            <p className="text-amber-700 text-lg">Returns made easy</p>
+          </div>
+        </div>
+      </div>
+      
+      {/* Right side - Login Form */}
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-amber-900">Welcome Back</h1>
+          <p className="text-amber-700">Sign in to access your account</p>
         </div>
 
         {/* Tab Navigation */}
@@ -572,6 +582,7 @@ export default function Login() {
             </form>
           )}
         </Card>
+        </div>
       </div>
     </div>
   );
