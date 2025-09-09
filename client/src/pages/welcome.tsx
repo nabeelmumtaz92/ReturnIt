@@ -165,7 +165,7 @@ export default function Welcome() {
         {/* ReturnIt Logo - Centered */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="text-6xl font-bold text-white filter drop-shadow-lg">
+            <div className="text-6xl font-bold text-amber-900 filter drop-shadow-lg">
               ReturnIt
             </div>
           </div>
@@ -173,14 +173,14 @@ export default function Welcome() {
 
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
-          <p className="text-xl sm:text-2xl text-white/90 font-medium">
+          <p className="text-xl sm:text-2xl text-amber-800 font-medium">
             Hassle-free returns with professional return delivery service
           </p>
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3 inline-block">
-            <p className="text-lg text-white font-semibold">
+          <div className="bg-amber-100 border border-amber-200 rounded-lg px-6 py-3 inline-block">
+            <p className="text-lg text-amber-900 font-semibold">
               📍 St. Louis only right now
             </p>
-            <p className="text-sm text-white/80 mt-1">
+            <p className="text-sm text-amber-700 mt-1">
               Coming to your city soon!
             </p>
           </div>
@@ -190,7 +190,7 @@ export default function Welcome() {
         <div className="flex flex-col gap-4 w-full max-w-md">
           <Button 
             size="lg" 
-            className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-lg"
+            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-4 text-lg"
             data-testid="button-book-pickup"
             onClick={() => {
               if (isAuthenticated) {
@@ -221,7 +221,7 @@ export default function Welcome() {
         {envConfig?.allowDriverSignup && (
           <div className="mt-8 pt-8 border-t border-primary/20">
             <div className="text-center space-y-4">
-              <p className="text-white text-sm">
+              <p className="text-amber-700 text-sm">
                 Interested in earning money as a driver?
               </p>
               <Link href="/driver-onboarding">
@@ -241,7 +241,7 @@ export default function Welcome() {
         {/* Order Tracking Section */}
         <div className="w-full max-w-md mt-12 pt-8 border-t border-primary/20">
           <div className="text-center space-y-4">
-            <h3 className="text-lg font-semibold text-white">
+            <h3 className="text-lg font-semibold text-amber-900">
               Track Your Order
             </h3>
             <div className="flex gap-2">
