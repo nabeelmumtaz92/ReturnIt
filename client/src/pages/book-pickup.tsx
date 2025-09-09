@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -437,17 +437,48 @@ export default function BookPickup() {
   const selectedImage = deliveryHandoffImg;
 
   return (
-    <div className="min-h-screen relative">
-      {/* Background Hero Image */}
-      <div 
-        className="absolute inset-0 z-0 bg-img-enhanced"
-        style={{
-          backgroundImage: `url(${selectedImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      />
-      <div className="absolute inset-0 bg-white/75"></div>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      {/* Professional Hero Section */}
+      <div className="w-full bg-white/90 border-b border-amber-100">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
+            {/* Hero Content */}
+            <div className="flex-1 text-center lg:text-left">
+              <h1 className="text-4xl lg:text-5xl font-bold text-amber-900 mb-4">
+                Schedule Your Return
+              </h1>
+              <p className="text-xl text-amber-700 mb-6">
+                Professional pickup service for returns, exchanges, and donations
+              </p>
+              <div className="flex items-center justify-center lg:justify-start gap-4 text-amber-600">
+                <div className="flex items-center gap-2">
+                  <Package className="h-5 w-5" />
+                  <span>Free Pickup</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="h-5 w-5" />
+                  <span>Same Day</span>
+                </div>
+              </div>
+            </div>
+            {/* Hero Image Card */}
+            <div className="flex-1 max-w-md">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-amber-100">
+                <img 
+                  src={selectedImage} 
+                  alt="Professional delivery service" 
+                  className="w-full h-64 object-cover"
+                />
+                <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50">
+                  <p className="text-sm text-amber-700 font-medium">
+                    Professional pickup and delivery service
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Header */}
       <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -476,7 +507,7 @@ export default function BookPickup() {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center text-amber-900">
