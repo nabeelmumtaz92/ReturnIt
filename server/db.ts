@@ -1,10 +1,10 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
+import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
 import * as schema from "@shared/schema";
 import { PerformanceService } from "./performance";
 
-neonConfig.webSocketConstructor = ws;
+// Configure neon for HTTP client (stateless, serverless-friendly)
+// Note: fetchConnectionCache is now always enabled by default
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -12,25 +12,47 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Optimized connection pool configuration
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  max: 20, // Maximum connections in pool
-  min: 2,  // Minimum connections to maintain
-  connectionTimeoutMillis: 30000, // 30 seconds
-  idleTimeoutMillis: 600000, // 10 minutes
-  maxUses: 7500, // Maximum uses per connection
-  allowExitOnIdle: true
-});
+// Stateless HTTP-based database client (no persistent connections)
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle(sql, { schema });
 
-// Enhanced database instance with performance tracking
-export const db = drizzle({ client: pool, schema });
+// Retry helper for transient connection errors
+async function retryOnTransientError<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 100
+): Promise<T> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error: any) {
+      const isTransientError = 
+        error?.code === '57P01' || // admin_shutdown
+        error?.code === '57P02' || // crash_shutdown  
+        error?.code === '57P03' || // cannot_connect_now
+        error?.code === 'ECONNRESET' ||
+        error?.code === 'EPIPE' ||
+        error?.code === 'ETIMEDOUT';
 
-// Database health monitoring
+      if (isTransientError && attempt < maxRetries) {
+        const delay = baseDelay * Math.pow(2, attempt - 1); // exponential backoff
+        console.log(`Database transient error (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms:`, error.message);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+// Database health monitoring with retry logic
 export async function checkDatabaseHealth() {
   try {
     const start = Date.now();
-    await pool.query('SELECT 1');
+    await retryOnTransientError(async () => {
+      return await sql`SELECT 1`;
+    });
     const duration = Date.now() - start;
     
     PerformanceService.trackMetric('db_health_check', duration);
@@ -38,9 +60,7 @@ export async function checkDatabaseHealth() {
     return {
       healthy: true,
       responseTime: duration,
-      poolSize: pool.totalCount,
-      idleCount: pool.idleCount,
-      waitingCount: pool.waitingCount
+      connectionType: 'HTTP (stateless)'
     };
   } catch (error) {
     console.error('Database health check failed:', error);
@@ -51,15 +71,7 @@ export async function checkDatabaseHealth() {
   }
 }
 
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  console.log('Closing database pool...');
-  await pool.end();
-  process.exit(0);
-});
+// Export retry helper for use in other parts of the application
+export { retryOnTransientError };
 
-process.on('SIGINT', async () => {
-  console.log('Closing database pool...');
-  await pool.end();
-  process.exit(0);
-});
+// No graceful shutdown needed for HTTP client (stateless connections)
