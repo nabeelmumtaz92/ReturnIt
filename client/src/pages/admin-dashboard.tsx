@@ -107,7 +107,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
   const [showUnifiedAI, setShowUnifiedAI] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
-  const [navigationHistory, setNavigationHistory] = useState<string[]>(['overview']);
+  const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
   
   // Real-time data state
   const [dashboardStats, setDashboardStats] = useState({
@@ -125,23 +125,41 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   // Function to change sections
   const changeSection = (newSection: string) => {
     console.log('Changing section to:', newSection);
-    // Add current section to history before changing
-    setNavigationHistory(prev => [...prev, currentSection]);
-    setCurrentSection(newSection);
     
-    if (newSection === 'overview') {
-      setLocation('/admin-dashboard');
-    } else {
-      setLocation(`/admin-dashboard?section=${newSection}`);
+    // Don't add to history if we're already on this section
+    if (newSection !== currentSection) {
+      // Add current section to history before changing (avoid duplicates)
+      setNavigationHistory(prev => {
+        if (prev[prev.length - 1] !== currentSection) {
+          return [...prev, currentSection];
+        }
+        return prev;
+      });
+      
+      setCurrentSection(newSection);
+      
+      // Update URL
+      if (newSection === 'overview') {
+        setLocation('/admin-dashboard');
+      } else {
+        setLocation(`/admin-dashboard?section=${newSection}`);
+      }
     }
   };
 
   // Function to go back to previous section
   const goBack = () => {
-    if (navigationHistory.length > 1) {
+    if (navigationHistory.length > 0) {
+      // Get the last section from history
       const previousSection = navigationHistory[navigationHistory.length - 1];
+      
+      // Remove the last section from history
       setNavigationHistory(prev => prev.slice(0, -1));
       
+      // Update current section to the previous one
+      setCurrentSection(previousSection);
+      
+      // Update URL
       if (previousSection === 'overview') {
         setLocation('/admin-dashboard');
       } else {
@@ -615,7 +633,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -623,7 +641,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -1019,7 +1037,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -1027,7 +1045,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -1316,33 +1334,58 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const fetchDrivers = async () => {
       setIsLoadingDrivers(true);
       try {
-        const response = await fetch('/api/admin/drivers');
-        if (response.ok) {
-          const realDrivers = await response.json();
-          // Transform to expected format
-          const transformedDrivers = realDrivers.map((driver: Driver) => ({
-            id: driver.id,
-            name: `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Driver',
-            status: driver.isActive ? 'active' : 'inactive',
-            availability: driver.isOnline ? 'online' : 'offline',
-            completedOrders: driver.completedDeliveries || 0,
-            rating: driver.driverRating || 5.0,
-            punctuality: 95, // Default punctuality score
-            onboardingStatus: driver.stripeOnboardingComplete ? 'completed' : 'pending',
-            documents: {
-              license: driver.driverLicense ? 'verified' : 'pending',
-              insurance: 'verified', // Default for now
-              vehicle: driver.vehicleInfo ? 'verified' : 'pending'
-            },
-            currentDelivery: null, // Would need to query active orders
-            email: driver.email,
-            phone: driver.phone,
-            totalEarnings: driver.totalEarnings || 0
-          }));
-          setDrivers(transformedDrivers);
+        const response = await fetch('/api/admin/drivers', {
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            toast({
+              title: "Authentication Error",
+              description: "Please log in as admin to view drivers",
+              variant: "destructive"
+            });
+            return;
+          }
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
-      } catch (error) {
+        
+        const realDrivers = await response.json();
+        console.log('Fetched drivers:', realDrivers);
+        
+        // Transform to expected format with better error handling
+        const transformedDrivers = realDrivers.map((driver: Driver) => ({
+          id: driver.id,
+          name: `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Driver',
+          status: driver.isActive ? 'active' : 'inactive',
+          availability: driver.isOnline ? 'online' : 'offline',
+          completedOrders: driver.completedDeliveries || 0,
+          rating: Number(driver.driverRating) || 5.0,
+          punctuality: 95, // Default punctuality score - will be improved with real data
+          onboardingStatus: driver.stripeOnboardingComplete ? 'completed' : 'pending',
+          documents: {
+            license: driver.driverLicense ? 'verified' : 'pending',
+            insurance: 'verified', // Default for now
+            vehicle: driver.vehicleInfo ? 'verified' : 'pending'
+          },
+          currentDelivery: null, // Would need to query active orders
+          email: driver.email,
+          phone: driver.phone || 'Not provided',
+          totalEarnings: Number(driver.totalEarnings) || 0
+        }));
+        
+        setDrivers(transformedDrivers);
+        console.log('Transformed drivers:', transformedDrivers);
+      } catch (error: any) {
         console.error('Error fetching drivers:', error);
+        toast({
+          title: "Error Loading Drivers",
+          description: error.message || "Failed to load driver data. Please try again.",
+          variant: "destructive"
+        });
         setDrivers([]);
       } finally {
         setIsLoadingDrivers(false);
@@ -1356,15 +1399,50 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const [selectedTab, setSelectedTab] = useState('active');
 
-    const toggleDriverStatus = (id: number) => {
-      setDrivers(prev => prev.map((driver: any) => 
-        driver.id === id 
-          ? { 
-              ...driver, 
-              availability: driver.availability === 'online' ? 'offline' : 'online' 
-            }
-          : driver
-      ));
+    const toggleDriverStatus = async (id: number) => {
+      const driver = drivers.find(d => d.id === id);
+      if (!driver) return;
+      
+      const newOnlineStatus = driver.availability !== 'online';
+      
+      try {
+        const response = await fetch(`/api/admin/drivers/${id}/status`, {
+          method: 'PATCH',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ isOnline: newOnlineStatus })
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to update driver status: ${response.statusText}`);
+        }
+        
+        const result = await response.json();
+        
+        // Update local state after successful backend update
+        setDrivers(prev => prev.map((driver: any) => 
+          driver.id === id 
+            ? { 
+                ...driver, 
+                availability: newOnlineStatus ? 'online' : 'offline' 
+              }
+            : driver
+        ));
+        
+        toast({
+          title: "Driver Status Updated",
+          description: `Driver set to ${newOnlineStatus ? 'online' : 'offline'}`
+        });
+      } catch (error: any) {
+        console.error('Error updating driver status:', error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to update driver status",
+          variant: "destructive"
+        });
+      }
     };
 
     const approveDriver = (id: number) => {
@@ -1449,7 +1527,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -1457,7 +1535,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -1717,11 +1795,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <p className="text-2xl font-bold text-green-700">{(activeDrivers.reduce((sum, d) => sum + d.rating, 0) / activeDrivers.length).toFixed(1)}</p>
+                  <p className="text-2xl font-bold text-green-700">{activeDrivers.length > 0 ? (activeDrivers.reduce((sum, d) => sum + d.rating, 0) / activeDrivers.length).toFixed(1) : '0.0'}</p>
                   <p className="text-sm text-amber-600">Average Rating</p>
                 </div>
                 <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <p className="text-2xl font-bold text-blue-700">{Math.round(activeDrivers.reduce((sum, d) => sum + d.punctuality, 0) / activeDrivers.length)}%</p>
+                  <p className="text-2xl font-bold text-blue-700">{activeDrivers.length > 0 ? Math.round(activeDrivers.reduce((sum, d) => sum + d.punctuality, 0) / activeDrivers.length) : 0}%</p>
                   <p className="text-sm text-amber-600">Average Punctuality</p>
                 </div>
                 <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
@@ -1777,7 +1855,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -1785,7 +1863,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2230,7 +2308,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2238,7 +2316,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2355,7 +2433,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2363,7 +2441,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2446,7 +2524,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2454,7 +2532,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2658,7 +2736,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2666,7 +2744,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2763,7 +2841,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2771,7 +2849,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -2906,7 +2984,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -2914,7 +2992,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -3081,7 +3159,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -3089,7 +3167,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -3219,7 +3297,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -3227,7 +3305,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -3377,7 +3455,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -3385,7 +3463,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -3601,7 +3679,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -3609,7 +3687,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -3752,8 +3830,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       setIsLoadingPayouts(true);
       try {
         const [driversResponse, paymentRecordsResponse] = await Promise.all([
-          fetch('/api/admin/drivers'),
-          fetch('/api/admin/payment-records')
+          fetch('/api/admin/drivers', { credentials: 'include' }),
+          fetch('/api/admin/payment-records', { credentials: 'include' })
         ]);
         
         if (driversResponse.ok && paymentRecordsResponse.ok) {
@@ -3818,25 +3896,36 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
-          }
+          },
+          credentials: 'include'
         });
         
         if (response.ok) {
+          const result = await response.json();
           setPayoutData(prev => prev.map(driver => 
-            driver.id === driverId 
-              ? { ...driver, status: 'Processing' }
+            driver.id === parseInt(driverId) 
+              ? { ...driver, status: 'Completed' }
               : driver
           ));
           toast({
-            title: "Instant Payout Initiated",
-            description: `Processing instant payout (fee: $0.50)`,
+            title: "Instant Payout Completed",
+            description: `Processed $${result.netAmount?.toFixed(2)} instant payout (fee: $${result.feeAmount?.toFixed(2)})`,
+          });
+          // Refresh payout data to reflect changes
+          fetchPayoutData();
+        } else {
+          const error = await response.json();
+          toast({
+            title: "Instant Payout Failed",
+            description: error.error || "Failed to process instant payout",
+            variant: "destructive",
           });
         }
       } catch (error) {
         console.error('Error processing instant payout:', error);
         toast({
-          title: "Error",
-          description: "Failed to process instant payout",
+          title: "Network Error",
+          description: "Failed to connect to server. Please try again.",
           variant: "destructive",
         });
       }
@@ -3877,11 +3966,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       setIsProcessing(true);
       setProcessingStatus('Processing bulk payouts...');
       try {
+        // Get eligible driver IDs from real payout data
+        const eligibleDriverIds = payoutData
+          .filter(driver => driver.status === 'Pending' && driver.netPayoutAmount > 0)
+          .map(driver => driver.id);
+        
+        if (eligibleDriverIds.length === 0) {
+          setProcessingStatus('❌ No eligible drivers for bulk payouts');
+          setTimeout(() => setProcessingStatus(''), 3000);
+          return;
+        }
+        
         const response = await fetch('/api/admin/bulk-payouts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ 
-            driverIds: ['driver_1', 'driver_2', 'driver_3'],
+            driverIds: eligibleDriverIds,
             payoutType: 'weekly' 
           })
         });
@@ -3946,7 +4047,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Total Payouts Today</p>
-                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 500 + 200).toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-amber-900">
+                    ${payoutData
+                      .filter(d => d.status === 'Completed')
+                      .reduce((sum, d) => sum + d.netPayoutAmount, 0)
+                      .toFixed(2)}
+                  </p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
               </div>
@@ -3958,7 +4064,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Pending Payouts</p>
-                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 15 + 5)}</p>
+                  <p className="text-2xl font-bold text-amber-900">
+                    {payoutData.filter(d => d.status === 'Pending' || d.status === 'Scheduled').length}
+                  </p>
                 </div>
                 <Users className="h-8 w-8 text-amber-600" />
               </div>
@@ -3970,7 +4078,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Instant Fees Collected</p>
-                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 25 + 5).toFixed(2)}</p>
+                  <p className="text-2xl font-bold text-amber-900">
+                    ${(payoutData
+                      .filter(d => d.paymentMethod === 'Stripe Connect' && d.status === 'Completed')
+                      .length * 0.50
+                    ).toFixed(2)}
+                  </p>
                 </div>
                 <CreditCard className="h-8 w-8 text-blue-600" />
               </div>
@@ -3982,7 +4095,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Weekly Payouts</p>
-                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 25 + 10)}</p>
+                  <p className="text-2xl font-bold text-amber-900">
+                    {payoutData.filter(d => d.paymentMethod === 'Bank Transfer' && d.status === 'Completed').length}
+                  </p>
                   <p className="text-xs text-green-600">No fees</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
@@ -4158,80 +4273,50 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [taxYear, setTaxYear] = useState(new Date().getFullYear().toString());
     const [quarter, setQuarter] = useState('');
     const [format, setFormat] = useState('csv');
-    const [isGenerating, setIsGenerating] = useState(false);
     const [generationStatus, setGenerationStatus] = useState('');
-    const [taxReportData, setTaxReportData] = useState(() => {
-      // Generate realistic tax report data using faker
-      return Array.from({ length: 15 }, (_, i) => ({
-        id: i + 1,
-        driverName: `Driver ${i + 1}`,
-        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
-        grossEarnings: 25000 + (i * 3000),
-        platformFees: 1250 + (i * 150),
-        netTaxableIncome: 0, // Calculated below
-        federalWithheld: 100 + (i * 50),
-        stateWithheld: 50 + (i * 25),
-        q1Earnings: 6000 + (i * 500),
-        q2Earnings: 6000 + (i * 500),
-        q3Earnings: 6000 + (i * 500),
-        q4Earnings: 6000 + (i * 500),
-        status: ['Filed', 'Pending', 'Draft', 'Processing'][i % 4],
-        lastUpdated: new Date(Date.now() - (i * 86400000)),
-        paymentMethod: ['Bank Transfer', 'PayPal', 'Stripe', 'Check'][i % 4],
-        ssn: `XXX-XX-${1000 + i}` // Masked SSN for privacy
-      })).map(item => ({
-        ...item,
-        netTaxableIncome: item.grossEarnings - item.platformFees
-      }));
+    const queryClient = useQueryClient();
+    
+    // Fetch real payment summary data
+    const { data: paymentSummary, isLoading: summaryLoading } = useQuery({
+      queryKey: ['/api/admin/payment-summary'],
+      enabled: true
+    });
+    
+    // Fetch real tax report data based on selected year
+    const { data: taxReportData = [], isLoading: taxDataLoading } = useQuery({
+      queryKey: ['/api/admin/tax-reports', taxYear],
+      queryFn: async () => {
+        const response = await fetch(`/api/admin/tax-reports?year=${taxYear}`, {
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          throw new Error('Failed to fetch tax report data');
+        }
+        return response.json();
+      },
+      enabled: true
     });
 
-    const regenerateTaxData = () => {
-      const newData = Array.from({ length: 15 }, (_, i) => ({
-        id: i + 1,
-        driverName: `Driver ${i + 1}`,
-        driverId: `DRV${String(i + 1).padStart(3, '0')}`,
-        grossEarnings: 25000 + (i * 3000),
-        platformFees: 1250 + (i * 150),
-        netTaxableIncome: 0,
-        federalWithheld: 100 + (i * 50),
-        stateWithheld: 50 + (i * 25),
-        q1Earnings: 6000 + (i * 500),
-        q2Earnings: 6000 + (i * 500),
-        q3Earnings: 6000 + (i * 500),
-        q4Earnings: 6000 + (i * 500),
-        status: ['Filed', 'Pending', 'Draft', 'Processing'][i % 4],
-        lastUpdated: new Date(Date.now() - (i * 86400000)),
-        paymentMethod: ['Bank Transfer', 'PayPal', 'Stripe', 'Check'][i % 4],
-        ssn: `XXX-XX-${1000 + i}`
-      })).map(item => ({
-        ...item,
-        netTaxableIncome: item.grossEarnings - item.platformFees
-      }));
-      setTaxReportData(newData);
-      toast({
-        title: "Tax Data Refreshed",
-        description: "Generated new sample tax report data with updated driver information",
-      });
+    // Refresh tax data from server
+    const refreshTaxData = async () => {
+      try {
+        await queryClient.invalidateQueries({ queryKey: ['/api/admin/tax-reports', taxYear] });
+        await queryClient.invalidateQueries({ queryKey: ['/api/admin/payment-summary'] });
+        toast({
+          title: "Tax Data Refreshed",
+          description: "Successfully refreshed tax data from server",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to refresh tax data",
+          variant: "destructive"
+        });
+      }
     };
 
-    // Function to convert data to CSV format
-    const convertToCSV = (data: any[], headers: string[]) => {
-      const csvContent = [
-        headers.join(','),
-        ...data.map(row => headers.map(header => {
-          const value = row[header] || '';
-          // Escape commas and quotes in CSV
-          return typeof value === 'string' && (value.includes(',') || value.includes('"')) 
-            ? `"${value.replace(/"/g, '""')}"` 
-            : value;
-        }).join(','))
-      ].join('\n');
-      return csvContent;
-    };
-
-    // Function to trigger download
-    const downloadFile = (content: string, filename: string, type: string = 'text/csv') => {
-      const blob = new Blob([content], { type });
+    // Function to download blob response from backend
+    const downloadBlobResponse = (blob: Blob, filename: string) => {
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -4242,185 +4327,91 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       window.URL.revokeObjectURL(url);
     };
 
-    const handleGenerateTaxReport = async () => {
-      setIsGenerating(true);
-      setGenerationStatus('Generating tax report...');
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1500));
+    // Mutation for generating tax reports
+    const generateTaxReportMutation = useMutation({
+      mutationFn: async () => {
+        const response = await fetch('/api/admin/export-payments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            format: format,
+            dateRange: quarter ? `${taxYear}-Q${quarter}` : taxYear,
+            status: 'completed'
+          }),
+        });
         
-        // Generate 1099-NEC forms with current tax data
-        const taxData = taxReportData.map(driver => ({
-          driver_name: driver.driverName,
-          driver_id: driver.driverId,
-          gross_earnings: `$${driver.grossEarnings.toLocaleString()}`,
-          platform_fees: `$${driver.platformFees.toLocaleString()}`,
-          net_taxable_income: `$${driver.netTaxableIncome.toLocaleString()}`,
-          federal_tax_withheld: `$${driver.federalWithheld}`,
-          state_tax_withheld: `$${driver.stateWithheld}`,
-          quarter_1: `$${driver.q1Earnings.toLocaleString()}`,
-          quarter_2: `$${driver.q2Earnings.toLocaleString()}`,
-          quarter_3: `$${driver.q3Earnings.toLocaleString()}`,
-          quarter_4: `$${driver.q4Earnings.toLocaleString()}`,
-          ssn_masked: driver.ssn,
-          status: driver.status,
-          payment_method: driver.paymentMethod,
-          last_updated: driver.lastUpdated.toLocaleDateString(),
-          form_1099_required: driver.netTaxableIncome >= 600 ? 'Yes' : 'No'
-        }));
-
-        const headers = [
-          'driver_name', 'driver_id', 'gross_earnings', 'platform_fees', 'net_taxable_income',
-          'federal_tax_withheld', 'state_tax_withheld', 'quarter_1', 'quarter_2', 'quarter_3', 
-          'quarter_4', 'ssn_masked', 'status', 'payment_method', 'last_updated', 'form_1099_required'
-        ];
+        if (!response.ok) {
+          throw new Error('Failed to generate tax report');
+        }
         
+        return response.blob();
+      },
+      onSuccess: (blob) => {
         const quarterText = quarter ? `_Q${quarter}` : '';
-        const filename = `tax_report_${taxYear}${quarterText}_${new Date().toISOString().split('T')[0]}.csv`;
-        
-        const csvContent = convertToCSV(taxData, headers);
-        downloadFile(csvContent, filename);
-        
+        const filename = `tax_report_${taxYear}${quarterText}_${new Date().toISOString().split('T')[0]}.${format === 'xlsx' ? 'xlsx' : 'csv'}`;
+        downloadBlobResponse(blob, filename);
         setGenerationStatus(`✅ Tax report for ${taxYear}${quarterText} downloaded successfully`);
         setTimeout(() => setGenerationStatus(''), 3000);
-      } catch (error) {
+      },
+      onError: (error) => {
+        console.error('Tax report generation error:', error);
         setGenerationStatus('❌ Error generating tax report');
         setTimeout(() => setGenerationStatus(''), 3000);
       }
-      setIsGenerating(false);
+    });
+    
+    const handleGenerateTaxReport = () => {
+      setGenerationStatus('Generating tax report...');
+      generateTaxReportMutation.mutate();
     };
 
-    const handleGenerate1099Forms = async () => {
-      setIsGenerating(true);
-      setGenerationStatus('Generating 1099 forms...');
-      try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Generate 1099-NEC data for each driver
-        const form1099Data = [
-          { 
-            form_type: '1099-NEC',
-            tax_year: taxYear,
-            payer_name: 'ReturnIt Logistics LLC',
-            payer_tin: '12-3456789',
-            payer_address: '123 Business Ave, City, State 12345',
-            recipient_name: 'John Smith',
-            recipient_tin: '123-45-6789',
-            recipient_address: '456 Driver St, City, State 12345',
-            nonemployee_compensation: '$3,247.50',
-            federal_income_tax: '$0.00',
-            form_generated_date: new Date().toISOString().split('T')[0]
+    // Mutation for generating 1099 forms
+    const generate1099Mutation = useMutation({
+      mutationFn: async () => {
+        const response = await fetch('/api/admin/generate-1099s', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          { 
-            form_type: '1099-NEC',
-            tax_year: taxYear,
-            payer_name: 'ReturnIt Logistics LLC',
-            payer_tin: '12-3456789',
-            payer_address: '123 Business Ave, City, State 12345',
-            recipient_name: 'Sarah Wilson',
-            recipient_tin: '987-65-4321',
-            recipient_address: '789 Route Dr, City, State 12345',
-            nonemployee_compensation: '$2,178.30',
-            federal_income_tax: '$0.00',
-            form_generated_date: new Date().toISOString().split('T')[0]
-          },
-          { 
-            form_type: '1099-NEC',
-            tax_year: taxYear,
-            payer_name: 'ReturnIt Logistics LLC',
-            payer_tin: '12-3456789',
-            payer_address: '123 Business Ave, City, State 12345',
-            recipient_name: 'Mike Chen',
-            recipient_tin: '456-78-9123',
-            recipient_address: '321 Delivery Ln, City, State 12345',
-            nonemployee_compensation: '$1,798.60',
-            federal_income_tax: '$0.00',
-            form_generated_date: new Date().toISOString().split('T')[0]
-          }
-        ];
-
-        const headers = [
-          'form_type', 'tax_year', 'payer_name', 'payer_tin', 'payer_address',
-          'recipient_name', 'recipient_tin', 'recipient_address', 
-          'nonemployee_compensation', 'federal_income_tax', 'form_generated_date'
-        ];
+          credentials: 'include',
+          body: JSON.stringify({
+            year: parseInt(taxYear)
+          }),
+        });
         
-        const filename = `1099_forms_${taxYear}_${new Date().toISOString().split('T')[0]}.csv`;
+        if (!response.ok) {
+          throw new Error('Failed to generate 1099 forms');
+        }
         
-        const csvContent = convertToCSV(form1099Data, headers);
-        downloadFile(csvContent, filename);
-        
+        return response.blob();
+      },
+      onSuccess: (blob) => {
+        const filename = `1099_forms_${taxYear}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        downloadBlobResponse(blob, filename);
         setGenerationStatus(`✅ 1099-NEC forms for ${taxYear} downloaded successfully`);
         setTimeout(() => setGenerationStatus(''), 3000);
-      } catch (error) {
+      },
+      onError: (error) => {
+        console.error('1099 generation error:', error);
         setGenerationStatus('❌ Error generating 1099 forms');
         setTimeout(() => setGenerationStatus(''), 3000);
       }
-      setIsGenerating(false);
+    });
+    
+    const handleGenerate1099Forms = () => {
+      setGenerationStatus('Generating 1099 forms...');
+      generate1099Mutation.mutate();
     };
 
-    const handleExportAllData = async () => {
-      setIsGenerating(true);
-      setGenerationStatus('Exporting comprehensive tax data...');
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1800));
-        
-        // Generate comprehensive export with all tax-related data
-        const comprehensiveData = [
-          {
-            export_type: 'Driver Earnings Summary',
-            driver_name: 'John Smith',
-            driver_id: 'DRV001',
-            total_trips: 247,
-            gross_earnings: '$3,247.50',
-            platform_fees: '$162.38',
-            net_earnings: '$3,085.12',
-            instant_payouts: 45,
-            instant_payout_fees: '$22.50',
-            tax_year: taxYear,
-            requires_1099: 'Yes'
-          },
-          {
-            export_type: 'Platform Revenue Summary',
-            total_gross_revenue: '$89,247.30',
-            driver_payouts: '$62,473.11',
-            platform_fees: '$26,774.19',
-            instant_payout_fees: '$1,234.56',
-            processing_fees: '$892.47',
-            net_platform_revenue: '$24,647.07',
-            tax_year: taxYear,
-            total_1099_forms: 23
-          },
-          {
-            export_type: 'Payment Processing Summary',
-            total_transactions: 1847,
-            successful_payments: 1839,
-            failed_payments: 8,
-            refunds_processed: 12,
-            chargeback_fees: '$45.00',
-            stripe_fees: '$2,677.42',
-            tax_year: taxYear
-          }
-        ];
-
-        const headers = Object.keys(comprehensiveData[0]);
-        const filename = `comprehensive_tax_export_${taxYear}_${new Date().toISOString().split('T')[0]}.csv`;
-        
-        const csvContent = convertToCSV(comprehensiveData, headers);
-        downloadFile(csvContent, filename);
-        
-        setGenerationStatus(`✅ Comprehensive tax data for ${taxYear} exported successfully`);
-        setTimeout(() => setGenerationStatus(''), 3000);
-      } catch (error) {
-        setGenerationStatus('❌ Error exporting tax data');
-        setTimeout(() => setGenerationStatus(''), 3000);
-      }
-      setIsGenerating(false);
-    };
+    // Old mock functions removed - now using real backend APIs
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Back Button */}
-        {navigationHistory.length > 1 && (
+        {navigationHistory.length > 0 && (
           <div className="mb-4">
             <Button 
               onClick={goBack}
@@ -4428,7 +4419,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-amber-200 hover:bg-amber-50"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
             </Button>
           </div>
         )}
@@ -4497,7 +4488,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Drivers Requiring 1099</p>
-                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 15 + 8)}</p>
+                  {summaryLoading ? (
+                    <div className="h-8 w-16 bg-amber-200 animate-pulse rounded"></div>
+                  ) : (
+                    <p className="text-2xl font-bold text-amber-900">
+                      {taxReportData.filter((d: any) => d.netTaxableIncome >= 600).length}
+                    </p>
+                  )}
                   <p className="text-xs text-amber-700">$600+ earnings</p>
                 </div>
                 <Users className="h-8 w-8 text-amber-600" />
@@ -4510,7 +4507,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Total Contractor Payments</p>
-                  <p className="text-2xl font-bold text-amber-900">${(Math.random() * 50000 + 25000).toFixed(2)}</p>
+                  {summaryLoading ? (
+                    <div className="h-8 w-24 bg-amber-200 animate-pulse rounded"></div>
+                  ) : (
+                    <p className="text-2xl font-bold text-amber-900">
+                      ${(paymentSummary?.todayDriverEarnings || 0).toLocaleString()}
+                    </p>
+                  )}
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
               </div>
@@ -4522,7 +4525,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Forms Generated</p>
-                  <p className="text-2xl font-bold text-amber-900">{Math.floor(Math.random() * 20 + 5)}</p>
+                  {summaryLoading ? (
+                    <div className="h-8 w-12 bg-amber-200 animate-pulse rounded"></div>
+                  ) : (
+                    <p className="text-2xl font-bold text-amber-900">
+                      {taxReportData.filter((d: any) => d.form1099Generated).length}
+                    </p>
+                  )}
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
@@ -4534,8 +4543,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-amber-600">Tax Year</p>
-                  <p className="text-2xl font-bold text-amber-900">2025</p>
-                  <p className="text-xs text-amber-700">Current</p>
+                  <p className="text-2xl font-bold text-amber-900">{taxYear}</p>
+                  <p className="text-xs text-amber-700">Selected</p>
                 </div>
                 <Badge className="bg-amber-100 text-amber-800">Active</Badge>
               </div>
@@ -4553,10 +4562,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <Button 
                 className="h-auto p-6 bg-blue-600 hover:bg-blue-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
                 onClick={handleGenerateTaxReport}
-                disabled={isGenerating}
+                disabled={generateTaxReportMutation.isPending}
                 data-testid="button-generate-tax-report"
               >
-                <BarChart3 className="h-8 w-8" />
+                {generateTaxReportMutation.isPending ? (
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                ) : (
+                  <BarChart3 className="h-8 w-8" />
+                )}
                 <span>Generate Tax Report</span>
                 <span className="text-xs opacity-80">Download comprehensive report</span>
               </Button>
@@ -4564,22 +4577,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <Button 
                 className="h-auto p-6 bg-green-600 hover:bg-green-700 text-white flex flex-col items-center space-y-2 disabled:opacity-50"
                 onClick={handleGenerate1099Forms}
-                disabled={isGenerating}
+                disabled={generate1099Mutation.isPending}
                 data-testid="button-generate-1099-forms"
               >
-                <CheckCircle className="h-8 w-8" />
+                {generate1099Mutation.isPending ? (
+                  <Loader2 className="h-8 w-8 animate-spin" />
+                ) : (
+                  <CheckCircle className="h-8 w-8" />
+                )}
                 <span>Generate 1099 Forms</span>
                 <span className="text-xs opacity-80">For drivers over $600</span>
               </Button>
               
               <Button 
                 className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2"
-                onClick={regenerateTaxData}
-                data-testid="button-regenerate-tax-data"
+                onClick={refreshTaxData}
+                data-testid="button-refresh-tax-data"
               >
                 <RefreshCw className="h-8 w-8" />
-                <span>Regenerate Data</span>
-                <span className="text-xs opacity-80">Refresh sample data</span>
+                <span>Refresh Data</span>
+                <span className="text-xs opacity-80">Update from server</span>
               </Button>
             </div>
 
@@ -4602,55 +4619,90 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <p className="text-sm text-amber-600">Comprehensive tax information for all drivers</p>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-amber-200">
-                    <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">ID</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">Gross Earnings</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">Platform Fees</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">Net Taxable</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">1099 Required</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">Status</th>
-                    <th className="text-left p-3 text-amber-900 font-medium">Payment Method</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {taxReportData.slice(0, 10).map((driver) => (
-                    <tr key={driver.id} className="border-b border-amber-100 hover:bg-amber-50/30">
-                      <td className="p-3 text-amber-900 font-medium">{driver.driverName}</td>
-                      <td className="p-3 text-amber-600 font-mono text-xs">{driver.driverId}</td>
-                      <td className="p-3 text-amber-900">${driver.grossEarnings.toLocaleString()}</td>
-                      <td className="p-3 text-amber-600">${driver.platformFees.toLocaleString()}</td>
-                      <td className="p-3 text-amber-900 font-medium">${driver.netTaxableIncome.toLocaleString()}</td>
-                      <td className="p-3">
-                        <Badge className={driver.netTaxableIncome >= 600 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}>
-                          {driver.netTaxableIncome >= 600 ? 'Required' : 'Not Required'}
-                        </Badge>
-                      </td>
-                      <td className="p-3">
-                        <Badge className={
-                          driver.status === 'Filed' ? 'bg-green-100 text-green-800' :
-                          driver.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
-                          driver.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-600'
-                        }>
-                          {driver.status}
-                        </Badge>
-                      </td>
-                      <td className="p-3 text-amber-600 text-xs">{driver.paymentMethod}</td>
-                    </tr>
+            {taxDataLoading ? (
+              <div className="space-y-4">
+                <div className="h-10 bg-amber-200 animate-pulse rounded"></div>
+                <div className="space-y-2">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="h-8 bg-amber-100 animate-pulse rounded"></div>
                   ))}
-                </tbody>
-              </table>
-              <div className="mt-4 text-center">
-                <p className="text-sm text-amber-600">
-                  Showing {Math.min(10, taxReportData.length)} of {taxReportData.length} drivers
-                  • {taxReportData.filter(d => d.netTaxableIncome >= 600).length} require 1099-NEC forms
-                </p>
+                </div>
               </div>
-            </div>
+            ) : taxReportData.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-amber-600">No tax data available for {taxYear}</p>
+                <Button 
+                  onClick={refreshTaxData} 
+                  className="mt-4"
+                  variant="outline"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Refresh Data
+                </Button>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-amber-200">
+                      <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">ID</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">Gross Earnings</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">Platform Fees</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">Net Taxable</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">1099 Required</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">Status</th>
+                      <th className="text-left p-3 text-amber-900 font-medium">Payment Method</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {taxReportData.slice(0, 10).map((driver: any, index: number) => (
+                      <tr key={driver.id || index} className="border-b border-amber-100 hover:bg-amber-50/30">
+                        <td className="p-3 text-amber-900 font-medium">
+                          {driver.driverName || driver.driver_name || `Driver ${index + 1}`}
+                        </td>
+                        <td className="p-3 text-amber-600 font-mono text-xs">
+                          {driver.driverId || driver.driver_id || `DRV${(index + 1).toString().padStart(3, '0')}`}
+                        </td>
+                        <td className="p-3 text-amber-900">
+                          ${(driver.grossEarnings || driver.gross_earnings || 0).toLocaleString()}
+                        </td>
+                        <td className="p-3 text-amber-600">
+                          ${(driver.platformFees || driver.platform_fees || 0).toLocaleString()}
+                        </td>
+                        <td className="p-3 text-amber-900 font-medium">
+                          ${(driver.netTaxableIncome || driver.net_taxable_income || 0).toLocaleString()}
+                        </td>
+                        <td className="p-3">
+                          <Badge className={(driver.netTaxableIncome || driver.net_taxable_income || 0) >= 600 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-600'}>
+                            {(driver.netTaxableIncome || driver.net_taxable_income || 0) >= 600 ? 'Required' : 'Not Required'}
+                          </Badge>
+                        </td>
+                        <td className="p-3">
+                          <Badge className={
+                            (driver.status === 'Filed' || driver.form1099Generated) ? 'bg-green-100 text-green-800' :
+                            driver.status === 'Processing' ? 'bg-blue-100 text-blue-800' :
+                            driver.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-600'
+                          }>
+                            {driver.status || (driver.form1099Generated ? 'Filed' : 'Pending')}
+                          </Badge>
+                        </td>
+                        <td className="p-3 text-amber-600 text-xs">
+                          {driver.paymentMethod || driver.payment_method || 'Bank Transfer'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-4 text-center">
+                  <p className="text-sm text-amber-600">
+                    Showing {Math.min(10, taxReportData.length)} of {taxReportData.length} drivers
+                    • {taxReportData.filter((d: any) => (d.netTaxableIncome || d.net_taxable_income || 0) >= 600).length} require 1099-NEC forms
+                  </p>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
         </div>

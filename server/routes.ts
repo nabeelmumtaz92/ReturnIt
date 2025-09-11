@@ -1090,6 +1090,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // GET endpoint for tax report data (for dashboard display)
+  app.get("/api/admin/tax-reports", requireAdmin, async (req, res) => {
+    try {
+      const year = req.query.year || new Date().getFullYear();
+      
+      // Get all payment records for the year and generate tax summary
+      const paymentRecords = await storage.getPaymentRecords();
+      const yearRecords = paymentRecords.filter((r: any) => r.taxYear === parseInt(year as string));
+      
+      // Group by driver and calculate tax info
+      const driverTaxData = new Map();
+      yearRecords.forEach((record: any) => {
+        const driverId = record.driverId;
+        if (!driverTaxData.has(driverId)) {
+          driverTaxData.set(driverId, {
+            id: driverId,
+            driverName: record.driverName,
+            driverId: `DRV${driverId.toString().padStart(3, '0')}`,
+            grossEarnings: 0,
+            platformFees: 0,
+            netTaxableIncome: 0,
+            form1099Generated: false,
+            status: 'Pending',
+            paymentMethod: 'Bank Transfer',
+            lastUpdated: new Date()
+          });
+        }
+        
+        const driver = driverTaxData.get(driverId);
+        driver.grossEarnings += record.driverEarnings.total;
+        driver.platformFees += record.companyRevenue.total;
+        driver.netTaxableIncome = driver.grossEarnings - driver.platformFees;
+        driver.lastUpdated = new Date(record.transactionDate);
+      });
+      
+      const taxReportData = Array.from(driverTaxData.values());
+      res.json(taxReportData);
+    } catch (error) {
+      console.error("Error fetching tax report data:", error);
+      res.status(500).json({ message: "Failed to fetch tax report data" });
+    }
+  });
+
   app.post("/api/admin/tax-report", requireAdmin, async (req, res) => {
     try {
       
@@ -1352,11 +1395,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/drivers", requireAdmin, async (req, res) => {
     try {
-      
       const drivers = await storage.getDrivers();
       res.json(drivers);
     } catch (error) {
+      console.error("Error fetching drivers:", error);
       res.status(500).json({ message: "Failed to fetch drivers" });
+    }
+  });
+
+  // Driver oversight management endpoint
+  app.patch("/api/admin/drivers/:id/oversight", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { action } = req.body;
+
+      if (!driverId || !action) {
+        return res.status(400).json({ message: "Driver ID and action are required" });
+      }
+
+      const validActions = ['review', 'suspend', 'reactivate', 'approve'];
+      if (!validActions.includes(action)) {
+        return res.status(400).json({ message: "Invalid action" });
+      }
+
+      // Get the current driver
+      const driver = await storage.getUser(driverId);
+      if (!driver || !driver.isDriver) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+
+      // Update driver based on action
+      let updateData: any = {};
+      switch (action) {
+        case 'suspend':
+          updateData = { isActive: false, suspendedAt: new Date() };
+          break;
+        case 'reactivate':
+          updateData = { isActive: true, suspendedAt: null };
+          break;
+        case 'approve':
+          updateData = { isActive: true, approvedAt: new Date() };
+          break;
+        case 'review':
+          updateData = { reviewedAt: new Date() };
+          break;
+      }
+
+      const updatedDriver = await storage.updateUser(driverId, updateData);
+      
+      res.json({ 
+        success: true, 
+        message: `Driver ${action} completed successfully`,
+        driver: updatedDriver 
+      });
+    } catch (error) {
+      console.error("Error updating driver oversight:", error);
+      res.status(500).json({ message: "Failed to update driver oversight" });
+    }
+  });
+
+  // Driver status toggle endpoint
+  app.patch("/api/admin/drivers/:id/status", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { isOnline } = req.body;
+
+      if (!driverId || typeof isOnline !== 'boolean') {
+        return res.status(400).json({ message: "Driver ID and online status are required" });
+      }
+
+      const updatedDriver = await storage.updateUser(driverId, { isOnline });
+      
+      if (!updatedDriver) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+
+      res.json({ 
+        success: true, 
+        message: `Driver status updated to ${isOnline ? 'online' : 'offline'}`,
+        driver: updatedDriver 
+      });
+    } catch (error) {
+      console.error("Error updating driver status:", error);
+      res.status(500).json({ message: "Failed to update driver status" });
     }
   });
 
@@ -1885,7 +2006,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "No eligible orders for instant payout" });
       }
 
-      const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverEarning || 0), 0);
+      const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverBasePay || 3.00), 0);
       const netAmount = totalEarnings - feeAmount;
 
       // Minimum payout validation
@@ -2007,11 +2128,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
             // Create payout record
             const payout = await storage.createDriverPayout({
               driverId: driverId,
-              amount: earnings,
+              totalAmount: earnings,
+              feeAmount: 0,
+              netAmount: earnings,
               payoutType: payoutType as 'instant' | 'weekly',
               status: 'completed',
-              stripePayoutId: `po_bulk_${Math.random().toString(36).substr(2, 9)}`,
-              taxYear: new Date().getFullYear()
+              stripeTransferId: `po_bulk_${Math.random().toString(36).substr(2, 9)}`,
+              taxYear: new Date().getFullYear(),
+              orderIds: unpaidOrders.map(o => o.id)
             });
             
             // Mark orders as paid
@@ -2030,8 +2154,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           } else {
             results.push({ driverId, status: 'no_earnings', amount: 0 });
           }
-        } catch (error) {
-          results.push({ driverId, status: 'error', error: error.message });
+        } catch (error: any) {
+          results.push({ driverId, status: 'error', error: error?.message || 'Unknown error' });
         }
       }
       
@@ -2045,6 +2169,100 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Bulk payout error:", error);
       res.status(500).json({ error: "Failed to process bulk payouts" });
+    }
+  });
+
+  // Admin instant payout for individual driver
+  app.post("/api/admin/payouts/:driverId/instant", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(404).json({ error: "Driver not found" });
+      }
+
+      const { feeAmount = 0.50 } = req.body;
+      
+      // Get pending earnings for the driver
+      const driverOrders = await storage.getDriverOrders(driverId);
+      const pendingOrders = driverOrders.filter(order => 
+        order.paymentStatus === 'completed' && order.driverPayoutStatus === 'pending'
+      );
+
+      if (pendingOrders.length === 0) {
+        return res.status(400).json({ error: "No eligible orders for instant payout" });
+      }
+
+      const totalEarnings = pendingOrders.reduce((sum, order) => sum + (order.driverBasePay || 3.00), 0);
+      const netAmount = totalEarnings - feeAmount;
+
+      // Minimum payout validation
+      if (netAmount < 1.00) {
+        return res.status(400).json({ 
+          error: `Minimum payout is $${(1.00 + feeAmount).toFixed(2)} (including $${feeAmount.toFixed(2)} instant fee)`,
+          totalEarnings,
+          feeAmount,
+          netAmount: 0,
+          minimumRequired: 1.00 + feeAmount
+        });
+      }
+
+      // Check driver's Stripe Connect account
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ error: "Driver Stripe Connect account not set up" });
+      }
+
+      try {
+        // Create Stripe transfer to driver's Connect account
+        const transfer = await stripe.transfers.create({
+          amount: Math.round(netAmount * 100), // Convert to cents
+          currency: 'usd',
+          destination: driver.stripeConnectAccountId,
+          description: `Admin instant payout for ${pendingOrders.length} orders`,
+          metadata: {
+            driverId: driverId.toString(),
+            orderIds: pendingOrders.map(o => o.id).join(','),
+            payoutType: 'instant',
+            processedBy: 'admin'
+          }
+        });
+
+        // Create payout record with Stripe transfer ID
+        const payout = await storage.createDriverPayout({
+          driverId,
+          payoutType: "instant",
+          totalAmount: totalEarnings,
+          feeAmount,
+          netAmount,
+          orderIds: pendingOrders.map(o => o.id),
+          taxYear: new Date().getFullYear(),
+          status: "completed",
+          stripeTransferId: transfer.id
+        });
+
+        // Update orders to mark as paid
+        for (const order of pendingOrders) {
+          await storage.updateOrder(order.id, { driverPayoutStatus: "instant_paid" });
+        }
+
+        res.json({
+          message: "Admin instant payout processed successfully",
+          payout,
+          netAmount,
+          feeAmount,
+          ordersCount: pendingOrders.length
+        });
+      } catch (stripeError: any) {
+        console.error('Admin Stripe transfer failed:', stripeError);
+        return res.status(500).json({ 
+          error: "Payment transfer failed", 
+          details: stripeError.message 
+        });
+      }
+    } catch (error) {
+      console.error("Admin instant payout error:", error);
+      res.status(500).json({ error: "Failed to process instant payout" });
     }
   });
 
