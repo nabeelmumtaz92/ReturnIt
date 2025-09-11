@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
 import deliveryDriverImage from "@assets/image_1755273879529.png";
+import bookingInterfaceImage from "@assets/image_1757631684593.png";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -63,7 +64,45 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
       {/* Professional Hero Section */}
-      <div className="w-full bg-white/95 border-b border-amber-100">
+      <div className="w-full bg-white/95 border-b border-amber-100 relative">
+        {/* Sign In/Sign Up buttons in top right */}
+        <div className="absolute top-4 right-4 z-10">
+          {!isAuthenticated && (
+            <div className="flex gap-2">
+              <Link href="/login">
+                <Button variant="outline" size="sm" data-testid="button-sign-in">
+                  Sign In
+                </Button>
+              </Link>
+              <Link href="/login?tab=register">
+                <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-sign-up">
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          )}
+          {isAuthenticated && (
+            <div className="flex items-center gap-2">
+              {user?.isAdmin && (
+                <Link href="/admin-dashboard">
+                  <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
+                    <User className="h-4 w-4 mr-2" />
+                    Admin Dashboard
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                data-testid="button-sign-out"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
+          )}
+        </div>
         <div className="container mx-auto px-4 py-12">
           <div className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
@@ -107,57 +146,18 @@ export default function Welcome() {
         </div>
       </div>
       
-      {/* Top Navigation Bar */}
-      <nav className="bg-white/90 backdrop-blur-sm shadow-sm border-b border-primary/20 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-            </div>
-            
-            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
-              {isAuthenticated ? (
-                <>
-                  {user?.isAdmin ? (
-                    <Link href="/admin-dashboard">
-                      <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
-                        <User className="h-4 w-4 mr-2" />
-                        Admin Dashboard
-                      </Button>
-                    </Link>
-                  ) : (
-                    <span className="text-amber-800 font-medium">
-                      Welcome, {user?.firstName || user?.email?.split('@')[0] || 'User'}!
-                    </span>
-                  )}
-                  <RoleSwitcher />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogout}
-                    data-testid="button-sign-out"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <div className="flex gap-2">
-                  <Link href="/login">
-                    <Button variant="outline" size="sm">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/login?tab=register">
-                    <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
+      {/* Additional Content Section - Your attached image */}
+      <div className="w-full bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+        <div className="container mx-auto px-4 py-12">
+          <div className="max-w-4xl mx-auto">
+            <img 
+              src={bookingInterfaceImage} 
+              alt="Book Pickup Interface" 
+              className="w-full rounded-2xl shadow-lg border border-amber-200"
+            />
           </div>
         </div>
-      </nav>
+      </div>
 
       {/* Main Content - Mobile Optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 space-y-8">
