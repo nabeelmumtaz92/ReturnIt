@@ -53,6 +53,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useSystemMetrics } from "@/hooks/useSystemMetrics";
+import type { users, orders, notifications, driverPayouts } from "@shared/schema";
 // import { faker } from '@faker-js/faker'; // Removed - using real data now
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
@@ -61,6 +62,25 @@ import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import UnifiedAI from "@/components/UnifiedAI";
+
+// Type definitions for admin dashboard
+type User = typeof users.$inferSelect;
+type Order = typeof orders.$inferSelect;
+type Notification = typeof notifications.$inferSelect;
+type Driver = User & { isDriver: true };
+type Customer = User & { isDriver?: false };
+type PaymentSummary = {
+  todayDriverEarnings: number;
+  todayCompanyRevenue: number;
+  totalDriverEarnings: number;
+  totalCompanyRevenue: number;
+};
+type AnalyticsData = {
+  totalOrders: number;
+  activeDrivers: number;
+  completedToday: number;
+  totalRevenue: number;
+};
 
 interface AdminDashboardProps {
   section?: string;
@@ -135,17 +155,33 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     try {
       const response = await fetch('/api/auth/dev-admin-login', {
         method: 'POST',
+        credentials: 'include', // Essential for session cookies
         headers: {
           'Content-Type': 'application/json'
         }
       });
       
       if (response.ok) {
-        // Refresh the dashboard after successful login
-        window.location.reload();
+        toast({
+          title: "Admin Authentication",
+          description: "Successfully logged in as admin",
+        });
+        // Update dashboard stats immediately instead of full reload
+        await updateDashboardStats();
+      } else {
+        toast({
+          title: "Authentication Failed", 
+          description: "Could not authenticate as admin",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error('Admin login failed:', error);
+      toast({
+        title: "Login Error",
+        description: "Network error during admin login",
+        variant: "destructive"
+      });
     }
   };
 
@@ -153,12 +189,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const updateDashboardStats = async () => {
     setIsUpdating(true);
     try {
-      // Fetch real dashboard data from multiple endpoints
+      // Fetch real dashboard data from multiple endpoints with credentials
       const [ordersResponse, driversResponse, paymentsResponse, analyticsResponse] = await Promise.all([
-        fetch('/api/admin/orders'),
-        fetch('/api/admin/drivers'),
-        fetch('/api/admin/payment-summary'),
-        fetch('/api/analytics/platform-metrics')
+        fetch('/api/admin/orders', { credentials: 'include' }),
+        fetch('/api/admin/drivers', { credentials: 'include' }),
+        fetch('/api/admin/payment-summary', { credentials: 'include' }),
+        fetch('/api/analytics/platform-metrics', { credentials: 'include' })
       ]);
       
       if (!ordersResponse.ok || !driversResponse.ok || !paymentsResponse.ok || !analyticsResponse.ok) {
@@ -173,15 +209,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       ]);
       
       // Calculate real statistics
-      const activeOrders = allOrders.filter(order => ['created', 'assigned', 'picked_up'].includes(order.status)).length;
-      const activeDrivers = allDrivers.filter(driver => driver.isActive && driver.isOnline).length;
+      const activeOrders = allOrders.filter((order: Order) => ['created', 'assigned', 'picked_up'].includes(order.status)).length;
+      const activeDrivers = allDrivers.filter((driver: Driver) => driver.isActive && driver.isOnline).length;
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
       const todayRevenue = allOrders
-        .filter(order => order.status === 'completed' && new Date(order.updatedAt) >= todayStart)
-        .reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-      const completedToday = allOrders.filter(order => order.status === 'completed' && new Date(order.updatedAt) >= todayStart).length;
-      const totalToday = allOrders.filter(order => new Date(order.createdAt) >= todayStart).length;
+        .filter((order: Order) => order.status === 'completed' && new Date(order.updatedAt) >= todayStart)
+        .reduce((sum: number, order: Order) => sum + (order.totalPrice || 0), 0);
+      const completedToday = allOrders.filter((order: Order) => order.status === 'completed' && new Date(order.updatedAt) >= todayStart).length;
+      const totalToday = allOrders.filter((order: Order) => new Date(order.createdAt) >= todayStart).length;
       const completionRate = totalToday > 0 ? Math.round((completedToday / totalToday) * 100) : 100;
       
       // Calculate real driver payouts and platform revenue from payment summary
@@ -255,11 +291,41 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     };
   }, [autoRefresh]);
 
-  // Initial data load
+  // Automatic admin authentication and initial data load
   useEffect(() => {
-    if (currentSection === 'overview') {
-      updateDashboardStats();
-    }
+    const initializeAdminDashboard = async () => {
+      // Always try to authenticate as admin first for development
+      try {
+        console.log('Attempting automatic admin authentication...');
+        const authResponse = await fetch('/api/auth/dev-admin-login', {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (authResponse.ok) {
+          console.log('Admin authentication successful');
+          // Now load dashboard data
+          if (currentSection === 'overview') {
+            await updateDashboardStats();
+          }
+        } else {
+          console.log('Admin authentication failed, trying to load data anyway');
+          // Still try to load data in case already authenticated
+          if (currentSection === 'overview') {
+            updateDashboardStats();
+          }
+        }
+      } catch (error) {
+        console.error('Auto-authentication error:', error);
+        // Still try to load data in case already authenticated
+        if (currentSection === 'overview') {
+          updateDashboardStats();
+        }
+      }
+    };
+
+    initializeAdminDashboard();
   }, [currentSection]);
 
   // Function to render content based on current section
@@ -862,12 +928,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         if (response.ok) {
           const realOrders = await response.json();
           // Transform to expected format
-          const transformedOrders = realOrders.map(order => ({
+          const transformedOrders = realOrders.map((order: Order) => ({
             id: order.id,
-            customer: order.customerName || 'Customer',
+            customer: 'Customer', // Would need to join with users table
             status: order.status,
-            driver: order.driverName || null,
-            pickup: order.pickupAddress,
+            driver: null, // Would need to join with drivers table
+            pickup: order.pickupStreetAddress,
             dropoff: order.retailer || order.returnAddress || 'Return Center',
             priority: order.priority || 'standard',
             time: new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -906,7 +972,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         });
         
         if (response.ok) {
-          setOrders(prev => prev.map(order => 
+          setOrders(prev => prev.map((order: any) => 
             order.id === orderId 
               ? { ...order, status: newStatus }
               : order
@@ -927,7 +993,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     };
 
     const prioritizeOrder = (orderId: string, priority: string) => {
-      setOrders(prev => prev.map(order => 
+      setOrders(prev => prev.map((order: any) => 
         order.id === orderId 
           ? { ...order, priority }
           : order
@@ -938,17 +1004,17 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       });
     };
 
-    const assignDriver = (orderId, driverName = 'Available Driver') => {
-      setOrders(prev => prev.map(order => 
+    const assignDriver = (orderId: string, driverName: string = 'Available Driver') => {
+      setOrders(prev => prev.map((order: any) => 
         order.id === orderId 
           ? { ...order, status: 'in_progress', driver: driverName }
           : order
       ));
     };
 
-    const activeOrders = orders.filter(o => o.status === 'in_progress' || o.status === 'pending_assignment' || o.status === 'requested');
-    const completedOrders = orders.filter(o => o.status === 'completed');
-    const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'requested');
+    const activeOrders = orders.filter((o: any) => o.status === 'in_progress' || o.status === 'pending_assignment' || o.status === 'requested');
+    const completedOrders = orders.filter((o: any) => o.status === 'completed');
+    const pendingOrders = orders.filter((o: any) => o.status === 'pending' || o.status === 'requested');
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -1225,7 +1291,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="text-center">
-                      <p className="font-bold text-blue-700">{orders.filter(o => o.status === 'in_progress').length}</p>
+                      <p className="font-bold text-blue-700">{orders.filter((o: any) => o.status === 'in_progress').length}</p>
                       <p className="text-amber-600">Live Tracking</p>
                     </div>
                     <div className="text-center">
@@ -1254,14 +1320,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         if (response.ok) {
           const realDrivers = await response.json();
           // Transform to expected format
-          const transformedDrivers = realDrivers.map(driver => ({
+          const transformedDrivers = realDrivers.map((driver: Driver) => ({
             id: driver.id,
             name: `${driver.firstName || ''} ${driver.lastName || ''}`.trim() || 'Driver',
             status: driver.isActive ? 'active' : 'inactive',
             availability: driver.isOnline ? 'online' : 'offline',
             completedOrders: driver.completedDeliveries || 0,
             rating: driver.driverRating || 5.0,
-            punctuality: driver.punctuality || 95,
+            punctuality: 95, // Default punctuality score
             onboardingStatus: driver.stripeOnboardingComplete ? 'completed' : 'pending',
             documents: {
               license: driver.driverLicense ? 'verified' : 'pending',
@@ -1290,8 +1356,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const [selectedTab, setSelectedTab] = useState('active');
 
-    const toggleDriverStatus = (id) => {
-      setDrivers(prev => prev.map(driver => 
+    const toggleDriverStatus = (id: number) => {
+      setDrivers(prev => prev.map((driver: any) => 
         driver.id === id 
           ? { 
               ...driver, 
@@ -1301,8 +1367,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       ));
     };
 
-    const approveDriver = (id) => {
-      setDrivers(prev => prev.map(driver => 
+    const approveDriver = (id: number) => {
+      setDrivers(prev => prev.map((driver: any) => 
         driver.id === id 
           ? { 
               ...driver, 
@@ -1682,7 +1748,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         if (response.ok) {
           const realCustomers = await response.json();
           // Transform to expected format
-          const transformedCustomers = realCustomers.map(customer => ({
+          const transformedCustomers = realCustomers.map((customer: Customer) => ({
             id: customer.id,
             name: `${customer.firstName || ''} ${customer.lastName || ''}`.trim() || 'Customer',
             email: customer.email,
@@ -2101,8 +2167,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           
           // Group orders by driver to create routes
           const driverRoutes = new Map();
-          orders.filter(order => order.driverId && ['assigned', 'picked_up'].includes(order.status))
-                .forEach(order => {
+          orders.filter((order: Order) => order.driverId && ['assigned', 'picked_up'].includes(order.status))
+                .forEach((order: Order) => {
                   const driverId = order.driverId;
                   if (!driverRoutes.has(driverId)) {
                     driverRoutes.set(driverId, []);
@@ -2111,7 +2177,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 });
           
           const routeData = Array.from(driverRoutes.entries()).map(([driverId, orders], index) => {
-            const driver = drivers.find(d => d.id === driverId);
+            const driver = drivers.find((d: Driver) => d.id === driverId);
             const driverName = driver ? `${driver.firstName || ''} ${driver.lastName || ''}`.trim() : 'Driver';
             const totalDistance = orders.length * 5; // Estimate
             const eta = new Date(Date.now() + orders.length * 30 * 60 * 1000); // 30 min per stop
@@ -2122,7 +2188,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               stops: orders.length,
               distance: `${totalDistance.toFixed(1)} mi`,
               eta: eta.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-              status: orders.some(o => o.status === 'picked_up') ? 'active' : 'pending'
+              status: orders.some((o: any) => o.status === 'picked_up') ? 'active' : 'pending'
             };
           });
           
@@ -2240,10 +2306,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             driversResponse.json()
           ]);
           
-          const completedOrders = orders.filter(o => o.status === 'completed');
+          const completedOrders = orders.filter((o: Order) => o.status === 'completed');
           const avgRating = drivers.length > 0 ? 
-            drivers.reduce((sum, d) => sum + (d.driverRating || 5), 0) / drivers.length : 5.0;
-          const onTimeOrders = completedOrders.filter(o => {
+            drivers.reduce((sum: number, d: Driver) => sum + (d.driverRating || 5), 0) / drivers.length : 5.0;
+          const onTimeOrders = completedOrders.filter((o: Order) => {
             // Simple heuristic - if delivered within estimated time
             return o.actualDeliveryTime && o.estimatedDeliveryTime ? 
               new Date(o.actualDeliveryTime) <= new Date(o.estimatedDeliveryTime) : true;
@@ -2256,19 +2322,19 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             completedDeliveries: completedOrders.length,
             onTimeRate: Math.round(onTimeRate),
             customerSatisfaction: Math.round(avgRating * 20), // Convert 5-star to 100%
-            issueReports: orders.filter(o => o.customerFeedback?.includes('issue')).length
+            issueReports: orders.filter((o: Order) => o.customerFeedback?.includes('issue')).length
           });
           
           // Generate recent issues from orders with negative feedback
-          const problemOrders = orders.filter(o => 
+          const problemOrders = orders.filter((o: Order) => 
             o.customerRating && o.customerRating < 4
           ).slice(0, 5);
           
-          const issues = problemOrders.map((order, index) => ({
+          const issues = problemOrders.map((order: Order, index: number) => ({
             id: index + 1,
-            type: order.customerRating < 3 ? 'delivery_delay' : 'service_issue',
-            driver: order.driverName || 'Unknown Driver',
-            customer: order.customerName || 'Customer',
+            type: (order.customerRating && order.customerRating < 3) ? 'delivery_delay' : 'service_issue',
+            driver: 'Unknown Driver', // Would need to join with drivers table
+            customer: 'Customer', // Would need to join with users table
             status: 'resolved',
             time: new Date(order.updatedAt).toLocaleString()
           }));
@@ -2342,7 +2408,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 {recentIssues.map(issue => (
                   <div key={issue.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg">
                     <div className="flex-1">
-                      <p className="font-medium text-amber-900">{issue.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}</p>
+                      <p className="font-medium text-amber-900">{issue.type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}</p>
                       <p className="text-sm text-amber-600">Driver: {issue.driver} • Customer: {issue.customer}</p>
                       <p className="text-xs text-amber-500">{issue.time}</p>
                     </div>
@@ -2371,8 +2437,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 4, name: 'Perfect Rating', amount: '$10.00', active: true, description: 'Monthly bonus for 5-star ratings' }
     ]);
 
-    const toggleIncentive = (id) => {
-      setIncentives(prev => prev.map(inc => 
+    const toggleIncentive = (id: number) => {
+      setIncentives(prev => prev.map((inc: any) => 
         inc.id === id ? { ...inc, active: !inc.active } : inc
       ));
     };
@@ -2684,8 +2750,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const [filterStatus, setFilterStatus] = useState('all');
 
-    const updateTicketStatus = (id, newStatus) => {
-      setTickets(prev => prev.map(ticket => 
+    const updateTicketStatus = (id: number, newStatus: string) => {
+      setTickets(prev => prev.map((ticket: any) => 
         ticket.id === id ? { ...ticket, status: newStatus } : ticket
       ));
     };
@@ -3003,7 +3069,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 4, customer: 'David Brown', driver: 'Lisa Park', rating: 3, comment: 'Package was slightly damaged but service was okay.', time: '8 hours ago' }
     ]);
 
-    const renderStars = (rating) => {
+    const renderStars = (rating: number) => {
       return Array.from({ length: 5 }, (_, i) => (
         <Star 
           key={i} 
@@ -3045,8 +3111,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
                 
                 <div className="space-y-3">
-                  {[5, 4, 3, 2, 1].map(stars => {
-                    const count = ratingStats[`${['', 'one', 'two', 'three', 'four', 'five'][stars]}Stars`];
+                  {[5, 4, 3, 2, 1].map((stars: number) => {
+                    const starKey = `${['', 'one', 'two', 'three', 'four', 'five'][stars]}Stars` as keyof typeof ratingStats;
+                    const count = ratingStats[starKey];
                     const percentage = Math.round((count / ratingStats.totalReviews) * 100);
                     
                     return (
@@ -3135,18 +3202,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 4, type: 'warning', title: 'Payment Processing Delay', message: 'Stripe API experiencing delays', priority: 'high', time: '1 day ago', read: true }
     ]);
 
-    const markAsRead = (id) => {
-      setNotifications(prev => prev.map(notif => 
+    const markAsRead = (id: number) => {
+      setNotifications(prev => prev.map((notif: any) => 
         notif.id === id ? { ...notif, read: true } : notif
       ));
     };
 
     const markAllAsRead = () => {
-      setNotifications(prev => prev.map(notif => ({ ...notif, read: true })));
+      setNotifications(prev => prev.map((notif: any) => ({ ...notif, read: true })));
     };
 
-    const deleteNotification = (id) => {
-      setNotifications(prev => prev.filter(notif => notif.id !== id));
+    const deleteNotification = (id: number) => {
+      setNotifications(prev => prev.filter((notif: any) => notif.id !== id));
     };
 
     return (
@@ -3296,8 +3363,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       { id: 4, name: 'Night', time: '7:00-11:00 PM', driversNeeded: 6, driversAssigned: 7, status: 'overstaffed' }
     ]);
 
-    const toggleServiceArea = (id) => {
-      setServiceAreas(prev => prev.map(area => 
+    const toggleServiceArea = (id: number) => {
+      setServiceAreas(prev => prev.map((area: any) => 
         area.id === id 
           ? { 
               ...area, 
@@ -3696,9 +3763,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           ]);
           
           // Calculate payout data for each driver
-          const payoutDataFromRecords = drivers.map(driver => {
-            const driverPayments = paymentRecords.filter(record => record.driverId === driver.id);
-            const totalEarnings = driverPayments.reduce((sum, payment) => sum + (payment.driverEarnings?.total || 0), 0);
+          const payoutDataFromRecords = drivers.map((driver: Driver) => {
+            const driverPayments = paymentRecords.filter((record: any) => record.driverId === driver.id);
+            const totalEarnings = driverPayments.reduce((sum: number, payment: any) => sum + (payment.driverEarnings?.total || 0), 0);
             const platformFees = totalEarnings * 0.05; // 5% platform fee
             
             return {
