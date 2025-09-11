@@ -165,7 +165,7 @@ export default function Welcome() {
         {/* ReturnIt Logo - Centered */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="text-6xl font-bold text-amber-900 filter drop-shadow-lg">
+            <div className="text-6xl font-bold text-black filter drop-shadow-lg">
               ReturnIt
             </div>
           </div>
@@ -173,14 +173,14 @@ export default function Welcome() {
 
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
-          <p className="text-xl sm:text-2xl text-amber-800 font-medium">
+          <p className="text-xl sm:text-2xl text-black font-medium">
             Hassle-free returns with professional return delivery service
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-lg px-6 py-3 inline-block">
-            <p className="text-lg text-amber-900 font-semibold">
+            <p className="text-lg text-black font-semibold">
               📍 St. Louis only right now
             </p>
-            <p className="text-sm text-amber-700 mt-1">
+            <p className="text-sm text-black mt-1">
               Coming to your city soon!
             </p>
           </div>
