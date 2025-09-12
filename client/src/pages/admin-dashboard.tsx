@@ -4818,6 +4818,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           isMinimized={!showUnifiedAI}
           onClose={() => setShowUnifiedAI(false)}
           defaultMode="hybrid"
+          standalone={false}
         />
 
         {/* Floating AI Button */}

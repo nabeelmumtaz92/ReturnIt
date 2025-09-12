@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -12,21 +13,25 @@ import {
   X, Terminal, Minimize2, Maximize2, Send, Bot, Code, Database,
   Brain, TrendingUp, Users, Package, DollarSign, Activity, 
   MessageSquare, Settings, RefreshCw, Monitor, Play, RotateCcw,
-  Sparkles, Eye, Power, Zap, CheckCircle, AlertTriangle
+  Sparkles, Eye, Power, Zap, CheckCircle, AlertTriangle,
+  HeadphonesIcon, User, Phone, Cpu
 } from "lucide-react";
 
 interface AIMessage {
   id: string;
-  type: 'user' | 'assistant' | 'system';
+  type: 'user' | 'assistant' | 'system' | 'support';
   content: string;
   timestamp: Date;
-  status?: 'processing' | 'completed' | 'error';
+  status?: 'processing' | 'completed' | 'error' | 'thinking' | 'executing';
+  source?: 'embedded' | 'replit' | 'support';
   metadata?: {
     processingTime?: number;
     command?: string;
     confidence?: number;
     sources?: string[];
     category?: string;
+    agent?: string;
+    escalated?: boolean;
   };
   codeChanges?: {
     file: string;
@@ -55,7 +60,13 @@ interface UnifiedAIProps {
   onClose?: () => void;
   isMinimized?: boolean;
   standalone?: boolean;
-  defaultMode?: 'terminal' | 'chat' | 'hybrid';
+  defaultMode?: 'terminal' | 'chat' | 'hybrid' | 'support';
+  supportContext?: {
+    type: 'driver' | 'customer';
+    name: string;
+    orderId?: string;
+    userId?: string;
+  };
 }
 
 interface PlatformMetrics {
@@ -67,14 +78,18 @@ interface PlatformMetrics {
   errorRate: number;
 }
 
-export default function UnifiedAI({ onClose, isMinimized, standalone = false, defaultMode = 'hybrid' }: UnifiedAIProps) {
+export default function UnifiedAI({ onClose, isMinimized, standalone = false, defaultMode = 'hybrid', supportContext }: UnifiedAIProps) {
   // State management
   const [isExpanded, setIsExpanded] = useState(!isMinimized);
   const [input, setInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [uiMode, setUiMode] = useState<'terminal' | 'chat' | 'hybrid'>(defaultMode);
+  const [uiMode, setUiMode] = useState<'terminal' | 'chat' | 'hybrid' | 'support'>(defaultMode);
+  const [activeAISource, setActiveAISource] = useState<'embedded' | 'replit'>('embedded');
+  const [isEscalated, setIsEscalated] = useState(false);
+  const [questionStep, setQuestionStep] = useState(0);
+  const [userResponses, setUserResponses] = useState<string[]>([]);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -87,13 +102,40 @@ export default function UnifiedAI({ onClose, isMinimized, standalone = false, de
     refetchInterval: 30000,
   });
 
+  // Support questions for support mode
+  const supportQuestions = [
+    "What type of issue are you experiencing today?",
+    "When did this issue first occur?", 
+    "What steps have you already tried to resolve this?",
+    "Are you experiencing this issue on a specific order? If so, what's the order number?",
+    "How urgent is this issue for you?"
+  ];
+
   // Unified AI messages with enhanced system boot
   const [messages, setMessages] = useState<AIMessage[]>(() => {
-    const baseSystemMessage: AIMessage = {
-      id: '1',
-      type: 'system',
-      content: uiMode === 'terminal' 
-        ? `ReturnIt AI Terminal v3.0.1 (x86_64-linux-gnu)
+    const getSystemMessage = (): AIMessage => {
+      if (uiMode === 'support') {
+        return {
+          id: '1',
+          type: 'system',
+          content: `🎧 ReturnIt Support Center - We're here to help!
+
+Hello ${supportContext?.name || 'there'}! I'm your support assistant. I'll ask you a few quick questions to better understand your situation and provide the best possible assistance.
+
+Support Context:
+${supportContext?.type === 'driver' ? '🚛 Driver Support' : '👤 Customer Support'}
+${supportContext?.orderId ? `📦 Order: ${supportContext.orderId}` : ''}
+
+Let's get started!`,
+          timestamp: new Date(),
+          status: 'completed',
+          source: 'support'
+        };
+      } else if (uiMode === 'terminal') {
+        return {
+          id: '1',
+          type: 'system',
+          content: `ReturnIt AI Terminal v3.0.1 (x86_64-linux-gnu)
 Copyright (c) 2025 ReturnIt Systems. All rights reserved.
 
 System Information:
@@ -103,6 +145,7 @@ System Information:
  - Status: OPERATIONAL
  - Security: ENHANCED
  - AI Engine: GPT-5 Integration Active
+ - Dual AI: ${activeAISource === 'embedded' ? 'Embedded AI' : 'Development AI'} Active
 
 Available Commands:
   help          - Show available commands
@@ -112,13 +155,27 @@ Available Commands:
   drivers       - Driver management
   analytics     - Business analytics
   clear         - Clear terminal
-  mode [type]   - Switch interface mode (terminal/chat/hybrid)
+  ai embedded   - Switch to embedded AI
+  ai replit     - Switch to development AI
+  mode [type]   - Switch interface mode (terminal/chat/hybrid/support)
 
 Type 'help' for detailed command information.
-Type your request or command below:`
-        : `🤖 ReturnIt AI Assistant - Ready to help!
+Type your request or command below:`,
+          timestamp: new Date(),
+          status: 'completed'
+        };
+      } else {
+        return {
+          id: '1',
+          type: 'system',
+          content: `🤖 ReturnIt AI Assistant - Dual AI System Ready!
 
-Hi! I'm your intelligent assistant for the ReturnIt platform. I can help you with:
+Hi! I'm your intelligent assistant powered by dual AI systems:
+
+🔧 **Embedded AI**: Direct codebase access with full platform control
+🧠 **Development AI**: Advanced analysis and comprehensive tooling
+
+I can help you with:
 
 📊 Business Analytics & Insights
 👥 Customer & Driver Management  
@@ -126,86 +183,250 @@ Hi! I'm your intelligent assistant for the ReturnIt platform. I can help you wit
 💰 Financial Analysis & Reporting
 🔧 System Administration & Support
 📈 Performance Optimization
+💻 Code Analysis & Development
 
-You can ask me anything about your platform, request data analysis, or get help with operations. I understand natural language and can execute complex tasks.
+Currently using: **${activeAISource === 'embedded' ? 'Embedded AI' : 'Development AI'}**
+
+You can switch AI sources anytime or ask me anything about your platform!
 
 How can I assist you today?`,
-      timestamp: new Date(),
-      status: 'completed'
+          timestamp: new Date(),
+          status: 'completed'
+        };
+      }
     };
     
-    return [baseSystemMessage];
+    return [getSystemMessage()];
   });
 
-  // Enhanced AI processing with OpenAI integration
-  const aiMutation = useMutation({
+  // Embedded AI mutation
+  const embeddedAIMutation = useMutation({
     mutationFn: async (prompt: string) => {
-      const response = await apiRequest("POST", "/api/ai/query", { 
+      const endpoint = uiMode === 'terminal' ? '/console/ai' : '/api/ai/assistant';
+      const response = await apiRequest('POST', endpoint, { 
         prompt,
         mode: uiMode,
         includeMetrics: true,
-        includeContext: true 
+        includeContext: true,
+        context: supportContext
       });
       return response.json();
     },
     onSuccess: (data) => {
-      const processingTime = Date.now() - processingStartTime;
-      
-      setMessages(prev => prev.map(msg => 
-        msg.id === currentProcessingId 
-          ? {
-              ...msg,
-              type: 'assistant',
-              content: data.message || data.content || "Task completed successfully.",
-              status: data.error ? 'error' : 'completed',
-              codeChanges: data.codeChanges,
-              databaseQueries: data.databaseQueries,
-              commandResults: data.commandResults,
-              businessInsights: data.businessInsights,
-              metadata: {
-                ...msg.metadata,
-                processingTime,
-                confidence: data.confidence,
-                sources: data.sources,
-                category: data.category
-              }
-            }
-          : msg
-      ));
-      
-      setIsProcessing(false);
+      handleAIResponse(data, 'embedded');
     },
     onError: (error) => {
-      const processingTime = Date.now() - processingStartTime;
-      
-      setMessages(prev => prev.map(msg => 
-        msg.id === currentProcessingId 
-          ? {
-              ...msg,
-              type: 'assistant',
-              content: `Error: ${error.message || 'Something went wrong. Please try again.'}`,
-              status: 'error',
-              metadata: { ...msg.metadata, processingTime }
-            }
-          : msg
-      ));
-      
-      setIsProcessing(false);
-      toast({
-        title: "AI Processing Error",
-        description: error.message || "Something went wrong",
-        variant: "destructive",
-      });
+      handleAIError(error, 'embedded');
     }
   });
 
+  // Development AI mutation (simulated)
+  const replitAIMutation = useMutation({
+    mutationFn: async (prompt: string) => {
+      // Simulate advanced development AI processing
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({
+            message: `🧠 **Development AI Response**:
+
+I understand you want: "${prompt}"
+
+As your advanced development assistant, I would:
+1. Analyze your entire codebase structure
+2. Check for dependencies and conflicts
+3. Implement the change with proper testing
+4. Validate the solution across your stack
+5. Provide comprehensive documentation
+
+*Note: This simulates advanced AI capabilities. Your embedded AI can perform these actions directly!*`,
+            source: 'replit',
+            analysisComplete: true
+          });
+        }, 2000);
+      });
+    },
+    onSuccess: (data) => {
+      handleAIResponse(data, 'replit');
+    },
+    onError: (error) => {
+      handleAIError(error, 'replit');
+    }
+  });
+  // Handle AI responses
+  const handleAIResponse = (data: any, source: 'embedded' | 'replit') => {
+    const processingTime = Date.now() - processingStartTime;
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === currentProcessingId 
+        ? {
+            ...msg,
+            type: 'assistant',
+            content: data.message || data.content || "Task completed successfully.",
+            status: data.error ? 'error' : 'completed',
+            source,
+            codeChanges: data.codeChanges,
+            databaseQueries: data.databaseQueries,
+            commandResults: data.commandResults,
+            businessInsights: data.businessInsights,
+            metadata: {
+              ...msg.metadata,
+              processingTime,
+              confidence: data.confidence,
+              sources: data.sources,
+              category: data.category
+            }
+          }
+        : msg
+    ));
+    
+    setIsProcessing(false);
+
+    if (data.codeChanges?.length > 0) {
+      toast({
+        title: `${source === 'embedded' ? 'Embedded' : 'Development'} AI - Changes Applied`,
+        description: `Updated ${data.codeChanges.length} file(s)`,
+      });
+    }
+  };
+
+  // Handle AI errors
+  const handleAIError = (error: any, source: 'embedded' | 'replit') => {
+    const processingTime = Date.now() - processingStartTime;
+    
+    setMessages(prev => prev.map(msg => 
+      msg.id === currentProcessingId 
+        ? {
+            ...msg,
+            type: 'assistant',
+            content: `Error: ${error.message || 'Something went wrong. Please try again.'}`,
+            status: 'error',
+            source,
+            metadata: { ...msg.metadata, processingTime }
+          }
+        : msg
+    ));
+    
+    setIsProcessing(false);
+    toast({
+      title: `${source === 'embedded' ? 'Embedded' : 'Development'} AI Error`,
+      description: error.message || "Something went wrong",
+      variant: "destructive",
+    });
+  };
+
   let processingStartTime = 0;
   let currentProcessingId = '';
+
+  // Support mode functions
+  const handleSupportMessage = () => {
+    if (!input.trim()) return;
+    
+    const userMessage: AIMessage = {
+      id: Date.now().toString(),
+      type: 'user',
+      content: input.trim(),
+      timestamp: new Date(),
+      status: 'completed'
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    const currentResponse = input;
+    setInput('');
+    
+    if (!isEscalated) {
+      const newResponses = [...userResponses, currentResponse];
+      setUserResponses(newResponses);
+      
+      // Simulate AI thinking
+      const thinkingMessage: AIMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: 'Let me process your response...',
+        timestamp: new Date(),
+        status: 'thinking',
+        source: 'support'
+      };
+      
+      setMessages(prev => [...prev, thinkingMessage]);
+      setIsProcessing(true);
+      
+      setTimeout(() => {
+        setIsProcessing(false);
+        setMessages(prev => prev.filter(msg => msg.id !== thinkingMessage.id));
+        
+        if (questionStep < supportQuestions.length - 1) {
+          const nextStep = questionStep + 1;
+          setQuestionStep(nextStep);
+          const nextMessage: AIMessage = {
+            id: (Date.now() + 2).toString(),
+            type: 'assistant',
+            content: supportQuestions[nextStep],
+            timestamp: new Date(),
+            status: 'completed',
+            source: 'support'
+          };
+          setMessages(prev => [...prev, nextMessage]);
+        } else {
+          const finalMessage: AIMessage = {
+            id: (Date.now() + 2).toString(),
+            type: 'assistant',
+            content: "Thank you for providing those details! Based on your responses, I can see you need assistance. Would you like me to connect you with a human support agent who can provide personalized help with your specific situation?",
+            timestamp: new Date(),
+            status: 'completed',
+            source: 'support'
+          };
+          setMessages(prev => [...prev, finalMessage]);
+        }
+      }, 1500);
+    }
+  };
+
+  // Escalate to human support
+  const handleEscalate = () => {
+    setIsEscalated(true);
+    const escalateMessage: AIMessage = {
+      id: Date.now().toString(),
+      type: 'assistant',
+      content: "Connecting you with a human support agent. Please wait...",
+      timestamp: new Date(),
+      status: 'processing',
+      source: 'support'
+    };
+    setMessages(prev => [...prev, escalateMessage]);
+    
+    setTimeout(() => {
+      const supportAgents = ['Sarah', 'Mike', 'Jessica', 'David', 'Emily'];
+      const randomAgent = supportAgents[Math.floor(Math.random() * supportAgents.length)];
+      const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      
+      const agentMessage: AIMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'support',
+        content: `Hi ${supportContext?.name || 'there'}! This is ${randomAgent} from ReturnIt Support (${currentTime}). I'm here to help you resolve this issue. How can I assist you today?`,
+        timestamp: new Date(),
+        status: 'completed',
+        source: 'support',
+        metadata: { agent: randomAgent, escalated: true }
+      };
+      
+      setMessages(prev => prev.map(msg => 
+        msg.content === "Connecting you with a human support agent. Please wait..."
+          ? { ...msg, status: 'completed' as const }
+          : msg
+      ).concat([agentMessage]));
+    }, 3000);
+  };
 
   // Enhanced command processing
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!input.trim() || isProcessing) return;
+
+    // Handle support mode differently
+    if (uiMode === 'support') {
+      handleSupportMessage();
+      return;
+    }
 
     const userMessage: AIMessage = {
       id: Date.now().toString(),
@@ -278,8 +499,8 @@ Type your request or command to get started!`,
     }
     
     if (command.startsWith('mode ')) {
-      const newMode = command.split(' ')[1] as 'terminal' | 'chat' | 'hybrid';
-      if (['terminal', 'chat', 'hybrid'].includes(newMode)) {
+      const newMode = command.split(' ')[1] as 'terminal' | 'chat' | 'hybrid' | 'support';
+      if (['terminal', 'chat', 'hybrid', 'support'].includes(newMode)) {
         setUiMode(newMode);
         setMessages(prev => prev.map(msg => 
           msg.id === processingMessage.id 
@@ -294,18 +515,46 @@ Type your request or command to get started!`,
         return;
       }
     }
+    
+    if (command.startsWith('ai ')) {
+      const newSource = command.split(' ')[1] as 'embedded' | 'replit';
+      if (['embedded', 'replit'].includes(newSource)) {
+        setActiveAISource(newSource);
+        setMessages(prev => prev.map(msg => 
+          msg.id === processingMessage.id 
+            ? {
+                ...msg,
+                content: `✅ Switched to ${newSource === 'embedded' ? 'Embedded AI' : 'Development AI'}`,
+                status: 'completed'
+              }
+            : msg
+        ));
+        setInput('');
+        return;
+      }
+    }
 
     // Add to command history
     setCommandHistory(prev => [input.trim(), ...prev.slice(0, 49)]);
     setHistoryIndex(-1);
 
-    // Process with AI
+    // Process with AI based on mode and source
+    if (uiMode === 'support') {
+      handleSupportMessage();
+      return;
+    }
+    
     processingStartTime = Date.now();
     currentProcessingId = processingMessage.id;
     setIsProcessing(true);
     setInput('');
     
-    aiMutation.mutate(userMessage.content);
+    // Send to appropriate AI based on active source
+    if (activeAISource === 'embedded') {
+      embeddedAIMutation.mutate(userMessage.content);
+    } else {
+      replitAIMutation.mutate(userMessage.content);
+    }
   };
 
   // Keyboard navigation
@@ -345,14 +594,22 @@ Type your request or command to get started!`,
     }
   }, [isExpanded, isProcessing]);
 
-  if (!isExpanded) {
+  // Don't render floating button if controlled by parent (not standalone)
+  if (!isExpanded && !standalone) {
+    return null;
+  }
+
+  // Only render floating button in standalone mode
+  if (!isExpanded && standalone) {
     return (
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => setIsExpanded(true)}
           className="rounded-full w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg"
         >
-          {uiMode === 'terminal' ? <Terminal className="w-6 h-6" /> : <Bot className="w-6 h-6" />}
+          {uiMode === 'terminal' ? <Terminal className="w-6 h-6" /> : 
+           uiMode === 'support' ? <HeadphonesIcon className="w-6 h-6" /> : 
+           <Bot className="w-6 h-6" />}
         </Button>
       </div>
     );
