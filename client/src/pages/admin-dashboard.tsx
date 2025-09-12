@@ -97,10 +97,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return urlParams.get('section') || section || 'overview';
   });
   
-  // Re-render when location changes
-  const [, forceUpdate] = useState({});
+  // Sync currentSection with URL when location changes
   useEffect(() => {
-    forceUpdate({});
+    const params = new URLSearchParams(window.location.search);
+    setCurrentSection(params.get('section') || 'overview');
   }, [location]);
   
   // State for various features
