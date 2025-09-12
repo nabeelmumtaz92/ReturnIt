@@ -4649,7 +4649,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             ) : taxReportData.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-amber-600">No tax data available for {taxYear}</p>
+                <p className="text-amber-600">Tax reports will be generated when drivers earn income</p>
                 <Button 
                   onClick={refreshTaxData} 
                   className="mt-4"
