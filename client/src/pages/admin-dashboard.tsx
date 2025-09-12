@@ -4749,7 +4749,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   ];
 
   return (
-    <AdminLayout pageTitle="Admin Dashboard" tabs={dashboardTabs}>
+    <AdminLayout 
+      pageTitle="Admin Dashboard" 
+      tabs={dashboardTabs}
+      changeSection={changeSection}
+      currentSection={currentSection}
+    >
       <div className="relative z-10">
         {/* Section Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 p-4">

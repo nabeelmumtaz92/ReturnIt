@@ -24,6 +24,8 @@ import NotificationBell from '@/components/NotificationBell';
 interface AdminLayoutProps {
   children: ReactNode;
   pageTitle: string;
+  changeSection?: (section: string) => void;
+  currentSection?: string;
   tabs?: Array<{
     label: string;
     href: string;
@@ -201,7 +203,7 @@ const navigationSections = [
   }
 ];
 
-export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps) {
+export function AdminLayout({ children, pageTitle, changeSection, currentSection: activeSectionProp, tabs = [] }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarWidth, setSidebarWidth] = useState(320); // Default 320px (w-80 equivalent)
   const [isDragging, setIsDragging] = useState(false);
@@ -407,19 +409,31 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
                 </h3>
               )}
               <div className="space-y-1">
-                {section.items.map((item) => (
-                  <Link key={item.href} href={item.href}>
+                {section.items.map((item) => {
+                  // Extract section from href (e.g., "?section=orders" -> "orders")
+                  const getSectionFromHref = (href: string) => {
+                    if (href === '/admin-dashboard') return 'overview';
+                    const match = href.match(/section=([^&]+)/);
+                    return match ? match[1] : 'overview';
+                  };
+                  
+                  const sectionName = getSectionFromHref(item.href);
+                  const isActive = activeSectionProp === sectionName;
+                  
+                  return (
                     <div
+                      key={item.href}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer group",
-                        isActiveLink(item.href)
+                        isActive
                           ? "bg-amber-100 text-amber-900 border border-amber-200"
                           : "text-amber-700 hover:bg-amber-50 hover:text-amber-900"
                       )}
                       title={!sidebarOpen ? item.label : undefined}
+                      onClick={() => changeSection && changeSection(sectionName)}
                     >
                       <item.icon className={cn("h-4 w-4 flex-shrink-0", 
-                        isActiveLink(item.href) ? "text-amber-700" : "text-amber-600"
+                        isActive ? "text-amber-700" : "text-amber-600"
                       )} />
                       {sidebarOpen && (
                         <>
@@ -429,14 +443,14 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
                               {item.description}
                             </div>
                           </div>
-                          {isActiveLink(item.href) && (
+                          {isActive && (
                             <ChevronRight className="h-4 w-4 text-amber-600" />
                           )}
                         </>
                       )}
                     </div>
-                  </Link>
-                ))}
+                  );
+                })};
               </div>
             </div>
           ))}
