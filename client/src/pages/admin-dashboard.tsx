@@ -421,6 +421,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </Card>
           </div>
         );
+      case 'business-intelligence':
+        return <BusinessIntelligenceContent />;
+      case 'financial-operations':
+        return <FinancialOperationsContent />;
+      case 'transaction-management':
+        return <TransactionManagementContent />;
+      case 'enhanced-driver-payouts':
+        return <EnhancedDriverPayoutsContent />;
+      case 'enhanced-tax-reports':
+        return <EnhancedTaxReportsContent />;
+      case 'payment-tracking':
+        return <PaymentTrackingContent />;
+      case 'support-center':
+        return <SupportCenterContent />;
+      case 'support-analytics':
+        return <SupportAnalyticsContent />;
+      case 'customer-feedback':
+        return <CustomerFeedbackContent />;
       case 'overview':
       default:
         return <OverviewContent />;
@@ -503,6 +521,93 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Target className="h-8 w-8" />
           <span className="text-sm font-medium">Zone Management</span>
         </Button>
+      </div>
+
+      {/* Master Admin Panel Features */}
+      <div className="mt-6">
+        <h3 className="text-md font-semibold text-amber-900 mb-4">Master Admin Panel</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Button 
+            onClick={() => changeSection('business-intelligence')}
+            className="h-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 text-blue-900 hover:from-blue-100 hover:to-indigo-100 hover:border-blue-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <PieChart className="h-8 w-8" />
+            <span className="text-sm font-medium">Business Intelligence</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('financial-operations')}
+            className="h-auto p-6 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 text-green-900 hover:from-green-100 hover:to-emerald-100 hover:border-green-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <DollarSign className="h-8 w-8" />
+            <span className="text-sm font-medium">Financial Operations</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('transaction-management')}
+            className="h-auto p-6 bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-200 text-purple-900 hover:from-purple-100 hover:to-violet-100 hover:border-purple-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <CreditCard className="h-8 w-8" />
+            <span className="text-sm font-medium">Transaction Management</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('enhanced-driver-payouts')}
+            className="h-auto p-6 bg-gradient-to-br from-orange-50 to-yellow-50 border border-orange-200 text-orange-900 hover:from-orange-100 hover:to-yellow-100 hover:border-orange-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <Zap className="h-8 w-8" />
+            <span className="text-sm font-medium">Enhanced Payouts</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('enhanced-tax-reports')}
+            className="h-auto p-6 bg-gradient-to-br from-slate-50 to-gray-50 border border-slate-200 text-slate-900 hover:from-slate-100 hover:to-gray-100 hover:border-slate-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <FileText className="h-8 w-8" />
+            <span className="text-sm font-medium">Enhanced Tax Reports</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('payment-tracking')}
+            className="h-auto p-6 bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 text-teal-900 hover:from-teal-100 hover:to-cyan-100 hover:border-teal-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <Activity className="h-8 w-8" />
+            <span className="text-sm font-medium">Payment Tracking</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('support-center')}
+            className="h-auto p-6 bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 text-red-900 hover:from-red-100 hover:to-pink-100 hover:border-red-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <MessageCircle className="h-8 w-8" />
+            <span className="text-sm font-medium">Support Center</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('support-analytics')}
+            className="h-auto p-6 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 text-indigo-900 hover:from-indigo-100 hover:to-blue-100 hover:border-indigo-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <BarChart3 className="h-8 w-8" />
+            <span className="text-sm font-medium">Support Analytics</span>
+          </Button>
+          
+          <Button 
+            onClick={() => changeSection('customer-feedback')}
+            className="h-auto p-6 bg-gradient-to-br from-pink-50 to-rose-50 border border-pink-200 text-pink-900 hover:from-pink-100 hover:to-rose-100 hover:border-pink-300 flex flex-col items-center space-y-2"
+            variant="outline"
+          >
+            <Star className="h-8 w-8" />
+            <span className="text-sm font-medium">Customer Feedback</span>
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -4815,4 +4920,997 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
     </AdminLayout>
   );
+
+  // Business Intelligence Component
+  function BusinessIntelligenceContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Business Intelligence</h2>
+          <p className="text-amber-600">Executive reporting & self-serve analytics across merchants, markets, and couriers.</p>
+        </div>
+
+        {/* Overview Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Order Volume</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">1,247</div>
+              <p className="text-xs text-amber-500">+12.5% from last month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Revenue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">$24,891</div>
+              <p className="text-xs text-amber-500">+8.2% from last month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">SLA Compliance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">94.8%</div>
+              <p className="text-xs text-amber-500">+2.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">NPS Score</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">8.7</div>
+              <p className="text-xs text-amber-500">+0.3 from last month</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* BI Tabs */}
+        <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg">
+          <div className="border-b border-amber-200">
+            <div className="flex space-x-8 px-6 py-4">
+              <Button variant="ghost" className="text-amber-700 border-b-2 border-amber-600">Overview</Button>
+              <Button variant="ghost" className="text-amber-600">Operations</Button>
+              <Button variant="ghost" className="text-amber-600">Finance</Button>
+              <Button variant="ghost" className="text-amber-600">Growth</Button>
+              <Button variant="ghost" className="text-amber-600">Risk</Button>
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card className="bg-amber-50 border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900">Unit Economics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">Average Order Value</span>
+                      <span className="font-semibold text-amber-900">$19.96</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">Cost Per Order</span>
+                      <span className="font-semibold text-amber-900">$8.45</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">Cost Per Mile</span>
+                      <span className="font-semibold text-amber-900">$1.23</span>
+                    </div>
+                    <div className="flex justify-between border-t border-amber-300 pt-2">
+                      <span className="text-amber-700 font-medium">Gross Margin</span>
+                      <span className="font-bold text-amber-900">57.7%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-amber-50 border-amber-200">
+                <CardHeader>
+                  <CardTitle className="text-amber-900">Performance Metrics</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">On-time Pickup</span>
+                      <span className="font-semibold text-amber-900">92.3%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">On-time Delivery</span>
+                      <span className="font-semibold text-amber-900">89.1%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">Exception Rate</span>
+                      <span className="font-semibold text-amber-900">3.2%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-amber-700">Route Utilization</span>
+                      <span className="font-semibold text-amber-900">78.5%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Financial Operations Component
+  function FinancialOperationsContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Financial Operations</h2>
+          <p className="text-amber-600">One-stop hub for finance workflows bridging Payments, Payouts, Invoices, and Collections.</p>
+        </div>
+
+        {/* Cash Position */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Available Balance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">$127,450</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Pending Settlements</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">$34,290</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Reserve Hold</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">$12,750</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Next 7 Days Payouts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">$45,890</div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Financial Sections */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Accounts Receivable</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Current (0-30 days)</span>
+                  <span className="font-semibold text-green-600">$8,450</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Past Due (31-60 days)</span>
+                  <span className="font-semibold text-orange-600">$2,130</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Overdue (60+ days)</span>
+                  <span className="font-semibold text-red-600">$890</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Accounts Payable</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Upcoming Payouts</span>
+                  <span className="font-semibold text-amber-900">$45,890</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Negative Balance Alerts</span>
+                  <span className="font-semibold text-red-600">3</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Adjustment Queue</span>
+                  <span className="font-semibold text-blue-600">7</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Transaction Management Component
+  function TransactionManagementContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Transaction Management</h2>
+          <p className="text-amber-600">Manage customer charges, refunds, and risk assessment.</p>
+        </div>
+
+        {/* Transaction Filters */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="authorized">Authorized</SelectItem>
+                  <SelectItem value="captured">Captured</SelectItem>
+                  <SelectItem value="refunded">Refunded</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Payment Method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Methods</SelectItem>
+                  <SelectItem value="card">Credit Card</SelectItem>
+                  <SelectItem value="apple_pay">Apple Pay</SelectItem>
+                  <SelectItem value="google_pay">Google Pay</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Risk Level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Risk Levels</SelectItem>
+                  <SelectItem value="low">Low Risk</SelectItem>
+                  <SelectItem value="medium">Medium Risk</SelectItem>
+                  <SelectItem value="high">High Risk</SelectItem>
+                </SelectContent>
+              </Select>
+              <Input placeholder="Transaction ID" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Transaction Table */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900">Recent Transactions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[
+                { id: 'txn_1234567890', amount: '$24.99', status: 'captured', method: 'card', risk: 'low', date: '2024-03-15 10:30:00' },
+                { id: 'txn_1234567891', amount: '$19.50', status: 'authorized', method: 'apple_pay', risk: 'low', date: '2024-03-15 10:25:00' },
+                { id: 'txn_1234567892', amount: '$31.25', status: 'refunded', method: 'card', risk: 'medium', date: '2024-03-15 10:20:00' },
+                { id: 'txn_1234567893', amount: '$15.75', status: 'failed', method: 'google_pay', risk: 'high', date: '2024-03-15 10:15:00' }
+              ].map((txn) => (
+                <div key={txn.id} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex-1">
+                    <div className="font-medium text-amber-900">{txn.id}</div>
+                    <div className="text-sm text-amber-600">{txn.date}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-amber-900">{txn.amount}</div>
+                    <div className="text-sm text-amber-600">{txn.method}</div>
+                  </div>
+                  <div className="ml-4">
+                    <Badge className={`${txn.status === 'captured' ? 'bg-green-100 text-green-800' : 
+                      txn.status === 'authorized' ? 'bg-blue-100 text-blue-800' :
+                      txn.status === 'refunded' ? 'bg-orange-100 text-orange-800' :
+                      'bg-red-100 text-red-800'}`}>
+                      {txn.status}
+                    </Badge>
+                  </div>
+                  <div className="ml-2">
+                    <Badge className={`${txn.risk === 'low' ? 'bg-green-100 text-green-800' :
+                      txn.risk === 'medium' ? 'bg-orange-100 text-orange-800' :
+                      'bg-red-100 text-red-800'}`}>
+                      {txn.risk} risk
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Enhanced Driver Payouts Component
+  function EnhancedDriverPayoutsContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Enhanced Driver Payouts</h2>
+          <p className="text-amber-600">Advanced payout management with instant pay capabilities and earnings optimization.</p>
+        </div>
+
+        {/* Payout Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Total Pending Payouts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">$45,890</div>
+              <p className="text-xs text-amber-500">127 drivers</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Instant Pay Requests</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">$8,450</div>
+              <p className="text-xs text-amber-500">23 requests</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Weekly Payouts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">$37,440</div>
+              <p className="text-xs text-amber-500">104 drivers</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Avg. Processing Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">2.3</div>
+              <p className="text-xs text-amber-500">minutes</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Payout Management */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Instant Pay Queue</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { driver: 'John Smith', amount: '$245.50', fee: '$1.50', status: 'pending' },
+                  { driver: 'Sarah Johnson', amount: '$189.25', fee: '$1.50', status: 'processing' },
+                  { driver: 'Mike Davis', amount: '$320.75', fee: '$1.50', status: 'completed' }
+                ].map((payout, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-amber-900">{payout.driver}</div>
+                      <div className="text-sm text-amber-600">Fee: {payout.fee}</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-semibold text-amber-900">{payout.amount}</div>
+                      <Badge className={payout.status === 'completed' ? 'bg-green-100 text-green-800' : 
+                        payout.status === 'processing' ? 'bg-blue-100 text-blue-800' :
+                        'bg-orange-100 text-orange-800'}>
+                        {payout.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Driver Earnings Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Base Pay</span>
+                  <span className="font-semibold text-amber-900">$28,450</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Distance Pay</span>
+                  <span className="font-semibold text-amber-900">$12,340</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Tips</span>
+                  <span className="font-semibold text-amber-900">$3,890</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Bonuses</span>
+                  <span className="font-semibold text-amber-900">$1,210</span>
+                </div>
+                <div className="flex justify-between border-t border-amber-300 pt-2">
+                  <span className="text-amber-700 font-medium">Total Earnings</span>
+                  <span className="font-bold text-amber-900">$45,890</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Enhanced Tax Reports Component
+  function EnhancedTaxReportsContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Enhanced Tax Reports</h2>
+          <p className="text-amber-600">Comprehensive tax compliance including 1099-NEC generation, VAT/GST support, and automated filing.</p>
+        </div>
+
+        {/* Tax Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">1099-NEC Eligible</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">87</div>
+              <p className="text-xs text-amber-500">drivers &gt;$600</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">W-9 Forms</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">92%</div>
+              <p className="text-xs text-amber-500">collected</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Generated Forms</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">45</div>
+              <p className="text-xs text-amber-500">ready to file</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Total Earnings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">$1.2M</div>
+              <p className="text-xs text-amber-500">subject to 1099</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tax Management Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">1099-NEC Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Forms Generated</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-green-600">45</span>
+                    <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                      Download All
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">Missing W-9 Forms</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-red-600">7</span>
+                    <Button size="sm" variant="outline" className="border-amber-300 text-amber-700">
+                      Send Reminders
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-amber-700">TIN Verification</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-blue-600">42</span>
+                    <Button size="sm" variant="outline" className="border-amber-300 text-amber-700">
+                      Verify All
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Tax Compliance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Backup Withholding</span>
+                  <span className="font-semibold text-amber-900">$2,450</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Electronic Delivery</span>
+                  <span className="font-semibold text-green-600">78%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Corrections Filed</span>
+                  <span className="font-semibold text-amber-900">3</span>
+                </div>
+                <div className="mt-4">
+                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                    Generate Year-End Reports
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Payment Tracking Component
+  function PaymentTrackingContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Payment Tracking</h2>
+          <p className="text-amber-600">End-to-end visibility from quote to settlement with comprehensive reconciliation.</p>
+        </div>
+
+        {/* Payment Timeline */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+          <CardHeader>
+            <CardTitle className="text-amber-900">Payment Timeline Example</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between relative">
+              <div className="absolute top-4 left-8 right-8 h-0.5 bg-amber-200"></div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
+                <span className="text-xs text-amber-700 mt-2">Quote</span>
+              </div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
+                <span className="text-xs text-amber-700 mt-2">Auth</span>
+              </div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
+                <span className="text-xs text-amber-700 mt-2">Capture</span>
+              </div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
+                <span className="text-xs text-amber-700 mt-2">Settlement</span>
+              </div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
+                <span className="text-xs text-amber-700 mt-2">Payout</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Reconciliation */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Settlement Reconciliation</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Settled Amount</span>
+                  <span className="font-semibold text-green-600">$24,567.89</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Internal Ledger</span>
+                  <span className="font-semibold text-amber-900">$24,567.89</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Variance</span>
+                  <span className="font-semibold text-green-600">$0.00</span>
+                </div>
+                <div className="flex justify-between border-t border-amber-300 pt-2">
+                  <span className="text-amber-700">Status</span>
+                  <Badge className="bg-green-100 text-green-800">Matched</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Aging Report</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Unsettled &gt; T+2</span>
+                  <span className="font-semibold text-orange-600">$1,245</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Pending Refunds</span>
+                  <span className="font-semibold text-blue-600">$890</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-amber-700">Active Chargebacks</span>
+                  <span className="font-semibold text-red-600">$325</span>
+                </div>
+                <div className="mt-4">
+                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                    Generate Reconciliation Report
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Support Center Component
+  function SupportCenterContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Customer Support Center</h2>
+          <p className="text-amber-600">Real-time assistance hub for customers, merchants, and couriers with live chat capabilities.</p>
+        </div>
+
+        {/* Support Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Active Chats</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">7</div>
+              <p className="text-xs text-amber-500">3 agents online</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Avg Response Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">2m 15s</div>
+              <p className="text-xs text-amber-500">-30s from yesterday</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Resolution Rate</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">89.2%</div>
+              <p className="text-xs text-amber-500">first contact</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">CSAT Score</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">4.6/5</div>
+              <p className="text-xs text-amber-500">based on 234 ratings</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Live Chat Interface */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Active Conversations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { customer: 'John Smith', issue: 'Pickup delay inquiry', priority: 'medium', time: '5m ago', agent: 'Sarah' },
+                  { customer: 'Lisa Johnson', issue: 'Refund processing question', priority: 'high', time: '12m ago', agent: 'Mike' },
+                  { customer: 'David Lee', issue: 'Driver contact request', priority: 'low', time: '18m ago', agent: 'Emma' }
+                ].map((chat, idx) => (
+                  <div key={idx} className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium text-amber-900">{chat.customer}</span>
+                      <div className="flex items-center gap-2">
+                        <Badge className={chat.priority === 'high' ? 'bg-red-100 text-red-800' : 
+                          chat.priority === 'medium' ? 'bg-orange-100 text-orange-800' :
+                          'bg-green-100 text-green-800'}>
+                          {chat.priority}
+                        </Badge>
+                        <span className="text-xs text-amber-600">{chat.time}</span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-amber-700 mb-2">{chat.issue}</div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-amber-600">Agent: {chat.agent}</span>
+                      <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                        Join Chat
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  New Chat Session
+                </Button>
+                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                  <FileText className="h-4 w-4 mr-2" />
+                  Canned Responses
+                </Button>
+                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                  <Users className="h-4 w-4 mr-2" />
+                  Transfer Queue
+                </Button>
+                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  Escalate Issue
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Support Analytics Component
+  function SupportAnalyticsContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Support Analytics</h2>
+          <p className="text-amber-600">Comprehensive support performance metrics and quality analysis.</p>
+        </div>
+
+        {/* Performance KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">First Response Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">2m 15s</div>
+              <p className="text-xs text-amber-500">Target: &lt;3m</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Average Handle Time</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">8m 42s</div>
+              <p className="text-xs text-amber-500">-1m 23s vs last week</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Resolution Rate</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">94.2%</div>
+              <p className="text-xs text-amber-500">+2.1% from last month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Agent Occupancy</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">78.5%</div>
+              <p className="text-xs text-amber-500">Optimal range: 70-85%</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Analytics Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Issue Categories</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { category: 'Order Issues', count: 45, percentage: 35 },
+                  { category: 'Payment Problems', count: 28, percentage: 22 },
+                  { category: 'Driver Communication', count: 22, percentage: 17 },
+                  { category: 'Refund Requests', count: 18, percentage: 14 },
+                  { category: 'General Inquiries', count: 15, percentage: 12 }
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
+                      <span className="text-amber-700">{item.category}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold text-amber-900">{item.count}</span>
+                      <span className="text-xs text-amber-600 ml-2">({item.percentage}%)</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Agent Performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { agent: 'Sarah Johnson', resolved: 23, csat: 4.8, aht: '7m 15s' },
+                  { agent: 'Mike Davis', resolved: 19, csat: 4.6, aht: '8m 42s' },
+                  { agent: 'Emma Wilson', resolved: 21, csat: 4.9, aht: '6m 58s' }
+                ].map((agent, idx) => (
+                  <div key={idx} className="p-3 bg-amber-50 rounded-lg">
+                    <div className="font-medium text-amber-900 mb-2">{agent.agent}</div>
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span className="text-amber-600">Resolved: </span>
+                        <span className="font-semibold text-amber-900">{agent.resolved}</span>
+                      </div>
+                      <div>
+                        <span className="text-amber-600">CSAT: </span>
+                        <span className="font-semibold text-amber-900">{agent.csat}</span>
+                      </div>
+                      <div>
+                        <span className="text-amber-600">AHT: </span>
+                        <span className="font-semibold text-amber-900">{agent.aht}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  // Customer Feedback Component
+  function CustomerFeedbackContent() {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Customer Feedback & VOC System</h2>
+          <p className="text-amber-600">Capture and act on feedback across the customer journey with sentiment analysis.</p>
+        </div>
+
+        {/* Feedback Overview */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Total Feedback</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">1,247</div>
+              <p className="text-xs text-amber-500">this month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Average Rating</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">4.6/5</div>
+              <p className="text-xs text-amber-500">+0.2 from last month</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">NPS Score</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">72</div>
+              <p className="text-xs text-amber-500">Excellent (&gt;70)</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Response Rate</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">87.3%</div>
+              <p className="text-xs text-amber-500">feedback participation</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Feedback Analysis */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Sentiment Analysis</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                    <span className="text-amber-700">Positive</span>
+                  </div>
+                  <span className="font-semibold text-green-600">72.5%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
+                    <span className="text-amber-700">Neutral</span>
+                  </div>
+                  <span className="font-semibold text-amber-600">18.3%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+                    <span className="text-amber-700">Negative</span>
+                  </div>
+                  <span className="font-semibold text-red-600">9.2%</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="text-amber-900">Top Themes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { theme: 'Fast & reliable service', mentions: 89, sentiment: 'positive' },
+                  { theme: 'Friendly drivers', mentions: 67, sentiment: 'positive' },
+                  { theme: 'Easy booking process', mentions: 45, sentiment: 'positive' },
+                  { theme: 'Pickup delays', mentions: 23, sentiment: 'negative' },
+                  { theme: 'Communication issues', mentions: 18, sentiment: 'negative' }
+                ].map((theme, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-amber-900">{theme.theme}</div>
+                      <div className="text-sm text-amber-600">{theme.mentions} mentions</div>
+                    </div>
+                    <Badge className={theme.sentiment === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                      {theme.sentiment}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 }
