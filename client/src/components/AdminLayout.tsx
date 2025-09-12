@@ -7,7 +7,7 @@ import {
   Settings, MessageSquare, Star, Package, UserCheck, 
   Activity, Clock, Shield, Globe, Heart, Headphones,
   ChevronRight, Menu, X, Building2, Bell, LogOut, RefreshCw,
-  PieChart, CreditCard, Zap
+  PieChart, CreditCard, Zap, ArrowLeft
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -204,6 +204,11 @@ const navigationSections = [
 export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [location] = useLocation();
+  
+  // Check if we're on a section page
+  const currentParams = new URLSearchParams(window.location.search);
+  const currentSection = currentParams.get('section');
+  const showBackButton = location.includes('/admin-dashboard') && currentSection;
   const { logout } = useAuth();
 
   const handleGlobalUpdate = async () => {
@@ -235,6 +240,13 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
   };
 
   const isActiveLink = (href: string) => {
+    // Handle both direct URLs and section-based URLs
+    if (href.includes('?section=')) {
+      const sectionParam = href.split('?section=')[1];
+      const currentParams = new URLSearchParams(window.location.search);
+      const currentSection = currentParams.get('section');
+      return location.includes('/admin-dashboard') && currentSection === sectionParam;
+    }
     return location === href;
   };
 
@@ -382,7 +394,22 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
       )}>
         <div className="px-6 py-4">
           <div>
-            <h1 className="text-2xl font-bold text-amber-900">{pageTitle}</h1>
+            <div className="flex items-center gap-3">
+              {showBackButton && (
+                <Link href="/admin-dashboard">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-amber-900 hover:bg-amber-50"
+                    data-testid="button-back-dashboard"
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-1" />
+                    Back to Dashboard
+                  </Button>
+                </Link>
+              )}
+              <h1 className="text-2xl font-bold text-amber-900">{pageTitle}</h1>
+            </div>
             <div className="text-sm text-amber-600 mt-1">
               {getCurrentSection()} • {new Date().toLocaleDateString()}
             </div>
