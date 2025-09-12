@@ -13,8 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 // LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
-import deliveryDriverImage from "@assets/image_1755273879529.png";
-import bookingInterfaceImage from "@assets/image_1757631684593.png";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -127,11 +125,6 @@ export default function Welcome() {
             {/* Hero Image Card */}
             <div className="flex-1 max-w-lg">
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
-                <img 
-                  src={deliveryDriverImage} 
-                  alt="Professional delivery service" 
-                  className="w-full h-80 object-cover"
-                />
                 <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">
                     Professional Service
@@ -146,18 +139,6 @@ export default function Welcome() {
         </div>
       </div>
       
-      {/* Additional Content Section - Your attached image */}
-      <div className="w-full bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
-        <div className="container mx-auto px-4 py-12">
-          <div className="max-w-4xl mx-auto">
-            <img 
-              src={bookingInterfaceImage} 
-              alt="Book Pickup Interface" 
-              className="w-full rounded-2xl shadow-lg border border-amber-200"
-            />
-          </div>
-        </div>
-      </div>
 
       {/* Main Content - Mobile Optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 space-y-8">

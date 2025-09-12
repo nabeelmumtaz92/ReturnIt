@@ -4530,7 +4530,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     <div className="h-8 w-24 bg-amber-200 animate-pulse rounded"></div>
                   ) : (
                     <p className="text-2xl font-bold text-amber-900">
-                      ${(paymentSummary?.todayDriverEarnings || 0).toLocaleString()}
+                      ${((paymentSummary as PaymentSummary)?.todayDriverEarnings || 0).toLocaleString()}
                     </p>
                   )}
                 </div>
