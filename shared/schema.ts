@@ -416,6 +416,457 @@ export const analytics = pgTable("analytics", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+// Business Intelligence - Fact Tables
+export const factOrders = pgTable("fact_orders", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id),
+  merchantId: integer("merchant_id"),
+  dateId: integer("date_id").notNull(),
+  regionId: integer("region_id").notNull(),
+  serviceLevel: text("service_level").notNull(),
+  orderValue: real("order_value").notNull(),
+  revenue: real("revenue").notNull(),
+  driverPayout: real("driver_payout").notNull(),
+  platformFee: real("platform_fee").notNull(),
+  distance: real("distance"),
+  duration: integer("duration"), // minutes
+  status: text("status").notNull(),
+  pickupTime: timestamp("pickup_time"),
+  deliveryTime: timestamp("delivery_time"),
+  slaCompliance: boolean("sla_compliance").default(true),
+  exceptionFlag: boolean("exception_flag").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const factPayments = pgTable("fact_payments", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  transactionId: text("transaction_id").notNull().unique(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  merchantId: integer("merchant_id"),
+  dateId: integer("date_id").notNull(),
+  amount: real("amount").notNull(),
+  fees: real("fees").notNull(),
+  netAmount: real("net_amount").notNull(),
+  paymentMethod: text("payment_method").notNull(),
+  processorResponse: jsonb("processor_response").default({}),
+  riskScore: real("risk_score"),
+  threeDSecure: boolean("three_d_secure").default(false),
+  status: text("status").notNull(), // authorized, captured, refunded, voided, failed
+  failureReason: text("failure_reason"),
+  chargebackFlag: boolean("chargeback_flag").default(false),
+  refundAmount: real("refund_amount").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  settledAt: timestamp("settled_at"),
+});
+
+export const factPayouts = pgTable("fact_payouts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  payoutId: integer("payout_id").references(() => driverPayouts.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  dateId: integer("date_id").notNull(),
+  regionId: integer("region_id").notNull(),
+  payoutType: text("payout_type").notNull(), // weekly, instant
+  grossEarnings: real("gross_earnings").notNull(),
+  fees: real("fees").notNull(),
+  netPayout: real("net_payout").notNull(),
+  orderCount: integer("order_count").notNull(),
+  tips: real("tips").default(0),
+  bonuses: real("bonuses").default(0),
+  adjustments: real("adjustments").default(0),
+  taxWithholdings: real("tax_withholdings").default(0),
+  status: text("status").notNull(),
+  processingTime: integer("processing_time"), // minutes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const factTickets = pgTable("fact_tickets", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  ticketId: integer("ticket_id").notNull(),
+  customerId: integer("customer_id").references(() => users.id),
+  orderId: text("order_id").references(() => orders.id),
+  assignedAgentId: integer("assigned_agent_id").references(() => users.id),
+  dateId: integer("date_id").notNull(),
+  category: text("category").notNull(),
+  priority: text("priority").notNull(),
+  channel: text("channel").notNull(),
+  firstResponseTime: integer("first_response_time"), // minutes
+  resolutionTime: integer("resolution_time"), // minutes
+  totalMessages: integer("total_messages").notNull(),
+  escalationLevel: integer("escalation_level").default(0),
+  satisfactionScore: integer("satisfaction_score"), // 1-5
+  status: text("status").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+});
+
+export const factFeedback = pgTable("fact_feedback", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  feedbackId: integer("feedback_id").notNull(),
+  entityType: text("entity_type").notNull(), // order, driver, merchant, app
+  entityId: text("entity_id").notNull(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id),
+  driverId: integer("driver_id").references(() => users.id),
+  dateId: integer("date_id").notNull(),
+  source: text("source").notNull(), // post-pickup, post-delivery, app-store, survey
+  rating: integer("rating"), // 1-5
+  npsScore: integer("nps_score"), // 0-10
+  sentiment: text("sentiment"), // positive, neutral, negative
+  category: text("category"),
+  severity: text("severity"), // low, medium, high, critical
+  hasComment: boolean("has_comment").default(false),
+  autoTicketCreated: boolean("auto_ticket_created").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Business Intelligence - Dimension Tables
+export const dimDate = pgTable("dim_date", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  dateValue: timestamp("date_value").notNull().unique(),
+  dayOfWeek: integer("day_of_week").notNull(),
+  dayName: text("day_name").notNull(),
+  month: integer("month").notNull(),
+  monthName: text("month_name").notNull(),
+  quarter: integer("quarter").notNull(),
+  year: integer("year").notNull(),
+  isWeekend: boolean("is_weekend").default(false),
+  isHoliday: boolean("is_holiday").default(false),
+  fiscalYear: integer("fiscal_year").notNull(),
+  fiscalQuarter: integer("fiscal_quarter").notNull(),
+});
+
+export const dimRegion = pgTable("dim_region", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  regionName: text("region_name").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCodes: jsonb("zip_codes").default([]),
+  timezone: text("timezone").notNull(),
+  population: integer("population"),
+  marketSize: text("market_size"), // small, medium, large
+  isActive: boolean("is_active").default(true),
+  launchDate: timestamp("launch_date").defaultNow(),
+});
+
+export const dimMerchant = pgTable("dim_merchant", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  merchantName: text("merchant_name").notNull(),
+  category: text("category").notNull(),
+  tier: text("tier"), // bronze, silver, gold, enterprise
+  onboardingDate: timestamp("onboarding_date").notNull(),
+  status: text("status").default("active"),
+  avgOrderValue: real("avg_order_value"),
+  returnPolicy: jsonb("return_policy").default({}),
+  isActive: boolean("is_active").default(true),
+});
+
+export const dimServiceLevel = pgTable("dim_service_level", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  serviceName: text("service_name").notNull(),
+  description: text("description"),
+  basePrice: real("base_price").notNull(),
+  slaHours: integer("sla_hours"),
+  features: jsonb("features").default([]),
+  isActive: boolean("is_active").default(true),
+});
+
+// Transaction Management
+export const transactions = pgTable("transactions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  transactionId: text("transaction_id").notNull().unique(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  merchantOfRecord: text("merchant_of_record"),
+  amount: real("amount").notNull(),
+  currency: text("currency").default("USD"),
+  status: text("status").notNull(), // authorized, captured, refunded, voided, failed
+  paymentMethod: text("payment_method").notNull(),
+  paymentMethodDetails: jsonb("payment_method_details").default({}),
+  processorTransactionId: text("processor_transaction_id"),
+  processorResponse: jsonb("processor_response").default({}),
+  threeDSecureData: jsonb("three_d_secure_data").default({}),
+  avsResult: text("avs_result"),
+  cvvResult: text("cvv_result"),
+  riskScore: real("risk_score"),
+  riskFlags: jsonb("risk_flags").default([]),
+  fraudulent: boolean("fraudulent").default(false),
+  chargebackFlag: boolean("chargeback_flag").default(false),
+  chargebackDate: timestamp("chargeback_date"),
+  chargebackReason: text("chargeback_reason"),
+  refunds: jsonb("refunds").default([]),
+  disputeEvidence: jsonb("dispute_evidence").default({}),
+  idempotencyKey: text("idempotency_key").unique(),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  capturedAt: timestamp("captured_at"),
+  settledAt: timestamp("settled_at"),
+  refundedAt: timestamp("refunded_at"),
+});
+
+// Enhanced Support System
+export const supportTicketsEnhanced = pgTable("support_tickets_enhanced", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  ticketNumber: text("ticket_number").notNull().unique(),
+  customerId: integer("customer_id").references(() => users.id),
+  orderId: text("order_id").references(() => orders.id),
+  assignedAgentId: integer("assigned_agent_id").references(() => users.id),
+  category: text("category").notNull(), // order_issue, payment, refund, general
+  priority: text("priority").default("medium"), // low, medium, high, urgent
+  status: text("status").default("open"), // open, in_progress, waiting, resolved, closed
+  subject: text("subject").notNull(),
+  description: text("description").notNull(),
+  channel: text("channel").notNull(), // chat, email, phone, app
+  tags: jsonb("tags").default([]),
+  satisfaction: integer("satisfaction"), // 1-5 rating
+  satisfactionComment: text("satisfaction_comment"),
+  internalNotes: text("internal_notes"),
+  escalationLevel: integer("escalation_level").default(0),
+  slaBreached: boolean("sla_breached").default(false),
+  firstResponseTime: integer("first_response_time"), // minutes
+  resolutionTime: integer("resolution_time"), // minutes
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  resolvedAt: timestamp("resolved_at"),
+  closedAt: timestamp("closed_at"),
+});
+
+export const supportMessages = pgTable("support_messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  ticketId: integer("ticket_id").references(() => supportTicketsEnhanced.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  senderType: text("sender_type").notNull(), // customer, agent, system
+  messageType: text("message_type").default("text"), // text, attachment, system, canned_response
+  content: text("content").notNull(),
+  attachments: jsonb("attachments").default([]),
+  isInternal: boolean("is_internal").default(false),
+  cannedResponseId: integer("canned_response_id"),
+  readBy: jsonb("read_by").default([]), // Array of user IDs who read this
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const cannedResponses = pgTable("canned_responses", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  category: text("category").notNull(),
+  tags: jsonb("tags").default([]),
+  usageCount: integer("usage_count").default(0),
+  isActive: boolean("is_active").default(true),
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Live Chat System (Enhanced)
+export const liveChatSessions = pgTable("live_chat_sessions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  sessionId: text("session_id").notNull().unique(),
+  customerId: integer("customer_id").references(() => users.id),
+  orderId: text("order_id").references(() => orders.id),
+  assignedAgentId: integer("assigned_agent_id").references(() => users.id),
+  status: text("status").default("active"), // active, waiting, transferred, ended
+  channel: text("channel").default("web"), // web, mobile, whatsapp
+  priority: text("priority").default("normal"), // low, normal, high, vip
+  queue: text("queue"), // general, technical, billing, vip
+  language: text("language").default("en"),
+  customerVerified: boolean("customer_verified").default(false),
+  tags: jsonb("tags").default([]),
+  satisfaction: integer("satisfaction"), // 1-5 rating
+  waitTime: integer("wait_time"), // seconds before agent assignment
+  chatDuration: integer("chat_duration"), // seconds
+  messageCount: integer("message_count").default(0),
+  transferCount: integer("transfer_count").default(0),
+  escalated: boolean("escalated").default(false),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  assignedAt: timestamp("assigned_at"),
+  endedAt: timestamp("ended_at"),
+});
+
+export const liveChatMessages = pgTable("live_chat_messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  sessionId: integer("session_id").references(() => liveChatSessions.id).notNull(),
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  senderType: text("sender_type").notNull(), // customer, agent, system, bot
+  messageType: text("message_type").default("text"), // text, image, file, card, quick_action
+  content: text("content").notNull(),
+  richContent: jsonb("rich_content").default({}), // Cards, buttons, etc.
+  attachments: jsonb("attachments").default([]),
+  quickActions: jsonb("quick_actions").default([]),
+  isRead: boolean("is_read").default(false),
+  readAt: timestamp("read_at"),
+  edited: boolean("edited").default(false),
+  editedAt: timestamp("edited_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Customer Feedback & VOC System
+export const customerFeedback = pgTable("customer_feedback", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  customerId: integer("customer_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id),
+  driverId: integer("driver_id").references(() => users.id),
+  entityType: text("entity_type").notNull(), // order, driver, merchant, app, article
+  entityId: text("entity_id").notNull(),
+  source: text("source").notNull(), // post-pickup, post-delivery, app-store, survey, help-article
+  feedbackType: text("feedback_type").notNull(), // rating, nps, comment, thumbs
+  rating: integer("rating"), // 1-5 stars
+  npsScore: integer("nps_score"), // 0-10
+  thumbsUp: boolean("thumbs_up"),
+  comment: text("comment"),
+  sentiment: text("sentiment"), // positive, neutral, negative
+  sentimentScore: real("sentiment_score"), // -1 to 1
+  categories: jsonb("categories").default([]), // Auto-categorized topics
+  tags: jsonb("tags").default([]),
+  severity: text("severity").default("low"), // low, medium, high, critical
+  actionRequired: boolean("action_required").default(false),
+  linkedTicketId: integer("linked_ticket_id").references(() => supportTicketsEnhanced.id),
+  escalated: boolean("escalated").default(false),
+  responded: boolean("responded").default(false),
+  responseText: text("response_text"),
+  respondedAt: timestamp("responded_at"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Financial Operations
+export const financialAccounts = pgTable("financial_accounts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  accountType: text("account_type").notNull(), // cash, accounts_receivable, accounts_payable, reserve
+  accountName: text("account_name").notNull(),
+  accountNumber: text("account_number").unique(),
+  balance: real("balance").default(0),
+  currency: text("currency").default("USD"),
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+  parentAccountId: integer("parent_account_id"),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const journalEntries = pgTable("journal_entries", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  entryNumber: text("entry_number").notNull().unique(),
+  entryDate: timestamp("entry_date").defaultNow().notNull(),
+  description: text("description").notNull(),
+  reference: text("reference"), // Order ID, Payout ID, etc.
+  totalAmount: real("total_amount").notNull(),
+  status: text("status").default("posted"), // draft, posted, reversed
+  entryType: text("entry_type").notNull(), // order_revenue, payout, adjustment, refund
+  approvedBy: integer("approved_by").references(() => users.id),
+  reversedBy: integer("reversed_by").references(() => users.id),
+  reversalReason: text("reversal_reason"),
+  metadata: jsonb("metadata").default({}),
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  reversedAt: timestamp("reversed_at"),
+});
+
+export const journalEntryLines = pgTable("journal_entry_lines", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  journalEntryId: integer("journal_entry_id").references(() => journalEntries.id).notNull(),
+  accountId: integer("account_id").references(() => financialAccounts.id).notNull(),
+  debitAmount: real("debit_amount").default(0),
+  creditAmount: real("credit_amount").default(0),
+  description: text("description").notNull(),
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Enhanced Tax Reporting
+export const taxProfiles = pgTable("tax_profiles", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  taxYear: integer("tax_year").notNull(),
+  businessType: text("business_type"), // sole_proprietor, llc, corporation
+  ein: text("ein"),
+  ssn: text("ssn"), // Encrypted
+  legalName: text("legal_name").notNull(),
+  businessName: text("business_name"),
+  addresses: jsonb("addresses").default([]),
+  w9Status: text("w9_status").default("not_requested"), // not_requested, requested, received, verified
+  w9RequestedAt: timestamp("w9_requested_at"),
+  w9ReceivedAt: timestamp("w9_received_at"),
+  w9Url: text("w9_url"),
+  tinMatchingStatus: text("tin_matching_status"), // pending, matched, failed
+  backupWithholding: boolean("backup_withholding").default(false),
+  withholdingRate: real("withholding_rate").default(0.24),
+  electronicDelivery: boolean("electronic_delivery").default(false),
+  emailDelivery: boolean("email_delivery").default(true),
+  mailingAddress: jsonb("mailing_address"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const tax1099Records = pgTable("tax_1099_records", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  taxYear: integer("tax_year").notNull(),
+  formType: text("form_type").default("1099-NEC"), // 1099-NEC, 1099-K
+  grossPayments: real("gross_payments").notNull(),
+  federalWithheld: real("federal_withheld").default(0),
+  stateWithheld: real("state_withheld").default(0),
+  adjustments: real("adjustments").default(0),
+  correctedAmount: real("corrected_amount"),
+  isCorrected: boolean("is_corrected").default(false),
+  originalRecordId: integer("original_record_id"),
+  status: text("status").default("draft"), // draft, filed, corrected, voided
+  filedAt: timestamp("filed_at"),
+  deliveryMethod: text("delivery_method"), // electronic, postal
+  deliveredAt: timestamp("delivered_at"),
+  bounced: boolean("bounced").default(false),
+  bounceReason: text("bounce_reason"),
+  pdfUrl: text("pdf_url"),
+  xmlData: text("xml_data"),
+  transmissionId: text("transmission_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Payment Reconciliation
+export const paymentReconciliation = pgTable("payment_reconciliation", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  reconciliationDate: timestamp("reconciliation_date").defaultNow().notNull(),
+  processorName: text("processor_name").notNull(), // stripe, adyen, etc.
+  settlementId: text("settlement_id").notNull(),
+  settlementAmount: real("settlement_amount").notNull(),
+  settledTransactions: integer("settled_transactions").notNull(),
+  unmatchedItems: integer("unmatched_items").default(0),
+  totalFees: real("total_fees").notNull(),
+  netSettlement: real("net_settlement").notNull(),
+  status: text("status").default("pending"), // pending, matched, discrepancy, resolved
+  discrepancyAmount: real("discrepancy_amount").default(0),
+  discrepancyReason: text("discrepancy_reason"),
+  resolvedBy: integer("resolved_by").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  processorData: jsonb("processor_data").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Risk Management
+export const riskProfiles = pgTable("risk_profiles", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  entityType: text("entity_type").notNull(), // customer, driver, merchant
+  entityId: integer("entity_id").notNull(),
+  riskScore: real("risk_score").default(0), // 0-100
+  riskLevel: text("risk_level").default("low"), // low, medium, high, blocked
+  riskFactors: jsonb("risk_factors").default([]),
+  velocityLimits: jsonb("velocity_limits").default({}),
+  blocklist: boolean("blocklist").default(false),
+  allowlist: boolean("allowlist").default(false),
+  fraudulent: boolean("fraudulent").default(false),
+  safetyIncidents: integer("safety_incidents").default(0),
+  chargebackHistory: jsonb("chargeback_history").default([]),
+  lastRiskAssessment: timestamp("last_risk_assessment").defaultNow(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Driver payouts table for Stripe Connect payments
 export const driverPayouts = pgTable("driver_payouts", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -489,31 +940,11 @@ export const cities = pgTable("cities", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Customer Service Tickets
-export const supportTickets = pgTable("support_tickets", {
-  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  userId: integer("user_id").references(() => users.id),
-  orderId: text("order_id").references(() => orders.id),
-  category: text("category").notNull(), // technical, payment, delivery, general
-  priority: text("priority").default("medium"), // low, medium, high, urgent
-  status: text("status").default("open"), // open, in_progress, waiting, resolved, closed
-  subject: text("subject").notNull(),
-  description: text("description").notNull(),
-  assignedAgent: integer("assigned_agent").references(() => users.id),
-  tags: jsonb("tags").default([]),
-  attachments: jsonb("attachments").default([]),
-  resolution: text("resolution"),
-  customerSatisfaction: integer("customer_satisfaction"), // 1-5 rating
-  timeToResolution: integer("time_to_resolution"), // minutes
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  resolvedAt: timestamp("resolved_at"),
-});
 
 // Support Ticket Messages
 export const ticketMessages = pgTable("ticket_messages", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  ticketId: integer("ticket_id").references(() => supportTickets.id).notNull(),
+  ticketId: integer("ticket_id").references(() => supportTicketsEnhanced.id).notNull(),
   senderId: integer("sender_id").references(() => users.id).notNull(),
   message: text("message").notNull(),
   messageType: text("message_type").default("text"), // text, file, image
@@ -689,7 +1120,7 @@ export const insertCitySchema = createInsertSchema(cities).omit({
   updatedAt: true,
 });
 
-export const insertSupportTicketSchema = createInsertSchema(supportTickets).omit({
+export const insertSupportTicketSchema = createInsertSchema(supportTicketsEnhanced).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
@@ -754,7 +1185,7 @@ export type InsertBusinessInfo = z.infer<typeof insertBusinessInfoSchema>;
 // New table types
 export type City = typeof cities.$inferSelect;
 export type InsertCity = z.infer<typeof insertCitySchema>;
-export type SupportTicket = typeof supportTickets.$inferSelect;
+export type SupportTicket = typeof supportTicketsEnhanced.$inferSelect;
 export type InsertSupportTicket = z.infer<typeof insertSupportTicketSchema>;
 export type TicketMessage = typeof ticketMessages.$inferSelect;
 export type InsertTicketMessage = z.infer<typeof insertTicketMessageSchema>;

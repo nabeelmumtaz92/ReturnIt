@@ -1,0 +1,164 @@
+# Return It — Master Admin Panel Spec (Finance & Support Addendum)
+
+This addendum defines the new pages you requested for the **Master Admin** layer: Business Intelligence, Financial Operations, Transaction Management, Driver Payouts, Tax Reports, Payment Tracking, Support Center (Live Chat), Support Analytics, and Customer Feedback.
+
+---
+
+## 20) Business Intelligence (BI)
+
+**Purpose**: Self‑serve analytics & executive reporting across merchants, markets, couriers, and time.
+**Core views**:
+
+* **Overview**: Order volume, revenue, gross margin, unit economics (AOV, CPO, cost per mile), on‑time % (pickup/dropoff), exception rate, NPS.
+* **Operations**: SLA compliance by region/merchant, route utilization, pickup success rate, reattempts, average dwell time at pickup/dropoff.
+* **Finance**: Revenue by product/service level, surcharge mix, discounts, refund leakage, write‑offs, DSO.
+* **Growth**: Merchant cohort retention, repeat customer rate, attribution (if available), funnel: quote→booked→picked up→delivered.
+* **Risk**: Fraud flags by segment, chargeback rate, courier safety incidents.
+  **Features**: interactive filters, drill‑downs to Orders/Couriers/Merchants, save/share dashboards, scheduled exports, row‑level security by role.
+  **Data model (warehouse)**: star schema with fact tables `fact_orders`, `fact_events`, `fact_payments`, `fact_payouts`, `fact_tickets`, `fact_feedback`; dimensions `dim_date`, `dim_region`, `dim_merchant`, `dim_courier`, `dim_customer`, `dim_service_level`.
+  **Tech notes**: pre‑aggregations for last 7/30/90 days, metric versioning, backfill jobs, data freshness indicator.
+
+---
+
+## 21) Financial Operations (Side Button)
+
+**Purpose**: One‑stop hub for finance workflows bridging Payments, Payouts, Invoices, Collections.
+**Sections**:
+
+* **Cash Position**: available balance, pending settlements, reserve/hold, expected payouts next 7 days.
+* **Accounts Receivable (Merchants)**: invoice aging buckets, dunning status, disputes.
+* **Accounts Payable (Couriers)**: upcoming payouts, negative balance alerts, adjustments queue.
+* **Compliance**: KYC/KYB states, 1099 readiness, document expiries.
+  **Actions**: trigger payout run, post manual journal entries (with reason), export GL, lock accounting period.
+  **Controls**: four‑eyes approval for manual adjustments above threshold; full audit trail.
+
+---
+
+## 22) Payment Processing ▸ Transaction Management
+
+**Purpose**: Manage customer charges, refunds, and risk.
+**Table columns**: txn\_id, created\_at, order\_id, customer, merchant\_of\_record, amount, status (authorized/captured/refunded/voided), method (card/wallet), 3DS, risk\_score, chargeback\_flag.
+**Filters**: date, status, method, amount range, risk band, merchant, failure reason.
+**Detail view**: full processor response, AVS/CVV, 3DS data, risk checks, related refunds/partial captures, evidence files.
+**Actions**: capture/void, partial/full refund, send receipt, create dispute evidence packet, mark as fraudulent.
+**Integrations**: Stripe/Adyen (abstracted), webhook retries, idempotency keys, descriptor management.
+**Risk automation**: velocity limits, device fingerprint, blocklist/allowlist, SCA rules per region.
+
+---
+
+## 23) Driver Payouts
+
+**Purpose**: Calculate and disburse courier earnings (including Instant Pay).
+**Views**:
+
+* **Payout Runs**: pay\_period, status (open/processing/paid), gross, tips, bonuses, fees, withholdings, net.
+* **Courier Earnings**: courier\_id, completed\_orders, base\_pay, per‑mile/min, surcharges, tips, adjustments, disputes offsets.
+* **Instant Pay**: requests queue (amount, fee, method, limits), risk flags, daily caps.
+  **Rules engine**: pay formulas by service level/region; minimums/guarantees; surge/peak boosts; cancellation policies.
+  **Compliance**: negative balance checks, holds for investigations, lien/withholding support.
+  **Actions**: create adjustment (bonus/penalty), approve instant pay, reverse payout, regenerate statement PDF, send 1099 preview.
+  **Exports**: NACHA/ACH files, CSV, API to processor.
+
+---
+
+## 24) Tax Reports (1099 & Compliance)
+
+**Purpose**: Year‑end tax reporting for couriers and tax compliance for merchants/platform.
+**Modules**:
+
+* **1099‑NEC** (US): eligibility (>\$600), TIN matching, W‑9 collection, e‑delivery consent, form generation, corrections.
+* **Withholding**: backup withholding tracking/remittance.
+* **VAT/GST** (if applicable): merchant tax profiles, tax rates by region, invoice tax calculation audit.
+  **Views**: courier list with totals YTD, missing W‑9, bounced emails, undeliverable addresses.
+  **Actions**: request W‑9 via email/SMS, lock year, file e‑file batch, issue corrections, regenerate forms, track postal mail.
+  **Data points**: gross earnings, adjustments, reimbursements, withholdings, fees; legal name, TIN, address history.
+
+---
+
+## 25) Payment Tracking
+
+**Purpose**: End‑to‑end visibility from quote → capture → settlement → reconciliation.
+**Timeline view**: order\_id anchored timeline showing quote, auth, capture, settlement, refund, chargeback, payout linkage.
+**Reconciliation**: compare processor settlements vs internal ledger; unmatched items queue; auto‑match rules; write‑off workflows.
+**Aging**: unsettled > T+2, refunds pending, chargeback lifecycles (pre‑arb/arb).
+**Notifications**: settlement delays, high refund spikes, processor incidents.
+
+---
+
+## 26) Customer Support Center — Live Support Chat
+
+**Purpose**: Real‑time assistance for customers, merchants, and couriers.
+**Agent console**: multi‑conversation inbox, presence, canned responses/macros, clipboard for links (tracking, labels), internal notes, customer verification.
+**Chat features**: rich cards (order summary, ETAs), attachments (photos of labels/damage), quick actions (rebook pickup, resend label, refund), emoji/typing indicators, SLA timers.
+**Routing**: skills‑based (merchant, region, language), priority tags (VIP, SLA breach), idle reassign.
+**Security**: PII redaction, file type scanning, export/transcript.
+**Integrations**: Web/widget SDK, mobile app SDK, email fallback, voice escalation.
+
+---
+
+## 27) Support Analytics
+
+**Purpose**: Measure support performance and quality.
+**KPIs**: FRT, ART, AHT, resolution rate, reopen rate, CSAT/NPS, contact rate per order, deflection rate (self‑serve), agent occupancy, backlog, SLA compliance.
+**Breakdowns**: by queue, merchant, issue type, agent, channel, time of day.
+**Quality**: QA scorecards, conversation sampling, coaching notes, macro effectiveness.
+**Exports & Schedules**: weekly ops review, per‑merchant reports.
+
+---
+
+## 28) Customer Feedback & VOC System
+
+**Purpose**: Capture and act on feedback across the journey.
+**Inputs**: post‑pickup CSAT, post‑delivery CSAT/NPS, thumbs on help articles, merchant/courier feedback forms, app store reviews (ingested), reason‑coded cancellations.
+**Feedback objects**: id, source, entity\_type (order/merchant/courier/app), rating, comment, sentiment, tags, severity, created\_at, linked\_ticket\_id.
+**Flows**: auto‑create tickets for low scores, notify merchant on store‑specific issues, trigger training for couriers with repeated negative tags.
+**Dashboards**: trend over time, top themes (topic modeling), geo heatmap, impact on churn/repeat.
+**Actions**: reply templates, vouchers/credits, publish testimonials (with consent), route to merchant.
+
+---
+
+## 29) Roles & Permissions for Added Sections
+
+* **Financial Ops & Transactions**: Finance, SuperAdmin
+* **Driver Payouts & Tax**: Finance, OpsLead (read), SuperAdmin
+* **Payment Tracking**: Finance, Support (read), OpsLead (read)
+* **Support Center**: Support, Support Lead, SuperAdmin
+* **Support Analytics**: Support Lead, OpsLead, SuperAdmin
+* **Feedback System**: Support, MerchantAdmin (their own), OpsLead, SuperAdmin
+
+---
+
+## 30) Events & Webhooks (Additions)
+
+* `payment.authorized`, `payment.captured`, `payment.settled`, `payment.refunded`, `payment.chargeback.opened`, `payment.chargeback.closed`
+* `payout.created`, `payout.failed`, `payout.reversed`, `instant_pay.requested`, `instant_pay.approved`
+* `tax.w9.requested`, `tax.1099.generated`, `tax.1099.corrected`
+* `support.chat.started`, `support.chat.resolved`, `feedback.received`
+
+---
+
+## 31) Ledger & Accounting Notes
+
+**Double‑entry ledger** with entities: Customer, Merchant, Courier, Platform, Processor Reserve. Postings for: order revenue, discounts, fees, refunds, chargebacks, payouts, adjustments, reserves. Period close, lock and re‑open with audit.
+
+---
+
+## 32) API Endpoints (Sketch)
+
+* `GET /v1/transactions`, `POST /v1/transactions/{id}/refund`
+* `GET /v1/payouts`, `POST /v1/payouts/run`, `POST /v1/instant-pay/{courier_id}`
+* `GET /v1/tax/1099`, `POST /v1/tax/w9-request`
+* `GET /v1/support/chats`, `POST /v1/support/chats/{id}/message`
+* `GET /v1/feedback`, `POST /v1/feedback`
+* `GET /v1/ledger/reconcile`
+
+---
+
+## 33) Edge Cases & Guardrails
+
+* Duplicate charges & idempotency on retries.
+* Instant pay abuse: cooling periods, velocity limits, KYC block.
+* Negative balances after reversals; auto‑recovery from future payouts.
+* Tax jurisdiction changes mid‑year; corrected forms.
+* PII exposure in chat and feedback; automated redaction.
+* SLA breach cascades triggering refunds—cap automatic credits per order.
