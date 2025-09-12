@@ -1,0 +1,211 @@
+# Return It — Master Admin Panel Spec (Finance, Support & Business Ops Addendum)
+
+This extended spec now also defines the **Business Operations Center** pages you requested, in addition to the Finance & Support modules. It also introduces a **global Back button** pattern across all pages.
+
+---
+
+## Global UI Element: Back Button
+
+* **Location**: top‑left of every page, next to breadcrumbs.
+* **Behavior**: navigates to the last page visited within the Admin Panel.
+* **Implementation notes**: maintain a navigation stack in session state. If no history available, default back target = Dashboard.
+
+---
+
+## 34) Business Operations Center
+
+**Purpose**: Central hub for day‑to‑day ops separate from Master Finance/Config.
+
+### 34.1) Order Management
+
+**Purpose**: Oversee all active and historical returns.
+**Views**:
+
+* **Active Orders**: live list with SLA countdowns, courier assigned, merchant, pickup/dropoff, exceptions.
+* **Order History**: searchable archive, filters for merchant, customer, courier, region, status.
+  **Actions**:
+* Create manual order
+* Edit pickup/dropoff windows
+* Cancel order
+* Assign/reassign courier
+* Print/Resend labels & QR codes
+* Export CSV/PDF
+  **Widgets**: SLA breach alerts, exception badges, escalation buttons.
+
+### 34.2) Driver Management
+
+**Purpose**: Manage couriers/drivers operationally.
+**Table columns**: driver\_id, name, phone, status (online/offline), active route, rating, completed\_orders, cancellation\_rate.
+**Profile**: schedule, assigned region, documents (read‑only from Compliance), performance metrics.
+**Actions**:
+
+* Toggle availability
+* Assign to route/zone
+* Message driver (broadcast/individual)
+* Apply bonus/penalty adjustment
+  **KPIs**: acceptance rate, on‑time %, exception rate, instant pay eligibility.
+
+### 34.3) Customer Management
+
+**Purpose**: Handle end‑user customers for operations.
+**Table columns**: customer\_id, name, email, phone, last\_order, lifetime\_orders, risk\_score.
+**Profile**: order history, saved addresses, payment methods (tokenized), feedback history.
+**Actions**:
+
+* Reset password
+* Merge duplicates
+* Block/unblock (fraud)
+* Send comms (SMS/email template)
+  **Ops notes**: quick issue creation, link to support tickets.
+
+### 34.4) Real‑Time Tracking
+
+**Purpose**: Live visibility on all ongoing returns and couriers.
+**Map view**: show courier locations, active orders with status pins, SLA breach highlight.
+**Filters**: by merchant, region, courier, exception type.
+**Order timeline widget**: pickup ETA, dropoff ETA, courier contact, last GPS ping.
+**Actions**:
+
+* Reassign courier
+* Message customer/courier
+* Trigger reroute/hub diversion
+* Escalate to support
+
+### 34.5) Customer Support (Ops Layer)
+
+**Purpose**: Operational support separate from Finance Support Center.
+**Console**: ticket inbox, live chat (if enabled), call log, email integration.
+**Ticket view**: customer info, order linkage, macros, SLA timer, internal notes.
+**Actions**:
+
+* Rebook pickup
+* Issue credit/refund (with permissions)
+* Escalate to Finance/Compliance
+* Close/merge tickets
+  **Analytics**: open vs resolved, SLA breaches, agent occupancy.
+
+---
+
+## Updated Roles & Permissions
+
+* **Business Ops Center Pages**: OpsLead, Dispatcher, Support Lead, SuperAdmin.
+* Order/Driver/Customer Mgmt → Ops, Dispatcher.
+* Real‑time Tracking → Ops, Dispatcher, Support (read).
+* Ops Customer Support → Support, OpsLead.
+
+---
+
+## Navigation Notes
+
+* Back button available on all pages.
+* Breadcrumbs: Dashboard ▸ Business Ops ▸ \[Page]
+* Quick switcher (Ctrl+K): jump between Ops, Finance, Support centers.
+
+---
+
+All previous sections (1–33) remain valid; this extends the spec with **Business Ops Center** for front‑line operations management.
+
+---
+
+## 34) Business Operations Center — Overview
+
+**Purpose**: Day‑to‑day operations cockpit for Ops users (dispatchers, shift leads, CS). Think of this as the tenant‑aware view that sits under Master Admin but focuses on execution.
+**Navigation**: Order Management · Driver Management · Customer Management · Real‑time Tracking · Customer Support
+**Common UX**: sticky **Back** button (see §39) and left rail filters (region, merchant, shift, service level). Each page supports bulk actions, exports, and live refresh.
+
+---
+
+## 35) Order Management (Ops Center)
+
+**Goal**: Create, modify, assign, and resolve returns rapidly.
+**Primary table**: order\_id, created\_at, status, SLA clocks (pickup/dropoff), customer, merchant, pickup\_window, courier, service\_level, value band, exception tag.
+**Key widgets**:
+
+* **Queues**: Needs assignment, Approaching pickup window (<30m), Exceptions, Label issues, High‑value, Reattempts.
+* **Batch actions**: assign to courier/route, reprice, rebook pickup, send comms, print/export labels, export CSV.
+* **Detail drawer**: items, photos, label/QR, chat, timeline, audit, quick actions (reroute, switch to mail, refund, escalate).
+  **Forms**: Create order (on behalf of merchant), Edit pickup window, Add fee/discount, Cancel with reason codes.
+  **Automation hooks**: auto‑assign policy by region/availability; SLA breach alerts; merchant webhooks.
+
+---
+
+## 36) Driver Management (Ops Center)
+
+**Goal**: Staff, monitor, and coach couriers in‑shift.
+**Roster view**: courier\_id, name, online/offline, current route, capacity left, acceptance rate (rolling), on‑time %, last\_seen, violations, instant‑pay eligibility.
+**Shift board**: clock‑in/out, meal/break, region assignment, caps.
+**Actions**: set active region, force logoff, grant temporary surge bonus, assign/reassign stops, open investigation, message courier, approve/deny instant pay.
+**Safety & compliance**: license/insurance expiry warnings, strike policy, incident reports.
+**Drill‑down profile**: earnings today/week, issue history, equipment checklist, device diagnostics, geofence compliance heatmap.
+
+---
+
+## 37) Customer Management (Ops Center)
+
+**Goal**: Resolve customer issues quickly and maintain quality.
+**Directory**: customer\_id, name, contact, lifetime\_orders, last\_order, risk score, CSAT trend.
+**Profile**: addresses, recent orders (with status chips), open tickets, refunds/credits, device/app version.
+**Actions**: issue credit, resend label/QR, rebook pickup, update contact details (PII audit), block/suspend for fraud, send reset link.
+**Retention tools**: voucher issuance with caps, follow‑up tasks, notes visible to Support.
+
+---
+
+## 38) Real‑time Tracking (Ops Center)
+
+**Goal**: Live operational awareness for orders and couriers.
+**Map**: courier GPS, active stops, hub/store locations; color by SLA risk.
+**Layers**: Orders (by status), Couriers (by availability), Traffic/weather overlays, Hubs.
+**Panels**: delayed >15m, no‑movement >5m, route outliers, store closures.
+**Actions**: broadcast to driver group, reroute stop, swap courier, call store/customer, trigger safety check.
+**Telemetry**: heartbeat interval, last GPS ping, device battery; alerting if stale.
+
+---
+
+## 39) Customer Support (Ops Center)
+
+**Goal**: Ticket + chat workspace tailored for Ops (integrates with Support Center in Master Admin §26).
+**Inbox**: queues by merchant/priority/channel; SLA timers; macros; internal notes.
+**Conversation view**: order context card (timeline, ETAs, label links), quick actions (refund, rebook, resend comms), attachment handling.
+**Workflows**: escalation to Master Support, dispatch handoff, merchant‑visible vs internal notes, after‑call wrap with reason codes.
+**Quality**: canned replies, knowledge base search, QA checklists.
+
+---
+
+## 40) Back Button Behavior (Global)
+
+**Requirement**: Provide a persistent **Back** button across Ops Center pages that returns to **the last page the user navigated from** (not a fixed parent).
+**Spec**:
+
+* Maintain a client‑side **navigation stack** per user session (LIFO). Push route + filter/query params on navigation.
+* **Back** pops the stack and navigates to the prior entry, restoring scroll position, filters, and table pagination.
+* If stack is empty, fall back to browser history; if unavailable, default to Ops Center Overview.
+* Expose a `useNavStack()` hook (or service) with `push(route, state)`, `back()`, `peek()`, and `clear()`; persist in sessionStorage to survive soft refresh.
+* Respect guarded routes (unsaved changes): prompt confirm, allow cancel.
+* Telemetry: log back‑nav events for UX analysis.
+
+---
+
+## 41) Permissions & Roles (Ops Center)
+
+* **Order/Driver/Tracking**: OpsAgent (read/write), Dispatcher (write/bulk), OpsLead (all), ReadOnly (read).
+* **Customer Management & Support**: SupportAgent (write), SupportLead (all), OpsLead (read), Finance (read refunds only).
+
+---
+
+## 42) API Endpoints (Ops Center Sketch)
+
+* `GET /v1/ops/orders` (filters/sort/pagination), `POST /v1/ops/orders`, `PATCH /v1/ops/orders/{id}`
+* `POST /v1/ops/orders/{id}/assign`, `/rebook`, `/refund`, `/cancel`
+* `GET /v1/ops/couriers`, `PATCH /v1/ops/couriers/{id}` (status/region/caps), `POST /v1/ops/couriers/{id}/message`
+* `GET /v1/ops/customers`, `GET /v1/ops/customers/{id}`, `POST /v1/ops/customers/{id}/credit`
+* `GET /v1/ops/tracking` (orders + courier telemetry), `POST /v1/ops/routes/{id}/swap`
+* `GET /v1/ops/support/tickets`, `POST /v1/ops/support/tickets/{id}/reply`, `POST /v1/ops/support/tickets/{id}/escalate`
+
+---
+
+## 43) Events/Webhooks (Ops Center Additions)
+
+* `ops.order.reassigned`, `ops.order.rebooked`, `ops.order.refund.issued`
+* `ops.courier.force_logoff`, `ops.courier.region_changed`
+* `ops.tracking.alert.stale_location`, `ops.tracking.route_swapped`
+* `ops.support.ticket.escalated`, `ops.support.chat.handoff`

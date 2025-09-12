@@ -6,7 +6,8 @@ import {
   Home, Users, Truck, DollarSign, FileText, BarChart3, 
   Settings, MessageSquare, Star, Package, UserCheck, 
   Activity, Clock, Shield, Globe, Heart, Headphones,
-  ChevronRight, Menu, X, Building2, Bell, LogOut, RefreshCw
+  ChevronRight, Menu, X, Building2, Bell, LogOut, RefreshCw,
+  PieChart, CreditCard, Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { 
@@ -32,17 +33,28 @@ interface AdminLayoutProps {
 
 const navigationSections = [
   {
+    title: "Dashboard & Overview",
+    items: [
+      {
+        label: "Admin Dashboard",
+        href: "/admin-dashboard",
+        icon: Home,
+        description: "Overview and key metrics"
+      }
+    ]
+  },
+  {
     title: "Business Operations Center",
     items: [
       {
         label: "Order Management",
-        href: "/admin-orders",
+        href: "/admin-dashboard?section=orders",
         icon: Package,
         description: "Track and manage all orders"
       },
       {
         label: "Driver Management", 
-        href: "/admin-drivers",
+        href: "/admin-dashboard?section=drivers",
         icon: Truck,
         description: "Driver onboarding and oversight"
       },
@@ -54,113 +66,113 @@ const navigationSections = [
       },
       {
         label: "Real-time Tracking",
-        href: "/admin-tracking",
+        href: "/admin-dashboard?section=driver-locations",
         icon: Activity,
         description: "Live order and driver tracking"
-      },
-      {
-        label: "Customer Support",
-        href: "/admin-support",
-        icon: Headphones,
-        description: "Support ticket management"
       }
     ]
   },
   {
-    title: "Dashboard & Analytics",
+    title: "Master Admin Panel - Analytics",
     items: [
       {
-        label: "Admin Dashboard",
-        href: "/admin-dashboard",
-        icon: Home,
-        description: "Overview and key metrics"
-      },
-      {
         label: "Business Intelligence",
-        href: "/business-intelligence", 
-        icon: BarChart3,
-        description: "Advanced analytics and reporting"
+        href: "/admin-dashboard?section=business-intelligence", 
+        icon: PieChart,
+        description: "Executive reporting & self-serve analytics"
       },
       {
         label: "Performance Analytics",
-        href: "/admin-analytics",
-        icon: Activity,
+        href: "/admin-dashboard?section=analytics",
+        icon: BarChart3,
         description: "Detailed performance metrics"
-      }
-    ]
-  },
-  {
-    title: "Financial Operations",
-    items: [
-      {
-        label: "Payment Processing",
-        href: "/admin-payments",
-        icon: DollarSign,
-        description: "Transaction management"
-      },
-      {
-        label: "Driver Payouts",
-        href: "/admin-dashboard?section=payouts", 
-        icon: UserCheck,
-        description: "Driver payment processing & instant pay"
-      },
-      {
-        label: "Tax Reports",
-        href: "/admin-dashboard?section=tax-reports",
-        icon: FileText,
-        description: "1099 forms & tax compliance"
-      },
-      {
-        label: "Payment Tracking",
-        href: "/admin-payment-tracking",
-        icon: Clock,
-        description: "Payment status monitoring"
-      }
-    ]
-  },
-  {
-    title: "Customer Support Center",
-    items: [
-      {
-        label: "Live Support Chat",
-        href: "/admin-chat",
-        icon: MessageSquare,
-        description: "Real-time customer support"
       },
       {
         label: "Support Analytics", 
-        href: "/admin-support-analytics",
+        href: "/admin-dashboard?section=support-analytics",
         icon: BarChart3,
-        description: "Support performance metrics"
-      },
-      {
-        label: "Customer Feedback",
-        href: "/admin-reviews",
-        icon: Star,
-        description: "Customer satisfaction tracking"
+        description: "Support performance metrics & quality analysis"
       }
     ]
   },
   {
-    title: "User Management",
+    title: "Master Admin Panel - Financial",
     items: [
       {
-        label: "Customer Management",
-        href: "/admin-customers",
-        icon: Users,
-        description: "Customer account oversight"
+        label: "Financial Operations",
+        href: "/admin-dashboard?section=financial-operations",
+        icon: DollarSign,
+        description: "One-stop hub for finance workflows"
       },
       {
-        label: "Driver Applications",
-        href: "/admin-driver-applications", 
+        label: "Transaction Management",
+        href: "/admin-dashboard?section=transaction-management",
+        icon: CreditCard,
+        description: "Customer charges, refunds & risk assessment"
+      },
+      {
+        label: "Enhanced Driver Payouts",
+        href: "/admin-dashboard?section=enhanced-driver-payouts", 
+        icon: Zap,
+        description: "Advanced payout management with instant pay"
+      },
+      {
+        label: "Enhanced Tax Reports",
+        href: "/admin-dashboard?section=enhanced-tax-reports",
         icon: FileText,
-        description: "New driver onboarding"
+        description: "1099-NEC generation, VAT/GST & automated filing"
       },
       {
-        label: "User Access Control",
-        href: "/admin-access",
-        icon: Shield,
-        description: "Permissions and security"
+        label: "Payment Tracking",
+        href: "/admin-dashboard?section=payment-tracking",
+        icon: Clock,
+        description: "End-to-end visibility from quote to settlement"
+      }
+    ]
+  },
+  {
+    title: "Master Admin Panel - Support",
+    items: [
+      {
+        label: "Support Center",
+        href: "/admin-dashboard?section=support-center",
+        icon: Headphones,
+        description: "Real-time assistance hub with live chat"
+      },
+      {
+        label: "Customer Feedback",
+        href: "/admin-dashboard?section=customer-feedback",
+        icon: Star,
+        description: "VOC system with sentiment analysis"
+      },
+      {
+        label: "Live Support Chat",
+        href: "/admin-dashboard?section=chat",
+        icon: MessageSquare,
+        description: "Real-time customer support"
+      }
+    ]
+  },
+  {
+    title: "Legacy Operations",
+    items: [
+      {
+        label: "Driver Payouts (Legacy)",
+        href: "/admin-dashboard?section=payouts", 
+        icon: UserCheck,
+        description: "Basic driver payment processing"
+      },
+      {
+        label: "Tax Reports (Legacy)",
+        href: "/admin-dashboard?section=tax-reports",
+        icon: FileText,
+        description: "Basic 1099 forms & tax compliance"
+      },
+      {
+        label: "Notifications",
+        href: "/admin-dashboard?section=notifications",
+        icon: Bell,
+        description: "System alerts and notification management"
       }
     ]
   },
@@ -168,22 +180,22 @@ const navigationSections = [
     title: "System Administration",
     items: [
       {
-        label: "Cost Monitoring",
-        href: "/cost-monitoring",
-        icon: DollarSign,
-        description: "Track AI and platform costs"
+        label: "System Metrics",
+        href: "/admin-dashboard?section=system-metrics",
+        icon: Activity,
+        description: "Real-time server performance monitoring"
+      },
+      {
+        label: "Zone Management",
+        href: "/admin-dashboard?section=zone-management",
+        icon: Globe,
+        description: "Regional manager territories"
       },
       {
         label: "Platform Settings",
-        href: "/admin-settings",
+        href: "/admin-dashboard?section=operations",
         icon: Settings,
         description: "Platform configuration"
-      },
-      {
-        label: "Business Profile",
-        href: "/business-profile",
-        icon: Building2,
-        description: "Company information"
       }
     ]
   }
