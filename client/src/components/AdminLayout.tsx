@@ -1,4 +1,4 @@
-import { useState, ReactNode } from 'react';
+import { useState, ReactNode, useEffect, useCallback, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
@@ -203,7 +203,69 @@ const navigationSections = [
 
 export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(320); // Default 320px (w-80 equivalent)
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef(0);
+  const dragStartWidth = useRef(0);
   const [location] = useLocation();
+
+  // Load sidebar width from localStorage on mount
+  useEffect(() => {
+    const savedWidth = localStorage.getItem('adminSidebarWidth');
+    if (savedWidth) {
+      const width = parseInt(savedWidth, 10);
+      if (width >= 200 && width <= 500) {
+        setSidebarWidth(width);
+      }
+    }
+  }, []);
+
+  // Save sidebar width to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('adminSidebarWidth', sidebarWidth.toString());
+  }, [sidebarWidth]);
+
+  // Mouse event handlers for dragging
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    dragStartX.current = e.clientX;
+    dragStartWidth.current = sidebarWidth;
+  }, [sidebarWidth]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging) return;
+
+    const deltaX = e.clientX - dragStartX.current;
+    const newWidth = Math.max(200, Math.min(500, dragStartWidth.current + deltaX));
+    setSidebarWidth(newWidth);
+  }, [isDragging]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Global mouse event listeners for drag functionality
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, handleMouseMove, handleMouseUp]);
   
   // Check if we're on a section page
   const currentParams = new URLSearchParams(window.location.search);
@@ -314,10 +376,12 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
       </div>
 
       {/* Sidebar */}
-      <div className={cn(
-        "fixed left-0 top-12 z-40 h-[calc(100vh-3rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300",
-        sidebarOpen ? "w-80" : "w-16"
-      )}>
+      <div 
+        className="fixed left-0 top-12 z-40 h-[calc(100vh-3rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300"
+        style={{ 
+          width: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = w-16
+        }}
+      >
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-amber-200">
           <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
@@ -385,13 +449,30 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
             <div className="text-sm font-semibold text-amber-900">{getCurrentSection()}</div>
           </div>
         )}
+
+        {/* Resize Handle */}
+        {sidebarOpen && (
+          <div
+            className={cn(
+              "absolute right-0 top-0 bottom-0 w-1 bg-transparent hover:bg-amber-300 cursor-col-resize transition-colors duration-200 group",
+              isDragging && "bg-amber-400"
+            )}
+            onMouseDown={handleMouseDown}
+            data-testid="sidebar-resize-handle"
+          >
+            {/* Visual indicator */}
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1 h-12 bg-amber-200 group-hover:bg-amber-400 transition-colors duration-200 rounded-l" />
+          </div>
+        )}
       </div>
 
       {/* Page Header */}
-      <div className={cn(
-        "bg-white border-b border-amber-200 shadow-sm transition-all duration-300 pt-12",
-        sidebarOpen ? "ml-80" : "ml-16"
-      )}>
+      <div 
+        className="bg-white border-b border-amber-200 shadow-sm transition-all duration-300 pt-12"
+        style={{
+          marginLeft: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = ml-16
+        }}
+      >
         <div className="px-6 py-4">
           <div>
             <div className="flex items-center gap-3">
@@ -440,10 +521,12 @@ export function AdminLayout({ children, pageTitle, tabs = [] }: AdminLayoutProps
       </div>
 
       {/* Main Content */}
-      <div className={cn(
-        "transition-all duration-300",
-        sidebarOpen ? "ml-80" : "ml-16"
-      )}>
+      <div 
+        className="transition-all duration-300"
+        style={{
+          marginLeft: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = ml-16
+        }}
+      >
         {/* Page Content */}
         <div className="p-6">
           {children}
