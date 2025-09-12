@@ -125,6 +125,11 @@ export default function Welcome() {
             {/* Hero Image Card */}
             <div className="flex-1 max-w-lg">
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
+                <img 
+                  src="https://images.unsplash.com/photo-1566492031773-4f4e44671d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                  alt="Professional delivery man with packages" 
+                  className="w-full h-64 object-cover"
+                />
                 <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">
                     Professional Service
