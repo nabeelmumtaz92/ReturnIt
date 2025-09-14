@@ -36,7 +36,8 @@ export class FreeEmailSMSService implements SMSService {
   }
 
   private formatOrderMessage(orderData: any): string {
-    return `🚚 NEW RETURNIT ORDER! Customer: ${orderData.customerName || 'New Customer'}, Pickup: ${orderData.pickupAddress || 'Address pending'}, Amount: $${orderData.totalAmount || 'TBD'}. Login to manage.`;
+    const trackingInfo = orderData.trackingNumber ? ` Track: ${orderData.trackingNumber}` : '';
+    return `🚚 NEW RETURNIT ORDER! Customer: ${orderData.customerName || 'New Customer'}, Pickup: ${orderData.pickupAddress || 'Address pending'}, Amount: $${orderData.totalAmount || 'TBD'}.${trackingInfo} Login to manage.`;
   }
 
   private async sendViaSMSGateway(phoneNumber: string, message: string): Promise<boolean> {
@@ -75,7 +76,8 @@ export class TwilioSMSService implements SMSService {
     }
 
     try {
-      const message = `🚚 NEW RETURNIT ORDER! Customer: ${orderData.customerName}, Pickup: ${orderData.pickupAddress}, Amount: $${orderData.totalAmount}`;
+      const trackingInfo = orderData.trackingNumber ? ` Track: ${orderData.trackingNumber}` : '';
+      const message = `🚚 NEW RETURNIT ORDER! Customer: ${orderData.customerName}, Pickup: ${orderData.pickupAddress}, Amount: $${orderData.totalAmount}.${trackingInfo}`;
       
       await this.client.messages.create({
         body: message,

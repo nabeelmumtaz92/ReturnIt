@@ -233,14 +233,15 @@ export default function BookPickup() {
     },
     onSuccess: (order: any) => {
       toast({
-        title: "Order Created!",
-        description: "Proceeding to payment...",
+        title: "🎉 Order Created Successfully!",
+        description: `Your tracking number is ${order.trackingNumber}. Save this to track your return!`,
+        duration: 8000, // Show longer to give customer time to read
       });
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
-      // Navigate to checkout page with order details
+      // Navigate to checkout page with order details and tracking number
       setTimeout(() => {
-        setLocation(`/checkout?amount=${order.totalPrice}&orderId=${order.id}`);
-      }, 1000);
+        setLocation(`/checkout?amount=${order.totalPrice}&orderId=${order.id}&trackingNumber=${order.trackingNumber}`);
+      }, 2000); // Slightly longer delay to let customer see tracking number
     },
     onError: (error: Error) => {
       toast({

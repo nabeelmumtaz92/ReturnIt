@@ -6,7 +6,7 @@ import { useLocation, Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin } from "lucide-react";
+import { ArrowLeft, Package, Truck, CheckCircle, Clock, MapPin, Copy, ExternalLink } from "lucide-react";
 import { Order } from "@shared/schema";
 import LiveOrderTracking from "@/components/LiveOrderTracking";
 
@@ -24,6 +24,25 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const [trackingCopied, setTrackingCopied] = useState(false);
+  
+  const copyTrackingNumber = async (trackingNumber: string) => {
+    try {
+      await navigator.clipboard.writeText(trackingNumber);
+      setTrackingCopied(true);
+      toast({
+        title: "Copied!",
+        description: "Tracking number copied to clipboard",
+      });
+      setTimeout(() => setTrackingCopied(false), 2000);
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Please manually copy the tracking number",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -175,6 +194,55 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
           </CardHeader>
           
           <CardContent className="space-y-6">
+            {/* Tracking Number Display */}
+            {order?.trackingNumber && (
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-blue-900 mb-1 flex items-center">
+                      <Package className="h-5 w-5 mr-2" />
+                      Track Your Return
+                    </h3>
+                    <p className="text-blue-700 text-sm mb-3">Use this tracking number to monitor your return status</p>
+                    <div className="bg-white p-3 rounded border font-mono text-lg font-bold text-blue-900 border-blue-300">
+                      {order.trackingNumber}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 ml-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => copyTrackingNumber(order.trackingNumber!)}
+                      className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                      data-testid="button-copy-tracking"
+                    >
+                      {trackingCopied ? (
+                        <>
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4 mr-1" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => setLocation(`/track?tracking=${order.trackingNumber}`)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
+                      data-testid="button-track-order"
+                    >
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      Track
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Status Description */}
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
               <p className="text-amber-900">

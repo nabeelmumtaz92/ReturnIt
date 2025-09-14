@@ -1121,7 +1121,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           customerName: 'New Customer',
           pickupAddress: order.pickupStreetAddress,
           totalAmount: order.totalPrice,
-          orderId: order.id
+          orderId: order.id,
+          trackingNumber: order.trackingNumber
         });
       } catch (smsError) {
         console.error('SMS notification failed:', smsError);

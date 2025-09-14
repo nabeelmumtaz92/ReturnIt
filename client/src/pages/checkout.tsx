@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation, Link } from "wouter";
-import { ArrowLeft, CreditCard, Shield, Clock } from "lucide-react";
+import { ArrowLeft, CreditCard, Shield, Clock, Copy, CheckCircle } from "lucide-react";
 import Footer from "@/components/Footer";
 
 // Import delivery images
@@ -32,6 +32,31 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [trackingCopied, setTrackingCopied] = useState(false);
+  
+  // Get tracking number from URL parameters
+  const searchParams = new URLSearchParams(window.location.search);
+  const trackingNumber = searchParams.get('trackingNumber') || '';
+  
+  const copyTrackingNumber = async () => {
+    if (trackingNumber) {
+      try {
+        await navigator.clipboard.writeText(trackingNumber);
+        setTrackingCopied(true);
+        toast({
+          title: "Copied!",
+          description: "Tracking number copied to clipboard",
+        });
+        setTimeout(() => setTrackingCopied(false), 2000);
+      } catch (error) {
+        toast({
+          title: "Copy failed",
+          description: "Please manually copy the tracking number",
+          variant: "destructive",
+        });
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +83,8 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
     } else {
       toast({
         title: "Payment Successful",
-        description: "Your pickup has been booked successfully!",
+        description: trackingNumber ? `Your pickup has been booked! Track with ${trackingNumber}` : "Your pickup has been booked successfully!",
+        duration: 6000,
       });
       setLocation(`/order-status/${orderId}`);
     }
@@ -68,6 +94,41 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Tracking Number Display */}
+      {trackingNumber && (
+        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-semibold text-green-900 mb-1">📦 Your Tracking Number</h3>
+              <p className="text-green-700 text-sm mb-2">Save this number to track your return!</p>
+              <div className="bg-white p-3 rounded border font-mono text-lg font-bold text-green-900 border-green-300">
+                {trackingNumber}
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={copyTrackingNumber}
+              className="border-green-300 text-green-700 hover:bg-green-100"
+              data-testid="button-copy-tracking"
+            >
+              {trackingCopied ? (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-1" />
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4 mr-1" />
+                  Copy
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+      
       <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
         <h3 className="font-medium text-amber-900 mb-2">Order Summary</h3>
         <div className="flex justify-between items-center">
@@ -109,6 +170,7 @@ export default function Checkout() {
   const searchParams = new URLSearchParams(window.location.search);
   const amount = parseFloat(searchParams.get('amount') || '0');
   const orderId = searchParams.get('orderId') || '';
+  const trackingNumber = searchParams.get('trackingNumber') || '';
   const [, setLocation] = useLocation();
   const [clientSecret, setClientSecret] = useState("");
   const { toast } = useToast();
