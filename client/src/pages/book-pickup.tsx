@@ -156,8 +156,8 @@ export default function BookPickup() {
     if (!itemValue || itemValue <= 0) return 0;
     
     const paymentRouteInfo: PaymentRouteInfo = {
-      distance: routeInfo?.distance || 0,
-      estimatedTime: routeInfo?.duration || 0  // Use duration from locationServices RouteInfo
+      distance: typeof routeInfo?.distance === 'number' ? routeInfo.distance : parseFloat(String(routeInfo?.distance || 0)),
+      estimatedTime: typeof routeInfo?.duration === 'number' ? routeInfo.duration : parseFloat(String(routeInfo?.duration || 0))
     };
     
     const breakdown = calculatePaymentWithValue(
