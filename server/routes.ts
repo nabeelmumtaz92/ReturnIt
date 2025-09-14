@@ -79,6 +79,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 
+  // Serve manifest with correct MIME type
+  app.use('/site.webmanifest', (req, res, next) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    next();
+  });
+
   // Add cache-busting headers for development
   if (process.env.NODE_ENV === 'development') {
     app.use((req, res, next) => {
