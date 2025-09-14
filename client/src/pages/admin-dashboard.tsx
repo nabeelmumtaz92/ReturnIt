@@ -447,79 +447,87 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   // Quick Actions Component
   const QuickActions = () => (
-    <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-6 mb-6">
+    <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6 mb-6">
       <h2 className="text-lg font-semibold text-amber-900 mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
         <Button 
           onClick={() => changeSection('orders')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-manage-orders"
         >
-          <Package className="h-8 w-8" />
-          <span className="text-sm font-medium">Manage Orders</span>
+          <Package className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Manage Orders</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('drivers')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-view-drivers"
         >
-          <Truck className="h-8 w-8" />
-          <span className="text-sm font-medium">View Drivers</span>
+          <Truck className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">View Drivers</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('analytics')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-analytics"
         >
-          <BarChart3 className="h-8 w-8" />
-          <span className="text-sm font-medium">Analytics</span>
+          <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Analytics</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('payouts')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-driver-payouts"
         >
-          <DollarSign className="h-8 w-8" />
-          <span className="text-sm font-medium">Driver Payouts</span>
+          <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Driver Payouts</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('tax-reports')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-tax-reports"
         >
-          <FileText className="h-8 w-8" />
-          <span className="text-sm font-medium">Tax Reports</span>
+          <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('chat')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-support-chat"
         >
-          <MessageCircle className="h-8 w-8" />
-          <span className="text-sm font-medium">Support Chat</span>
+          <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Support Chat</span>
         </Button>
         
         <Button 
           onClick={() => changeSection('driver-locations')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-driver-locations"
         >
-          <MapPin className="h-8 w-8" />
-          <span className="text-sm font-medium">Driver Locations</span>
+          <MapPin className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Driver Locations</span>
         </Button>
 
         <Button 
           onClick={() => changeSection('zone-management')}
-          className="h-auto p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2"
+          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
           variant="outline"
+          data-testid="button-zone-management"
         >
-          <Target className="h-8 w-8" />
-          <span className="text-sm font-medium">Zone Management</span>
+          <Target className="h-6 w-6 sm:h-8 sm:w-8" />
+          <span className="text-xs sm:text-sm font-medium text-center">Zone Management</span>
         </Button>
       </div>
 
@@ -533,12 +541,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       <QuickActions />
 
       {/* Update Controls */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
           <Button 
             onClick={updateDashboardStats}
             disabled={isUpdating}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
+            className="bg-amber-600 hover:bg-amber-700 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
+            data-testid="button-update-stats"
           >
             {isUpdating ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -551,19 +560,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Button 
             onClick={() => setAutoRefresh(!autoRefresh)}
             variant={autoRefresh ? "default" : "outline"}
-            className={autoRefresh ? "bg-green-600 hover:bg-green-700 text-white" : ""}
+            className={`w-full sm:w-auto min-h-[44px] touch-manipulation ${autoRefresh ? "bg-green-600 hover:bg-green-700 text-white" : ""}`}
+            data-testid="button-auto-refresh"
           >
             {autoRefresh ? 'Auto-Refresh ON' : 'Auto-Refresh OFF'}
           </Button>
         </div>
         
-        <div className="text-sm text-amber-600">
+        <div className="text-sm text-amber-600 text-center sm:text-right">
           Last updated: {dashboardStats.lastUpdated.toLocaleTimeString()}
         </div>
       </div>
 
       {/* Overview dashboard content */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
         <Card className={`bg-white/90 backdrop-blur-sm border-amber-200 transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -1116,33 +1126,40 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Order Management */}
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="text-amber-900 text-xl">Order Pipeline: Requested → Assigned → In Progress → Completed</CardTitle>
-                <div className="flex gap-2">
+            <CardHeader className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <CardTitle className="text-amber-900 text-lg sm:text-xl">Order Pipeline: Requested → Assigned → In Progress → Completed</CardTitle>
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={() => setShowBulkUpload(!showBulkUpload)}
                     variant="outline"
                     size="sm"
+                    className="min-h-[44px] touch-manipulation"
                     data-testid="button-bulk-upload"
                   >
                     <Package className="h-4 w-4 mr-2" />
                     Bulk Upload
                   </Button>
-                  <Button
-                    onClick={() => setSelectedTab('active')}
-                    variant={selectedTab === 'active' ? 'default' : 'outline'}
-                    size="sm"
-                  >
-                    Active ({activeOrders.length})
-                  </Button>
-                  <Button
-                    onClick={() => setSelectedTab('completed')}
-                    variant={selectedTab === 'completed' ? 'default' : 'outline'}
-                    size="sm"
-                  >
-                    Completed ({completedOrders.length})
-                  </Button>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      onClick={() => setSelectedTab('active')}
+                      variant={selectedTab === 'active' ? 'default' : 'outline'}
+                      size="sm"
+                      className="min-h-[44px] touch-manipulation"
+                      data-testid="button-tab-active"
+                    >
+                      Active ({activeOrders.length})
+                    </Button>
+                    <Button
+                      onClick={() => setSelectedTab('completed')}
+                      variant={selectedTab === 'completed' ? 'default' : 'outline'}
+                      size="sm"
+                      className="min-h-[44px] touch-manipulation"
+                      data-testid="button-tab-completed"
+                    >
+                      Completed ({completedOrders.length})
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -1157,7 +1174,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       accept=".csv"
                       className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-amber-100"
                     />
-                    <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-upload-orders">
+                    <Button className="bg-green-600 hover:bg-green-700 text-white min-h-[44px] touch-manipulation" data-testid="button-upload-orders">
                       Process Upload
                     </Button>
                   </div>
@@ -1166,100 +1183,112 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
               <div className="space-y-4">
                 {(selectedTab === 'active' ? activeOrders : completedOrders).map(order => (
-                  <div key={order.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">#{order.id} - {order.customer}</p>
-                          <Badge className={
-                            order.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            order.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
-                            order.status === 'pending_assignment' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
-                          }>
-                            {order.status.replace('_', ' ')}
-                          </Badge>
-                          {order.priority === 'urgent' && (
-                            <Badge className="bg-red-100 text-red-800">URGENT</Badge>
-                          )}
-                          <Badge variant="outline" className="text-xs">
-                            {order.type}
-                          </Badge>
-                          <span className="text-sm text-amber-600">{order.time}</span>
+                  <div key={order.id} className="p-3 sm:p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div className="flex flex-col space-y-3">
+                      {/* Header section */}
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                        <div className="flex-1">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <p className="font-medium text-amber-900 text-sm sm:text-base">#{order.id} - {order.customer}</p>
+                            <span className="text-xs sm:text-sm text-amber-600">{order.time}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-2 mb-2">
+                            <Badge className={
+                              order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                              order.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                              order.status === 'pending_assignment' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }>
+                              {order.status.replace('_', ' ')}
+                            </Badge>
+                            {order.priority === 'urgent' && (
+                              <Badge className="bg-red-100 text-red-800">URGENT</Badge>
+                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {order.type}
+                            </Badge>
+                          </div>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <p className="text-amber-600">Pickup</p>
-                            <p className="font-medium text-amber-900">{order.pickup}</p>
+                      </div>
+                      
+                      {/* Order details - mobile-friendly layout */}
+                      <div className="grid grid-cols-1 gap-3 text-sm">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="p-2 bg-white/50 rounded border border-amber-100">
+                            <p className="text-amber-600 text-xs font-medium">Pickup</p>
+                            <p className="font-medium text-amber-900 break-words">{order.pickup}</p>
                           </div>
-                          <div>
-                            <p className="text-amber-600">Drop-off</p>
-                            <p className="font-medium text-amber-900">{order.dropoff}</p>
+                          <div className="p-2 bg-white/50 rounded border border-amber-100">
+                            <p className="text-amber-600 text-xs font-medium">Drop-off</p>
+                            <p className="font-medium text-amber-900 break-words">{order.dropoff}</p>
                           </div>
-                          <div>
-                            <p className="text-amber-600">Driver</p>
+                          <div className="p-2 bg-white/50 rounded border border-amber-100">
+                            <p className="text-amber-600 text-xs font-medium">Driver</p>
                             <p className="font-medium text-amber-900">{order.driver || 'Unassigned'}</p>
                           </div>
                         </div>
                       </div>
-                      <div className="flex gap-2 flex-wrap">
-                        {/* Status Update Actions - Matching HTML structure */}
-                        {order.status === 'requested' || order.status === 'pending' ? (
-                          <>
+                      
+                      {/* Action buttons - mobile-friendly */}
+                      <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-amber-200">
+                        {/* Status Update Actions - Mobile-friendly buttons */}
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          {order.status === 'requested' || order.status === 'pending' ? (
+                            <>
+                              <Button
+                                onClick={() => updateOrderStatus(order.id, 'pending_assignment')}
+                                className="bg-green-600 hover:bg-green-700 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
+                                size="sm"
+                                data-testid={`button-approve-${order.id}`}
+                              >
+                                ✅ Approve
+                              </Button>
+                              <Button
+                                onClick={() => updateOrderStatus(order.id, 'cancelled')}
+                                variant="outline"
+                                className="border-red-200 text-red-600 hover:bg-red-50 w-full sm:w-auto min-h-[44px] touch-manipulation"
+                                size="sm"
+                                data-testid={`button-reject-${order.id}`}
+                              >
+                                ❌ Reject
+                              </Button>
+                            </>
+                          ) : order.status === 'pending_assignment' ? (
                             <Button
-                              onClick={() => updateOrderStatus(order.id, 'pending_assignment')}
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => {
+                                assignDriver(order.id);
+                                updateOrderStatus(order.id, 'in_progress');
+                              }}
+                              className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
                               size="sm"
-                              data-testid={`button-approve-${order.id}`}
+                              data-testid={`button-assign-driver-${order.id}`}
                             >
-                              ✅ Approve
+                              👤 Assign Driver
                             </Button>
+                          ) : order.status === 'in_progress' ? (
                             <Button
-                              onClick={() => updateOrderStatus(order.id, 'cancelled')}
-                              variant="outline"
-                              className="border-red-200 text-red-600 hover:bg-red-50"
+                              onClick={() => updateOrderStatus(order.id, 'completed')}
+                              className="bg-purple-600 hover:bg-purple-700 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
                               size="sm"
-                              data-testid={`button-reject-${order.id}`}
+                              data-testid={`button-complete-${order.id}`}
                             >
-                              ❌ Reject
+                              🎯 Mark Complete
                             </Button>
-                          </>
-                        ) : order.status === 'pending_assignment' ? (
-                          <Button
-                            onClick={() => {
-                              assignDriver(order.id);
-                              updateOrderStatus(order.id, 'in_progress');
-                            }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                            size="sm"
-                            data-testid={`button-assign-driver-${order.id}`}
-                          >
-                            👤 Assign Driver
-                          </Button>
-                        ) : order.status === 'in_progress' ? (
-                          <Button
-                            onClick={() => updateOrderStatus(order.id, 'completed')}
-                            className="bg-purple-600 hover:bg-purple-700 text-white"
-                            size="sm"
-                            data-testid={`button-complete-${order.id}`}
-                          >
-                            🎯 Mark Complete
-                          </Button>
-                        ) : null}
+                          ) : null}
 
-                        {/* Priority Controls */}
-                        {order.priority !== 'urgent' && order.status !== 'completed' && (
-                          <Button
-                            onClick={() => prioritizeOrder(order.id, 'urgent')}
-                            variant="outline"
-                            className="border-red-200 text-red-600 hover:bg-red-50"
-                            size="sm"
-                            data-testid={`button-prioritize-${order.id}`}
-                          >
-                            🚨 Urgent
-                          </Button>
-                        )}
+                          {/* Priority Controls */}
+                          {order.priority !== 'urgent' && order.status !== 'completed' && (
+                            <Button
+                              onClick={() => prioritizeOrder(order.id, 'urgent')}
+                              variant="outline"
+                              className="border-red-200 text-red-600 hover:bg-red-50 w-full sm:w-auto min-h-[44px] touch-manipulation"
+                              size="sm"
+                              data-testid={`button-prioritize-${order.id}`}
+                            >
+                              🚨 Urgent
+                            </Button>
+                          )}
+                        </div>
 
                         {/* Standard Actions - Based on HTML structure */}
                         <Button 
