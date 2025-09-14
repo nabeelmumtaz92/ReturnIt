@@ -6,7 +6,7 @@ Your PWA is ready for Android deployment! Since you have your DUNS number and Go
 
 ### Step 1: Generate Android App Package
 1. Go to **https://pwabuilder.com**
-2. Enter your PWA URL: `https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev`
+2. Enter your PWA URL: `https://returnit.online`
 3. Click **"Start"** and wait for analysis
 4. Review the PWA scorecard (should show excellent scores)
 5. Click **"Package for Stores"**
