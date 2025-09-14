@@ -97,7 +97,7 @@ export default function BookPickup() {
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [calculatedFare, setCalculatedFare] = useState<number>(0);
 
-  const [currentStep, setCurrentStep] = useState<'details' | 'payment'>('details');
+  const [currentStep, setCurrentStep] = useState<'step1' | 'step2' | 'step3' | 'step4'>('step1');
   const [totalAmount, setTotalAmount] = useState(3.99);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [showRetailerDropdown, setShowRetailerDropdown] = useState(false);
@@ -252,17 +252,63 @@ export default function BookPickup() {
     }
   });
 
-  const handleDetailsSubmit = (e: React.FormEvent) => {
+  // Step 1: Customer Information & Address
+  const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
+    const required = ['fullName', 'phone', 'streetAddress', 'city', 'state', 'zipCode'];
+    const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
-    // Validate required fields
-    const required = ['fullName', 'phone', 'streetAddress', 'city', 'state', 'zipCode', 'retailer', 'orderName', 'returnReason', 'preferredTimeSlot'];
+    if (missing.length > 0) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCurrentStep('step2');
+  };
+
+  // Step 2: Return Details & Item Information
+  const handleStep2Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const required = ['retailer', 'orderName', 'returnReason', 'itemValue'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
     if (formData.itemCategories.length === 0) {
-      missing.push('itemCategories');
+      toast({
+        title: "Item Categories Required",
+        description: "Please select at least one item category",
+        variant: "destructive",
+      });
+      return;
     }
+    
+    if (missing.length > 0) {
+      toast({
+        title: "Missing information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+    setCurrentStep('step3');
+  };
 
+  // Step 3: Pickup Preferences & Authorization
+  const handleStep3Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.preferredTimeSlot) {
+      toast({
+        title: "Time Slot Required",
+        description: "Please select a preferred pickup time slot",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     // Validate return authorization requirements
     if (!formData.purchaseType) {
       toast({
@@ -321,16 +367,14 @@ export default function BookPickup() {
       }
     }
     
-    if (missing.length > 0) {
-      toast({
-        title: "Missing information",
-        description: "Please fill in all required fields",
-        variant: "destructive",
-      });
-      return;
-    }
+    setCurrentStep('step4');
+  };
 
-    setCurrentStep('payment');
+  // Navigate back between steps
+  const handleBackStep = () => {
+    if (currentStep === 'step4') setCurrentStep('step3');
+    else if (currentStep === 'step3') setCurrentStep('step2');
+    else if (currentStep === 'step2') setCurrentStep('step1');
   };
 
   const handlePaymentSelect = (method: string, details?: any) => {
@@ -516,120 +560,402 @@ export default function BookPickup() {
               Schedule Return Pickup
             </CardTitle>
             <CardDescription>
-              Fill out the details below to schedule your return pickup
+              {currentStep === 'step1' && "Let's start with your contact information and pickup address"}
+              {currentStep === 'step2' && "Tell us about the items you're returning"}
+              {currentStep === 'step3' && "Set your pickup preferences and return authorization"}
+              {currentStep === 'step4' && "Review your order and complete payment"}
             </CardDescription>
+            
+            {/* Progress Indicator */}
+            <div className="flex items-center justify-between mt-4 px-2">
+              <div className="flex items-center space-x-2">
+                <div className={`h-2 w-8 rounded-full ${currentStep === 'step1' ? 'bg-amber-600' : 'bg-amber-200'}`}></div>
+                <span className={`text-xs ${currentStep === 'step1' ? 'text-amber-900 font-semibold' : 'text-amber-600'}`}>1/4</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`h-2 w-8 rounded-full ${currentStep === 'step2' ? 'bg-amber-600' : 'bg-amber-200'}`}></div>
+                <span className={`text-xs ${currentStep === 'step2' ? 'text-amber-900 font-semibold' : 'text-amber-600'}`}>2/4</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`h-2 w-8 rounded-full ${currentStep === 'step3' ? 'bg-amber-600' : 'bg-amber-200'}`}></div>
+                <span className={`text-xs ${currentStep === 'step3' ? 'text-amber-900 font-semibold' : 'text-amber-600'}`}>3/4</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className={`h-2 w-8 rounded-full ${currentStep === 'step4' ? 'bg-amber-600' : 'bg-amber-200'}`}></div>
+                <span className={`text-xs ${currentStep === 'step4' ? 'text-amber-900 font-semibold' : 'text-amber-600'}`}>4/4</span>
+              </div>
+            </div>
           </CardHeader>
           
-          <form onSubmit={handleDetailsSubmit}>
+          <form onSubmit={currentStep === 'step1' ? handleStep1Submit : currentStep === 'step2' ? handleStep2Submit : currentStep === 'step3' ? handleStep3Submit : (e) => e.preventDefault()}>
             <CardContent className="space-y-6">
-              {/* Customer Information Section */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <User className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Contact Information</Label>
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <Label htmlFor="fullName" className="text-amber-800 font-medium">
-                      Full Name *
-                    </Label>
-                    <Input
-                      id="fullName"
-                      type="text"
-                      placeholder="John Doe"
-                      value={formData.fullName}
-                      onChange={(e) => handleInputChange('fullName', e.target.value)}
-                      className="bg-white/80 border-amber-300 focus:border-amber-500"
-                      required
-                      data-testid="input-full-name"
-                    />
+              {/* Step 1: Customer Information & Address */}
+              {currentStep === 'step1' && (
+                <div className="space-y-6">
+                  {/* Customer Information Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <User className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Contact Information</Label>
+                    </div>
+                    
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <Label htmlFor="fullName" className="text-amber-800 font-medium">
+                          Full Name *
+                        </Label>
+                        <Input
+                          id="fullName"
+                          type="text"
+                          placeholder="John Doe"
+                          value={formData.fullName}
+                          onChange={(e) => handleInputChange('fullName', e.target.value)}
+                          className="bg-white/80 border-amber-300 focus:border-amber-500"
+                          required
+                          data-testid="input-full-name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone" className="text-amber-800 font-medium">
+                          Phone Number *
+                        </Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="(555) 123-4567"
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange('phone', e.target.value)}
+                          className="bg-white/80 border-amber-300 focus:border-amber-500"
+                          required
+                          data-testid="input-phone"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Label htmlFor="phone" className="text-amber-800 font-medium">
-                      Phone Number *
-                    </Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="(555) 123-4567"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className="bg-white/80 border-amber-300 focus:border-amber-500"
-                      required
-                      data-testid="input-phone"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* Enhanced Pickup Address Section with Google Autocomplete */}
-              <div className="space-y-4">
-                <AddressAutocomplete
-                  label="Pickup Address"
-                  placeholder="Enter your pickup address"
-                  value={formData.streetAddress}
-                  onChange={(address, placeResult) => {
-                    handleInputChange('streetAddress', address);
-                    if (placeResult) {
-                      handlePickupLocationSelect(placeResult.location);
-                    }
-                  }}
-                  onLocationSelect={handlePickupLocationSelect}
-                  required
-                  data-testid="input-pickup-address"
-                />
-              </div>
-
-              {/* Order Details Section */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <Package className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Return Details</Label>
-                </div>
-                
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <Label htmlFor="orderName" className="text-amber-800 font-medium">
-                      Order Name/Description *
-                    </Label>
-                    <Input
-                      id="orderName"
-                      type="text"
-                      placeholder="e.g., Black Purse, Nike Shoes"
-                      value={formData.orderName}
-                      onChange={(e) => handleInputChange('orderName', e.target.value)}
-                      className="bg-white/80 border-amber-300 focus:border-amber-500"
+                  {/* Enhanced Pickup Address Section with Google Autocomplete */}
+                  <div className="space-y-4">
+                    <AddressAutocomplete
+                      label="Pickup Address"
+                      placeholder="Enter your pickup address"
+                      value={formData.streetAddress}
+                      onChange={(address, placeResult) => {
+                        handleInputChange('streetAddress', address);
+                        if (placeResult) {
+                          handlePickupLocationSelect(placeResult.location);
+                        }
+                      }}
+                      onLocationSelect={handlePickupLocationSelect}
                       required
-                      data-testid="input-order-name"
+                      data-testid="input-pickup-address"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="returnReason" className="text-amber-800 font-medium">
-                      Return Reason *
-                    </Label>
-                    <Select value={formData.returnReason} onValueChange={(value) => handleInputChange('returnReason', value)}>
-                      <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-return-reason">
-                        <SelectValue placeholder="Select reason" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {returnReasons.map((reason) => (
-                          <SelectItem key={reason} value={reason}>
-                            {reason}
-                          </SelectItem>
+                  
+                  {/* Navigation */}
+                  <div className="flex justify-end pt-4">
+                    <Button
+                      type="submit"
+                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
+                      data-testid="button-step1-next"
+                    >
+                      Next Step
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 2: Return Details & Item Information */}
+              {currentStep === 'step2' && (
+                <div className="space-y-6">
+                  {/* Return Details Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Package className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Return Details</Label>
+                    </div>
+                    
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <Label htmlFor="orderName" className="text-amber-800 font-medium">
+                          Order Name/Description *
+                        </Label>
+                        <Input
+                          id="orderName"
+                          type="text"
+                          placeholder="e.g., Black Purse, Nike Shoes"
+                          value={formData.orderName}
+                          onChange={(e) => handleInputChange('orderName', e.target.value)}
+                          className="bg-white/80 border-amber-300 focus:border-amber-500"
+                          required
+                          data-testid="input-order-name"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="returnReason" className="text-amber-800 font-medium">
+                          Return Reason *
+                        </Label>
+                        <Select value={formData.returnReason} onValueChange={(value) => handleInputChange('returnReason', value)}>
+                          <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-return-reason">
+                            <SelectValue placeholder="Select reason" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {returnReasons.map((reason) => (
+                              <SelectItem key={reason} value={reason}>
+                                {reason}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Retailer Information */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <MapPin className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Retailer Information</Label>
+                    </div>
+                    <div className="relative">
+                      <Label htmlFor="retailer" className="text-amber-800 font-medium">
+                        Retailer/Store Name *
+                      </Label>
+                      <Input
+                        id="retailer"
+                        type="text"
+                        placeholder="e.g., Target, Walmart, Amazon"
+                        value={formData.retailerQuery}
+                        onChange={(e) => handleRetailerSearch(e.target.value)}
+                        className="bg-white/80 border-amber-300 focus:border-amber-500"
+                        required
+                        data-testid="input-retailer"
+                      />
+                      
+                      {/* Retailer dropdown */}
+                      {showRetailerDropdown && filteredRetailers.length > 0 && (
+                        <div className="absolute z-10 w-full mt-1 bg-white border border-amber-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                          {filteredRetailers.map((retailer) => (
+                            <button
+                              key={retailer}
+                              type="button"
+                              onClick={() => selectRetailer(retailer)}
+                              className="block w-full px-3 py-2 text-left hover:bg-amber-50 text-amber-800 border-b border-amber-100 last:border-b-0"
+                            >
+                              {retailer}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Item Details */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Package className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Item Information</Label>
+                    </div>
+                    
+                    {/* Item Categories */}
+                    <div>
+                      <Label className="text-amber-800 font-medium">Item Categories *</Label>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {itemCategories.map((category) => (
+                          <label key={category} className="flex items-center space-x-2 cursor-pointer">
+                            <Checkbox
+                              checked={formData.itemCategories.includes(category)}
+                              onCheckedChange={() => handleCategoryToggle(category)}
+                              data-testid={`checkbox-category-${category.toLowerCase().replace(/\s+/g, '-')}`}
+                            />
+                            <span className="text-amber-800">{category}</span>
+                          </label>
                         ))}
-                      </SelectContent>
-                    </Select>
+                      </div>
+                    </div>
+                    
+                    {/* Item Value */}
+                    <div>
+                      <Label htmlFor="itemValue" className="text-amber-800 font-medium">
+                        Item Value (USD) *
+                      </Label>
+                      <Input
+                        id="itemValue"
+                        type="number"
+                        placeholder="25.99"
+                        value={formData.itemValue}
+                        onChange={(e) => handleInputChange('itemValue', e.target.value)}
+                        className="bg-white/80 border-amber-300 focus:border-amber-500"
+                        required
+                        data-testid="input-item-value"
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Navigation */}
+                  <div className="flex justify-between pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleBackStep}
+                      className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                      data-testid="button-step2-back"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
+                      data-testid="button-step2-next"
+                    >
+                      Next Step
+                    </Button>
                   </div>
                 </div>
-              </div>
-
-              {/* Return Authorization Section */}
-              <div className="space-y-4">
-                <div className="flex items-center space-x-2 mb-3">
-                  <Shield className="h-5 w-5 text-amber-600" />
-                  <Label className="text-amber-800 font-semibold text-lg">Return Authorization</Label>
+              )}
+              
+              {/* Step 3: Pickup Preferences & Authorization */}
+              {currentStep === 'step3' && (
+                <div className="space-y-6">
+                  <div className="text-center text-amber-800 font-semibold">Step 3 content will be added here</div>
+                  <div className="flex justify-between pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleBackStep}
+                      className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                      data-testid="button-step3-back"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
+                      data-testid="button-step3-next"
+                    >
+                      Next Step
+                    </Button>
+                  </div>
                 </div>
+              )}
+              
+              {/* Step 4: Payment & Review */}
+              {currentStep === 'step4' && (
+                <div className="space-y-6">
+                  <div className="text-center text-amber-800 font-semibold">Step 4 content will be added here</div>
+                  <div className="flex justify-between pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleBackStep}
+                      className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                      data-testid="button-step4-back"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
+                      data-testid="button-complete"
+                    >
+                      Complete Order
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Step 3: Pickup Preferences & Authorization */}
+              {currentStep === 'step3' && (
+                <div className="space-y-6">
+                  {/* Time Slot Selection */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Clock className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Pickup Preferences</Label>
+                    </div>
+                    
+                    <div>
+                      <Label className="text-amber-800 font-medium">Preferred Time Slot *</Label>
+                      <Select value={formData.preferredTimeSlot} onValueChange={(value) => handleInputChange('preferredTimeSlot', value)}>
+                        <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-time-slot">
+                          <SelectValue placeholder="Select preferred time" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {timeSlots.map((slot) => (
+                            <SelectItem key={slot} value={slot}>
+                              {slot}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* Pickup Location Preference */}
+                    <div className="space-y-3">
+                      <Label className="text-amber-800 font-medium">Pickup Location Preference *</Label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="pickupLocation"
+                            value="inside"
+                            checked={formData.pickupLocation === 'inside'}
+                            onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
+                            className="text-amber-600 focus:ring-amber-500"
+                            data-testid="radio-pickup-inside"
+                          />
+                          <span className="text-amber-800">Inside (at door)</span>
+                        </label>
+                        <label className="flex items-center space-x-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="pickupLocation"
+                            value="outside"
+                            checked={formData.pickupLocation === 'outside'}
+                            onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
+                            className="text-amber-600 focus:ring-amber-500"
+                            data-testid="radio-pickup-outside"
+                          />
+                          <span className="text-amber-800">Outside (specific location)</span>
+                        </label>
+                      </div>
+                      
+                      {formData.pickupLocation === 'outside' && (
+                        <div className="mt-3">
+                          <Label htmlFor="pickupInstructions" className="text-amber-800 font-medium">
+                            Specific Pickup Instructions *
+                          </Label>
+                          <Textarea
+                            id="pickupInstructions"
+                            placeholder="e.g., Leave on front porch, behind planter box"
+                            value={formData.pickupInstructions}
+                            onChange={(e) => handleInputChange('pickupInstructions', e.target.value)}
+                            className="bg-white/80 border-amber-300 focus:border-amber-500 mt-1"
+                            data-testid="textarea-pickup-instructions"
+                          />
+                          
+                          <div className="flex items-center space-x-2 mt-3">
+                            <Checkbox
+                              id="acceptsLiabilityTerms"
+                              checked={formData.acceptsLiabilityTerms}
+                              onCheckedChange={(checked) => handleInputChange('acceptsLiabilityTerms', checked)}
+                              className="border-amber-400 text-amber-600"
+                              data-testid="checkbox-liability-terms"
+                            />
+                            <Label htmlFor="acceptsLiabilityTerms" className="text-amber-800 text-sm">
+                              I accept liability for outside pickup and understand items left outside are at my risk *
+                            </Label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Return Authorization Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2 mb-3">
+                      <Shield className="h-5 w-5 text-amber-600" />
+                      <Label className="text-amber-800 font-semibold text-lg">Return Authorization</Label>
+                    </div>
                 
                 {/* Purchase Type Question */}
                 <div className="space-y-3 p-4 bg-amber-50/80 rounded-lg border border-amber-200">

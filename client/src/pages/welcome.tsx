@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Truck, Package, User, Search, LogOut } from 'lucide-react';
+import { Truck, Package, User, Search, LogOut, Settings } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import { useState } from 'react';
@@ -80,6 +80,12 @@ export default function Welcome() {
         )}
         {isAuthenticated && (
           <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-md">
+              <Settings className="h-4 w-4 text-amber-600" />
+              <span className="text-sm font-medium text-amber-900">
+                {user?.firstName} {user?.lastName}
+              </span>
+            </div>
             {user?.isAdmin && (
               <Link href="/admin-dashboard">
                 <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
@@ -120,6 +126,12 @@ export default function Welcome() {
           )}
           {isAuthenticated && (
             <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                <Settings className="h-4 w-4 text-amber-600" />
+                <span className="text-sm font-medium text-amber-900">
+                  {user?.firstName} {user?.lastName}
+                </span>
+              </div>
               {user?.isAdmin && (
                 <Link href="/admin-dashboard">
                   <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
