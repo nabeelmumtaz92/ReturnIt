@@ -1,8 +1,8 @@
-# Returnly Brand & Asset Pack
+# ReturnIt Brand & Asset Pack
 *Generated on January 15, 2025*
 
 ## 📋 Overview
-Comprehensive documentation of Returnly's brand assets, design tokens, and visual identity system for the return logistics platform based in St. Louis, MO.
+Comprehensive documentation of ReturnIt's brand assets, design tokens, and visual identity system for the return logistics platform based in St. Louis, MO.
 
 ## 🏷️ Logo Files
 
@@ -32,7 +32,7 @@ Comprehensive documentation of Returnly's brand assets, design tokens, and visua
 - `logo-red.png` - Red variant
 
 ### SVG Logos
-- `logo-returnly-box.svg` - Box-style logo with text (SVG format)
+- `logo-returnit-box.svg` - Box-style logo with text (SVG format)
 - `logo-with-text.svg` - Logo with text treatment (SVG format)
 - `favicon.svg` - Favicon in SVG format
 
@@ -236,7 +236,7 @@ box-shadow:
 
 ### PWA Manifest
 - **File**: `site.webmanifest`
-- **App Name**: "Returnly"
+- **App Name**: "ReturnIt"
 
 ---
 
@@ -267,4 +267,4 @@ box-shadow:
 
 ---
 
-*This brand pack ensures consistent visual identity across all Returnly touchpoints - web platform, mobile apps, and marketing materials.*
+*This brand pack ensures consistent visual identity across all ReturnIt touchpoints - web platform, mobile apps, and marketing materials.*

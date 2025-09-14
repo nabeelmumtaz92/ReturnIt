@@ -97,8 +97,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/returnly.git
-   cd returnly
+   git clone https://github.com/yourusername/returnit.git
+   cd returnit
    ```
 
 2. **Install dependencies**
@@ -220,9 +220,9 @@ Please review our legal documentation:
 ## 📞 Support
 
 ### Business Contact
-- **Email**: support@returnly.tech
+- **Email**: support@returnit.tech
 - **Phone**: (636) 254-4821
-- **Website**: https://returnly.tech
+- **Website**: https://returnit.tech
 
 ### Development Support
 - **GitHub Issues**: Report bugs and feature requests
@@ -231,7 +231,7 @@ Please review our legal documentation:
 
 ## 🏆 Recognition
 
-Returnly is designed as an enterprise-grade platform ready for:
+ReturnIt is designed as an enterprise-grade platform ready for:
 - **Partnership Integration**: Retailer partnerships and white-label solutions
 - **Scalable Infrastructure**: High-volume operations with automated processes
 - **Business Intelligence**: Comprehensive analytics for growth optimization
@@ -241,4 +241,4 @@ Returnly is designed as an enterprise-grade platform ready for:
 
 **Built with ❤️ for the future of return logistics**
 
-*Returnly - Making Returns Effortless*
+*ReturnIt - Making Returns Effortless*

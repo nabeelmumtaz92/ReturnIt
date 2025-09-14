@@ -62,10 +62,48 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+      {/* Mobile Auth Bar */}
+      <div className="md:hidden flex justify-end gap-2 p-3 border-b border-amber-100 bg-white/95">
+        {!isAuthenticated && (
+          <>
+            <Link href="/login">
+              <Button variant="outline" size="sm" data-testid="button-sign-in">
+                Sign In
+              </Button>
+            </Link>
+            <Link href="/login?tab=register">
+              <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-sign-up">
+                Sign Up
+              </Button>
+            </Link>
+          </>
+        )}
+        {isAuthenticated && (
+          <div className="flex items-center gap-2">
+            {user?.isAdmin && (
+              <Link href="/admin-dashboard">
+                <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
+                  <User className="h-4 w-4 mr-1" />
+                  Admin
+                </Button>
+              </Link>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLogout}
+              data-testid="button-sign-out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Professional Hero Section */}
       <div className="w-full bg-white/95 border-b border-amber-100 relative">
-        {/* Sign In/Sign Up buttons in top right */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Sign In/Sign Up buttons in top right - Desktop only */}
+        <div className="hidden md:block absolute top-4 right-4 z-10">
           {!isAuthenticated && (
             <div className="flex gap-2">
               <Link href="/login">
@@ -102,24 +140,24 @@ export default function Welcome() {
             </div>
           )}
         </div>
-        <div className="container mx-auto px-4 py-12">
-          <div className="flex flex-col lg:flex-row items-center gap-12 max-w-7xl mx-auto">
+        <div className="container mx-auto px-4 py-6 sm:py-8 md:py-12">
+          <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-5xl lg:text-6xl font-bold text-amber-900 mb-6">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-amber-900 mb-4 sm:mb-6">
                 ReturnIt
               </h1>
-              <p className="text-2xl text-amber-700 mb-8">
+              <p className="text-sm sm:text-base md:text-lg lg:text-2xl text-amber-700 mb-6 sm:mb-8">
                 Professional pickup service for returns, exchanges, and donations
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6 mb-8">
-                <div className="flex items-center gap-3 text-amber-600">
-                  <Package className="h-6 w-6" />
-                  <span className="text-lg">Fast & Reliable</span>
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+                <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
+                  <Package className="h-4 w-4 sm:h-6 sm:w-6" />
+                  <span className="text-sm sm:text-base md:text-lg">Fast & Reliable</span>
                 </div>
-                <div className="flex items-center gap-3 text-amber-600">
-                  <Truck className="h-6 w-6" />
-                  <span className="text-lg">Professional Drivers</span>
+                <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
+                  <Truck className="h-4 w-4 sm:h-6 sm:w-6" />
+                  <span className="text-sm sm:text-base md:text-lg">Professional Drivers</span>
                 </div>
               </div>
             </div>
@@ -129,7 +167,7 @@ export default function Welcome() {
                 <img 
                   src={deliveryHandoffImg} 
                   alt="Professional delivery man with packages" 
-                  className="w-full h-64 object-cover"
+                  className="w-full h-40 sm:h-56 md:h-64 object-cover"
                 />
                 <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">
@@ -147,12 +185,12 @@ export default function Welcome() {
       
 
       {/* Main Content - Mobile Optimized */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 space-y-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
         
         {/* ReturnIt Logo - Centered */}
         <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="text-6xl font-bold text-black filter drop-shadow-lg">
+          <div className="flex justify-center mb-3 sm:mb-4">
+            <div className="text-3xl sm:text-5xl lg:text-6xl font-bold text-black filter drop-shadow-lg">
               ReturnIt
             </div>
           </div>
@@ -160,24 +198,24 @@ export default function Welcome() {
 
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
-          <p className="text-xl sm:text-2xl text-black font-medium">
+          <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-medium px-2">
             Hassle-free returns with professional return delivery service
           </p>
-          <div className="bg-amber-100 border border-amber-200 rounded-lg px-6 py-3 inline-block">
-            <p className="text-lg text-black font-semibold">
+          <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
+            <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
               📍 St. Louis only right now
             </p>
-            <p className="text-sm text-black mt-1">
+            <p className="text-xs sm:text-sm text-black mt-1">
               Coming to your city soon!
             </p>
           </div>
         </div>
 
-        {/* Buttons - Vertical Stack on Mobile */}
-        <div className="flex flex-col gap-4 w-full max-w-md">
+        {/* Buttons - Mobile Optimized */}
+        <div className="flex flex-col gap-3 w-full max-w-sm">
           <Button 
-            size="lg" 
-            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-4 text-lg"
+            size="default" 
+            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-3 text-base"
             data-testid="button-book-pickup"
             onClick={() => {
               if (isAuthenticated) {
@@ -187,7 +225,7 @@ export default function Welcome() {
               }
             }}
           >
-            <Package className="h-5 w-5 mr-2" />
+            <Package className="h-4 w-4 mr-2" />
             Book Pickup
           </Button>
         </div>
@@ -206,14 +244,15 @@ export default function Welcome() {
 
         {/* Become a Driver - Separate Tab */}
         {envConfig?.allowDriverSignup && (
-          <div className="mt-8 pt-8 border-t border-primary/20">
-            <div className="text-center space-y-4">
-              <p className="text-amber-700 text-sm">
+          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-primary/20">
+            <div className="text-center space-y-3 sm:space-y-4">
+              <p className="text-amber-700 text-xs sm:text-sm">
                 Interested in earning money as a driver?
               </p>
               <Link href="/driver-onboarding">
                 <Button 
                   variant="outline" 
+                  size="sm"
                   className="border-primary text-primary hover:bg-primary/10"
                   data-testid="button-become-driver"
                 >
@@ -226,20 +265,21 @@ export default function Welcome() {
         )}
 
         {/* Order Tracking Section */}
-        <div className="w-full max-w-md mt-12 pt-8 border-t border-primary/20">
-          <div className="text-center space-y-4">
-            <h3 className="text-lg font-semibold text-amber-900">
+        <div className="w-full max-w-sm mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-primary/20">
+          <div className="text-center space-y-3 sm:space-y-4">
+            <h3 className="text-base sm:text-lg font-semibold text-amber-900">
               Track Your Order
             </h3>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 placeholder="Enter tracking number"
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
-                className="flex-1"
+                className="flex-1 text-sm"
                 data-testid="input-tracking"
               />
               <Button 
+                size="sm"
                 onClick={() => {
                   if (trackingNumber.trim()) {
                     setLocation(`/order-status/${trackingNumber.trim()}`);

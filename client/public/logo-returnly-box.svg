@@ -40,7 +40,7 @@
     <!-- Main "Returnly" text on the box -->
     <text x="70" y="75" font-family="Arial, sans-serif" font-size="16" font-weight="bold" 
           text-anchor="middle" fill="#2D1B14" opacity="0.85">
-      Returnly
+      ReturnIt
     </text>
     
     <!-- Shipping label lines -->

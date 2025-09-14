@@ -249,11 +249,11 @@ export default function Login() {
     <Button
       type="button"
       variant="outline"
-      className={`w-full h-12 ${color} border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900`}
+      className={`w-full h-10 text-sm ${color} border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900`}
       onClick={onClick}
       data-testid={`button-${provider.toLowerCase()}-auth`}
     >
-      <Icon className="h-5 w-5 mr-3" />
+      <Icon className="h-4 w-4 mr-2" />
       Continue with {provider}
     </Button>
   );
@@ -261,7 +261,7 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col lg:flex-row">
       {/* Left side - Hero Card */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="hidden md:flex flex-1 items-center justify-center p-8">
         <div className="max-w-lg">
           <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200 mb-8">
             <img 
@@ -290,18 +290,18 @@ export default function Login() {
       </div>
       
       {/* Right side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-sm md:max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-amber-900">Welcome Back</h1>
-          <p className="text-amber-700">Sign in to access your account</p>
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-amber-900">Welcome Back</h1>
+          <p className="text-sm md:text-base text-amber-700">Sign in to access your account</p>
         </div>
 
         {/* Tab Navigation */}
         <div className="flex bg-white/90 rounded-t-lg border border-b-0 border-amber-200 shadow-lg">
           <button
-            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-tl-lg transition-colors ${
+            className={`flex-1 py-2 px-3 text-xs sm:py-3 sm:px-4 sm:text-sm font-medium text-center rounded-tl-lg transition-colors ${
               activeTab === 'login' 
                 ? 'bg-amber-800 text-white' 
                 : 'bg-white text-amber-800 hover:bg-amber-50'
@@ -312,7 +312,7 @@ export default function Login() {
             Sign In
           </button>
           <button
-            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-tr-lg transition-colors ${
+            className={`flex-1 py-2 px-3 text-xs sm:py-3 sm:px-4 sm:text-sm font-medium text-center rounded-tr-lg transition-colors ${
               activeTab === 'register' 
                 ? 'bg-amber-800 text-white' 
                 : 'bg-white text-amber-800 hover:bg-amber-50'
@@ -326,23 +326,23 @@ export default function Login() {
 
         {/* Forms */}
         <Card className="bg-white border-amber-200 shadow-lg rounded-t-none border-t-0">
-          <CardHeader className="text-center">
-            <CardTitle className="text-amber-900">
+          <CardHeader className="text-center pb-2 md:pb-6">
+            <CardTitle className="text-amber-900 text-lg md:text-xl">
               {activeTab === 'login' ? 'Sign In' : 'Create Account'}
             </CardTitle>
-            <CardDescription className="text-amber-700">
+            <CardDescription className="text-amber-700 text-xs md:text-sm">
               {activeTab === 'login' ? 'Access your Return It account' : 'Join Return It today'}
             </CardDescription>
           </CardHeader>
           {activeTab === 'login' ? (
             <form onSubmit={handleLogin}>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4 md:space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-amber-800 font-medium">Email Address</Label>
+                  <Label htmlFor="login-email" className="text-xs sm:text-sm text-amber-800 font-medium">Email Address</Label>
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
-                      <div className="flex items-center space-x-3">
-                        <Mail className="h-5 w-5 text-amber-600" />
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-3 md:p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-2 md:space-x-3">
+                        <Mail className="h-4 w-4 text-amber-600" />
                         <Input
                           id="login-email"
                           data-testid="input-login-email"
@@ -350,7 +350,7 @@ export default function Login() {
                           value={loginData.email}
                           onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
                           placeholder="Enter your email address"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 h-10 text-sm"
                         />
                       </div>
                     </div>
@@ -360,11 +360,11 @@ export default function Login() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-amber-800 font-medium">Password</Label>
+                  <Label htmlFor="login-password" className="text-xs sm:text-sm text-amber-800 font-medium">Password</Label>
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
-                      <div className="flex items-center space-x-3">
-                        <Lock className="h-5 w-5 text-amber-600" />
+                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-3 md:p-4 rounded-lg border border-amber-200">
+                      <div className="flex items-center space-x-2 md:space-x-3">
+                        <Lock className="h-4 w-4 text-amber-600" />
                         <Input
                           id="login-password"
                           data-testid="input-login-password"
@@ -372,7 +372,7 @@ export default function Login() {
                           value={loginData.password}
                           onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
                           placeholder="Enter your password"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 h-10 text-sm"
                         />
                       </div>
                     </div>
@@ -382,10 +382,10 @@ export default function Login() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col space-y-4">
+              <CardFooter className="flex flex-col space-y-3 md:space-y-4 pt-2 md:pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-800 hover:bg-amber-900 h-12"
+                  className="w-full bg-amber-800 hover:bg-amber-900 h-10 text-sm"
                   disabled={loginMutation.isPending}
                   data-testid="button-login-submit"
                 >
@@ -393,9 +393,9 @@ export default function Login() {
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
                 
-                <div className="flex items-center my-8">
+                <div className="flex items-center my-4 md:my-8">
                   <div className="flex-1 h-px bg-amber-200"></div>
-                  <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                  <span className="px-3 md:px-4 text-xs md:text-sm font-medium text-amber-700 bg-white">
                     Or continue with
                   </span>
                   <div className="flex-1 h-px bg-amber-200"></div>

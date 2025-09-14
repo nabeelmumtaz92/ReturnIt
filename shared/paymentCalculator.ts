@@ -1,4 +1,4 @@
-// Returnly Payment Calculator
+// ReturnIt Payment Calculator
 // Calculates fair payment splits between drivers and company
 
 export interface RouteInfo {

@@ -1,4 +1,4 @@
-// Design Tokens - Returnly Design System
+// Design Tokens - ReturnIt Design System
 // Based on Figma Step-by-Step Build Guide
 
 // 1) Colors - Figma Variables

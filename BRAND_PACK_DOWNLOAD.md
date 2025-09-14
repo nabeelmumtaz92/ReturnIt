@@ -5,11 +5,11 @@
 The **ReturnIt Brand & Asset Pack** is now ready! You can download it from your project files:
 
 ### 📥 Download File
-**`returnly-brand-pack.tar.gz`** - Complete brand package (compressed)
+**`returnit-brand-pack.tar.gz`** - Complete brand package (compressed)
 
 ### 📂 Package Structure
 ```
-returnly-brand-pack/
+returnit-brand-pack/
 ├── README.md                    # Quick start guide
 ├── documentation/
 │   └── brand-pack.md           # Complete brand guidelines (20+ pages)
@@ -51,7 +51,7 @@ returnly-brand-pack/
 
 ### 💻 How to Use
 
-1. **Download**: Click `returnly-brand-pack.tar.gz` in your file explorer
+1. **Download**: Click `returnit-brand-pack.tar.gz` in your file explorer
 2. **Extract**: Unzip the archive to access all files
 3. **Reference**: Start with `README.md` for overview
 4. **Implement**: Follow `documentation/brand-pack.md` for detailed guidelines

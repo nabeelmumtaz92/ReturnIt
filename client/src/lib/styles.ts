@@ -1,4 +1,4 @@
-// Style kit for Returnly - Cardboard theme inspired by shipping/logistics
+// Style kit for ReturnIt - Cardboard theme inspired by shipping/logistics
 export const colors = {
   cardboard: "#D2B48C",     // Main tan color for boxes
   offWhite: "#F8F7F4",      // Light background

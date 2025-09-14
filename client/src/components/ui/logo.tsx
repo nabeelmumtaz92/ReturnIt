@@ -73,7 +73,7 @@ export function Logo({ className = '', size = 'md', variant = 'full' }: LogoProp
           fill="#8B4513"
           fontFamily="Inter, system-ui, sans-serif"
         >
-          Returnly
+          ReturnIt
         </text>
       </svg>
     );
@@ -135,7 +135,7 @@ export function Logo({ className = '', size = 'md', variant = 'full' }: LogoProp
         fontFamily="Inter, system-ui, sans-serif"
         letterSpacing="-0.5px"
       >
-        Returnly
+        ReturnIt
       </text>
       
       {/* Tagline */}

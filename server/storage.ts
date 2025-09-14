@@ -830,18 +830,18 @@ export class MemStorage implements IStorage {
       // Initialize with default business info
       this.businessInfo = {
         id: 1,
-        companyName: "Returnly",
+        companyName: "ReturnIt",
         tagline: "Making Returns Effortless",
-        description: "At Returnly, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
+        description: "At ReturnIt, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
         headquarters: "St. Louis, MO",
-        supportEmail: "support@returnly.com",
+        supportEmail: "support@returnit.com",
         supportPhone: "(636) 254-4821",
         businessHours: "Mon–Sat, 8 AM – 8 PM CST",
-        instagramHandle: "@Returnly",
-        facebookUrl: "facebook.com/Returnly",
-        twitterHandle: "@Returnly",
-        missionStatement: "Founded with the mission to save you time and effort, Returnly partners with local drivers to ensure every return is handled quickly, safely, and securely. Whether it's a small package or a bulky box, we've got you covered.",
-        foundingStory: "Founded in 2024 in St. Louis, Missouri, Returnly was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way.",
+        instagramHandle: "@ReturnIt",
+        facebookUrl: "facebook.com/ReturnIt",
+        twitterHandle: "@ReturnIt",
+        missionStatement: "Founded with the mission to save you time and effort, ReturnIt partners with local drivers to ensure every return is handled quickly, safely, and securely. Whether it's a small package or a bulky box, we've got you covered.",
+        foundingStory: "Founded in 2024 in St. Louis, Missouri, ReturnIt was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way.",
         updatedAt: new Date()
       };
     }
@@ -853,16 +853,16 @@ export class MemStorage implements IStorage {
     
     this.businessInfo = {
       id: currentInfo?.id || 1,
-      companyName: info.companyName || currentInfo?.companyName || "Returnly",
+      companyName: info.companyName || currentInfo?.companyName || "ReturnIt",
       tagline: info.tagline || currentInfo?.tagline || "Making Returns Effortless",
       description: info.description || currentInfo?.description || "",
       headquarters: info.headquarters || currentInfo?.headquarters || "St. Louis, MO",
-      supportEmail: info.supportEmail || currentInfo?.supportEmail || "support@returnly.com",
+      supportEmail: info.supportEmail || currentInfo?.supportEmail || "support@returnit.com",
       supportPhone: info.supportPhone || currentInfo?.supportPhone || "(555) 123-4567",
       businessHours: info.businessHours || currentInfo?.businessHours || "Mon–Sat, 8 AM – 8 PM CST",
-      instagramHandle: info.instagramHandle || currentInfo?.instagramHandle || "@ReturnlyApp",
-      facebookUrl: info.facebookUrl || currentInfo?.facebookUrl || "facebook.com/Returnly",
-      twitterHandle: info.twitterHandle || currentInfo?.twitterHandle || "@Returnly",
+      instagramHandle: info.instagramHandle || currentInfo?.instagramHandle || "@ReturnItApp",
+      facebookUrl: info.facebookUrl || currentInfo?.facebookUrl || "facebook.com/ReturnIt",
+      twitterHandle: info.twitterHandle || currentInfo?.twitterHandle || "@ReturnIt",
       missionStatement: info.missionStatement || currentInfo?.missionStatement || "",
       foundingStory: info.foundingStory || currentInfo?.foundingStory || "",
       updatedAt: new Date()

@@ -1,4 +1,4 @@
-// Location Services - Google Maps integration for Returnly
+// Location Services - Google Maps integration for ReturnIt
 import { useEffect, useState } from 'react';
 
 // Extend Window interface for Google Maps

@@ -38,7 +38,7 @@
     <!-- Company name on the box -->
     <text x="75" y="95" font-family="Arial, sans-serif" font-size="20" font-weight="bold" 
           text-anchor="middle" fill="#2D1B14" opacity="0.9">
-      Returnly
+      ReturnIt
     </text>
     
     <!-- Subtle address lines to look like shipping label -->

@@ -1,4 +1,4 @@
-# Returnly Roadmap – Status
+# ReturnIt Roadmap – Status
 
 ## Phase 1 — Foundation (Replit first)
 - [x] 1. Branding locked (logo, palette, tokens)

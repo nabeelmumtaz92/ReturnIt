@@ -36,7 +36,7 @@ const HelpCenter = lazy(() => import("@/pages/help-center"));
 const HelpArticle = lazy(() => import("@/pages/help-article"));
 const FAQ = lazy(() => import("@/pages/faq"));
 const CustomerMobileApp = lazy(() => import("@/pages/customer-mobile-app"));
-const ReturnlyDriverApp = lazy(() => import("@/pages/returnly-driver-app"));
+const ReturnItDriverApp = lazy(() => import("@/pages/mobile-driver"));
 const RealTimeTracking = lazy(() => import("@/pages/real-time-tracking"));
 const DriverAnalytics = lazy(() => import("@/pages/driver-analytics"));
 const CustomerRating = lazy(() => import("@/pages/customer-rating"));
@@ -182,7 +182,7 @@ function Router() {
       <Route path="/mobile-simulator" component={MobileSimulator} />
       <Route path="/mobile-driver" component={MobileDriver} />
       <Route path="/customer-mobile-app" component={CustomerMobileApp} />
-      <Route path="/driver-mobile-app" component={ReturnlyDriverApp} />
+      <Route path="/driver-mobile-app" component={ReturnItDriverApp} />
       <Route path="/logo-colors" component={LogoColors} />
       <Route path="/background-colors" component={BackgroundColors} />
       <Route path="/real-time-tracking" component={RealTimeTracking} />

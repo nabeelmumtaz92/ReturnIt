@@ -50,7 +50,7 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
   const handleDemoLogin = async () => {
     setIsLoading(true);
     try {
-      const demoEmail = isDriver ? 'driver@returnly.demo' : 'customer@returnly.demo';
+      const demoEmail = isDriver ? 'driver@returnit.demo' : 'customer@returnit.demo';
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
