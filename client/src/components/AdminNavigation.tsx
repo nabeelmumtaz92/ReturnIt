@@ -21,7 +21,8 @@ import {
   Shield, 
   Activity,
   LogOut,
-  Home
+  Home,
+  User
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth-simple";
 
@@ -201,6 +202,29 @@ export function AdminNavigation() {
           description: "1099 forms and tax reporting"
         }
       ]
+    },
+    {
+      title: "My Account",
+      items: [
+        {
+          label: "Customer Panel",
+          href: "/",
+          icon: User,
+          description: "Access the customer interface"
+        },
+        {
+          label: "Track Order",
+          href: "/track",
+          icon: Package,
+          description: "Track packages and deliveries"
+        },
+        {
+          label: "Book Pickup",
+          href: "/book-pickup",
+          icon: Truck,
+          description: "Schedule new pickup service"
+        }
+      ]
     }
   ];
 
@@ -250,19 +274,19 @@ export function AdminNavigation() {
       </div>
 
       {/* Navigation Sections */}
-      {navigationSections.map((section) => (
+      {navigationSections.map((section, sectionIndex) => (
         <div key={section.title} className="space-y-2">
           <h3 className="font-semibold text-amber-900 text-sm uppercase tracking-wide">
             {section.title}
           </h3>
           <div className="space-y-1">
-            {section.items.map((item) => {
+            {section.items.map((item, itemIndex) => {
               // Better active state detection for section-based URLs
               const isActive = location === item.href || 
                 (item.href.includes('?section=') && 
                  window.location.search.includes(item.href.split('?section=')[1]));
               return (
-                <Link key={item.href} href={item.href}>
+                <Link key={`${section.title}-${item.label}-${itemIndex}`} href={item.href}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     className={`w-full justify-start h-auto p-3 ${
@@ -271,6 +295,7 @@ export function AdminNavigation() {
                         : "hover:bg-amber-50 text-amber-800"
                     }`}
                     onClick={() => setIsOpen(false)}
+                    data-testid={`nav-${section.title.toLowerCase().replace(/\s+/g, '-')}-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                   >
                     <div className="flex items-center space-x-3 w-full">
                       <item.icon className="h-4 w-4 flex-shrink-0" />
@@ -300,6 +325,10 @@ export function AdminNavigation() {
               );
             })}
           </div>
+          {/* Add visual separator between sections except for the last one */}
+          {sectionIndex < navigationSections.length - 1 && (
+            <div className="border-b border-amber-100 my-4" />
+          )}
         </div>
       ))}
     </div>
