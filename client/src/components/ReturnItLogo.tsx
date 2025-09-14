@@ -21,70 +21,53 @@ export function ReturnItLogo({ size = 32, className = "" }: ReturnItLogoProps) {
 
 export function ReturnItIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 100 80" className={className}>
-      {/* Just the 3D Box Icon from your exact logo */}
-      <g transform="translate(5, 0) scale(0.8)">
-        {/* Back top edge */}
-        <path d="M10 30 L50 15 L90 30" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinecap="round"
-              strokeLinejoin="round"/>
-        
-        {/* Front top edge */}
-        <path d="M10 50 L50 35 L90 50" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinecap="round"
-              strokeLinejoin="round"/>
-        
-        {/* Left face */}
-        <path d="M10 30 L10 50 L50 65 L50 45 Z" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinejoin="round"/>
-        
-        {/* Right face */}
-        <path d="M50 45 L50 65 L90 50 L90 30 Z" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinejoin="round"/>
-        
-        {/* Top face */}
-        <path d="M10 30 L50 15 L90 30 L50 45 Z" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinejoin="round"/>
-        
-        {/* Front face */}
-        <path d="M10 50 L50 35 L50 65 L10 80 Z" 
-              fill="none" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinejoin="round"/>
-        
-        {/* Vertical connecting lines */}
-        <path d="M10 30 L10 50" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinecap="round"/>
-        <path d="M50 15 L50 35" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinecap="round"/>
-        <path d="M90 30 L90 50" 
-              stroke="#1A3B5C" 
-              strokeWidth="4" 
-              strokeLinecap="round"/>
-        
-        {/* Small circular dot on front face */}
-        <circle cx="35" cy="55" r="3" fill="#1A3B5C"/>
-      </g>
+    <svg 
+      width={size} 
+      height={size} 
+      viewBox="0 0 32 32" 
+      className={className}
+      aria-hidden="true"
+    >
+      {/* Modern ReturnIt Logo - Circular arrow with package */}
+      <defs>
+        <mask id="packageMask">
+          <rect x="12" y="12" width="8" height="8" fill="white"/>
+          <path 
+            d="M16 12 L16 20 M12 16 L20 16" 
+            stroke="black" 
+            strokeWidth="1.5" 
+            strokeLinecap="round"
+          />
+        </mask>
+      </defs>
+      
+      {/* Circular return arrow */}
+      <path 
+        d="M16 4 A 10 10 0 1 1 6 14 L 8 12 A 8 8 0 1 0 16 6 L 14 8 L 18 8 L 18 4 Z" 
+        fill="currentColor"
+        stroke="none"
+      />
+      
+      {/* Package box with tape lines cut out */}
+      <rect 
+        x="12" 
+        y="12" 
+        width="8" 
+        height="8" 
+        rx="1"
+        fill="currentColor"
+        opacity="0.9"
+        mask="url(#packageMask)"
+      />
+      
+      {/* Small return indicator dot */}
+      <circle 
+        cx="24" 
+        cy="8" 
+        r="2" 
+        fill="currentColor"
+        opacity="0.8"
+      />
     </svg>
   );
 }
