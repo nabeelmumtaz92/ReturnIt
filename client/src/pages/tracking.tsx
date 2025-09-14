@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -24,10 +24,14 @@ import {
   Navigation,
   Calendar,
   Timer,
-  User
+  User,
+  Wifi,
+  WifiOff,
+  RefreshCw
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
+import { useWebSocketTracking } from '@/hooks/useWebSocket';
 
 const formSchema = z.object({
   trackingNumber: trackingNumberSchema,
@@ -274,9 +278,60 @@ const EventTimeline = ({ events }: { events: TrackingEvent[] }) => {
   );
 };
 
+// Connection status component
+const ConnectionStatus = ({ 
+  isConnected, 
+  isConnecting, 
+  error, 
+  onManualRefresh 
+}: { 
+  isConnected: boolean; 
+  isConnecting: boolean; 
+  error: string | null;
+  onManualRefresh: () => void;
+}) => {
+  if (isConnected) {
+    return (
+      <div className="flex items-center gap-2 text-green-600 text-sm">
+        <Wifi className="h-4 w-4" />
+        <span>Real-time updates active</span>
+      </div>
+    );
+  }
+
+  if (isConnecting) {
+    return (
+      <div className="flex items-center gap-2 text-amber-600 text-sm">
+        <RefreshCw className="h-4 w-4 animate-spin" />
+        <span>Connecting to real-time updates...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 text-gray-500 text-sm">
+      <WifiOff className="h-4 w-4" />
+      <span>Using periodic updates</span>
+      {error && (
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={onManualRefresh}
+          className="ml-2 h-6 px-2 text-xs"
+          data-testid="button-manual-refresh"
+        >
+          <RefreshCw className="h-3 w-3 mr-1" />
+          Refresh
+        </Button>
+      )}
+    </div>
+  );
+};
+
 export default function TrackingPage() {
   const [searchedTrackingNumber, setSearchedTrackingNumber] = useState<string>('');
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -285,20 +340,56 @@ export default function TrackingPage() {
     },
   });
 
-  // Fetch tracking information with polling
+  // WebSocket connection for real-time updates
+  const {
+    isConnected: wsConnected,
+    isConnecting: wsConnecting,
+    error: wsError,
+    lastMessage: wsLastMessage
+  } = useWebSocketTracking({
+    trackingNumber: searchedTrackingNumber,
+    onMessage: useCallback((message) => {
+      console.log('📦 Real-time tracking update:', message);
+      
+      // Show toast for important updates
+      if (message.type === 'status_update') {
+        toast({
+          title: "Status Updated",
+          description: `Order status: ${message.data.statusDisplayName}`,
+        });
+      } else if (message.type === 'location_update') {
+        // Subtle notification for location updates to avoid spam
+        console.log(`📍 Driver location updated for ${message.trackingNumber}`);
+      }
+    }, [toast]),
+    onConnect: useCallback(() => {
+      console.log(`✅ Real-time tracking connected for ${searchedTrackingNumber}`);
+      toast({
+        title: "Real-time Updates",
+        description: "Connected to live tracking updates",
+      });
+    }, [searchedTrackingNumber, toast]),
+    onDisconnect: useCallback(() => {
+      console.log(`🔌 Real-time tracking disconnected for ${searchedTrackingNumber}`);
+    }, [searchedTrackingNumber]),
+    reconnectInterval: 5000, // 5 seconds
+    maxReconnectAttempts: 3
+  });
+
+  // Fetch tracking information with smart polling (reduced when WebSocket connected)
   const { data: trackingInfo, isLoading: isLoadingTracking, error: trackingError, refetch: refetchTracking } = useQuery<TrackingInfo>({
     queryKey: ['/api/tracking', searchedTrackingNumber],
     enabled: !!searchedTrackingNumber,
-    refetchInterval: searchedTrackingNumber ? 30000 : false, // Poll every 30 seconds
-    staleTime: 25000, // Consider data stale after 25 seconds
+    refetchInterval: searchedTrackingNumber ? (wsConnected ? 120000 : 30000) : false, // 2 min if WS connected, 30s if not
+    staleTime: wsConnected ? 60000 : 25000, // Longer stale time if WS connected
   });
 
-  // Fetch tracking events with polling
+  // Fetch tracking events with smart polling
   const { data: trackingEvents, isLoading: isLoadingEvents, error: eventsError } = useQuery<TrackingEventsResponse>({
     queryKey: ['/api/tracking', searchedTrackingNumber, 'events'],
     enabled: !!searchedTrackingNumber,
-    refetchInterval: searchedTrackingNumber ? 30000 : false, // Poll every 30 seconds
-    staleTime: 25000,
+    refetchInterval: searchedTrackingNumber ? (wsConnected ? 120000 : 30000) : false,
+    staleTime: wsConnected ? 60000 : 25000,
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -310,6 +401,19 @@ export default function TrackingPage() {
       description: `Searching for tracking number: ${trackingNumber}`,
     });
   };
+
+  const handleManualRefresh = useCallback(() => {
+    console.log('🔄 Manual refresh triggered');
+    refetchTracking();
+    queryClient.invalidateQueries({ 
+      queryKey: ['/api/tracking', searchedTrackingNumber, 'events'] 
+    });
+    
+    toast({
+      title: "Refreshing",
+      description: "Updating tracking information...",
+    });
+  }, [refetchTracking, searchedTrackingNumber, toast]);
 
   const isLoading = isLoadingTracking || isLoadingEvents;
   const hasError = trackingError || eventsError;
@@ -416,6 +520,19 @@ export default function TrackingPage() {
         {/* Tracking Results */}
         {trackingInfo && !hasError && (
           <div className="space-y-6" data-testid="tracking-results">
+            {/* Connection Status */}
+            <div className="flex justify-between items-center bg-white/50 rounded-lg px-4 py-2 border border-amber-100">
+              <ConnectionStatus 
+                isConnected={wsConnected}
+                isConnecting={wsConnecting}
+                error={wsError}
+                onManualRefresh={handleManualRefresh}
+              />
+              <div className="text-xs text-amber-600">
+                {wsConnected ? 'Live updates' : 'Every 30 seconds'}
+              </div>
+            </div>
+
             {/* Order Status Card */}
             <Card className="w-full border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
               <CardHeader>
@@ -429,7 +546,15 @@ export default function TrackingPage() {
                       {trackingInfo.trackingNumber}
                     </CardDescription>
                   </div>
-                  <StatusBadge status={trackingInfo.status} />
+                  <div className="flex items-center gap-3">
+                    <StatusBadge status={trackingInfo.status} />
+                    {wsLastMessage && (
+                      <div className="text-xs text-green-600 font-medium">
+                        {wsLastMessage.type === 'location_update' ? '📍 Live' : 
+                         wsLastMessage.type === 'status_update' ? '📊 Updated' : '📡 Active'}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">

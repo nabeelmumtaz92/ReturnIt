@@ -21,6 +21,7 @@ import { AdvancedAnalytics } from "./analytics";
 import { checkDatabaseHealth, db } from "./db";
 import { requireAdmin, isAdmin } from "./middleware/adminAuth";
 import { sql } from "drizzle-orm";
+import { webSocketService } from "./websocket-service";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -968,7 +969,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         order.status === 'en_route'
       );
       
-      // Create location tracking events for active orders
+      // Create location tracking events for active orders and broadcast via WebSocket
       for (const order of activeDeliveryOrders) {
         await storage.createTrackingEvent({
           orderId: order.id,
@@ -982,12 +983,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
             speed: location.speed
           }
         });
+
+        // Broadcast real-time location update via WebSocket
+        if (order.trackingNumber) {
+          webSocketService.broadcastLocationUpdate(
+            order.trackingNumber,
+            location,
+            user.id,
+            order.id,
+            order.status
+          );
+
+          // Also broadcast tracking event for granular updates
+          webSocketService.broadcastTrackingEvent(
+            order.trackingNumber,
+            'location_update',
+            'Driver location updated',
+            location,
+            user.id,
+            {
+              accuracy: location.accuracy,
+              heading: location.heading,
+              speed: location.speed,
+              orderId: order.id
+            }
+          );
+        }
       }
+      
+      console.log(`📍 Driver ${user.id} location updated - broadcasted to ${activeDeliveryOrders.length} active orders`);
       
       res.json({ 
         success: true, 
         message: "Location updated successfully",
-        activeOrders: activeDeliveryOrders.length
+        activeOrders: activeDeliveryOrders.length,
+        broadcastCount: activeDeliveryOrders.filter(order => order.trackingNumber).length
       });
     } catch (error) {
       console.error("Error updating driver location:", error);
@@ -4087,6 +4117,21 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     } catch (error) {
       console.error('Track Replit cost error:', error);
       res.status(500).json({ message: 'Failed to track Replit cost' });
+    }
+  });
+
+  // WebSocket status and monitoring endpoint  
+  app.get("/api/websocket/stats", requireAdmin, async (req, res) => {
+    try {
+      const stats = webSocketService.getStats();
+      res.json({
+        success: true,
+        ...stats,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error fetching WebSocket stats:", error);
+      res.status(500).json({ message: "Failed to fetch WebSocket statistics" });
     }
   });
 

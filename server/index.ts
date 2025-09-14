@@ -3,6 +3,7 @@ import compression from "compression";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { PerformanceService, performanceMiddleware } from "./performance";
+import { webSocketService } from "./websocket-service";
 
 const app = express();
 
@@ -71,6 +72,9 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
+  // Initialize WebSocket service for real-time tracking
+  webSocketService.initialize(server);
+
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -99,5 +103,19 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
+    log(`WebSocket tracking available at ws://localhost:${port}/ws/tracking`);
+  });
+
+  // Graceful shutdown handling
+  process.on('SIGINT', () => {
+    console.log('\n🛑 Shutting down gracefully...');
+    webSocketService.cleanup();
+    process.exit(0);
+  });
+
+  process.on('SIGTERM', () => {
+    console.log('\n🛑 SIGTERM received, shutting down gracefully...');
+    webSocketService.cleanup();
+    process.exit(0);
   });
 })();
