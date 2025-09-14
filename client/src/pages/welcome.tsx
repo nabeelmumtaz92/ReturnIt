@@ -228,6 +228,16 @@ export default function Welcome() {
             <Package className="h-4 w-4 mr-2" />
             Book Pickup
           </Button>
+          <Button 
+            variant="outline"
+            size="default" 
+            className="w-full border-amber-600 text-amber-800 hover:bg-amber-50 py-3 text-base"
+            data-testid="button-track-order"
+            onClick={() => setLocation('/track')}
+          >
+            <Search className="h-4 w-4 mr-2" />
+            Track Your Order
+          </Button>
         </div>
 
         {/* Environment Notice for Restricted Access */}

@@ -17,6 +17,7 @@ import DriverPortal from "@/pages/driver-portal";
 import NotFound from "@/pages/not-found";
 
 // Lazy-loaded components for better performance
+const TrackingPage = lazy(() => import("@/pages/tracking"));
 const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
 const DriverPayments = lazy(() => import("@/pages/driver-payments"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
@@ -144,6 +145,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
       <Route path="/checkout" component={Checkout} />
+      <Route path="/track" component={TrackingPage} />
       <Route path="/order-status/:orderId">
         {(params) => <OrderStatus orderId={params.orderId} />}
       </Route>
