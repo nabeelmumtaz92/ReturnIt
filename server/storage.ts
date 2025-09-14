@@ -5,8 +5,11 @@ import {
   type DriverPayout, type InsertDriverPayout, type DriverIncentive, type InsertDriverIncentive,
   type BusinessInfo, type InsertBusinessInfo,
   type DriverApplication, type InsertDriverApplication,
-  OrderStatus, type OrderStatus as OrderStatusType
+  type TrackingEvent, type InsertTrackingEvent,
+  OrderStatus, type OrderStatus as OrderStatusType,
+  type Location, LocationSchema
 } from "@shared/schema";
+import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
 
 export interface IStorage {
   // User operations
@@ -79,6 +82,16 @@ export interface IStorage {
   getUserDriverApplication(userId: number): Promise<DriverApplication | undefined>;
   updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined>;
   getAllDriverApplications(): Promise<DriverApplication[]>;
+
+  // Tracking operations
+  getOrderByTrackingNumber(trackingNumber: string): Promise<Order | undefined>;
+  updateDriverLocation(driverId: number, location: Location): Promise<User | undefined>;
+  getDriverLocation(driverId: number): Promise<Location | undefined>;
+  getOrderCurrentLocation(orderId: string): Promise<Location | undefined>;
+  getOrderLocationByTracking(trackingNumber: string): Promise<Location | undefined>;
+  createTrackingEvent(trackingEvent: InsertTrackingEvent): Promise<TrackingEvent>;
+  getOrderTrackingEvents(orderId: string): Promise<TrackingEvent[]>;
+  getTrackingEvent(id: number): Promise<TrackingEvent | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -93,6 +106,8 @@ export class MemStorage implements IStorage {
   private businessInfo: BusinessInfo | undefined;
   private driverApplications: Map<string, DriverApplication>;
   private paymentRecords: Map<string, any>;
+  private trackingEvents: Map<number, TrackingEvent>;
+  private trackingNumberIndex: Map<string, string>; // trackingNumber -> orderId for O(1) lookup
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
@@ -100,6 +115,7 @@ export class MemStorage implements IStorage {
   private nextAnalyticsId: number = 1;
   private nextPayoutId: number = 1;
   private nextIncentiveId: number = 1;
+  private nextTrackingEventId: number = 1;
 
   constructor() {
     this.users = new Map();
@@ -112,6 +128,8 @@ export class MemStorage implements IStorage {
     this.driverIncentives = new Map();
     this.driverApplications = new Map();
     this.paymentRecords = new Map();
+    this.trackingEvents = new Map();
+    this.trackingNumberIndex = new Map();
     
     // Master Administrator account (real data only)
     const masterAdmin: User = {
@@ -313,7 +331,11 @@ export class MemStorage implements IStorage {
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
     const id = Math.random().toString(36).slice(2, 8).toUpperCase();
-    const trackingNumber = `RTN${Date.now().toString().slice(-6)}`;
+    
+    // Generate unique tracking number with collision handling
+    const trackingNumber = await generateUniqueTrackingNumber(async (tn) => {
+      return this.trackingNumberIndex.has(tn);
+    });
     
     const order: Order = {
       id,
@@ -364,6 +386,10 @@ export class MemStorage implements IStorage {
       updatedAt: new Date()
     };
     this.orders.set(id, order);
+    // Maintain tracking index for O(1) lookups
+    if (trackingNumber) {
+      this.trackingNumberIndex.set(trackingNumber, id);
+    }
     return order;
   }
 
@@ -379,6 +405,16 @@ export class MemStorage implements IStorage {
         ...(order.statusHistory || []),
         { status: updates.status, timestamp: new Date().toISOString(), note: `Status updated to ${updates.status}` }
       ];
+    }
+    
+    // Update tracking index if tracking number changed
+    if (updates.trackingNumber && updates.trackingNumber !== order.trackingNumber) {
+      // Remove old tracking number from index
+      if (order.trackingNumber) {
+        this.trackingNumberIndex.delete(order.trackingNumber);
+      }
+      // Add new tracking number to index
+      this.trackingNumberIndex.set(updates.trackingNumber, id);
     }
     
     this.orders.set(id, updatedOrder);
@@ -906,6 +942,76 @@ export class MemStorage implements IStorage {
 
   async getAllDriverApplications(): Promise<DriverApplication[]> {
     return Array.from(this.driverApplications.values());
+  }
+
+  // Tracking operations
+  async getOrderByTrackingNumber(trackingNumber: string): Promise<Order | undefined> {
+    // Use O(1) index lookup for performance
+    const orderId = this.trackingNumberIndex.get(trackingNumber);
+    if (!orderId) return undefined;
+    
+    const order = this.orders.get(orderId);
+    if (!order) return undefined;
+    
+    // Enforce tracking permissions
+    if (!order.trackingEnabled) return undefined;
+    if (order.trackingExpiresAt && order.trackingExpiresAt < new Date()) return undefined;
+    
+    return order;
+  }
+
+  async updateDriverLocation(driverId: number, location: Location): Promise<User | undefined> {
+    const user = this.users.get(driverId);
+    if (!user) return undefined;
+    
+    const updatedUser = { ...user, currentLocation: location, updatedAt: new Date() };
+    this.users.set(driverId, updatedUser);
+    return updatedUser;
+  }
+
+  async getDriverLocation(driverId: number): Promise<Location | undefined> {
+    const user = this.users.get(driverId);
+    return user ? user.currentLocation as Location : undefined;
+  }
+
+  async getOrderCurrentLocation(orderId: string): Promise<Location | undefined> {
+    const order = this.orders.get(orderId);
+    if (!order || !order.driverId) return undefined;
+    
+    return this.getDriverLocation(order.driverId);
+  }
+
+  async getOrderLocationByTracking(trackingNumber: string): Promise<Location | undefined> {
+    const order = await this.getOrderByTrackingNumber(trackingNumber);
+    if (!order) return undefined;
+    
+    return this.getOrderCurrentLocation(order.id);
+  }
+
+  async createTrackingEvent(trackingEventData: InsertTrackingEvent): Promise<TrackingEvent> {
+    const id = this.nextTrackingEventId++;
+    const trackingEvent: TrackingEvent = {
+      id,
+      orderId: trackingEventData.orderId,
+      eventType: trackingEventData.eventType,
+      description: trackingEventData.description,
+      location: trackingEventData.location || null,
+      driverId: trackingEventData.driverId || null,
+      metadata: trackingEventData.metadata || {},
+      timestamp: new Date()
+    };
+    this.trackingEvents.set(id, trackingEvent);
+    return trackingEvent;
+  }
+
+  async getOrderTrackingEvents(orderId: string): Promise<TrackingEvent[]> {
+    return Array.from(this.trackingEvents.values())
+      .filter(event => event.orderId === orderId)
+      .sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+  }
+
+  async getTrackingEvent(id: number): Promise<TrackingEvent | undefined> {
+    return this.trackingEvents.get(id);
   }
 }
 

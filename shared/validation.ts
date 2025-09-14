@@ -11,6 +11,11 @@ export const emailSchema = z.string()
 // Simple phone validation
 export const phoneSchema = z.string().optional();
 
+// Tracking number validation
+export const trackingNumberSchema = z.string()
+  .regex(/^RTN-[A-Z0-9]{8,12}$/, "Invalid tracking number format. Expected format: RTN-XXXXXXXX")
+  .describe("Tracking number with RTN- prefix followed by 8-12 alphanumeric characters");
+
 // Registration validation schema
 export const registrationSchema = z.object({
   email: emailSchema,

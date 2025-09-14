@@ -3,6 +3,18 @@ import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Location schema for type safety
+export const LocationSchema = z.object({
+  lat: z.number(),
+  lng: z.number(),
+  accuracy: z.number().optional(),
+  heading: z.number().optional(),
+  speed: z.number().optional(),
+  timestamp: z.string()
+});
+
+export type Location = z.infer<typeof LocationSchema>;
+
 // Enhanced Users table with profiles and preferences
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -214,6 +226,8 @@ export const orders = pgTable("orders", {
   userId: integer("user_id").references(() => users.id).notNull(),
   status: text("status").notNull().default("created"), // created, confirmed, assigned, pickup_scheduled, picked_up, in_transit, delivered, completed, cancelled, refunded, return_refused
   trackingNumber: text("tracking_number").unique(),
+  trackingEnabled: boolean("tracking_enabled").default(true).notNull(),
+  trackingExpiresAt: timestamp("tracking_expires_at"),
   
   // Pickup details
   pickupStreetAddress: text("pickup_street_address").notNull(),
