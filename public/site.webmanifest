@@ -1,6 +1,6 @@
 {
-  "name": "ReturnIt - Return Delivery Service",
-  "short_name": "ReturnIt",
+  "name": "Return It - Return Delivery Service",
+  "short_name": "Return It",
   "description": "Professional return delivery service for online purchases and package returns",
   "start_url": "/",
   "display": "standalone",
