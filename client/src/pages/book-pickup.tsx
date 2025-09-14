@@ -813,55 +813,6 @@ export default function BookPickup() {
                 </div>
               )}
               
-              {/* Step 3: Pickup Preferences & Authorization */}
-              {currentStep === 'step3' && (
-                <div className="space-y-6">
-                  <div className="text-center text-amber-800 font-semibold">Step 3 content will be added here</div>
-                  <div className="flex justify-between pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleBackStep}
-                      className="border-amber-300 text-amber-800 hover:bg-amber-50"
-                      data-testid="button-step3-back"
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
-                      data-testid="button-step3-next"
-                    >
-                      Next Step
-                    </Button>
-                  </div>
-                </div>
-              )}
-              
-              {/* Step 4: Payment & Review */}
-              {currentStep === 'step4' && (
-                <div className="space-y-6">
-                  <div className="text-center text-amber-800 font-semibold">Step 4 content will be added here</div>
-                  <div className="flex justify-between pt-4">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleBackStep}
-                      className="border-amber-300 text-amber-800 hover:bg-amber-50"
-                      data-testid="button-step4-back"
-                    >
-                      Back
-                    </Button>
-                    <Button
-                      type="submit"
-                      className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2"
-                      data-testid="button-complete"
-                    >
-                      Complete Order
-                    </Button>
-                  </div>
-                </div>
-              )}
 
               {/* Step 3: Pickup Preferences & Authorization */}
               {currentStep === 'step3' && (
