@@ -11,10 +11,11 @@ import bcrypt from "bcrypt";
 import { z } from "zod";
 import { 
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
-  insertNotificationSchema, insertDriverApplicationSchema, OrderStatus 
+  insertNotificationSchema, insertDriverApplicationSchema, OrderStatus,
+  LocationSchema
 } from "@shared/schema";
 import { AuthService } from "./auth";
-import { registrationSchema, loginSchema } from "@shared/validation";
+import { registrationSchema, loginSchema, trackingNumberSchema } from "@shared/validation";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
 import { checkDatabaseHealth, db } from "./db";
@@ -934,6 +935,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating driver status:", error);
       res.status(500).json({ message: "Failed to update driver status" });
+    }
+  });
+
+  // Driver Location Update API
+  app.put("/api/driver/location", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      // Validate location data using LocationSchema
+      const locationValidation = LocationSchema.safeParse(req.body);
+      if (!locationValidation.success) {
+        return res.status(400).json({ 
+          message: "Invalid location data",
+          errors: locationValidation.error.issues
+        });
+      }
+      
+      const location = locationValidation.data;
+      
+      // Update driver's current location
+      await storage.updateDriverLocation(user.id, location);
+      
+      // Create tracking event for active orders
+      const activeOrders = await storage.getDriverOrders(user.id);
+      const activeDeliveryOrders = activeOrders.filter(order => 
+        order.status === 'driver_assigned' || 
+        order.status === 'picked_up' || 
+        order.status === 'en_route'
+      );
+      
+      // Create location tracking events for active orders
+      for (const order of activeDeliveryOrders) {
+        await storage.createTrackingEvent({
+          orderId: order.id,
+          eventType: 'location_update',
+          description: `Driver location updated`,
+          location: location,
+          driverId: user.id,
+          metadata: {
+            accuracy: location.accuracy,
+            heading: location.heading,
+            speed: location.speed
+          }
+        });
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Location updated successfully",
+        activeOrders: activeDeliveryOrders.length
+      });
+    } catch (error) {
+      console.error("Error updating driver location:", error);
+      res.status(500).json({ message: "Failed to update driver location" });
     }
   });
 
@@ -3745,6 +3803,224 @@ Always think strategically, explain your reasoning, and provide value beyond bas
       res.status(500).json({ 
         message: "AI Assistant encountered an error. Please try again." 
       });
+    }
+  });
+
+  // Simple rate limiting for public endpoints
+  const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+  const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
+  const RATE_LIMIT_MAX = 50; // 50 requests per window
+  
+  const rateLimit = (req: any, res: any, next: any) => {
+    const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+    const now = Date.now();
+    const key = `tracking_${clientIP}`;
+    
+    const current = rateLimitStore.get(key);
+    
+    if (!current || now > current.resetTime) {
+      // Reset or initialize
+      rateLimitStore.set(key, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+      next();
+    } else if (current.count < RATE_LIMIT_MAX) {
+      // Increment count
+      current.count++;
+      next();
+    } else {
+      // Rate limit exceeded
+      res.status(429).json({ 
+        message: "Too many tracking requests. Please try again later.",
+        retryAfter: Math.ceil((current.resetTime - now) / 1000)
+      });
+    }
+  };
+
+  // Customer Tracking Lookup API (Public)
+  app.get("/api/tracking/:trackingNumber", rateLimit, async (req, res) => {
+    try {
+      const { trackingNumber } = req.params;
+      
+      // Validate tracking number format
+      const trackingValidation = trackingNumberSchema.safeParse(trackingNumber);
+      if (!trackingValidation.success) {
+        return res.status(400).json({ 
+          message: "Invalid tracking number format. Expected format: RTN-XXXXXXXX"
+        });
+      }
+      
+      // Get order by tracking number
+      const order = await storage.getOrderByTrackingNumber(trackingNumber);
+      if (!order) {
+        return res.status(404).json({ 
+          message: "Order not found. Please check your tracking number."
+        });
+      }
+      
+      // Check tracking settings
+      if (!order.trackingEnabled) {
+        return res.status(403).json({ 
+          message: "Tracking is not enabled for this order."
+        });
+      }
+      
+      // Check if tracking has expired
+      if (order.trackingExpiresAt && new Date() > order.trackingExpiresAt) {
+        return res.status(410).json({ 
+          message: "Tracking for this order has expired."
+        });
+      }
+      
+      // Get current driver location if order is assigned
+      let driverLocation = null;
+      if (order.driverId) {
+        driverLocation = await storage.getDriverLocation(order.driverId);
+      }
+      
+      // Get tracking events
+      const trackingEvents = await storage.getOrderTrackingEvents(order.id);
+      
+      // Return tracking information
+      res.json({
+        orderId: order.id,
+        trackingNumber: order.trackingNumber,
+        status: order.status,
+        statusDisplayName: order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        pickup: {
+          address: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+          scheduledTime: order.scheduledPickupTime,
+          actualTime: order.actualPickupTime
+        },
+        delivery: {
+          address: order.dropoffAddress,
+          estimatedTime: order.estimatedDeliveryTime,
+          actualTime: order.actualDeliveryTime
+        },
+        driver: order.driverId ? {
+          assigned: true,
+          assignedAt: order.driverAssignedAt,
+          currentLocation: driverLocation
+        } : {
+          assigned: false
+        },
+        lastUpdate: trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].timestamp : order.createdAt,
+        estimatedArrival: order.estimatedDeliveryTime,
+        retailer: order.retailer
+      });
+    } catch (error) {
+      console.error("Error fetching tracking information:", error);
+      res.status(500).json({ message: "Failed to fetch tracking information" });
+    }
+  });
+  
+  // Order Location History API (Public)
+  app.get("/api/tracking/:trackingNumber/events", rateLimit, async (req, res) => {
+    try {
+      const { trackingNumber } = req.params;
+      
+      // Validate tracking number format
+      const trackingValidation = trackingNumberSchema.safeParse(trackingNumber);
+      if (!trackingValidation.success) {
+        return res.status(400).json({ 
+          message: "Invalid tracking number format. Expected format: RTN-XXXXXXXX"
+        });
+      }
+      
+      // Get order by tracking number
+      const order = await storage.getOrderByTrackingNumber(trackingNumber);
+      if (!order) {
+        return res.status(404).json({ 
+          message: "Order not found. Please check your tracking number."
+        });
+      }
+      
+      // Check tracking settings
+      if (!order.trackingEnabled) {
+        return res.status(403).json({ 
+          message: "Tracking is not enabled for this order."
+        });
+      }
+      
+      // Check if tracking has expired
+      if (order.trackingExpiresAt && new Date() > order.trackingExpiresAt) {
+        return res.status(410).json({ 
+          message: "Tracking for this order has expired."
+        });
+      }
+      
+      // Get all tracking events
+      const trackingEvents = await storage.getOrderTrackingEvents(order.id);
+      
+      // Format events for frontend consumption
+      const formattedEvents = trackingEvents.map(event => ({
+        id: event.id,
+        eventType: event.eventType,
+        description: event.description,
+        timestamp: event.timestamp,
+        location: event.location,
+        driverId: event.driverId,
+        metadata: event.metadata
+      }));
+      
+      // Add order milestone events
+      const milestoneEvents = [];
+      
+      if (order.createdAt) {
+        milestoneEvents.push({
+          eventType: 'order_created',
+          description: 'Order has been created',
+          timestamp: order.createdAt,
+          location: null,
+          driverId: null,
+          metadata: {}
+        });
+      }
+      
+      if (order.driverAssignedAt) {
+        milestoneEvents.push({
+          eventType: 'driver_assigned',
+          description: 'Driver has been assigned to your order',
+          timestamp: order.driverAssignedAt,
+          location: null,
+          driverId: order.driverId,
+          metadata: {}
+        });
+      }
+      
+      if (order.actualPickupTime) {
+        milestoneEvents.push({
+          eventType: 'picked_up',
+          description: 'Items have been picked up',
+          timestamp: order.actualPickupTime,
+          location: null,
+          driverId: order.driverId,
+          metadata: {}
+        });
+      }
+      
+      if (order.actualDeliveryTime) {
+        milestoneEvents.push({
+          eventType: 'delivered',
+          description: 'Items have been delivered',
+          timestamp: order.actualDeliveryTime,
+          location: null,
+          driverId: order.driverId,
+          metadata: {}
+        });
+      }
+      
+      // Combine and sort all events
+      const allEvents = [...formattedEvents, ...milestoneEvents]
+        .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+      
+      res.json({
+        orderId: order.id,
+        trackingNumber: order.trackingNumber,
+        totalEvents: allEvents.length,
+        events: allEvents
+      });
+    } catch (error) {
+      console.error("Error fetching tracking events:", error);
+      res.status(500).json({ message: "Failed to fetch tracking events" });
     }
   });
 
