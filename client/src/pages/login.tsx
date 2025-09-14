@@ -61,7 +61,7 @@ export default function Login() {
   });
 
   // Use the clearest, most professional background image
-  const [selectedImage, setSelectedImage] = useState(deliveryProfessionalImg);
+  const [selectedImage, setSelectedImage] = useState(deliveryHandoffImg);
 
   // Dynamic background positioning based on tab
   const backgroundPosition = activeTab === 'register' ? 'right center' : 'center center';
@@ -568,6 +568,35 @@ export default function Login() {
                   <User className="h-4 w-4 mr-2" />
                   {registerMutation.isPending ? "Creating Account..." : "Create Account"}
                 </Button>
+                
+                <div className="flex items-center my-8">
+                  <div className="flex-1 h-px bg-amber-200"></div>
+                  <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                    Or continue with
+                  </span>
+                  <div className="flex-1 h-px bg-amber-200"></div>
+                </div>
+                
+                <div className="space-y-2">
+                  <SocialButton 
+                    provider="Google" 
+                    icon={SiGoogle} 
+                    onClick={handleGoogleAuth}
+                    color="bg-red-50"
+                  />
+                  <SocialButton 
+                    provider="Apple" 
+                    icon={SiApple} 
+                    onClick={handleAppleAuth}
+                    color="bg-gray-50"
+                  />
+                  <SocialButton 
+                    provider="Facebook" 
+                    icon={SiFacebook} 
+                    onClick={handleFacebookAuth}
+                    color="bg-blue-50"
+                  />
+                </div>
                 
                 <Button 
                   type="button" 

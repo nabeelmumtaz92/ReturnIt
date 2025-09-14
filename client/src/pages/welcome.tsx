@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 // LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
+import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -126,7 +127,7 @@ export default function Welcome() {
             <div className="flex-1 max-w-lg">
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
                 <img 
-                  src="https://images.unsplash.com/photo-1566492031773-4f4e44671d66?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+                  src={deliveryHandoffImg} 
                   alt="Professional delivery man with packages" 
                   className="w-full h-64 object-cover"
                 />
