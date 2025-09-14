@@ -124,7 +124,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   
   // Function to change sections
   const changeSection = (newSection: string) => {
-    console.log('Changing section to:', newSection);
+    console.log('Admin Dashboard - Changing section to:', newSection);
+    console.log('Current section:', currentSection);
     
     // Don't add to history if we're already on this section
     if (newSection !== currentSection) {
@@ -137,6 +138,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       });
       
       setCurrentSection(newSection);
+      console.log('Section changed to:', newSection);
       
       // Update URL
       if (newSection === 'overview') {
@@ -144,6 +146,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       } else {
         setLocation(`/admin-dashboard?section=${newSection}`);
       }
+    } else {
+      console.log('Already on section:', newSection);
     }
   };
 
@@ -4318,6 +4322,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   };
 
   const TaxReportsContent = () => {
+    const [activeTab, setActiveTab] = useState('payment-records');
     const [taxYear, setTaxYear] = useState(new Date().getFullYear().toString());
     const [quarter, setQuarter] = useState('');
     const [format, setFormat] = useState('csv');
@@ -4471,6 +4476,90 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </Button>
           </div>
         )}
+        
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-amber-900 mb-2">Payment Tracking & Tax Management</h1>
+          <p className="text-amber-600">Dashboard • 9/14/2025</p>
+        </div>
+
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-medium text-green-600 mb-2">Total Driver Earnings</h3>
+                <p className="text-2xl font-bold text-green-600">${(paymentSummary?.totalDriverEarnings || 0).toFixed(2)}</p>
+                <p className="text-xs text-green-500 mt-1">This month</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-medium text-blue-600 mb-2">Company Revenue</h3>
+                <p className="text-2xl font-bold text-blue-600">${(paymentSummary?.totalCompanyRevenue || 0).toFixed(2)}</p>
+                <p className="text-xs text-blue-500 mt-1">This month</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-medium text-purple-600 mb-2">Customer Payments</h3>
+                <p className="text-2xl font-bold text-purple-600">${((paymentSummary?.totalCompanyRevenue || 0) + (paymentSummary?.totalDriverEarnings || 0)).toFixed(2)}</p>
+                <p className="text-xs text-purple-500 mt-1">This month</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex flex-col">
+                <h3 className="text-sm font-medium text-amber-600 mb-2">Transactions</h3>
+                <p className="text-2xl font-bold text-amber-900">{taxReportData?.length || 0}</p>
+                <p className="text-xs text-amber-500 mt-1">This month</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="mb-6">
+          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+            <button
+              onClick={() => setActiveTab('payment-records')}
+              className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
+                activeTab === 'payment-records'
+                  ? 'bg-white text-amber-900 shadow-sm'
+                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+              }`}
+              data-testid="tab-payment-records"
+            >
+              Payment Records
+            </button>
+            <button
+              onClick={() => setActiveTab('tax-analytics')}
+              className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
+                activeTab === 'tax-analytics'
+                  ? 'bg-gray-300 text-amber-900 shadow-sm'
+                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+              }`}
+              data-testid="tab-tax-analytics"
+            >
+              Tax Analytics
+            </button>
+            <button
+              onClick={() => setActiveTab('reports-exports')}
+              className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
+                activeTab === 'reports-exports'
+                  ? 'bg-gray-300 text-amber-900 shadow-sm'
+                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+              }`}
+              data-testid="tab-reports-exports"
+            >
+              Reports & Exports
+            </button>
+          </div>
+        </div>
 
         {/* Status Display */}
         {generationStatus && (
@@ -4479,7 +4568,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </div>
         )}
 
-        <div className="space-y-6">
+        {/* Tab Content */}
+        {activeTab === 'payment-records' && (
+          <div className="bg-white rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-center bg-gray-50 border border-amber-200 rounded-lg p-8 min-h-[400px]">
+              <div className="text-center">
+                <div className="flex items-center justify-center space-x-4 mb-4">
+                  <span className="text-2xl">🔍</span>
+                  <h2 className="text-lg font-semibold text-amber-900">Filters & Search</h2>
+                </div>
+                <p className="text-amber-600 mb-4">Search Orders/Drivers, Date Range, Payment Status</p>
+                <p className="text-sm text-gray-500">Payment records filtering and search functionality</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'tax-analytics' && (
+          <div className="space-y-6">
         {/* Tax Year Selection */}
         <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
           <CardHeader>
@@ -4754,6 +4860,84 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </CardContent>
         </Card>
         </div>
+        )}
+
+        {activeTab === 'reports-exports' && (
+          <div className="space-y-6">
+            {/* Export Controls */}
+            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 text-xl">Tax Reports & 1099 Forms</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div>
+                    <label className="text-sm font-medium text-amber-900">Tax Year</label>
+                    <select 
+                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      value={taxYear}
+                      onChange={(e) => setTaxYear(e.target.value)}
+                    >
+                      <option value="2025">2025</option>
+                      <option value="2024">2024</option>
+                      <option value="2023">2023</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-amber-900">Quarter (Optional)</label>
+                    <select 
+                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      value={quarter}
+                      onChange={(e) => setQuarter(e.target.value)}
+                    >
+                      <option value="">All Year</option>
+                      <option value="1">Q1 (Jan-Mar)</option>
+                      <option value="2">Q2 (Apr-Jun)</option>
+                      <option value="3">Q3 (Jul-Sep)</option>
+                      <option value="4">Q4 (Oct-Dec)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-amber-900">Export Format</label>
+                    <select 
+                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      value={format}
+                      onChange={(e) => setFormat(e.target.value)}
+                    >
+                      <option value="csv">CSV File</option>
+                      <option value="xlsx">Excel File</option>
+                      <option value="pdf">PDF Report</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="mt-6 flex space-x-4">
+                  <Button 
+                    onClick={handleGenerateTaxReport}
+                    disabled={generateTaxReportMutation.isPending}
+                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                  >
+                    {generateTaxReportMutation.isPending ? 'Generating...' : 'Generate Tax Report'}
+                  </Button>
+                  <Button 
+                    onClick={handleGenerate1099Forms}
+                    disabled={generate1099Mutation.isPending}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    {generate1099Mutation.isPending ? 'Generating...' : 'Generate 1099 Forms'}
+                  </Button>
+                  <Button 
+                    onClick={refreshTaxData}
+                    variant="outline"
+                    className="border-amber-200 hover:bg-amber-50"
+                  >
+                    Refresh Data
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     );
   };
