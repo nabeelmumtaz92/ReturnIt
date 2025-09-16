@@ -1,0 +1,88 @@
+Action Items
+
+0
+
+2
+
+6
+
+12
+
+Add screenshots to showcase your app.
+
+info symbol, additional information available on hover
+
+Help browsers and OSes identify your app, even if your URL changes, by adding an id to your manifest.
+
+info symbol, additional information available on hover
+
+Specify whether you want users to use your PWA or your native app.
+
+info symbol, additional information available on hover
+
+Specify your native app ID by adding related_applications to your manifest.
+
+info symbol, additional information available on hover
+
+Let users know what ages your app is designed for by adding an IARC rating to your manifest.
+
+info symbol, additional information available on hover
+
+Control how your app is displayed by adding display_override to your manifest.
+
+info symbol, additional information available on hover
+
+Define the language direction of your PWA by adding dir to your manifest.
+
+info symbol, additional information available on hover
+
+Enable your PWA to navigate to additional domains or subdomains by adding scope_extensions to your manifest.
+
+info symbol, additional information available on hover
+
+Let users open files with your PWA by adding file_handlers to your manifest.
+
+info symbol, additional information available on hover
+
+Take control over how your app is launched -- single instance, focus existing, or navigate in new window -- by adding launch_handler to your manifest.
+
+info symbol, additional information available on hover
+
+Specify whether you want users to use your PWA or your native app.
+
+info symbol, additional information available on hover
+
+Make your app appear in the OS share tray by adding share_target to your manifest.
+
+info symbol, additional information available on hover
+
+Let users add your app as a widget.
+
+info symbol, additional information available on hover
+
+Make your app pinnable to the sidebar by adding edge_side_panel to your manifest.
+
+info symbol, additional information available on hover
+
+Customize your app's title bar by adding windows-control-overlay to your manifest's display_override.
+
+info symbol, additional information available on hover
+
+Let users open multiple tabs within your PWA by adding tabbed to your manifest's display_override.
+
+info symbol, additional information available on hover
+
+Register as a notes app to integrate with the OS's note-taking capabilities.
+
+info symbol, additional information available on hover
+
+Show data to your users instantly by adding periodic background sync to your service worker.
+
+info symbol, additional information available on hover
+
+Re-engage users with timely notifications by adding push notifications to your service worker.
+
+info symbol, additional information available on hover
+
+Enable your PWA to work offline by caching your app's assets in your service worker and serving them from the cache when offline.
+
