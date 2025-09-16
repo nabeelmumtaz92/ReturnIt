@@ -20,13 +20,22 @@ export class FreeEmailSMSService implements SMSService {
       // Format notification message
       const message = this.formatOrderMessage(orderData);
       
-      // Send via nodemailer to SMS gateway
+      // Try email-to-SMS gateway first
       if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
-        return await this.sendViaSMSGateway('6362544821', message);
+        const sent = await this.sendViaSMSGateway('6362544821', message);
+        if (sent) return true;
       }
       
-      // Fallback: log to console for now
+      // Fallback: log to console and send notification
       console.log(`📱 SMS ALERT for 636-254-4821: ${message}`);
+      
+      // Also send browser push notification if available
+      try {
+        await this.sendPushNotification(message);
+      } catch (error) {
+        console.log('Push notification failed:', (error as Error).message);
+      }
+      
       return true;
       
     } catch (error) {
@@ -40,17 +49,49 @@ export class FreeEmailSMSService implements SMSService {
     return `🚚 NEW RETURNIT ORDER! Customer: ${orderData.customerName || 'New Customer'}, Pickup: ${orderData.pickupAddress || 'Address pending'}, Amount: $${orderData.totalAmount || 'TBD'}.${trackingInfo} Login to manage.`;
   }
 
+  private async sendPushNotification(message: string): Promise<void> {
+    // Send push notification to admin via WebSocket
+    const { webSocketService } = require('./websocket-service');
+    if (webSocketService) {
+      webSocketService.broadcastAdminNotification({
+        type: 'new_order',
+        title: 'New Return Order',
+        message: message,
+        timestamp: new Date().toISOString()
+      });
+    }
+  }
+
   private async sendViaSMSGateway(phoneNumber: string, message: string): Promise<boolean> {
+    const nodemailer = require('nodemailer');
+    
+    // Use Gmail SMTP (free) - requires app password
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.SMTP_EMAIL || 'your-email@gmail.com',
+        pass: process.env.SMTP_PASSWORD || 'your-app-password'
+      }
+    });
+
     // Try multiple carrier gateways for reliability
-    const gateways = ['vtext.com', 'txt.att.net', 'tmomail.net'];
+    const gateways = ['vtext.com', 'txt.att.net', 'tmomail.net', 'messaging.sprintncs.com'];
     
     for (const gateway of gateways) {
       try {
         const emailAddress = `${phoneNumber}@${gateway}`;
-        // Would implement nodemailer here with SMTP
-        console.log(`Sending to ${emailAddress}: ${message}`);
+        
+        await transporter.sendMail({
+          from: process.env.SMTP_EMAIL || 'your-email@gmail.com',
+          to: emailAddress,
+          subject: '', // SMS gateways ignore subject
+          text: message
+        });
+        
+        console.log(`✅ SMS sent to ${emailAddress}: ${message}`);
         return true;
       } catch (error) {
+        console.log(`Failed ${gateway}:`, (error as Error).message);
         continue;
       }
     }

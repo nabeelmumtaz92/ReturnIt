@@ -116,6 +116,57 @@ self.addEventListener('message', (event) => {
   }
 });
 
+// Push notification event listener
+self.addEventListener('push', (event) => {
+  console.log('Push notification received:', event);
+  
+  let options = {
+    body: 'You have a new notification',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    vibrate: [200, 100, 200],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    },
+    actions: [
+      {
+        action: 'explore', 
+        title: 'View Order',
+        icon: '/icon-192.png'
+      },
+      {
+        action: 'close', 
+        title: 'Close'
+      }
+    ]
+  };
+
+  if (event.data) {
+    const data = event.data.json();
+    options.body = data.message || options.body;
+    options.data = { ...options.data, ...data };
+  }
+
+  event.waitUntil(
+    self.registration.showNotification('Return It - New Order', options)
+  );
+});
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  console.log('Notification click received:', event);
+  
+  event.notification.close();
+  
+  if (event.action === 'explore') {
+    // Open the admin dashboard
+    event.waitUntil(
+      clients.openWindow('/admin-dashboard')
+    );
+  }
+});
+
 // Background sync for offline orders (if supported)
 if ('sync' in self.registration) {
   self.addEventListener('sync', (event) => {

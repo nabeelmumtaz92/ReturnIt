@@ -18,8 +18,8 @@ interface WebSocketMessage {
 }
 
 interface BroadcastMessage {
-  type: 'location_update' | 'status_update' | 'tracking_event' | 'error' | 'connection_status';
-  trackingNumber: string;
+  type: 'location_update' | 'status_update' | 'tracking_event' | 'error' | 'connection_status' | 'admin_notification';
+  trackingNumber?: string;
   data: any;
   timestamp: string;
 }
@@ -417,6 +417,32 @@ class WebSocketTrackingService {
     }, 30000); // 30 seconds
 
     console.log('💓 WebSocket heartbeat started (30s interval)');
+  }
+
+  public broadcastAdminNotification(notificationData: any) {
+    if (!this.wss) return;
+
+    const message: BroadcastMessage = {
+      type: 'admin_notification',
+      data: notificationData,
+      timestamp: new Date().toISOString()
+    };
+
+    let successCount = 0;
+    this.wss.clients.forEach((ws: WebSocket) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        try {
+          this.sendToClient(ws, message);
+          successCount++;
+        } catch (error) {
+          console.error('❌ Failed to send admin notification:', error);
+        }
+      }
+    });
+
+    if (successCount > 0) {
+      console.log(`🔔 Admin notification sent to ${successCount} clients`);
+    }
   }
 
   public getStats() {
