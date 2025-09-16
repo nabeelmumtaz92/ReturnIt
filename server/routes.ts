@@ -524,6 +524,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Privacy Policy Page
+  app.get('/privacy-policy', (req, res) => {
+    const path = require('path');
+    res.sendFile(path.join(__dirname, '../client/public/privacy-policy.html'));
+  });
+
   // OAuth Test Page
   app.get('/test-oauth', (req, res) => {
     const path = require('path');
