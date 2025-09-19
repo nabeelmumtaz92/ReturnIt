@@ -11,19 +11,19 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: #A47C48;
-  --primary-foreground: #F5F0E6;
-  --secondary: #F5F0E6;
-  --secondary-foreground: #A47C48;
+  --primary: #FF8C42;
+  --primary-foreground: #FAF8F4;
+  --secondary: #FAF8F4;
+  --secondary-foreground: #B8956A;
   --muted: hsl(39, 20%, 85%);
   --muted-foreground: hsl(30, 20%, 45%);
-  --accent: #F5F0E6;
-  --accent-foreground: #A47C48;
+  --accent: #FAF8F4;
+  --accent-foreground: #B8956A;
   --destructive: hsl(0, 85%, 58%);
   --destructive-foreground: hsl(0, 0%, 100%);
   --border: hsl(30, 40%, 25%);
-  --input: #F5F0E6;
-  --ring: #A47C48;
+  --input: #FAF8F4;
+  --ring: #B8956A;
   --chart-1: hsl(20, 100%, 60%);
   --chart-2: hsl(123, 45%, 30%);
   --chart-3: hsl(39, 35%, 65%);
@@ -42,12 +42,13 @@
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
   --radius: 0.75rem;
   
-  /* Brand specific colors - Cardboard Theme */
-  --brand-cardboard: #A47C48;
-  --brand-cream: #F5F0E6;
+  /* Brand specific colors - Cardboard Theme - Optimized for crisp rendering */
+  --brand-cardboard: #B8956A;
+  --brand-cream: #FAF8F4;
   --brand-cardboard-dark: hsl(30, 40%, 25%);
   --brand-barcode-black: hsl(210, 7%, 10%);
   --brand-tape-brown: hsl(30, 32%, 39%);
+  --brand-accent-orange: #FF8C42;
   --brand-accent-green: hsl(123, 43%, 32%);
   
   /* Mapped brand variables */
@@ -337,26 +338,26 @@
       0 8px 10px -6px rgba(0, 0, 0, 0.1);
   }
   
-  /* Enhanced image quality utilities */
+  /* Enhanced image quality utilities - Optimized for better rendering */
   .img-crisp {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
     image-rendering: optimizeQuality;
-    filter: contrast(1.15) saturate(1.1) brightness(1.04) blur(0px);
+    filter: contrast(1.05) saturate(1.02) brightness(1.01);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     -webkit-transform: translateZ(0);
     transform: translateZ(0);
-    -webkit-filter: contrast(1.15) saturate(1.1) brightness(1.04);
+    -webkit-filter: contrast(1.05) saturate(1.02) brightness(1.01);
   }
   
   .bg-img-enhanced {
     image-rendering: -webkit-optimize-contrast;
     image-rendering: optimizeQuality;
-    filter: contrast(1.15) saturate(1.18) brightness(0.97) hue-rotate(1deg);
+    filter: contrast(1.03) saturate(1.05) brightness(1.0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    -webkit-filter: contrast(1.15) saturate(1.18) brightness(0.97) hue-rotate(1deg);
+    -webkit-filter: contrast(1.03) saturate(1.05) brightness(1.0);
     will-change: transform;
   }
   

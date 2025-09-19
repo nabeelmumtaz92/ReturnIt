@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 // LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
-import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
+import deliveryHandoffImg from "@assets/stock_images/professional_deliver_7f2d215b.jpg";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -61,7 +61,7 @@ export default function Welcome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+    <div className="min-h-screen bg-amber-50">
       {/* Mobile Auth Bar */}
       <div className="md:hidden flex justify-end gap-2 p-3 border-b border-amber-100 bg-white/95">
         {!isAuthenticated && (
@@ -178,10 +178,10 @@ export default function Welcome() {
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
                 <img 
                   src={deliveryHandoffImg} 
-                  alt="Professional delivery man with packages" 
-                  className="w-full h-40 sm:h-56 md:h-64 object-cover"
+                  alt="Delivery cart with cardboard packages for returns and exchanges" 
+                  className="w-full h-40 sm:h-56 md:h-64 object-cover img-crisp"
                 />
-                <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
+                <div className="p-6 bg-amber-50">
                   <h3 className="text-lg font-semibold text-amber-900 mb-2">
                     Professional Service
                   </h3>
