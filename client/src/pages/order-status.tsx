@@ -57,7 +57,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
   }, [isAuthenticated, isLoading, setLocation, toast]);
 
   const { data: order, isLoading: orderLoading, error } = useQuery<Order>({
-    queryKey: ['/api/orders', orderId],
+    queryKey: ['/api/customers/orders', orderId],
     enabled: isAuthenticated && !!orderId,
   });
 

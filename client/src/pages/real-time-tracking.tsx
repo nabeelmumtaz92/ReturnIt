@@ -47,7 +47,7 @@ export default function RealTimeTracking() {
   const [orderId, setOrderId] = useState(new URLSearchParams(window.location.search).get('order') || '');
   
   const { data: order, refetch } = useQuery<TrackingOrder>({
-    queryKey: ['/api/orders/track', orderId],
+    queryKey: ['/api/tracking', orderId],
     enabled: !!orderId,
     refetchInterval: 30000, // Poll every 30 seconds
   });
