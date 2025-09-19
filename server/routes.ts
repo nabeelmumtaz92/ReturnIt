@@ -582,7 +582,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else if (user.isDriver) {
           return res.redirect('/driver-portal');
           } else {
-            return res.redirect('/');
+            return res.redirect('/customer-dashboard');
           }
         });
       } else {
@@ -620,7 +620,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } else if (userData.isDriver) {
           res.redirect('/driver-portal');
         } else {
-          res.redirect('/');
+          res.redirect('/customer-dashboard');
         }
       } else {
         res.redirect('/login?error=auth_failed');
@@ -885,6 +885,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  // Customer-specific endpoints
+  app.get("/api/customers/orders", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      
+      // Only allow access for customers (not drivers or admins)
+      if (user.isDriver || user.isAdmin) {
+        return res.status(403).json({ message: "Customer access only" });
+      }
+      
+      const orders = await storage.getUserOrders(user.id);
+      res.json(orders);
+    } catch (error) {
+      console.error('Customer orders error:', error);
+      res.status(500).json({ message: "Failed to fetch customer orders" });
+    }
+  });
+
+  app.get("/api/customers/stats", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      
+      // Only allow access for customers (not drivers or admins)
+      if (user.isDriver || user.isAdmin) {
+        return res.status(403).json({ message: "Customer access only" });
+      }
+      
+      const orders = await storage.getUserOrders(user.id);
+      
+      // Calculate customer statistics
+      const stats = {
+        totalOrders: orders.length,
+        completedOrders: orders.filter(order => order.status === 'dropped_off' || order.status === 'completed').length,
+        pendingOrders: orders.filter(order => 
+          order.status === 'created' || 
+          order.status === 'driver_assigned' || 
+          order.status === 'pickup_confirmed' ||
+          order.status === 'in_transit'
+        ).length,
+        totalSpent: orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0),
+        recentOrders: orders.filter(order => {
+          const orderDate = new Date(order.createdAt);
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          return orderDate >= thirtyDaysAgo;
+        }).length,
+        averageOrderValue: orders.length > 0 ? orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0) / orders.length : 0,
+        lastOrderDate: orders.length > 0 ? Math.max(...orders.map(order => new Date(order.createdAt).getTime())) : null
+      };
+      
+      res.json(stats);
+    } catch (error) {
+      console.error('Customer stats error:', error);
+      res.status(500).json({ message: "Failed to fetch customer statistics" });
     }
   });
 

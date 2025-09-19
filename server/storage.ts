@@ -342,29 +342,80 @@ export class MemStorage implements IStorage {
       trackingNumber,
       userId: insertOrder.userId,
       status: OrderStatus.CREATED,
+      trackingEnabled: insertOrder.trackingEnabled ?? true,
+      trackingExpiresAt: insertOrder.trackingExpiresAt || null,
       pickupStreetAddress: insertOrder.pickupStreetAddress,
       pickupCity: insertOrder.pickupCity,
       pickupState: insertOrder.pickupState,
       pickupZipCode: insertOrder.pickupZipCode,
       pickupCoordinates: insertOrder.pickupCoordinates || null,
+      pickupLocation: insertOrder.pickupLocation || 'inside',
       pickupInstructions: insertOrder.pickupInstructions || null,
+      acceptsLiabilityTerms: insertOrder.acceptsLiabilityTerms ?? false,
       pickupWindow: insertOrder.pickupWindow || null,
       scheduledPickupTime: insertOrder.scheduledPickupTime || null,
       actualPickupTime: insertOrder.actualPickupTime || null,
       retailer: insertOrder.retailer,
+      retailerLocation: insertOrder.retailerLocation || null,
       returnAddress: insertOrder.returnAddress || null,
       returnCoordinates: insertOrder.returnCoordinates || null,
+      itemCategory: insertOrder.itemCategory,
       itemDescription: insertOrder.itemDescription,
-      itemCategory: insertOrder.itemCategory || null,
+      estimatedWeight: insertOrder.estimatedWeight || null,
       itemPhotos: insertOrder.itemPhotos || [],
       returnReason: insertOrder.returnReason || null,
       originalOrderNumber: insertOrder.originalOrderNumber || null,
+      purchaseType: insertOrder.purchaseType || 'online',
+      hasOriginalTags: insertOrder.hasOriginalTags ?? false,
+      receiptUploaded: insertOrder.receiptUploaded ?? false,
+      receiptUrl: insertOrder.receiptUrl || null,
+      returnLabelUrl: insertOrder.returnLabelUrl || null,
+      authorizationSigned: insertOrder.authorizationSigned ?? false,
+      authorizationSignature: insertOrder.authorizationSignature || null,
+      authorizationTimestamp: insertOrder.authorizationTimestamp || null,
+      requiresInStoreReturn: insertOrder.requiresInStoreReturn ?? false,
+      requiresCarrierDropoff: insertOrder.requiresCarrierDropoff ?? false,
+      numberOfItems: insertOrder.numberOfItems ?? 1,
+      itemSize: insertOrder.itemSize || 'M',
+      packagingType: insertOrder.packagingType || 'bag',
       basePrice: insertOrder.basePrice ?? 3.99,
+      distanceFee: insertOrder.distanceFee ?? 0,
+      timeFee: insertOrder.timeFee ?? 0,
+      sizeUpcharge: insertOrder.sizeUpcharge ?? 0,
+      multiItemFee: insertOrder.multiItemFee ?? 0,
+      serviceFee: insertOrder.serviceFee ?? 0,
+      taxAmount: insertOrder.taxAmount ?? 0,
+      totalOrderValue: insertOrder.totalOrderValue || null,
+      valueTier: insertOrder.valueTier || null,
+      valueTierFee: insertOrder.valueTierFee ?? 0,
+      serviceFeeRate: insertOrder.serviceFeeRate ?? 0.15,
+      driverValueBonus: insertOrder.driverValueBonus ?? 0,
+      rushFee: insertOrder.rushFee ?? 0,
       surcharges: insertOrder.surcharges || [],
       discountCode: insertOrder.discountCode || null,
       discountAmount: insertOrder.discountAmount ?? 0,
-      totalPrice: insertOrder.totalPrice ?? 3.99,
       tip: insertOrder.tip ?? 0,
+      totalPrice: insertOrder.totalPrice ?? 3.99,
+      itemRefundAmount: insertOrder.itemRefundAmount || null,
+      customerPaid: insertOrder.customerPaid || null,
+      driverBasePay: insertOrder.driverBasePay ?? 0,
+      driverDistancePay: insertOrder.driverDistancePay ?? 0,
+      driverTimePay: insertOrder.driverTimePay ?? 0,
+      driverSizeBonus: insertOrder.driverSizeBonus ?? 0,
+      driverTip: insertOrder.driverTip ?? 0,
+      driverTotalEarning: insertOrder.driverTotalEarning ?? 0,
+      companyServiceFee: insertOrder.companyServiceFee ?? 0,
+      companyBaseFeeShare: insertOrder.companyBaseFeeShare ?? 0,
+      companyDistanceFeeShare: insertOrder.companyDistanceFeeShare ?? 0,
+      companyTimeFeeShare: insertOrder.companyTimeFeeShare ?? 0,
+      companyTotalRevenue: insertOrder.companyTotalRevenue ?? 0,
+      stripePaymentIntentId: insertOrder.stripePaymentIntentId || null,
+      stripeChargeId: insertOrder.stripeChargeId || null,
+      paymentStatus: insertOrder.paymentStatus || 'pending',
+      paymentMethod: insertOrder.paymentMethod || 'stripe',
+      originalPaymentMethod: insertOrder.originalPaymentMethod || null,
+      stripeRefundId: insertOrder.stripeRefundId || null,
+      refundAmount: insertOrder.refundAmount || null,
       driverId: insertOrder.driverId || null,
       driverAssignedAt: insertOrder.driverAssignedAt || null,
       estimatedDeliveryTime: insertOrder.estimatedDeliveryTime || null,
@@ -382,6 +433,14 @@ export class MemStorage implements IStorage {
       isFragile: insertOrder.isFragile ?? false,
       requiresSignature: insertOrder.requiresSignature ?? false,
       insuranceValue: insertOrder.insuranceValue || null,
+      itemCost: insertOrder.itemCost || null,
+      refundMethod: insertOrder.refundMethod || null,
+      refundStatus: insertOrder.refundStatus || null,
+      refundProcessedAt: insertOrder.refundProcessedAt || null,
+      refundCompletedAt: insertOrder.refundCompletedAt || null,
+      refundReason: insertOrder.refundReason || null,
+      returnRefused: insertOrder.returnRefused ?? false,
+      returnRefusedReason: insertOrder.returnRefusedReason || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -402,7 +461,7 @@ export class MemStorage implements IStorage {
     // Update status history if status changed
     if (updates.status && updates.status !== order.status) {
       updatedOrder.statusHistory = [
-        ...(order.statusHistory || []),
+        ...(Array.isArray(order.statusHistory) ? order.statusHistory : []),
         { status: updates.status, timestamp: new Date().toISOString(), note: `Status updated to ${updates.status}` }
       ];
     }
@@ -438,7 +497,7 @@ export class MemStorage implements IStorage {
     const updatedOrder = {
       ...order,
       driverId,
-      driverAssignedAt: new Date().toISOString(),
+      driverAssignedAt: new Date(),
       status: OrderStatus.ASSIGNED as OrderStatusType,
       updatedAt: new Date()
     };
@@ -487,7 +546,7 @@ export class MemStorage implements IStorage {
       },
       customerPayment: {
         basePrice: order.basePrice || 3.99,
-        surcharges: order.surcharges?.reduce((sum, s) => sum + s.amount, 0) || 0,
+        surcharges: Array.isArray(order.surcharges) ? order.surcharges.reduce((sum, s) => sum + s.amount, 0) : 0,
         taxes: (order.totalPrice || 3.99) * 0.0899, // 8.99% Missouri St. Louis County tax rate
         total: order.totalPrice || 3.99
       },
@@ -691,6 +750,15 @@ export class MemStorage implements IStorage {
     };
   }
 
+  async updatePromoCode(code: string, updates: Partial<PromoCode>): Promise<PromoCode | undefined> {
+    const promo = this.promoCodes.get(code);
+    if (!promo) return undefined;
+    
+    const updatedPromo = { ...promo, ...updates };
+    this.promoCodes.set(code, updatedPromo);
+    return updatedPromo;
+  }
+
   // Driver earnings
   async getDriverEarnings(driverId: number): Promise<DriverEarning[]> {
     return Array.from(this.driverEarnings.values()).filter(earning => earning.driverId === driverId);
@@ -735,12 +803,26 @@ export class MemStorage implements IStorage {
     return notification;
   }
 
+  async getNotifications(userId: number): Promise<Notification[]> {
+    return Array.from(this.notifications.values()).filter(notif => notif.userId === userId);
+  }
+
   async markNotificationRead(id: number): Promise<void> {
     const notification = this.notifications.get(id);
     if (notification) {
       notification.isRead = true;
       this.notifications.set(id, notification);
     }
+  }
+
+  async markNotificationAsRead(id: number): Promise<boolean> {
+    const notification = this.notifications.get(id);
+    if (notification) {
+      notification.isRead = true;
+      this.notifications.set(id, notification);
+      return true;
+    }
+    return false;
   }
 
   // Analytics
@@ -775,7 +857,7 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).filter(user => user.isDriver);
   }
 
-  async getOrdersByDriver(driverId: string): Promise<Order[]> {
+  async getOrdersByDriver(driverId: number): Promise<Order[]> {
     return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
   }
 
@@ -844,7 +926,7 @@ export class MemStorage implements IStorage {
     let totalBonus = 0;
 
     // Size-based bonus for Large packages
-    if (order.packageSize === 'large') {
+    if (order.itemSize === 'L' || order.itemSize === 'XL') {
       totalBonus += 5.00; // $5 bonus for large packages
     }
 
@@ -912,6 +994,10 @@ export class MemStorage implements IStorage {
     const newApplication: DriverApplication = {
       id,
       ...application,
+      status: application.status || 'pending',
+      gender: application.gender || null,
+      isVeteran: application.isVeteran ?? null,
+      hasDisability: application.hasDisability ?? null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -1158,7 +1244,7 @@ export class DatabaseStorage implements IStorage {
   async createAnalytics(analytics: InsertAnalytics): Promise<Analytics> {
     return {} as Analytics;
   }
-  async getAnalytics(startDate?: Date, endDate?: Date): Promise<Analytics[]> { return []; }
+  async getAnalytics(metric: string, from?: Date, to?: Date): Promise<Analytics[]> { return []; }
   async updateAnalytics(id: number, updates: Partial<Analytics>): Promise<Analytics | undefined> {
     return {} as Analytics;
   }

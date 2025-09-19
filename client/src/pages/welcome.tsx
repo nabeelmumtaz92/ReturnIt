@@ -98,6 +98,15 @@ export default function Welcome() {
                   </Button>
                 </Link>
               )}
+              {user && !user.isDriver && !user.isAdmin && (
+                <Link href="/customer-dashboard">
+                  <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" data-testid="button-customer-dashboard">
+                    <User className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">My Dashboard</span>
+                    <span className="sm:hidden">Dashboard</span>
+                  </Button>
+                </Link>
+              )}
               <Button
                 variant="outline"
                 size="sm"

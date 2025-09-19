@@ -19,6 +19,7 @@ import NotFound from "@/pages/not-found";
 // Lazy-loaded components for better performance
 const TrackingPage = lazy(() => import("@/pages/tracking"));
 const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
+const CustomerDashboard = lazy(() => import("@/pages/customer-dashboard"));
 const DriverPayments = lazy(() => import("@/pages/driver-payments"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
 const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
@@ -166,6 +167,12 @@ function Router() {
         {() => {
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/customer-dashboard">
+        {() => {
+          // Customer dashboard is available to all authenticated users who are not drivers or admins
+          return user && !user.isDriver && !user.isAdmin ? <CustomerDashboard /> : <NotFound />;
         }}
       </Route>
       <Route path="/payment-structure" component={PaymentStructure} />
