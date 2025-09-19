@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 // LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
 import ContactSupportButton from "@/components/ContactSupportButton";
-import deliveryHandoffImg from "@assets/stock_images/professional_deliver_7f2d215b.jpg";
+import deliveryHandoffImg from "@assets/generated_images/Professional_delivery_homepage_hero_4017d9ae.png";
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -62,54 +62,11 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-amber-50">
-      {/* Mobile Auth Bar */}
-      <div className="md:hidden flex justify-end gap-2 p-3 border-b border-amber-100 bg-white/95">
-        {!isAuthenticated && (
-          <>
-            <Link href="/login">
-              <Button variant="outline" size="sm" data-testid="button-sign-in">
-                Sign In
-              </Button>
-            </Link>
-            <Link href="/login?tab=register">
-              <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-sign-up">
-                Sign Up
-              </Button>
-            </Link>
-          </>
-        )}
-        {isAuthenticated && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-md">
-              <Settings className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-amber-900">
-                {user?.firstName} {user?.lastName}
-              </span>
-            </div>
-            {user?.isAdmin && (
-              <Link href="/admin-dashboard">
-                <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
-                  <User className="h-4 w-4 mr-1" />
-                  Admin
-                </Button>
-              </Link>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleLogout}
-              data-testid="button-sign-out"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
 
       {/* Professional Hero Section */}
       <div className="w-full bg-white/95 border-b border-amber-100 relative">
-        {/* Sign In/Sign Up buttons in top right - Desktop only */}
-        <div className="hidden md:block absolute top-4 right-4 z-10">
+        {/* Sign In/Sign Up buttons in top right */}
+        <div className="absolute top-4 right-4 z-10">
           {!isAuthenticated && (
             <div className="flex gap-2">
               <Link href="/login">
@@ -126,17 +83,18 @@ export default function Welcome() {
           )}
           {isAuthenticated && (
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-amber-50 border border-amber-200 rounded-lg">
                 <Settings className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-medium text-amber-900">
+                <span className="text-xs sm:text-sm font-medium text-amber-900">
                   {user?.firstName} {user?.lastName}
                 </span>
               </div>
               {user?.isAdmin && (
                 <Link href="/admin-dashboard">
                   <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
-                    <User className="h-4 w-4 mr-2" />
-                    Admin Dashboard
+                    <User className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Admin Dashboard</span>
+                    <span className="sm:hidden">Admin</span>
                   </Button>
                 </Link>
               )}
@@ -146,8 +104,9 @@ export default function Welcome() {
                 onClick={handleLogout}
                 data-testid="button-sign-out"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
+                <LogOut className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">Sign Out</span>
+                <span className="sm:hidden">Out</span>
               </Button>
             </div>
           )}
@@ -178,7 +137,7 @@ export default function Welcome() {
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
                 <img 
                   src={deliveryHandoffImg} 
-                  alt="Delivery cart with cardboard packages for returns and exchanges" 
+                  alt="Professional delivery service homepage hero" 
                   className="w-full h-40 sm:h-56 md:h-64 object-cover img-crisp"
                 />
                 <div className="p-6 bg-amber-50">
