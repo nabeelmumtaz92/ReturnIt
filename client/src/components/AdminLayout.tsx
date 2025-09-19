@@ -317,7 +317,18 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
   return (
     <div className="min-h-screen bg-white">
       {/* Top Admin Bar */}
-      <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex justify-end items-center relative z-50">
+      <div className="bg-white border-b border-amber-200 shadow-sm py-2 px-6 flex justify-between lg:justify-end items-center relative z-50">
+        {/* Mobile menu button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="lg:hidden text-amber-600 hover:text-amber-900 hover:bg-amber-50"
+        >
+          <Menu className="h-4 w-4" />
+          <span className="ml-2 text-sm">Menu</span>
+        </Button>
+        
         {/* Right side controls with labels */}
         <div className="flex items-center space-x-3">
           <Link href="/admin-dashboard">
@@ -377,11 +388,21 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
         </div>
       </div>
 
+      {/* Mobile sidebar overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-30 bg-black bg-opacity-50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
       {/* Sidebar */}
       <div 
-        className="fixed left-0 top-12 z-40 h-[calc(100vh-3rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300"
+        className={`fixed left-0 top-12 z-40 h-[calc(100vh-3rem)] bg-white shadow-xl border-r border-amber-200 transition-all duration-300 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        } lg:block`}
         style={{ 
-          width: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = w-16
+          width: sidebarOpen || window.innerWidth >= 1024 ? `${sidebarWidth}px` : '64px'
         }}
       >
         {/* Sidebar Header */}
@@ -482,9 +503,9 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
 
       {/* Page Header */}
       <div 
-        className="bg-white border-b border-amber-200 shadow-sm transition-all duration-300 pt-12"
+        className="bg-white border-b border-amber-200 shadow-sm transition-all duration-300 pt-12 lg:ml-16"
         style={{
-          marginLeft: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = ml-16
+          marginLeft: sidebarOpen && window.innerWidth >= 1024 ? `${sidebarWidth}px` : undefined
         }}
       >
         <div className="px-6 py-4">
@@ -536,9 +557,9 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
 
       {/* Main Content */}
       <div 
-        className="transition-all duration-300"
+        className="transition-all duration-300 lg:ml-16"
         style={{
-          marginLeft: sidebarOpen ? `${sidebarWidth}px` : '64px' // 64px = ml-16
+          marginLeft: sidebarOpen && window.innerWidth >= 1024 ? `${sidebarWidth}px` : undefined
         }}
       >
         {/* Page Content */}

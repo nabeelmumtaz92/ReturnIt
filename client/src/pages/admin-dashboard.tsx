@@ -453,7 +453,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const QuickActions = () => (
     <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6 mb-6">
       <h2 className="text-lg font-semibold text-amber-900 mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
         <Button 
           onClick={() => changeSection('orders')}
           className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
@@ -1085,7 +1085,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         <div className="space-y-6">
           {/* Order Pipeline Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
             <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
               <CardContent className="p-4">
                 <div className="text-center">

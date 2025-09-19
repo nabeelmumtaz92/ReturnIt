@@ -575,7 +575,6 @@ export default function Login() {
             </form>
           )}
         </Card>
-        </div>
       </div>
     </div>
   );
