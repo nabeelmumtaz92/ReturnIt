@@ -63,9 +63,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const credentials = Buffer.from(auth.slice(6), 'base64').toString('utf-8');
       const [username, password] = credentials.split(':');
       
-      // Staging credentials (you can change these)
-      const stagingUsername = process.env.STAGING_USERNAME || 'returnly';
-      const stagingPassword = process.env.STAGING_PASSWORD || 'staging2025';
+      // SECURITY: Require staging credentials to be set explicitly
+      const stagingUsername = process.env.STAGING_USERNAME;
+      const stagingPassword = process.env.STAGING_PASSWORD;
+      
+      if (!stagingUsername || !stagingPassword) {
+        console.error('SECURITY WARNING: STAGING_USERNAME and STAGING_PASSWORD must be set');
+        return res.status(500).send('Staging environment misconfigured');
+      }
       
       if (username !== stagingUsername || password !== stagingPassword) {
         res.setHeader('WWW-Authenticate', 'Basic realm="Staging Environment"');
@@ -96,15 +101,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Session middleware with production-optimized settings
+  // SECURITY: Require session secret in production
+  if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+    throw new Error('SECURITY ERROR: SESSION_SECRET environment variable must be set in production');
+  }
+  
   app.use(session({
-    secret: process.env.SESSION_SECRET || 'returnly-secret-key-fallback',
+    secret: process.env.SESSION_SECRET || 'dev-fallback-' + Math.random().toString(36),
     resave: false,
     saveUninitialized: false,
     cookie: { 
       secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'lax', // Lax for same-site navigation
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Strict in production for CSRF protection
       // Don't set domain - let browser handle it automatically for returnit.online
     }
   }));
@@ -141,9 +151,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Enhanced validation using Zod schema
       const validatedData = registrationSchema.parse(req.body);
       
-      // Restrict registration to only authorized accounts
-      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com'];
-      if (!authorizedEmails.includes(validatedData.email)) {
+      // Import secure admin control
+      const { MASTER_ADMIN_EMAIL, shouldAutoAssignAdmin } = await import('./auth/adminControl');
+      
+      // SECURITY: Restrict registration to only master admin account
+      if (validatedData.email !== MASTER_ADMIN_EMAIL) {
         return res.status(403).json({ 
           message: "Registration is restricted to authorized accounts only",
           field: "email"
@@ -180,8 +192,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         lastName: validatedData.lastName,
         password: hashedPassword,
         dateOfBirth: validatedData.dateOfBirth,
-        isDriver: true,  // Both accounts have driver access
-        isAdmin: true    // Both accounts have admin access
+        isDriver: shouldAutoAssignAdmin(validatedData.email), // Only master admin gets driver access
+        isAdmin: shouldAutoAssignAdmin(validatedData.email)   // SECURITY: Only master admin gets admin access
       });
       
       // Log user in with secure session
@@ -233,13 +245,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = loginSchema.parse(req.body);
       const { email, password } = validatedData;
       
-      // Restrict login to only authorized accounts
-      const authorizedEmails = ['nabeelmumtaz92@gmail.com', 'durremumtaz@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
-      if (!authorizedEmails.includes(email)) {
-        return res.status(403).json({ 
-          message: "Access restricted to authorized accounts only"
-        });
-      }
+      // Import secure admin control for login validation
+      const { MASTER_ADMIN_EMAIL } = await import('./auth/adminControl');
+      
+      // SECURITY: Allow login for any registered user, but admin privileges controlled separately
+      // Remove hardcoded email restrictions for login
       
       // Check for lockout
       if (AuthService.isUserLockedOut(email)) {
@@ -295,16 +305,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear failed attempts on successful login
       AuthService.clearFailedAttempts(email);
 
-      // Create secure session
-      req.session.user = AuthService.sanitizeUserData({ 
-        id: user.id, 
-        email: user.email, 
-        phone: user.phone, 
-        isDriver: user.isDriver || false, 
-        isAdmin: user.isAdmin || false,
-        firstName: user.firstName,
-        lastName: user.lastName
-      });
+      // SECURITY: Regenerate session ID to prevent session fixation attacks
+      req.session.regenerate((err) => {
+        if (err) {
+          console.error('Session regeneration error:', err);
+          return res.status(500).json({ message: "Login failed due to session error" });
+        }
+        
+        // Create secure session after regeneration
+        req.session.user = AuthService.sanitizeUserData({ 
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone, 
+          isDriver: user.isDriver || false, 
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName,
+          lastName: user.lastName
+        });
       
       const responseUser = { 
         id: user.id, 
@@ -320,12 +337,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('=== SENDING RESPONSE ===');
       console.log(JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
       
-      console.log('=== FINAL RESPONSE ===');
-      console.log('About to send response:', JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
-      
-      res.json({ 
-        message: "Login successful",
-        user: responseUser
+        console.log('=== FINAL RESPONSE ===');
+        console.log('About to send response:', JSON.stringify({ message: "Login successful", user: responseUser }, null, 2));
+        
+        res.json({ 
+          message: "Login successful",
+          user: responseUser
+        });
       });
     } catch (error) {
       console.error('Login error:', error);
@@ -333,71 +351,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Clear account lockout endpoint (for admin debugging)
-  app.post("/api/auth/clear-lockout", async (req, res) => {
+  // Clear account lockout endpoint - SECURED (master admin only)
+  app.post("/api/auth/clear-lockout", requireAdmin, async (req, res) => {
     try {
+      const { canGrantAdmin } = await import('./auth/adminControl');
+      const currentUser = req.session?.user;
+      
+      // SECURITY: Only master admin can clear lockouts
+      if (!canGrantAdmin(currentUser?.email || '')) {
+        return res.status(403).json({ 
+          message: 'Access denied. Only master admin can clear lockouts.' 
+        });
+      }
+      
       const { email } = req.body;
       if (email) {
         AuthService.clearFailedAttempts(email);
-        console.log(`Cleared lockout for: ${email}`);
+        console.log(`[SECURITY] Lockout cleared for ${email} by master admin ${currentUser?.email}`);
         res.json({ message: "Lockout cleared successfully" });
       } else {
         res.status(400).json({ message: "Email is required" });
       }
     } catch (error) {
+      console.error('Error clearing lockout:', error);
       res.status(500).json({ message: "Failed to clear lockout" });
     }
   });
 
-  // Development admin login for testing and client sync
-  app.post("/api/auth/dev-admin-login", async (req, res) => {
-    try {
-      // Get or create admin user from database
-      let adminUser = await storage.getUserByEmail("nabeelmumtaz92@gmail.com");
-      
-      if (!adminUser) {
-        // Create admin user if doesn't exist
-        adminUser = await storage.createUser({
-          email: "nabeelmumtaz92@gmail.com",
-          firstName: "Nabeel",
-          lastName: "Mumtaz", 
-          phone: "6362544821",
-          password: await AuthService.hashPassword("TempPassword123!"),
-          isDriver: true,
-          isAdmin: true
-        });
-      }
-      
-      // Create server session
-      req.session.user = {
-        id: adminUser.id,
-        email: adminUser.email,
-        firstName: adminUser.firstName || undefined,
-        lastName: adminUser.lastName || undefined,
-        isAdmin: adminUser.isAdmin,
-        isDriver: adminUser.isDriver
-      };
-      
-      console.log('Admin session synchronized:', adminUser.email);
-      res.json({
-        message: "Admin session created",
-        user: {
-          id: adminUser.id,
-          email: adminUser.email,
-          firstName: adminUser.firstName,
-          lastName: adminUser.lastName,
-          isAdmin: adminUser.isAdmin,
-          isDriver: adminUser.isDriver
-        }
-      });
-    } catch (error) {
-      console.error('Admin session creation error:', error);
-      res.status(500).json({ message: "Failed to create admin session" });
-    }
-  });
+  // REMOVED: Development admin login - SECURITY VULNERABILITY
+  // This endpoint was a critical security backdoor that allowed anyone to become master admin
+  // Replaced with secure authentication via /api/auth/login or Google OAuth only
 
   app.post("/api/auth/logout", (req, res) => {
-    req.session?.destroy(() => {
+    // SECURITY: Regenerate session ID on logout to ensure complete cleanup
+    req.session?.regenerate(() => {
       res.json({ message: "Logged out successfully" });
     });
   });
@@ -479,8 +466,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
 
-        // Update user with all the profile data
-        const updatedUser = await storage.updateUser(userId, {
+        // SECURITY: Prepare safe update data (exclude isAdmin and other privileged fields)
+        const safeUpdateData: any = {
           firstName: firstName || '',
           lastName: lastName || '',
           phone: phone || '',
@@ -488,7 +475,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           addresses: addresses,
           emergencyContacts: emergencyContacts,
           preferences: preferences || {}
-        });
+        };
+        
+        // SECURITY: Never allow updating isAdmin, isDriver, or other privileged fields via profile update
+        // These can only be modified via secure admin-controlled endpoints
+        
+        const updatedUser = await storage.updateUser(userId, safeUpdateData);
 
         if (updatedUser) {
           // Update session data
@@ -574,17 +566,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const user = req.user as any;
         console.log('Google OAuth success, user:', { id: user.id, email: user.email, isAdmin: user.isAdmin });
         
-        // Store user in session
-        req.session.user = user;
+        // SECURITY: Regenerate session ID to prevent session fixation attacks
+        req.session.regenerate((err) => {
+          if (err) {
+            console.error('OAuth session regeneration error:', err);
+            return res.redirect('/login?error=session_error');
+          }
+          
+          // Store user in session after regeneration
+          req.session.user = user;
         
         // Redirect admin users to admin dashboard
         if (user.isAdmin) {
           return res.redirect('/admin-dashboard');
         } else if (user.isDriver) {
           return res.redirect('/driver-portal');
-        } else {
-          return res.redirect('/');
-        }
+          } else {
+            return res.redirect('/');
+          }
+        });
       } else {
         return res.redirect('/login?error=auth_failed');
       }
@@ -2932,13 +2932,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Employee Management Routes
   // Get all employees (admin only)
-  app.get('/api/employees', isAuthenticated, async (req, res) => {
+  app.get('/api/employees', requireAdmin, async (req, res) => {
     try {
-      const currentUser = req.session?.user;
-      if (!currentUser?.isAdmin) {
-        return res.status(403).json({ message: 'Admin access required' });
-      }
-
       const employees = await storage.getEmployees();
       res.json(employees);
     } catch (error) {
@@ -2947,9 +2942,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Grant admin access to employee
+  // Grant admin access to employee - SECURE VERSION
   app.post('/api/employees/:id/grant-admin', requireAdmin, async (req, res) => {
     try {
+      const { canGrantAdmin } = await import('./auth/adminControl');
+      const currentUser = req.session?.user;
+      
+      // SECURITY: Only master admin can grant admin privileges
+      if (!canGrantAdmin(currentUser?.email || '')) {
+        return res.status(403).json({ 
+          message: 'Access denied. Only master admin can grant admin privileges.' 
+        });
+      }
 
       const employeeId = parseInt(req.params.id);
       const updatedEmployee = await storage.updateUser(employeeId, { isAdmin: true });
@@ -2958,6 +2962,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Employee not found' });
       }
 
+      console.log(`[SECURITY] Admin privileges granted to user ${employeeId} by master admin ${currentUser?.email}`);
       res.json(updatedEmployee);
     } catch (error) {
       console.error('Error granting admin access:', error);
@@ -2965,9 +2970,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Revoke admin access from employee
+  // Revoke admin access from employee - SECURE VERSION
   app.post('/api/employees/:id/revoke-admin', requireAdmin, async (req, res) => {
     try {
+      const { canGrantAdmin, MASTER_ADMIN_EMAIL } = await import('./auth/adminControl');
+      const currentUser = req.session?.user;
+      
+      // SECURITY: Only master admin can revoke admin privileges
+      if (!canGrantAdmin(currentUser?.email || '')) {
+        return res.status(403).json({ 
+          message: 'Access denied. Only master admin can revoke admin privileges.' 
+        });
+      }
+      
+      const employee = await storage.getUser(parseInt(req.params.id));
+      
+      // SECURITY: Cannot revoke master admin's own privileges
+      if (employee?.email === MASTER_ADMIN_EMAIL) {
+        return res.status(403).json({ 
+          message: 'Cannot revoke master admin privileges.' 
+        });
+      }
 
       const employeeId = parseInt(req.params.id);
       const updatedEmployee = await storage.updateUser(employeeId, { isAdmin: false });
@@ -2976,6 +2999,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: 'Employee not found' });
       }
 
+      console.log(`[SECURITY] Admin privileges revoked from user ${employeeId} by master admin ${currentUser?.email}`);
       res.json(updatedEmployee);
     } catch (error) {
       console.error('Error revoking admin access:', error);

@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
 import { registerRoutes } from "./routes";
+import { validateSecurityConfig, logSecurityStatus } from "./security-startup";
 import { setupVite, serveStatic, log } from "./vite";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { webSocketService } from "./websocket-service";
@@ -70,6 +71,15 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // SECURITY: Validate all security configurations at startup
+  try {
+    validateSecurityConfig();
+    logSecurityStatus();
+  } catch (error) {
+    console.error('❌ SECURITY VALIDATION FAILED:', error);
+    process.exit(1);
+  }
+  
   const server = await registerRoutes(app);
 
   // Initialize WebSocket service for real-time tracking

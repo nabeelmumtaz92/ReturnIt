@@ -46,15 +46,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
       console.log('Creating new Google user:', userEmail);
       
-      const adminEmails = ['nabeelmumtaz92@gmail.com', 'nabeelmumtaz4.2@gmail.com'];
+      const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
+      const isMasterAdmin = userEmail === MASTER_ADMIN_EMAIL;
+      
       const newUser = await storage.createUser({
         email: userEmail,
-        phone: adminEmails.includes(userEmail) ? '6362544821' : '', // Admin gets phone number
+        phone: isMasterAdmin ? '6362544821' : '', // Only master admin gets phone number
         password: 'GOOGLE_AUTH_USER', // Social auth placeholder
         firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
         lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
-        isDriver: adminEmails.includes(userEmail), // Admins are also drivers for testing
-        isAdmin: adminEmails.includes(userEmail) // Admin access for both emails
+        isDriver: isMasterAdmin, // Only master admin is driver by default
+        isAdmin: shouldAutoAssignAdmin(userEmail) // ONLY master admin gets automatic admin access
       });
       
       console.log('New user created:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
