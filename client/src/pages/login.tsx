@@ -259,52 +259,25 @@ export default function Login() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col lg:flex-row">
-      {/* Left side - Hero Card */}
-      <div className="hidden md:flex flex-1 items-center justify-center p-8">
-        <div className="max-w-lg">
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200 mb-8">
-            <img 
-              src={selectedImage} 
-              alt="Professional delivery service" 
-              className="w-full h-64 object-cover"
-            />
-            <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50">
-              <h3 className="text-xl font-bold text-amber-900 mb-2">
-                Professional Return Service
-              </h3>
-              <p className="text-amber-700">
-                Trusted by thousands for fast, reliable pickup and delivery
-              </p>
-            </div>
-          </div>
-          <div className="text-center">
-            <Link href="/">
-              <div className="text-4xl font-bold text-amber-900 mb-2 cursor-pointer hover:opacity-80 transition-opacity">
-                ReturnIt
-              </div>
-            </Link>
-            <p className="text-amber-700 text-lg">Returns made easy</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Right side - Login Form */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-sm md:max-w-md">
+    <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-amber-900">Welcome Back</h1>
-          <p className="text-sm md:text-base text-amber-700">Sign in to access your account</p>
+        <div className="text-center mb-8">
+          <Link href="/">
+            <div className="text-3xl font-bold text-amber-900 mb-2 cursor-pointer hover:opacity-80 transition-opacity">
+              ReturnIt
+            </div>
+          </Link>
+          <p className="text-amber-700">Professional return service</p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-white/90 rounded-t-lg border border-b-0 border-amber-200 shadow-lg">
+        <div className="flex bg-white rounded-lg border border-amber-200 shadow-sm mb-6">
           <button
-            className={`flex-1 py-2 px-3 text-xs sm:py-3 sm:px-4 sm:text-sm font-medium text-center rounded-tl-lg transition-colors ${
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-l-lg transition-colors ${
               activeTab === 'login' 
-                ? 'bg-amber-800 text-white' 
-                : 'bg-white text-amber-800 hover:bg-amber-50'
+                ? 'bg-amber-600 text-white' 
+                : 'bg-white text-amber-600 hover:bg-amber-50'
             }`}
             onClick={() => setActiveTab('login')}
             data-testid="tab-sign-in"
@@ -312,10 +285,10 @@ export default function Login() {
             Sign In
           </button>
           <button
-            className={`flex-1 py-2 px-3 text-xs sm:py-3 sm:px-4 sm:text-sm font-medium text-center rounded-tr-lg transition-colors ${
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-r-lg transition-colors ${
               activeTab === 'register' 
-                ? 'bg-amber-800 text-white' 
-                : 'bg-white text-amber-800 hover:bg-amber-50'
+                ? 'bg-amber-600 text-white' 
+                : 'bg-white text-amber-600 hover:bg-amber-50'
             }`}
             onClick={() => setActiveTab('register')}
             data-testid="tab-sign-up"
@@ -325,7 +298,7 @@ export default function Login() {
         </div>
 
         {/* Forms */}
-        <Card className="bg-white border-amber-200 shadow-lg rounded-t-none border-t-0">
+        <Card className="bg-white border-amber-200 shadow-sm">
           <CardHeader className="text-center pb-2 md:pb-6">
             <CardTitle className="text-amber-900 text-lg md:text-xl">
               {activeTab === 'login' ? 'Sign In' : 'Create Account'}
@@ -340,20 +313,16 @@ export default function Login() {
                 <div className="space-y-2">
                   <Label htmlFor="login-email" className="text-xs sm:text-sm text-amber-800 font-medium">Email Address</Label>
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-3 md:p-4 rounded-lg border border-amber-200">
-                      <div className="flex items-center space-x-2 md:space-x-3">
-                        <Mail className="h-4 w-4 text-amber-600" />
-                        <Input
-                          id="login-email"
-                          data-testid="input-login-email"
-                          type="email"
-                          value={loginData.email}
-                          onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
-                          placeholder="Enter your email address"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 h-10 text-sm"
-                        />
-                      </div>
-                    </div>
+                    <Input
+                      id="login-email"
+                      data-testid="input-login-email"
+                      type="email"
+                      value={loginData.email}
+                      onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
+                      placeholder="Enter your email address"
+                      className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
+                    />
+                    <Mail className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.email && (
                       <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
                     )}
@@ -362,20 +331,16 @@ export default function Login() {
                 <div className="space-y-2">
                   <Label htmlFor="login-password" className="text-xs sm:text-sm text-amber-800 font-medium">Password</Label>
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-3 md:p-4 rounded-lg border border-amber-200">
-                      <div className="flex items-center space-x-2 md:space-x-3">
-                        <Lock className="h-4 w-4 text-amber-600" />
-                        <Input
-                          id="login-password"
-                          data-testid="input-login-password"
-                          type="password"
-                          value={loginData.password}
-                          onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
-                          placeholder="Enter your password"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500 h-10 text-sm"
-                        />
-                      </div>
-                    </div>
+                    <Input
+                      id="login-password"
+                      data-testid="input-login-password"
+                      type="password"
+                      value={loginData.password}
+                      onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
+                      placeholder="Enter your password"
+                      className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
+                    />
+                    <Lock className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.password && (
                       <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
                     )}
@@ -385,11 +350,10 @@ export default function Login() {
               <CardFooter className="flex flex-col space-y-3 md:space-y-4 pt-2 md:pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-800 hover:bg-amber-900 h-10 text-sm"
+                  className="w-full bg-amber-600 hover:bg-amber-700 h-11"
                   disabled={loginMutation.isPending}
                   data-testid="button-login-submit"
                 >
-                  <Mail className="h-4 w-4 mr-2" />
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
                 
