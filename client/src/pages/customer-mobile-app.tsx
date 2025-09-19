@@ -67,7 +67,7 @@ export default function CustomerMobileApp() {
   }
 
   const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery<CustomerOrder[]>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/customers/orders"],
     enabled: isAuthenticated,
     refetchInterval: 30000, // Auto-refresh every 30 seconds
     retry: 3
@@ -341,7 +341,7 @@ export default function CustomerMobileApp() {
         title: "Pickup Booked Successfully!",
         description: `Your tracking number is ${newOrder.trackingNumber || newOrder.id}`,
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/orders"] });
       setCurrentView('orders');
       setBookingStep('details');
       setBookingData({
