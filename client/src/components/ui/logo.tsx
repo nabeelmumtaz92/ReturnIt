@@ -73,7 +73,7 @@ export function Logo({ className = '', size = 'md', variant = 'full' }: LogoProp
           fill="#8B4513"
           fontFamily="Inter, system-ui, sans-serif"
         >
-          ReturnIt
+          Return It
         </text>
       </svg>
     );

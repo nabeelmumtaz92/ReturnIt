@@ -150,7 +150,7 @@ export default function Login() {
     onSuccess: async (data) => {
       toast({
         title: "Account Created Successfully!",
-        description: "Welcome to ReturnIt! You're now ready to start using our service.",
+        description: "Welcome to Return It! You're now ready to start using our service.",
       });
       setActiveTab("login");
       setLoginData({ email: registerData.email, password: '' });

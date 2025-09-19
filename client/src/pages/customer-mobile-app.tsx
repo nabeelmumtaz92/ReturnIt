@@ -982,7 +982,7 @@ export default function CustomerMobileApp() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <ReturnItIcon size={32} className="text-primary" />
-              <h1 className="text-lg font-bold text-primary">ReturnIt</h1>
+              <h1 className="text-lg font-bold text-primary">Return It</h1>
             </div>
             <div className="flex items-center gap-2">
               <Button 

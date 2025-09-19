@@ -34,7 +34,7 @@ export function Header({ title, subtitle, showBack = false, backUrl = "/", class
               <div 
                 className="text-amber-900 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity"
               >
-                ReturnIt
+                Return It
               </div>
             </Link>
             

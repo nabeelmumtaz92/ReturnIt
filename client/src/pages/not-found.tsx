@@ -13,7 +13,7 @@ export default function NotFound() {
             <div 
               className="text-amber-900 font-bold text-3xl mx-auto cursor-pointer hover:opacity-80 transition-opacity"
             >
-              ReturnIt
+              Return It
             </div>
           </Link>
         </div>

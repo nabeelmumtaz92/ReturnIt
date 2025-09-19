@@ -125,7 +125,7 @@ export default function Welcome() {
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-3 sm:mb-4">
-                ReturnIt
+                Return It
               </h1>
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-amber-700 mb-4 sm:mb-6">
                 Professional pickup service for returns, exchanges, and donations
@@ -171,7 +171,7 @@ export default function Welcome() {
         <div className="text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black filter drop-shadow-lg">
-              ReturnIt
+              Return It
             </div>
           </div>
         </div>

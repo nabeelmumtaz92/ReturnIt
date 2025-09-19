@@ -127,7 +127,7 @@ export default function CustomerDashboard() {
       <div className="min-h-screen bg-amber-50 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="text-3xl font-bold text-amber-900 animate-pulse">
-            ReturnIt
+            Return It
           </div>
           <p className="text-amber-800">Loading your dashboard...</p>
         </div>
@@ -159,7 +159,7 @@ export default function CustomerDashboard() {
             <div>
               <Link href="/">
                 <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <p className="text-amber-700 mt-1">Customer Dashboard</p>

@@ -249,7 +249,7 @@ export default function Checkout() {
             </Button>
             <Link href="/">
               <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
-                ReturnIt
+                Return It
               </div>
             </Link>
             <span className="text-xl font-bold text-amber-900">Secure Payment</span>
