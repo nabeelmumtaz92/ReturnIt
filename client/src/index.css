@@ -117,13 +117,49 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-weight: 700;
-    letter-spacing: -0.025em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1 {
+    font-size: 1.5rem; /* 24px */
     line-height: 1.2;
   }
 
+  h2 {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.25;
+  }
+
+  h3 {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.3;
+  }
+
   p {
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 0.875rem; /* 14px */
+  }
+
+  /* Enhanced mobile typography */
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.375rem; /* 22px */
+    }
+    
+    h2 {
+      font-size: 1.125rem; /* 18px */
+    }
+    
+    h3 {
+      font-size: 1rem; /* 16px */
+    }
+    
+    p {
+      font-size: 0.875rem; /* 14px */
+    }
   }
 }
 
@@ -260,6 +296,26 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    letter-spacing: -0.01em;
+  }
+
+  /* Compact mobile spacing utilities */
+  .mobile-compact {
+    @apply space-y-2 sm:space-y-3;
+  }
+
+  .mobile-compact-tight {
+    @apply space-y-1.5 sm:space-y-2;
+  }
+
+  /* Mobile-optimized button styles */
+  .btn-mobile {
+    @apply h-11 px-4 py-2 text-sm font-medium rounded-lg;
+  }
+
+  .btn-mobile-sm {
+    @apply h-10 px-3 py-1.5 text-xs font-medium rounded-md;
   }
 
   /* Enhanced shadows */

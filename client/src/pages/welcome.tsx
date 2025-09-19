@@ -152,17 +152,17 @@ export default function Welcome() {
             </div>
           )}
         </div>
-        <div className="container mx-auto px-4 py-6 sm:py-8 md:py-12">
+        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
           <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-amber-900 mb-4 sm:mb-6">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-3 sm:mb-4">
                 ReturnIt
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-2xl text-amber-700 mb-6 sm:mb-8">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-amber-700 mb-4 sm:mb-6">
                 Professional pickup service for returns, exchanges, and donations
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 sm:gap-6 mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
                   <Package className="h-4 w-4 sm:h-6 sm:w-6" />
                   <span className="text-sm sm:text-base md:text-lg">Fast & Reliable</span>
@@ -197,12 +197,12 @@ export default function Welcome() {
       
 
       {/* Main Content - Mobile Optimized */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 lg:py-12 space-y-6 sm:space-y-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6">
         
         {/* ReturnIt Logo - Centered */}
         <div className="text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
-            <div className="text-3xl sm:text-5xl lg:text-6xl font-bold text-black filter drop-shadow-lg">
+            <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black filter drop-shadow-lg">
               ReturnIt
             </div>
           </div>
@@ -224,10 +224,10 @@ export default function Welcome() {
         </div>
 
         {/* Buttons - Mobile Optimized */}
-        <div className="flex flex-col gap-3 w-full max-w-sm">
+        <div className="flex flex-col gap-2.5 w-full max-w-sm">
           <Button 
             size="default" 
-            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-3 text-base"
+            className="w-full bg-amber-800 hover:bg-amber-900 text-white text-sm font-medium"
             data-testid="button-book-pickup"
             onClick={() => {
               if (isAuthenticated) {
@@ -243,7 +243,7 @@ export default function Welcome() {
           <Button 
             variant="outline"
             size="default" 
-            className="w-full border-amber-600 text-amber-800 hover:bg-amber-50 py-3 text-base"
+            className="w-full border-amber-600 text-amber-800 hover:bg-amber-50 text-sm font-medium"
             data-testid="button-track-order"
             onClick={() => setLocation('/track')}
           >

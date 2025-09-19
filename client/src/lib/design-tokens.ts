@@ -32,26 +32,32 @@ export const colors = {
 // 2) Typography - Type Variables (Inter; Poppins for headlines optional)
 export const typography = {
   h1: {
-    fontSize: '28px',
-    lineHeight: '34px', 
-    fontWeight: 800,
-    fontFamily: 'Inter, system-ui, sans-serif'
-  },
-  h2: {
-    fontSize: '22px',
-    lineHeight: '28px',
+    fontSize: '24px',
+    lineHeight: '28px', 
     fontWeight: 700,
     fontFamily: 'Inter, system-ui, sans-serif'
   },
-  body: {
-    fontSize: '16px',
+  h2: {
+    fontSize: '20px',
     lineHeight: '24px',
+    fontWeight: 600,
+    fontFamily: 'Inter, system-ui, sans-serif'
+  },
+  h3: {
+    fontSize: '18px',
+    lineHeight: '22px',
+    fontWeight: 600,
+    fontFamily: 'Inter, system-ui, sans-serif'
+  },
+  body: {
+    fontSize: '14px',
+    lineHeight: '20px',
     fontWeight: 400,
     fontFamily: 'Inter, system-ui, sans-serif'
   },
   caption: {
-    fontSize: '13px',
-    lineHeight: '18px',
+    fontSize: '12px',
+    lineHeight: '16px',
     fontWeight: 400,
     fontFamily: 'Inter, system-ui, sans-serif'
   }
@@ -64,15 +70,16 @@ export const radius = {
   pill: 999
 };
 
-// 4) Spacing - 8pt System
+// 4) Spacing - 4pt System for tighter mobile design
 export const space = {
+  2: '2px',
   4: '4px',
+  6: '6px',
   8: '8px', 
   12: '12px',
   16: '16px',
   20: '20px',
-  24: '24px',
-  32: '32px'
+  24: '24px'
 };
 
 // 5) Component Token Mappings
@@ -81,39 +88,39 @@ export const componentTokens = {
     primary: {
       background: colors.brand.accent,
       text: colors.text.inverse,
-      padding: `${space[16]} ${space[24]}`,
+      padding: `${space[8]} ${space[16]}`,
       borderRadius: `${radius.control}px`,
-      fontWeight: 600
+      fontWeight: 500
     },
     secondary: {
       background: colors.brand.cardboard,
       text: colors.text.primary,
       border: `1px solid ${colors.brand.tape}`,
-      padding: `${space[16]} ${space[24]}`,
+      padding: `${space[8]} ${space[16]}`,
       borderRadius: `${radius.control}px`,
-      fontWeight: 600
+      fontWeight: 500
     },
     outline: {
       background: 'transparent',
       text: colors.brand.accent,
-      border: `2px solid ${colors.brand.accent}`,
-      padding: `${space[16]} ${space[24]}`,
+      border: `1px solid ${colors.brand.accent}`,
+      padding: `${space[8]} ${space[16]}`,
       borderRadius: `${radius.control}px`,
-      fontWeight: 600
+      fontWeight: 500
     }
   },
   card: {
     background: colors.background.surface,
     border: `1px solid ${colors.border.default}`,
     borderRadius: `${radius.card}px`,
-    padding: space[16],
+    padding: space[12],
     shadow: '0 2px 8px rgba(210, 180, 140, 0.2)'
   },
   input: {
     background: colors.background.surface,
     border: `1px solid ${colors.border.default}`,
     borderRadius: `${radius.control}px`,
-    padding: `${space[12]} ${space[16]}`,
+    padding: `${space[8]} ${space[12]}`,
     fontSize: typography.body.fontSize,
     fontFamily: typography.body.fontFamily
   }

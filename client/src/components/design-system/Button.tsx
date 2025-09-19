@@ -6,7 +6,7 @@ import { Loader2 } from 'lucide-react';
 // Button variants using CVA (Class Variance Authority)
 const buttonVariants = cva(
   // Base styles
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -16,10 +16,10 @@ const buttonVariants = cva(
         ghost: "text-[#1A1A1A] hover:bg-[#D2B48C]/20 active:bg-[#D2B48C]/40",
       },
       size: {
-        sm: "h-9 px-3 text-xs",
-        default: "h-11 px-6 py-3",
-        lg: "h-12 px-8 text-base",
-        icon: "h-10 w-10",
+        sm: "h-11 px-3 text-xs",
+        default: "h-11 px-4 py-2",
+        lg: "h-12 px-6 text-base",
+        icon: "h-11 w-11",
       },
       state: {
         default: "",
