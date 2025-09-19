@@ -36,30 +36,17 @@ import { useAuth } from '@/hooks/useAuth-simple';
 import { useToast } from '@/hooks/use-toast';
 import LiveOrderTracking from '@/components/LiveOrderTracking';
 import { apiRequest } from '@/lib/queryClient';
+import { Order } from '@shared/schema';
 
-// Types
-interface Order {
-  id: string;
-  status: string;
-  trackingNumber?: string;
-  retailer: string;
-  itemCategory: string;
-  totalPrice: number;
-  createdAt: string;
-  pickupStreetAddress: string;
-  pickupCity: string;
-  pickupState: string;
-  pickupZipCode: string;
-  driverId?: number;
-  estimatedDeliveryTime?: string;
-  actualDeliveryTime?: string;
-}
-
+// Customer stats interface matching server response
 interface CustomerStats {
   totalOrders: number;
-  activeOrders: number;
   completedOrders: number;
+  pendingOrders: number;
   totalSpent: number;
+  recentOrders: number;
+  averageOrderValue: number;
+  lastOrderDate: number | null;
 }
 
 export default function CustomerDashboard() {
@@ -81,25 +68,31 @@ export default function CustomerDashboard() {
     }
   }, [isAuthenticated, authLoading, setLocation, toast]);
 
-  // Fetch customer orders using existing endpoint
+  // Fetch customer orders using customer-scoped endpoint for security
   const { data: orders = [], isLoading: ordersLoading, error: ordersError } = useQuery<Order[]>({
-    queryKey: ['/api/orders'],
+    queryKey: ['/api/customers/orders'],
+    enabled: isAuthenticated && !!user?.id,
+  });
+
+  // Fetch customer statistics using customer-scoped endpoint
+  const { data: customerStats, isLoading: statsLoading, error: statsError } = useQuery<CustomerStats>({
+    queryKey: ['/api/customers/stats'],
     enabled: isAuthenticated && !!user?.id,
   });
 
   // Filter orders based on search
   const filteredOrders = orders.filter(order => 
     order.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.retailer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    order.itemCategory.toLowerCase().includes(searchTerm.toLowerCase())
+    order.retailer?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    order.itemCategory?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Separate active and completed orders
+  // Separate active and completed orders (using proper status values from schema)
   const activeOrders = filteredOrders.filter(order => 
-    !['delivered', 'completed', 'refunded', 'cancelled'].includes(order.status)
+    !['delivered', 'completed', 'refunded', 'cancelled', 'dropped_off'].includes(order.status)
   );
   const completedOrders = filteredOrders.filter(order => 
-    ['delivered', 'completed', 'refunded', 'cancelled'].includes(order.status)
+    ['delivered', 'completed', 'refunded', 'cancelled', 'dropped_off'].includes(order.status)
   );
 
   const getStatusColor = (status: string) => {
@@ -146,12 +139,15 @@ export default function CustomerDashboard() {
     return null; // Will redirect via useEffect
   }
 
-  // Calculate stats from orders data
-  const displayStats = {
+  // Use server-provided stats or fallback to calculated stats for better security
+  const displayStats = customerStats || {
     totalOrders: orders.length,
-    activeOrders: activeOrders.length,
     completedOrders: completedOrders.length,
-    totalSpent: orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0)
+    pendingOrders: activeOrders.length,
+    totalSpent: orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0),
+    recentOrders: 0,
+    averageOrderValue: 0,
+    lastOrderDate: null
   };
 
   return (
@@ -213,7 +209,7 @@ export default function CustomerDashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Orders</p>
-                    {ordersLoading ? (
+                    {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-16 mt-2" />
                     ) : (
                       <div className="text-2xl font-bold text-amber-900" data-testid="stat-total-orders">
@@ -231,11 +227,11 @@ export default function CustomerDashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Active Orders</p>
-                    {ordersLoading ? (
+                    {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-16 mt-2" />
                     ) : (
                       <div className="text-2xl font-bold text-blue-600" data-testid="stat-active-orders">
-                        {displayStats.activeOrders}
+                        {displayStats.pendingOrders || activeOrders.length}
                       </div>
                     )}
                   </div>
@@ -249,7 +245,7 @@ export default function CustomerDashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Completed</p>
-                    {ordersLoading ? (
+                    {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-16 mt-2" />
                     ) : (
                       <div className="text-2xl font-bold text-green-600" data-testid="stat-completed-orders">
@@ -267,11 +263,11 @@ export default function CustomerDashboard() {
                 <div className="flex items-center justify-between w-full">
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Spent</p>
-                    {ordersLoading ? (
+                    {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-20 mt-2" />
                     ) : (
                       <div className="text-2xl font-bold text-amber-900" data-testid="stat-total-spent">
-                        ${displayStats.totalSpent.toFixed(2)}
+                        ${(displayStats.totalSpent || 0).toFixed(2)}
                       </div>
                     )}
                   </div>
@@ -355,17 +351,18 @@ export default function CustomerDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {order.trackingNumber && (
+                        {order.trackingNumber && order.trackingEnabled && (
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => setSelectedOrderId(
                               selectedOrderId === order.id ? null : order.id
                             )}
-                            data-testid={`button-toggle-tracking-${order.id}`}
+                            className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                            data-testid={`button-track-order-${order.id}`}
                           >
                             <Eye className="h-4 w-4 mr-1" />
-                            {selectedOrderId === order.id ? 'Hide' : 'Track'}
+                            {selectedOrderId === order.id ? 'Hide Tracking' : 'Track Order'}
                           </Button>
                         )}
                         <Button
@@ -402,9 +399,16 @@ export default function CustomerDashboard() {
                       </div>
                     </div>
 
-                    {/* Live Tracking Integration */}
-                    {selectedOrderId === order.id && order.trackingNumber && (
+                    {/* Live Tracking Integration - User Scoped */}
+                    {selectedOrderId === order.id && order.trackingNumber && order.trackingEnabled && (
                       <div className="mt-6 pt-6 border-t border-gray-200">
+                        <div className="mb-3">
+                          <h4 className="font-medium text-blue-900 flex items-center">
+                            <Navigation className="h-4 w-4 mr-2" />
+                            Live Tracking - Order #{order.id}
+                          </h4>
+                          <p className="text-sm text-blue-700">Tracking Number: {order.trackingNumber}</p>
+                        </div>
                         <LiveOrderTracking 
                           orderId={order.id} 
                           className="border-0 shadow-none bg-transparent p-0"
@@ -569,14 +573,17 @@ export default function CustomerDashboard() {
                             <Eye className="h-3 w-3 mr-1" />
                             View
                           </Button>
-                          {order.trackingNumber && !['delivered', 'completed', 'refunded', 'cancelled'].includes(order.status) && (
+                          {order.trackingNumber && order.trackingEnabled && !['delivered', 'completed', 'refunded', 'cancelled', 'dropped_off'].includes(order.status) && (
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => setLocation(`/track?tracking=${order.trackingNumber}`)}
+                              onClick={() => setSelectedOrderId(
+                                selectedOrderId === order.id ? null : order.id
+                              )}
+                              className="border-blue-300 text-blue-700 hover:bg-blue-50"
                               data-testid={`button-table-track-${order.id}`}
                             >
-                              <MapPin className="h-3 w-3 mr-1" />
+                              <Navigation className="h-3 w-3 mr-1" />
                               Track
                             </Button>
                           )}
