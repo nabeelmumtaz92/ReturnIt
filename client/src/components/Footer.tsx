@@ -9,7 +9,6 @@ import {
   Instagram, 
   Linkedin
 } from "lucide-react";
-import { ReturnItIcon } from "@/components/ReturnItLogo";
 
 export default function Footer() {
   return (
@@ -21,8 +20,7 @@ export default function Footer() {
           
           {/* Company Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <ReturnItIcon size={32} className="text-white" />
+            <div>
               <span className="text-xl font-bold text-white">Return It</span>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
