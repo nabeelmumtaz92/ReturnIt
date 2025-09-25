@@ -1,0 +1,76 @@
+Conversation opened. 1 read message.
+
+Skip to content
+Using Gmail with screen readers
+google play store 
+
+Action Required: Your app is not compliant with Google Play Policies (Return It)
+Inbox
+
+Google Play Support <no-reply-googleplay-developer@google.com>
+Attachments
+Sun, Sep 21, 5:34 AM (4 days ago)
+to me
+
+Google PlayDeveloper update
+Hi Developers at Nabeel Mumtaz,
+After a recent review, we found that your app Return It (online.returnit.twa) is not compliant with one or more of our Developer Program Policies. See below for more information about your app's status and how to correct the issue.
+
+Publishing Status	
+App Status: Rejected
+Your app has been rejected and wasn't published due to the policy issue(s) listed below. If you submitted an update, the previous version of your app is still available on Google Play.
+
+Take action
+	
+Issue found: Violation of Misleading Claims policy
+Content in your app might not meet requirements in our misleading claims policy because of the following possible issue(s):
+
+Missing features listed in your description
+Your app’s description claims to have functionality or features that it doesn’t have
+Missing features shown in screenshots
+Your app’s screenshots claim to have functionality or features that it doesn’t have
+Making false or misleading claims about your app violates user trust, and can lead to restrictions on your app.
+
+Issue details
+
+We found an issue in the following area(s):
+
+Full description (en-US): "🚗 FOR DRIVERS Join our driver network and earn money on your schedule: • Flexible hours and routes • Instant payout options available • Driver incentives and bonuses • Built-in GPS navigation • Comprehensive earnings dashboard"
+App screenshot (en-US): Please see attached screenshot APP_SCREENSHOT-7141.png
+App screenshot (en-US): Please see attached screenshot APP_SCREENSHOT-8922.png
+In-app experience: Please see attached screenshot IN_APP_EXPERIENCE-4448.png
+To bring your app into compliance, follow these steps:
+
+Go to Store listings and check your default store listing and any custom store listings, including any translated store listings to make sure that the information and screenshots you have provided match all the functionality and features of your app.
+
+We recommend using test tracks to thoroughly test the quality and functionality of your app with users, capture valuable feedback, and identify bugs before attempting another review.
+
+About the Misleading Claims policy
+We don’t allow apps that contain false or misleading information or claims, including in the description, title, icon, and screenshots, such as apps that are improperly categorized, including but not limited to, the app rating or app category.
+
+Before you send your app for review, make sure that it complies with all Developer Program policies. If you repeatedly violate our policies, you may be prevented from publishing updates to your app, or your app may be suspended.
+
+For more information about how to avoid policy violations, read Helpful tips to get your app published on Google Play.
+
+Submit an Appeal
+Make sure you have followed the instructions provided on this page to quickly address this issue. If you have fixed the violation, you do not need to appeal and can directly make an updated submission. If you believe our decision may be incorrect, you can appeal. It may take up to 7 days to receive a response, or longer in exceptional cases.
+
+Learn More
+Visit the Enforcement Process article to learn more about how different enforcement actions can impact your apps in different ways. Check out the latest Google Play policy updates on Personal Loans, Cryptocurrency Exchanges and Software Wallets, Body Sensor Permissions, AI-Generated Content, Content Ratings, and Impersonation.
+Watch this #PolicyBytes video! Choose your preferred language by changing the audio track in the settings.
+
+Thanks for your continued support in helping to make Google Play a positive experience for both developers and consumers.
+
+Please complete a two question survey to help us improve this experience.
+
+The Google Play Team
+Play academy
+© 2025 Google LLC 1600 Amphitheatre Parkway, Mountain View, CA 94043
+
+Click here to configure your notification preferences.
+
+This message was sent to inform you about important updates to your Google Play developer account.
+
+ 3 Attachments
+  •  Scanned by Gmail
+google play store-news@amazon.com. Press tab to insert.
