@@ -617,7 +617,7 @@ export default function DriverPortal() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => window.open(`tel:${order.customerPhone || '+1234567890'}`)}
+                              onClick={() => window.open(`tel:${order.customerName || '+1234567890'}`)}
                               data-testid={`button-call-${order.id}`}
                             >
                               <Phone className="h-4 w-4 mr-1" />
@@ -637,7 +637,7 @@ export default function DriverPortal() {
                             : (order.returnAddress || `${order.retailer} Store`),
                         }}
                         orderId={order.id}
-                        customerPhone={order.customerPhone || ''}
+                        customerPhone={order.customerName || ''}
                         onNavigationStart={() => {
                           // Optional: Track navigation start event
                         }}
