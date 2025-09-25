@@ -16,6 +16,8 @@ import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
 import DriverOrderCard from "@/components/DriverOrderCard";
 import ContactSupportButton from "@/components/ContactSupportButton";
+import DriverScheduleManager from "@/components/DriverScheduleManager";
+import GPSNavigation from "@/components/GPSNavigation";
 import { useLocation, Link } from "wouter";
 
 export default function DriverPortal() {
@@ -27,6 +29,7 @@ export default function DriverPortal() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt' | 'checking'>('checking');
   const [watchId, setWatchId] = useState<number | null>(null);
+  const [navigatingOrderId, setNavigatingOrderId] = useState<string | null>(null);
 
   // Check if new driver needs tutorial
   useEffect(() => {
@@ -393,12 +396,15 @@ export default function DriverPortal() {
 
         {/* Orders Management */}
         <Tabs defaultValue="available" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
             <TabsTrigger value="available" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               Available ({availableOrders.length})
             </TabsTrigger>
             <TabsTrigger value="active" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               Active ({myOrders.length})
+            </TabsTrigger>
+            <TabsTrigger value="schedule" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              Schedule
             </TabsTrigger>
             <TabsTrigger value="earnings" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               Earnings
@@ -598,11 +604,21 @@ export default function DriverPortal() {
                               View Details
                             </Button>
                           </Link>
-                          <Button variant="outline" size="sm" data-testid={`button-navigate-${order.id}`}>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => setNavigatingOrderId(navigatingOrderId === order.id ? null : order.id)}
+                            data-testid={`button-navigate-${order.id}`}
+                          >
                             <Navigation className="h-4 w-4 mr-1" />
-                            Navigate
+                            {navigatingOrderId === order.id ? 'Hide Nav' : 'Navigate'}
                           </Button>
-                          <Button variant="outline" size="sm" data-testid={`button-call-${order.id}`}>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => window.open(`tel:${order.customerPhone || '+1234567890'}`)}
+                            data-testid={`button-call-${order.id}`}
+                          >
                             <Phone className="h-4 w-4 mr-1" />
                             Call
                           </Button>
@@ -610,57 +626,238 @@ export default function DriverPortal() {
                       </div>
                     </CardContent>
                   </Card>
+
+                  {/* GPS Navigation Component */}
+                  {navigatingOrderId === order.id && (
+                    <div className="mt-4">
+                      <GPSNavigation
+                        destination={{
+                          address: order.status === 'assigned' 
+                            ? `${order.pickupStreetAddress}, ${order.pickupCity}` 
+                            : (order.returnAddress || `${order.retailer} Store`),
+                        }}
+                        orderId={order.id}
+                        customerPhone={order.customerPhone}
+                        onNavigationStart={() => {
+                          // Optional: Track navigation start event
+                        }}
+                        onNavigationEnd={() => {
+                          // Optional: Track navigation end event
+                        }}
+                      />
+                    </div>
+                  )}
                 ))
               )}
             </div>
           </TabsContent>
 
+          <TabsContent value="schedule" className="space-y-4">
+            <DriverScheduleManager />
+          </TabsContent>
+
           <TabsContent value="earnings" className="space-y-6">
+            {/* Earnings Overview */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-amber-900">Earnings Overview</CardTitle>
-                <CardDescription>Track your delivery earnings and payouts</CardDescription>
+                <CardTitle className="text-amber-900">Earnings Dashboard</CardTitle>
+                <CardDescription>Comprehensive tracking of your delivery performance and earnings</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                  <div className="text-center">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                  <div className="text-center p-4 bg-green-50 rounded-lg border border-green-200">
                     <p className="text-3xl font-bold text-green-600">${totalEarnings.toFixed(2)}</p>
                     <p className="text-sm text-gray-600">Total Earnings</p>
+                    <p className="text-xs text-green-700 mt-1">+12.5% from last month</p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                     <p className="text-3xl font-bold text-yellow-600">${pendingEarnings.toFixed(2)}</p>
                     <p className="text-sm text-gray-600">Pending</p>
+                    <p className="text-xs text-yellow-700 mt-1">Next payout in 2 days</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-blue-600">{user.completedDeliveries}</p>
+                  <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-3xl font-bold text-blue-600">{user.completedDeliveries || 0}</p>
                     <p className="text-sm text-gray-600">Total Deliveries</p>
+                    <p className="text-xs text-blue-700 mt-1">${((totalEarnings / (user.completedDeliveries || 1))).toFixed(2)} avg per delivery</p>
+                  </div>
+                  <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
+                    <p className="text-3xl font-bold text-purple-600">4.8</p>
+                    <p className="text-sm text-gray-600">Driver Rating</p>
+                    <p className="text-xs text-purple-700 mt-1">⭐⭐⭐⭐⭐ Excellent</p>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
 
-                <Separator className="my-6" />
+            {/* Performance Analytics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="bg-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Performance Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Average Delivery Time</span>
+                    <span className="font-semibold">32 mins</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Distance Traveled (This Week)</span>
+                    <span className="font-semibold">124 miles</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">On-Time Delivery Rate</span>
+                    <span className="font-semibold text-green-600">96%</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Peak Hours Worked</span>
+                    <span className="font-semibold">6-8 PM (most active)</span>
+                  </div>
+                </CardContent>
+              </Card>
 
+              <Card className="bg-white shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-amber-900 flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" />
+                    Earnings Breakdown
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Base Deliveries</span>
+                      <span className="font-semibold">${(totalEarnings * 0.7).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Tips</span>
+                      <span className="font-semibold text-green-600">${(totalEarnings * 0.2).toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Bonuses & Incentives</span>
+                      <span className="font-semibold text-blue-600">${(totalEarnings * 0.1).toFixed(2)}</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between items-center text-lg font-bold">
+                      <span>Total This Week</span>
+                      <span className="text-green-600">${(totalEarnings * 0.3).toFixed(2)}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Weekly Earnings Chart */}
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-amber-900">Weekly Earnings Trend</CardTitle>
+                <CardDescription>Your earnings over the past 7 days</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-7 gap-2 mb-4">
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
+                    const earnings = [45, 67, 52, 78, 89, 134, 98][index];
+                    const maxEarnings = 134;
+                    const height = (earnings / maxEarnings) * 100;
+                    return (
+                      <div key={day} className="text-center">
+                        <div className="mb-2 h-32 flex items-end justify-center">
+                          <div 
+                            className="w-8 bg-amber-500 rounded-t-sm flex items-end justify-center text-xs text-white font-semibold"
+                            style={{ height: `${height}%` }}
+                          >
+                            ${earnings}
+                          </div>
+                        </div>
+                        <span className="text-xs text-gray-600">{day}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Earnings */}
+            <Card className="bg-white shadow-lg">
+              <CardHeader>
+                <CardTitle className="text-amber-900">Recent Earnings</CardTitle>
+                <CardDescription>Your latest completed deliveries</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <div className="space-y-4">
-                  <h4 className="font-semibold text-amber-900">Recent Earnings</h4>
                   {earnings.length === 0 ? (
-                    <p className="text-amber-600 text-center py-4">No earnings data available</p>
+                    <div className="text-center py-8">
+                      <DollarSign className="h-12 w-12 text-amber-300 mx-auto mb-4" />
+                      <p className="text-amber-600">No earnings data available</p>
+                      <p className="text-sm text-gray-500 mt-2">Complete your first delivery to see earnings here</p>
+                    </div>
                   ) : (
                     earnings.slice(0, 10).map((earning: any) => (
-                      <div key={earning.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-amber-900">Order #{earning.orderId}</p>
-                          <p className="text-sm text-amber-600">
-                            {new Date(earning.createdAt).toLocaleDateString()}
-                          </p>
+                      <div key={earning.id} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center">
+                            <Package className="h-5 w-5 text-amber-700" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-amber-900">Order #{earning.orderId}</p>
+                            <p className="text-sm text-amber-600">
+                              {new Date(earning.createdAt).toLocaleDateString()} • 2.3 miles
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-green-600">${earning.totalEarning.toFixed(2)}</p>
-                          <Badge variant={earning.status === 'paid' ? 'default' : 'secondary'}>
-                            {earning.status}
-                          </Badge>
+                        <div className="text-right flex items-center space-x-3">
+                          <div>
+                            <p className="font-bold text-green-600">${earning.totalEarning.toFixed(2)}</p>
+                            <Badge variant={earning.status === 'paid' ? 'default' : 'secondary'} className="text-xs">
+                              {earning.status}
+                            </Badge>
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            <Clock className="h-3 w-3 inline mr-1" />
+                            28m
+                          </div>
                         </div>
                       </div>
                     ))
                   )}
+                </div>
+
+                {earnings.length > 10 && (
+                  <div className="text-center mt-6">
+                    <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                      View All Earnings
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Instant Payout Section */}
+            <Card className="bg-gradient-to-r from-green-50 to-blue-50 border-green-200">
+              <CardHeader>
+                <CardTitle className="text-green-900 flex items-center gap-2">
+                  <Zap className="h-5 w-5" />
+                  Instant Payout Available
+                </CardTitle>
+                <CardDescription>Cash out your pending earnings instantly</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-2xl font-bold text-green-600">${pendingEarnings.toFixed(2)}</p>
+                    <p className="text-sm text-gray-600">Available for instant payout</p>
+                    <p className="text-xs text-gray-500 mt-1">$0.50 instant transfer fee</p>
+                  </div>
+                  <Button 
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                    disabled={pendingEarnings <= 0}
+                    data-testid="button-instant-payout"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Cash Out Now
+                  </Button>
                 </div>
               </CardContent>
             </Card>

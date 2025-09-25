@@ -59,6 +59,11 @@ export const users = pgTable("users", {
   assignedCity: text("assigned_city").default("st-louis"),
   serviceZones: jsonb("service_zones").default([]),
   
+  // Driver schedule and route management
+  availableHours: jsonb("available_hours").default({}), // Weekly schedule: {monday: {start: "09:00", end: "17:00", available: true}, ...}
+  preferredRoutes: jsonb("preferred_routes").default([]), // Array of preferred areas/routes
+  serviceRadius: real("service_radius").default(25.0), // Maximum distance willing to travel (miles)
+  
   // Emergency and safety features
   emergencyContacts: jsonb("emergency_contacts").default([]),
   lastSafetyCheck: timestamp("last_safety_check"),

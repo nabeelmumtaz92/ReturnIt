@@ -1473,6 +1473,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver preferences update
+  app.patch("/api/driver/preferences", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { availableHours, preferredRoutes, serviceRadius } = req.body;
+      
+      const updates: any = {};
+      if (availableHours) updates.availableHours = availableHours;
+      if (preferredRoutes) updates.preferredRoutes = preferredRoutes;
+      if (typeof serviceRadius === 'number') updates.serviceRadius = serviceRadius;
+      
+      const user = await storage.updateUser(driverId, updates);
+      res.json(user);
+    } catch (error) {
+      console.error('Error updating driver preferences:', error);
+      res.status(500).json({ message: "Failed to update driver preferences" });
+    }
+  });
+
   // Driver tutorial completion
   app.post('/api/driver/complete-tutorial', isAuthenticated, async (req, res) => {
     try {
@@ -1496,6 +1521,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error completing tutorial:', error);
       res.status(500).json({ message: "Failed to complete tutorial" });
+    }
+  });
+
+  // Navigation routes for GPS functionality
+  app.post("/api/navigation/route", isAuthenticated, async (req, res) => {
+    try {
+      const { origin, destination, mode = 'driving' } = req.body;
+      
+      if (!origin || !destination) {
+        return res.status(400).json({ message: "Origin and destination are required" });
+      }
+
+      // For now, we'll return a mock route response that matches Google Directions API format
+      // In production, this would call the actual Google Directions API
+      const mockRoute = {
+        routes: [{
+          legs: [{
+            distance: { text: "3.2 mi", value: 5150 },
+            duration: { text: "12 mins", value: 720 },
+            steps: [
+              {
+                html_instructions: "Head <b>north</b> on Current St",
+                distance: { text: "0.3 mi", value: 482 },
+                duration: { text: "2 mins", value: 120 },
+                maneuver: "straight"
+              },
+              {
+                html_instructions: "Turn <b>left</b> onto Main St",
+                distance: { text: "1.5 mi", value: 2414 },
+                duration: { text: "6 mins", value: 360 },
+                maneuver: "turn-left"
+              },
+              {
+                html_instructions: "Turn <b>right</b> onto Destination Rd",
+                distance: { text: "1.4 mi", value: 2254 },
+                duration: { text: "4 mins", value: 240 },
+                maneuver: "turn-right"
+              },
+              {
+                html_instructions: "Arrive at destination",
+                distance: { text: "0 mi", value: 0 },
+                duration: { text: "0 mins", value: 0 },
+                maneuver: "straight"
+              }
+            ]
+          }]
+        }]
+      };
+
+      res.json(mockRoute);
+    } catch (error) {
+      console.error('Navigation route error:', error);
+      res.status(500).json({ message: "Failed to calculate route" });
     }
   });
 
