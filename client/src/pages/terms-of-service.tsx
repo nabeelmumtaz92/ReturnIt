@@ -24,7 +24,7 @@ export default function TermsOfService() {
             </Link>
             <Link href="/">
               <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
-                ReturnIt
+                Return It
               </div>
             </Link>
           </div>
@@ -50,7 +50,7 @@ export default function TermsOfService() {
           <CardContent className="prose prose-amber max-w-none">
             <div className="space-y-6">
               <p className="text-gray-700 leading-relaxed">
-                Welcome to ReturnIt, LLC ("Company," "we," "our," or "us"). These Terms of Service ("Terms") govern 
+                Welcome to Return It, LLC ("Company," "we," "our," or "us"). These Terms of Service ("Terms") govern 
                 your use of our return delivery services, driver platform, and admin dashboard (collectively, the 
                 "Services"). By using the Services, you agree to these Terms.
               </p>
@@ -74,8 +74,8 @@ export default function TermsOfService() {
               <div className="space-y-4">
                 <h2 className="text-xl font-semibold text-amber-900">2. Services</h2>
                 <p className="text-gray-700">
-                  ReturnIt provides return delivery services by connecting customers with independent drivers. Drivers 
-                  operate as independent contractors and not employees of ReturnIt.
+                  Return It provides return delivery services by connecting customers with independent drivers. Drivers 
+                  operate as independent contractors and not employees of Return It.
                 </p>
 
                 <h2 className="text-xl font-semibold text-amber-900">3. Accounts</h2>
@@ -105,7 +105,7 @@ export default function TermsOfService() {
 
                 <h2 className="text-xl font-semibold text-amber-900">7. Limitation of Liability</h2>
                 <p className="text-gray-700">
-                  Services are provided "as is." ReturnIt is not liable for indirect damages, lost items, or failures caused 
+                  Services are provided "as is." Return It is not liable for indirect damages, lost items, or failures caused 
                   by third parties.
                 </p>
 

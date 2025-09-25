@@ -24,7 +24,7 @@ export default function PrivacyPolicy() {
             </Link>
             <Link href="/">
               <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
-                ReturnIt
+                Return It
               </div>
             </Link>
           </div>
@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
           <CardContent className="prose prose-amber max-w-none">
             <div className="space-y-6">
               <p className="text-gray-700 leading-relaxed">
-                Your privacy is important to us. This Privacy Policy explains how ReturnIt, LLC ("we," "our," or "us") 
+                Your privacy is important to us. This Privacy Policy explains how Return It, LLC ("we," "our," or "us") 
                 collects, uses, and protects personal information.
               </p>
 

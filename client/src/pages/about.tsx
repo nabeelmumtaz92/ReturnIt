@@ -58,7 +58,7 @@ export default function About() {
                 <div 
                   className="text-amber-900 font-bold text-2xl cursor-pointer hover:opacity-80 transition-opacity"
                 >
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <h1 className="text-2xl font-bold text-amber-900">About Us</h1>
@@ -78,17 +78,17 @@ export default function About() {
                   className="text-amber-900 font-bold text-5xl logo-enhanced"
                   data-testid="text-logo"
                 >
-                  ReturnIt
+                  Return It
                 </div>
               </div>
               <Badge className="mb-6 bg-amber-100 text-amber-800 border-amber-200" data-testid="badge-company">
-                {businessInfo?.companyName || "ReturnIt"}
+                {businessInfo?.companyName || "Return It"}
               </Badge>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900 mb-6 leading-tight" data-testid="heading-tagline">
                 {businessInfo?.tagline || "Making Returns Effortless"}
               </h1>
               <p className="text-xl text-amber-700 leading-relaxed mb-8" data-testid="text-description">
-                {businessInfo?.description || "At ReturnIt, we believe returning an item should be as easy as ordering it. Our professional pickup service connects you with local drivers who handle every step of the return process."}
+                {businessInfo?.description || "At Return It, we believe returning an item should be as easy as ordering it. Our professional pickup service connects you with local drivers who handle every step of the return process."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link href="/book-pickup">
@@ -148,7 +148,7 @@ export default function About() {
               Our Mission
             </h2>
             <p className="text-xl text-amber-700 max-w-3xl mx-auto leading-relaxed" data-testid="text-mission">
-              {businessInfo?.missionStatement || "Founded with the mission to save you time and effort, ReturnIt partners with local drivers to ensure every return is handled quickly, safely, and securely."}
+              {businessInfo?.missionStatement || "Founded with the mission to save you time and effort, Return It partners with local drivers to ensure every return is handled quickly, safely, and securely."}
             </p>
           </div>
           
@@ -187,7 +187,7 @@ export default function About() {
           <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 md:p-12">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold text-amber-900 mb-4">Why Choose ReturnIt?</h3>
+                <h3 className="text-2xl font-bold text-amber-900 mb-4">Why Choose Return It?</h3>
                 <div className="space-y-4">
                     <div className="flex items-center gap-3" data-testid="feature-hassle-free">
                     <div className="w-2 h-2 bg-amber-500 rounded-full" />
@@ -230,7 +230,7 @@ export default function About() {
             </CardHeader>
             <CardContent>
               <p className="text-lg text-amber-700 leading-relaxed" data-testid="text-founding-story">
-                {businessInfo?.foundingStory || "Founded in 2024 in St. Louis, Missouri, ReturnIt was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way."}
+                {businessInfo?.foundingStory || "Founded in 2024 in St. Louis, Missouri, Return It was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way."}
               </p>
             </CardContent>
           </Card>

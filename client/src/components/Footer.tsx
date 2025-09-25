@@ -23,7 +23,7 @@ export default function Footer() {
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <ReturnItIcon size={32} className="text-white" />
-              <span className="text-xl font-bold text-white">ReturnIt</span>
+              <span className="text-xl font-bold text-white">Return It</span>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
               Professional return delivery service in St. Louis, MO. We handle your returns so you don't have to.
@@ -91,7 +91,7 @@ export default function Footer() {
                     variant="link" 
                     className="text-amber-100 hover:text-white p-0 h-auto justify-start"
                   >
-                    About ReturnIt
+                    About Return It
                   </Button>
                 </Link>
               </li>
@@ -187,7 +187,7 @@ export default function Footer() {
         <div className="border-t border-amber-800 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-amber-100 text-sm">
-              © 2025 ReturnIt. All rights reserved. | Licensed return service provider in Missouri.
+              © 2025 Return It. All rights reserved. | Licensed return service provider in Missouri.
             </div>
             <div className="flex space-x-6 text-sm">
               <Button 
