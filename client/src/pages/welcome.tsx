@@ -275,7 +275,6 @@ export default function Welcome() {
                     setLocation(`/order-status/${trackingNumber.trim()}`);
                   }
                 }}
-                disabled={!trackingNumber.trim()}
                 data-testid="button-track"
               >
                 <Search className="h-4 w-4" />
