@@ -192,7 +192,7 @@ export default function Welcome() {
         </div>
 
         {/* Buttons - Mobile Optimized */}
-        <div className="flex flex-col gap-2.5 w-full max-w-sm">
+        <div className="flex flex-col gap-6 w-full max-w-sm">
           <Button 
             size="default" 
             className="w-full bg-amber-800 hover:bg-amber-900 text-white text-sm font-medium"
