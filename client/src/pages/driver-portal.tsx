@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users, Menu, ArrowLeft, Home, Settings } from "lucide-react";
+import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users, Menu, ArrowLeft, Home, Settings, Zap, TrendingUp, BarChart3, AlertCircle, User as UserIcon, ChevronDown, Calendar, X } from "lucide-react";
 import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
@@ -520,116 +520,116 @@ export default function DriverPortal() {
                 </Card>
               ) : (
                 myOrders.map((order) => (
-                  <Card key={order.id} className="bg-white shadow-lg border-amber-200">
-                    <CardContent className="p-6">
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h3 className="text-lg font-semibold text-amber-900">Order #{order.id}</h3>
-                          <p className="text-amber-700">{order.retailer}</p>
-                          <Badge className="mt-2" variant={
-                            order.status === 'completed' ? 'default' :
-                            order.status === 'in_transit' ? 'secondary' :
-                            order.status === 'picked_up' ? 'outline' : 'destructive'
-                          }>
-                            {order.status.replace('_', ' ').toUpperCase()}
-                          </Badge>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-green-600">${((order.basePrice || 0) + (order.tip || 0)).toFixed(2)}</p>
-                        </div>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-4 mb-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <MapPin className="h-4 w-4 text-amber-500" />
-                            <span className="text-sm font-medium text-amber-900">Pickup</span>
+                  <div key={order.id} className="space-y-4">
+                    <Card className="bg-white shadow-lg border-amber-200">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between items-start mb-4">
+                          <div>
+                            <h3 className="text-lg font-semibold text-amber-900">Order #{order.id}</h3>
+                            <p className="text-amber-700">{order.retailer}</p>
+                            <Badge className="mt-2" variant={
+                              order.status === 'completed' ? 'default' :
+                              order.status === 'in_transit' ? 'secondary' :
+                              order.status === 'picked_up' ? 'outline' : 'destructive'
+                            }>
+                              {order.status.replace('_', ' ').toUpperCase()}
+                            </Badge>
                           </div>
-                          <p className="text-sm text-amber-700 ml-6">{order.pickupStreetAddress}, {order.pickupCity}</p>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex items-center space-x-2">
-                            <Navigation className="h-4 w-4 text-amber-500" />
-                            <span className="text-sm font-medium text-amber-900">Return To</span>
+                          <div className="text-right">
+                            <p className="text-xl font-bold text-green-600">${((order.basePrice || 0) + (order.tip || 0)).toFixed(2)}</p>
                           </div>
-                          <p className="text-sm text-amber-700 ml-6">{order.returnAddress || `${order.retailer} Store`}</p>
                         </div>
-                      </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-amber-100">
-                        <div className="flex space-x-2">
-                          {order.status === 'assigned' && (
-                            <Button 
-                              size="sm"
-                              onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'picked_up' })}
-                              disabled={updateOrderMutation.isPending}
-                              className="bg-blue-600 hover:bg-blue-700"
-                              data-testid={`button-pickup-${order.id}`}
-                            >
-                              Mark Picked Up
-                            </Button>
-                          )}
-                          {order.status === 'picked_up' && (
-                            <Button 
-                              size="sm"
-                              onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'in_transit' })}
-                              disabled={updateOrderMutation.isPending}
-                              className="bg-yellow-600 hover:bg-yellow-700"
-                              data-testid={`button-transit-${order.id}`}
-                            >
-                              En Route
-                            </Button>
-                          )}
-                          {order.status === 'in_transit' && (
-                            <Button 
-                              size="sm"
-                              onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'delivered' })}
-                              disabled={updateOrderMutation.isPending}
-                              className="bg-green-600 hover:bg-green-700"
-                              data-testid={`button-deliver-${order.id}`}
-                            >
-                              Mark Delivered
-                            </Button>
-                          )}
+                        <div className="grid md:grid-cols-2 gap-4 mb-4">
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="h-4 w-4 text-amber-500" />
+                              <span className="text-sm font-medium text-amber-900">Pickup</span>
+                            </div>
+                            <p className="text-sm text-amber-700 ml-6">{order.pickupStreetAddress}, {order.pickupCity}</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <Navigation className="h-4 w-4 text-amber-500" />
+                              <span className="text-sm font-medium text-amber-900">Return To</span>
+                            </div>
+                            <p className="text-sm text-amber-700 ml-6">{order.returnAddress || `${order.retailer} Store`}</p>
+                          </div>
                         </div>
-                        
-                        <div className="flex space-x-2">
-                          <Link href={`/driver-portal/job/${order.id}`}>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-amber-100">
+                          <div className="flex space-x-2">
+                            {order.status === 'assigned' && (
+                              <Button 
+                                size="sm"
+                                onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'picked_up' })}
+                                disabled={updateOrderMutation.isPending}
+                                className="bg-blue-600 hover:bg-blue-700"
+                                data-testid={`button-pickup-${order.id}`}
+                              >
+                                Mark Picked Up
+                              </Button>
+                            )}
+                            {order.status === 'picked_up' && (
+                              <Button 
+                                size="sm"
+                                onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'in_transit' })}
+                                disabled={updateOrderMutation.isPending}
+                                className="bg-yellow-600 hover:bg-yellow-700"
+                                data-testid={`button-transit-${order.id}`}
+                              >
+                                En Route
+                              </Button>
+                            )}
+                            {order.status === 'in_transit' && (
+                              <Button 
+                                size="sm"
+                                onClick={() => updateOrderMutation.mutate({ orderId: order.id, status: 'delivered' })}
+                                disabled={updateOrderMutation.isPending}
+                                className="bg-green-600 hover:bg-green-700"
+                                data-testid={`button-deliver-${order.id}`}
+                              >
+                                Mark Delivered
+                              </Button>
+                            )}
+                          </div>
+                          
+                          <div className="flex space-x-2">
+                            <Link href={`/driver-portal/job/${order.id}`}>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              >
+                                View Details
+                              </Button>
+                            </Link>
                             <Button 
                               variant="outline" 
-                              size="sm"
-                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              size="sm" 
+                              onClick={() => setNavigatingOrderId(navigatingOrderId === order.id ? null : order.id)}
+                              data-testid={`button-navigate-${order.id}`}
                             >
-                              View Details
+                              <Navigation className="h-4 w-4 mr-1" />
+                              {navigatingOrderId === order.id ? 'Hide Nav' : 'Navigate'}
                             </Button>
-                          </Link>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => setNavigatingOrderId(navigatingOrderId === order.id ? null : order.id)}
-                            data-testid={`button-navigate-${order.id}`}
-                          >
-                            <Navigation className="h-4 w-4 mr-1" />
-                            {navigatingOrderId === order.id ? 'Hide Nav' : 'Navigate'}
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => window.open(`tel:${order.customerPhone || '+1234567890'}`)}
-                            data-testid={`button-call-${order.id}`}
-                          >
-                            <Phone className="h-4 w-4 mr-1" />
-                            Call
-                          </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => window.open(`tel:${order.customerPhone || '+1234567890'}`)}
+                              data-testid={`button-call-${order.id}`}
+                            >
+                              <Phone className="h-4 w-4 mr-1" />
+                              Call
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
 
-                  {/* GPS Navigation Component */}
-                  {navigatingOrderId === order.id && (
-                    <div className="mt-4">
+                    {/* GPS Navigation Component */}
+                    {navigatingOrderId === order.id && (
                       <GPSNavigation
                         destination={{
                           address: order.status === 'assigned' 
@@ -637,7 +637,7 @@ export default function DriverPortal() {
                             : (order.returnAddress || `${order.retailer} Store`),
                         }}
                         orderId={order.id}
-                        customerPhone={order.customerPhone}
+                        customerPhone={order.customerPhone || ''}
                         onNavigationStart={() => {
                           // Optional: Track navigation start event
                         }}
@@ -645,8 +645,8 @@ export default function DriverPortal() {
                           // Optional: Track navigation end event
                         }}
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 ))
               )}
             </div>
