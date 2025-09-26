@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon-driver.png",
     "userInterfaceStyle": "light",
-    "description": "ReturnIt Driver App - Manage pickups, deliveries, and earnings",
+    "description": "ReturnIt Driver App - Manage pickups, deliveries, route optimization, and earnings with real-time job tracking",
     "privacy": "public",
     "platforms": ["ios", "android"],
     "splash": {
@@ -17,7 +17,20 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.returnit.driver"
+      "bundleIdentifier": "com.returnit.driver",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow ReturnIt Driver to use your location for navigation and job completion verification.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt Driver to track your location for pickup and delivery assignments, even when the app is in the background.",
+        "NSLocationAlwaysUsageDescription": "Allow ReturnIt Driver to access location for background job tracking and route optimization.",
+        "NSCameraUsageDescription": "Allow ReturnIt Driver to take photos for package verification and proof of delivery.",
+        "UIBackgroundModes": ["location", "background-processing", "background-fetch"],
+        "CFBundleDisplayName": "ReturnIt Driver",
+        "CFBundleName": "ReturnIt Driver"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.returnit.driver",
@@ -29,9 +42,25 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION", 
+        "ACCESS_BACKGROUND_LOCATION",
         "CAMERA",
         "INTERNET",
-        "ACCESS_BACKGROUND_LOCATION"
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK",
+        "FOREGROUND_SERVICE"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "driver.returnit.online"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "plugins": [
@@ -52,7 +81,7 @@
     "scheme": "returnit-driver",
     "extra": {
       "eas": {
-        "projectId": "returnit-driver-project-id"
+        "projectId": "87654321-4321-4321-4321-cba987654321"
       }
     }
   }

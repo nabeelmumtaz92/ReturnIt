@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "description": "Professional reverse delivery service - Book returns, exchanges, and donations",
+    "description": "Professional reverse delivery service - Book returns, exchanges, and donations with real-time tracking",
     "privacy": "public",
     "platforms": ["ios", "android"],
     "splash": {
@@ -17,7 +17,18 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.returnit.customer"
+      "bundleIdentifier": "com.returnit.customer",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Allow ReturnIt to use your location for accurate pickup scheduling and delivery tracking.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt to track deliveries and provide real-time updates.",
+        "NSCameraUsageDescription": "Allow ReturnIt to take photos for package verification and support requests.",
+        "CFBundleDisplayName": "ReturnIt",
+        "CFBundleName": "ReturnIt"
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.returnit.customer",
@@ -30,7 +41,21 @@
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
         "CAMERA",
-        "INTERNET"
+        "INTERNET",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "https",
+              "host": "returnit.online"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "plugins": [
@@ -50,7 +75,7 @@
     "scheme": "returnit-customer",
     "extra": {
       "eas": {
-        "projectId": "returnit-customer-project-id"
+        "projectId": "12345678-1234-1234-1234-123456789abc"
       }
     }
   }
