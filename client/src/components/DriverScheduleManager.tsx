@@ -13,7 +13,10 @@ import {
   MapPin, 
   Route,
   Save,
-  RefreshCw
+  RefreshCw,
+  Power,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -115,6 +118,27 @@ export default function DriverScheduleManager() {
     }
   });
 
+  // Toggle availability status mutation
+  const toggleAvailabilityMutation = useMutation({
+    mutationFn: (isOnline: boolean) =>
+      apiRequest('PATCH', '/api/driver/status', { isOnline }),
+    onSuccess: (data) => {
+      const status = (data as any).isOnline ? "Available" : "Offline";
+      toast({
+        title: `Status Updated`,
+        description: `You are now ${status.toLowerCase()} for deliveries.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    },
+    onError: () => {
+      toast({
+        title: "Status Update Failed",
+        description: "Failed to update your availability status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
   const updateDaySchedule = (day: keyof WeeklySchedule, field: keyof DaySchedule, value: any) => {
     setPreferences(prev => ({
       ...prev,
@@ -182,17 +206,72 @@ export default function DriverScheduleManager() {
     );
   }
 
+  const isOnline = (user as any)?.isOnline || false;
+
+  const handleAvailabilityToggle = (checked: boolean) => {
+    toggleAvailabilityMutation.mutate(checked);
+  };
+
   return (
     <div className="space-y-6">
+      {/* Availability Toggle - Primary Control */}
+      <Card className="border-2 border-dashed border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className={`p-3 rounded-full ${isOnline ? 'bg-green-100' : 'bg-gray-100'}`}>
+                {isOnline ? (
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                ) : (
+                  <XCircle className="h-8 w-8 text-gray-600" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">
+                  {isOnline ? "Available for Deliveries" : "Currently Offline"}
+                </h2>
+                <p className="text-gray-600">
+                  {isOnline 
+                    ? "You'll receive delivery requests when orders become available" 
+                    : "Turn on to start receiving delivery requests"
+                  }
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <Label htmlFor="availability-toggle" className="text-lg font-medium">
+                {isOnline ? "Available" : "Offline"}
+              </Label>
+              <Switch
+                id="availability-toggle"
+                checked={isOnline}
+                onCheckedChange={handleAvailabilityToggle}
+                disabled={toggleAvailabilityMutation.isPending}
+                className="data-[state=checked]:bg-green-500 scale-150"
+                data-testid="switch-driver-availability"
+              />
+            </div>
+          </div>
+          
+          {toggleAvailabilityMutation.isPending && (
+            <div className="mt-4 flex items-center justify-center text-gray-600">
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              Updating your availability status...
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Header */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Calendar className="h-5 w-5" />
-            Schedule & Availability
+            Schedule & Preferences
           </CardTitle>
           <p className="text-sm text-gray-600">
-            Manage your available hours, service areas, and delivery preferences
+            Set your preferred hours, service areas, and delivery preferences
           </p>
         </CardHeader>
       </Card>
@@ -202,8 +281,11 @@ export default function DriverScheduleManager() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="h-5 w-5" />
-            Weekly Availability
+            Preferred Working Hours
           </CardTitle>
+          <p className="text-sm text-gray-600">
+            Set your preferred times for each day. You can still work outside these hours when available.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           {Object.entries(dayNames).map(([day, displayName]) => {
