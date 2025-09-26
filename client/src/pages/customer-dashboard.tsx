@@ -29,7 +29,8 @@ import {
   Eye,
   ChevronRight,
   User,
-  Activity
+  Activity,
+  Navigation
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth-simple';
@@ -278,6 +279,51 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
+        {/* Profile Summary Panel */}
+        <div className="mb-8">
+          <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+            <CardHeader>
+              <CardTitle className="text-xl text-amber-900 flex items-center">
+                <User className="h-5 w-5 mr-2" />
+                Profile Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">Full Name</p>
+                  <p className="font-semibold text-gray-900">
+                    {user?.firstName && user?.lastName 
+                      ? `${user.firstName} ${user.lastName}`
+                      : 'Not set'
+                    }
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">Email</p>
+                  <p className="font-semibold text-gray-900 text-sm">{user?.email || 'Not set'}</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-600">Phone</p>
+                  <p className="font-semibold text-gray-900">{user?.phone || 'Not set'}</p>
+                </div>
+                <div className="flex items-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setLocation('/profile')}
+                    className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                    data-testid="button-edit-profile"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    Edit Profile
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Quick Actions */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-amber-900 mb-4">Quick Actions</h2>
@@ -394,7 +440,7 @@ export default function CustomerDashboard() {
                       <div className="flex items-center gap-2">
                         <DollarSign className="h-4 w-4 text-gray-500" />
                         <span className="font-semibold text-gray-900">
-                          ${order.totalPrice.toFixed(2)}
+                          ${(order.totalPrice || 0).toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -559,7 +605,7 @@ export default function CustomerDashboard() {
                       </TableCell>
                       <TableCell>
                         <div className="font-semibold">
-                          ${order.totalPrice.toFixed(2)}
+                          ${(order.totalPrice || 0).toFixed(2)}
                         </div>
                       </TableCell>
                       <TableCell>

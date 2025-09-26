@@ -937,45 +937,6 @@ export default function BookPickup() {
             </div>
             <p className="text-xs text-amber-600 mt-2">Final pricing will be calculated with route information</p>
           </div>
-          
-          {/* Policy Validation Display */}
-          {policyValidation && (
-            <div className={`p-4 rounded-lg border ${
-              !policyValidation.isValid 
-                ? 'bg-red-50 border-red-200' 
-                : policyValidation.warnings.length > 0
-                ? 'bg-yellow-50 border-yellow-200'
-                : 'bg-green-50 border-green-200'
-            }`}>
-              <div className="flex items-start space-x-2">
-                {!policyValidation.isValid ? (
-                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                ) : policyValidation.warnings.length > 0 ? (
-                  <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                ) : (
-                  <Shield className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                )}
-                <div className="flex-1">
-                  <p className={`text-sm font-medium ${
-                    !policyValidation.isValid ? 'text-red-800' : 
-                    policyValidation.warnings.length > 0 ? 'text-yellow-800' : 'text-green-800'
-                  }`}>
-                    {policyValidation.message}
-                  </p>
-                  {policyValidation.warnings.length > 0 && (
-                    <ul className="mt-2 text-xs text-yellow-700 space-y-1">
-                      {policyValidation.warnings.map((warning, index) => (
-                        <li key={index} className="flex items-start space-x-1">
-                          <span className="text-yellow-600">•</span>
-                          <span>{warning}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
         )}
       </div>
 
