@@ -217,9 +217,94 @@ export class MemStorage implements IStorage {
     };
     this.users.set(2, masterAdmin2);
     
-    // Production data only - no demo content
+    // Test users for comprehensive testing
+    const testCustomer: User = {
+      id: 3,
+      email: 'testuser@test.com',
+      password: '$2b$12$ftLGflVQZ9Br7ltRBCCrkubpZgme6Ur9T7/LfhH/BdOQAkOo1Ez4O', // hashed 'test123!'
+      firstName: 'Test',
+      lastName: 'User',
+      phone: '+15551234567',
+      dateOfBirth: null,
+      isDriver: false,
+      tutorialCompleted: true,
+      isAdmin: false,
+      isActive: true,
+      role: 'customer',
+      department: null,
+      employeeId: null,
+      permissions: ['customer'],
+      profileImage: null,
+      preferences: {},
+      addresses: [],
+      paymentMethods: [],
+      driverLicense: null,
+      vehicleInfo: null,
+      bankInfo: null,
+      driverRating: 5.0,
+      totalEarnings: 0,
+      completedDeliveries: 0,
+      isOnline: false,
+      currentLocation: null,
+      stripeConnectAccountId: null,
+      stripeOnboardingComplete: false,
+      paymentPreference: 'weekly',
+      instantPayFeePreference: 1.00,
+      hireDate: null,
+      assignedCity: 'st-louis',
+      serviceZones: [],
+      emergencyContacts: [],
+      lastSafetyCheck: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(3, testCustomer);
     
-    this.nextUserId = 3;
+    const testDriver: User = {
+      id: 4,
+      email: 'testdriver@test.com',
+      password: '$2b$12$ftLGflVQZ9Br7ltRBCCrkubpZgme6Ur9T7/LfhH/BdOQAkOo1Ez4O', // hashed 'test123!'
+      firstName: 'Test',
+      lastName: 'Driver',
+      phone: '+15551234568',
+      dateOfBirth: null,
+      isDriver: true,
+      tutorialCompleted: true,
+      isAdmin: false,
+      isActive: true,
+      role: 'driver',
+      department: null,
+      employeeId: 'DRV004',
+      permissions: ['driver'],
+      profileImage: null,
+      preferences: {},
+      addresses: [],
+      paymentMethods: [],
+      driverLicense: null,
+      vehicleInfo: null,
+      bankInfo: null,
+      driverRating: 5.0,
+      totalEarnings: 0,
+      completedDeliveries: 0,
+      isOnline: false,
+      currentLocation: null,
+      stripeConnectAccountId: null,
+      stripeOnboardingComplete: false,
+      paymentPreference: 'weekly',
+      instantPayFeePreference: 1.00,
+      hireDate: new Date('2025-01-01'),
+      assignedCity: 'st-louis',
+      serviceZones: [],
+      emergencyContacts: [],
+      lastSafetyCheck: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users.set(4, testDriver);
+    
+    // Production data only - no additional demo content
+    
+    this.nextUserId = 5;
   }
 
   // User operations
