@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-gesture-handler';
 
 // Import screens
+import LoginScreen from './screens/LoginScreen';
 import DriverDashboardScreen from './screens/DriverDashboardScreen';
 import JobManagementScreen from './screens/JobManagementScreen';
 import EarningsScreen from './screens/EarningsScreen';
@@ -33,39 +34,68 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    let unsubscribe;
+
+    const initializeApp = async () => {
+      try {
+        // Add auth state listener first
+        unsubscribe = authService.addAuthListener((event, user) => {
+          console.log('Auth event:', event, user?.email, user?.isDriver);
+          const authenticated = authService.isAuthenticated();
+          const isDriver = authService.isDriver();
+          setIsAuthenticated(authenticated && isDriver);
+        });
+
+        // Initialize authentication service and wait for completion
+        await authService.initialize();
+        
+        // Check authentication status and verify driver access after initialization
+        const authenticated = authService.isAuthenticated();
+        const isDriver = authService.isDriver();
+        
+        setIsAuthenticated(authenticated && isDriver);
+        
+        console.log('Driver app initialized, authenticated:', authenticated, 'isDriver:', isDriver);
+      } catch (error) {
+        console.error('Driver app initialization error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     initializeApp();
+
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
-
-  const initializeApp = async () => {
-    try {
-      // Initialize authentication service
-      await authService.initialize();
-      
-      // Check authentication status and verify driver access
-      const authenticated = authService.isAuthenticated();
-      const isDriver = authService.isDriver();
-      
-      setIsAuthenticated(authenticated && isDriver);
-
-      // Add auth state listener
-      const unsubscribe = authService.addAuthListener((event, user) => {
-        console.log('Auth event:', event, user?.email, user?.isDriver);
-        setIsAuthenticated(authService.isAuthenticated() && authService.isDriver());
-      });
-
-      // Store unsubscribe function for cleanup
-      return unsubscribe;
-    } catch (error) {
-      console.error('Driver app initialization error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
+  // Authentication gating - show login if not authenticated or not a driver
+  if (!isAuthenticated) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login">
+            {(props) => (
+              <LoginScreen 
+                {...props} 
+                onAuthSuccess={() => setIsAuthenticated(true)} 
+              />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  // Main driver app navigation for authenticated drivers
   return (
     <NavigationContainer>
       <Stack.Navigator

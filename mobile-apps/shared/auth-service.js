@@ -46,7 +46,7 @@ class AuthService {
           // Verify session with server
           try {
             const user = await apiClient.getCurrentUser();
-            this.setAuthenticatedUser(user);
+            await this.setAuthenticatedUser(user);
             console.log('Session restored for user:', user.email);
           } catch (error) {
             console.log('Session expired or invalid, clearing stored auth');
@@ -74,8 +74,16 @@ class AuthService {
       const response = await apiClient.login(email, password);
       
       if (response.user) {
+        // Critical: Update auth state before returning
         await this.setAuthenticatedUser(response.user);
         this.notifyAuthListeners('login', response.user);
+        
+        // Ensure state is fully updated
+        console.log('Login successful, auth state updated:', {
+          isAuthenticated: this.isAuthenticated(),
+          user: response.user.email
+        });
+        
         return response;
       }
 

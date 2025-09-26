@@ -5,6 +5,7 @@ import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-gesture-handler';
 
 // Import screens
+import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import BookReturnScreen from './screens/BookReturnScreen';
 import TrackPackageScreen from './screens/TrackPackageScreen';
@@ -33,37 +34,64 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
+    let unsubscribe;
+
+    const initializeApp = async () => {
+      try {
+        // Add auth state listener first
+        unsubscribe = authService.addAuthListener((event, user) => {
+          console.log('Auth event:', event, user?.email);
+          setIsAuthenticated(authService.isAuthenticated());
+        });
+
+        // Initialize authentication service and wait for completion
+        await authService.initialize();
+        
+        // Check authentication status after initialization
+        const authenticated = authService.isAuthenticated();
+        setIsAuthenticated(authenticated);
+        
+        console.log('App initialized, authenticated:', authenticated);
+      } catch (error) {
+        console.error('App initialization error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     initializeApp();
+
+    // Cleanup function
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
   }, []);
-
-  const initializeApp = async () => {
-    try {
-      // Initialize authentication service
-      await authService.initialize();
-      
-      // Check authentication status
-      const authenticated = authService.isAuthenticated();
-      setIsAuthenticated(authenticated);
-
-      // Add auth state listener
-      const unsubscribe = authService.addAuthListener((event, user) => {
-        console.log('Auth event:', event, user?.email);
-        setIsAuthenticated(authService.isAuthenticated());
-      });
-
-      // Store unsubscribe function for cleanup
-      return unsubscribe;
-    } catch (error) {
-      console.error('App initialization error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
+  // Authentication gating - show login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login">
+            {(props) => (
+              <LoginScreen 
+                {...props} 
+                onAuthSuccess={() => setIsAuthenticated(true)} 
+              />
+            )}
+          </Stack.Screen>
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
+  // Main app navigation for authenticated users
   return (
     <NavigationContainer>
       <Stack.Navigator
