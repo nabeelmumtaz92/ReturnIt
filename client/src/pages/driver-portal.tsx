@@ -31,9 +31,9 @@ export default function DriverPortal() {
   const [watchId, setWatchId] = useState<number | null>(null);
   const [navigatingOrderId, setNavigatingOrderId] = useState<string | null>(null);
 
-  // Check if new driver needs tutorial
+  // Check if new driver needs tutorial (skip for admins viewing driver portal)
   useEffect(() => {
-    if (user && user.isDriver && !user.tutorialCompleted) {
+    if (user && user.isDriver && !user.isAdmin && !user.tutorialCompleted) {
       setLocation('/driver-tutorial');
     }
   }, [user, setLocation]);
@@ -62,7 +62,7 @@ export default function DriverPortal() {
       }
 
       // Start continuous tracking
-      if (user?.isDriver && isOnline) {
+      if (hasDriverAccess && isOnline) {
         startLocationTracking();
       }
     };
@@ -75,7 +75,7 @@ export default function DriverPortal() {
         navigator.geolocation.clearWatch(watchId);
       }
     };
-  }, [user?.isDriver, isOnline]);
+  }, [hasDriverAccess, isOnline]);
 
   // Location tracking functions
   const startLocationTracking = () => {
@@ -141,20 +141,23 @@ export default function DriverPortal() {
     });
   };
 
+  // Allow both drivers and admins to access driver portal
+  const hasDriverAccess = user?.isDriver || user?.isAdmin;
+
   // Queries
   const { data: availableOrders = [], isLoading: loadingAvailable } = useQuery<Order[]>({
     queryKey: ["/api/driver/orders/available"],
-    enabled: isAuthenticated && user?.isDriver
+    enabled: isAuthenticated && hasDriverAccess
   });
 
   const { data: myOrders = [], isLoading: loadingMy } = useQuery<Order[]>({
     queryKey: ["/api/driver/orders"],
-    enabled: isAuthenticated && user?.isDriver
+    enabled: isAuthenticated && hasDriverAccess
   });
 
   const { data: earnings = [] } = useQuery<any[]>({
     queryKey: ["/api/driver/earnings"],
-    enabled: isAuthenticated && user?.isDriver
+    enabled: isAuthenticated && hasDriverAccess
   });
 
   // Mutations
@@ -188,14 +191,21 @@ export default function DriverPortal() {
 
   // Remove duplicate function - already defined above
 
-  if (!isAuthenticated || !user?.isDriver) {
+  if (!isAuthenticated || !hasDriverAccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
         <Card className="w-96">
           <CardHeader>
             <CardTitle className="text-amber-900">Access Denied</CardTitle>
-            <CardDescription>You need driver access to view this page.</CardDescription>
+            <CardDescription>You need driver or admin access to view this page.</CardDescription>
           </CardHeader>
+          <CardContent className="pt-4">
+            <div className="text-center">
+              <Link href="/login" className="text-amber-600 hover:text-amber-800 underline">
+                Sign in to continue
+              </Link>
+            </div>
+          </CardContent>
         </Card>
       </div>
     );
@@ -211,6 +221,28 @@ export default function DriverPortal() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      {/* Admin Viewing Indicator */}
+      {user?.isAdmin && !user?.isDriver && (
+        <div className="bg-blue-100 border-b border-blue-300 px-4 py-2">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                <UserIcon className="h-3 w-3 mr-1" />
+                Admin View
+              </Badge>
+              <span className="text-blue-700 text-sm">
+                Viewing driver portal for troubleshooting and quality assurance
+              </span>
+            </div>
+            <Link href="/admin-dashboard">
+              <Button size="sm" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
+                Return to Admin Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
@@ -223,9 +255,19 @@ export default function DriverPortal() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-amber-900">Driver Portal</h1>
+                <h1 className="text-2xl font-bold text-amber-900">
+                  Driver Portal
+                  {user?.isAdmin && !user?.isDriver && (
+                    <span className="ml-2 text-sm text-blue-600">(Admin View)</span>
+                  )}
+                </h1>
                 <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-amber-700">Welcome back, {user.firstName || user.username || 'Driver'}!</span>
+                  <span className="text-amber-700">
+                    Welcome back, {user.firstName || user.username || 'Driver'}!
+                    {user?.isAdmin && !user?.isDriver && (
+                      <span className="ml-1 text-blue-600">(Administrator)</span>
+                    )}
+                  </span>
                   <div className="flex items-center space-x-1">
                     <Switch 
                       checked={isOnline} 

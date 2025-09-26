@@ -3444,31 +3444,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(PerformanceService.getHealthStats());
   });
 
-  // Debug route to test ORM user lookup
-  app.get("/api/debug/user/:email", async (req, res) => {
-    try {
-      const email = req.params.email;
-      console.log(`Debug - Testing ORM lookup for: ${email}`);
-      
-      // Test direct ORM query
-      const user = await storage.getUserByEmail(email);
-      console.log(`Debug - ORM result:`, user);
-      
-      // Test raw SQL query
-      const rawResult = await db.execute(sql`SELECT id, email FROM users WHERE email = ${email}`);
-      console.log(`Debug - Raw SQL result:`, rawResult);
-      
-      res.json({
-        email,
-        ormResult: user,
-        rawResult: rawResult.rows || rawResult
-      });
-    } catch (error) {
-      console.error("Debug route error:", error);
-      res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
-    }
-  });
-
   // Advanced business analytics (protected route)
   app.get("/api/analytics/business-report", requireAdmin, async (req, res) => {
     try {
