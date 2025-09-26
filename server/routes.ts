@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import express from "express";
 import { createServer, type Server } from "http";
+import path from "path";
 import { storage } from "./storage";
 import { smsService } from "./sms-notifications";
 import { AIAssistant } from "./ai-assistant";
@@ -84,10 +85,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 
-  // Serve manifest with correct MIME type
-  app.use('/site.webmanifest', (req, res, next) => {
+  // Serve PWA manifest files with correct MIME type
+  app.get('/site.webmanifest', (req, res) => {
     res.setHeader('Content-Type', 'application/manifest+json');
-    next();
+    res.sendFile(path.resolve(process.cwd(), 'public/site.webmanifest'));
+  });
+  
+  app.get('/customer-app.webmanifest', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.sendFile(path.resolve(process.cwd(), 'public/customer-app.webmanifest'));
+  });
+  
+  app.get('/driver-app.webmanifest', (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.sendFile(path.resolve(process.cwd(), 'public/driver-app.webmanifest'));
   });
 
   // Add cache-busting headers for development

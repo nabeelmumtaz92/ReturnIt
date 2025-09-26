@@ -22,7 +22,10 @@ import {
   Activity,
   LogOut,
   Home,
-  User
+  User,
+  Smartphone,
+  Monitor,
+  Eye
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth-simple";
 
@@ -200,6 +203,37 @@ export function AdminNavigation() {
           href: "/admin-dashboard?section=tax-reports",
           icon: BarChart3,
           description: "1099 forms and tax reporting"
+        }
+      ]
+    },
+    {
+      title: "Mobile App Management",
+      items: [
+        {
+          label: "Customer Mobile App",
+          href: "/customer-app",
+          icon: Smartphone,
+          description: "Access customer mobile interface",
+          badge: "Mobile"
+        },
+        {
+          label: "Driver Mobile App",
+          href: "/driver-app",
+          icon: Truck,
+          description: "Access driver mobile interface",
+          badge: "Driver"
+        },
+        {
+          label: "App Analytics",
+          href: "/admin-dashboard?section=mobile-analytics",
+          icon: Monitor,
+          description: "Mobile app usage and performance"
+        },
+        {
+          label: "Interface Preview",
+          href: "/admin-dashboard?section=interface-preview",
+          icon: Eye,
+          description: "Preview and test mobile interfaces"
         }
       ]
     },

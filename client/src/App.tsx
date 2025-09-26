@@ -1,11 +1,11 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/design-system";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 
 // Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
@@ -95,6 +95,55 @@ const PageLoader = () => (
   </div>
 );
 
+// Smart route handler component that manages redirects properly
+function SmartRouteHandler() {
+  const { user, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  
+  useEffect(() => {
+    try {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+      
+      // Smart routing based on user role and device
+      if (user && isAuthenticated) {
+        if (user.isAdmin && masterAdmins.includes(user.email)) {
+          // Admins go to dashboard
+          setLocation('/admin-dashboard');
+          return;
+        } else if (user.isDriver) {
+          // Drivers go to driver portal on desktop, stay on mobile driver app if on mobile
+          if (!isMobile) {
+            setLocation('/driver-portal');
+            return;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Smart routing error:', error);
+    }
+  }, [user, isAuthenticated, setLocation]);
+
+  // Determine what to render based on current state
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  if (user && isAuthenticated) {
+    if (user.isDriver && isMobile) {
+      // Mobile drivers get the driver mobile app
+      return <MobileDriver />;
+    } else if (!user.isDriver && !user.isAdmin && isMobile) {
+      // Mobile customers get the customer mobile app
+      return <CustomerMobileApp />;
+    }
+  } else if (isMobile) {
+    // Non-authenticated mobile users get the customer mobile app
+    return <CustomerMobileApp />;
+  }
+
+  // Default to welcome page for desktop users and others
+  return <Welcome />;
+}
+
 function Router() {
   const { user, isLoading, isAuthenticated } = useAuth();
   
@@ -123,25 +172,7 @@ function Router() {
     <Suspense fallback={<PageLoader />}>
       <Switch>
       <Route path="/">
-        {() => {
-          try {
-            // Check if admin user should go directly to dashboard
-            const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
-            if (user?.isAdmin && masterAdmins.includes(user?.email)) {
-              // Use location.replace to avoid back button issues on mobile
-              if (typeof window !== 'undefined') {
-                window.location.replace('/admin-dashboard');
-                return null;
-              }
-            }
-            // Show welcome page for all other users (logged in or not)
-            return <Welcome />;
-          } catch (error) {
-            console.error('Root route error:', error);
-            // Fallback to welcome page
-            return <Welcome />;
-          }
-        }}
+        {() => <SmartRouteHandler />}
       </Route>
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
@@ -187,6 +218,40 @@ function Router() {
       </Route>
       <Route path="/about" component={About} />
 
+      {/* Smart App Routing */}
+      <Route path="/customer-app">
+        {() => <CustomerMobileApp />}
+      </Route>
+      <Route path="/driver-app">
+        {() => {
+          // Drivers only
+          if (!user?.isDriver && !user?.isAdmin) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+              return null;
+            }
+          }
+          return <MobileDriver />;
+        }}
+      </Route>
+      <Route path="/admin-app">
+        {() => {
+          // Admins only
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          if (!user?.isAdmin || !masterAdmins.includes(user?.email)) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+              return null;
+            }
+          }
+          if (typeof window !== 'undefined') {
+            window.location.replace('/admin-dashboard');
+            return null;
+          }
+        }}
+      </Route>
+      
+      {/* Legacy mobile routes for backward compatibility */}
       <Route path="/mobile-app-demo" component={MobileAppDemo} />
       <Route path="/mobile-simulator" component={MobileSimulator} />
       <Route path="/mobile-driver" component={MobileDriver} />

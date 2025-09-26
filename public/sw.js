@@ -1,12 +1,16 @@
 // ReturnIt Service Worker for PWA functionality
-const CACHE_NAME = 'returnit-v1.1.0';
+const CACHE_NAME = 'returnit-v1.2.0';
 const STATIC_CACHE_URLS = [
   '/',
   '/book-pickup',
   '/driver-portal',
+  '/customer-app',
+  '/driver-app',
   '/favicon.svg',
   '/logo-cardboard-deep.png',
-  '/site.webmanifest'
+  '/site.webmanifest',
+  '/customer-app.webmanifest',
+  '/driver-app.webmanifest'
 ];
 
 // Install event - cache static resources

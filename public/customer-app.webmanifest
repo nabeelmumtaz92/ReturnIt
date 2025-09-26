@@ -1,0 +1,60 @@
+{
+  "name": "ReturnIt Customer - Book Returns",
+  "short_name": "ReturnIt",
+  "description": "Book return pickups and track your orders with ReturnIt",
+  "start_url": "/customer-app",
+  "display": "standalone",
+  "background_color": "#F5F0E6",
+  "theme_color": "#A47C48",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo-cardboard-deep.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo-cardboard-deep.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Book Pickup",
+      "short_name": "Book",
+      "description": "Book a new return pickup",
+      "url": "/customer-app#book",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "description": "View your return orders",
+      "url": "/customer-app#orders",
+      "icons": [
+        {
+          "src": "/favicon.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

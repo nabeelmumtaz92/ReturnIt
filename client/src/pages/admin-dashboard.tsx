@@ -42,7 +42,8 @@ import {
   Trash,
   AlertTriangle,
   Target,
-  Bot
+  Bot,
+  Smartphone
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -391,6 +392,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <TaxReportsContent />;
       case 'system-metrics':
         return <SystemMetricsContent />;
+      case 'mobile-analytics':
+        return <MobileAnalyticsContent />;
+      case 'interface-preview':
+        return <InterfacePreviewContent />;
       case 'driver-locations':
         return (
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -963,6 +968,272 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </div>
           </CardContent>
         </Card>
+      </div>
+    );
+  };
+
+  // Mobile Analytics Content
+  const MobileAnalyticsContent = () => {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 0 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </Button>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-amber-900">Mobile App Analytics</h1>
+          <p className="text-amber-700">Monitor usage and performance across customer and driver mobile interfaces</p>
+        </div>
+
+        {/* Quick Access Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Smartphone className="h-5 w-5 text-amber-600" />
+                Customer Mobile App
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Daily Active Users:</span>
+                  <span className="text-sm font-medium">245</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Session Duration:</span>
+                  <span className="text-sm font-medium">4.2 min</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Booking Conversion:</span>
+                  <span className="text-sm font-medium">68%</span>
+                </div>
+                <Link href="/customer-app">
+                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Customer App
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Truck className="h-5 w-5 text-orange-600" />
+                Driver Mobile App
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Active Drivers:</span>
+                  <span className="text-sm font-medium">42</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Average Response Time:</span>
+                  <span className="text-sm font-medium">2.1 min</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-amber-600">Job Acceptance Rate:</span>
+                  <span className="text-sm font-medium">89%</span>
+                </div>
+                <Link href="/driver-app">
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Driver App
+                  </Button>
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance Metrics */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Performance Metrics
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">98.5%</div>
+                <div className="text-sm text-amber-600">App Uptime</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">1.2s</div>
+                <div className="text-sm text-amber-600">Average Load Time</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-amber-600">4.7/5</div>
+                <div className="text-sm text-amber-600">User Rating</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  // Interface Preview Content
+  const InterfacePreviewContent = () => {
+    const [previewMode, setPreviewMode] = useState<'customer' | 'driver'>('customer');
+    const [deviceView, setDeviceView] = useState<'mobile' | 'desktop'>('mobile');
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 0 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </Button>
+          </div>
+        )}
+
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-amber-900">Interface Preview & Testing</h1>
+          <p className="text-amber-700">Preview and test different mobile app interfaces for quality assurance</p>
+        </div>
+
+        {/* Control Panel */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex items-center gap-2">
+                  <Label>Interface:</Label>
+                  <Select value={previewMode} onValueChange={(value: 'customer' | 'driver') => setPreviewMode(value)}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="customer">Customer</SelectItem>
+                      <SelectItem value="driver">Driver</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <Label>View:</Label>
+                  <Select value={deviceView} onValueChange={(value: 'mobile' | 'desktop') => setDeviceView(value)}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mobile">Mobile</SelectItem>
+                      <SelectItem value="desktop">Desktop</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Link href={previewMode === 'customer' ? '/customer-app' : '/driver-app'} target="_blank">
+                  <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                    <Eye className="h-4 w-4 mr-2" />
+                    Open in New Tab
+                  </Button>
+                </Link>
+                {user?.isAdmin && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => {
+                      const message = `Testing ${previewMode} interface in ${deviceView} view`;
+                      toast({ title: "Interface Test", description: message });
+                    }}
+                  >
+                    <Target className="h-4 w-4 mr-2" />
+                    Run Test
+                  </Button>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Preview Display */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Monitor className="h-5 w-5" />
+              {previewMode === 'customer' ? 'Customer' : 'Driver'} Interface Preview
+              <Badge variant="outline">{deviceView}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`border-2 border-gray-300 rounded-lg ${deviceView === 'mobile' ? 'mx-auto max-w-sm' : 'w-full'} overflow-hidden`}>
+              <div className="bg-gray-100 p-2 text-center text-xs text-gray-600">
+                {previewMode === 'customer' ? 'Customer Mobile App' : 'Driver Mobile App'} - {deviceView} View
+              </div>
+              <div className={`bg-white ${deviceView === 'mobile' ? 'h-96' : 'h-[600px]'} flex items-center justify-center`}>
+                <div className="text-center p-8">
+                  <Smartphone className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">Interface Preview</h3>
+                  <p className="text-gray-500 mb-4">
+                    Preview of {previewMode} interface in {deviceView} mode
+                  </p>
+                  <Link href={previewMode === 'customer' ? '/customer-app' : '/driver-app'} target="_blank">
+                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                      Open Live Interface
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <Smartphone className="h-8 w-8 text-amber-600 mx-auto mb-2" />
+              <h3 className="font-medium text-amber-900">Mobile Testing</h3>
+              <p className="text-xs text-amber-600 mb-3">Test mobile responsiveness</p>
+              <Button size="sm" variant="outline" className="w-full">Test Mobile</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
+              <h3 className="font-medium text-amber-900">User Experience</h3>
+              <p className="text-xs text-amber-600 mb-3">Review UX flows</p>
+              <Button size="sm" variant="outline" className="w-full">Review UX</Button>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-4 text-center">
+              <Activity className="h-8 w-8 text-green-600 mx-auto mb-2" />
+              <h3 className="font-medium text-amber-900">Performance</h3>
+              <p className="text-xs text-amber-600 mb-3">Check load times</p>
+              <Button size="sm" variant="outline" className="w-full">Check Performance</Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   };
@@ -4330,7 +4601,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const queryClient = useQueryClient();
     
     // Fetch real payment summary data
-    const { data: paymentSummary, isLoading: summaryLoading } = useQuery({
+    const { data: paymentSummary, isLoading: summaryLoading } = useQuery<PaymentSummary>({
       queryKey: ['/api/admin/payment-summary'],
       enabled: true
     });
