@@ -1,70 +1,115 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import apiClient from '../../shared/api-client';
+import authService from '../../shared/auth-service';
+import ErrorHandler from '../../shared/error-handler';
 
 export default function JobManagementScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('active');
+  const [activeJobs, setActiveJobs] = useState([]);
+  const [completedJobs, setCompletedJobs] = useState([]);
+  const [availableJobs, setAvailableJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const activeJobs = [
-    {
-      id: 'RT123456789',
-      type: 'Return to Best Buy',
-      customer: 'Sarah Johnson',
-      pickupAddress: '123 Main St, City, ST 12345',
-      dropoffAddress: 'Best Buy - Downtown Plaza',
-      status: 'Assigned',
-      estimatedEarnings: 15.50,
-      timeEstimate: '25 min',
-      distance: '2.3 miles',
-      scheduledTime: '2:30 PM',
-      priority: 'high',
-      packageDetails: 'Electronic return - Handle with care'
-    },
-    {
-      id: 'RT123456788',
-      type: 'Donation Pickup',
-      customer: 'Mike Chen',
-      pickupAddress: '456 Oak Ave, City, ST 12345',
-      dropoffAddress: 'Goodwill Center - North',
-      status: 'En Route',
-      estimatedEarnings: 12.00,
-      timeEstimate: '30 min',
-      distance: '1.8 miles',
-      scheduledTime: '3:00 PM',
-      priority: 'normal',
-      packageDetails: 'Clothing donation - 2 bags'
-    }
-  ];
+  useEffect(() => {
+    loadJobs();
+  }, []);
 
-  const completedJobs = [
-    {
-      id: 'RT123456787',
-      type: 'Return to Target',
-      customer: 'Lisa Wong',
-      completedAt: '1:45 PM',
-      earnings: 18.75,
-      rating: 5,
-      feedback: 'Excellent service, very professional!'
-    },
-    {
-      id: 'RT123456786',
-      type: 'Exchange at Amazon Hub',
-      customer: 'David Smith',
-      completedAt: '12:30 PM',
-      earnings: 14.25,
-      rating: 4,
-      feedback: 'Good delivery, on time.'
-    },
-    {
-      id: 'RT123456785',
-      type: 'Donation to Salvation Army',
-      customer: 'Emily Davis',
-      completedAt: '11:15 AM',
-      earnings: 10.00,
-      rating: 5,
-      feedback: 'Thank you for the careful handling!'
+  const loadJobs = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check authentication
+      if (!authService.isAuthenticated() || !authService.isDriver()) {
+        throw new Error('Driver authentication required');
+      }
+
+      // Load active/assigned jobs
+      const driverOrders = await apiClient.getDriverOrders();
+      const transformedActiveJobs = driverOrders.map(order => ({
+        id: order.id,
+        type: `Return to ${order.retailer}`,
+        customer: `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() || 'Customer',
+        pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+        dropoffAddress: order.retailer,
+        status: formatJobStatus(order.status),
+        estimatedEarnings: order.driverTotalEarning || 0,
+        timeEstimate: estimateTime(order),
+        distance: estimateDistance(order),
+        scheduledTime: order.scheduledPickupTime ? new Date(order.scheduledPickupTime).toLocaleTimeString() : 'TBD',
+        priority: order.priority || 'normal',
+        packageDetails: order.itemDescription || 'Package pickup'
+      }));
+      setActiveJobs(transformedActiveJobs);
+
+      // Load available jobs if needed
+      if (activeTab === 'available') {
+        const available = await apiClient.getAvailableJobs();
+        const transformedAvailable = available.map(order => ({
+          id: order.id,
+          type: `Return to ${order.retailer}`,
+          pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+          dropoffAddress: order.retailer,
+          estimatedEarnings: order.driverTotalEarning || 0,
+          timeEstimate: estimateTime(order),
+          distance: estimateDistance(order),
+          priority: order.priority || 'normal'
+        }));
+        setAvailableJobs(transformedAvailable);
+      }
+
+    } catch (err) {
+      const appError = ErrorHandler.handleAPIError(err);
+      setError(appError.userFriendly);
+      ErrorHandler.logError(appError, { screen: 'JobManagement' });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadJobs();
+    setRefreshing(false);
+  };
+
+  const formatJobStatus = (status) => {
+    const statusMap = {
+      'assigned': 'Assigned',
+      'pickup_scheduled': 'Scheduled',
+      'picked_up': 'En Route',
+      'in_transit': 'En Route',
+      'delivered': 'Delivered',
+      'completed': 'Completed'
+    };
+    return statusMap[status] || status;
+  };
+
+  const estimateTime = (order) => {
+    // Simple time estimation based on distance/complexity
+    return '25-35 min';
+  };
+
+  const estimateDistance = (order) => {
+    // Would calculate based on coordinates in real implementation
+    return '2-5 miles';
+  };
+
+  const handleAcceptJob = async (jobId) => {
+    try {
+      await apiClient.acceptJob(jobId);
+      Alert.alert('Job Accepted', 'You have successfully accepted this job!', [
+        { text: 'OK', onPress: () => loadJobs() }
+      ]);
+    } catch (err) {
+      const appError = ErrorHandler.handleAPIError(err);
+      Alert.alert('Error', appError.userFriendly);
+    }
+  };
 
   const handleJobAction = (jobId, action) => {
     switch (action) {

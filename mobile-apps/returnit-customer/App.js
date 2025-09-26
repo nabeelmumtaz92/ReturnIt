@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import 'react-native-gesture-handler';
 
 // Import screens
@@ -11,9 +12,58 @@ import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SupportScreen from './screens/SupportScreen';
 
+// Import auth and API services
+import authService from '../shared/auth-service';
+import apiClient from '../shared/api-client';
+
 const Stack = createStackNavigator();
 
+// Loading Screen Component
+function LoadingScreen() {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator size="large" color="#FF6B35" />
+      <Text style={styles.loadingText}>Loading ReturnIt...</Text>
+    </View>
+  );
+}
+
 export default function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    initializeApp();
+  }, []);
+
+  const initializeApp = async () => {
+    try {
+      // Initialize authentication service
+      await authService.initialize();
+      
+      // Check authentication status
+      const authenticated = authService.isAuthenticated();
+      setIsAuthenticated(authenticated);
+
+      // Add auth state listener
+      const unsubscribe = authService.addAuthListener((event, user) => {
+        console.log('Auth event:', event, user?.email);
+        setIsAuthenticated(authService.isAuthenticated());
+      });
+
+      // Store unsubscribe function for cleanup
+      return unsubscribe;
+    } catch (error) {
+      console.error('App initialization error:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -34,3 +84,18 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF8F3',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#8B4513',
+    fontWeight: '500',
+  },
+});

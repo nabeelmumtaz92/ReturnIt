@@ -1,42 +1,94 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import apiClient from '../../shared/api-client';
+import authService from '../../shared/auth-service';
+import ErrorHandler from '../../shared/error-handler';
 
 export default function OrderHistoryScreen({ navigation }) {
-  const orderHistory = [
-    {
-      id: 'RT123456789',
-      type: 'Return to Best Buy',
-      date: '2024-01-15',
-      status: 'Delivered',
-      amount: '$25.99',
-      items: 'Wireless Headphones'
-    },
-    {
-      id: 'RT123456788',
-      type: 'Donation to Goodwill',
-      date: '2024-01-10',
-      status: 'Completed',
-      amount: 'Free',
-      items: 'Clothing (3 bags)'
-    },
-    {
-      id: 'RT123456787',
-      type: 'Exchange at Target',
-      date: '2024-01-05',
-      status: 'Delivered',
-      amount: '$15.50',
-      items: 'Kitchen Appliance'
-    },
-    {
-      id: 'RT123456786',
-      type: 'Return to Amazon',
-      date: '2023-12-28',
-      status: 'Delivered',
-      amount: '$12.99',
-      items: 'Phone Case'
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    loadOrderHistory();
+  }, []);
+
+  const loadOrderHistory = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Check authentication
+      if (!authService.isAuthenticated()) {
+        throw new Error('Please log in to view your order history');
+      }
+
+      const orders = await apiClient.getOrders();
+      
+      // Transform API data to match UI expectations
+      const transformedOrders = orders.map(order => ({
+        id: order.trackingNumber || order.id,
+        type: `Return to ${order.retailer}`,
+        date: new Date(order.createdAt).toLocaleDateString(),
+        status: formatOrderStatus(order.status),
+        amount: order.totalPrice ? `$${order.totalPrice.toFixed(2)}` : 'N/A',
+        items: order.itemDescription || 'Package'
+      }));
+
+      setOrderHistory(transformedOrders);
+    } catch (err) {
+      const appError = ErrorHandler.handleAPIError(err);
+      setError(appError.userFriendly);
+      ErrorHandler.logError(appError, { screen: 'OrderHistory' });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await loadOrderHistory();
+    setRefreshing(false);
+  };
+
+  const formatOrderStatus = (status) => {
+    const statusMap = {
+      'created': 'Pending',
+      'confirmed': 'Confirmed', 
+      'assigned': 'Driver Assigned',
+      'picked_up': 'Picked Up',
+      'in_transit': 'In Transit',
+      'delivered': 'Delivered',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled',
+      'refunded': 'Refunded'
+    };
+    return statusMap[status] || status;
+  };
+
+  if (loading && !refreshing) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <StatusBar style="dark" />
+        <ActivityIndicator size="large" color="#FF6B35" />
+        <Text style={styles.loadingText}>Loading your orders...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <StatusBar style="dark" />
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={loadOrderHistory}>
+          <Text style={styles.retryButtonText}>Try Again</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   const getStatusColor = (status) => {
     switch (status) {
