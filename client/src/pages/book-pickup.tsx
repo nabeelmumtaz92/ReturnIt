@@ -97,6 +97,7 @@ export default function BookPickup() {
   const [selectedStore, setSelectedStore] = useState<NearbyStore | null>(null);
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const [pricingBreakdown, setPricingBreakdown] = useState<ReturnType<typeof calculatePaymentWithValue> | null>(null);
 
   // Item categories for multiple selection
   const itemCategories = [
@@ -311,18 +312,55 @@ export default function BookPickup() {
     setPickupLocation(location);
   };
 
-  // Route fare calculation handler
-  const handleFareCalculated = (routeInfo: RouteInfo) => {
+  // Route fare calculation handler with pricing calculation
+  const handleFareCalculated = (fare: number, routeInfo: RouteInfo) => {
     setRouteInfo(routeInfo);
+    
+    // Calculate pricing breakdown using payment calculator
+    const itemValue = parseFloat(formData.itemValue) || 50; // Default to $50 if no value
+    const numberOfItems = formData.numberOfItems || 1;
+    const paymentRouteInfo: PaymentRouteInfo = {
+      distance: parseFloat(routeInfo.distance.replace(' miles', '')) || 0,
+      estimatedTime: parseFloat(routeInfo.duration.replace(' mins', '')) || 0
+    };
+    
+    const breakdown = calculatePaymentWithValue(
+      paymentRouteInfo,
+      itemValue,
+      numberOfItems,
+      false, // not rush delivery
+      0 // no tip initially
+    );
+    
+    setPricingBreakdown(breakdown);
   };
+
+  // Recalculate pricing when form data changes
+  useEffect(() => {
+    if (routeInfo && formData.itemValue) {
+      const itemValue = parseFloat(formData.itemValue) || 50;
+      const numberOfItems = formData.numberOfItems || 1;
+      const paymentRouteInfo: PaymentRouteInfo = {
+        distance: parseFloat(routeInfo.distance.replace(' miles', '')) || 0,
+        estimatedTime: parseFloat(routeInfo.duration.replace(' mins', '')) || 0
+      };
+      
+      const breakdown = calculatePaymentWithValue(
+        paymentRouteInfo,
+        itemValue,
+        numberOfItems,
+        false, // not rush delivery  
+        0 // no tip initially
+      );
+      
+      setPricingBreakdown(breakdown);
+    }
+  }, [formData.itemValue, formData.numberOfItems, routeInfo]);
 
   // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
-      return apiRequest('/api/orders', {
-        method: 'POST',
-        body: JSON.stringify(orderData),
-      });
+      return apiRequest('/api/orders', 'POST', orderData);
     },
     onSuccess: (data) => {
       toast({
@@ -803,35 +841,78 @@ export default function BookPickup() {
         />
       )}
 
-      {/* Pricing */}
+      {/* Dynamic Pricing */}
       <div className="space-y-4">
-        <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-          <div className="flex justify-between items-center">
-            <span className="text-amber-900 font-semibold text-lg">Subtotal:</span>
-            <span className="text-amber-900 font-bold text-xl" data-testid="text-subtotal-amount">$3.99</span>
-          </div>
-          {routeInfo && (
-            <p className="text-xs text-amber-600">
-              ETA: {routeInfo.duration} • Price locked at booking
-            </p>
-          )}
-        </div>
+        {pricingBreakdown ? (
+          <>
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <div className="flex justify-between items-center">
+                <span className="text-amber-900 font-semibold text-lg">Base Service:</span>
+                <span className="text-amber-900 font-bold text-xl" data-testid="text-base-amount">${pricingBreakdown.basePrice.toFixed(2)}</span>
+              </div>
+              {routeInfo && (
+                <p className="text-xs text-amber-600">
+                  ETA: {routeInfo.duration} • Distance: {routeInfo.distance}
+                </p>
+              )}
+            </div>
 
-        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-          <h4 className="text-blue-900 font-semibold mb-3">Fees & Taxes</h4>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-blue-700">Service Fee (15%):</span><span className="font-medium">$0.60</span></div>
-            <div className="flex justify-between"><span className="text-blue-700">Processing Fee:</span><span className="font-medium">$0.30</span></div>
-            <div className="flex justify-between"><span className="text-blue-700">Tax (8.99%):</span><span className="font-medium">$0.44</span></div>
-          </div>
-        </div>
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <h4 className="text-blue-900 font-semibold mb-3">Additional Fees</h4>
+              <div className="space-y-2 text-sm">
+                {pricingBreakdown.distanceFee > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Distance Fee:</span>
+                    <span className="font-medium">${pricingBreakdown.distanceFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {pricingBreakdown.timeFee > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Time Fee:</span>
+                    <span className="font-medium">${pricingBreakdown.timeFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {pricingBreakdown.sizeUpcharge > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Size Upcharge:</span>
+                    <span className="font-medium">${pricingBreakdown.sizeUpcharge.toFixed(2)}</span>
+                  </div>
+                )}
+                {pricingBreakdown.multiItemFee > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Multi-Item Fee:</span>
+                    <span className="font-medium">${pricingBreakdown.multiItemFee.toFixed(2)}</span>
+                  </div>
+                )}
+                {pricingBreakdown.smallOrderFee > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">Small Order Fee:</span>
+                    <span className="font-medium">${pricingBreakdown.smallOrderFee.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between border-t pt-2">
+                  <span className="text-blue-700">Service Fee (15%):</span>
+                  <span className="font-medium">${pricingBreakdown.serviceFee.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
 
-        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-          <div className="flex justify-between items-center">
-            <span className="text-green-900 font-bold text-lg">Total:</span>
-            <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">$5.33</span>
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <div className="flex justify-between items-center">
+                <span className="text-green-900 font-bold text-lg">Total:</span>
+                <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">${pricingBreakdown.totalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+            <div className="flex justify-between items-center">
+              <span className="text-amber-900 font-semibold text-lg">Base Service:</span>
+              <span className="text-amber-900 font-bold text-xl" data-testid="text-base-amount">$3.99</span>
+            </div>
+            <p className="text-xs text-amber-600 mt-2">Final pricing will be calculated with route information</p>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Payment */}
