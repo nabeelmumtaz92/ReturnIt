@@ -339,6 +339,15 @@ export const orders = pgTable("orders", {
   returnRefusedReason: text("return_refused_reason"), // Why store refused (expired return window, no receipt, damaged, policy violation)
   returnRefusedPhotos: jsonb("return_refused_photos").default([]), // Photos of refused return attempt
   returnToCustomer: boolean("return_to_customer").default(false), // Driver returned items to customer
+  
+  // Policy enforcement tracking
+  policyViolations: jsonb("policy_violations").default([]), // Array of policy violation details
+  policyWarnings: jsonb("policy_warnings").default([]), // Array of policy warnings
+  requiresPolicyReview: boolean("requires_policy_review").default(false), // If order needs manual review
+  policyReviewStatus: text("policy_review_status").default("pending"), // pending, approved, rejected
+  policyReviewedBy: integer("policy_reviewed_by").references(() => users.id), // Admin who reviewed
+  policyReviewedAt: timestamp("policy_reviewed_at"), // When policy review was completed
+  policyNotes: text("policy_notes"), // Admin notes about policy review
   returnToCustomerTime: timestamp("return_to_customer_time"), // When items were returned to customer
   returnToCustomerPhotos: jsonb("return_to_customer_photos").default([]), // Photos of customer return
   additionalDeliveryFee: real("additional_delivery_fee").default(0), // Extra fee for return to customer trip

@@ -20,6 +20,7 @@ import RoutePreview from "@/components/RoutePreview";
 import { PaymentBreakdown } from "@/components/PaymentBreakdown";
 import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
 import type { RouteInfo as PaymentRouteInfo } from "@shared/paymentCalculator";
+import { validateOrderPolicy, determinePolicyAction, PolicyAction, formatPolicyMessage } from "@shared/policyValidator";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 import Footer from "@/components/Footer";
 
@@ -98,6 +99,7 @@ export default function BookPickup() {
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [pricingBreakdown, setPricingBreakdown] = useState<ReturnType<typeof calculatePaymentWithValue> | null>(null);
+  const [policyValidation, setPolicyValidation] = useState<{ isValid: boolean; message: string; warnings: string[] } | null>(null);
 
   // Item categories for multiple selection
   const itemCategories = [
@@ -356,6 +358,29 @@ export default function BookPickup() {
       setPricingBreakdown(breakdown);
     }
   }, [formData.itemValue, formData.numberOfItems, routeInfo]);
+
+  // Validate order against policies in real-time
+  useEffect(() => {
+    if (formData.itemDescription || formData.itemCategories.length > 0 || formData.retailer) {
+      const result = validateOrderPolicy({
+        itemDescription: formData.itemDescription,
+        itemCategory: formData.itemCategories.join(', '), // Convert array to string
+        retailer: formData.retailer,
+        itemValue: parseFloat(formData.itemValue) || 0,
+        numberOfItems: formData.numberOfItems || 1,
+        estimatedWeight: formData.estimatedWeight
+      });
+
+      const action = determinePolicyAction(result);
+      const message = formatPolicyMessage(result);
+
+      setPolicyValidation({
+        isValid: action !== PolicyAction.BLOCK,
+        message,
+        warnings: result.warnings
+      });
+    }
+  }, [formData.itemDescription, formData.itemCategories, formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
 
   // Create order mutation
   const createOrderMutation = useMutation({
@@ -912,6 +937,45 @@ export default function BookPickup() {
             </div>
             <p className="text-xs text-amber-600 mt-2">Final pricing will be calculated with route information</p>
           </div>
+          
+          {/* Policy Validation Display */}
+          {policyValidation && (
+            <div className={`p-4 rounded-lg border ${
+              !policyValidation.isValid 
+                ? 'bg-red-50 border-red-200' 
+                : policyValidation.warnings.length > 0
+                ? 'bg-yellow-50 border-yellow-200'
+                : 'bg-green-50 border-green-200'
+            }`}>
+              <div className="flex items-start space-x-2">
+                {!policyValidation.isValid ? (
+                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                ) : policyValidation.warnings.length > 0 ? (
+                  <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                ) : (
+                  <Shield className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                )}
+                <div className="flex-1">
+                  <p className={`text-sm font-medium ${
+                    !policyValidation.isValid ? 'text-red-800' : 
+                    policyValidation.warnings.length > 0 ? 'text-yellow-800' : 'text-green-800'
+                  }`}>
+                    {policyValidation.message}
+                  </p>
+                  {policyValidation.warnings.length > 0 && (
+                    <ul className="mt-2 text-xs text-yellow-700 space-y-1">
+                      {policyValidation.warnings.map((warning, index) => (
+                        <li key={index} className="flex items-start space-x-1">
+                          <span className="text-yellow-600">•</span>
+                          <span>{warning}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         )}
       </div>
 

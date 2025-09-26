@@ -1110,8 +1110,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = (req.session as any).user.id;
       
+      // Import policy validator
+      const { validateOrderPolicy, determinePolicyAction, PolicyAction } = await import('@shared/policyValidator');
+      
+      // Validate order against policies
+      const policyResult = validateOrderPolicy({
+        itemDescription: req.body.itemDescription || '',
+        itemCategory: req.body.itemCategory || '',
+        retailer: req.body.retailer || '',
+        itemValue: parseFloat(req.body.itemValue || '0'),
+        numberOfItems: parseInt(req.body.numberOfItems || '1'),
+        estimatedWeight: req.body.estimatedWeight
+      });
+      
+      const policyAction = determinePolicyAction(policyResult);
+      
+      // Block order if policy violations found
+      if (policyAction === PolicyAction.BLOCK) {
+        return res.status(400).json({
+          message: "Order cannot be processed due to policy violations",
+          violations: policyResult.violations,
+          code: 'POLICY_VIOLATION'
+        });
+      }
+      
       // Calculate payment breakdown if route info is available
-      let orderData = { ...req.body, userId };
+      let orderData = { 
+        ...req.body, 
+        userId,
+        // Add policy validation results
+        policyViolations: policyResult.violations,
+        policyWarnings: policyResult.warnings,
+        requiresPolicyReview: policyResult.requiresReview,
+        policyReviewStatus: policyResult.requiresReview ? 'pending' : 'approved'
+      };
       
       if (req.body.routeInfo) {
         const { calculatePayment } = await import('@shared/paymentCalculator');
