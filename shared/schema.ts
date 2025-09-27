@@ -51,6 +51,16 @@ export const users = pgTable("users", {
   paymentPreference: text("payment_preference").default("weekly"), // weekly, instant
   instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
   
+  // Driver onboarding and application status
+  applicationStatus: text("application_status").default("pending_review"), // pending_review, documents_required, approved_active, rejected
+  onboardingStep: text("onboarding_step").default("signup"), // signup, documents, banking, approval, complete
+  projectedHireDate: timestamp("projected_hire_date"), // Estimated hire date for this driver's ZIP
+  approvedAt: timestamp("approved_at"),
+  rejectedAt: timestamp("rejected_at"),
+  rejectionReason: text("rejection_reason"),
+  otpVerified: boolean("otp_verified").default(false),
+  termsAcceptedAt: timestamp("terms_accepted_at"),
+  
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),
   hireDate: timestamp("hire_date"),
@@ -1839,3 +1849,86 @@ export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type InsertWebhookEvent = z.infer<typeof insertWebhookEventSchema>;
 export type WebhookDelivery = typeof webhookDeliveries.$inferSelect;
 export type InsertWebhookDelivery = z.infer<typeof insertWebhookDeliverySchema>;
+
+// Customer Waitlist for pre-launch signups
+export const customerWaitlist = pgTable("customer_waitlist", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  email: text("email").notNull().unique(),
+  firstName: text("first_name").notNull(),
+  lastName: text("last_name").notNull(),
+  phone: text("phone").notNull(),
+  streetAddress: text("street_address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  coordinates: jsonb("coordinates"), // {lat: number, lng: number}
+  addressVerified: boolean("address_verified").default(false),
+  status: text("status").default("waitlist"), // waitlist, active, launched
+  projectedLaunchDate: timestamp("projected_launch_date"),
+  notificationPreferences: jsonb("notification_preferences").default({}), // email, sms preferences
+  referralCode: text("referral_code"),
+  referredBy: integer("referred_by").references(() => customerWaitlist.id),
+  marketingOptIn: boolean("marketing_opt_in").default(true),
+  launchedAt: timestamp("launched_at"),
+  notifiedAt: timestamp("notified_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// ZIP Code Management for launch planning
+export const zipCodeManagement = pgTable("zip_code_management", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  zipCode: text("zip_code").notNull().unique(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  isActive: boolean("is_active").default(false), // Service is live in this ZIP
+  driverCount: integer("driver_count").default(0), // Number of approved drivers
+  customerCount: integer("customer_count").default(0), // Number of waitlist customers
+  projectedDriverHireDays: integer("projected_driver_hire_days").default(30), // Days until driver hiring
+  projectedCustomerLaunchDays: integer("projected_customer_launch_days").default(45), // Days until customer launch
+  minimumDrivers: integer("minimum_drivers").default(20), // Required drivers before launch
+  launchPriority: integer("launch_priority").default(1), // 1=highest, 5=lowest priority
+  notes: text("notes"),
+  activatedAt: timestamp("activated_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// OTP Verification for phone number verification
+export const otpVerification = pgTable("otp_verification", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  phoneNumber: text("phone_number").notNull(),
+  otpCode: text("otp_code").notNull(),
+  purpose: text("purpose").notNull(), // signup, password_reset, phone_change
+  isVerified: boolean("is_verified").default(false),
+  expiresAt: timestamp("expires_at").notNull(),
+  verifiedAt: timestamp("verified_at"),
+  attempts: integer("attempts").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Insert schemas for new tables
+export const insertCustomerWaitlistSchema = createInsertSchema(customerWaitlist).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertZipCodeManagementSchema = createInsertSchema(zipCodeManagement).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertOtpVerificationSchema = createInsertSchema(otpVerification).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types for new tables
+export type CustomerWaitlist = typeof customerWaitlist.$inferSelect;
+export type InsertCustomerWaitlist = z.infer<typeof insertCustomerWaitlistSchema>;
+export type ZipCodeManagement = typeof zipCodeManagement.$inferSelect;
+export type InsertZipCodeManagement = z.infer<typeof insertZipCodeManagementSchema>;
+export type OtpVerification = typeof otpVerification.$inferSelect;
+export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
