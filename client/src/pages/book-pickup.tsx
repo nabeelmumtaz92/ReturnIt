@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -387,6 +387,28 @@ export default function BookPickup() {
     }
   }, [formData.itemDescription, formData.itemCategories, formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
 
+  // Fetch available retailers on component mount
+  useEffect(() => {
+    const fetchRetailers = async () => {
+      try {
+        const response = await fetch('/api/stores/retailers');
+        if (response.ok) {
+          const retailers = await response.json();
+          const retailerNames = retailers.map((r: any) => r.retailer_name);
+          setAvailableRetailers(retailerNames);
+        } else {
+          // Fallback to popular retailers if API fails
+          setAvailableRetailers(popularRetailers);
+        }
+      } catch (error) {
+        console.error('Error fetching retailers:', error);
+        setAvailableRetailers(popularRetailers);
+      }
+    };
+    
+    fetchRetailers();
+  }, []);
+
   // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
@@ -526,6 +548,33 @@ export default function BookPickup() {
               onStoreSelect={handleStoreSelect}
               customerLocation={pickupLocation || undefined}
             />
+            
+            {/* Display selected store information */}
+            {selectedStore && (
+              <div className="mt-3 p-3 bg-green-50/80 border border-green-200 rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <Store className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-green-800">
+                      Store Selected: {selectedStore.name}
+                    </p>
+                    <p className="text-xs text-green-600 mt-1">
+                      {selectedStore.address}
+                    </p>
+                    <div className="flex items-center space-x-3 mt-1">
+                      <span className="text-xs text-green-600">
+                        📍 {selectedStore.distance}
+                      </span>
+                      {selectedStore.isOpen ? (
+                        <span className="text-xs text-green-600">🟢 Open</span>
+                      ) : (
+                        <span className="text-xs text-red-600">🔴 Closed</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
