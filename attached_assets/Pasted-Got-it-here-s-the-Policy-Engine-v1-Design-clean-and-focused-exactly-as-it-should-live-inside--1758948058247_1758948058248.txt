@@ -1,0 +1,110 @@
+Got it — here’s the **Policy Engine v1 Design** clean and focused, exactly as it should live inside **customer + driver apps today** with superadmin controls.
+
+---
+
+# 🛠️ ReturnIt Policy Engine (v1 Design)
+
+### 🎯 Goal
+
+* Enforce **merchant return rules** directly inside the **customer booking flow**
+* Trigger **webhooks** for policy-related events
+* Allow ReturnIt HQ (superadmin) to manage policies centrally until merchant portal is built
+
+---
+
+## 🔹 Data Model (Core Schema)
+
+**MerchantPolicy**
+
+```ts
+{
+  merchantId: "uuid",
+  storeName: "Target",
+  policy: {
+    returnWindowDays: 90,
+    receiptRequired: true,
+    tagsRequired: true,
+    originalPackagingRequired: false,
+    allowedCategories: ["Electronics", "Clothing & Apparel", "Home & Garden"],
+    excludedCategories: ["Final Sale", "Open Box"],
+    holidayExtension: {
+      enabled: true,
+      start: "2025-11-15",
+      end: "2026-01-15"
+    },
+    refundMethod: "original_payment" | "store_credit" | "exchange_only",
+    restockingFee: {
+      enabled: false,
+      percentage: 0
+    }
+  },
+  updatedAt: "2025-09-26T10:00:00Z"
+}
+```
+
+---
+
+## 🔹 Booking Flow Validation (Customer App)
+
+1. Customer selects **store** → system fetches merchant policy.
+2. Validation checks:
+
+   * Item within return window (`purchaseDate` vs. `returnWindowDays`).
+   * Receipt uploaded if `receiptRequired`.
+   * Tags confirmed if `tagsRequired`.
+   * Category allowed (not in excluded list).
+3. If **any condition fails**, customer sees a **store-specific error**:
+
+> ❌ *“This return is not eligible per Target return policy: final sale items cannot be returned.”*
+
+---
+
+## 🔹 Webhook Events
+
+* `policy.updated` → Policy updated in ReturnIt system
+* `policy.violation_detected` → Customer attempted return outside policy
+* `policy.enforced` → Return validated & accepted under current policy
+* `policy.expired` → Return window expired for attempted return
+
+---
+
+## 🔹 Superadmin Panel Additions (ReturnIt HQ Only)
+
+* **Merchant Policy Manager**
+
+  * Create/edit/delete policies per merchant
+  * Input: return window, receipt/tags required, refund method, categories
+  * Upload official return policy PDF (optional)
+  * Track “last updated by”
+
+* **Policy Violation Log**
+
+  * All failed booking attempts (what failed, which merchant)
+  * Filter by merchant, date, violation type
+  * Exportable for internal analysis
+
+* **Webhook Delivery Monitor**
+
+  * Track webhook attempts for policy events
+  * Retry failed deliveries manually
+
+---
+
+## 🔹 Future Extensions
+
+* **Version Control:** Store historical policy versions (for disputes).
+* **Quarterly Sync:** Manually refresh policies against retailer sites.
+* **AI OCR Validation:** Auto-check receipt uploads for compliance.
+
+---
+
+✅ This v1 setup ensures:
+
+* **Customers** never try to book outside merchant rules.
+* **Drivers** only handle eligible returns.
+* **Superadmin** keeps control until merchant self-service is ready.
+* **Merchants (future)** get clean webhook updates when you integrate.
+
+---
+
+Do you want me to now draft the **TypeScript validation module (`policy.rules.ts`)** so this design becomes plug-and-play in your booking flow?

@@ -626,6 +626,63 @@ export const dimServiceLevel = pgTable("dim_service_level", {
   isActive: boolean("is_active").default(true),
 });
 
+// POLICY ENGINE V1 - Merchant Return Policies
+export const merchantPolicies = pgTable("merchant_policies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  merchantId: text("merchant_id").notNull().unique(), // External merchant identifier
+  storeName: text("store_name").notNull(), // "Target", "Macy's", "Best Buy"
+  
+  // Policy Configuration (jsonb for flexibility)
+  policy: jsonb("policy").default({
+    returnWindowDays: 30,
+    receiptRequired: true,
+    tagsRequired: true,
+    originalPackagingRequired: false,
+    allowedCategories: [],
+    excludedCategories: [],
+    holidayExtension: {
+      enabled: false,
+      start: null,
+      end: null
+    },
+    refundMethod: "original_payment", // original_payment, store_credit, exchange_only
+    restockingFee: {
+      enabled: false,
+      percentage: 0
+    }
+  }).notNull(),
+  
+  // Administrative
+  isActive: boolean("is_active").default(true).notNull(),
+  lastUpdatedBy: text("last_updated_by"), // Admin user who updated
+  notes: text("notes"), // Internal notes about policy changes
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Policy Violation Tracking
+export const policyViolations = pgTable("policy_violations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  merchantId: text("merchant_id").notNull(),
+  customerId: integer("customer_id").references(() => users.id),
+  orderId: text("order_id").references(() => orders.id), // If order was created despite violation
+  
+  // Violation Details
+  violationType: text("violation_type").notNull(), // return_window_expired, receipt_required, category_excluded, etc.
+  violationReason: text("violation_reason").notNull(), // Human-readable description
+  attemptedBookingData: jsonb("attempted_booking_data").notNull(), // What the customer tried to book
+  policyData: jsonb("policy_data").notNull(), // Policy that was violated
+  
+  // Resolution
+  resolved: boolean("resolved").default(false),
+  resolution: text("resolution"), // override_allowed, customer_contacted, etc.
+  resolvedBy: text("resolved_by"), // Admin user
+  resolvedAt: timestamp("resolved_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Transaction Management
 export const transactions = pgTable("transactions", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1166,6 +1223,53 @@ export const insertBusinessInfoSchema = createInsertSchema(businessInfo).omit({
   updatedAt: true,
 });
 
+// POLICY ENGINE SCHEMAS
+// Policy Configuration TypeScript Interface (must be declared first)
+export const PolicyConfigSchema = z.object({
+  returnWindowDays: z.number().min(0).max(365),
+  receiptRequired: z.boolean(),
+  tagsRequired: z.boolean(),
+  originalPackagingRequired: z.boolean(),
+  allowedCategories: z.array(z.string()),
+  excludedCategories: z.array(z.string()),
+  holidayExtension: z.object({
+    enabled: z.boolean(),
+    start: z.string().nullable(),
+    end: z.string().nullable()
+  }),
+  refundMethod: z.enum(["original_payment", "store_credit", "exchange_only"]),
+  restockingFee: z.object({
+    enabled: z.boolean(),
+    percentage: z.number().min(0).max(100)
+  })
+});
+
+export type PolicyConfig = z.infer<typeof PolicyConfigSchema>;
+
+export const insertMerchantPolicySchema = createInsertSchema(merchantPolicies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  merchantId: z.string().min(1, "Merchant ID required"),
+  storeName: z.string().min(1, "Store name required"),
+  policy: PolicyConfigSchema
+});
+
+export const insertPolicyViolationSchema = createInsertSchema(policyViolations).omit({
+  id: true,
+  createdAt: true,
+}).extend({
+  merchantId: z.string().min(1, "Merchant ID required"),
+  violationType: z.string().min(1, "Violation type required"),
+  violationReason: z.string().min(1, "Violation reason required")
+});
+
+export type InsertMerchantPolicy = z.infer<typeof insertMerchantPolicySchema>;
+export type SelectMerchantPolicy = typeof merchantPolicies.$inferSelect;
+export type InsertPolicyViolation = z.infer<typeof insertPolicyViolationSchema>;
+export type SelectPolicyViolation = typeof policyViolations.$inferSelect;
+
 // New table insert schemas
 export const insertCitySchema = createInsertSchema(cities).omit({
   id: true,
@@ -1689,7 +1793,13 @@ export const WebhookEventType = {
   // Driver Events (for enterprise clients who want driver insights)
   DRIVER_ASSIGNED: 'driver.assigned',            // Specific driver assigned
   DRIVER_LOCATION_UPDATED: 'driver.location_updated', // Driver location ping
-  DRIVER_STATUS_UPDATED: 'driver.status_updated'     // Driver status change
+  DRIVER_STATUS_UPDATED: 'driver.status_updated',     // Driver status change
+
+  // Policy Engine Events (for merchant return policy management)
+  POLICY_UPDATED: 'policy.updated',              // Merchant policy updated
+  POLICY_VIOLATION_DETECTED: 'policy.violation_detected', // Customer attempted return outside policy
+  POLICY_ENFORCED: 'policy.enforced',            // Return validated & accepted under current policy
+  POLICY_EXPIRED: 'policy.expired'               // Return window expired for attempted return
 } as const;
 
 export type WebhookEventType = (typeof WebhookEventType)[keyof typeof WebhookEventType];
