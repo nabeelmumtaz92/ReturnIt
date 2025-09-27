@@ -1275,6 +1275,145 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.sendFile(path.join(__dirname, '../client/public/privacy-policy.html'));
   });
 
+  // Google Play Store Compliance: User Account Deletion Endpoint
+  app.post("/api/account/delete", async (req, res) => {
+    try {
+      // Require authentication
+      if (!req.session.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const userId = req.session.user.id;
+      const { confirmationText, reason } = req.body;
+
+      // Validate deletion confirmation
+      if (confirmationText !== "DELETE MY ACCOUNT") {
+        return res.status(400).json({ 
+          message: "Please type 'DELETE MY ACCOUNT' to confirm account deletion" 
+        });
+      }
+
+      // Get user data before deletion for confirmation
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Log deletion request for compliance
+      console.log(`Account deletion requested for user ${user.email} (ID: ${userId}). Reason: ${reason || 'Not specified'}`);
+
+      // Delete user data (using existing AI assistant function)
+      const { AIAssistant } = await import('./ai-assistant');
+      const deletionResult = await AIAssistant.deleteUser(user.email);
+
+      if (deletionResult.error) {
+        return res.status(500).json({ 
+          message: "Failed to delete account. Please contact support.",
+          error: deletionResult.error
+        });
+      }
+
+      // Destroy user session
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Session destruction error:', err);
+        }
+      });
+
+      res.json({ 
+        message: "Your account has been successfully deleted along with all associated data.",
+        deletedData: {
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          deletedAt: new Date().toISOString()
+        }
+      });
+
+    } catch (error: any) {
+      console.error('Account deletion error:', error);
+      res.status(500).json({ 
+        message: "An error occurred while deleting your account. Please contact support.",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  });
+
+  // Google Play Store Compliance: Data Export Endpoint
+  app.get("/api/account/export", async (req, res) => {
+    try {
+      // Require authentication
+      if (!req.session.user?.id) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const userId = req.session.user.id;
+      
+      // Get user data
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's orders
+      const orders = await storage.getUserOrders(userId);
+
+      // Get user's notifications
+      const notifications = await storage.getUserNotifications(userId);
+
+      // Prepare exportable data
+      const exportData = {
+        exportInfo: {
+          requestedAt: new Date().toISOString(),
+          userId: userId,
+          format: "JSON"
+        },
+        personalData: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          role: user.role,
+          createdAt: user.createdAt,
+          preferences: user.preferences || {}
+        },
+        orders: orders.map(order => ({
+          id: order.id,
+          status: order.status,
+          itemDescription: order.itemDescription,
+          retailer: order.retailer,
+          createdAt: order.createdAt,
+          totalPrice: order.totalPrice
+        })),
+        notifications: notifications.map(notif => ({
+          id: notif.id,
+          message: notif.message,
+          createdAt: notif.createdAt,
+          isRead: notif.isRead
+        })),
+        summary: {
+          totalOrders: orders.length,
+          totalNotifications: notifications.length,
+          accountAge: user.createdAt ? Math.floor((Date.now() - new Date(user.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 0
+        }
+      };
+
+      // Set headers for file download
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="returnit-data-export-${userId}-${Date.now()}.json"`);
+      
+      res.json(exportData);
+
+    } catch (error: any) {
+      console.error('Data export error:', error);
+      res.status(500).json({ 
+        message: "Failed to export data",
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+  });
+
   // OAuth Test Page
   app.get('/test-oauth', (req, res) => {
     const path = require('path');
