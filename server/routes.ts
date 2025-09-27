@@ -2126,10 +2126,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { orderId } = req.params;
       const order = await storage.assignOrderToDriver(orderId, user.id);
-      res.json(order);
+      
+      // Send timeline info back to driver
+      const response = {
+        ...order,
+        timeline: {
+          acceptedAt: order?.driverAcceptedAt,
+          completionDeadline: order?.completionDeadline,
+          timeRemaining: order?.completionDeadline 
+            ? Math.max(0, order.completionDeadline.getTime() - Date.now())
+            : null
+        }
+      };
+      
+      res.json(response);
     } catch (error) {
       console.error("Error accepting order:", error);
       res.status(500).json({ message: "Failed to accept order" });
+    }
+  });
+
+  // Request deadline extension (driver can request 30-60 min grace period)
+  app.post("/api/driver/orders/:orderId/extend", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver && !user.isAdmin) {
+        return res.status(403).json({ message: "Driver or admin access required" });
+      }
+      
+      const { orderId } = req.params;
+      const { extensionMinutes = 60, reason } = req.body;
+      
+      // SECURITY: Check order ownership - only assigned driver or admin can extend
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (!user.isAdmin && order.driverId !== user.id) {
+        return res.status(403).json({ message: "You can only extend orders assigned to you" });
+      }
+      
+      // Prevent extensions for terminal orders
+      const terminalStatuses = ['completed', 'cancelled', 'delivered', 'refunded'];
+      if (terminalStatuses.includes(order.status)) {
+        return res.status(400).json({ message: "Cannot extend deadline for completed orders" });
+      }
+      
+      // Validate extension request (max 60 minutes)
+      if (extensionMinutes > 60) {
+        return res.status(400).json({ message: "Maximum extension is 60 minutes" });
+      }
+      
+      const updatedOrder = await storage.extendOrderDeadline(orderId, extensionMinutes);
+      if (!updatedOrder) {
+        return res.status(400).json({ message: "Cannot extend deadline - maximum limit reached" });
+      }
+      
+      res.json({
+        message: `Deadline extended by ${extensionMinutes} minutes`,
+        newDeadline: updatedOrder.completionDeadline,
+        timeRemaining: updatedOrder.completionDeadline 
+          ? Math.max(0, updatedOrder.completionDeadline.getTime() - Date.now())
+          : null
+      });
+    } catch (error) {
+      console.error("Error extending deadline:", error);
+      res.status(500).json({ message: "Failed to extend deadline" });
+    }
+  });
+
+  // Get order with timeline information
+  app.get("/api/orders/:orderId/timeline", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      const { orderId } = req.params;
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // SECURITY: Only order owner, assigned driver, or admin can view timeline
+      const canView = user.isAdmin || 
+                      order.userId === user.id || 
+                      order.driverId === user.id;
+      
+      if (!canView) {
+        return res.status(403).json({ message: "You can only view timelines for your own orders" });
+      }
+      
+      const timeline = {
+        createdAt: order.createdAt,
+        acceptedAt: order.driverAcceptedAt,
+        completionDeadline: order.completionDeadline,
+        timeRemaining: order.completionDeadline 
+          ? Math.max(0, order.completionDeadline.getTime() - Date.now()) 
+          : null,
+        isOverdue: order.completionDeadline 
+          ? order.completionDeadline < new Date() 
+          : false,
+        maxDeadline: order.driverAcceptedAt 
+          ? new Date(order.driverAcceptedAt.getTime() + (4 * 60 * 60 * 1000)) 
+          : null // 4 hour absolute max
+      };
+      
+      res.json({ order, timeline });
+    } catch (error) {
+      console.error("Error fetching order timeline:", error);
+      res.status(500).json({ message: "Failed to fetch order timeline" });
     }
   });
 

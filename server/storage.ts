@@ -46,6 +46,11 @@ export interface IStorage {
   updateDriverStatus(driverId: number, status: string): Promise<User | undefined>;
   getOrdersByDriver(driverId: number): Promise<Order[]>;
   
+  // Timeline management
+  extendOrderDeadline(orderId: string, extensionMinutes?: number): Promise<Order | undefined>;
+  getOverdueOrders(): Promise<Order[]>;
+  getUnacceptedOrders(timeoutMinutes?: number): Promise<Order[]>;
+  
   // Promo code operations
   getPromoCode(code: string): Promise<PromoCode | undefined>;
   createPromoCode(promoCode: InsertPromoCode): Promise<PromoCode>;
@@ -1920,12 +1925,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined> {
+    const now = new Date();
+    const completionDeadline = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from acceptance
+    
     const [order] = await db
       .update(orders)
       .set({
         driverId,
         status: 'assigned',
-        driverAssignedAt: new Date()
+        driverAssignedAt: now,
+        driverAcceptedAt: now, // Driver accepts when assigned
+        completionDeadline: completionDeadline
       })
       .where(eq(orders.id, orderId))
       .returning();
@@ -1939,6 +1949,52 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, driverId))
       .returning();
     return user;
+  }
+
+  // Timeline management methods
+  async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
+    const order = await this.getOrder(orderId);
+    if (!order || !order.completionDeadline) return undefined;
+    
+    // Max extension of 4 hours total from acceptance
+    const maxDeadline = new Date(order.driverAcceptedAt!.getTime() + (4 * 60 * 60 * 1000));
+    const newDeadline = new Date(order.completionDeadline.getTime() + (extensionMinutes * 60 * 1000));
+    
+    // Don't extend beyond 4-hour max
+    const finalDeadline = newDeadline > maxDeadline ? maxDeadline : newDeadline;
+    
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({ completionDeadline: finalDeadline })
+      .where(eq(orders.id, orderId))
+      .returning();
+    return updatedOrder;
+  }
+
+  async getOverdueOrders(): Promise<Order[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(orders)
+      .where(
+        and(
+          sql`${orders.completionDeadline} < ${now}`,
+          notInArray(orders.status, ['completed', 'cancelled', 'delivered'])
+        )
+      );
+  }
+
+  async getUnacceptedOrders(timeoutMinutes: number = 30): Promise<Order[]> {
+    const timeoutThreshold = new Date(Date.now() - (timeoutMinutes * 60 * 1000));
+    return await db
+      .select()
+      .from(orders)
+      .where(
+        and(
+          eq(orders.status, 'created'),
+          sql`${orders.createdAt} < ${timeoutThreshold}`
+        )
+      );
   }
 
   async getOrdersByDriver(driverId: number): Promise<Order[]> {

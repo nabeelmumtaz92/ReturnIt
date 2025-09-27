@@ -414,6 +414,8 @@ export const orders = pgTable("orders", {
   // Driver assignment
   driverId: integer("driver_id").references(() => users.id),
   driverAssignedAt: timestamp("driver_assigned_at"),
+  driverAcceptedAt: timestamp("driver_accepted_at"), // When driver actually accepts the order
+  completionDeadline: timestamp("completion_deadline"), // Driver has 2 hours from acceptance to complete
   estimatedDeliveryTime: timestamp("estimated_delivery_time"),
   actualDeliveryTime: timestamp("actual_delivery_time"),
   
