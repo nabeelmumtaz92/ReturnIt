@@ -132,7 +132,7 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
       <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
         <h3 className="font-medium text-amber-900 mb-2">Order Summary</h3>
         <div className="flex justify-between items-center">
-          <span className="text-amber-700">Pickup Service Fee</span>
+          <span className="text-amber-700">On Demand Returns Fee</span>
           <span className="font-bold text-amber-900">${amount.toFixed(2)}</span>
         </div>
       </div>

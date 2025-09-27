@@ -88,7 +88,7 @@ export default function About() {
                 {businessInfo?.tagline || "Making Returns Effortless"}
               </h1>
               <p className="text-xl text-amber-700 leading-relaxed mb-8" data-testid="text-description">
-                {businessInfo?.description || "At Return It, we believe returning an item should be as easy as ordering it. Our professional pickup service connects you with local drivers who handle every step of the return process."}
+                {businessInfo?.description || "At Return It, we believe returning an item should be as easy as ordering it. Our On Demand Returns connects you with local drivers who handle every step of the return process."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link href="/book-pickup">
@@ -182,6 +182,46 @@ export default function About() {
                 <p className="text-amber-700">Professional, insured drivers ensure your returns are handled safely and securely.</p>
               </CardContent>
             </Card>
+          </div>
+          
+          {/* Market Statistics Section */}
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 md:p-12 mb-16 border border-amber-200">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl font-bold text-amber-900 mb-4">The Returns Revolution</h3>
+              <p className="text-lg text-amber-700 max-w-2xl mx-auto">The returns industry is massive and growing. Here's why On Demand Returns is the future:</p>
+            </div>
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-amber-900 mb-2">$743B</div>
+                <p className="text-amber-700 font-medium">U.S. returns in 2023</p>
+                <p className="text-sm text-amber-600">≈14.5% of total retail sales</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-amber-900 mb-2">70%</div>
+                <p className="text-amber-700 font-medium">Would use pickup service</p>
+                <p className="text-sm text-amber-600">To avoid lines and driving</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-amber-900 mb-2">16.5%</div>
+                <p className="text-amber-700 font-medium">Online return rate</p>
+                <p className="text-sm text-amber-600">vs. 8-10% in-store</p>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl font-bold text-amber-900 mb-2">30-45</div>
+                <p className="text-amber-700 font-medium">Minutes per return trip</p>
+                <p className="text-sm text-amber-600">Time you save with ReturnIt</p>
+              </div>
+            </div>
+            <div className="grid md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-amber-200">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-amber-900 mb-2">79%</div>
+                <p className="text-amber-700 font-medium">Avoid stores with difficult returns</p>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-amber-900 mb-2">60%</div>
+                <p className="text-amber-700 font-medium">Say returns policy affects where they shop</p>
+              </div>
+            </div>
           </div>
           
           <div className="bg-gradient-to-br from-amber-100 to-orange-100 rounded-3xl p-8 md:p-12">

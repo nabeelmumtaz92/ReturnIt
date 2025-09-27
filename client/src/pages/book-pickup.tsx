@@ -1077,7 +1077,7 @@ export default function BookPickup() {
           <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
             <div className="flex-1 text-center lg:text-left">
               <h1 className="text-4xl lg:text-5xl font-bold text-amber-900 mb-4">Schedule Your Return</h1>
-              <p className="text-xl text-amber-700 mb-6">Professional pickup service for returns, exchanges, and donations</p>
+              <p className="text-xl text-amber-700 mb-6">On Demand Returns for returns, exchanges, and donations</p>
               <div className="flex items-center justify-center lg:justify-start gap-4 text-amber-600">
                 <div className="flex items-center gap-2"><Package className="h-5 w-5" /><span>Free Pickup</span></div>
                 <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span>Same Day</span></div>
@@ -1087,7 +1087,7 @@ export default function BookPickup() {
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-amber-100">
                 <img src={selectedImage} alt="Professional delivery service" className="w-full h-64 object-cover" />
                 <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50">
-                  <p className="text-sm text-amber-700 font-medium">Professional pickup and delivery service</p>
+                  <p className="text-sm text-amber-700 font-medium">On Demand Returns pickup and delivery service</p>
                 </div>
               </div>
             </div>

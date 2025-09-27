@@ -128,7 +128,7 @@ export default function Welcome() {
                 Return It
               </h1>
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-amber-700 mb-4 sm:mb-6">
-                Professional pickup service for returns, exchanges, and donations
+                On Demand Returns for returns, exchanges, and donations
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
@@ -179,7 +179,7 @@ export default function Welcome() {
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-medium px-2">
-            Hassle-free returns with professional return delivery service
+            Hassle-free returns with On Demand Returns
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
             <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
