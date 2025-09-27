@@ -223,6 +223,53 @@ export default function Welcome() {
           </Button>
         </div>
 
+        {/* Become a Driver Section - Prominent */}
+        {envConfig?.allowDriverSignup && (
+          <div className="w-full max-w-2xl mt-8 sm:mt-12">
+            <div className="bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+              <div className="text-center space-y-4">
+                <div className="flex justify-center">
+                  <div className="bg-white/20 rounded-full p-3">
+                    <Truck className="h-8 w-8 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold">
+                  Drive with ReturnIt
+                </h3>
+                <p className="text-white/90 text-sm sm:text-base leading-relaxed">
+                  Join St. Louis's premier reverse logistics network. Earn competitive pay helping customers with returns, exchanges, and donations. Flexible schedules, instant payouts, and full support.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-sm">
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>Earn $15-25/hour</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>Flexible schedule</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full"></div>
+                    <span>Instant payouts</span>
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <Link href="/driver-signup">
+                    <Button 
+                      size="lg"
+                      className="bg-white text-amber-700 hover:bg-amber-50 font-semibold px-8"
+                      data-testid="button-become-driver-main"
+                    >
+                      <Truck className="h-5 w-5 mr-2" />
+                      Apply to Drive
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Environment Notice for Restricted Access */}
         {envConfig && !envConfig.allowPublicLogin && (
           <div className="text-center p-4 bg-red-50 border border-red-200 rounded-lg max-w-md">
@@ -235,27 +282,6 @@ export default function Welcome() {
           </div>
         )}
 
-        {/* Become a Driver - Separate Tab */}
-        {envConfig?.allowDriverSignup && (
-          <div className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-primary/20">
-            <div className="text-center space-y-3 sm:space-y-4">
-              <p className="text-amber-700 text-xs sm:text-sm">
-                Interested in earning money as a driver?
-              </p>
-              <Link href="/driver-onboarding">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="border-primary text-primary hover:bg-primary/10"
-                  data-testid="button-become-driver"
-                >
-                  <Truck className="h-4 w-4 mr-2" />
-                  Become a Driver
-                </Button>
-              </Link>
-            </div>
-          </div>
-        )}
 
         {/* Order Tracking Section */}
         <div className="w-full max-w-sm mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-primary/20">
