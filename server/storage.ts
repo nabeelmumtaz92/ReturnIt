@@ -1149,9 +1149,9 @@ export class MemStorage implements IStorage {
       // Initialize with default business info
       this.businessInfo = {
         id: 1,
-        companyName: "ReturnIt",
+        companyName: "Return It",
         tagline: "Making Returns Effortless",
-        description: "At ReturnIt, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
+        description: "At Return It, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
         headquarters: "St. Louis, MO",
         supportEmail: "support@returnit.com",
         supportPhone: "(636) 254-4821",

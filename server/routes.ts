@@ -510,10 +510,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const existingUser = await storage.getUserByEmail(validatedData.email);
       
       if (existingUser) {
-        return res.status(409).json({ 
-          message: "An account with this email already exists",
-          field: "email"
-        });
+        // SECURITY: Verify password before upgrading existing account to driver
+        const passwordValid = await bcrypt.compare(validatedData.password, existingUser.password);
+        if (!passwordValid) {
+          return res.status(401).json({ 
+            message: "An account with this email already exists. Please sign in with your existing password or use a different email." 
+          });
+        }
+
+        // If user exists but isn't a driver yet, update them to be a driver (with password verified)
+        if (!existingUser.isDriver) {
+          const updatedUser = await storage.updateUser(existingUser.id, {
+            isDriver: true,
+            applicationStatus: 'pending_review',
+            onboardingStep: 'documents_pending',
+            projectedHireDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+            vehicleInfo: JSON.stringify({
+              type: validatedData.vehicleType,
+              experience: validatedData.experience,
+              referralCode: validatedData.referralCode
+            }),
+            addresses: JSON.stringify([{
+              type: 'primary',
+              address: validatedData.address,
+              city: validatedData.city,
+              state: validatedData.state,
+              zipCode: validatedData.zipCode
+            }])
+          });
+          
+          // Log user in with secure session (password already verified above)
+          (req.session as any).user = AuthService.sanitizeUserData({ 
+            id: updatedUser.id, 
+            email: updatedUser.email, 
+            phone: updatedUser.phone, 
+            isDriver: true, 
+            isAdmin: updatedUser.isAdmin,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            dateOfBirth: updatedUser.dateOfBirth
+          });
+          
+          return res.status(201).json({ 
+            message: "Driver application submitted successfully",
+            user: AuthService.sanitizeUserData({
+              id: updatedUser.id, 
+              email: updatedUser.email, 
+              phone: updatedUser.phone, 
+              isDriver: true,
+              isAdmin: updatedUser.isAdmin,
+              firstName: updatedUser.firstName,
+              lastName: updatedUser.lastName,
+              applicationStatus: updatedUser.applicationStatus,
+              onboardingStep: updatedUser.onboardingStep
+            })
+          });
+        } else {
+          // User is already a driver
+          return res.status(409).json({ 
+            message: "You already have a driver application. Please check your application status.",
+            field: "email"
+          });
+        }
       }
 
       // Additional password strength validation

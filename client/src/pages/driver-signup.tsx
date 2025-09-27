@@ -98,23 +98,10 @@ export default function DriverSignup() {
     },
   });
 
-  const watchedZipCode = form.watch('zipCode');
-
-  // Check ZIP code info when ZIP code changes
-  const zipCodeQuery = useQuery({
-    queryKey: ['/api/zip-codes', watchedZipCode],
-    enabled: watchedZipCode?.length >= 5,
-    retry: false,
-  });
-
-  // Update ZIP code info from backend response
+  // Remove driver count information per user request
   useEffect(() => {
-    if (zipCodeQuery.data) {
-      setZipCodeInfo(zipCodeQuery.data);
-    } else if (watchedZipCode?.length < 5) {
-      setZipCodeInfo(null);
-    }
-  }, [zipCodeQuery.data, watchedZipCode]);
+    setZipCodeInfo(null);
+  }, []);
 
   // Driver signup mutation
   const signupMutation = useMutation({
@@ -143,9 +130,22 @@ export default function DriverSignup() {
       });
     },
     onError: (error: any) => {
+      let userFriendlyMessage = "Something went wrong. Please try again.";
+      
+      // Handle specific error cases with user-friendly messages
+      if (error?.message) {
+        if (error.message.includes("email already exists") || error.message.includes("already have a driver application")) {
+          userFriendlyMessage = "You already have an account. Please sign in instead.";
+        } else if (error.message.includes("validation") || error.message.includes("Invalid")) {
+          userFriendlyMessage = "Please check your information and try again.";
+        } else if (error.message.includes("password")) {
+          userFriendlyMessage = "Please check your password requirements.";
+        }
+      }
+      
       toast({
-        title: "Signup Failed",
-        description: error.message || "Something went wrong. Please try again.",
+        title: "Application Error",
+        description: userFriendlyMessage,
         variant: "destructive",
       });
     },
@@ -227,7 +227,7 @@ export default function DriverSignup() {
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h1 className="text-3xl font-bold text-amber-900 mb-2">Application Submitted!</h1>
-            <p className="text-amber-700">Thank you for your interest in becoming a ReturnIt driver</p>
+            <p className="text-amber-700">Thank you for your interest in becoming a Return It driver</p>
           </div>
 
           <Card className="border-amber-200 shadow-lg">
@@ -302,7 +302,7 @@ export default function DriverSignup() {
           style={{ backgroundImage: `url(${deliveryDriverSignupImg})` }}
         />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-4">Join the ReturnIt Driver Team</h1>
+          <h1 className="text-4xl font-bold mb-4">Join the Return It Driver Team</h1>
           <p className="text-xl text-amber-100 mb-6">
             Earn competitive pay helping customers with returns and exchanges
           </p>
@@ -331,7 +331,7 @@ export default function DriverSignup() {
               <CardHeader className="bg-amber-50 border-b border-amber-200">
                 <CardTitle className="text-amber-900">Driver Application</CardTitle>
                 <p className="text-amber-700 text-sm">
-                  Complete your application to start earning with ReturnIt
+                  Complete your application to start earning with Return It
                 </p>
               </CardHeader>
               <CardContent className="p-6">

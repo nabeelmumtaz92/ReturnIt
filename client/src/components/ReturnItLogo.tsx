@@ -1,4 +1,5 @@
 import React from 'react';
+import returnItLogo from '@assets/ChatGPT Image Sep 27, 2025, 03_15_52 PM_1759004176575.png';
 
 interface ReturnItLogoProps {
   size?: number;
@@ -7,15 +8,15 @@ interface ReturnItLogoProps {
 
 export function ReturnItLogo({ size = 32, className = "" }: ReturnItLogoProps) {
   return (
-    <div 
-      className={`text-amber-900 font-bold flex items-center ${className}`}
+    <img 
+      src={returnItLogo}
+      alt="Return It"
+      className={`object-contain ${className}`}
       style={{ 
-        fontSize: `${size * 0.8}px`,
+        height: `${size}px`,
         filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
       }}
-    >
-      Return It
-    </div>
+    />
   );
 }
 

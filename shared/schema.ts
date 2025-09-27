@@ -1025,7 +1025,7 @@ export const driverIncentives = pgTable("driver_incentives", {
 // Business information and contact details
 export const businessInfo = pgTable("business_info", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
-  companyName: text("company_name").default("ReturnIt"),
+  companyName: text("company_name").default("Return It"),
   tagline: text("tagline").default("Making Returns Effortless"),
   description: text("description"),
   headquarters: text("headquarters").default("St. Louis, MO"),
