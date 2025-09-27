@@ -14,15 +14,39 @@
     "assetBundlePatterns": [],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.returnit.app"
+      "bundleIdentifier": "com.returnit.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "ReturnIt needs location access to optimize pickup and delivery routes for drivers.",
+        "NSLocationAlwaysUsageDescription": "ReturnIt uses location to provide real-time tracking for customers and route optimization for drivers.",
+        "NSCameraUsageDescription": "ReturnIt needs camera access to capture package photos for delivery confirmation.",
+        "NSPhotoLibraryUsageDescription": "ReturnIt needs photo library access to attach package photos and receipts."
+      }
     },
     "android": {
-      "package": "com.returnit.app"
+      "package": "com.returnit.app",
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "buildToolsVersion": "35.0.0",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "usesCleartextTraffic": false,
+      "allowBackup": false
     },
     "cli": {
       "appVersionSource": "remote"
     },
-    "plugins": [],
+    "plugins": [
+      "expo-location",
+      "expo-camera",
+      "expo-image-picker"
+    ],
     "extra": {
       "eas": {
         "projectId": "9225a988-ab9f-4a64-824a-06b91366c3ee"
@@ -33,6 +57,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/9225a988-ab9f-4a64-824a-06b91366c3ee"
-    }
+    },
+    "privacy": "public"
   }
 }
