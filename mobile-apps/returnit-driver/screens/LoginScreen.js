@@ -142,12 +142,6 @@ export default function LoginScreen({ navigation, onAuthSuccess }) {
           </View>
         </View>
 
-        {/* Demo Info */}
-        <View style={styles.demoInfo}>
-          <Text style={styles.demoText}>
-            Demo Driver: Use "driver@returnit.com" with password "driver123" for testing
-          </Text>
-        </View>
 
         {/* Support */}
         <View style={styles.supportContainer}>
@@ -290,17 +284,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4B5563',
     flex: 1,
-  },
-  demoInfo: {
-    backgroundColor: '#FEF3C7',
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 20,
-  },
-  demoText: {
-    fontSize: 14,
-    color: '#92400E',
-    textAlign: 'center',
   },
   supportContainer: {
     backgroundColor: '#F3F4F6',

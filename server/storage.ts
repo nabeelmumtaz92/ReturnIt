@@ -200,51 +200,6 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, masterAdmin);
     
-    // Test user for testing purposes
-    const testUser: User = {
-      id: 99,
-      email: 'test@returnit.online',
-      password: '$2b$10$JGzTnuHXUj7688DLWRzDe.bvFhY/9M35WX6nqSpBxe.HALDFDBb12', // hashed 'Test123!'
-      firstName: 'Test',
-      lastName: 'User',
-      phone: '(555) 123-4567',
-      dateOfBirth: '1990-01-01',
-      isDriver: false,
-      tutorialCompleted: false,
-      isAdmin: false,
-      isActive: true,
-      role: 'customer',
-      department: null,
-      employeeId: null,
-      permissions: ['customer'],
-      profileImage: null,
-      preferences: {},
-      addresses: [],
-      paymentMethods: [],
-      driverLicense: null,
-      vehicleInfo: null,
-      bankInfo: null,
-      driverRating: 5.0,
-      totalEarnings: 0,
-      completedDeliveries: 0,
-      isOnline: false,
-      currentLocation: null,
-      stripeConnectAccountId: null,
-      stripeOnboardingComplete: false,
-      paymentPreference: 'weekly',
-      instantPayFeePreference: 1.00,
-      hireDate: null,
-      assignedCity: 'st-louis',
-      serviceZones: [],
-      emergencyContacts: [],
-      lastSafetyCheck: null,
-      availableHours: {},
-      preferredRoutes: [],
-      serviceRadius: 25.0,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    this.users.set(99, testUser);
     
     // Second Master Administrator account
     const masterAdmin2: User = {
