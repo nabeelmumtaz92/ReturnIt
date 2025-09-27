@@ -518,7 +518,7 @@ export default function CustomerDashboard() {
             <Card>
               <CardContent className="p-6 text-center">
                 <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-                <p className="text-gray-600">Failed to load orders. Please try again.</p>
+                <p className="text-gray-600">No orders...yet!</p>
                 <Button
                   variant="outline"
                   onClick={() => window.location.reload()}
