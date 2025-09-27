@@ -28,7 +28,30 @@ export default function JobManagementScreen({ navigation }) {
         throw new Error('Driver authentication required');
       }
 
-      // Load active/assigned jobs
+      // Load pending assignments (new comprehensive system)
+      const driverAssignments = await apiClient.getDriverAssignments();
+      const transformedPendingJobs = driverAssignments.map(assignment => ({
+        id: assignment.order.id,
+        assignmentId: assignment.id,
+        type: `Return to ${assignment.order.retailer}`,
+        customer: `${assignment.order.user?.firstName || ''} ${assignment.order.user?.lastName || ''}`.trim() || 'Customer',
+        pickupAddress: `${assignment.order.pickupStreetAddress}, ${assignment.order.pickupCity}, ${assignment.order.pickupState} ${assignment.order.pickupZipCode}`,
+        dropoffAddress: assignment.order.retailer,
+        status: formatJobStatus(assignment.order.status),
+        originalStatus: assignment.order.status,
+        estimatedEarnings: assignment.order.driverTotalEarning || 0,
+        timeEstimate: estimateTime(assignment.order),
+        distance: estimateDistance(assignment.order),
+        scheduledTime: assignment.order.scheduledPickupTime ? new Date(assignment.order.scheduledPickupTime).toLocaleTimeString() : 'TBD',
+        priority: assignment.order.priority || 'normal',
+        packageDetails: assignment.order.itemDescription || 'Package pickup',
+        expiresAt: assignment.expiresAt ? new Date(assignment.expiresAt) : null,
+        assignedAt: assignment.assignedAt ? new Date(assignment.assignedAt) : null,
+        isPending: assignment.status === 'pending',
+        isAccepted: assignment.status === 'accepted'
+      }));
+
+      // Load current active jobs (accepted assignments)
       const driverOrders = await apiClient.getDriverOrders();
       const transformedActiveJobs = driverOrders.map(order => ({
         id: order.id,
@@ -37,6 +60,7 @@ export default function JobManagementScreen({ navigation }) {
         pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
         dropoffAddress: order.retailer,
         status: formatJobStatus(order.status),
+        originalStatus: order.status,
         estimatedEarnings: order.driverTotalEarning || 0,
         timeEstimate: estimateTime(order),
         distance: estimateDistance(order),
@@ -44,7 +68,10 @@ export default function JobManagementScreen({ navigation }) {
         priority: order.priority || 'normal',
         packageDetails: order.itemDescription || 'Package pickup'
       }));
-      setActiveJobs(transformedActiveJobs);
+
+      // Combine pending assignments with active jobs
+      const allActiveJobs = [...transformedPendingJobs, ...transformedActiveJobs];
+      setActiveJobs(allActiveJobs);
 
       // Load available jobs if needed
       if (activeTab === 'available') {
@@ -79,12 +106,14 @@ export default function JobManagementScreen({ navigation }) {
 
   const formatJobStatus = (status) => {
     const statusMap = {
+      'created': 'Created',
       'assigned': 'Assigned',
-      'pickup_scheduled': 'Scheduled',
-      'picked_up': 'En Route',
-      'in_transit': 'En Route',
-      'delivered': 'Delivered',
-      'completed': 'Completed'
+      'accepted': 'Accepted', 
+      'picked_up': 'Picked Up',
+      'en_route_to_store': 'En Route',
+      'dropped_off': 'Delivered',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled'
     };
     return statusMap[status] || status;
   };
@@ -99,29 +128,136 @@ export default function JobManagementScreen({ navigation }) {
     return '2-5 miles';
   };
 
-  const handleAcceptJob = async (jobId) => {
+  const getCurrentLocation = async () => {
+    return new Promise((resolve) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+              heading: position.coords.heading,
+              speed: position.coords.speed
+            });
+          },
+          (error) => {
+            console.log('Location error:', error);
+            resolve(null); // Continue without location if permission denied
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+      } else {
+        resolve(null);
+      }
+    });
+  };
+
+  const handleAcceptJob = async (job) => {
     try {
-      await apiClient.acceptJob(jobId);
-      Alert.alert('Job Accepted', 'You have successfully accepted this job!', [
-        { text: 'OK', onPress: () => loadJobs() }
-      ]);
+      const location = await getCurrentLocation();
+      
+      if (job.assignmentId) {
+        // New assignment system - respond to assignment
+        await apiClient.respondToAssignment(job.assignmentId, 'accept', location);
+        Alert.alert('Assignment Accepted!', 'You have successfully accepted this assignment. Navigate to pickup location to begin.', [
+          { text: 'OK', onPress: () => loadJobs() }
+        ]);
+      } else {
+        // Fallback to legacy system
+        await apiClient.acceptJob(job.id);
+        Alert.alert('Job Accepted', 'You have successfully accepted this job!', [
+          { text: 'OK', onPress: () => loadJobs() }
+        ]);
+      }
     } catch (err) {
       const appError = ErrorHandler.handleAPIError(err);
       Alert.alert('Error', appError.userFriendly);
     }
   };
 
-  const handleJobAction = (jobId, action) => {
-    switch (action) {
-      case 'start':
-        Alert.alert('Job Started', 'Navigation to pickup location will begin.', [
-          { text: 'OK', onPress: () => navigation.navigate('RouteOptimization', { jobId }) }
+  const handleDeclineJob = async (job) => {
+    try {
+      const location = await getCurrentLocation();
+      
+      if (job.assignmentId) {
+        await apiClient.respondToAssignment(job.assignmentId, 'decline', location);
+        Alert.alert('Assignment Declined', 'This assignment has been declined and will be offered to other drivers.', [
+          { text: 'OK', onPress: () => loadJobs() }
         ]);
+      }
+    } catch (err) {
+      const appError = ErrorHandler.handleAPIError(err);
+      Alert.alert('Error', appError.userFriendly);
+    }
+  };
+
+  const handleJobAction = async (job, action) => {
+    switch (action) {
+      case 'accept':
+        await handleAcceptJob(job);
+        break;
+      case 'decline':
+        await handleDeclineJob(job);
+        break;
+      case 'start':
+        try {
+          const location = await getCurrentLocation();
+          await apiClient.updateOrderStatus(job.id, 'picked_up', location);
+          
+          // Open GPS navigation to pickup location
+          const pickupURL = `https://maps.google.com/maps?q=${encodeURIComponent(job.pickupAddress)}`;
+          Alert.alert('Navigate to Pickup', 'Opening GPS navigation to customer pickup location.', [
+            { text: 'OK', onPress: () => {
+              // In a real app, this would open the native maps app
+              console.log('Opening navigation to:', pickupURL);
+              navigation.navigate('RouteOptimization', { orderId: job.id, destination: job.pickupAddress });
+              loadJobs(); // Refresh jobs after status update
+            }}
+          ]);
+        } catch (err) {
+          const appError = ErrorHandler.handleAPIError(err);
+          Alert.alert('Error', appError.userFriendly);
+        }
         break;
       case 'complete':
-        Alert.alert('Complete Job', 'Mark this job as completed?', [
-          { text: 'Cancel', style: 'cancel' },
-          { text: 'Complete', onPress: () => completeJob(jobId) }
+        try {
+          const location = await getCurrentLocation();
+          await apiClient.updateOrderStatus(job.id, 'dropped_off', location);
+          Alert.alert('Job Completed!', 'Package successfully delivered to store. Earnings have been added to your account.', [
+            { text: 'OK', onPress: () => loadJobs() }
+          ]);
+        } catch (err) {
+          const appError = ErrorHandler.handleAPIError(err);
+          Alert.alert('Error', appError.userFriendly);
+        }
+        break;
+      case 'en_route':
+        try {
+          const location = await getCurrentLocation();
+          await apiClient.updateOrderStatus(job.id, 'en_route_to_store', location);
+          
+          // Open GPS navigation to store
+          const storeURL = `https://maps.google.com/maps?q=${encodeURIComponent(job.dropoffAddress)}`;
+          Alert.alert('Navigate to Store', 'Opening GPS navigation to store location.', [
+            { text: 'OK', onPress: () => {
+              console.log('Opening navigation to:', storeURL);
+              navigation.navigate('RouteOptimization', { orderId: job.id, destination: job.dropoffAddress });
+              loadJobs(); // Refresh jobs after status update
+            }}
+          ]);
+        } catch (err) {
+          const appError = ErrorHandler.handleAPIError(err);
+          Alert.alert('Error', appError.userFriendly);
+        }
+        break;
+      case 'cancel':
+        Alert.alert('Cancel Job', 'Why are you canceling this job?', [
+          { text: 'Customer not available', onPress: () => cancelJob(job.id, 'customer_not_available') },
+          { text: 'Store closed/unavailable', onPress: () => cancelJob(job.id, 'store_unavailable') },
+          { text: 'Vehicle issue', onPress: () => cancelJob(job.id, 'vehicle_issue') },
+          { text: 'Other reason', onPress: () => cancelJob(job.id, 'other') },
+          { text: 'Cancel', style: 'cancel' }
         ]);
         break;
       case 'contact':
@@ -134,8 +270,51 @@ export default function JobManagementScreen({ navigation }) {
     }
   };
 
+  const cancelJob = async (jobId, reason) => {
+    try {
+      const location = await getCurrentLocation();
+      await apiClient.cancelOrder(jobId, reason, location);
+      Alert.alert('Job Cancelled', 'This job has been cancelled and will be reassigned to another driver.', [
+        { text: 'OK', onPress: () => loadJobs() }
+      ]);
+    } catch (err) {
+      const appError = ErrorHandler.handleAPIError(err);
+      Alert.alert('Error', appError.userFriendly);
+    }
+  };
+
   const completeJob = (jobId) => {
     Alert.alert('Success', 'Job completed successfully! Earnings added to your account.');
+  };
+
+  const getJobActionType = (status) => {
+    // Use actual backend status values, not display strings
+    switch (status) {
+      case 'assigned':
+      case 'accepted':
+        return 'start';
+      case 'picked_up':
+        return 'en_route';
+      case 'en_route_to_store':
+        return 'complete';
+      default:
+        return 'start';
+    }
+  };
+
+  const getJobActionText = (status) => {
+    // Use actual backend status values, not display strings
+    switch (status) {
+      case 'assigned':
+      case 'accepted':
+        return '🚗 Start Pickup';
+      case 'picked_up':
+        return '🏪 Go to Store';
+      case 'en_route_to_store':
+        return '✅ Complete Delivery';
+      default:
+        return '🚗 Start';
+    }
   };
 
   const getStatusColor = (status) => {
@@ -199,22 +378,60 @@ export default function JobManagementScreen({ navigation }) {
         </View>
       </View>
       
-      <View style={styles.jobActions}>
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => handleJobAction(item.id, 'contact')}
-        >
-          <Text style={styles.actionButtonText}>📞 Contact</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.primaryAction]}
-          onPress={() => handleJobAction(item.id, item.status === 'Assigned' ? 'start' : 'complete')}
-        >
-          <Text style={[styles.actionButtonText, styles.primaryActionText]}>
-            {item.status === 'Assigned' ? '🚗 Start' : '✅ Complete'}
+      {/* Assignment expiration warning */}
+      {item.expiresAt && item.isPending && (
+        <View style={styles.expirationWarning}>
+          <Text style={styles.expirationText}>
+            ⏰ Assignment expires: {item.expiresAt.toLocaleTimeString()}
           </Text>
-        </TouchableOpacity>
+        </View>
+      )}
+      
+      <View style={styles.jobActions}>
+        {item.isPending ? (
+          // Pending assignment - show accept/decline buttons
+          <>
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.declineAction]}
+              onPress={() => handleJobAction(item, 'decline')}
+            >
+              <Text style={[styles.actionButtonText, styles.declineActionText]}>❌ Decline</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.acceptAction]}
+              onPress={() => handleJobAction(item, 'accept')}
+            >
+              <Text style={[styles.actionButtonText, styles.acceptActionText]}>✅ Accept</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          // Active job - show status-appropriate actions
+          <>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => handleJobAction(item, 'contact')}
+            >
+              <Text style={styles.actionButtonText}>📞 Contact</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => handleJobAction(item, 'cancel')}
+            >
+              <Text style={styles.actionButtonText}>❌ Cancel</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.primaryAction]}
+              onPress={() => handleJobAction(item, getJobActionType(item.originalStatus || item.status))}
+            >
+              <Text style={[styles.actionButtonText, styles.primaryActionText]}>
+                {getJobActionText(item.originalStatus || item.status)}
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
@@ -497,6 +714,33 @@ const styles = StyleSheet.create({
   },
   primaryActionText: {
     color: 'white',
+  },
+  acceptAction: {
+    backgroundColor: '#10B981',
+    borderColor: '#10B981',
+  },
+  acceptActionText: {
+    color: 'white',
+  },
+  declineAction: {
+    backgroundColor: '#EF4444',
+    borderColor: '#EF4444',
+  },
+  declineActionText: {
+    color: 'white',
+  },
+  expirationWarning: {
+    backgroundColor: '#FEF3C7',
+    padding: 8,
+    borderRadius: 6,
+    marginBottom: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#F59E0B',
+  },
+  expirationText: {
+    fontSize: 12,
+    color: '#92400E',
+    fontWeight: '600',
   },
   feedbackContainer: {
     backgroundColor: '#F9FAFB',

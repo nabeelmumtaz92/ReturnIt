@@ -202,10 +202,54 @@ class APIClient {
     return await this.request('/api/driver/orders');
   }
 
+  // New comprehensive driver order management APIs
+  async getDriverAssignments() {
+    return await this.request('/api/driver/assignments/pending');
+  }
+
+  async respondToAssignment(assignmentId, response, location = null) {
+    return await this.request(`/api/driver/assignments/${assignmentId}/respond`, {
+      method: 'POST',
+      body: { 
+        response, // 'accept' or 'decline'
+        location 
+      },
+    });
+  }
+
   async acceptJob(orderId) {
     return await this.request(`/api/driver/orders/${orderId}/accept`, {
       method: 'POST',
     });
+  }
+
+  async updateOrderStatus(orderId, status, location = null, metadata = null) {
+    return await this.request(`/api/driver/orders/${orderId}/status`, {
+      method: 'POST',
+      body: { 
+        status,
+        location,
+        metadata
+      },
+    });
+  }
+
+  async cancelOrder(orderId, reason, location = null) {
+    return await this.request(`/api/driver/orders/${orderId}/cancel`, {
+      method: 'POST',
+      body: { 
+        reason,
+        location 
+      },
+    });
+  }
+
+  async getOrderStatusHistory(orderId) {
+    return await this.request(`/api/orders/${orderId}/status-history`);
+  }
+
+  async getDriverLocationHistory(orderId) {
+    return await this.request(`/api/driver/orders/${orderId}/location-history`);
   }
 
   async updateDriverStatus(status, location = null) {
@@ -220,8 +264,15 @@ class APIClient {
 
   async updateDriverLocation(location) {
     return await this.request('/api/driver/location', {
-      method: 'PUT',
-      body: { location },
+      method: 'POST',
+      body: { 
+        latitude: location.latitude,
+        longitude: location.longitude,
+        accuracy: location.accuracy,
+        heading: location.heading,
+        speed: location.speed,
+        altitude: location.altitude
+      },
     });
   }
 
