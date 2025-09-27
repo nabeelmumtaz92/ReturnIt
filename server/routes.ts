@@ -537,13 +537,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           referralCode: validatedData.referralCode
         }),
         preferences: JSON.stringify({
-          applicationStatus: 'pending_review',
-          onboardingStep: 'documents_pending',
-          projectedHireDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
           appliedAt: new Date().toISOString()
         }),
         isDriver: true, // Driver by default
         isAdmin: false,
+        applicationStatus: 'pending_review',
+        onboardingStep: 'documents_pending',
+        projectedHireDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+        otpVerified: false,
         tutorialCompleted: false,
         isActive: true
       });
@@ -570,8 +571,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           isAdmin: false,
           firstName: user.firstName,
           lastName: user.lastName,
-          applicationStatus: user.preferences?.applicationStatus || 'pending_review',
-          onboardingStep: user.preferences?.onboardingStep || 'documents_pending'
+          applicationStatus: user.applicationStatus,
+          onboardingStep: user.onboardingStep
         })
       });
     } catch (error: any) {
@@ -588,6 +589,177 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(500).json({ message: "Something went wrong. Please try again later." });
+    }
+  });
+
+  // Driver Application Status endpoint for onboarding page
+  app.get("/api/driver-applications/current", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      
+      // Get full user data with application status
+      const userData = await storage.getUser(user.id);
+      if (!userData) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Return driver application data
+      res.json({
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+        applicationStatus: userData.applicationStatus || 'pending_review',
+        onboardingStep: userData.onboardingStep || 'documents_pending',
+        projectedHireDate: userData.projectedHireDate,
+        isDriver: userData.isDriver,
+        tutorialCompleted: userData.tutorialCompleted,
+        driverLicense: userData.driverLicense,
+        vehicleInfo: userData.vehicleInfo ? (typeof userData.vehicleInfo === 'string' ? JSON.parse(userData.vehicleInfo) : userData.vehicleInfo) : null,
+        bankInfo: userData.bankInfo ? (typeof userData.bankInfo === 'string' ? JSON.parse(userData.bankInfo) : userData.bankInfo) : null,
+        addresses: userData.addresses ? (typeof userData.addresses === 'string' ? JSON.parse(userData.addresses) : userData.addresses) : [],
+        approvedAt: userData.approvedAt,
+        rejectedAt: userData.rejectedAt,
+        rejectionReason: userData.rejectionReason,
+        createdAt: userData.createdAt
+      });
+    } catch (error) {
+      console.error('Error fetching driver application:', error);
+      res.status(500).json({ message: "Failed to fetch driver application" });
+    }
+  });
+
+  // Create/Update Driver Application endpoint for onboarding
+  app.post("/api/driver-applications", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      
+      // Define validation schema for personal info
+      const personalInfoSchema = z.object({
+        firstName: z.string().min(2, 'First name must be at least 2 characters'),
+        lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+        email: z.string().email('Please enter a valid email address'),
+        phone: z.string().min(10, 'Please enter a valid phone number'),
+        dateOfBirth: z.string().min(1, 'Date of birth is required'),
+        address: z.string().min(5, 'Please enter your full address'),
+        city: z.string().min(2, 'City is required'),
+        state: z.string().min(2, 'State is required'),
+        zipCode: z.string().min(5, 'Valid zip code required'),
+      });
+      
+      // Validate personal info data
+      const personalInfoData = personalInfoSchema.parse(req.body);
+      
+      // Update user with personal info
+      const updatedUser = await storage.updateUser(user.id, {
+        firstName: personalInfoData.firstName,
+        lastName: personalInfoData.lastName,
+        email: personalInfoData.email,
+        phone: personalInfoData.phone,
+        dateOfBirth: personalInfoData.dateOfBirth,
+        addresses: JSON.stringify([{
+          type: 'primary',
+          address: personalInfoData.address,
+          city: personalInfoData.city,
+          state: personalInfoData.state,
+          zipCode: personalInfoData.zipCode
+        }]),
+        onboardingStep: 'vehicle_info'
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({ 
+        id: updatedUser.id,
+        message: "Personal information saved successfully",
+        onboardingStep: updatedUser.onboardingStep
+      });
+    } catch (error) {
+      console.error('Error saving personal info:', error);
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid input",
+          errors: error.issues.map(issue => ({
+            field: issue.path.join('.'),
+            message: issue.message
+          }))
+        });
+      }
+      res.status(500).json({ message: "Failed to save personal information" });
+    }
+  });
+
+  // Update Driver Application endpoint for vehicle info
+  app.patch("/api/driver-applications/:id", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      const { id } = req.params;
+      
+      // Ensure user can only update their own application
+      if (parseInt(id) !== user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      // Update user with vehicle info
+      const updatedUser = await storage.updateUser(user.id, {
+        vehicleInfo: JSON.stringify(req.body),
+        onboardingStep: 'documents'
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+      
+      res.json({ 
+        id: updatedUser.id,
+        message: "Vehicle information saved successfully",
+        onboardingStep: updatedUser.onboardingStep
+      });
+    } catch (error) {
+      console.error('Error updating vehicle info:', error);
+      res.status(500).json({ message: "Failed to update vehicle information" });
+    }
+  });
+
+  // Submit Driver Application endpoint
+  app.patch("/api/driver-applications/:id/submit", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      const { id } = req.params;
+      const { termsAccepted, termsAcceptedAt } = req.body;
+      
+      // Ensure user can only submit their own application
+      if (parseInt(id) !== user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      if (!termsAccepted) {
+        return res.status(400).json({ message: "Terms and conditions must be accepted" });
+      }
+      
+      // Update application status to submitted
+      const updatedUser = await storage.updateUser(user.id, {
+        onboardingStep: 'review',
+        applicationStatus: 'submitted',
+        termsAcceptedAt: new Date(termsAcceptedAt)
+      });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Application not found" });
+      }
+      
+      res.json({ 
+        id: updatedUser.id,
+        message: "Application submitted successfully",
+        applicationStatus: updatedUser.applicationStatus,
+        onboardingStep: updatedUser.onboardingStep
+      });
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      res.status(500).json({ message: "Failed to submit application" });
     }
   });
 
