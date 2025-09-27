@@ -45,6 +45,14 @@ const driverSignupSchema = z.object({
   state: z.string().min(2, 'State is required'),
   zipCode: z.string().min(5, 'Valid zip code required'),
   vehicleType: z.string().min(1, 'Vehicle type is required'),
+  vehicleMake: z.string().min(1, 'Vehicle make is required'),
+  vehicleModel: z.string().min(1, 'Vehicle model is required'),
+  vehicleYear: z.string().min(4, 'Vehicle year is required').max(4, 'Vehicle year must be 4 digits'),
+  vehicleColor: z.string().min(1, 'Vehicle color is required'),
+  licensePlate: z.string().min(1, 'License plate is required'),
+  backgroundCheckConsent: z.boolean().refine(val => val === true, {
+    message: "You must consent to background check to proceed"
+  }),
   experience: z.string().optional(),
   referralCode: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -93,6 +101,12 @@ export default function DriverSignup() {
       state: '',
       zipCode: '',
       vehicleType: '',
+      vehicleMake: '',
+      vehicleModel: '',
+      vehicleYear: '',
+      vehicleColor: '',
+      licensePlate: '',
+      backgroundCheckConsent: false,
       experience: '',
       referralCode: '',
     },
@@ -537,25 +551,109 @@ export default function DriverSignup() {
                       Vehicle Information
                     </h3>
                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="vehicleMake">Vehicle Make</Label>
+                        <Input
+                          id="vehicleMake"
+                          {...form.register('vehicleMake')}
+                          placeholder="e.g., Toyota, Honda, Ford"
+                          className="border-amber-200 focus:border-amber-400"
+                          data-testid="input-vehicle-make"
+                        />
+                        {form.formState.errors.vehicleMake && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {form.formState.errors.vehicleMake.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="vehicleModel">Vehicle Model</Label>
+                        <Input
+                          id="vehicleModel"
+                          {...form.register('vehicleModel')}
+                          placeholder="e.g., Camry, Civic, F-150"
+                          className="border-amber-200 focus:border-amber-400"
+                          data-testid="input-vehicle-model"
+                        />
+                        {form.formState.errors.vehicleModel && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {form.formState.errors.vehicleModel.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <Label htmlFor="vehicleYear">Vehicle Year</Label>
+                        <Input
+                          id="vehicleYear"
+                          {...form.register('vehicleYear')}
+                          placeholder="2020"
+                          className="border-amber-200 focus:border-amber-400"
+                          data-testid="input-vehicle-year"
+                        />
+                        {form.formState.errors.vehicleYear && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {form.formState.errors.vehicleYear.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="vehicleColor">Vehicle Color</Label>
+                        <Input
+                          id="vehicleColor"
+                          {...form.register('vehicleColor')}
+                          placeholder="e.g., Red, Blue, Silver"
+                          className="border-amber-200 focus:border-amber-400"
+                          data-testid="input-vehicle-color"
+                        />
+                        {form.formState.errors.vehicleColor && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {form.formState.errors.vehicleColor.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor="vehicleType">Vehicle Type</Label>
+                        <select
+                          id="vehicleType"
+                          {...form.register('vehicleType')}
+                          className="w-full p-2 border border-amber-200 rounded-md focus:border-amber-400 focus:outline-none"
+                          data-testid="select-vehicle-type"
+                        >
+                          <option value="">Select vehicle type</option>
+                          <option value="sedan">Sedan</option>
+                          <option value="suv">SUV</option>
+                          <option value="hatchback">Hatchback</option>
+                          <option value="truck">Pickup Truck</option>
+                          <option value="van">Van</option>
+                          <option value="other">Other</option>
+                        </select>
+                        {form.formState.errors.vehicleType && (
+                          <p className="text-red-500 text-sm mt-1">
+                            {form.formState.errors.vehicleType.message}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
                     <div>
-                      <Label htmlFor="vehicleType">Vehicle Type</Label>
-                      <select
-                        id="vehicleType"
-                        {...form.register('vehicleType')}
-                        className="w-full p-2 border border-amber-200 rounded-md focus:border-amber-400 focus:outline-none"
-                        data-testid="select-vehicle-type"
-                      >
-                        <option value="">Select vehicle type</option>
-                        <option value="sedan">Sedan</option>
-                        <option value="suv">SUV</option>
-                        <option value="hatchback">Hatchback</option>
-                        <option value="truck">Pickup Truck</option>
-                        <option value="van">Van</option>
-                        <option value="other">Other</option>
-                      </select>
-                      {form.formState.errors.vehicleType && (
+                      <Label htmlFor="licensePlate">License Plate Number</Label>
+                      <Input
+                        id="licensePlate"
+                        {...form.register('licensePlate')}
+                        placeholder="e.g., ABC-1234"
+                        className="border-amber-200 focus:border-amber-400"
+                        data-testid="input-license-plate"
+                      />
+                      {form.formState.errors.licensePlate && (
                         <p className="text-red-500 text-sm mt-1">
-                          {form.formState.errors.vehicleType.message}
+                          {form.formState.errors.licensePlate.message}
                         </p>
                       )}
                     </div>
@@ -588,6 +686,45 @@ export default function DriverSignup() {
                     </div>
                   </div>
 
+                  {/* Background Check Consent */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-amber-900 flex items-center">
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                      Background Check Authorization
+                    </h3>
+                    
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-blue-900 mb-2">Required Background Check</h4>
+                      <p className="text-blue-800 text-sm mb-3">
+                        For the safety of our customers and to comply with regulations, all drivers must pass a background check. 
+                        This includes verification of your driving record, criminal history, and identity verification.
+                      </p>
+                      <p className="text-blue-800 text-sm">
+                        The background check will be automatically initiated after you submit your application and typically takes 24-48 hours to complete.
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-start space-x-3">
+                      <input
+                        type="checkbox"
+                        id="backgroundCheckConsent"
+                        {...form.register('backgroundCheckConsent')}
+                        className="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500 border-amber-300 rounded"
+                        data-testid="checkbox-background-check-consent"
+                      />
+                      <label htmlFor="backgroundCheckConsent" className="text-sm text-gray-700 leading-5">
+                        I authorize Return It to conduct a background check, including but not limited to criminal history, 
+                        driving records, and identity verification. I understand this information will be used solely for 
+                        employment screening purposes and will be handled in accordance with applicable laws.
+                      </label>
+                    </div>
+                    {form.formState.errors.backgroundCheckConsent && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {form.formState.errors.backgroundCheckConsent.message}
+                      </p>
+                    )}
+                  </div>
+
                   <Button
                     type="submit"
                     disabled={signupMutation.isPending}
@@ -597,10 +734,10 @@ export default function DriverSignup() {
                     {signupMutation.isPending ? (
                       <div className="flex items-center">
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Submitting Application...
+                        Submitting Application & Starting Background Check...
                       </div>
                     ) : (
-                      'Submit Application'
+                      'Submit Application & Start Background Check'
                     )}
                   </Button>
                 </form>

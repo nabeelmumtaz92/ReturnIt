@@ -37,7 +37,15 @@ export const users = pgTable("users", {
   paymentMethods: jsonb("payment_methods").default([]),
   // Driver-specific fields
   driverLicense: text("driver_license"),
-  vehicleInfo: jsonb("vehicle_info"),
+  vehicleInfo: jsonb("vehicle_info"), // Legacy field - keeping for compatibility
+  // Detailed vehicle information
+  vehicleMake: text("vehicle_make"),
+  vehicleModel: text("vehicle_model"), 
+  vehicleYear: integer("vehicle_year"),
+  vehicleColor: text("vehicle_color"),
+  vehicleType: text("vehicle_type"),
+  licensePlate: text("license_plate"),
+  vehicleInsurance: jsonb("vehicle_insurance"),
   bankInfo: jsonb("bank_info"),
   driverRating: real("driver_rating").default(5.0),
   totalEarnings: real("total_earnings").default(0),
@@ -52,8 +60,14 @@ export const users = pgTable("users", {
   instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
   
   // Driver onboarding and application status
-  applicationStatus: text("application_status").default("pending_review"), // pending_review, documents_required, approved_active, rejected
-  onboardingStep: text("onboarding_step").default("signup"), // signup, documents, banking, approval, complete
+  applicationStatus: text("application_status").default("pending_review"), // pending_review, background_check_pending, background_check_approved, background_check_failed, documents_required, approved_active, rejected, waitlisted
+  onboardingStep: text("onboarding_step").default("signup"), // signup, vehicle_info, background_check, documents, banking, approval, complete
+  // Background check fields
+  backgroundCheckConsent: boolean("background_check_consent").default(false),
+  backgroundCheckStatus: text("background_check_status").default("not_started"), // not_started, in_progress, passed, failed, expired
+  backgroundCheckId: text("background_check_id"), // External background check reference ID
+  backgroundCheckCompletedAt: timestamp("background_check_completed_at"),
+  backgroundCheckResults: jsonb("background_check_results"),
   projectedHireDate: timestamp("projected_hire_date"), // Estimated hire date for this driver's ZIP
   approvedAt: timestamp("approved_at"),
   rejectedAt: timestamp("rejected_at"),
