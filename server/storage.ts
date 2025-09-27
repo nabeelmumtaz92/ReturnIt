@@ -103,7 +103,7 @@ export interface IStorage {
   getDriverOrderAssignments(orderId: string): Promise<DriverOrderAssignment[]>;
   getDriverPendingAssignments(driverId: number): Promise<DriverOrderAssignment[]>;
   updateDriverOrderAssignment(id: number, updates: Partial<DriverOrderAssignment>): Promise<DriverOrderAssignment | undefined>;
-  expireDriverOrderAssignments(): Promise<number>; // Returns count of expired assignments
+  expireDriverOrderAssignments(): Promise<DriverOrderAssignment[]>; // Returns newly expired assignments
   
   // NEW: Order status history operations
   createOrderStatusHistory(history: InsertOrderStatusHistory): Promise<OrderStatusHistory>;
@@ -1256,11 +1256,18 @@ export class MemStorage implements IStorage {
   async getTrackingEvent(id: number): Promise<TrackingEvent | undefined> {
     return this.trackingEvents.get(id);
   }
+
+  // Driver order assignment operations
+  async expireDriverOrderAssignments(): Promise<DriverOrderAssignment[]> {
+    // Mock implementation for MemStorage - in production this would be handled by database
+    // For testing purposes, return an empty array as MemStorage doesn't handle real-time expiration
+    return [];
+  }
 }
 
 // DatabaseStorage implementation
 import { db } from "./db";
-import { eq, and, sql, desc, asc } from "drizzle-orm";
+import { eq, and, sql, desc, asc, isNotNull, isNull, notInArray, or } from "drizzle-orm";
 import { 
   users, orders, promoCodes, 
   driverOrderAssignments, orderStatusHistory, 
@@ -1484,16 +1491,122 @@ export class DatabaseStorage implements IStorage {
     return assignment;
   }
 
-  async expireDriverOrderAssignments(): Promise<number> {
-    const result = await db
+  async expireDriverOrderAssignments(): Promise<DriverOrderAssignment[]> {
+    // Return newly expired assignments to prevent reprocessing
+    const expiredAssignments = await db
       .update(driverOrderAssignments)
-      .set({ status: 'expired' })
+      .set({ 
+        status: 'expired',
+        respondedAt: new Date() // Mark when we processed this expiration
+      })
       .where(
         and(
           eq(driverOrderAssignments.status, 'pending'),
           sql`offer_expires_at < NOW()`
         )
+      )
+      .returning();
+    return expiredAssignments;
+  }
+
+  // NOTE: This method is no longer used - expireDriverOrderAssignments() now returns newly expired assignments directly
+  async getExpiredAssignments(): Promise<DriverOrderAssignment[]> {
+    // Only return expired assignments that haven't been processed for reassignment yet
+    return await db
+      .select()
+      .from(driverOrderAssignments)
+      .where(
+        and(
+          eq(driverOrderAssignments.status, 'expired'),
+          isNull(driverOrderAssignments.respondedAt) // Not yet processed
+        )
+      )
+      .orderBy(desc(driverOrderAssignments.createdAt));
+  }
+
+  async getAbandonedOrders(thresholdMinutes: number): Promise<Order[]> {
+    // Find orders where driver has been assigned but hasn't updated location or status 
+    // for more than thresholdMinutes
+    const thresholdTime = new Date(Date.now() - thresholdMinutes * 60 * 1000);
+    
+    return await db
+      .select({
+        id: orders.id,
+        userId: orders.userId,
+        driverId: orders.driverId,
+        status: orders.status,
+        driverAssignedAt: orders.driverAssignedAt,
+        trackingNumber: orders.trackingNumber,
+        retailer: orders.retailer,
+        pickupStreetAddress: orders.pickupStreetAddress,
+        pickupCity: orders.pickupCity,
+        pickupState: orders.pickupState,
+        pickupZipCode: orders.pickupZipCode,
+        createdAt: orders.createdAt,
+        updatedAt: orders.updatedAt
+      })
+      .from(orders)
+      .leftJoin(driverLocationPings, 
+        and(
+          eq(orders.driverId, driverLocationPings.driverId),
+          eq(orders.id, driverLocationPings.orderId)
+        )
+      )
+      .where(
+        and(
+          isNotNull(orders.driverId), // Has assigned driver
+          notInArray(orders.status, ['completed', 'cancelled', 'dropped_off']), // Not completed
+          sql`${orders.driverAssignedAt} < NOW() - INTERVAL '${thresholdMinutes} minutes'`, // Order was assigned more than threshold time ago
+          or(
+            // No recent location pings for this order
+            isNull(driverLocationPings.createdAt),
+            sql`${driverLocationPings.createdAt} < NOW() - INTERVAL '${thresholdMinutes} minutes'`
+          )
+        )
+      )
+      .groupBy(orders.id);
+  }
+
+  async getAvailableDrivers(options: {
+    excludeIds?: number[];
+    isOnline?: boolean;
+    limit?: number;
+  }): Promise<User[]> {
+    const conditions = [eq(users.isDriver, true)];
+    
+    if (options.isOnline !== undefined) {
+      conditions.push(eq(users.isOnline, options.isOnline));
+    }
+    
+    if (options.excludeIds && options.excludeIds.length > 0) {
+      conditions.push(notInArray(users.id, options.excludeIds));
+    }
+
+    let query = db
+      .select()
+      .from(users)
+      .where(and(...conditions))
+      .orderBy(desc(users.isOnline), desc(users.createdAt)); // Prioritize online drivers
+
+    if (options.limit) {
+      query = query.limit(options.limit);
+    }
+
+    return await query;
+  }
+
+  async cleanupOldAssignments(hoursOld: number): Promise<number> {
+    const cutoffTime = new Date(Date.now() - hoursOld * 60 * 60 * 1000);
+    
+    const result = await db
+      .delete(driverOrderAssignments)
+      .where(
+        and(
+          inArray(driverOrderAssignments.status, ['completed', 'expired', 'declined']),
+          sql`${driverOrderAssignments.createdAt} < ${cutoffTime}`
+        )
       );
+    
     return result.rowCount || 0;
   }
 

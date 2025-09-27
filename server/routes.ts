@@ -49,6 +49,301 @@ const isAuthenticated = (req: any, res: any, next: any) => {
   }
 };
 
+// Comprehensive Order Reassignment Logic
+async function handleOrderReassignment(
+  orderId: string, 
+  reassignmentReason: 'driver_decline' | 'driver_abandon' | 'store_reject' | 'timeout' | 'system_cancel',
+  context: {
+    previousDriverId?: number;
+    declineReason?: string;
+    assignmentId?: number;
+    storeId?: number;
+    timeoutMinutes?: number;
+  } = {}
+) {
+  try {
+    console.log(`🔄 Starting reassignment for order ${orderId}, reason: ${reassignmentReason}`);
+
+    // Get the current order details
+    const order = await storage.getOrder(orderId);
+    if (!order) {
+      throw new Error(`Order ${orderId} not found`);
+    }
+
+    // Get reassignment history to implement exponential backoff
+    const assignmentHistory = await storage.getDriverOrderAssignments(orderId);
+    const reassignmentCount = assignmentHistory.length;
+    const blacklistedDrivers = assignmentHistory
+      .filter(a => ['declined', 'expired', 'abandoned'].includes(a.status))
+      .map(a => a.driverId);
+
+    // Calculate assignment priority with exponential backoff
+    const basePriority = 1;
+    const backoffMultiplier = Math.min(reassignmentCount, 5); // Cap at 5 for reasonable delays
+    const assignmentPriority = basePriority + backoffMultiplier;
+
+    // Calculate assignment timeout with exponential backoff (10 min base, +5 min per attempt)
+    const baseTimeoutMinutes = 10;
+    const timeoutMinutes = baseTimeoutMinutes + (reassignmentCount * 5);
+    const offerExpiresAt = new Date(Date.now() + timeoutMinutes * 60 * 1000);
+
+    // Log the reassignment in cancellations table if applicable
+    if (context.previousDriverId && reassignmentReason !== 'timeout') {
+      await storage.createOrderCancellation({
+        orderId,
+        cancellationType: reassignmentReason,
+        cancelledBy: context.previousDriverId,
+        driverId: context.previousDriverId,
+        cancellationReason: context.declineReason || `${reassignmentReason.replace('_', ' ')}`,
+        cancellationDetails: `Order reassigned due to ${reassignmentReason.replace('_', ' ')}`,
+        storeId: context.storeId || null,
+        driverNotified: true
+      });
+    }
+
+    // Safety check: Allow reassignment if order still has the previous driver OR is already unassigned
+    if (context.previousDriverId && order.driverId !== null && order.driverId !== context.previousDriverId) {
+      console.log(`⚠️ Skipping reassignment for ${orderId} - order assigned to different active driver`);
+      return;
+    }
+
+    // Update order status back to ASSIGNED (available for reassignment)
+    await storage.updateOrder(orderId, {
+      status: OrderStatus.ASSIGNED,
+      driverId: null, // Clear previous driver
+      driverAssignedAt: null
+    });
+
+    // Create status history entry
+    await storage.createOrderStatusHistory({
+      orderId,
+      previousStatus: order.status,
+      newStatus: OrderStatus.ASSIGNED,
+      statusReason: `Order reassigned due to ${reassignmentReason.replace('_', ' ')}`,
+      triggeredBy: context.previousDriverId || null,
+      triggerType: 'automatic',
+      metadata: {
+        reassignmentReason,
+        reassignmentCount,
+        previousDriverId: context.previousDriverId,
+        timeoutMinutes,
+        blacklistedDriverCount: blacklistedDrivers.length
+      },
+      actualTime: new Date()
+    });
+
+    // Find available drivers (excluding blacklisted ones)
+    const availableDrivers = await findAvailableDriversForOrder(orderId, {
+      excludeDriverIds: blacklistedDrivers,
+      maxDrivers: 3, // Limit to top 3 candidates
+      priorityRadius: 10 // 10 mile radius for priority matching
+    });
+
+    if (availableDrivers.length === 0) {
+      console.warn(`⚠️ No available drivers found for order ${orderId} after ${reassignmentCount} attempts`);
+      
+      // If no drivers available after multiple attempts, escalate to admin
+      if (reassignmentCount >= 3) {
+        await escalateOrderToAdmin(orderId, 'no_available_drivers', {
+          reassignmentCount,
+          lastReason: reassignmentReason,
+          blacklistedDrivers: blacklistedDrivers.length
+        });
+      }
+      return;
+    }
+
+    // Create new assignment for the best available driver
+    const bestDriver = availableDrivers[0];
+    const assignment = await storage.createDriverOrderAssignment({
+      orderId,
+      driverId: bestDriver.id,
+      status: 'pending',
+      assignmentPriority,
+      offerExpiresAt,
+      driverLocation: bestDriver.currentLocation || null,
+      reassignmentCount,
+      previousDrivers: blacklistedDrivers
+    });
+
+    // Broadcast assignment to driver via WebSocket
+    webSocketService.broadcastToDriver(bestDriver.id, {
+      type: 'new_assignment',
+      assignment: {
+        id: assignment.id,
+        orderId,
+        priority: assignmentPriority,
+        expiresAt: offerExpiresAt,
+        reassignmentCount
+      },
+      order,
+      expiresAt: offerExpiresAt
+    });
+
+    // Send SMS notification if enabled
+    if (bestDriver.phone && bestDriver.smsNotifications) {
+      await smsService.sendDriverAssignment(bestDriver.phone, {
+        orderId: order.trackingNumber,
+        pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}`,
+        retailer: order.retailer,
+        estimatedEarnings: order.driverTotalEarning,
+        expiresIn: Math.round(timeoutMinutes)
+      });
+    }
+
+    console.log(`✅ Order ${orderId} reassigned to driver ${bestDriver.id} (attempt ${reassignmentCount + 1})`);
+
+    // Broadcast order update for tracking clients
+    webSocketService.broadcastOrderUpdate({
+      orderId,
+      status: OrderStatus.ASSIGNED,
+      timestamp: new Date().toISOString(),
+      notes: `Order reassigned to new driver (attempt ${reassignmentCount + 1})`
+    });
+
+  } catch (error) {
+    console.error(`❌ Failed to reassign order ${orderId}:`, error);
+    
+    // If reassignment fails, escalate to admin
+    await escalateOrderToAdmin(orderId, 'reassignment_failed', {
+      error: error.message,
+      reassignmentReason,
+      context
+    });
+  }
+}
+
+// Helper function to find available drivers for an order
+async function findAvailableDriversForOrder(
+  orderId: string,
+  options: {
+    excludeDriverIds: number[];
+    maxDrivers: number;
+    priorityRadius: number;
+  }
+) {
+  // This is a simplified implementation - in a real system, you'd consider:
+  // - Driver location proximity to pickup/dropoff
+  // - Driver ratings and performance metrics  
+  // - Driver availability and current workload
+  // - Driver vehicle type compatibility
+  
+  // For now, get all online drivers excluding blacklisted ones
+  const drivers = await storage.getAvailableDrivers({
+    excludeIds: options.excludeDriverIds,
+    isOnline: true,
+    limit: options.maxDrivers
+  });
+
+  return drivers.filter(driver => 
+    driver.isOnline && 
+    !options.excludeDriverIds.includes(driver.id) &&
+    driver.status === 'available'
+  );
+}
+
+// Driver Abandonment Detection - Background Process
+async function detectDriverAbandonmentAndExpiredAssignments() {
+  try {
+    console.log('🕵️ Running driver abandonment and expired assignment detection...');
+
+    // 1. Handle expired assignments (assignments that weren't responded to)
+    const expiredAssignments = await storage.expireDriverOrderAssignments();
+    if (expiredAssignments.length > 0) {
+      console.log(`⏰ Found ${expiredAssignments.length} newly expired driver assignments`);
+      
+      // Process newly expired assignments
+      for (const assignment of expiredAssignments) {
+        // Safety check: Process if order still has this driver OR if order is unassigned (ready for next attempt)
+        const currentOrder = await storage.getOrder(assignment.orderId);
+        if (currentOrder && (currentOrder.driverId === assignment.driverId || currentOrder.driverId === null)) {
+          await handleOrderReassignment(assignment.orderId, 'timeout', {
+            previousDriverId: assignment.driverId,
+            assignmentId: assignment.id,
+            timeoutMinutes: 15
+          });
+        } else {
+          console.log(`⚠️ Skipping expired assignment ${assignment.id} - order assigned to different driver`);
+        }
+      }
+    }
+
+    // 2. Detect driver abandonment in active orders
+    const abandonmentThresholdMinutes = 30; // No status update or location ping for 30+ minutes
+    const abandonedOrders = await storage.getAbandonedOrders(abandonmentThresholdMinutes);
+    
+    for (const order of abandonedOrders) {
+      console.log(`🚨 Detected driver abandonment for order ${order.id} by driver ${order.driverId}`);
+      
+      // Trigger reassignment (handleOrderReassignment will create the cancellation record)
+      await handleOrderReassignment(order.id, 'driver_abandon', {
+        previousDriverId: order.driverId,
+        declineReason: `Driver abandonment detected - no activity for ${abandonmentThresholdMinutes} minutes`
+      });
+    }
+
+    // 3. Clean up old completed assignments (older than 24 hours)
+    const cleanupCount = await storage.cleanupOldAssignments(24);
+    if (cleanupCount > 0) {
+      console.log(`🧹 Cleaned up ${cleanupCount} old assignment records`);
+    }
+
+    console.log('✅ Driver abandonment detection completed');
+  } catch (error) {
+    console.error('❌ Error in driver abandonment detection:', error);
+  }
+}
+
+// Schedule abandonment detection to run every 5 minutes
+setInterval(detectDriverAbandonmentAndExpiredAssignments, 5 * 60 * 1000);
+
+// Run immediately on startup
+setTimeout(detectDriverAbandonmentAndExpiredAssignments, 10000); // Wait 10 seconds after startup
+
+// Helper function to escalate problematic orders to admin
+async function escalateOrderToAdmin(
+  orderId: string,
+  escalationReason: 'no_available_drivers' | 'reassignment_failed' | 'repeated_failures',
+  context: any
+) {
+  try {
+    console.log(`🚨 Escalating order ${orderId} to admin: ${escalationReason}`);
+
+    // Create admin notification
+    await storage.createNotification({
+      userId: null, // Admin notification
+      type: 'order_escalation',
+      title: 'Order Requires Manual Intervention',
+      message: `Order ${orderId} needs admin attention: ${escalationReason.replace('_', ' ')}`,
+      data: {
+        orderId,
+        escalationReason,
+        context,
+        createdAt: new Date().toISOString()
+      },
+      priority: 'high'
+    });
+
+    // Update order with escalation flag
+    await storage.updateOrder(orderId, {
+      adminEscalated: true,
+      adminEscalationReason: escalationReason,
+      adminEscalatedAt: new Date()
+    });
+
+    // Broadcast admin alert
+    webSocketService.broadcastOrderUpdate({
+      orderId,
+      status: 'escalated',
+      timestamp: new Date().toISOString(),
+      notes: `Escalated to admin: ${escalationReason.replace('_', ' ')}`
+    });
+
+  } catch (error) {
+    console.error(`❌ Failed to escalate order ${orderId} to admin:`, error);
+  }
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Basic Auth for staging environment (returnly.tech)
   app.use((req, res, next) => {
@@ -1851,8 +2146,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         res.json({ message: "Assignment accepted successfully", assignment, order });
       } else {
-        // TODO: Implement reassignment logic for declined orders
-        res.json({ message: "Assignment declined", assignment });
+        // Handle declined assignment with comprehensive reassignment logic
+        await handleOrderReassignment(assignment.orderId, 'driver_decline', {
+          previousDriverId: user.id,
+          declineReason,
+          assignmentId: parseInt(assignmentId)
+        });
+        
+        res.json({ message: "Assignment declined - finding alternative driver", assignment });
       }
     } catch (error) {
       console.error("Error responding to assignment:", error);
@@ -2060,7 +2361,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cancellation: { reason, details }
       });
       
-      res.json({ message: "Order cancelled successfully", cancellation });
+      // Trigger reassignment if appropriate
+      if (cancellationType === 'store_rejection') {
+        // Store rejections should be reassigned to other drivers
+        await handleOrderReassignment(orderId, 'store_reject', {
+          previousDriverId: user.id,
+          declineReason: details,
+          storeId: storeId ? parseInt(storeId) : undefined
+        });
+      } else if (cancellationType === 'driver_cancel' && reason === 'driver_abandon') {
+        // Driver abandonment should trigger reassignment
+        await handleOrderReassignment(orderId, 'driver_abandon', {
+          previousDriverId: user.id,
+          declineReason: details
+        });
+      }
+      // Note: Other cancellation types (driver_cancel with valid reasons) typically don't reassign
+      
+      const responseMessage = cancellationType === 'store_rejection' 
+        ? "Order cancelled - finding alternative driver for store rejection"
+        : cancellationType === 'driver_cancel' && reason === 'driver_abandon'
+        ? "Order cancelled - reassigning due to driver abandonment"
+        : "Order cancelled successfully";
+      
+      res.json({ message: responseMessage, cancellation });
     } catch (error) {
       console.error("Error cancelling order:", error);
       res.status(500).json({ message: "Failed to cancel order" });
