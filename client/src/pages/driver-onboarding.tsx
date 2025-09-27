@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -147,6 +147,65 @@ export default function DriverOnboarding() {
     queryKey: ['/api/driver-applications/current'],
     retry: false,
   });
+
+  // Populate forms when application data loads
+  useEffect(() => {
+    if (application && !isLoading) {
+      // Populate personal form with existing data
+      personalForm.reset({
+        firstName: application?.firstName || '',
+        lastName: application?.lastName || '',
+        email: application?.email || '',
+        phone: application?.phone || '',
+        dateOfBirth: application?.dateOfBirth || '',
+        address: application?.address || '',
+        city: application?.city || '',
+        state: application?.state || '',
+        zipCode: application?.zipCode || '',
+      });
+
+      // Populate vehicle form if vehicle info exists
+      if (application?.vehicleInfo) {
+        vehicleForm.reset({
+          vehicleType: application.vehicleInfo?.vehicleType || '',
+          vehicleMake: application.vehicleInfo?.vehicleMake || '',
+          vehicleModel: application.vehicleInfo?.vehicleModel || '',
+          vehicleYear: application.vehicleInfo?.vehicleYear || '',
+          vehicleColor: application.vehicleInfo?.vehicleColor || '',
+          licensePlate: application.vehicleInfo?.licensePlate || '',
+          insurance: application.vehicleInfo?.insurance || '',
+        });
+      }
+
+      // Set application ID for mutations
+      if (application?.id) {
+        setApplicationId(String(application.id));
+      }
+
+      // Advance to appropriate step based on application progress
+      if (application?.onboardingStep) {
+        switch (application.onboardingStep) {
+          case 'personal_complete':
+          case 'vehicle_pending':
+            setCurrentStep(2);
+            break;
+          case 'vehicle_complete':
+          case 'documents_pending':
+            setCurrentStep(3);
+            break;
+          case 'documents_complete':
+          case 'background_pending':
+            setCurrentStep(4);
+            break;
+          case 'completed':
+            setCurrentStep(5);
+            break;
+          default:
+            setCurrentStep(1);
+        }
+      }
+    }
+  }, [application, isLoading, personalForm, vehicleForm]);
 
   // Mutations
   const savePersonalInfo = useMutation({

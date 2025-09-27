@@ -5013,7 +5013,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       allowPublicRegistration: true,
       allowPublicLogin: true,
       allowGoogleAuth: true, // Enable Google Auth in production
-      allowDriverSignup: false,
+      allowDriverSignup: true,
       enableDemoMode: false,
       environment: process.env.NODE_ENV || 'development'
     });

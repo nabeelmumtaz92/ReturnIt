@@ -98,6 +98,15 @@ export default function Welcome() {
                   </Button>
                 </Link>
               )}
+              {user?.isDriver && (
+                <Link href="/driver-portal">
+                  <Button variant="default" size="sm" className="bg-orange-600 hover:bg-orange-700 text-white" data-testid="button-driver-portal">
+                    <Truck className="h-4 w-4 mr-1 sm:mr-2" />
+                    <span className="hidden sm:inline">Driver Portal</span>
+                    <span className="sm:hidden">Portal</span>
+                  </Button>
+                </Link>
+              )}
               {user && !user.isDriver && !user.isAdmin && (
                 <Link href="/customer-dashboard">
                   <Button variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" data-testid="button-customer-dashboard">
