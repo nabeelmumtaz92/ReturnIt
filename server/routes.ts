@@ -24,6 +24,7 @@ import { requireAdmin, isAdmin } from "./middleware/adminAuth";
 import { sql } from "drizzle-orm";
 import { webSocketService } from "./websocket-service";
 import { webhookService } from "./webhook-service";
+import { autoAssignmentService } from "./auto-assignment-service";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -1672,6 +1673,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (smsError) {
         console.error('SMS notification failed:', smsError);
         // Continue with order creation even if SMS fails
+      }
+
+      // FIRE WEBHOOK FOR RETURN CREATED (ALWAYS FIRES FOR ENTERPRISE MERCHANT NOTIFICATIONS)
+      try {
+        await webhookService.fireReturnCreated(order);
+        console.log(`🔗 Webhook fired: return.created for order ${order.id}`);
+      } catch (webhookError) {
+        console.error(`❌ Webhook error for order ${order.id}:`, webhookError);
+        // Continue - webhook failures don't block order creation
+      }
+
+      // AUTO-ASSIGNMENT FOR OPERATIONAL SCALE (10 orders → 10,000+ orders)
+      try {
+        console.log(`🤖 Triggering auto-assignment for order ${order.id}`);
+        const autoAssigned = await autoAssignmentService.autoAssignOrder(order);
+        
+        if (autoAssigned) {
+          console.log(`✅ Order ${order.id} auto-assigned successfully`);
+        } else {
+          console.log(`⚠️ Order ${order.id} auto-assignment failed - will use fallback assignment`);
+        }
+        
+      } catch (autoAssignError) {
+        console.error(`❌ Auto-assignment error for order ${order.id}:`, autoAssignError);
+        // Continue with order creation even if auto-assignment fails
       }
       res.status(201).json(order);
     } catch (error) {
