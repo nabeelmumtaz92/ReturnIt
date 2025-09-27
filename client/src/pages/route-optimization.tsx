@@ -8,6 +8,7 @@ import { Navigation, MapPin, Clock, Fuel, TrendingUp, Route, Zap, Settings } fro
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { handleError } from "@/lib/errorHandler";
 import Footer from '@/components/Footer';
 import { useState } from 'react';
 
@@ -47,6 +48,18 @@ export default function RouteOptimization() {
         description: "Your delivery route has been optimized for efficiency.",
       });
     },
+    onError: (error) => {
+      setOptimizing(false);
+      const userMessage = handleError(error, {
+        context: "Route Optimization",
+        userMessage: "Error"
+      });
+      toast({
+        title: userMessage,
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    }
   });
 
   if (!isAuthenticated || !user?.isDriver) {

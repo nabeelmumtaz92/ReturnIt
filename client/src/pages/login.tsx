@@ -14,6 +14,7 @@ import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicato
 import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
 import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
+import { handleError } from "@/lib/errorHandler";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -96,17 +97,21 @@ export default function Login() {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
     onError: (error: any) => {
-      console.error('Login error:', error);
+      // Log detailed error for debugging
+      handleError(error, {
+        context: "User Login",
+        userMessage: "Error"
+      });
       
-      // Parse error response for better user guidance
+      // Parse error response for specific UX behaviors
       try {
         const errorData = error instanceof Error ? JSON.parse(error.message) : error;
         
-        // Handle specific authentication scenarios
+        // Handle specific authentication scenarios with preserved UX logic
         if (errorData.requiresSignup) {
           toast({
-            title: "Account Required",
-            description: errorData.message || "Please sign up first to create an account.",
+            title: "Error",
+            description: "Please try again.",
             variant: "destructive",
           });
           
@@ -116,25 +121,18 @@ export default function Login() {
             setRegisterData(prev => ({ ...prev, email: loginData.email }));
           }, 2000);
           
-        } else if (errorData.wrongPassword) {
-          toast({
-            title: "Incorrect Password",
-            description: errorData.message || "The password you entered is incorrect.",
-            variant: "destructive",
-          });
-          
         } else {
           toast({
-            title: "Login Failed",
-            description: errorData.message || "Invalid credentials. Please try again.",
+            title: "Error",
+            description: "Please check your credentials and try again.",
             variant: "destructive",
           });
         }
       } catch {
         // Fallback for unparseable errors
         toast({
-          title: "Login Failed",
-          description: error instanceof Error ? error.message : "Invalid credentials. Please try again.",
+          title: "Error",
+          description: "Please check your credentials and try again.",
           variant: "destructive",
         });
       }
@@ -157,25 +155,30 @@ export default function Login() {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
     onError: (error) => {
-      console.error('Registration error:', error);
+      // Log detailed error for debugging
+      handleError(error, {
+        context: "User Registration",
+        userMessage: "Error"
+      });
+      
       const errorMessage = error instanceof Error ? error.message : "Registration failed. Please try again.";
       
-      // Parse field-specific errors if available
+      // Parse field-specific errors if available (preserve validation logic)
       if (errorMessage.includes('validation')) {
         try {
           const validationError = JSON.parse(errorMessage);
           setValidationErrors(validationError.fieldErrors || {});
         } catch {
           toast({
-            title: "Registration Failed",
-            description: errorMessage,
+            title: "Error",
+            description: "Please check your information and try again.",
             variant: "destructive",
           });
         }
       } else {
         toast({
-          title: "Registration Failed",
-          description: errorMessage,
+          title: "Error",
+          description: "Please check your information and try again.",
           variant: "destructive",
         });
       }

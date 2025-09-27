@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
+import { handleError } from "@/lib/errorHandler";
 import { 
   MapPin, 
   Clock, 
@@ -93,10 +94,14 @@ export default function MobileDriver() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
-    onError: () => {
+    onError: (error) => {
+      const userMessage = handleError(error, {
+        context: "Driver Status Update",
+        userMessage: "Error"
+      });
       toast({
-        title: "Status Update Failed",
-        description: "Failed to update availability. Please try again.",
+        title: userMessage,
+        description: "Please try again.",
         variant: "destructive",
       });
     }
@@ -114,10 +119,14 @@ export default function MobileDriver() {
       queryClient.invalidateQueries({ queryKey: ['/api/driver/orders'] });
       queryClient.invalidateQueries({ queryKey: ['/api/driver/orders/available'] });
     },
-    onError: () => {
+    onError: (error) => {
+      const userMessage = handleError(error, {
+        context: "Job Acceptance",
+        userMessage: "Error"
+      });
       toast({
-        title: "Accept Failed",
-        description: "Failed to accept job. It may have been taken by another driver.",
+        title: userMessage,
+        description: "Please try again.",
         variant: "destructive",
       });
     }
