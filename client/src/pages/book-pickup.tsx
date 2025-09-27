@@ -140,7 +140,10 @@ export default function BookPickup() {
     { size: 'XL', label: 'Extra Large', valueRange: '$200+', upcharge: 5 }
   ];
 
-  // Popular retailers for autocomplete
+  // Available retailers from database (fetched on component mount)
+  const [availableRetailers, setAvailableRetailers] = useState<string[]>([]);
+  
+  // Fallback popular retailers for autocomplete if database fetch fails
   const popularRetailers = [
     "Amazon", "Target", "Walmart", "Best Buy", "Macy's", "Nordstrom", "REI", "Nike", 
     "Adidas", "Gap", "Old Navy", "H&M", "Zara", "Anthropologie", "Urban Outfitters",
@@ -285,7 +288,9 @@ export default function BookPickup() {
     setFormData(prev => ({ ...prev, retailerQuery: query }));
     
     if (query.length > 0) {
-      const filtered = popularRetailers.filter(retailer =>
+      // Use available retailers from database, fallback to popular retailers
+      const retailersToFilter = availableRetailers.length > 0 ? availableRetailers : popularRetailers;
+      const filtered = retailersToFilter.filter(retailer =>
         retailer.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredRetailers(filtered);
