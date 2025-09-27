@@ -1255,17 +1255,96 @@ export type InsertBulkOrderImport = z.infer<typeof insertBulkOrderImportSchema>;
 export type EmergencyAlert = typeof emergencyAlerts.$inferSelect;
 export type InsertEmergencyAlert = z.infer<typeof insertEmergencyAlertSchema>;
 
-// Status enums for type safety
+// Driver Order Assignments - manages order offers to drivers with timeout logic
+export const driverOrderAssignments = pgTable("driver_order_assignments", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  assignmentType: text("assignment_type").default("offer").notNull(), // offer, direct_assign, reassign
+  status: text("status").default("pending").notNull(), // pending, accepted, declined, expired, cancelled
+  offerExpiresAt: timestamp("offer_expires_at"), // Auto-decline after timeout
+  respondedAt: timestamp("responded_at"),
+  assignmentPriority: integer("assignment_priority").default(1), // 1 = highest priority
+  estimatedDistance: real("estimated_distance"), // Distance from driver to pickup (miles)
+  estimatedDuration: integer("estimated_duration"), // Estimated time to reach pickup (minutes)
+  driverLocation: jsonb("driver_location"), // Driver's location when offer was made
+  declineReason: text("decline_reason"), // Why driver declined (busy, too_far, break, etc.)
+  reassignmentCount: integer("reassignment_count").default(0), // Track how many times order was reassigned
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Order Status History - comprehensive audit trail of all status changes
+export const orderStatusHistory = pgTable("order_status_history", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  previousStatus: text("previous_status"),
+  newStatus: text("new_status").notNull(),
+  statusReason: text("status_reason"), // Reason for status change
+  triggeredBy: integer("triggered_by").references(() => users.id), // User who triggered the change
+  triggerType: text("trigger_type").default("manual").notNull(), // manual, automatic, timeout, system
+  driverId: integer("driver_id").references(() => users.id), // Driver involved in status change
+  location: jsonb("location"), // GPS location when status changed
+  metadata: jsonb("metadata").default({}), // Additional context (photos, notes, etc.)
+  estimatedTime: timestamp("estimated_time"), // When status change was expected
+  actualTime: timestamp("actual_time").defaultNow().notNull(), // When status actually changed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Driver Location Pings - real-time GPS tracking for active drivers
+export const driverLocationPings = pgTable("driver_location_pings", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id), // Associated order if driver is on delivery
+  location: jsonb("location").notNull(), // GPS coordinates with accuracy, heading, speed
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  isOnline: boolean("is_online").default(true).notNull(),
+  isOnDelivery: boolean("is_on_delivery").default(false).notNull(),
+  batteryLevel: integer("battery_level"), // Device battery percentage (optional)
+  networkType: text("network_type"), // wifi, cellular, etc. (optional)
+  accuracy: real("accuracy"), // GPS accuracy in meters
+  source: text("source").default("mobile_app").notNull(), // mobile_app, web_app, system
+});
+
+// Order Cancellations - detailed tracking of why orders are cancelled
+export const orderCancellations = pgTable("order_cancellations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  cancellationType: text("cancellation_type").notNull(), // customer_cancel, driver_cancel, store_rejection, system_cancel, admin_cancel
+  cancelledBy: integer("cancelled_by").references(() => users.id), // Who initiated cancellation
+  driverId: integer("driver_id").references(() => users.id), // Driver involved if applicable
+  cancellationReason: text("cancellation_reason").notNull(), // Specific reason code
+  cancellationDetails: text("cancellation_details"), // Free-form explanation
+  storeId: integer("store_id").references(() => storeLocations.id), // Store involved if store rejection
+  refundAmount: real("refund_amount"), // Amount refunded to customer
+  driverCompensation: real("driver_compensation"), // Compensation to driver if applicable
+  photos: jsonb("photos").default([]), // Evidence photos if needed
+  customerNotified: boolean("customer_notified").default(false),
+  driverNotified: boolean("driver_notified").default(false),
+  reassignAttempted: boolean("reassign_attempted").default(false),
+  escalatedToSupport: boolean("escalated_to_support").default(false),
+  resolutionNotes: text("resolution_notes"),
+  resolvedBy: integer("resolved_by").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Status enums for type safety - EXTENDED with GPS routing states
 export const OrderStatus = {
   CREATED: 'created',
-  CONFIRMED: 'confirmed',
+  CONFIRMED: 'confirmed', 
   ASSIGNED: 'assigned',
+  ACCEPTED: 'accepted', // Driver accepted the order
   PICKUP_SCHEDULED: 'pickup_scheduled',
-  PICKED_UP: 'picked_up',
-  IN_TRANSIT: 'in_transit',
-  DELIVERED: 'delivered',
-  COMPLETED: 'completed',
+  EN_ROUTE_TO_PICKUP: 'en_route_to_pickup', // Driver heading to customer
+  PICKED_UP: 'picked_up', // Items collected from customer
+  EN_ROUTE_TO_STORE: 'en_route_to_store', // Driver heading to dropoff store
+  AT_STORE: 'at_store', // Driver arrived at store
+  DROPPED_OFF: 'dropped_off', // Items delivered to store
+  COMPLETED: 'completed', // Order fully complete
   CANCELLED: 'cancelled',
+  STORE_REJECTED: 'store_rejected', // Store refused to accept return
+  RETURN_TO_CUSTOMER: 'return_to_customer', // Returning items to customer after rejection
   REFUNDED: 'refunded'
 } as const;
 
@@ -1413,8 +1492,85 @@ export const insertDailyCostSummarySchema = createInsertSchema(dailyCostSummary)
   createdAt: true,
 });
 
+// New table insert schemas
+export const insertDriverOrderAssignmentSchema = createInsertSchema(driverOrderAssignments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderStatusHistorySchema = createInsertSchema(orderStatusHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertDriverLocationPingSchema = createInsertSchema(driverLocationPings).omit({
+  id: true,
+  timestamp: true,
+});
+
+export const insertOrderCancellationSchema = createInsertSchema(orderCancellations).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type CostTracking = typeof costTracking.$inferSelect;
 export type InsertCostTracking = z.infer<typeof insertCostTrackingSchema>;
 export type DailyCostSummary = typeof dailyCostSummary.$inferSelect;
 export type InsertDailyCostSummary = z.infer<typeof insertDailyCostSummarySchema>;
+
+// New table types
+export type DriverOrderAssignment = typeof driverOrderAssignments.$inferSelect;
+export type InsertDriverOrderAssignment = z.infer<typeof insertDriverOrderAssignmentSchema>;
+export type OrderStatusHistory = typeof orderStatusHistory.$inferSelect;
+export type InsertOrderStatusHistory = z.infer<typeof insertOrderStatusHistorySchema>;
+export type DriverLocationPing = typeof driverLocationPings.$inferSelect;
+export type InsertDriverLocationPing = z.infer<typeof insertDriverLocationPingSchema>;
+export type OrderCancellation = typeof orderCancellations.$inferSelect;
+export type InsertOrderCancellation = z.infer<typeof insertOrderCancellationSchema>;
+
+// Cancellation reason enums for type safety
+export const CancellationReason = {
+  // Customer cancellations
+  CUSTOMER_CHANGED_MIND: 'customer_changed_mind',
+  CUSTOMER_EMERGENCY: 'customer_emergency',
+  CUSTOMER_FOUND_RECEIPT: 'customer_found_receipt', // Decided to return in-store
+  
+  // Driver cancellations  
+  DRIVER_EMERGENCY: 'driver_emergency',
+  DRIVER_VEHICLE_ISSUE: 'driver_vehicle_issue',
+  DRIVER_TOO_FAR: 'driver_too_far',
+  DRIVER_UNSAFE_LOCATION: 'driver_unsafe_location',
+  DRIVER_CUSTOMER_UNAVAILABLE: 'driver_customer_unavailable',
+  
+  // Store rejections
+  STORE_RETURN_WINDOW_EXPIRED: 'store_return_window_expired',
+  STORE_NO_RECEIPT: 'store_no_receipt', 
+  STORE_DAMAGED_ITEM: 'store_damaged_item',
+  STORE_FINAL_SALE: 'store_final_sale',
+  STORE_POLICY_VIOLATION: 'store_policy_violation',
+  STORE_SYSTEM_DOWN: 'store_system_down',
+  
+  // System cancellations
+  SYSTEM_TIMEOUT: 'system_timeout',
+  SYSTEM_ERROR: 'system_error',
+  PAYMENT_FAILED: 'payment_failed',
+  
+  // Admin cancellations
+  ADMIN_FRAUD_SUSPECTED: 'admin_fraud_suspected',
+  ADMIN_POLICY_VIOLATION: 'admin_policy_violation',
+  ADMIN_CUSTOMER_REQUEST: 'admin_customer_request'
+} as const;
+
+export type CancellationReason = (typeof CancellationReason)[keyof typeof CancellationReason];
+
+// Assignment status enum
+export const AssignmentStatus = {
+  PENDING: 'pending',
+  ACCEPTED: 'accepted', 
+  DECLINED: 'declined',
+  EXPIRED: 'expired',
+  CANCELLED: 'cancelled'
+} as const;
+
+export type AssignmentStatus = (typeof AssignmentStatus)[keyof typeof AssignmentStatus];
