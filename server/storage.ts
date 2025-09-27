@@ -138,6 +138,8 @@ export interface IStorage {
   
   // Merchant Policy operations
   getMerchantPolicyByStoreName(storeName: string): Promise<SelectMerchantPolicy | undefined>;
+  createMerchantPolicy(policy: InsertMerchantPolicy): Promise<SelectMerchantPolicy>;
+  updateMerchantPolicy(id: number, policy: Partial<InsertMerchantPolicy>): Promise<SelectMerchantPolicy | undefined>;
   
   createWebhookEvent(event: InsertWebhookEvent): Promise<WebhookEvent>;
   getWebhookEvents(): Promise<WebhookEvent[]>;
@@ -1957,6 +1959,23 @@ export class DatabaseStorage implements IStorage {
       .from(merchantPolicies)
       .where(eq(merchantPolicies.storeName, storeName));
     return policy;
+  }
+
+  async createMerchantPolicy(policy: InsertMerchantPolicy): Promise<SelectMerchantPolicy> {
+    const [newPolicy] = await db
+      .insert(merchantPolicies)
+      .values(policy)
+      .returning();
+    return newPolicy;
+  }
+
+  async updateMerchantPolicy(id: number, policy: Partial<InsertMerchantPolicy>): Promise<SelectMerchantPolicy | undefined> {
+    const [updatedPolicy] = await db
+      .update(merchantPolicies)
+      .set({ ...policy, updatedAt: new Date() })
+      .where(eq(merchantPolicies.id, id))
+      .returning();
+    return updatedPolicy;
   }
 }
 

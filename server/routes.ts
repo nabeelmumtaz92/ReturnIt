@@ -2628,6 +2628,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create new merchant policy - Admin only
+  app.post("/api/merchants/policies", requireAdmin, async (req, res) => {
+    try {
+      const validatedData = insertMerchantPolicySchema.parse(req.body);
+      const newPolicy = await storage.createMerchantPolicy(validatedData);
+      res.status(201).json(newPolicy);
+    } catch (error) {
+      console.error("Error creating merchant policy:", error);
+      res.status(400).json({ message: "Invalid merchant policy data" });
+    }
+  });
+
+  // Update merchant policy - Admin only  
+  app.patch("/api/merchants/policies/:id", requireAdmin, async (req, res) => {
+    try {
+      const policyId = parseInt(req.params.id);
+      const updates = req.body;
+      
+      const updatedPolicy = await storage.updateMerchantPolicy(policyId, updates);
+      
+      if (!updatedPolicy) {
+        return res.status(404).json({ message: "Merchant policy not found" });
+      }
+      
+      res.json(updatedPolicy);
+    } catch (error) {
+      console.error("Error updating merchant policy:", error);
+      res.status(500).json({ message: "Failed to update merchant policy" });
+    }
+  });
+
+  // Admin route to seed retailer policies
+  app.post("/api/admin/seed-policies", requireAdmin, async (req, res) => {
+    try {
+      const { seedRetailerPolicies } = await import('./seed-retailer-policies.js');
+      const results = await seedRetailerPolicies();
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error("Error seeding retailer policies:", error);
+      res.status(500).json({ message: "Failed to seed retailer policies" });
+    }
+  });
+
   // Driver status toggle endpoint
   app.patch("/api/admin/drivers/:id/status", requireAdmin, async (req, res) => {
     try {
