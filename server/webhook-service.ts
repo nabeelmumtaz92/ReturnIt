@@ -4,7 +4,9 @@ import type {
   WebhookEndpoint, 
   InsertWebhookDelivery, 
   WebhookEventType,
-  Order 
+  Order,
+  SelectMerchantPolicy,
+  SelectPolicyViolation
 } from '@shared/schema';
 
 interface WebhookPayload {
@@ -278,6 +280,92 @@ class WebhookService {
     await this.fireWebhook('return.cancelled', order, { 
       orderId: order.id,
       metadata: { cancellation_reason: reason }
+    });
+  }
+
+  // POLICY ENGINE WEBHOOK EVENTS
+  async firePolicyUpdated(merchantPolicy: SelectMerchantPolicy): Promise<void> {
+    // Policy webhooks don't relate to specific orders - use empty order with null ID
+    const emptyOrder = {
+      id: null,
+      retailer: merchantPolicy.storeName,
+      status: 'policy_updated'
+    };
+
+    await this.fireWebhook('policy.updated', emptyOrder, {
+      orderId: null, // No order relation for policy events
+      metadata: {
+        policy_id: merchantPolicy.id,
+        merchant_id: merchantPolicy.merchantId,
+        store_name: merchantPolicy.storeName,
+        updated_by: merchantPolicy.lastUpdatedBy,
+        policy_config: merchantPolicy.policy,
+        event_type: 'policy_update'
+      }
+    });
+  }
+
+  async firePolicyViolationDetected(
+    violation: SelectPolicyViolation,
+    bookingAttempt: any,
+    merchantPolicy: SelectMerchantPolicy | null
+  ): Promise<void> {
+    // Policy violations don't create orders - use empty order with null ID
+    const emptyOrder = {
+      id: null,
+      retailer: bookingAttempt.retailer || 'Unknown',
+      status: 'policy_violation_detected'
+    };
+
+    await this.fireWebhook('policy.violation_detected', emptyOrder, {
+      orderId: null, // No order relation for policy violations
+      metadata: {
+        violation_id: violation.id,
+        violation_type: violation.violationType,
+        violation_reason: violation.violationReason,
+        merchant_id: violation.merchantId,
+        customer_id: violation.customerId,
+        attempted_booking: bookingAttempt,
+        policy_config: merchantPolicy?.policy || {},
+        event_type: 'policy_violation'
+      }
+    });
+  }
+
+  async firePolicyEnforced(order: Partial<Order>, merchantPolicy: SelectMerchantPolicy): Promise<void> {
+    // Policy enforcement relates to a real order that was allowed
+    await this.fireWebhook('policy.enforced', order, {
+      orderId: order.id, // Real order ID since booking was allowed
+      metadata: {
+        policy_id: merchantPolicy.id,
+        merchant_id: merchantPolicy.merchantId,
+        store_name: merchantPolicy.storeName,
+        policy_config: merchantPolicy.policy,
+        enforcement_result: 'booking_allowed',
+        event_type: 'policy_enforcement'
+      }
+    });
+  }
+
+  async firePolicyExpired(bookingAttempt: any, merchantPolicy: SelectMerchantPolicy): Promise<void> {
+    // Policy expiration doesn't create orders - use empty order with null ID
+    const emptyOrder = {
+      id: null,
+      retailer: bookingAttempt.retailer || merchantPolicy.storeName,
+      status: 'policy_expired'
+    };
+
+    await this.fireWebhook('policy.expired', emptyOrder, {
+      orderId: null, // No order relation for expired bookings
+      metadata: {
+        policy_id: merchantPolicy.id,
+        merchant_id: merchantPolicy.merchantId,
+        store_name: merchantPolicy.storeName,
+        attempted_booking: bookingAttempt,
+        expiration_reason: 'return_window_expired',
+        policy_config: merchantPolicy.policy,
+        event_type: 'policy_expiration'
+      }
     });
   }
 
