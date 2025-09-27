@@ -124,6 +124,9 @@ export default function DriverPortal() {
     }
   };
 
+  // Allow both drivers and admins to access driver portal
+  const hasDriverAccess = user?.isDriver || user?.isAdmin;
+
   // Handle online status changes
   const handleOnlineToggle = async (online: boolean) => {
     setIsOnline(online);
@@ -140,9 +143,6 @@ export default function DriverPortal() {
       currentLocation: online ? currentLocation : null
     });
   };
-
-  // Allow both drivers and admins to access driver portal
-  const hasDriverAccess = user?.isDriver || user?.isAdmin;
 
   // Queries
   const { data: availableOrders = [], isLoading: loadingAvailable } = useQuery<Order[]>({
@@ -659,7 +659,7 @@ export default function DriverPortal() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => window.open(`tel:${order.customerName || '+1234567890'}`)}
+                              onClick={() => window.open(`tel:${order.phone || '+1234567890'}`)}
                               data-testid={`button-call-${order.id}`}
                             >
                               <Phone className="h-4 w-4 mr-1" />
@@ -679,7 +679,7 @@ export default function DriverPortal() {
                             : (order.returnAddress || `${order.retailer} Store`),
                         }}
                         orderId={order.id}
-                        customerPhone={order.customerName || ''}
+                        customerPhone={order.phone || ''}
                         onNavigationStart={() => {
                           // Optional: Track navigation start event
                         }}
