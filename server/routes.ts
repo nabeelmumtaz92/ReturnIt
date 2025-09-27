@@ -1105,6 +1105,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Store Location API Endpoints
+  // GET /api/stores - Search for stores by retailer name and location
+  app.get("/api/stores", async (req, res) => {
+    try {
+      const { retailer, lat, lng, radius = 10 } = req.query;
+      
+      let query = sql`SELECT * FROM store_locations WHERE is_active = true AND accepts_returns = true`;
+      const params: any[] = [];
+      
+      // Filter by retailer if provided
+      if (retailer) {
+        query = sql`${query} AND LOWER(retailer_name) LIKE LOWER($${params.length + 1})`;
+        params.push(`%${retailer}%`);
+      }
+      
+      // If coordinates provided, calculate distance and sort by proximity
+      if (lat && lng) {
+        const latitude = parseFloat(lat as string);
+        const longitude = parseFloat(lng as string);
+        const radiusMiles = parseFloat(radius as string);
+        
+        // Using the haversine formula to calculate distance
+        query = sql`
+          SELECT *, 
+            (3959 * acos(cos(radians(${latitude})) * cos(radians((coordinates->>'lat')::float)) * 
+            cos(radians((coordinates->>'lng')::float) - radians(${longitude})) + 
+            sin(radians(${latitude})) * sin(radians((coordinates->>'lat')::float)))) AS distance_miles
+          FROM store_locations 
+          WHERE is_active = true AND accepts_returns = true
+          ${retailer ? sql`AND LOWER(retailer_name) LIKE LOWER(${`%${retailer}%`})` : sql``}
+          HAVING distance_miles <= ${radiusMiles}
+          ORDER BY distance_miles ASC
+        `;
+        
+        const stores = await db.execute(query);
+        return res.json(stores.rows);
+      }
+      
+      // Add retailer filter if provided
+      if (retailer) {
+        query = sql`${query} ORDER BY retailer_name, store_name`;
+        const stores = await db.execute(query);
+        return res.json(stores.rows);
+      }
+      
+      // Return all stores if no filters
+      const stores = await db.execute(sql`${query} ORDER BY retailer_name, store_name`);
+      res.json(stores.rows);
+      
+    } catch (error) {
+      console.error("Error fetching stores:", error);
+      res.status(500).json({ message: "Failed to fetch stores" });
+    }
+  });
+
+  // GET /api/stores/retailers - Get list of unique retailers  
+  app.get("/api/stores/retailers", async (req, res) => {
+    try {
+      const retailers = await db.execute(sql`
+        SELECT DISTINCT retailer_name, COUNT(*) as store_count
+        FROM store_locations 
+        WHERE is_active = true AND accepts_returns = true
+        GROUP BY retailer_name 
+        ORDER BY retailer_name
+      `);
+      res.json(retailers.rows);
+    } catch (error) {
+      console.error("Error fetching retailers:", error);
+      res.status(500).json({ message: "Failed to fetch retailers" });
+    }
+  });
+
+  // GET /api/stores/:retailer - Get stores for specific retailer
+  app.get("/api/stores/:retailer", async (req, res) => {
+    try {
+      const { retailer } = req.params;
+      const { lat, lng, limit = 20 } = req.query;
+      
+      let query;
+      
+      if (lat && lng) {
+        const latitude = parseFloat(lat as string);
+        const longitude = parseFloat(lng as string);
+        const limitNum = parseInt(limit as string);
+        
+        // Get stores sorted by distance
+        query = sql`
+          SELECT *, 
+            (3959 * acos(cos(radians(${latitude})) * cos(radians((coordinates->>'lat')::float)) * 
+            cos(radians((coordinates->>'lng')::float) - radians(${longitude})) + 
+            sin(radians(${latitude})) * sin(radians((coordinates->>'lat')::float)))) AS distance_miles,
+            CONCAT(store_name, ' - ', street_address, ', ', city, ', ', state, ' ', zip_code) as full_address
+          FROM store_locations 
+          WHERE LOWER(retailer_name) = LOWER(${retailer}) 
+            AND is_active = true AND accepts_returns = true
+          ORDER BY distance_miles ASC
+          LIMIT ${limitNum}
+        `;
+      } else {
+        // Get stores without distance calculation
+        query = sql`
+          SELECT *,
+            CONCAT(store_name, ' - ', street_address, ', ', city, ', ', state, ' ', zip_code) as full_address
+          FROM store_locations 
+          WHERE LOWER(retailer_name) = LOWER(${retailer}) 
+            AND is_active = true AND accepts_returns = true
+          ORDER BY store_name
+        `;
+      }
+      
+      const stores = await db.execute(query);
+      res.json(stores.rows);
+      
+    } catch (error) {
+      console.error("Error fetching retailer stores:", error);
+      res.status(500).json({ message: "Failed to fetch retailer stores" });
+    }
+  });
+
   // Create new order (protected)
   app.post("/api/orders", isAuthenticated, async (req, res) => {
     try {
