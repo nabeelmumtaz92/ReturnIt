@@ -2115,6 +2115,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver real-time status endpoint (GET for status info)
+  app.get("/api/driver/status", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver && !user.isAdmin) {
+        return res.status(403).json({ message: "Driver or admin access required" });
+      }
+
+      // Get fresh driver data from database
+      const driverData = await storage.getUser(user.id);
+      if (!driverData) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+
+      // Calculate waitlist position if driver is on waitlist
+      let waitlistPosition = null;
+      if (driverData.applicationStatus === 'waitlist') {
+        // Simple waitlist position calculation (can be enhanced)
+        const waitlistDrivers = await storage.getUsers();
+        const driversOnWaitlist = waitlistDrivers.filter(d => 
+          d.applicationStatus === 'waitlist' && 
+          d.backgroundCheckStatus === 'approved'
+        );
+        
+        // Sort by background check completion date or created date
+        driversOnWaitlist.sort((a, b) => {
+          const aDate = new Date(a.backgroundCheckCompletedAt || a.createdAt);
+          const bDate = new Date(b.backgroundCheckCompletedAt || b.createdAt);
+          return aDate.getTime() - bDate.getTime();
+        });
+        
+        waitlistPosition = driversOnWaitlist.findIndex(d => d.id === user.id) + 1;
+      }
+
+      res.json({
+        backgroundCheckStatus: driverData.backgroundCheckStatus,
+        applicationStatus: driverData.applicationStatus,
+        onboardingStep: driverData.onboardingStep,
+        waitlistPosition,
+        approvedAt: driverData.approvedAt,
+        backgroundCheckCompletedAt: driverData.backgroundCheckCompletedAt,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Driver status error:', error);
+      res.status(500).json({ message: "Failed to fetch driver status" });
+    }
+  });
+
   app.patch("/api/driver/status", isAuthenticated, async (req, res) => {
     try {
       const user = (req.session as any).user;

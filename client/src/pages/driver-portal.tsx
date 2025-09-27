@@ -31,6 +31,17 @@ export default function DriverPortal() {
   const [watchId, setWatchId] = useState<number | null>(null);
   const [navigatingOrderId, setNavigatingOrderId] = useState<string | null>(null);
 
+  // Real-time driver status query to ensure background check and waitlist status updates
+  const { data: driverStatus, isLoading: statusLoading } = useQuery({
+    queryKey: ['/api/driver/status'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/driver/status');
+      return response.json();
+    },
+    refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+    enabled: isAuthenticated && user?.isDriver
+  });
+
   // Check if new driver needs tutorial (skip for admins viewing driver portal)
   useEffect(() => {
     if (user && user.isDriver && !user.isAdmin && !user.tutorialCompleted) {
@@ -268,6 +279,67 @@ export default function DriverPortal() {
                       <span className="ml-1 text-blue-600">(Administrator)</span>
                     )}
                   </span>
+                  
+                  {/* Real-time Driver Status Indicators */}
+                  <div className="flex items-center space-x-2 ml-3">
+                    {/* Background Check Status */}
+                    {(driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) && 
+                     (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) !== 'approved' && (
+                      <div className="flex items-center">
+                        {(driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'pending' ? (
+                          <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
+                            <Clock className="h-3 w-3 mr-1" />
+                            Background Check Pending
+                          </Badge>
+                        ) : (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'in_progress' ? (
+                          <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50">
+                            <Clock className="h-3 w-3 mr-1 animate-spin" />
+                            Background Check In Progress
+                          </Badge>
+                        ) : (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'failed' ? (
+                          <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-300">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            Background Check Failed
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="border-yellow-300 text-yellow-700 bg-yellow-50">
+                            <Clock className="h-3 w-3 mr-1" />
+                            Background Check Required
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Waitlist Status */}
+                    {(driverStatus?.applicationStatus || user?.applicationStatus) === 'waitlist' && (
+                      <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50">
+                        <Users className="h-3 w-3 mr-1" />
+                        On Waitlist
+                        {driverStatus?.waitlistPosition && (
+                          <span className="ml-1">#{driverStatus.waitlistPosition}</span>
+                        )}
+                      </Badge>
+                    )}
+
+                    {/* Application Status for non-approved drivers */}
+                    {(driverStatus?.applicationStatus || user?.applicationStatus) && 
+                     !['approved', 'waitlist'].includes(driverStatus?.applicationStatus || user?.applicationStatus || '') && (
+                      <div className="flex items-center">
+                        {(driverStatus?.applicationStatus || user?.applicationStatus) === 'pending_review' ? (
+                          <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
+                            <Clock className="h-3 w-3 mr-1" />
+                            Under Review
+                          </Badge>
+                        ) : (driverStatus?.applicationStatus || user?.applicationStatus) === 'rejected' ? (
+                          <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-300">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            Application Rejected
+                          </Badge>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                  
                   <div className="flex items-center space-x-1">
                     <Switch 
                       checked={isOnline} 
