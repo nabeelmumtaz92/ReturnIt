@@ -24,6 +24,7 @@ const DriverPayments = lazy(() => import("@/pages/driver-payments"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
 const DriverSignup = lazy(() => import("@/pages/driver-signup"));
 const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
+const CustomerWaitlist = lazy(() => import("@/pages/customer-waitlist"));
 const About = lazy(() => import("@/pages/about"));
 
 // Admin and heavy components (lazy-loaded)
@@ -188,6 +189,7 @@ function Router() {
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
+      <Route path="/customer-waitlist" component={CustomerWaitlist} />
       <Route path="/driver-tutorial" component={DriverTutorial} />
       <Route path="/driver-documents" component={DriverDocuments} />
       <Route path="/help-center" component={HelpCenter} />

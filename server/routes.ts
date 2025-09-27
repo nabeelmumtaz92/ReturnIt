@@ -763,24 +763,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ZIP Code lookup service function (extracted for reuse)
+  function getZipCodeAnalysis(zipCode: string) {
+    // Mock ZIP code data - in production this would query a ZIP management table
+    return {
+      zipCode: zipCode,
+      driverCount: Math.floor(Math.random() * 25) + 5,
+      targetDriverCount: 30,
+      projectedHireDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString(), // Random date in next 60 days
+      status: Math.random() > 0.6 ? 'hiring' : Math.random() > 0.3 ? 'waitlist' : 'full',
+      priority: Math.floor(Math.random() * 3) + 1, // 1-3 priority
+      estimatedWaitDays: Math.floor(Math.random() * 45) + 7, // 7-52 days
+      marketDemand: Math.random() > 0.5 ? 'high' : 'medium'
+    };
+  }
+
+  // Customer Waitlist Signup endpoint
+  app.post("/api/customer-waitlist", async (req, res) => {
+    try {
+      // Define validation schema for customer waitlist
+      const customerWaitlistSchema = z.object({
+        firstName: z.string().min(2, 'First name must be at least 2 characters'),
+        lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+        email: z.string().email('Please enter a valid email address'),
+        phone: z.string().min(10, 'Please enter a valid phone number'),
+        streetAddress: z.string().min(5, 'Please enter your full address'),
+        city: z.string().min(2, 'City is required'),
+        state: z.string().min(2, 'State is required'),
+        zipCode: z.string().min(5, 'Valid zip code required'),
+        marketingOptIn: z.boolean().default(true),
+        referralCode: z.string().optional(),
+      });
+      
+      // Validate customer waitlist data
+      const validatedData = customerWaitlistSchema.parse(req.body);
+      
+      // Check if customer already exists on waitlist
+      const existingCustomer = await storage.getCustomerWaitlistByEmail(validatedData.email);
+      if (existingCustomer) {
+        return res.status(409).json({ 
+          message: "You're already on our waitlist! We'll notify you when we launch in your area.",
+          waitlistId: existingCustomer.id
+        });
+      }
+      
+      // Get ZIP code analysis directly (no HTTP fetch)
+      const zipData = getZipCodeAnalysis(validatedData.zipCode);
+      
+      // Create customer waitlist entry
+      const customerWaitlist = await storage.createCustomerWaitlist({
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        streetAddress: validatedData.streetAddress,
+        city: validatedData.city,
+        state: validatedData.state,
+        zipCode: validatedData.zipCode,
+        marketingOptIn: validatedData.marketingOptIn,
+        referralCode: validatedData.referralCode || null,
+        projectedLaunchDate: zipData.projectedHireDate ? new Date(zipData.projectedHireDate) : null,
+        notificationPreferences: JSON.stringify({
+          email: true,
+          sms: validatedData.marketingOptIn
+        })
+      });
+      
+      res.status(201).json({ 
+        message: "Successfully joined the waitlist!",
+        waitlistId: customerWaitlist.id,
+        projectedLaunchDate: customerWaitlist.projectedLaunchDate,
+        zipCodeData: zipData
+      });
+    } catch (error: any) {
+      console.error('Customer waitlist signup error:', error);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid input",
+          errors: error.issues.map(issue => ({
+            field: issue.path.join('.'),
+            message: issue.message
+          }))
+        });
+      }
+      
+      res.status(500).json({ message: "Something went wrong. Please try again later." });
+    }
+  });
+
+  // Get Customer Waitlist Stats endpoint
+  app.get("/api/customer-waitlist/stats", async (req, res) => {
+    try {
+      const totalCount = await storage.getCustomerWaitlistCount();
+      const allWaitlist = await storage.getAllCustomerWaitlist();
+      
+      // Group by ZIP code for regional stats
+      const zipCodeStats = allWaitlist.reduce((acc: any, customer) => {
+        const zipCode = customer.zipCode;
+        if (!acc[zipCode]) {
+          acc[zipCode] = {
+            zipCode,
+            customerCount: 0,
+            avgProjectedLaunch: null,
+            marketDemand: 'medium'
+          };
+        }
+        acc[zipCode].customerCount++;
+        return acc;
+      }, {});
+      
+      res.json({
+        totalCustomers: totalCount,
+        zipCodeBreakdown: Object.values(zipCodeStats),
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error fetching waitlist stats:', error);
+      res.status(500).json({ message: "Failed to fetch waitlist statistics" });
+    }
+  });
+
   // ZIP Code Analytics endpoint for driver signup
   app.get("/api/zip-codes/:zipCode", async (req, res) => {
     try {
       const { zipCode } = req.params;
       
-      // Mock ZIP code data for now - in production this would query a ZIP management table
-      const mockZipData = {
-        zipCode: zipCode,
-        driverCount: Math.floor(Math.random() * 25) + 5,
-        targetDriverCount: 30,
-        projectedHireDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString(), // Random date in next 60 days
-        status: Math.random() > 0.6 ? 'hiring' : Math.random() > 0.3 ? 'waitlist' : 'full',
-        priority: Math.floor(Math.random() * 3) + 1, // 1-3 priority
-        estimatedWaitDays: Math.floor(Math.random() * 45) + 7, // 7-52 days
-        marketDemand: Math.random() > 0.5 ? 'high' : 'medium'
-      };
+      // Use the same service function for consistency
+      const zipData = getZipCodeAnalysis(zipCode);
       
-      res.json(mockZipData);
+      res.json(zipData);
     } catch (error) {
       console.error('ZIP code lookup error:', error);
       res.status(500).json({ message: "Failed to fetch ZIP code information" });

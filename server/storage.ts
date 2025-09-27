@@ -15,9 +15,9 @@ import {
   type WebhookDelivery, type InsertWebhookDelivery,
   type SelectMerchantPolicy, type InsertMerchantPolicy,
   type SelectPolicyViolation, type InsertPolicyViolation,
-  // type CustomerWaitlist, type InsertCustomerWaitlist,
-  // type ZipCodeManagement, type InsertZipCodeManagement,
-  // type OtpVerification, type InsertOtpVerification,
+  type CustomerWaitlist, type InsertCustomerWaitlist,
+  type ZipCodeManagement, type InsertZipCodeManagement,
+  type OtpVerification, type InsertOtpVerification,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -94,6 +94,15 @@ export interface IStorage {
   getUserDriverApplication(userId: number): Promise<DriverApplication | undefined>;
   updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined>;
   getAllDriverApplications(): Promise<DriverApplication[]>;
+
+  // Customer waitlist operations
+  createCustomerWaitlist(waitlist: InsertCustomerWaitlist): Promise<CustomerWaitlist>;
+  getCustomerWaitlist(id: number): Promise<CustomerWaitlist | undefined>;
+  getCustomerWaitlistByEmail(email: string): Promise<CustomerWaitlist | undefined>;
+  updateCustomerWaitlist(id: number, updates: Partial<CustomerWaitlist>): Promise<CustomerWaitlist | undefined>;
+  getCustomerWaitlistByZipCode(zipCode: string): Promise<CustomerWaitlist[]>;
+  getAllCustomerWaitlist(): Promise<CustomerWaitlist[]>;
+  getCustomerWaitlistCount(): Promise<number>;
 
   // Tracking operations
   getOrderByTrackingNumber(trackingNumber: string): Promise<Order | undefined>;
@@ -1421,7 +1430,7 @@ import {
   users, orders, promoCodes, 
   driverOrderAssignments, orderStatusHistory, 
   driverLocationPings, orderCancellations,
-  merchantPolicies, policyViolations
+  merchantPolicies, policyViolations, customerWaitlist
 } from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
@@ -1593,6 +1602,64 @@ export class DatabaseStorage implements IStorage {
     return undefined;
   }
   async getAllDriverApplications(): Promise<DriverApplication[]> { return []; }
+
+  // Customer waitlist operations implementation
+  async createCustomerWaitlist(waitlist: InsertCustomerWaitlist): Promise<CustomerWaitlist> {
+    const [result] = await db
+      .insert(customerWaitlist)
+      .values(waitlist)
+      .returning();
+    return result;
+  }
+
+  async getCustomerWaitlist(id: number): Promise<CustomerWaitlist | undefined> {
+    const [result] = await db
+      .select()
+      .from(customerWaitlist)
+      .where(eq(customerWaitlist.id, id));
+    return result;
+  }
+
+  async getCustomerWaitlistByEmail(email: string): Promise<CustomerWaitlist | undefined> {
+    const [result] = await db
+      .select()
+      .from(customerWaitlist)
+      .where(eq(customerWaitlist.email, email));
+    return result;
+  }
+
+  async updateCustomerWaitlist(id: number, updates: Partial<CustomerWaitlist>): Promise<CustomerWaitlist | undefined> {
+    const [result] = await db
+      .update(customerWaitlist)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(customerWaitlist.id, id))
+      .returning();
+    return result;
+  }
+
+  async getCustomerWaitlistByZipCode(zipCode: string): Promise<CustomerWaitlist[]> {
+    const results = await db
+      .select()
+      .from(customerWaitlist)
+      .where(eq(customerWaitlist.zipCode, zipCode))
+      .orderBy(desc(customerWaitlist.createdAt));
+    return results;
+  }
+
+  async getAllCustomerWaitlist(): Promise<CustomerWaitlist[]> {
+    const results = await db
+      .select()
+      .from(customerWaitlist)
+      .orderBy(desc(customerWaitlist.createdAt));
+    return results;
+  }
+
+  async getCustomerWaitlistCount(): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(customerWaitlist);
+    return result.count;
+  }
 
   // NEW: Driver order assignment operations
   async createDriverOrderAssignment(assignment: InsertDriverOrderAssignment): Promise<DriverOrderAssignment> {

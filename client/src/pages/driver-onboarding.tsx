@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -537,19 +537,25 @@ export default function DriverOnboarding() {
                   </div>
                   <div>
                     <Label htmlFor="vehicleType" className="text-amber-800 font-medium">Vehicle Type *</Label>
-                    <Select {...vehicleForm.register('vehicleType')} required>
-                      <SelectTrigger className="border-amber-300 focus:border-amber-500" data-testid="select-vehicle-type">
-                        <SelectValue placeholder="Select vehicle type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="car">Car</SelectItem>
-                        <SelectItem value="suv">SUV</SelectItem>
-                        <SelectItem value="truck">Truck</SelectItem>
-                        <SelectItem value="van">Van</SelectItem>
-                        <SelectItem value="hatchback">Hatchback</SelectItem>
-                        <SelectItem value="sedan">Sedan</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="vehicleType"
+                      control={vehicleForm.control}
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <SelectTrigger className="border-amber-300 focus:border-amber-500" data-testid="select-vehicle-type">
+                            <SelectValue placeholder="Select vehicle type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="car">Car</SelectItem>
+                            <SelectItem value="suv">SUV</SelectItem>
+                            <SelectItem value="truck">Truck</SelectItem>
+                            <SelectItem value="van">Van</SelectItem>
+                            <SelectItem value="hatchback">Hatchback</SelectItem>
+                            <SelectItem value="sedan">Sedan</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                     {vehicleForm.formState.errors.vehicleType && (
                       <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleType.message}</p>
                     )}
