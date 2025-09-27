@@ -29,7 +29,12 @@ app.use(performanceMiddleware);
 
 // Add caching headers for static assets
 app.use((req, res, next) => {
-  if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+  if (req.url === '/sw.js' || req.url === '/manifest.json' || req.url === '/site.webmanifest') {
+    // Critical PWA files - no cache to ensure updates work on Android
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+  } else if (req.url.match(/\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
     res.set('Cache-Control', 'public, max-age=31536000'); // 1 year for static assets
   } else if (req.url.startsWith('/api/')) {
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');

@@ -1,6 +1,7 @@
 // ReturnIt Service Worker for Performance and Offline Support
-const CACHE_NAME = 'returnit-v1.2';
-const STATIC_CACHE = 'returnit-static-v1.2';
+const CACHE_VERSION = Date.now(); // Dynamic versioning for Android PWA updates
+const CACHE_NAME = `returnit-v${CACHE_VERSION}`;
+const STATIC_CACHE = `returnit-static-v${CACHE_VERSION}`;
 
 // Assets to cache immediately
 const STATIC_ASSETS = [
@@ -12,14 +13,14 @@ const STATIC_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
+  console.log('Service Worker: Installing...', CACHE_VERSION);
   event.waitUntil(
     Promise.all([
       caches.open(STATIC_CACHE).then(cache => {
         console.log('Service Worker: Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       }),
-      self.skipWaiting()
+      self.skipWaiting() // Force immediate activation for Android updates
     ])
   );
 });
@@ -113,6 +114,24 @@ self.addEventListener('message', (event) => {
     }).then(() => {
       event.ports[0].postMessage({ success: true });
     });
+  }
+  
+  // Force refresh for Android PWA updates
+  if (event.data && event.data.type === 'FORCE_REFRESH') {
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => caches.delete(cacheName))
+      );
+    }).then(() => {
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => client.navigate(client.url));
+      });
+    });
+  }
+  
+  // Get cache version for update detection
+  if (event.data && event.data.type === 'GET_VERSION') {
+    event.ports[0].postMessage({ version: CACHE_VERSION });
   }
 });
 
