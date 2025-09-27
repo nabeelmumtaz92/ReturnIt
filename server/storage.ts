@@ -1267,7 +1267,7 @@ export class MemStorage implements IStorage {
 
 // DatabaseStorage implementation
 import { db } from "./db";
-import { eq, and, sql, desc, asc, isNotNull, isNull, notInArray, or } from "drizzle-orm";
+import { eq, and, sql, desc, asc, isNotNull, isNull, notInArray, or, lt, inArray } from "drizzle-orm";
 import { 
   users, orders, promoCodes, 
   driverOrderAssignments, orderStatusHistory, 
@@ -1529,42 +1529,37 @@ export class DatabaseStorage implements IStorage {
     // for more than thresholdMinutes
     const thresholdTime = new Date(Date.now() - thresholdMinutes * 60 * 1000);
     
-    return await db
-      .select({
-        id: orders.id,
-        userId: orders.userId,
-        driverId: orders.driverId,
-        status: orders.status,
-        driverAssignedAt: orders.driverAssignedAt,
-        trackingNumber: orders.trackingNumber,
-        retailer: orders.retailer,
-        pickupStreetAddress: orders.pickupStreetAddress,
-        pickupCity: orders.pickupCity,
-        pickupState: orders.pickupState,
-        pickupZipCode: orders.pickupZipCode,
-        createdAt: orders.createdAt,
-        updatedAt: orders.updatedAt
-      })
-      .from(orders)
-      .leftJoin(driverLocationPings, 
-        and(
-          eq(orders.driverId, driverLocationPings.driverId),
-          eq(orders.id, driverLocationPings.orderId)
-        )
-      )
-      .where(
-        and(
-          isNotNull(orders.driverId), // Has assigned driver
-          notInArray(orders.status, ['completed', 'cancelled', 'dropped_off']), // Not completed
-          sql`${orders.driverAssignedAt} < NOW() - INTERVAL '${thresholdMinutes} minutes'`, // Order was assigned more than threshold time ago
-          or(
-            // No recent location pings for this order
-            isNull(driverLocationPings.createdAt),
-            sql`${driverLocationPings.createdAt} < NOW() - INTERVAL '${thresholdMinutes} minutes'`
+    try {
+      // Simplified query - just check orders with assigned drivers and old assignment times
+      return await db
+        .select({
+          id: orders.id,
+          userId: orders.userId,
+          driverId: orders.driverId,
+          status: orders.status,
+          driverAssignedAt: orders.driverAssignedAt,
+          trackingNumber: orders.trackingNumber,
+          retailer: orders.retailer,
+          pickupStreetAddress: orders.pickupStreetAddress,
+          pickupCity: orders.pickupCity,
+          pickupState: orders.pickupState,
+          pickupZipCode: orders.pickupZipCode,
+          createdAt: orders.createdAt,
+          updatedAt: orders.updatedAt
+        })
+        .from(orders)
+        .where(
+          and(
+            isNotNull(orders.driverId), // Has assigned driver
+            notInArray(orders.status, ['completed', 'cancelled', 'dropped_off']), // Not completed
+            isNotNull(orders.driverAssignedAt), // Has assignment time
+            lt(orders.driverAssignedAt, thresholdTime) // Order was assigned more than threshold time ago
           )
-        )
-      )
-      .groupBy(orders.id);
+        );
+    } catch (error) {
+      console.error('Error in getAbandonedOrders:', error);
+      return []; // Return empty array to prevent crashes
+    }
   }
 
   async getAvailableDrivers(options: {

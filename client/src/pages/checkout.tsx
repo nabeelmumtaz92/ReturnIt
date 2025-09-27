@@ -183,10 +183,11 @@ export default function Checkout() {
     // Create PaymentIntent as soon as the page loads
     const createPaymentIntent = async () => {
       try {
-        const data = await apiRequest("/api/create-payment-intent", 'POST', { 
+        const response = await apiRequest("/api/create-payment-intent", 'POST', { 
           amount: amount,
           orderId: orderId 
         });
+        const data = await response.json();
         setClientSecret(data.clientSecret);
       } catch (error) {
         toast({

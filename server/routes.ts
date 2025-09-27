@@ -89,9 +89,27 @@ async function handleOrderReassignment(
 
     // Log the reassignment in cancellations table if applicable
     if (context.previousDriverId && reassignmentReason !== 'timeout') {
+      // Map reassignmentReason to valid cancellationType enum values
+      let cancellationType: string;
+      switch (reassignmentReason) {
+        case 'driver_abandon':
+        case 'driver_decline':
+          cancellationType = 'driver_cancel';
+          break;
+        case 'store_reject':
+          cancellationType = 'store_rejection';
+          break;
+        case 'system_cancel':
+          cancellationType = 'system_cancel';
+          break;
+        default:
+          cancellationType = 'system_cancel';
+          break;
+      }
+
       await storage.createOrderCancellation({
         orderId,
-        cancellationType: reassignmentReason,
+        cancellationType,
         cancelledBy: context.previousDriverId,
         driverId: context.previousDriverId,
         cancellationReason: context.declineReason || `${reassignmentReason.replace('_', ' ')}`,
@@ -5192,6 +5210,31 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     } catch (error) {
       console.error('Track service cost error:', error);
       res.status(500).json({ message: 'Failed to track service cost' });
+    }
+  });
+
+  // Health check endpoint for testing
+  app.get("/api/health", async (req, res) => {
+    try {
+      // Test database connectivity
+      const testQuery = await storage.getDrivers();
+      const dbConnected = testQuery !== undefined;
+      
+      res.json({
+        status: "healthy",
+        database: dbConnected ? "connected" : "error",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        memory: process.memoryUsage(),
+        environment: process.env.NODE_ENV || 'development'
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unhealthy", 
+        database: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
+        timestamp: new Date().toISOString()
+      });
     }
   });
 
