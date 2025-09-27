@@ -290,40 +290,58 @@ class LocationService {
   }
 
   async findNearbyStores(location: Location, retailerName: string): Promise<NearbyStore[]> {
-    if (!this.placesService) {
-      throw new Error('Google Maps not initialized');
+    try {
+      // Use our database API instead of Google Places API
+      const response = await fetch(`/api/stores/${encodeURIComponent(retailerName)}?lat=${location.lat}&lng=${location.lng}&limit=10`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch stores from database');
+      }
+      
+      const stores = await response.json();
+      
+      // Transform database results to NearbyStore format
+      const nearbyStores: NearbyStore[] = stores.map((store: any) => ({
+        placeId: store.id.toString(), // Use database ID as placeId
+        name: store.store_name || store.storeName,
+        address: store.full_address || `${store.street_address || store.streetAddress}, ${store.city}, ${store.state} ${store.zip_code || store.zipCode}`,
+        location: {
+          lat: store.coordinates.lat,
+          lng: store.coordinates.lng
+        },
+        distance: store.distance_miles ? `${store.distance_miles.toFixed(1)} mi` : 'Unknown',
+        isOpen: this.isStoreOpen(store.store_hours || store.storeHours)
+      }));
+      
+      return nearbyStores;
+    } catch (error) {
+      console.error('Error fetching nearby stores:', error);
+      throw new Error('Failed to find nearby stores');
     }
+  }
 
-    return new Promise((resolve, reject) => {
-      const request = {
-        location: new google.maps.LatLng(location.lat, location.lng),
-        radius: 25000, // 25km radius
-        keyword: retailerName,
-        type: 'store'
-      };
-
-      this.placesService!.nearbySearch(request, (results, status) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-          const stores: NearbyStore[] = results.slice(0, 5).map(place => ({
-            placeId: place.place_id || '',
-            name: place.name || '',
-            address: place.vicinity || '',
-            location: {
-              lat: place.geometry?.location?.lat() || 0,
-              lng: place.geometry?.location?.lng() || 0
-            },
-            distance: this.calculateDistance(location, {
-              lat: place.geometry?.location?.lat() || 0,
-              lng: place.geometry?.location?.lng() || 0
-            }),
-            isOpen: place.opening_hours?.open_now || false
-          }));
-          resolve(stores);
-        } else {
-          reject(new Error('No nearby stores found'));
-        }
-      });
-    });
+  private isStoreOpen(storeHours: any): boolean {
+    if (!storeHours || typeof storeHours !== 'object') {
+      return true; // Assume open if no hours provided
+    }
+    
+    const now = new Date();
+    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = dayNames[now.getDay()];
+    
+    const todayHours = storeHours[today];
+    if (!todayHours || !todayHours.open || !todayHours.close) {
+      return true; // Assume open if hours not defined
+    }
+    
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const [openHour, openMin] = todayHours.open.split(':').map(Number);
+    const [closeHour, closeMin] = todayHours.close.split(':').map(Number);
+    
+    const openTime = openHour * 60 + openMin;
+    const closeTime = closeHour * 60 + closeMin;
+    
+    return currentTime >= openTime && currentTime <= closeTime;
   }
 
   private calculateDistance(origin: Location, destination: Location): string {
