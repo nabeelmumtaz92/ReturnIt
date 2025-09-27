@@ -42,26 +42,33 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         return done(null, existingUser);
       }
 
-      // Create new user with Google profile data
+      // SECURITY FIX: Don't auto-create users - redirect to signup instead
       const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
-      console.log('Creating new Google user:', userEmail);
+      console.log('Google user not found, denying auto-creation:', userEmail);
       
+      // Check if this is the master admin - only they can auto-create
       const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
       const isMasterAdmin = userEmail === MASTER_ADMIN_EMAIL;
       
-      const newUser = await storage.createUser({
-        email: userEmail,
-        phone: isMasterAdmin ? '6362544821' : '', // Only master admin gets phone number
-        password: 'GOOGLE_AUTH_USER', // Social auth placeholder
-        firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
-        lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
-        isDriver: isMasterAdmin, // Only master admin is driver by default
-        isAdmin: shouldAutoAssignAdmin(userEmail) // ONLY master admin gets automatic admin access
-      });
-      
-      console.log('New user created:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
+      if (isMasterAdmin) {
+        // Only master admin gets auto-created
+        const newUser = await storage.createUser({
+          email: userEmail,
+          phone: '6362544821', // Master admin phone
+          password: 'GOOGLE_AUTH_USER', // Social auth placeholder
+          firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
+          lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
+          isDriver: true, // Master admin is driver
+          isAdmin: true // Master admin gets admin access
+        });
+        
+        console.log('Master admin auto-created:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
+        return done(null, newUser);
+      }
 
-      return done(null, newUser);
+      // All other users must sign up first - return error to redirect to signup
+      console.log('Non-admin Google user attempted auto-creation - blocking:', userEmail);
+      return done(new Error('OAUTH_SIGNUP_REQUIRED'), null);
     } catch (error) {
       console.error('Google auth error:', error);
       return done(error);
@@ -87,14 +94,33 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
         return done(null, existingUser);
       }
 
-      // Create new user - simplified for basic schema
-      const newUser = await storage.createUser({
-        email: profile.emails?.[0]?.value || `${profile.id}@facebook.temp`,
-        phone: '', // Social auth users need to add phone later
-        password: 'FACEBOOK_AUTH_USER' // Social auth placeholder
-      });
+      // SECURITY FIX: Don't auto-create users - redirect to signup instead
+      const userEmail = profile.emails?.[0]?.value || `${profile.id}@facebook.temp`;
+      console.log('Facebook user not found, denying auto-creation:', userEmail);
+      
+      // Check if this is the master admin - only they can auto-create
+      const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
+      const isMasterAdmin = userEmail === MASTER_ADMIN_EMAIL;
+      
+      if (isMasterAdmin) {
+        // Only master admin gets auto-created
+        const newUser = await storage.createUser({
+          email: userEmail,
+          phone: '6362544821', // Master admin phone
+          password: 'FACEBOOK_AUTH_USER', // Social auth placeholder
+          firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
+          lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
+          isDriver: true, // Master admin is driver
+          isAdmin: true // Master admin gets admin access
+        });
+        
+        console.log('Master admin auto-created via Facebook:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
+        return done(null, newUser);
+      }
 
-      return done(null, newUser);
+      // All other users must sign up first - return error to redirect to signup
+      console.log('Non-admin Facebook user attempted auto-creation - blocking:', userEmail);
+      return done(new Error('OAUTH_SIGNUP_REQUIRED'), null);
     } catch (error) {
       console.error('Facebook auth error:', error);
       return done(error);

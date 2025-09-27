@@ -1668,6 +1668,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     })(req, res, (err: any) => {
       if (err) {
         console.error('Google OAuth callback error:', err);
+        // Check if this is a signup required error
+        if (err.message === 'OAUTH_SIGNUP_REQUIRED') {
+          return res.redirect('/login?error=signup_required&provider=google&message=Please create an account first before using Google login');
+        }
         return res.redirect('/login?error=auth_failed');
       }
       
@@ -1706,9 +1710,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     scope: ['email'] 
   }));
 
-  app.get('/api/auth/facebook/callback',
-    passport.authenticate('facebook', { failureRedirect: '/login?error=facebook_auth_failed' }),
-    (req, res) => {
+  app.get('/api/auth/facebook/callback', (req, res, next) => {
+    passport.authenticate('facebook', { 
+      failureRedirect: '/login?error=facebook_auth_failed' 
+    })(req, res, (err: any) => {
+      if (err) {
+        console.error('Facebook OAuth callback error:', err);
+        // Check if this is a signup required error
+        if (err.message === 'OAUTH_SIGNUP_REQUIRED') {
+          return res.redirect('/login?error=signup_required&provider=facebook&message=Please create an account first before using Facebook login');
+        }
+        return res.redirect('/login?error=facebook_auth_failed');
+      }
+      
+      // Continue with success handling
+      next();
+    });
+  }, (req, res) => {
       // Set up session for authenticated user
       if (req.user) {
         const user = req.user as any;
