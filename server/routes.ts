@@ -483,11 +483,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     apiVersion: "2025-07-30.basil",
   });
 
+  // Background Check System
+  async function initiateBackgroundCheck(userId: number, driverInfo: any) {
+    try {
+      console.log(`🔍 Initiating background check for driver ${userId}`);
+      
+      // Update driver status to indicate background check is in progress
+      await storage.updateUser(userId, {
+        backgroundCheckStatus: 'in_progress',
+        onboardingStep: 'background_check_pending'
+      });
+
+      // Log background check initiation
+      console.log(`📋 Background check initiated for ${driverInfo.firstName} ${driverInfo.lastName}:`, {
+        email: driverInfo.email,
+        vehicle: `${driverInfo.vehicleInfo.year} ${driverInfo.vehicleInfo.make} ${driverInfo.vehicleInfo.model}`,
+        licensePlate: driverInfo.vehicleInfo.licensePlate,
+        location: `${driverInfo.city}, ${driverInfo.state}`
+      });
+
+      // Simulate background check process (in real implementation, this would integrate with a service like Checkr, Uber CarCheck, etc.)
+      simulateBackgroundCheckProcess(userId, driverInfo);
+
+      return {
+        success: true,
+        status: 'initiated',
+        estimatedCompletionTime: '24-48 hours'
+      };
+    } catch (error) {
+      console.error(`❌ Failed to initiate background check for driver ${userId}:`, error);
+      
+      // Update status to failed
+      await storage.updateUser(userId, {
+        backgroundCheckStatus: 'failed',
+        onboardingStep: 'background_check_failed'
+      });
+
+      throw error;
+    }
+  }
+
+  // Simulate background check process (replace with real integration)
+  function simulateBackgroundCheckProcess(userId: number, driverInfo: any) {
+    // In development, simulate a quick background check completion
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const delay = isDevelopment ? 5000 : 24 * 60 * 60 * 1000; // 5 seconds in dev, 24 hours in production
+
+    setTimeout(async () => {
+      try {
+        // Simulate background check results (90% pass rate for testing)
+        const passed = Math.random() > 0.1;
+        
+        if (passed) {
+          await storage.updateUser(userId, {
+            backgroundCheckStatus: 'approved',
+            applicationStatus: 'waitlist',
+            onboardingStep: 'waitlist_pending',
+            backgroundCheckCompletedAt: new Date()
+          });
+          
+          console.log(`✅ Background check APPROVED for driver ${userId} - ${driverInfo.firstName} ${driverInfo.lastName}`);
+          
+          // TODO: Send notification to driver about approval and waitlist status
+          // TODO: Notify admin about new approved driver
+          
+        } else {
+          await storage.updateUser(userId, {
+            backgroundCheckStatus: 'failed',
+            applicationStatus: 'rejected',
+            onboardingStep: 'application_rejected',
+            backgroundCheckCompletedAt: new Date()
+          });
+          
+          console.log(`❌ Background check FAILED for driver ${userId} - ${driverInfo.firstName} ${driverInfo.lastName}`);
+          
+          // TODO: Send notification to driver about rejection
+        }
+      } catch (error) {
+        console.error(`❌ Error completing background check for driver ${userId}:`, error);
+      }
+    }, delay);
+  }
+
   // Auth routes with environment controls
   // Driver-specific signup endpoint
   app.post("/api/auth/driver-signup", registrationRateLimit, async (req, res) => {
     try {
-      // Enhanced validation for driver signup
+      // Enhanced validation for driver signup with vehicle details and background check
       const driverSignupSchema = z.object({
         firstName: z.string().min(2, 'First name must be at least 2 characters'),
         lastName: z.string().min(2, 'Last name must be at least 2 characters'),
@@ -500,6 +582,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         state: z.string().min(2, 'State is required'),
         zipCode: z.string().min(5, 'Valid zip code required'),
         vehicleType: z.string().min(1, 'Vehicle type is required'),
+        vehicleMake: z.string().min(1, 'Vehicle make is required'),
+        vehicleModel: z.string().min(1, 'Vehicle model is required'),
+        vehicleYear: z.string().min(4, 'Vehicle year is required').max(4, 'Vehicle year must be 4 digits'),
+        vehicleColor: z.string().min(1, 'Vehicle color is required'),
+        licensePlate: z.string().min(1, 'License plate is required'),
+        backgroundCheckConsent: z.boolean().refine(val => val === true, {
+          message: "Background check consent is required"
+        }),
         experience: z.string().optional(),
         referralCode: z.string().optional(),
       });
@@ -527,9 +617,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             projectedHireDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
             vehicleInfo: JSON.stringify({
               type: validatedData.vehicleType,
+              make: validatedData.vehicleMake,
+              model: validatedData.vehicleModel,
+              year: validatedData.vehicleYear,
+              color: validatedData.vehicleColor,
+              licensePlate: validatedData.licensePlate,
               experience: validatedData.experience,
               referralCode: validatedData.referralCode
             }),
+            backgroundCheckStatus: 'pending',
+            backgroundCheckConsentedAt: new Date(),
             addresses: JSON.stringify([{
               type: 'primary',
               address: validatedData.address,
@@ -537,6 +634,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
               state: validatedData.state,
               zipCode: validatedData.zipCode
             }])
+          });
+
+          // Initiate background check for existing user becoming driver
+          await initiateBackgroundCheck(existingUser.id, {
+            firstName: validatedData.firstName,
+            lastName: validatedData.lastName,
+            email: validatedData.email,
+            phone: validatedData.phone,
+            dateOfBirth: validatedData.dateOfBirth,
+            address: validatedData.address,
+            city: validatedData.city,
+            state: validatedData.state,
+            zipCode: validatedData.zipCode,
+            vehicleInfo: {
+              make: validatedData.vehicleMake,
+              model: validatedData.vehicleModel,
+              year: validatedData.vehicleYear,
+              color: validatedData.vehicleColor,
+              licensePlate: validatedData.licensePlate,
+              type: validatedData.vehicleType
+            }
           });
           
           // Log user in with secure session (password already verified above)
@@ -552,7 +670,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
           
           return res.status(201).json({ 
-            message: "Driver application submitted successfully",
+            message: "Driver application submitted successfully. Background check initiated.",
             user: AuthService.sanitizeUserData({
               id: updatedUser.id, 
               email: updatedUser.email, 
@@ -562,7 +680,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               firstName: updatedUser.firstName,
               lastName: updatedUser.lastName,
               applicationStatus: updatedUser.applicationStatus,
-              onboardingStep: updatedUser.onboardingStep
+              onboardingStep: updatedUser.onboardingStep,
+              backgroundCheckStatus: 'pending'
             })
           });
         } else {
@@ -603,9 +722,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }]),
         vehicleInfo: JSON.stringify({
           type: validatedData.vehicleType,
+          make: validatedData.vehicleMake,
+          model: validatedData.vehicleModel,
+          year: validatedData.vehicleYear,
+          color: validatedData.vehicleColor,
+          licensePlate: validatedData.licensePlate,
           experience: validatedData.experience,
           referralCode: validatedData.referralCode
         }),
+        backgroundCheckStatus: 'pending',
+        backgroundCheckConsentedAt: new Date(),
         preferences: JSON.stringify({
           appliedAt: new Date().toISOString()
         }),
@@ -619,6 +745,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isActive: true
       });
       
+      // Initiate background check process
+      await initiateBackgroundCheck(user.id, {
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        email: validatedData.email,
+        phone: validatedData.phone,
+        dateOfBirth: validatedData.dateOfBirth,
+        address: validatedData.address,
+        city: validatedData.city,
+        state: validatedData.state,
+        zipCode: validatedData.zipCode,
+        vehicleInfo: {
+          make: validatedData.vehicleMake,
+          model: validatedData.vehicleModel,
+          year: validatedData.vehicleYear,
+          color: validatedData.vehicleColor,
+          licensePlate: validatedData.licensePlate,
+          type: validatedData.vehicleType
+        }
+      });
+
       // Log user in with secure session
       (req.session as any).user = AuthService.sanitizeUserData({ 
         id: user.id, 
@@ -632,7 +779,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       
       res.status(201).json({ 
-        message: "Driver application submitted successfully",
+        message: "Driver application submitted successfully. Background check initiated.",
         user: AuthService.sanitizeUserData({
           id: user.id, 
           email: user.email, 
@@ -642,7 +789,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           firstName: user.firstName,
           lastName: user.lastName,
           applicationStatus: user.applicationStatus,
-          onboardingStep: user.onboardingStep
+          onboardingStep: user.onboardingStep,
+          backgroundCheckStatus: 'pending'
         })
       });
     } catch (error: any) {
