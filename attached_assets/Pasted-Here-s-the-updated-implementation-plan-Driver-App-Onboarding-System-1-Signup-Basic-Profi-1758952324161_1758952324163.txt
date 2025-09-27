@@ -1,0 +1,183 @@
+Here’s the updated implementation plan 👇
+
+🚗 Driver App – Onboarding System
+1. Signup & Basic Profile
+
+Input: Name, Email, Phone, Password.
+
+OTP verification.
+
+2. Driver Docs & Compliance
+
+Upload driver’s license.
+
+Upload insurance + registration (if required).
+
+Agree to terms of service & digital driver agreement.
+
+3. Banking Setup
+
+Integrate Stripe Connect (or Payoneer).
+
+Securely collect payout info.
+
+4. Pending Approval State
+
+After submitting docs, driver sees:
+
+“Your application is under review. Estimated X days until projected hiring in your area.”
+
+Status dashboard shows: Pending → Approved & Ready.
+
+5. Driver Dashboard (post-approval)
+
+Tabs: Orders, Earnings, Profile, Support.
+
+Notifications when hiring starts.
+
+👤 Customer App – Waitlist
+1. Simple Waitlist Signup
+
+Collect: Name, Email, Phone, Address.
+
+Verify address with Google Places API.
+
+2. Projected Start Display
+
+After signup, show:
+
+“ReturnIt is expanding near you. Estimated X days until service begins in your area.”
+
+Dynamic value: based on driver signups + internal rollout schedule.
+
+3. Notifications
+
+Email + push when the area goes live:
+
+“Great news! ReturnIt is now active in your area. Tap below to book your first return.”
+
+🔄 Shared Infrastructure
+
+Database (Postgres or Firebase):
+
+drivers table: name, contact, docs, status, projected_hire_date.
+
+customers table: name, contact, location, projected_start_date.
+
+Logic for Projected Days Calculation:
+
+Simple rule engine (example):
+
+If drivers in ZIP < 20 → “Projected 30–45 days.”
+
+If drivers ≥ 20 → “Projected 7–14 days.”
+
+Can be manually overridden in admin dashboard.
+
+Admin Dashboard:
+
+See all signups by ZIP code.
+
+Adjust projected timelines manually.
+
+Approve/reject driver docs.
+
+🚀 Rollout Plan
+
+Phase 1 (Immediate) → Implement customer waitlist + driver signup with projected-day messaging (no referrals, no ranks).
+
+Phase 2 (Next 30–45 days) → Add banking setup for drivers + approval workflow.
+
+Phase 3 (Pre-launch) → Manually approve drivers once enough are onboard in a ZIP.
+
+Phase 4 (Launch) → Flip customers in that ZIP from waitlist to active booking.
+
+📊 Result:
+
+Drivers feel they’re in a pipeline with a clear timeline → prevents drop-off.
+
+Customers stay warm with an expectation of launch timing.
+
+You avoid overpromising while showing demand buildup to investors.
+
+Do you want me to design wireframe-style screen flows (with text + layout per screen), so your devs/designers can build this exact UX for both apps?
+
+You said:
+so when they sign up, they would fill out the application, it go into our database as an accepted driver, and the app would become functional when we say so otherwise it says estimate etc 
+ChatGPT said:
+
+Exactly 👍 — you’ve nailed it. Here’s how it works in practice:
+
+🔄 Driver Flow
+
+Driver signs up + fills application
+
+Profile info (name, contact).
+
+Upload required docs (ID, insurance, etc.).
+
+Accept terms of service.
+
+App stores driver in database
+
+Status = pending_review (not active yet).
+
+Admin dashboard shows all drivers waiting.
+
+Driver sees “Projected Hiring” message
+
+Instead of a working dashboard, they see:
+
+“Thanks for applying! Your account is created. Estimated X days until hiring in your area.”
+
+They can update docs, check profile, but not accept jobs yet.
+
+When you flip the switch (manually in admin)
+
+Status changes to approved_active.
+
+App dashboard unlocks → they now see earnings, jobs, notifications.
+
+Push notification/email goes out:
+
+“You’re approved! You can now start accepting ReturnIt orders.”
+
+👤 Customer Flow
+
+Customer signs up for waitlist
+
+Enters name, email, address.
+
+Stored in customers table with waitlist status.
+
+Sees projected launch timeline
+
+Example:
+
+“ReturnIt will be live in your area soon. Estimated 14 days until service begins.”
+
+When you activate their ZIP code
+
+Status switches from waitlist → active.
+
+Their app unlocks order booking.
+
+Push/email notification triggers:
+
+“ReturnIt is now active in your area! Tap below to book your first return.”
+
+🛠️ Admin Controls
+
+Database states:
+
+Driver: pending_review, approved_active, rejected.
+
+Customer: waitlist, active.
+
+Admin Dashboard Functions:
+
+Approve/reject drivers manually.
+
+Set projected timelines per ZIP (which drives the “X days” messaging).
+
+Activate customer ZIPs when enough drivers are onboard.
