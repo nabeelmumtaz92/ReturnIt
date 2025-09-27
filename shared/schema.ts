@@ -1338,9 +1338,11 @@ export const OrderStatus = {
   PICKUP_SCHEDULED: 'pickup_scheduled',
   EN_ROUTE_TO_PICKUP: 'en_route_to_pickup', // Driver heading to customer
   PICKED_UP: 'picked_up', // Items collected from customer
+  IN_TRANSIT: 'in_transit', // Legacy status for compatibility
   EN_ROUTE_TO_STORE: 'en_route_to_store', // Driver heading to dropoff store
   AT_STORE: 'at_store', // Driver arrived at store
   DROPPED_OFF: 'dropped_off', // Items delivered to store
+  DELIVERED: 'delivered', // Legacy status for compatibility
   COMPLETED: 'completed', // Order fully complete
   CANCELLED: 'cancelled',
   STORE_REJECTED: 'store_rejected', // Store refused to accept return

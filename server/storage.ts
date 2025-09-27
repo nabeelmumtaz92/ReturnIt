@@ -6,8 +6,12 @@ import {
   type BusinessInfo, type InsertBusinessInfo,
   type DriverApplication, type InsertDriverApplication,
   type TrackingEvent, type InsertTrackingEvent,
+  type DriverOrderAssignment, type InsertDriverOrderAssignment,
+  type OrderStatusHistory, type InsertOrderStatusHistory,
+  type DriverLocationPing, type InsertDriverLocationPing,
+  type OrderCancellation, type InsertOrderCancellation,
   OrderStatus, type OrderStatus as OrderStatusType,
-  type Location, LocationSchema
+  type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
 import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
 
@@ -92,6 +96,28 @@ export interface IStorage {
   createTrackingEvent(trackingEvent: InsertTrackingEvent): Promise<TrackingEvent>;
   getOrderTrackingEvents(orderId: string): Promise<TrackingEvent[]>;
   getTrackingEvent(id: number): Promise<TrackingEvent | undefined>;
+  
+  // NEW: Driver order assignment operations
+  createDriverOrderAssignment(assignment: InsertDriverOrderAssignment): Promise<DriverOrderAssignment>;
+  getDriverOrderAssignment(id: number): Promise<DriverOrderAssignment | undefined>;
+  getDriverOrderAssignments(orderId: string): Promise<DriverOrderAssignment[]>;
+  getDriverPendingAssignments(driverId: number): Promise<DriverOrderAssignment[]>;
+  updateDriverOrderAssignment(id: number, updates: Partial<DriverOrderAssignment>): Promise<DriverOrderAssignment | undefined>;
+  expireDriverOrderAssignments(): Promise<number>; // Returns count of expired assignments
+  
+  // NEW: Order status history operations
+  createOrderStatusHistory(history: InsertOrderStatusHistory): Promise<OrderStatusHistory>;
+  getOrderStatusHistory(orderId: string): Promise<OrderStatusHistory[]>;
+  
+  // NEW: Driver location ping operations
+  createDriverLocationPing(ping: InsertDriverLocationPing): Promise<DriverLocationPing>;
+  getDriverLocationPings(driverId: number, since?: Date): Promise<DriverLocationPing[]>;
+  getRecentDriverLocations(orderId: string): Promise<DriverLocationPing[]>;
+  
+  // NEW: Order cancellation operations
+  createOrderCancellation(cancellation: InsertOrderCancellation): Promise<OrderCancellation>;
+  getOrderCancellation(orderId: string): Promise<OrderCancellation | undefined>;
+  getOrderCancellations(filters?: { driverId?: number; storeId?: number; type?: string }): Promise<OrderCancellation[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -1235,7 +1261,11 @@ export class MemStorage implements IStorage {
 // DatabaseStorage implementation
 import { db } from "./db";
 import { eq, and, sql, desc, asc } from "drizzle-orm";
-import { users, orders, promoCodes } from "@shared/schema";
+import { 
+  users, orders, promoCodes, 
+  driverOrderAssignments, orderStatusHistory, 
+  driverLocationPings, orderCancellations 
+} from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
   // User operations
@@ -1406,9 +1436,300 @@ export class DatabaseStorage implements IStorage {
     return undefined;
   }
   async getAllDriverApplications(): Promise<DriverApplication[]> { return []; }
+
+  // NEW: Driver order assignment operations
+  async createDriverOrderAssignment(assignment: InsertDriverOrderAssignment): Promise<DriverOrderAssignment> {
+    const [result] = await db
+      .insert(driverOrderAssignments)
+      .values(assignment)
+      .returning();
+    return result;
+  }
+
+  async getDriverOrderAssignment(id: number): Promise<DriverOrderAssignment | undefined> {
+    const [assignment] = await db
+      .select()
+      .from(driverOrderAssignments)
+      .where(eq(driverOrderAssignments.id, id));
+    return assignment;
+  }
+
+  async getDriverOrderAssignments(orderId: string): Promise<DriverOrderAssignment[]> {
+    return await db
+      .select()
+      .from(driverOrderAssignments)
+      .where(eq(driverOrderAssignments.orderId, orderId))
+      .orderBy(desc(driverOrderAssignments.createdAt));
+  }
+
+  async getDriverPendingAssignments(driverId: number): Promise<DriverOrderAssignment[]> {
+    return await db
+      .select()
+      .from(driverOrderAssignments)
+      .where(
+        and(
+          eq(driverOrderAssignments.driverId, driverId),
+          eq(driverOrderAssignments.status, 'pending')
+        )
+      )
+      .orderBy(asc(driverOrderAssignments.assignmentPriority), desc(driverOrderAssignments.createdAt));
+  }
+
+  async updateDriverOrderAssignment(id: number, updates: Partial<DriverOrderAssignment>): Promise<DriverOrderAssignment | undefined> {
+    const [assignment] = await db
+      .update(driverOrderAssignments)
+      .set(updates)
+      .where(eq(driverOrderAssignments.id, id))
+      .returning();
+    return assignment;
+  }
+
+  async expireDriverOrderAssignments(): Promise<number> {
+    const result = await db
+      .update(driverOrderAssignments)
+      .set({ status: 'expired' })
+      .where(
+        and(
+          eq(driverOrderAssignments.status, 'pending'),
+          sql`offer_expires_at < NOW()`
+        )
+      );
+    return result.rowCount || 0;
+  }
+
+  // NEW: Order status history operations
+  async createOrderStatusHistory(history: InsertOrderStatusHistory): Promise<OrderStatusHistory> {
+    const [result] = await db
+      .insert(orderStatusHistory)
+      .values(history)
+      .returning();
+    return result;
+  }
+
+  async getOrderStatusHistory(orderId: string): Promise<OrderStatusHistory[]> {
+    return await db
+      .select()
+      .from(orderStatusHistory)
+      .where(eq(orderStatusHistory.orderId, orderId))
+      .orderBy(desc(orderStatusHistory.createdAt));
+  }
+
+  // NEW: Driver location ping operations
+  async createDriverLocationPing(ping: InsertDriverLocationPing): Promise<DriverLocationPing> {
+    const [result] = await db
+      .insert(driverLocationPings)
+      .values(ping)
+      .returning();
+    return result;
+  }
+
+  async getDriverLocationPings(driverId: number, since?: Date): Promise<DriverLocationPing[]> {
+    const conditions = [eq(driverLocationPings.driverId, driverId)];
+    if (since) {
+      conditions.push(sql`timestamp >= ${since}`);
+    }
+    
+    return await db
+      .select()
+      .from(driverLocationPings)
+      .where(and(...conditions))
+      .orderBy(desc(driverLocationPings.timestamp))
+      .limit(100); // Limit to recent 100 pings
+  }
+
+  async getRecentDriverLocations(orderId: string): Promise<DriverLocationPing[]> {
+    return await db
+      .select()
+      .from(driverLocationPings)
+      .where(eq(driverLocationPings.orderId, orderId))
+      .orderBy(desc(driverLocationPings.timestamp))
+      .limit(50); // Recent 50 location pings for this order
+  }
+
+  // NEW: Order cancellation operations
+  async createOrderCancellation(cancellation: InsertOrderCancellation): Promise<OrderCancellation> {
+    const [result] = await db
+      .insert(orderCancellations)
+      .values(cancellation)
+      .returning();
+    return result;
+  }
+
+  async getOrderCancellation(orderId: string): Promise<OrderCancellation | undefined> {
+    const [cancellation] = await db
+      .select()
+      .from(orderCancellations)
+      .where(eq(orderCancellations.orderId, orderId));
+    return cancellation;
+  }
+
+  async getOrderCancellations(filters?: { driverId?: number; storeId?: number; type?: string }): Promise<OrderCancellation[]> {
+    const conditions = [];
+    
+    if (filters?.driverId) {
+      conditions.push(eq(orderCancellations.driverId, filters.driverId));
+    }
+    
+    if (filters?.storeId) {
+      conditions.push(eq(orderCancellations.storeId, filters.storeId));
+    }
+    
+    if (filters?.type) {
+      conditions.push(eq(orderCancellations.cancellationType, filters.type));
+    }
+    
+    return await db
+      .select()
+      .from(orderCancellations)
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(orderCancellations.createdAt));
+  }
+
+  // Add missing basic methods
+  async getAvailableOrders(): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.status, 'created'))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  async assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({
+        driverId,
+        status: 'assigned',
+        driverAssignedAt: new Date()
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+    return order;
+  }
+
+  async updateDriverStatus(driverId: number, status: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ isOnline: status === 'online' })
+      .where(eq(users.id, driverId))
+      .returning();
+    return user;
+  }
+
+  async getOrdersByDriver(driverId: number): Promise<Order[]> {
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.driverId, driverId))
+      .orderBy(desc(orders.createdAt));
+  }
+
+  // Add missing required interface methods
+  async updateDriverLocation(driverId: number, location: Location): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ currentLocation: location })
+      .where(eq(users.id, driverId))
+      .returning();
+    return user;
+  }
+
+  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }> {
+    const [promoCode] = await db.select().from(promoCodes).where(eq(promoCodes.code, code));
+    if (!promoCode || !promoCode.isActive) {
+      return { valid: false };
+    }
+    return {
+      valid: true,
+      discount: promoCode.discountValue,
+      type: promoCode.discountType
+    };
+  }
+
+  async getUserNotifications(userId: number): Promise<Notification[]> {
+    // Stub implementation - would need notifications table
+    return [];
+  }
+
+  async markNotificationRead(id: number): Promise<void> {
+    // Stub implementation - would need notifications table
+  }
+
+  async getPaymentRecords(): Promise<any[]> {
+    // Stub implementation - would need payment records table
+    return [];
+  }
+
+  async getPaymentSummary(): Promise<any> {
+    // Stub implementation
+    return {};
+  }
+
+  async exportPaymentData(format: string, dateRange: string, status: string): Promise<Buffer> {
+    // Stub implementation
+    return Buffer.from('');
+  }
+
+  async generateTaxReport(year: number): Promise<Buffer> {
+    // Stub implementation
+    return Buffer.from('');
+  }
+
+  async generate1099Forms(year: number): Promise<Buffer> {
+    // Stub implementation
+    return Buffer.from('');
+  }
+
+  async getOrderByTrackingNumber(trackingNumber: string): Promise<Order | undefined> {
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.trackingNumber, trackingNumber));
+    return order;
+  }
+
+  async getDriverLocation(driverId: number): Promise<Location | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, driverId));
+    return user?.currentLocation as Location | undefined;
+  }
+
+  async getOrderCurrentLocation(orderId: string): Promise<Location | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+    if (order?.driverId) {
+      return this.getDriverLocation(order.driverId);
+    }
+    return undefined;
+  }
+
+  async getOrderLocationByTracking(trackingNumber: string): Promise<Location | undefined> {
+    const order = await this.getOrderByTrackingNumber(trackingNumber);
+    if (order?.driverId) {
+      return this.getDriverLocation(order.driverId);
+    }
+    return undefined;
+  }
+
+  async createTrackingEvent(trackingEvent: InsertTrackingEvent): Promise<TrackingEvent> {
+    // Stub implementation - would need tracking events table implementation
+    return {
+      id: Date.now(),
+      ...trackingEvent,
+      timestamp: new Date()
+    } as TrackingEvent;
+  }
+
+  async getOrderTrackingEvents(orderId: string): Promise<TrackingEvent[]> {
+    // Stub implementation
+    return [];
+  }
+
+  async getTrackingEvent(id: number): Promise<TrackingEvent | undefined> {
+    // Stub implementation
+    return undefined;
+  }
 }
 
 // Switch to DatabaseStorage - temporarily using MemStorage for testing
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
 
 // Production storage initialized

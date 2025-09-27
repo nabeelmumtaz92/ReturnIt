@@ -1774,6 +1774,393 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // =============================================================================
+  // NEW: Enhanced Driver GPS and Order Management System
+  // Comprehensive order assignment, acceptance, tracking, and cancellation system
+  // =============================================================================
+
+  // Get driver's pending order assignments (offers awaiting response)
+  app.get("/api/driver/assignments/pending", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const assignments = await storage.getDriverPendingAssignments(user.id);
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error fetching pending assignments:", error);
+      res.status(500).json({ message: "Failed to fetch pending assignments" });
+    }
+  });
+
+  // Accept or decline an order assignment
+  app.post("/api/driver/assignments/:assignmentId/respond", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { assignmentId } = req.params;
+      const { response, declineReason } = req.body; // response: 'accepted' | 'declined'
+      
+      if (!response || !['accepted', 'declined'].includes(response)) {
+        return res.status(400).json({ message: "Invalid response. Must be 'accepted' or 'declined'" });
+      }
+      
+      // Update the assignment
+      const assignment = await storage.updateDriverOrderAssignment(parseInt(assignmentId), {
+        status: response,
+        respondedAt: new Date(),
+        declineReason: response === 'declined' ? declineReason : undefined
+      });
+      
+      if (!assignment) {
+        return res.status(404).json({ message: "Assignment not found" });
+      }
+      
+      if (response === 'accepted') {
+        // Update the order status and assign driver
+        const order = await storage.updateOrder(assignment.orderId, {
+          status: OrderStatus.ACCEPTED,
+          driverId: user.id,
+          driverAssignedAt: new Date()
+        });
+        
+        // Create status history entry
+        await storage.createOrderStatusHistory({
+          orderId: assignment.orderId,
+          previousStatus: OrderStatus.ASSIGNED,
+          newStatus: OrderStatus.ACCEPTED,
+          statusReason: 'Driver accepted assignment',
+          triggeredBy: user.id,
+          triggerType: 'manual',
+          driverId: user.id,
+          actualTime: new Date()
+        });
+        
+        // Broadcast to WebSocket clients
+        webSocketService.broadcastOrderUpdate({
+          orderId: assignment.orderId,
+          status: OrderStatus.ACCEPTED,
+          driverId: user.id,
+          timestamp: new Date().toISOString()
+        });
+        
+        res.json({ message: "Assignment accepted successfully", assignment, order });
+      } else {
+        // TODO: Implement reassignment logic for declined orders
+        res.json({ message: "Assignment declined", assignment });
+      }
+    } catch (error) {
+      console.error("Error responding to assignment:", error);
+      res.status(500).json({ message: "Failed to respond to assignment" });
+    }
+  });
+
+  // Update driver's current location (GPS ping)
+  app.post("/api/driver/location", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const locationData = LocationSchema.parse(req.body);
+      const { orderId, isOnline = true, batteryLevel, networkType } = req.body;
+      
+      // Create location ping record
+      const locationPing = await storage.createDriverLocationPing({
+        driverId: user.id,
+        orderId: orderId || null,
+        location: locationData,
+        isOnline,
+        isOnDelivery: !!orderId,
+        batteryLevel,
+        networkType,
+        accuracy: locationData.accuracy,
+        source: 'mobile_app'
+      });
+      
+      // Update driver's current location in users table
+      await storage.updateDriverLocation(user.id, locationData);
+      
+      // If driver is on an active delivery, broadcast location to tracking clients
+      if (orderId) {
+        webSocketService.broadcastLocationUpdate({
+          orderId,
+          driverId: user.id,
+          location: locationData,
+          timestamp: new Date().toISOString()
+        });
+      }
+      
+      res.json({ message: "Location updated successfully", locationPing });
+    } catch (error) {
+      console.error("Error updating driver location:", error);
+      res.status(500).json({ message: "Failed to update location" });
+    }
+  });
+
+  // Update order status with GPS tracking integration
+  app.post("/api/driver/orders/:orderId/status", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { orderId } = req.params;
+      const { status, location, notes, photos } = req.body;
+      
+      // Verify driver is assigned to this order
+      const order = await storage.getOrder(orderId);
+      if (!order || order.driverId !== user.id) {
+        return res.status(403).json({ message: "Not authorized for this order" });
+      }
+      
+      // Validate status transition
+      const validTransitions: Record<string, string[]> = {
+        [OrderStatus.ACCEPTED]: [OrderStatus.EN_ROUTE_TO_PICKUP],
+        [OrderStatus.EN_ROUTE_TO_PICKUP]: [OrderStatus.PICKED_UP],
+        [OrderStatus.PICKED_UP]: [OrderStatus.EN_ROUTE_TO_STORE],
+        [OrderStatus.EN_ROUTE_TO_STORE]: [OrderStatus.AT_STORE],
+        [OrderStatus.AT_STORE]: [OrderStatus.DROPPED_OFF, OrderStatus.STORE_REJECTED],
+        [OrderStatus.STORE_REJECTED]: [OrderStatus.RETURN_TO_CUSTOMER],
+        [OrderStatus.DROPPED_OFF]: [OrderStatus.COMPLETED],
+        [OrderStatus.RETURN_TO_CUSTOMER]: [OrderStatus.COMPLETED]
+      };
+      
+      const currentStatus = order.status as keyof typeof validTransitions;
+      if (!validTransitions[currentStatus]?.includes(status)) {
+        return res.status(400).json({ 
+          message: `Invalid status transition from ${currentStatus} to ${status}` 
+        });
+      }
+      
+      // Update order status
+      const updatedOrder = await storage.updateOrder(orderId, {
+        status,
+        driverNotes: notes,
+        ...(status === OrderStatus.PICKED_UP && { actualPickupTime: new Date() }),
+        ...(status === OrderStatus.DROPPED_OFF && { actualDeliveryTime: new Date() })
+      });
+      
+      // Create status history entry
+      await storage.createOrderStatusHistory({
+        orderId,
+        previousStatus: order.status,
+        newStatus: status,
+        statusReason: notes || `Driver updated status to ${status}`,
+        triggeredBy: user.id,
+        triggerType: 'manual',
+        driverId: user.id,
+        location,
+        metadata: { photos: photos || [] },
+        actualTime: new Date()
+      });
+      
+      // Create location ping if location provided
+      if (location) {
+        await storage.createDriverLocationPing({
+          driverId: user.id,
+          orderId,
+          location,
+          isOnline: true,
+          isOnDelivery: ![OrderStatus.COMPLETED, OrderStatus.CANCELLED].includes(status as any),
+          source: 'mobile_app'
+        });
+      }
+      
+      // Broadcast status update
+      webSocketService.broadcastOrderUpdate({
+        orderId,
+        status,
+        driverId: user.id,
+        location,
+        timestamp: new Date().toISOString(),
+        notes
+      });
+      
+      res.json({ message: "Order status updated successfully", order: updatedOrder });
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
+    }
+  });
+
+  // Cancel an order with detailed reason tracking
+  app.post("/api/driver/orders/:orderId/cancel", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      if (!user.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const { orderId } = req.params;
+      const { reason, details, storeId, photos } = req.body;
+      
+      // Verify driver is assigned to this order
+      const order = await storage.getOrder(orderId);
+      if (!order || order.driverId !== user.id) {
+        return res.status(403).json({ message: "Not authorized for this order" });
+      }
+      
+      // Determine cancellation type based on reason
+      let cancellationType: string;
+      if (reason.startsWith('store_')) {
+        cancellationType = 'store_rejection';
+      } else if (reason.startsWith('driver_')) {
+        cancellationType = 'driver_cancel';
+      } else {
+        cancellationType = 'system_cancel';
+      }
+      
+      // Create cancellation record
+      const cancellation = await storage.createOrderCancellation({
+        orderId,
+        cancellationType,
+        cancelledBy: user.id,
+        driverId: user.id,
+        cancellationReason: reason,
+        cancellationDetails: details,
+        storeId: storeId ? parseInt(storeId) : null,
+        photos: photos || [],
+        driverNotified: true
+      });
+      
+      // Update order status
+      const newStatus = cancellationType === 'store_rejection' ? OrderStatus.STORE_REJECTED : OrderStatus.CANCELLED;
+      await storage.updateOrder(orderId, {
+        status: newStatus,
+        driverNotes: `Order cancelled: ${details}`
+      });
+      
+      // Create status history
+      await storage.createOrderStatusHistory({
+        orderId,
+        previousStatus: order.status,
+        newStatus,
+        statusReason: `Order cancelled by driver: ${reason}`,
+        triggeredBy: user.id,
+        triggerType: 'manual',
+        driverId: user.id,
+        metadata: { cancellation: cancellation },
+        actualTime: new Date()
+      });
+      
+      // Broadcast cancellation
+      webSocketService.broadcastOrderUpdate({
+        orderId,
+        status: newStatus,
+        driverId: user.id,
+        timestamp: new Date().toISOString(),
+        cancellation: { reason, details }
+      });
+      
+      res.json({ message: "Order cancelled successfully", cancellation });
+    } catch (error) {
+      console.error("Error cancelling order:", error);
+      res.status(500).json({ message: "Failed to cancel order" });
+    }
+  });
+
+  // Get order status history for tracking
+  app.get("/api/orders/:orderId/status-history", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const user = (req.session as any).user;
+      // Allow access for order owner, assigned driver, or admin
+      if (order.userId !== user.id && order.driverId !== user.id && !user.isAdmin) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const history = await storage.getOrderStatusHistory(orderId);
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching order status history:", error);
+      res.status(500).json({ message: "Failed to fetch order status history" });
+    }
+  });
+
+  // Get driver's location history for a specific order
+  app.get("/api/driver/orders/:orderId/location-history", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      const { orderId } = req.params;
+      
+      // Check if user has access to this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (order.userId !== user.id && order.driverId !== user.id && !user.isAdmin) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const locations = await storage.getRecentDriverLocations(orderId);
+      res.json(locations);
+    } catch (error) {
+      console.error("Error fetching location history:", error);
+      res.status(500).json({ message: "Failed to fetch location history" });
+    }
+  });
+
+  // Admin endpoint: Manually assign order to driver with priority
+  app.post("/api/admin/orders/:orderId/assign", requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { driverId, priority = 1, expiresInMinutes = 15 } = req.body;
+      
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const driver = await storage.getUser(driverId);
+      if (!driver || !driver.isDriver) {
+        return res.status(400).json({ message: "Invalid driver ID" });
+      }
+      
+      // Create direct assignment
+      const assignment = await storage.createDriverOrderAssignment({
+        orderId,
+        driverId,
+        assignmentType: 'direct_assign',
+        assignmentPriority: priority,
+        offerExpiresAt: new Date(Date.now() + expiresInMinutes * 60 * 1000),
+        driverLocation: driver.currentLocation
+      });
+      
+      // Update order status
+      await storage.updateOrder(orderId, {
+        status: OrderStatus.ASSIGNED
+      });
+      
+      // Broadcast assignment to driver
+      webSocketService.broadcastToDriver(driverId, {
+        type: 'order_assignment',
+        assignment,
+        order,
+        expiresAt: assignment.offerExpiresAt
+      });
+      
+      res.json({ message: "Order assigned to driver successfully", assignment });
+    } catch (error) {
+      console.error("Error assigning order:", error);
+      res.status(500).json({ message: "Failed to assign order" });
+    }
+  });
+
   // Admin routes
   app.get("/api/admin/orders", requireAdmin, async (req, res) => {
     try {

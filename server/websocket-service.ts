@@ -278,45 +278,7 @@ class WebSocketTrackingService {
     this.clientConnections.delete(clientId);
   }
 
-  // Public methods for broadcasting updates
-  public broadcastLocationUpdate(trackingNumber: string, location: Location, driverId: number, orderId: string, orderStatus: string) {
-    const room = this.trackingRooms.get(trackingNumber);
-    if (!room || room.size === 0) return;
-
-    const message: BroadcastMessage = {
-      type: 'location_update',
-      trackingNumber,
-      data: {
-        driverId,
-        location,
-        orderId,
-        orderStatus,
-        accuracy: location.accuracy,
-        heading: location.heading,
-        speed: location.speed
-      },
-      timestamp: new Date().toISOString()
-    };
-
-    let successCount = 0;
-    room.forEach(client => {
-      if (client.ws.readyState === WebSocket.OPEN) {
-        try {
-          this.sendToClient(client.ws, message);
-          successCount++;
-        } catch (error) {
-          console.error(`❌ Failed to send location update to client ${client.clientId}:`, error);
-          this.removeClient(client.clientId);
-        }
-      } else {
-        this.removeClient(client.clientId);
-      }
-    });
-
-    if (successCount > 0) {
-      console.log(`📍 Broadcasted location update for ${trackingNumber} to ${successCount} clients`);
-    }
-  }
+  // Legacy method - now handled by new enhanced broadcast methods
 
   public broadcastStatusUpdate(trackingNumber: string, newStatus: string, orderId: string, metadata?: any) {
     const room = this.trackingRooms.get(trackingNumber);
@@ -399,6 +361,105 @@ class WebSocketTrackingService {
 
   private generateClientId(): string {
     return `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  // NEW: Enhanced broadcast methods for driver GPS and order management
+  public broadcastOrderUpdate(update: {
+    orderId: string;
+    status: string;
+    driverId?: number;
+    location?: any;
+    timestamp: string;
+    notes?: string;
+    cancellation?: any;
+  }) {
+    const message: BroadcastMessage = {
+      type: 'status_update',
+      data: {
+        orderId: update.orderId,
+        status: update.status,
+        driverId: update.driverId,
+        location: update.location,
+        notes: update.notes,
+        cancellation: update.cancellation
+      },
+      timestamp: update.timestamp
+    };
+
+    // Broadcast to all clients tracking this order (by orderId)
+    this.broadcastToTracking(update.orderId, message);
+    
+    console.log(`📡 Broadcasted order update for ${update.orderId}: ${update.status}`);
+  }
+
+  public broadcastLocationUpdate(update: {
+    orderId: string;
+    driverId: number;
+    location: any;
+    timestamp: string;
+  }) {
+    const message: BroadcastMessage = {
+      type: 'location_update',
+      data: {
+        orderId: update.orderId,
+        driverId: update.driverId,
+        location: update.location
+      },
+      timestamp: update.timestamp
+    };
+
+    // Broadcast to all clients tracking this order
+    this.broadcastToTracking(update.orderId, message);
+    
+    console.log(`📍 Broadcasted location update for order ${update.orderId}`);
+  }
+
+  public broadcastToDriver(driverId: number, message: {
+    type: string;
+    assignment?: any;
+    order?: any;
+    expiresAt?: Date;
+  }) {
+    const broadcastMessage: BroadcastMessage = {
+      type: 'admin_notification',
+      data: {
+        targetDriver: driverId,
+        message: message
+      },
+      timestamp: new Date().toISOString()
+    };
+
+    // For now, broadcast to all admin clients
+    // In a real implementation, you'd maintain driver-specific connections
+    this.broadcastToAll(broadcastMessage);
+    
+    console.log(`👤 Broadcasted message to driver ${driverId}: ${message.type}`);
+  }
+
+  private broadcastToTracking(trackingIdentifier: string, message: BroadcastMessage) {
+    const clients = this.trackingRooms.get(trackingIdentifier);
+    if (clients) {
+      const activeClients = Array.from(clients).filter(client => client.ws.readyState === WebSocket.OPEN);
+      
+      activeClients.forEach(client => {
+        this.sendToClient(client.ws, message);
+      });
+      
+      // Remove inactive clients
+      const inactiveClients = Array.from(clients).filter(client => client.ws.readyState !== WebSocket.OPEN);
+      inactiveClients.forEach(client => {
+        clients.delete(client);
+        this.clientConnections.delete(client.clientId);
+      });
+    }
+  }
+
+  private broadcastToAll(message: BroadcastMessage) {
+    this.clientConnections.forEach(client => {
+      if (client.ws.readyState === WebSocket.OPEN) {
+        this.sendToClient(client.ws, message);
+      }
+    });
   }
 
   private startHeartbeat() {
