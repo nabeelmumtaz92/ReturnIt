@@ -23,6 +23,7 @@ import { checkDatabaseHealth, db } from "./db";
 import { requireAdmin, isAdmin } from "./middleware/adminAuth";
 import { sql } from "drizzle-orm";
 import { webSocketService } from "./websocket-service";
+import { webhookService } from "./webhook-service";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -1904,6 +1905,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: `A driver has been assigned to your order ${order.id}`,
         data: { orderId: order.id, driverId }
       });
+
+      // Fire webhook for return assigned to driver
+      await webhookService.fireReturnAssigned(order, driverId);
       
       res.json(order);
     } catch (error) {
@@ -2378,6 +2382,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         timestamp: new Date().toISOString(),
         cancellation: { reason, details }
       });
+
+      // Fire webhook for order cancellation
+      await webhookService.fireReturnCancelled({ ...order, status: newStatus }, `${reason}: ${details}`);
       
       // Trigger reassignment if appropriate
       if (cancellationType === 'store_rejection') {
@@ -2795,6 +2802,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         refundReason: refundReason || 'return_delivered',
         refundAmount: refundAmount
       });
+
+      // Fire webhook for return delivered to store
+      await webhookService.fireReturnDelivered(completedOrder);
 
       // 3. Process customer refund based on selected method
       let refundResult: any = null;

@@ -1576,3 +1576,156 @@ export const AssignmentStatus = {
 } as const;
 
 export type AssignmentStatus = (typeof AssignmentStatus)[keyof typeof AssignmentStatus];
+
+// === WEBHOOK SYSTEM FOR MERCHANT NOTIFICATIONS ===
+
+// Webhook Endpoints - Merchant systems that want to receive notifications
+export const webhookEndpoints = pgTable("webhook_endpoints", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  merchantId: text("merchant_id").notNull(), // External merchant identifier (e.g., "target", "macys", "shopify_store_123")
+  merchantName: text("merchant_name").notNull(), // Human-readable name
+  url: text("url").notNull(), // Webhook endpoint URL
+  secret: text("secret").notNull(), // Secret for signing webhooks
+  isActive: boolean("is_active").default(true).notNull(),
+  description: text("description"), // Optional description
+  
+  // Event filtering - which events this endpoint wants to receive
+  enabledEvents: jsonb("enabled_events").default([]).notNull(), // Array of event types
+  
+  // Configuration
+  timeoutSeconds: integer("timeout_seconds").default(30).notNull(),
+  maxRetries: integer("max_retries").default(3).notNull(),
+  retryBackoffSeconds: integer("retry_backoff_seconds").default(60).notNull(),
+  
+  // Metadata
+  metadata: jsonb("metadata").default({}),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Webhook Events - Catalog of all events ReturnIt can emit
+export const webhookEvents = pgTable("webhook_events", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  eventType: text("event_type").notNull().unique(), // e.g., "return.created", "return.picked_up"
+  displayName: text("display_name").notNull(), // Human-readable name
+  description: text("description").notNull(), // Description of when this event fires
+  schemaVersion: text("schema_version").default("1.0").notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  samplePayload: jsonb("sample_payload").default({}), // Example payload structure
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Webhook Deliveries - Track individual webhook delivery attempts
+export const webhookDeliveries = pgTable("webhook_deliveries", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  webhookEndpointId: integer("webhook_endpoint_id").references(() => webhookEndpoints.id).notNull(),
+  eventType: text("event_type").notNull(),
+  orderId: text("order_id").references(() => orders.id), // Associated order if applicable
+  
+  // Delivery details
+  httpStatus: integer("http_status"), // Response status code
+  response: text("response"), // Response body (truncated)
+  attemptNumber: integer("attempt_number").default(1).notNull(),
+  isSuccessful: boolean("is_successful").default(false).notNull(),
+  
+  // Timing
+  deliveredAt: timestamp("delivered_at"),
+  nextRetryAt: timestamp("next_retry_at"),
+  
+  // Request details
+  requestHeaders: jsonb("request_headers").default({}),
+  requestPayload: jsonb("request_payload").notNull(),
+  responseHeaders: jsonb("response_headers").default({}),
+  
+  // Error tracking
+  errorMessage: text("error_message"),
+  errorCode: text("error_code"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Event Types Enum - ReturnIt's Webhook Event Catalog
+export const WebhookEventType = {
+  // Order Lifecycle Events
+  RETURN_CREATED: 'return.created',              // Customer books a return
+  RETURN_CONFIRMED: 'return.confirmed',          // Payment processed, order confirmed
+  RETURN_ASSIGNED: 'return.assigned',            // Driver assigned to pickup
+  RETURN_ACCEPTED: 'return.accepted',            // Driver accepted the pickup
+  
+  // Pickup Events
+  PICKUP_SCHEDULED: 'pickup.scheduled',          // Pickup time scheduled
+  PICKUP_ETA_UPDATED: 'pickup.eta_updated',      // ETA changed
+  PICKUP_STARTED: 'pickup.started',              // Driver en route to customer
+  PICKUP_ARRIVED: 'pickup.arrived',              // Driver arrived at customer
+  PICKUP_COMPLETED: 'pickup.completed',          // Items collected from customer
+  PICKUP_FAILED: 'pickup.failed',                // Pickup attempt failed
+  
+  // Transit Events  
+  RETURN_IN_TRANSIT: 'return.in_transit',        // Items being transported to store
+  RETURN_EN_ROUTE_TO_STORE: 'return.en_route_to_store', // Driver heading to dropoff
+  RETURN_ARRIVED_AT_STORE: 'return.arrived_at_store',   // Driver at store location
+  
+  // Delivery Events
+  RETURN_DELIVERED: 'return.delivered',          // Items delivered to store
+  RETURN_PROCESSED: 'return.processed',          // Store processed the return
+  RETURN_COMPLETED: 'return.completed',          // Return fully complete
+  
+  // Exception Events
+  RETURN_CANCELLED: 'return.cancelled',          // Order cancelled
+  RETURN_REJECTED_BY_STORE: 'return.rejected_by_store', // Store refused return
+  RETURN_DRIVER_ABANDONED: 'return.driver_abandoned',   // Driver abandoned pickup
+  RETURN_FAILED: 'return.failed',                // Return failed for any reason
+  
+  // Refund Events
+  REFUND_INITIATED: 'refund.initiated',          // Refund process started
+  REFUND_PROCESSING: 'refund.processing',        // Refund being processed
+  REFUND_COMPLETED: 'refund.completed',          // Customer refunded
+  REFUND_FAILED: 'refund.failed',                // Refund failed
+  
+  // Customer Communication Events
+  CUSTOMER_NOTIFIED: 'customer.notified',        // Customer received notification
+  CUSTOMER_UPDATED: 'customer.updated',          // Customer details updated
+  
+  // Driver Events (for enterprise clients who want driver insights)
+  DRIVER_ASSIGNED: 'driver.assigned',            // Specific driver assigned
+  DRIVER_LOCATION_UPDATED: 'driver.location_updated', // Driver location ping
+  DRIVER_STATUS_UPDATED: 'driver.status_updated'     // Driver status change
+} as const;
+
+export type WebhookEventType = (typeof WebhookEventType)[keyof typeof WebhookEventType];
+
+// Webhook Delivery Status Enum
+export const WebhookDeliveryStatus = {
+  PENDING: 'pending',
+  SUCCESS: 'success', 
+  FAILED: 'failed',
+  RETRYING: 'retrying',
+  MAX_RETRIES_EXCEEDED: 'max_retries_exceeded'
+} as const;
+
+export type WebhookDeliveryStatus = (typeof WebhookDeliveryStatus)[keyof typeof WebhookDeliveryStatus];
+
+// Webhook schemas for type safety
+export const insertWebhookEndpointSchema = createInsertSchema(webhookEndpoints).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWebhookEventSchema = createInsertSchema(webhookEvents).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertWebhookDeliverySchema = createInsertSchema(webhookDeliveries).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Types
+export type WebhookEndpoint = typeof webhookEndpoints.$inferSelect;
+export type InsertWebhookEndpoint = z.infer<typeof insertWebhookEndpointSchema>;
+export type WebhookEvent = typeof webhookEvents.$inferSelect;
+export type InsertWebhookEvent = z.infer<typeof insertWebhookEventSchema>;
+export type WebhookDelivery = typeof webhookDeliveries.$inferSelect;
+export type InsertWebhookDelivery = z.infer<typeof insertWebhookDeliverySchema>;

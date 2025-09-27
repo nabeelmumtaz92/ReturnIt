@@ -10,6 +10,9 @@ import {
   type OrderStatusHistory, type InsertOrderStatusHistory,
   type DriverLocationPing, type InsertDriverLocationPing,
   type OrderCancellation, type InsertOrderCancellation,
+  type WebhookEndpoint, type InsertWebhookEndpoint,
+  type WebhookEvent, type InsertWebhookEvent,
+  type WebhookDelivery, type InsertWebhookDelivery,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -118,6 +121,21 @@ export interface IStorage {
   createOrderCancellation(cancellation: InsertOrderCancellation): Promise<OrderCancellation>;
   getOrderCancellation(orderId: string): Promise<OrderCancellation | undefined>;
   getOrderCancellations(filters?: { driverId?: number; storeId?: number; type?: string }): Promise<OrderCancellation[]>;
+
+  // NEW: Webhook operations for merchant notifications  
+  createWebhookEndpoint(endpoint: InsertWebhookEndpoint): Promise<WebhookEndpoint>;
+  getWebhookEndpoint(id: number): Promise<WebhookEndpoint | undefined>;
+  getActiveWebhookEndpoints(): Promise<WebhookEndpoint[]>;
+  getWebhookEndpointsByMerchant(merchantId: string): Promise<WebhookEndpoint[]>;
+  updateWebhookEndpoint(id: number, updates: Partial<WebhookEndpoint>): Promise<WebhookEndpoint | undefined>;
+  deleteWebhookEndpoint(id: number): Promise<boolean>;
+  
+  createWebhookDelivery(delivery: InsertWebhookDelivery): Promise<WebhookDelivery>;
+  getWebhookDelivery(id: number): Promise<WebhookDelivery | undefined>;
+  getWebhookDeliveries(filters?: { webhookEndpointId?: number; eventType?: string; isSuccessful?: boolean }): Promise<WebhookDelivery[]>;
+  
+  createWebhookEvent(event: InsertWebhookEvent): Promise<WebhookEvent>;
+  getWebhookEvents(): Promise<WebhookEvent[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -134,6 +152,9 @@ export class MemStorage implements IStorage {
   private paymentRecords: Map<string, any>;
   private trackingEvents: Map<number, TrackingEvent>;
   private trackingNumberIndex: Map<string, string>; // trackingNumber -> orderId for O(1) lookup
+  private webhookEndpoints: Map<number, WebhookEndpoint>;
+  private webhookEvents: Map<number, WebhookEvent>;
+  private webhookDeliveries: Map<number, WebhookDelivery>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
@@ -142,6 +163,9 @@ export class MemStorage implements IStorage {
   private nextPayoutId: number = 1;
   private nextIncentiveId: number = 1;
   private nextTrackingEventId: number = 1;
+  private nextWebhookEndpointId: number = 1;
+  private nextWebhookEventId: number = 1;
+  private nextWebhookDeliveryId: number = 1;
 
   constructor() {
     this.users = new Map();
@@ -156,6 +180,9 @@ export class MemStorage implements IStorage {
     this.paymentRecords = new Map();
     this.trackingEvents = new Map();
     this.trackingNumberIndex = new Map();
+    this.webhookEndpoints = new Map();
+    this.webhookEvents = new Map();
+    this.webhookDeliveries = new Map();
     
     // Master Administrator account (real data only)
     const masterAdmin: User = {
@@ -1229,6 +1256,120 @@ export class MemStorage implements IStorage {
     // Mock implementation for MemStorage - in production this would be handled by database
     // For testing purposes, return an empty array as MemStorage doesn't handle real-time expiration
     return [];
+  }
+
+  // Webhook operations for merchant notifications
+  async createWebhookEndpoint(endpointData: InsertWebhookEndpoint): Promise<WebhookEndpoint> {
+    const id = this.nextWebhookEndpointId++;
+    const endpoint: WebhookEndpoint = {
+      id,
+      merchantId: endpointData.merchantId,
+      merchantName: endpointData.merchantName,
+      url: endpointData.url,
+      secret: endpointData.secret,
+      isActive: endpointData.isActive ?? true,
+      description: endpointData.description || null,
+      enabledEvents: endpointData.enabledEvents,
+      timeoutSeconds: endpointData.timeoutSeconds ?? 30,
+      maxRetries: endpointData.maxRetries ?? 3,
+      retryBackoffSeconds: endpointData.retryBackoffSeconds ?? 60,
+      metadata: endpointData.metadata ?? {},
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.webhookEndpoints.set(id, endpoint);
+    return endpoint;
+  }
+
+  async getWebhookEndpoint(id: number): Promise<WebhookEndpoint | undefined> {
+    return this.webhookEndpoints.get(id);
+  }
+
+  async getActiveWebhookEndpoints(): Promise<WebhookEndpoint[]> {
+    return Array.from(this.webhookEndpoints.values()).filter(endpoint => endpoint.isActive);
+  }
+
+  async getWebhookEndpointsByMerchant(merchantId: string): Promise<WebhookEndpoint[]> {
+    return Array.from(this.webhookEndpoints.values()).filter(endpoint => endpoint.merchantId === merchantId);
+  }
+
+  async updateWebhookEndpoint(id: number, updates: Partial<WebhookEndpoint>): Promise<WebhookEndpoint | undefined> {
+    const endpoint = this.webhookEndpoints.get(id);
+    if (!endpoint) return undefined;
+    
+    const updatedEndpoint = { ...endpoint, ...updates, updatedAt: new Date() };
+    this.webhookEndpoints.set(id, updatedEndpoint);
+    return updatedEndpoint;
+  }
+
+  async deleteWebhookEndpoint(id: number): Promise<boolean> {
+    return this.webhookEndpoints.delete(id);
+  }
+
+  async createWebhookDelivery(deliveryData: InsertWebhookDelivery): Promise<WebhookDelivery> {
+    const id = this.nextWebhookDeliveryId++;
+    const delivery: WebhookDelivery = {
+      id,
+      webhookEndpointId: deliveryData.webhookEndpointId,
+      eventType: deliveryData.eventType,
+      orderId: deliveryData.orderId || null,
+      httpStatus: deliveryData.httpStatus || null,
+      response: deliveryData.response || null,
+      attemptNumber: deliveryData.attemptNumber ?? 1,
+      isSuccessful: deliveryData.isSuccessful ?? false,
+      deliveredAt: deliveryData.deliveredAt || null,
+      nextRetryAt: deliveryData.nextRetryAt || null,
+      requestHeaders: deliveryData.requestHeaders ?? {},
+      requestPayload: deliveryData.requestPayload,
+      responseHeaders: deliveryData.responseHeaders ?? {},
+      errorMessage: deliveryData.errorMessage || null,
+      errorCode: deliveryData.errorCode || null,
+      createdAt: new Date()
+    };
+    this.webhookDeliveries.set(id, delivery);
+    return delivery;
+  }
+
+  async getWebhookDelivery(id: number): Promise<WebhookDelivery | undefined> {
+    return this.webhookDeliveries.get(id);
+  }
+
+  async getWebhookDeliveries(filters?: { webhookEndpointId?: number; eventType?: string; isSuccessful?: boolean }): Promise<WebhookDelivery[]> {
+    let deliveries = Array.from(this.webhookDeliveries.values());
+    
+    if (filters) {
+      if (filters.webhookEndpointId !== undefined) {
+        deliveries = deliveries.filter(d => d.webhookEndpointId === filters.webhookEndpointId);
+      }
+      if (filters.eventType !== undefined) {
+        deliveries = deliveries.filter(d => d.eventType === filters.eventType);
+      }
+      if (filters.isSuccessful !== undefined) {
+        deliveries = deliveries.filter(d => d.isSuccessful === filters.isSuccessful);
+      }
+    }
+    
+    return deliveries.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async createWebhookEvent(eventData: InsertWebhookEvent): Promise<WebhookEvent> {
+    const id = this.nextWebhookEventId++;
+    const event: WebhookEvent = {
+      id,
+      eventType: eventData.eventType,
+      displayName: eventData.displayName,
+      description: eventData.description,
+      schemaVersion: eventData.schemaVersion ?? "1.0",
+      isActive: eventData.isActive ?? true,
+      samplePayload: eventData.samplePayload ?? {},
+      createdAt: new Date()
+    };
+    this.webhookEvents.set(id, event);
+    return event;
+  }
+
+  async getWebhookEvents(): Promise<WebhookEvent[]> {
+    return Array.from(this.webhookEvents.values());
   }
 }
 
