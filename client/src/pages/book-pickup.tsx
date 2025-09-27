@@ -12,7 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store } from "lucide-react";
+import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -21,6 +21,7 @@ import { PaymentBreakdown } from "@/components/PaymentBreakdown";
 import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
 import type { RouteInfo as PaymentRouteInfo } from "@shared/paymentCalculator";
 import { validateOrderPolicy, determinePolicyAction, PolicyAction, formatPolicyMessage } from "@shared/policyValidator";
+import { PolicyValidator } from "@shared/policy.rules";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 import Footer from "@/components/Footer";
 
@@ -80,6 +81,8 @@ export default function BookPickup() {
     notes: '',
     // Return authorization & purchase type
     purchaseType: '', // 'online' or 'in_store'
+    purchaseDate: '', // When item was purchased - critical for return window validation
+    hasOriginalPackaging: false, // Whether item has original packaging (separate from tags)
     hasOriginalTags: false,
     receiptImage: null as File | null,
     returnLabelImage: null as File | null,
@@ -100,6 +103,7 @@ export default function BookPickup() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [pricingBreakdown, setPricingBreakdown] = useState<ReturnType<typeof calculatePaymentWithValue> | null>(null);
   const [policyValidation, setPolicyValidation] = useState<{ isValid: boolean; message: string; warnings: string[] } | null>(null);
+  const [merchantPolicyValidation, setMerchantPolicyValidation] = useState<{ isValid: boolean; message: string; violations: string[] } | null>(null);
 
   // Item categories for multiple selection
   const itemCategories = [
@@ -387,6 +391,76 @@ export default function BookPickup() {
     }
   }, [formData.itemDescription, formData.itemCategories, formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
 
+  // Validate merchant-specific return policies
+  useEffect(() => {
+    const validateMerchantPolicy = async () => {
+      // Require real customer data - no policy validation with fake dates
+      if (formData.retailer && formData.itemCategories.length > 0 && formData.purchaseDate) {
+        try {
+          // First, fetch merchant policy for the selected retailer
+          const response = await fetch(`/api/merchants/policies/${encodeURIComponent(formData.retailer)}`);
+          let merchantPolicy = null;
+          
+          if (response.ok) {
+            merchantPolicy = await response.json();
+          }
+
+          // Validate ALL selected categories (not just first one)
+          const categoryValidationResults = [];
+          for (const category of formData.itemCategories) {
+            const bookingAttempt = {
+              retailer: formData.retailer,
+              itemCategory: category, // Validate each category individually
+              itemDescription: formData.itemDescription || formData.orderName || 'Item return',
+              itemValue: parseFloat(formData.itemValue) || 0,
+              numberOfItems: formData.numberOfItems || 1,
+              originalPackaging: formData.hasOriginalPackaging, // Use REAL packaging status
+              purchaseDate: formData.purchaseDate, // MUST be real customer input - no fallback
+              receiptUploaded: formData.receiptImage !== null,
+              tagsAttached: formData.hasOriginalTags,
+              purchaseLocation: formData.purchaseType === 'in_store' ? 'in_store' : 'online'
+            };
+
+            // Validate each category
+            const categoryResult = await PolicyValidator.validateBookingAttempt(bookingAttempt, merchantPolicy);
+            categoryValidationResults.push({ category, result: categoryResult });
+          }
+
+          // Combine results - if ANY category fails, the entire validation fails
+          const validationResult = {
+            isAllowed: categoryValidationResults.every(r => r.result.isAllowed),
+            violations: categoryValidationResults.flatMap(r => r.result.violations)
+          };
+
+          if (validationResult.isAllowed) {
+            setMerchantPolicyValidation({
+              isValid: true,
+              message: `✅ Return accepted under ${formData.retailer}'s policy`,
+              violations: []
+            });
+          } else {
+            setMerchantPolicyValidation({
+              isValid: false,
+              message: `❌ Return not allowed: ${validationResult.violations[0]?.violationReason || 'Policy violation'}`,
+              violations: validationResult.violations.map(v => v.violationReason)
+            });
+          }
+        } catch (error) {
+          console.error('Merchant policy validation error:', error);
+          setMerchantPolicyValidation({
+            isValid: true, // Default to allow if validation fails
+            message: `⚠️ Unable to validate ${formData.retailer} policy - proceeding with caution`,
+            violations: []
+          });
+        }
+      } else {
+        setMerchantPolicyValidation(null);
+      }
+    };
+
+    validateMerchantPolicy();
+  }, [formData.retailer, formData.itemCategories, formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems]);
+
   // Fetch available retailers on component mount
   useEffect(() => {
     const fetchRetailers = async () => {
@@ -571,6 +645,92 @@ export default function BookPickup() {
                         <span className="text-xs text-red-600">🔴 Closed</span>
                       )}
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Policy Validation Results */}
+        {(policyValidation || merchantPolicyValidation) && (
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2 mb-2">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <Label className="text-blue-800 font-medium text-sm">Return Policy Status</Label>
+            </div>
+            
+            {/* General ReturnIt Policies */}
+            {policyValidation && (
+              <div className={`p-3 rounded-lg border ${
+                policyValidation.isValid 
+                  ? 'bg-green-50/80 border-green-200' 
+                  : 'bg-red-50/80 border-red-200'
+              }`}>
+                <div className="flex items-start space-x-2">
+                  {policyValidation.isValid ? (
+                    <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-sm font-medium ${
+                      policyValidation.isValid ? 'text-green-800' : 'text-red-800'
+                    }`}>
+                      ReturnIt Safety Check
+                    </p>
+                    <p className={`text-xs mt-1 ${
+                      policyValidation.isValid ? 'text-green-600' : 'text-red-600'
+                    }`}>
+                      {policyValidation.message}
+                    </p>
+                    {policyValidation.warnings.length > 0 && (
+                      <div className="mt-2">
+                        {policyValidation.warnings.map((warning, index) => (
+                          <p key={index} className="text-xs text-orange-600 bg-orange-50 p-1 rounded mt-1">
+                            ⚠️ {warning}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Merchant-Specific Policies */}
+            {merchantPolicyValidation && (
+              <div className={`p-3 rounded-lg border ${
+                merchantPolicyValidation.isValid 
+                  ? 'bg-blue-50/80 border-blue-200' 
+                  : 'bg-red-50/80 border-red-200'
+              }`}>
+                <div className="flex items-start space-x-2">
+                  {merchantPolicyValidation.isValid ? (
+                    <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  ) : (
+                    <XCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className={`text-sm font-medium ${
+                      merchantPolicyValidation.isValid ? 'text-blue-800' : 'text-red-800'
+                    }`}>
+                      Store Return Policy
+                    </p>
+                    <p className={`text-xs mt-1 ${
+                      merchantPolicyValidation.isValid ? 'text-blue-600' : 'text-red-600'
+                    }`}>
+                      {merchantPolicyValidation.message}
+                    </p>
+                    {merchantPolicyValidation.violations.length > 0 && (
+                      <div className="mt-2">
+                        {merchantPolicyValidation.violations.map((violation, index) => (
+                          <p key={index} className="text-xs text-red-600 bg-red-50 p-1 rounded mt-1">
+                            ❌ {violation}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

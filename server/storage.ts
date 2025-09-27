@@ -13,6 +13,8 @@ import {
   type WebhookEndpoint, type InsertWebhookEndpoint,
   type WebhookEvent, type InsertWebhookEvent,
   type WebhookDelivery, type InsertWebhookDelivery,
+  type SelectMerchantPolicy, type InsertMerchantPolicy,
+  type SelectPolicyViolation, type InsertPolicyViolation,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -133,6 +135,9 @@ export interface IStorage {
   createWebhookDelivery(delivery: InsertWebhookDelivery): Promise<WebhookDelivery>;
   getWebhookDelivery(id: number): Promise<WebhookDelivery | undefined>;
   getWebhookDeliveries(filters?: { webhookEndpointId?: number; eventType?: string; isSuccessful?: boolean }): Promise<WebhookDelivery[]>;
+  
+  // Merchant Policy operations
+  getMerchantPolicyByStoreName(storeName: string): Promise<SelectMerchantPolicy | undefined>;
   
   createWebhookEvent(event: InsertWebhookEvent): Promise<WebhookEvent>;
   getWebhookEvents(): Promise<WebhookEvent[]>;
@@ -1379,7 +1384,8 @@ import { eq, and, sql, desc, asc, isNotNull, isNull, notInArray, or, lt, inArray
 import { 
   users, orders, promoCodes, 
   driverOrderAssignments, orderStatusHistory, 
-  driverLocationPings, orderCancellations 
+  driverLocationPings, orderCancellations,
+  merchantPolicies, policyViolations
 } from "@shared/schema";
 
 export class DatabaseStorage implements IStorage {
@@ -1942,6 +1948,15 @@ export class DatabaseStorage implements IStorage {
   async getTrackingEvent(id: number): Promise<TrackingEvent | undefined> {
     // Stub implementation
     return undefined;
+  }
+
+  // Merchant Policy operations
+  async getMerchantPolicyByStoreName(storeName: string): Promise<SelectMerchantPolicy | undefined> {
+    const [policy] = await db
+      .select()
+      .from(merchantPolicies)
+      .where(eq(merchantPolicies.storeName, storeName));
+    return policy;
   }
 }
 

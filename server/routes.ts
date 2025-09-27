@@ -2608,6 +2608,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Merchant Policy Management - Get policy for a specific retailer
+  app.get("/api/merchants/policies/:retailer", async (req, res) => {
+    try {
+      const retailerName = decodeURIComponent(req.params.retailer);
+      
+      // Get merchant policy for the specified retailer
+      const merchantPolicy = await storage.getMerchantPolicyByStoreName(retailerName);
+      
+      if (!merchantPolicy) {
+        // Return null if no specific policy found - validation will use default behavior
+        return res.json(null);
+      }
+      
+      res.json(merchantPolicy);
+    } catch (error) {
+      console.error("Error fetching merchant policy:", error);
+      res.status(500).json({ message: "Failed to fetch merchant policy" });
+    }
+  });
+
   // Driver status toggle endpoint
   app.patch("/api/admin/drivers/:id/status", requireAdmin, async (req, res) => {
     try {
