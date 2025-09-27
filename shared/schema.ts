@@ -1867,7 +1867,7 @@ export const customerWaitlist = pgTable("customer_waitlist", {
   projectedLaunchDate: timestamp("projected_launch_date"),
   notificationPreferences: jsonb("notification_preferences").default({}), // email, sms preferences
   referralCode: text("referral_code"),
-  referredBy: integer("referred_by").references(() => customerWaitlist.id),
+  referredBy: integer("referred_by"), // References customerWaitlist.id
   marketingOptIn: boolean("marketing_opt_in").default(true),
   launchedAt: timestamp("launched_at"),
   notifiedAt: timestamp("notified_at"),

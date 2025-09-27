@@ -15,6 +15,9 @@ import {
   type WebhookDelivery, type InsertWebhookDelivery,
   type SelectMerchantPolicy, type InsertMerchantPolicy,
   type SelectPolicyViolation, type InsertPolicyViolation,
+  // type CustomerWaitlist, type InsertCustomerWaitlist,
+  // type ZipCodeManagement, type InsertZipCodeManagement,
+  // type OtpVerification, type InsertOtpVerification,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -143,6 +146,37 @@ export interface IStorage {
   
   createWebhookEvent(event: InsertWebhookEvent): Promise<WebhookEvent>;
   getWebhookEvents(): Promise<WebhookEvent[]>;
+  
+  // Driver Onboarding Operations (NEW)
+  updateDriverApplicationStatus(userId: number, status: string, reason?: string): Promise<User | undefined>;
+  getDriversByApplicationStatus(status: string): Promise<User[]>;
+  getDriverApplicationsByZip(zipCode: string): Promise<User[]>;
+  updateDriverOnboardingStep(userId: number, step: string): Promise<User | undefined>;
+  verifyDriverOTP(userId: number): Promise<User | undefined>;
+  acceptDriverTerms(userId: number): Promise<User | undefined>;
+  
+  // Customer Waitlist Operations (NEW) - TODO: Uncomment when schema is ready
+  // createCustomerWaitlist(waitlist: InsertCustomerWaitlist): Promise<CustomerWaitlist>;
+  // getCustomerWaitlist(id: number): Promise<CustomerWaitlist | undefined>;
+  // getCustomerWaitlistByEmail(email: string): Promise<CustomerWaitlist | undefined>;
+  // getCustomerWaitlistByZip(zipCode: string): Promise<CustomerWaitlist[]>;
+  // getAllCustomerWaitlist(): Promise<CustomerWaitlist[]>;
+  // updateCustomerWaitlist(id: number, updates: Partial<CustomerWaitlist>): Promise<CustomerWaitlist | undefined>;
+  // activateCustomerWaitlist(zipCode: string): Promise<CustomerWaitlist[]>;
+  
+  // ZIP Code Management Operations (NEW) - TODO: Uncomment when schema is ready
+  // createZipCodeManagement(zipData: InsertZipCodeManagement): Promise<ZipCodeManagement>;
+  // getZipCodeManagement(zipCode: string): Promise<ZipCodeManagement | undefined>;
+  // getAllZipCodeManagement(): Promise<ZipCodeManagement[]>;
+  // updateZipCodeManagement(zipCode: string, updates: Partial<ZipCodeManagement>): Promise<ZipCodeManagement | undefined>;
+  // updateZipCodeDriverCount(zipCode: string): Promise<ZipCodeManagement | undefined>;
+  // getZipCodesByLaunchPriority(): Promise<ZipCodeManagement[]>;
+  
+  // OTP Verification Operations (NEW) - TODO: Uncomment when schema is ready
+  // createOtpVerification(otp: InsertOtpVerification): Promise<OtpVerification>;
+  // getOtpVerification(phoneNumber: string, purpose: string): Promise<OtpVerification | undefined>;
+  // verifyOtpCode(phoneNumber: string, code: string, purpose: string): Promise<boolean>;
+  // cleanupExpiredOtps(): Promise<number>;
 }
 
 export class MemStorage implements IStorage {
