@@ -146,7 +146,7 @@ export default function DriverOnboarding() {
   const { data: application, isLoading } = useQuery({
     queryKey: ['/api/driver-applications/current'],
     retry: false,
-  });
+  }) as { data: any, isLoading: boolean };
 
   // Populate forms when application data loads
   useEffect(() => {
@@ -182,27 +182,30 @@ export default function DriverOnboarding() {
         setApplicationId(String(application.id));
       }
 
-      // Advance to appropriate step based on application progress
+      // Advance to appropriate step based on application progress (but don't regress)
       if (application?.onboardingStep) {
+        let newStep = 1;
         switch (application.onboardingStep) {
           case 'personal_complete':
           case 'vehicle_pending':
-            setCurrentStep(2);
+            newStep = 2;
             break;
           case 'vehicle_complete':
           case 'documents_pending':
-            setCurrentStep(3);
+            newStep = 3;
             break;
           case 'documents_complete':
           case 'background_pending':
-            setCurrentStep(4);
+            newStep = 4;
             break;
           case 'completed':
-            setCurrentStep(5);
+            newStep = 5;
             break;
           default:
-            setCurrentStep(1);
+            newStep = 1;
         }
+        // Only advance, never regress (unless it's a significant jump)
+        setCurrentStep(prev => Math.max(prev, newStep));
       }
     }
   }, [application, isLoading, personalForm, vehicleForm]);
@@ -229,13 +232,16 @@ export default function DriverOnboarding() {
       const response = await apiRequest('PATCH', `/api/driver-applications/${applicationId}`, data);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       setCurrentStep(3);
       toast({
         title: "Vehicle Information Saved",
         description: "Now let's upload your required documents.",
       });
-      queryClient.invalidateQueries({ queryKey: ['/api/driver-applications/current'] });
+      // Wait a bit before invalidating to ensure backend has updated
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['/api/driver-applications/current'] });
+      }, 100);
     },
   });
 
@@ -286,7 +292,7 @@ export default function DriverOnboarding() {
         title: "Application Submitted!",
         description: "Your driver application is now under review. We'll contact you within 2-3 business days.",
       });
-      setLocation('/driver-onboarding/success');
+      setLocation('/driver-portal');
     },
   });
 
@@ -381,7 +387,7 @@ export default function DriverOnboarding() {
                       data-testid="input-first-name"
                     />
                     {personalForm.formState.errors.firstName && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.firstName.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.firstName.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -393,7 +399,7 @@ export default function DriverOnboarding() {
                       data-testid="input-last-name"
                     />
                     {personalForm.formState.errors.lastName && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.lastName.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.lastName.message as string}</p>
                     )}
                   </div>
                 </div>
@@ -409,7 +415,7 @@ export default function DriverOnboarding() {
                       data-testid="input-email"
                     />
                     {personalForm.formState.errors.email && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.email.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.email.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -422,7 +428,7 @@ export default function DriverOnboarding() {
                       data-testid="input-phone"
                     />
                     {personalForm.formState.errors.phone && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.phone.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.phone.message as string}</p>
                     )}
                   </div>
                 </div>
@@ -437,7 +443,7 @@ export default function DriverOnboarding() {
                     data-testid="input-date-of-birth"
                   />
                   {personalForm.formState.errors.dateOfBirth && (
-                    <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.dateOfBirth.message}</p>
+                    <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.dateOfBirth.message as string}</p>
                   )}
                 </div>
 
@@ -451,7 +457,7 @@ export default function DriverOnboarding() {
                     data-testid="input-address"
                   />
                   {personalForm.formState.errors.address && (
-                    <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.address.message}</p>
+                    <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.address.message as string}</p>
                   )}
                 </div>
 
@@ -465,7 +471,7 @@ export default function DriverOnboarding() {
                       data-testid="input-city"
                     />
                     {personalForm.formState.errors.city && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.city.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.city.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -478,7 +484,7 @@ export default function DriverOnboarding() {
                       data-testid="input-state"
                     />
                     {personalForm.formState.errors.state && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.state.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.state.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -491,7 +497,7 @@ export default function DriverOnboarding() {
                       data-testid="input-zip-code"
                     />
                     {personalForm.formState.errors.zipCode && (
-                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.zipCode.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{personalForm.formState.errors.zipCode.message as string}</p>
                     )}
                   </div>
                 </div>
@@ -533,7 +539,7 @@ export default function DriverOnboarding() {
                       data-testid="input-vehicle-make"
                     />
                     {vehicleForm.formState.errors.vehicleMake && (
-                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleMake.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleMake.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -546,7 +552,7 @@ export default function DriverOnboarding() {
                       data-testid="input-vehicle-model"
                     />
                     {vehicleForm.formState.errors.vehicleModel && (
-                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleModel.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleModel.message as string}</p>
                     )}
                   </div>
                 </div>
@@ -562,7 +568,7 @@ export default function DriverOnboarding() {
                       data-testid="input-vehicle-year"
                     />
                     {vehicleForm.formState.errors.vehicleYear && (
-                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleYear.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleYear.message as string}</p>
                     )}
                   </div>
                   <div>
@@ -575,7 +581,7 @@ export default function DriverOnboarding() {
                       data-testid="input-vehicle-color"
                     />
                     {vehicleForm.formState.errors.vehicleColor && (
-                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleColor.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.vehicleColor.message as string}</p>
                     )}
                   </div>
                 </div>
@@ -591,7 +597,7 @@ export default function DriverOnboarding() {
                       data-testid="input-license-plate"
                     />
                     {vehicleForm.formState.errors.licensePlate && (
-                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.licensePlate.message}</p>
+                      <p className="text-red-600 text-sm mt-1">{vehicleForm.formState.errors.licensePlate.message as string}</p>
                     )}
                   </div>
                   <div>

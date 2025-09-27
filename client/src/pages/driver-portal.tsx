@@ -274,7 +274,7 @@ export default function DriverPortal() {
                 </h1>
                 <div className="flex items-center space-x-2 text-sm">
                   <span className="text-amber-700">
-                    Welcome back, {user.firstName || user.username || 'Driver'}!
+                    Welcome back, {user?.firstName || user?.username || 'Driver'}!
                     {user?.isAdmin && !user?.isDriver && (
                       <span className="ml-1 text-blue-600">(Administrator)</span>
                     )}
@@ -284,19 +284,19 @@ export default function DriverPortal() {
                   <div className="flex items-center space-x-2 ml-3">
                     {/* Background Check Status */}
                     {(driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) && 
-                     (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) !== 'approved' && (
+                     (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) !== 'approved' && (
                       <div className="flex items-center">
-                        {(driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'pending' ? (
+                        {(driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'pending' ? (
                           <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
                             <Clock className="h-3 w-3 mr-1" />
                             Background Check Pending
                           </Badge>
-                        ) : (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'in_progress' ? (
+                        ) : (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'in_progress' ? (
                           <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50">
                             <Clock className="h-3 w-3 mr-1 animate-spin" />
                             Background Check In Progress
                           </Badge>
-                        ) : (driverStatus?.backgroundCheckStatus || user.backgroundCheckStatus) === 'failed' ? (
+                        ) : (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'failed' ? (
                           <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-300">
                             <AlertCircle className="h-3 w-3 mr-1" />
                             Background Check Failed
