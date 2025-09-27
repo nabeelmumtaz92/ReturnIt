@@ -51,15 +51,15 @@ export const users = pgTable("users", {
   paymentPreference: text("payment_preference").default("weekly"), // weekly, instant
   instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
   
-  // Driver onboarding and application status
-  applicationStatus: text("application_status").default("pending_review"), // pending_review, documents_required, approved_active, rejected
-  onboardingStep: text("onboarding_step").default("signup"), // signup, documents, banking, approval, complete
-  projectedHireDate: timestamp("projected_hire_date"), // Estimated hire date for this driver's ZIP
-  approvedAt: timestamp("approved_at"),
-  rejectedAt: timestamp("rejected_at"),
-  rejectionReason: text("rejection_reason"),
-  otpVerified: boolean("otp_verified").default(false),
-  termsAcceptedAt: timestamp("terms_accepted_at"),
+  // Driver onboarding and application status - STORED IN PREFERENCES JSON
+  // applicationStatus: text("application_status").default("pending_review"), // pending_review, documents_required, approved_active, rejected
+  // onboardingStep: text("onboarding_step").default("signup"), // signup, documents, banking, approval, complete
+  // projectedHireDate: timestamp("projected_hire_date"), // Estimated hire date for this driver's ZIP
+  // approvedAt: timestamp("approved_at"),
+  // rejectedAt: timestamp("rejected_at"),
+  // rejectionReason: text("rejection_reason"),
+  // otpVerified: boolean("otp_verified").default(false),
+  // termsAcceptedAt: timestamp("terms_accepted_at"),
   
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),

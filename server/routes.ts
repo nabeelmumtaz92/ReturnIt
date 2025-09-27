@@ -472,6 +472,149 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Auth routes with environment controls
+  // Driver-specific signup endpoint
+  app.post("/api/auth/driver-signup", async (req, res) => {
+    try {
+      // Enhanced validation for driver signup
+      const driverSignupSchema = z.object({
+        firstName: z.string().min(2, 'First name must be at least 2 characters'),
+        lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+        email: z.string().email('Please enter a valid email address'),
+        phone: z.string().min(10, 'Please enter a valid phone number'),
+        password: z.string().min(8, 'Password must be at least 8 characters'),
+        dateOfBirth: z.string().min(1, 'Date of birth is required'),
+        address: z.string().min(5, 'Please enter your full address'),
+        city: z.string().min(2, 'City is required'),
+        state: z.string().min(2, 'State is required'),
+        zipCode: z.string().min(5, 'Valid zip code required'),
+        vehicleType: z.string().min(1, 'Vehicle type is required'),
+        experience: z.string().optional(),
+        referralCode: z.string().optional(),
+      });
+      
+      const validatedData = driverSignupSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(validatedData.email);
+      
+      if (existingUser) {
+        return res.status(409).json({ 
+          message: "An account with this email already exists",
+          field: "email"
+        });
+      }
+
+      // Additional password strength validation
+      const passwordValidation = AuthService.validatePassword(validatedData.password);
+      if (!passwordValidation.isValid) {
+        return res.status(400).json({ 
+          message: "Password does not meet security requirements",
+          errors: passwordValidation.errors,
+          field: "password"
+        });
+      }
+
+      // Hash password with enhanced security
+      const hashedPassword = await AuthService.hashPassword(validatedData.password);
+      
+      const user = await storage.createUser({
+        email: validatedData.email,
+        phone: validatedData.phone,
+        firstName: validatedData.firstName,
+        lastName: validatedData.lastName,
+        password: hashedPassword,
+        dateOfBirth: validatedData.dateOfBirth,
+        addresses: JSON.stringify([{
+          type: 'primary',
+          address: validatedData.address,
+          city: validatedData.city,
+          state: validatedData.state,
+          zipCode: validatedData.zipCode
+        }]),
+        vehicleInfo: JSON.stringify({
+          type: validatedData.vehicleType,
+          experience: validatedData.experience,
+          referralCode: validatedData.referralCode
+        }),
+        preferences: JSON.stringify({
+          applicationStatus: 'pending_review',
+          onboardingStep: 'documents_pending',
+          projectedHireDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(),
+          appliedAt: new Date().toISOString()
+        }),
+        isDriver: true, // Driver by default
+        isAdmin: false,
+        tutorialCompleted: false,
+        isActive: true
+      });
+      
+      // Log user in with secure session
+      (req.session as any).user = AuthService.sanitizeUserData({ 
+        id: user.id, 
+        email: user.email, 
+        phone: user.phone, 
+        isDriver: true, 
+        isAdmin: false,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        dateOfBirth: user.dateOfBirth
+      });
+      
+      res.status(201).json({ 
+        message: "Driver application submitted successfully",
+        user: AuthService.sanitizeUserData({
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone, 
+          isDriver: true,
+          isAdmin: false,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          applicationStatus: user.preferences?.applicationStatus || 'pending_review',
+          onboardingStep: user.preferences?.onboardingStep || 'documents_pending'
+        })
+      });
+    } catch (error: any) {
+      console.error('Driver signup error:', error);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Invalid input",
+          errors: error.issues.map(issue => ({
+            field: issue.path.join('.'),
+            message: issue.message
+          }))
+        });
+      }
+      
+      res.status(500).json({ message: "Something went wrong. Please try again later." });
+    }
+  });
+
+  // ZIP Code Analytics endpoint for driver signup
+  app.get("/api/zip-codes/:zipCode", async (req, res) => {
+    try {
+      const { zipCode } = req.params;
+      
+      // Mock ZIP code data for now - in production this would query a ZIP management table
+      const mockZipData = {
+        zipCode: zipCode,
+        driverCount: Math.floor(Math.random() * 25) + 5,
+        targetDriverCount: 30,
+        projectedHireDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString(), // Random date in next 60 days
+        status: Math.random() > 0.6 ? 'hiring' : Math.random() > 0.3 ? 'waitlist' : 'full',
+        priority: Math.floor(Math.random() * 3) + 1, // 1-3 priority
+        estimatedWaitDays: Math.floor(Math.random() * 45) + 7, // 7-52 days
+        marketDemand: Math.random() > 0.5 ? 'high' : 'medium'
+      };
+      
+      res.json(mockZipData);
+    } catch (error) {
+      console.error('ZIP code lookup error:', error);
+      res.status(500).json({ message: "Failed to fetch ZIP code information" });
+    }
+  });
+
   app.post("/api/auth/register", async (req, res) => {
     try {
       // Enhanced validation using Zod schema

@@ -22,6 +22,7 @@ const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
 const CustomerDashboard = lazy(() => import("@/pages/customer-dashboard"));
 const DriverPayments = lazy(() => import("@/pages/driver-payments"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
+const DriverSignup = lazy(() => import("@/pages/driver-signup"));
 const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
 const About = lazy(() => import("@/pages/about"));
 
@@ -185,6 +186,7 @@ function Router() {
       <Route path="/driver-portal" component={DriverPortal} />
       <Route path="/driver-portal/job/:id" component={DriverJob} />
       <Route path="/driver-payments" component={DriverPayments} />
+      <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/driver-tutorial" component={DriverTutorial} />
       <Route path="/driver-documents" component={DriverDocuments} />
