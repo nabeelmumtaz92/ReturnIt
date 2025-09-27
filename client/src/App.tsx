@@ -139,12 +139,9 @@ function SmartRouteHandler() {
       // Mobile customers get the customer mobile app
       return <CustomerMobileApp />;
     }
-  } else if (isMobile) {
-    // Non-authenticated mobile users get the customer mobile app
-    return <CustomerMobileApp />;
   }
 
-  // Default to welcome page for desktop users and others
+  // Default to welcome page for all users (desktop and mobile)
   return <Welcome />;
 }
 
