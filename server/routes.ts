@@ -1125,8 +1125,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Import secure admin control
       const { MASTER_ADMIN_EMAIL, shouldAutoAssignAdmin } = await import('./auth/adminControl');
       
-      // SECURITY: Restrict registration to only master admin account
-      if (validatedData.email !== MASTER_ADMIN_EMAIL) {
+      // SECURITY: In development, allow public registration. In production, restrict to master admin
+      if (process.env.NODE_ENV === 'production' && validatedData.email !== MASTER_ADMIN_EMAIL) {
         return res.status(403).json({ 
           message: "Registration is restricted to authorized accounts only",
           field: "email"
