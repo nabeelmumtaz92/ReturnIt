@@ -172,6 +172,31 @@ export const driverSafety = pgTable("driver_safety", {
   metadata: jsonb("metadata").default({}),
 });
 
+// Store Locations Database for comprehensive retailer-specific store locations
+export const storeLocations = pgTable("store_locations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  retailerName: text("retailer_name").notNull(), // Target, Walmart, Best Buy, etc.
+  storeName: text("store_name").notNull(), // Target Store T-2841, Walmart Supercenter #123
+  storeNumber: text("store_number"), // Internal store identifier: T-2841, #123, etc.
+  streetAddress: text("street_address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  phoneNumber: text("phone_number"),
+  coordinates: jsonb("coordinates").notNull(), // {lat: number, lng: number}
+  storeHours: jsonb("store_hours").default({}), // Weekly hours: {monday: {open: "09:00", close: "21:00"}, ...}
+  services: jsonb("services").default([]), // Available services: ["returns", "pickup", "customer-service"]
+  returnPolicy: jsonb("return_policy").default({}), // Store-specific return policies
+  isActive: boolean("is_active").default(true).notNull(),
+  acceptsReturns: boolean("accepts_returns").default(true).notNull(),
+  hasPickupService: boolean("has_pickup_service").default(false).notNull(),
+  maxReturnValue: real("max_return_value"), // Maximum return value accepted
+  specialInstructions: text("special_instructions"), // Special pickup/return instructions
+  lastVerified: timestamp("last_verified").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Return Label Generation (Design Only - Not Implemented)
 export const returnLabels = pgTable("return_labels", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
