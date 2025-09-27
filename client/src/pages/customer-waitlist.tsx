@@ -293,6 +293,7 @@ export default function CustomerWaitlist() {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="off"
                       {...form.register('email')}
                       className="mt-1 border-amber-300 focus:border-amber-500"
                       data-testid="input-email"

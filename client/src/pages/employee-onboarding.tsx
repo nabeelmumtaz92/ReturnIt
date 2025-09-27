@@ -732,6 +732,7 @@ export default function EmployeeOnboarding() {
                   id="password"
                   data-testid="input-password"
                   type="password"
+                  autoComplete="new-password"
                   value={employeeData.password}
                   onChange={(e) => setEmployeeData(prev => ({...prev, password: e.target.value}))}
                   className="border-amber-300 focus:border-amber-500"
@@ -748,6 +749,7 @@ export default function EmployeeOnboarding() {
                   id="confirmPassword"
                   data-testid="input-confirm-password"
                   type="password"
+                  autoComplete="new-password"
                   value={employeeData.confirmPassword}
                   onChange={(e) => setEmployeeData(prev => ({...prev, confirmPassword: e.target.value}))}
                   className="border-amber-300 focus:border-amber-500"

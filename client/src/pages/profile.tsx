@@ -284,6 +284,7 @@ export default function Profile() {
                       <Input
                         id="email"
                         type="email"
+                        autoComplete="off"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         data-testid="input-email"

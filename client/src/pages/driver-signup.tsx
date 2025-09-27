@@ -395,6 +395,7 @@ export default function DriverSignup() {
                         <Input
                           id="email"
                           type="email"
+                          autoComplete="off"
                           {...form.register('email')}
                           className="border-amber-200 focus:border-amber-400"
                           data-testid="input-email"
@@ -429,6 +430,7 @@ export default function DriverSignup() {
                         <Input
                           id="password"
                           type="password"
+                          autoComplete="new-password"
                           {...form.register('password')}
                           className="border-amber-200 focus:border-amber-400"
                           data-testid="input-password"
@@ -445,6 +447,7 @@ export default function DriverSignup() {
                         <Input
                           id="confirmPassword"
                           type="password"
+                          autoComplete="new-password"
                           {...form.register('confirmPassword')}
                           className="border-amber-200 focus:border-amber-400"
                           data-testid="input-confirm-password"

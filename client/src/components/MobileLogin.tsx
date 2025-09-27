@@ -98,6 +98,7 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
                 <Input
                   type="email"
                   placeholder="Email address"
+                  autoComplete="off"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-10 border-border focus:border-primary"
@@ -113,6 +114,7 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
                 <Input
                   type="password"
                   placeholder="Password"
+                  autoComplete="off"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 border-border focus:border-primary"

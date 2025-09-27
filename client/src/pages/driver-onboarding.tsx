@@ -410,6 +410,7 @@ export default function DriverOnboarding() {
                     <Input
                       id="email"
                       type="email"
+                      autoComplete="off"
                       {...personalForm.register('email')}
                       className="mt-1 border-amber-300 focus:border-amber-500"
                       data-testid="input-email"
