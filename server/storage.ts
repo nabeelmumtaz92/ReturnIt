@@ -700,12 +700,17 @@ export class MemStorage implements IStorage {
     const order = this.orders.get(orderId);
     if (!order) return undefined;
 
+    const now = new Date();
+    const completionDeadline = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from acceptance
+
     const updatedOrder = {
       ...order,
       driverId,
-      driverAssignedAt: new Date(),
+      driverAssignedAt: now,
+      driverAcceptedAt: now, // Driver accepts when assigned in MemStorage
+      completionDeadline: completionDeadline,
       status: OrderStatus.ASSIGNED as OrderStatusType,
-      updatedAt: new Date()
+      updatedAt: now
     };
 
     this.orders.set(orderId, updatedOrder);
@@ -1311,6 +1316,52 @@ export class MemStorage implements IStorage {
     // Mock implementation for MemStorage - in production this would be handled by database
     // For testing purposes, return an empty array as MemStorage doesn't handle real-time expiration
     return [];
+  }
+
+  // Timeline management methods (MemStorage implementation)
+  async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
+    const order = this.orders.get(orderId);
+    if (!order || !order.completionDeadline || !order.driverAcceptedAt) return undefined;
+    
+    // Max extension of 4 hours total from acceptance
+    const maxDeadline = new Date(order.driverAcceptedAt.getTime() + (4 * 60 * 60 * 1000));
+    const newDeadline = new Date(order.completionDeadline.getTime() + (extensionMinutes * 60 * 1000));
+    
+    // Don't extend beyond 4-hour max
+    const finalDeadline = newDeadline > maxDeadline ? maxDeadline : newDeadline;
+    
+    // Check if already at max
+    if (order.completionDeadline >= maxDeadline) return undefined;
+    
+    const updatedOrder = {
+      ...order,
+      completionDeadline: finalDeadline,
+      updatedAt: new Date()
+    };
+    
+    this.orders.set(orderId, updatedOrder);
+    return updatedOrder;
+  }
+
+  async getOverdueOrders(): Promise<Order[]> {
+    const now = new Date();
+    return Array.from(this.orders.values()).filter(order => 
+      order.completionDeadline && 
+      order.completionDeadline < now &&
+      order.status !== 'completed' &&
+      order.status !== 'cancelled' &&
+      order.status !== 'delivered' &&
+      order.status !== 'refunded'
+    );
+  }
+
+  async getUnacceptedOrders(timeoutMinutes: number = 15): Promise<Order[]> {
+    const cutoffTime = new Date(Date.now() - (timeoutMinutes * 60 * 1000));
+    return Array.from(this.orders.values()).filter(order => 
+      order.status === 'created' && 
+      order.createdAt < cutoffTime &&
+      !order.driverId
+    );
   }
 
   // Webhook operations for merchant notifications
@@ -1954,14 +2005,17 @@ export class DatabaseStorage implements IStorage {
   // Timeline management methods
   async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
     const order = await this.getOrder(orderId);
-    if (!order || !order.completionDeadline) return undefined;
+    if (!order || !order.completionDeadline || !order.driverAcceptedAt) return undefined;
     
     // Max extension of 4 hours total from acceptance
-    const maxDeadline = new Date(order.driverAcceptedAt!.getTime() + (4 * 60 * 60 * 1000));
+    const maxDeadline = new Date(order.driverAcceptedAt.getTime() + (4 * 60 * 60 * 1000));
     const newDeadline = new Date(order.completionDeadline.getTime() + (extensionMinutes * 60 * 1000));
     
     // Don't extend beyond 4-hour max
     const finalDeadline = newDeadline > maxDeadline ? maxDeadline : newDeadline;
+    
+    // Check if already at max
+    if (order.completionDeadline >= maxDeadline) return undefined;
     
     const [updatedOrder] = await db
       .update(orders)
@@ -1972,30 +2026,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOverdueOrders(): Promise<Order[]> {
-    const now = new Date();
     return await db
       .select()
       .from(orders)
       .where(
         and(
-          sql`${orders.completionDeadline} < ${now}`,
-          notInArray(orders.status, ['completed', 'cancelled', 'delivered'])
+          isNotNull(orders.completionDeadline),
+          lt(orders.completionDeadline, new Date()),
+          notInArray(orders.status, ['completed', 'cancelled', 'delivered', 'refunded'])
         )
-      );
+      )
+      .orderBy(asc(orders.completionDeadline));
   }
 
-  async getUnacceptedOrders(timeoutMinutes: number = 30): Promise<Order[]> {
-    const timeoutThreshold = new Date(Date.now() - (timeoutMinutes * 60 * 1000));
+  async getUnacceptedOrders(timeoutMinutes: number = 15): Promise<Order[]> {
+    const cutoffTime = new Date(Date.now() - (timeoutMinutes * 60 * 1000));
     return await db
       .select()
       .from(orders)
       .where(
         and(
           eq(orders.status, 'created'),
-          sql`${orders.createdAt} < ${timeoutThreshold}`
+          lt(orders.createdAt, cutoffTime),
+          isNull(orders.driverId)
         )
-      );
+      )
+      .orderBy(asc(orders.createdAt));
   }
+
 
   async getOrdersByDriver(driverId: number): Promise<Order[]> {
     return await db
