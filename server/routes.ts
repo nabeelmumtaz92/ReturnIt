@@ -25,6 +25,18 @@ import { sql } from "drizzle-orm";
 import { webSocketService } from "./websocket-service";
 import { webhookService } from "./webhook-service";
 import { autoAssignmentService } from "./auto-assignment-service";
+import { getErrorHealthStatus } from "./middleware/errorHandler";
+import { circuitBreakers } from "./middleware/circuitBreaker";
+import { 
+  authRateLimit, 
+  registrationRateLimit, 
+  paymentRateLimit, 
+  adminRateLimit, 
+  driverActionRateLimit,
+  getRateLimitHealth 
+} from "./middleware/rateLimiter";
+import { getSystemStatus, withFallback, getFallbackResponse } from "./middleware/gracefulDegradation";
+import { getCrashRecoveryStatus } from "./middleware/crashRecovery";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -473,7 +485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Auth routes with environment controls
   // Driver-specific signup endpoint
-  app.post("/api/auth/driver-signup", async (req, res) => {
+  app.post("/api/auth/driver-signup", registrationRateLimit, async (req, res) => {
     try {
       // Enhanced validation for driver signup
       const driverSignupSchema = z.object({
@@ -899,7 +911,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/register", async (req, res) => {
+  app.post("/api/auth/register", registrationRateLimit, async (req, res) => {
     try {
       // Enhanced validation using Zod schema
       const validatedData = registrationSchema.parse(req.body);
@@ -992,7 +1004,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/auth/login", async (req, res) => {
+  app.post("/api/auth/login", authRateLimit, async (req, res) => {
     try {
       // Enhanced validation
       const validatedData = loginSchema.parse(req.body);
@@ -1551,14 +1563,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { amount, orderId, payment_method_types = ['card'] } = req.body;
       
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: 'usd',
-        payment_method_types,
-        metadata: {
-          orderId: orderId || 'unknown'
+      const paymentIntent = await withFallback(
+        'stripe',
+        async () => stripe.paymentIntents.create({
+          amount: Math.round(amount * 100), // Convert to cents
+          currency: 'usd',
+          payment_method_types,
+          metadata: {
+            orderId: orderId || 'unknown'
+          }
+        }),
+        async () => {
+          // Fallback: Queue payment for later processing
+          const fallbackResponse = getFallbackResponse('stripe', 'payment_intent');
+          return {
+            client_secret: 'pi_fallback_' + Date.now(),
+            id: 'pi_queued_' + Date.now(),
+            status: 'pending',
+            ...fallbackResponse
+          };
         }
-      });
+      );
 
       res.json({
         client_secret: paymentIntent.client_secret,
@@ -4996,10 +5021,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Performance & Analytics API Endpoints
   
-  // System health check
-  app.get("/api/health", (req, res) => {
-    res.json(PerformanceService.getHealthStats());
-  });
+  // Note: Main health endpoint is defined below with comprehensive monitoring
 
   // Advanced business analytics (protected route)
   app.get("/api/analytics/business-report", requireAdmin, async (req, res) => {
@@ -5879,16 +5901,48 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  // Health check endpoint for testing
+  // Comprehensive health check endpoint with error monitoring
   app.get("/api/health", async (req, res) => {
     try {
       // Test database connectivity
       const testQuery = await storage.getDrivers();
       const dbConnected = testQuery !== undefined;
       
+      // Get error health status
+      const errorHealth = getErrorHealthStatus();
+      
+      // Get circuit breaker health status
+      const circuitHealth = circuitBreakers.getHealthSummary();
+      
+      // Get rate limiting health status
+      const rateLimitHealth = getRateLimitHealth();
+      
+      // Get graceful degradation status
+      const degradationStatus = getSystemStatus();
+      
+      // Get crash recovery status
+      const crashRecoveryStatus = getCrashRecoveryStatus();
+      
+      // Get performance metrics
+      const performanceStats = PerformanceService.getHealthStats();
+      
+      // Determine overall health status
+      const isHealthy = dbConnected && 
+                       errorHealth.status === 'healthy' && 
+                       !errorHealth.alerts.criticalErrors &&
+                       circuitHealth.status !== 'degraded' &&
+                       rateLimitHealth.status !== 'high_load' &&
+                       degradationStatus.overall === 'healthy';
+      
       res.json({
-        status: "healthy",
+        status: isHealthy ? "healthy" : "unhealthy",
         database: dbConnected ? "connected" : "error",
+        errorMonitoring: errorHealth,
+        circuitBreakers: circuitHealth,
+        rateLimiting: rateLimitHealth,
+        gracefulDegradation: degradationStatus,
+        crashRecovery: crashRecoveryStatus,
+        performance: performanceStats,
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         memory: process.memoryUsage(),

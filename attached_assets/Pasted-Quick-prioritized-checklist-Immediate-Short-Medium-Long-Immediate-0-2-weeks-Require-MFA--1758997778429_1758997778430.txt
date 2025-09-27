@@ -1,0 +1,248 @@
+Quick prioritized checklist (Immediate → Short → Medium → Long)
+
+Immediate (0–2 weeks)
+
+Require MFA for all admin / ops accounts.
+
+Enforce least privilege IAM (remove unused keys; don’t use root account).
+
+Turn on basic monitoring & error tracking (Sentry or similar) and create alerts for high-error rates.
+
+Use HTTPS everywhere (TLS 1.2/1.3) and HSTS.
+
+Don’t store card data — use a PCI provider (Stripe/Adyen) and use tokenization.
+
+Add rate limits on public APIs and auth endpoints.
+
+Add webhook signing and replay protection.
+
+Sanitize and validate all user input; use prepared statements / parameterized queries.
+
+Add health-check endpoints and set service restart policies.
+
+Short (2–8 weeks)
+
+Centralize secrets in a manager (AWS Secrets Manager / Vault). Rotate keys.
+
+Set up automated dependency scanning (Dependabot, Snyk) and apply urgent patches.
+
+Implement RBAC for app roles and admin UI.
+
+Enable logging centralization (structured logs) and an alerting rule for spikes and anomalies.
+
+Implement backups with encryption and test restores.
+
+Add Content Security Policy (CSP), secure cookies, CORS policy and CSRF tokens for forms.
+
+Harden mobile apps: secure storage (Keychain/Keystore), certificate pinning, tamper/root detection.
+
+Medium (2–6 months)
+
+Add WAF + DDoS protection (Cloudflare/AWS WAF + Shield).
+
+Automate security tests in CI: SAST + DAST + container scanning.
+
+Build an Incident Response Runbook + on-call rotation.
+
+Implement idempotency for critical endpoints (payments/webhooks) and retries with exponential backoff.
+
+Canary / blue-green deploys and feature flags for safer rollouts.
+
+Perform a penetration test (external/3rd party).
+
+Add database row-level encryption for very sensitive columns (SSNs/TINs).
+
+Long (6+ months / ongoing)
+
+Bug bounty program + continuous pen testing cadence.
+
+SIEM (Splunk/ELK/Datadog Security) and IDS/IPS monitoring.
+
+Achieve PCI scope reduction and compliance; GDPR/CCPA readiness if you have EEA/CA users.
+
+Threat modeling and adversary simulation (red team / chaos testing).
+
+Harden supply chain: sign container images, provenance, lock build pipelines.
+
+Reliability / Crash-resilience (how to avoid outages & recover quickly)
+
+Graceful degradation
+
+If a dependency fails (e.g., search, payments), degrade functionality but keep critical flows online (e.g., accept orders offline, queue for later).
+
+Circuit breakers & bulkheads
+
+Protect services from cascading failures by failing fast for overloaded downstream services.
+
+Queueing & backpressure
+
+Use message queues (SQS/Kafka/Rabbit) for async work (notifications, retries, webhooks). Don’t block user flows on slow external calls.
+
+Autoscaling + resource limits
+
+Horizontal autoscaling + CPU/memory limits and pod eviction policies to prevent noisy neighbor crashes.
+
+Blue/Green or Canary deployments
+
+Reduce deployment risk — rollback quickly on errors.
+
+Health checks & self-healing
+
+Liveness/readiness probes (K8s) trigger restarts before catastrophic failure.
+
+Circuit Breaker example
+
+If payments gateway is failing > X% for 30s, stop direct calls, queue them and notify ops.
+
+Backups & tested restores
+
+Daily backups, test restore quarterly. Document RTO/RPO targets.
+
+Observability
+
+Instrument metrics (Prometheus), logs, traces (OpenTelemetry). Alert on error rate, latency, queue backlog, DB connections.
+
+Security (how to prevent hacks & data loss)
+Authentication & Authorization
+
+MFA mandatory for admin.
+
+Use OAuth2 / OpenID Connect and SSO for corporate users.
+
+RBAC + least privilege for all systems (DB, S3, APIs).
+
+Short-lived credentials and rotate keys automatically.
+
+API & Web Security
+
+Rate limiting per IP/key and per-route throttles for abusive endpoints.
+
+Input validation & parameterized queries — eliminate SQL injection risk.
+
+Output encoding & CSP — prevent XSS.
+
+CSRF tokens for session-based flows; prefer token-based auth for APIs.
+
+Secure headers: HSTS, X-Frame-Options, X-Content-Type-Options.
+
+CORS allowlist, not *.
+
+Session security: secure, httpOnly cookies; session expiration and revocation.
+
+Payments & Sensitive Data
+
+Don’t store card numbers — use a PCI-compliant processor and tokenization.
+
+Encrypt PII at rest (AES-256). Mask sensitive fields in logs.
+
+Minimize PII retention — only store what you actually need.
+
+Secrets & Configuration
+
+Store secrets in a vault, not in repo or environment variables in plaintext. Use KMS/HSM for keys.
+
+Enforce secrets scanning in CI (trufflehog, git-secrets).
+
+Webhooks & Integrations
+
+Sign payloads (HMAC with secret). Verify signature server-side.
+
+Replay protection: include timestamp + unique event id; reject old events.
+
+Idempotency keys: avoid duplicate processing on retries.
+
+IP allowlisting option for merchant endpoints if they request it.
+
+Example webhook verification (pseudo)
+// server receives payload & headers
+const signature = req.headers['x-returnit-signature']
+const timestamp = req.headers['x-returnit-timestamp']
+const body = req.rawBody
+const expected = HMAC_SHA256(signingSecret, timestamp + '.' + body)
+if (!safeCompare(signature, expected)) reject()
+
+Infrastructure Security
+
+Network segmentation: private DB subnets; only app servers access DB.
+
+WAF + DDoS protection (Cloudflare/AWS WAF).
+
+Egress restrictions and VPC endpoints for S3, RDS.
+
+IAM least privilege for services and ops roles.
+
+Mobile App Specific
+
+Secure storage: Android Keystore / iOS Keychain for tokens.
+
+Certificate pinning to prevent MITM (tradeoffs: updates).
+
+Detect rooted/jailbroken devices and limit functionality or warn users.
+
+Code obfuscation and tamper detection (minimize reconnaissance).
+
+In-app update flow — force critical security updates.
+
+Don’t log tokens/PII to app logs; redact before sending to crash tracker.
+
+DevOps & CI/CD Security
+
+Sign builds and container images.
+
+Enforce branch protections, PR reviews, and 2FA for repo access.
+
+Run SAST/DAST in CI; block merge on high severity.
+
+Use immutable artifacts — don’t rebuild images on deploy.
+
+Data & Logging Practices
+
+Mask PII in logs (names/addresses/tokenized).
+
+Separate audit logs from application logs and protect access.
+
+Time-limited access for support to PII (just-in-time access with approval).
+
+Monitoring & Response
+
+Alerts for: unusual spike in failed logins, new admin user creation, high error rates, high egress, huge DB query times.
+
+Maintain a contact list, status page, and communication templates for incidents.
+
+Regularly review logs for anomalous behavior (automated via SIEM).
+
+Incident Response & Recovery (must have)
+
+IR Runbook: clear steps for detection → containment → eradication → recovery → post-mortem.
+
+On-call rota and pager escalation.
+
+Public status page to inform customers during incidents.
+
+Forensic snapshots (immutable logs) before wiping compromised machines.
+
+Breach notification process in line with laws (GDPR/State laws).
+
+Testing & Validation
+
+Penetration tests at least annually; more often when new capabilities launch.
+
+Red team / tabletop exercises to test IR.
+
+Chaos testing (simulate service failures) to validate graceful degradation.
+
+Load testing for peak shopping/holiday days.
+
+Practical low-effort wins you can do this week
+
+Turn on MFA for all accounts.
+
+Add TLS to all endpoints and enable HSTS.
+
+Add webhook signing + idempotency.
+
+Start Sentry (or similar) and create a page-flood alert.
+
+Add rate limits on auth and payments endpoints.
+
+Turn on Dependabot or automated dependency scanning.

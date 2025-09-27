@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ToastProvider } from "@/components/design-system";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { Suspense, lazy, useEffect } from "react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 // Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
@@ -472,14 +473,23 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <ToastProvider>
-          <Toaster />
-          <Router />
-        </ToastProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
+    <ErrorBoundary
+      onError={(error, errorInfo) => {
+        // Additional error reporting can go here
+        console.error('App-level error caught:', error, errorInfo);
+      }}
+    >
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <ToastProvider>
+            <ErrorBoundary>
+              <Toaster />
+              <Router />
+            </ErrorBoundary>
+          </ToastProvider>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 

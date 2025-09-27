@@ -5,6 +5,14 @@ import { validateSecurityConfig, logSecurityStatus } from "./security-startup";
 import { setupVite, serveStatic, log } from "./vite";
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { webSocketService } from "./websocket-service";
+import { 
+  globalErrorHandler, 
+  setupUnhandledRejectionHandler, 
+  setupUncaughtExceptionHandler,
+  requestTimeoutHandler,
+  getErrorHealthStatus
+} from "./middleware/errorHandler";
+import { crashRecovery } from "./middleware/crashRecovery";
 
 const app = express();
 
@@ -76,6 +84,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Setup global error handling before anything else
+  setupUnhandledRejectionHandler();
+  setupUncaughtExceptionHandler();
+
+  // Add request timeout middleware
+  app.use(requestTimeoutHandler(30000)); // 30 second timeout
+
   // SECURITY: Validate all security configurations at startup
   try {
     validateSecurityConfig();
@@ -90,13 +105,8 @@ app.use((req, res, next) => {
   // Initialize WebSocket service for real-time tracking
   webSocketService.initialize(server);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    throw err;
-  });
+  // Use comprehensive error handler
+  app.use(globalErrorHandler);
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
