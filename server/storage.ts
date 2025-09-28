@@ -18,10 +18,21 @@ import {
   type CustomerWaitlist, type InsertCustomerWaitlist,
   type ZipCodeManagement, type InsertZipCodeManagement,
   type OtpVerification, type InsertOtpVerification,
+  type SupportTicket, type InsertSupportTicket,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
 import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
+import { 
+  users, orders, promoCodes, notifications, analytics, 
+  driverPayouts, driverIncentives, businessInfo, 
+  driverApplications, driverEarnings, trackingEvents,
+  driverOrderAssignments, orderStatusHistory, driverLocationPings,
+  orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
+  merchantPolicies, supportTicketsEnhanced, supportMessages
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, and, or, desc, asc, isNull, not, lt, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -141,6 +152,30 @@ export interface IStorage {
   getOrderCancellation(orderId: string): Promise<OrderCancellation | undefined>;
   getOrderCancellations(filters?: { driverId?: number; storeId?: number; type?: string }): Promise<OrderCancellation[]>;
 
+  // Support Ticket operations
+  createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
+  getSupportTicket(id: number): Promise<SupportTicket | undefined>;
+  getSupportTickets(filters?: { 
+    status?: string; 
+    priority?: string; 
+    customerId?: number; 
+    assignedAgentId?: number; 
+    category?: string; 
+    escalationLevel?: number; 
+    slaBreached?: boolean; 
+    limit?: number; 
+    offset?: number; 
+  }): Promise<SupportTicket[]>;
+  updateSupportTicket(id: number, updates: Partial<SupportTicket>): Promise<SupportTicket | undefined>;
+  createSupportMessage(message: { 
+    ticketId: number; 
+    senderId: number; 
+    senderType: 'customer' | 'agent' | 'system'; 
+    content: string; 
+    createdAt: Date; 
+  }): Promise<any>;
+  getSupportMessages(ticketId: number): Promise<any[]>;
+
   // NEW: Webhook operations for merchant notifications  
   createWebhookEndpoint(endpoint: InsertWebhookEndpoint): Promise<WebhookEndpoint>;
   getWebhookEndpoint(id: number): Promise<WebhookEndpoint | undefined>;
@@ -210,11 +245,15 @@ export class MemStorage implements IStorage {
   private webhookEndpoints: Map<number, WebhookEndpoint>;
   private webhookEvents: Map<number, WebhookEvent>;
   private webhookDeliveries: Map<number, WebhookDelivery>;
+  private supportTickets: Map<number, SupportTicket>;
+  private supportMessages: Map<number, any>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextEarningId: number = 1;
   private nextPromoId: number = 1;
   private nextAnalyticsId: number = 1;
+  private nextSupportTicketId: number = 1;
+  private nextSupportMessageId: number = 1;
   private nextPayoutId: number = 1;
   private nextIncentiveId: number = 1;
   private nextTrackingEventId: number = 1;
@@ -238,6 +277,8 @@ export class MemStorage implements IStorage {
     this.webhookEndpoints = new Map();
     this.webhookEvents = new Map();
     this.webhookDeliveries = new Map();
+    this.supportTickets = new Map();
+    this.supportMessages = new Map();
     
     // Master Administrator account (real data only)
     const masterAdmin: User = {
@@ -1477,6 +1518,115 @@ export class MemStorage implements IStorage {
   async getWebhookEvents(): Promise<WebhookEvent[]> {
     return Array.from(this.webhookEvents.values());
   }
+
+  // Support Ticket operations for MemStorage
+  async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
+    const id = this.nextSupportTicketId++;
+    const newTicket: SupportTicket = {
+      id,
+      ticketNumber: ticket.ticketNumber,
+      customerId: ticket.customerId || null,
+      orderId: ticket.orderId || null,
+      assignedAgentId: ticket.assignedAgentId || null,
+      category: ticket.category,
+      priority: ticket.priority || 'medium',
+      status: ticket.status || 'open',
+      subject: ticket.subject,
+      description: ticket.description,
+      channel: ticket.channel,
+      tags: ticket.tags || [],
+      satisfaction: ticket.satisfaction || null,
+      satisfactionComment: ticket.satisfactionComment || null,
+      internalNotes: ticket.internalNotes || null,
+      escalationLevel: ticket.escalationLevel || 0,
+      slaBreached: ticket.slaBreached || false,
+      firstResponseTime: ticket.firstResponseTime || null,
+      resolutionTime: ticket.resolutionTime || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      resolvedAt: ticket.resolvedAt || null,
+      closedAt: ticket.closedAt || null
+    };
+    this.supportTickets.set(id, newTicket);
+    return newTicket;
+  }
+
+  async getSupportTicket(id: number): Promise<SupportTicket | undefined> {
+    return this.supportTickets.get(id);
+  }
+
+  async getSupportTickets(filters?: { 
+    status?: string; 
+    priority?: string; 
+    customerId?: number; 
+    assignedAgentId?: number; 
+    category?: string; 
+    escalationLevel?: number; 
+    slaBreached?: boolean; 
+    limit?: number; 
+    offset?: number; 
+  }): Promise<SupportTicket[]> {
+    let tickets = Array.from(this.supportTickets.values());
+    
+    if (filters) {
+      if (filters.status) tickets = tickets.filter(t => t.status === filters.status);
+      if (filters.priority) tickets = tickets.filter(t => t.priority === filters.priority);
+      if (filters.customerId) tickets = tickets.filter(t => t.customerId === filters.customerId);
+      if (filters.assignedAgentId) tickets = tickets.filter(t => t.assignedAgentId === filters.assignedAgentId);
+      if (filters.category) tickets = tickets.filter(t => t.category === filters.category);
+      if (filters.escalationLevel !== undefined) tickets = tickets.filter(t => t.escalationLevel === filters.escalationLevel);
+      if (filters.slaBreached !== undefined) tickets = tickets.filter(t => t.slaBreached === filters.slaBreached);
+    }
+
+    // Sort by creation date (newest first)
+    tickets.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+    // Apply pagination
+    if (filters?.offset) tickets = tickets.slice(filters.offset);
+    if (filters?.limit) tickets = tickets.slice(0, filters.limit);
+
+    return tickets;
+  }
+
+  async updateSupportTicket(id: number, updates: Partial<SupportTicket>): Promise<SupportTicket | undefined> {
+    const ticket = this.supportTickets.get(id);
+    if (!ticket) return undefined;
+    
+    const updatedTicket = { ...ticket, ...updates, updatedAt: new Date() };
+    this.supportTickets.set(id, updatedTicket);
+    return updatedTicket;
+  }
+
+  async createSupportMessage(message: { 
+    ticketId: number; 
+    senderId: number; 
+    senderType: 'customer' | 'agent' | 'system'; 
+    content: string; 
+    createdAt: Date; 
+  }): Promise<any> {
+    const id = this.nextSupportMessageId++;
+    const newMessage = {
+      id,
+      ticketId: message.ticketId,
+      senderId: message.senderId,
+      senderType: message.senderType,
+      messageType: 'text',
+      content: message.content,
+      attachments: [],
+      isInternal: false,
+      cannedResponseId: null,
+      readBy: [],
+      createdAt: message.createdAt
+    };
+    this.supportMessages.set(id, newMessage);
+    return newMessage;
+  }
+
+  async getSupportMessages(ticketId: number): Promise<any[]> {
+    return Array.from(this.supportMessages.values())
+      .filter(message => message.ticketId === ticketId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  }
 }
 
 // DatabaseStorage implementation
@@ -2191,6 +2341,92 @@ export class DatabaseStorage implements IStorage {
       .where(eq(merchantPolicies.id, id))
       .returning();
     return updatedPolicy;
+  }
+
+  // Support Ticket operations
+  async createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket> {
+    const [newTicket] = await db
+      .insert(supportTicketsEnhanced)
+      .values(ticket)
+      .returning();
+    return newTicket;
+  }
+
+  async getSupportTicket(id: number): Promise<SupportTicket | undefined> {
+    const [ticket] = await db
+      .select()
+      .from(supportTicketsEnhanced)
+      .where(eq(supportTicketsEnhanced.id, id));
+    return ticket;
+  }
+
+  async getSupportTickets(filters?: { 
+    status?: string; 
+    priority?: string; 
+    customerId?: number; 
+    assignedAgentId?: number; 
+    category?: string; 
+    escalationLevel?: number; 
+    slaBreached?: boolean; 
+    limit?: number; 
+    offset?: number; 
+  }): Promise<SupportTicket[]> {
+    let query = db.select().from(supportTicketsEnhanced);
+    
+    const conditions = [];
+    if (filters?.status) conditions.push(eq(supportTicketsEnhanced.status, filters.status));
+    if (filters?.priority) conditions.push(eq(supportTicketsEnhanced.priority, filters.priority));
+    if (filters?.customerId) conditions.push(eq(supportTicketsEnhanced.customerId, filters.customerId));
+    if (filters?.assignedAgentId) conditions.push(eq(supportTicketsEnhanced.assignedAgentId, filters.assignedAgentId));
+    if (filters?.category) conditions.push(eq(supportTicketsEnhanced.category, filters.category));
+    if (filters?.escalationLevel !== undefined) conditions.push(eq(supportTicketsEnhanced.escalationLevel, filters.escalationLevel));
+    if (filters?.slaBreached !== undefined) conditions.push(eq(supportTicketsEnhanced.slaBreached, filters.slaBreached));
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions));
+    }
+
+    query = query.orderBy(desc(supportTicketsEnhanced.createdAt));
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+    if (filters?.offset) {
+      query = query.offset(filters.offset);
+    }
+
+    return await query;
+  }
+
+  async updateSupportTicket(id: number, updates: Partial<SupportTicket>): Promise<SupportTicket | undefined> {
+    const [updatedTicket] = await db
+      .update(supportTicketsEnhanced)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(supportTicketsEnhanced.id, id))
+      .returning();
+    return updatedTicket;
+  }
+
+  async createSupportMessage(message: { 
+    ticketId: number; 
+    senderId: number; 
+    senderType: 'customer' | 'agent' | 'system'; 
+    content: string; 
+    createdAt: Date; 
+  }): Promise<any> {
+    const [newMessage] = await db
+      .insert(supportMessages)
+      .values(message)
+      .returning();
+    return newMessage;
+  }
+
+  async getSupportMessages(ticketId: number): Promise<any[]> {
+    return await db
+      .select()
+      .from(supportMessages)
+      .where(eq(supportMessages.ticketId, ticketId))
+      .orderBy(asc(supportMessages.createdAt));
   }
 }
 

@@ -4,6 +4,8 @@ import { createServer, type Server } from "http";
 import path from "path";
 import { storage } from "./storage";
 import { smsService } from "./sms-notifications";
+import { LiveOrderAssignmentService } from "./liveOrderAssignmentService.js";
+import { SupportTicketService } from "./supportTicketService.js";
 import { AIAssistant } from "./ai-assistant";
 import Stripe from "stripe";
 import session from "express-session";
@@ -6428,6 +6430,530 @@ Always think strategically, explain your reasoning, and provide value beyond bas
       console.error("Error fetching real-time analytics:", error);
       res.status(500).json({ message: "Failed to fetch real-time analytics" });
     }
+  });
+
+  // Initialize live order assignment service
+  const liveAssignmentService = new LiveOrderAssignmentService(storage, webSocketService);
+
+  // Initialize support ticket service
+  const supportTicketService = new SupportTicketService(storage, webSocketService);
+
+  // Live Order Assignment API Endpoints
+
+  // Driver accepts order (live assignment system)
+  app.post("/api/driver/orders/:orderId/accept", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      if (!user?.isDriver && !user?.isAdmin) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { orderId } = req.params;
+      const driverId = user.id;
+
+      const result = await liveAssignmentService.handleDriverAcceptance(orderId, driverId);
+      
+      if (result.success) {
+        res.json({
+          message: "Order accepted successfully",
+          orderId,
+          driverId,
+          timeline: result.timeline,
+          completionDeadline: result.completionDeadline
+        });
+      } else {
+        res.status(400).json({ 
+          message: result.message,
+          success: false 
+        });
+      }
+    } catch (error) {
+      console.error("Error accepting order:", error);
+      res.status(500).json({ message: "Failed to accept order" });
+    }
+  });
+
+  // Get available orders for driver (live assignment system)
+  app.get("/api/driver/available-orders", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      if (!user?.isDriver && !user?.isAdmin) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Get orders in finding_driver status (live assignment in progress)
+      const availableOrders = await storage.getOrdersByStatus('finding_driver');
+      
+      // Check which orders this driver is eligible for
+      const eligibleOrders = [];
+      for (const order of availableOrders) {
+        const status = liveAssignmentService.getAssignmentStatus(order.id);
+        if (status && status.assignedDrivers.includes(user.id)) {
+          eligibleOrders.push({
+            ...order,
+            assignmentInfo: {
+              timeRemaining: status.timeRemaining,
+              priorityLevel: status.priorityLevel,
+              expiresAt: new Date(Date.now() + status.timeRemaining).toISOString()
+            }
+          });
+        }
+      }
+
+      res.json({ 
+        orders: eligibleOrders,
+        message: `Found ${eligibleOrders.length} available orders`
+      });
+    } catch (error) {
+      console.error("Error fetching available orders:", error);
+      res.status(500).json({ message: "Failed to fetch available orders" });
+    }
+  });
+
+  // Trigger live assignment for an order (admin/system use)
+  app.post("/api/admin/orders/:orderId/assign", requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (order.status !== 'created' && order.status !== 'confirmed') {
+        return res.status(400).json({ 
+          message: `Order must be in 'created' or 'confirmed' status, currently: ${order.status}` 
+        });
+      }
+
+      const orderLocation = order.pickupCoordinates;
+      const success = await liveAssignmentService.assignOrderToDrivers(orderId, orderLocation);
+      
+      if (success) {
+        res.json({ 
+          message: "Live assignment started",
+          orderId,
+          status: "finding_driver"
+        });
+      } else {
+        res.status(500).json({ message: "Failed to start live assignment" });
+      }
+    } catch (error) {
+      console.error("Error starting live assignment:", error);
+      res.status(500).json({ message: "Failed to start live assignment" });
+    }
+  });
+
+  // Get live assignment status (admin monitoring)
+  app.get("/api/admin/orders/:orderId/assignment-status", requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const status = liveAssignmentService.getAssignmentStatus(orderId);
+      
+      if (!status) {
+        return res.json({ 
+          message: "No active assignment for this order",
+          hasActiveAssignment: false 
+        });
+      }
+
+      const order = await storage.getOrder(orderId);
+      res.json({
+        hasActiveAssignment: true,
+        assignment: status,
+        order: order,
+        priorityLevels: {
+          0: 'Proximity-based',
+          1: 'Rating-based', 
+          2: 'First-come-first-served'
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching assignment status:", error);
+      res.status(500).json({ message: "Failed to fetch assignment status" });
+    }
+  });
+
+  // Cancel live assignment (admin intervention)
+  app.post("/api/admin/orders/:orderId/cancel-assignment", requireAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const cancelled = liveAssignmentService.cancelAssignment(orderId);
+      
+      if (cancelled) {
+        // Update order status back to created for manual assignment
+        await storage.updateOrder(orderId, {
+          status: 'created',
+          statusHistory: sql`array_append(status_history, ${JSON.stringify({
+            status: 'created',
+            timestamp: new Date().toISOString(),
+            note: 'Live assignment cancelled by admin'
+          })})`
+        });
+
+        res.json({ 
+          message: "Live assignment cancelled",
+          orderId,
+          status: "created"
+        });
+      } else {
+        res.status(404).json({ message: "No active assignment to cancel" });
+      }
+    } catch (error) {
+      console.error("Error cancelling assignment:", error);
+      res.status(500).json({ message: "Failed to cancel assignment" });
+    }
+  });
+
+  // Support Ticket System API Endpoints
+
+  // Create new support ticket
+  app.post("/api/support/tickets", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      const { orderId, category, priority, subject, description, channel } = req.body;
+
+      // Validate required fields
+      if (!category || !subject || !description) {
+        return res.status(400).json({ 
+          message: "Category, subject, and description are required" 
+        });
+      }
+
+      const ticket = await supportTicketService.createTicket({
+        customerId: user.id,
+        orderId,
+        category,
+        priority: priority || 'medium',
+        subject,
+        description,
+        channel: channel || 'app'
+      });
+
+      res.status(201).json({
+        message: "Support ticket created successfully",
+        ticket,
+        escalationInfo: {
+          priority: ticket.priority,
+          expectedResponseTime: supportTicketService.escalationRules?.[ticket.priority]?.firstResponse || '24 hours'
+        }
+      });
+    } catch (error) {
+      console.error("Error creating support ticket:", error);
+      res.status(500).json({ message: "Failed to create support ticket" });
+    }
+  });
+
+  // Get tickets (with filtering for admin, user's own tickets for customers)
+  app.get("/api/support/tickets", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      const { 
+        status, priority, category, escalationLevel, slaBreached, 
+        limit = 50, offset = 0, assignedAgentId 
+      } = req.query;
+
+      const filters: any = {
+        limit: parseInt(limit as string),
+        offset: parseInt(offset as string)
+      };
+
+      // Non-admin users can only see their own tickets
+      if (!user.isAdmin) {
+        filters.customerId = user.id;
+      }
+
+      // Add optional filters
+      if (status) filters.status = status;
+      if (priority) filters.priority = priority;
+      if (category) filters.category = category;
+      if (escalationLevel !== undefined) filters.escalationLevel = parseInt(escalationLevel as string);
+      if (slaBreached !== undefined) filters.slaBreached = slaBreached === 'true';
+      if (assignedAgentId && user.isAdmin) filters.assignedAgentId = parseInt(assignedAgentId as string);
+
+      const tickets = await supportTicketService.getTickets(filters);
+      const escalationStats = user.isAdmin ? supportTicketService.getEscalationStats() : null;
+
+      res.json({ 
+        tickets,
+        escalationStats,
+        filters: filters
+      });
+    } catch (error) {
+      console.error("Error fetching support tickets:", error);
+      res.status(500).json({ message: "Failed to fetch support tickets" });
+    }
+  });
+
+  // Get specific ticket details with conversation history
+  app.get("/api/support/tickets/:ticketId", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      const { ticketId } = req.params;
+
+      const ticketDetails = await supportTicketService.getTicketDetails(parseInt(ticketId));
+      
+      if (!ticketDetails) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+
+      // Check access rights (admin can see all, users can only see their own)
+      if (!user.isAdmin && ticketDetails.customerId !== user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json({ 
+        ticket: ticketDetails,
+        canManage: user.isAdmin,
+        escalationRules: user.isAdmin ? supportTicketService.escalationRules : null
+      });
+    } catch (error) {
+      console.error("Error fetching ticket details:", error);
+      res.status(500).json({ message: "Failed to fetch ticket details" });
+    }
+  });
+
+  // Add response/message to ticket
+  app.post("/api/support/tickets/:ticketId/messages", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      const { ticketId } = req.params;
+      const { content, isInternal } = req.body;
+
+      if (!content || content.trim().length === 0) {
+        return res.status(400).json({ message: "Message content is required" });
+      }
+
+      // Verify access to ticket
+      const ticket = await supportTicketService.getTicketDetails(parseInt(ticketId));
+      if (!ticket) {
+        return res.status(404).json({ message: "Ticket not found" });
+      }
+
+      if (!user.isAdmin && ticket.customerId !== user.id) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Determine sender type
+      let senderType: 'customer' | 'agent' | 'system' = 'customer';
+      if (user.isAdmin) {
+        senderType = 'agent';
+      }
+
+      const message = await supportTicketService.addTicketResponse(
+        parseInt(ticketId),
+        user.id,
+        content,
+        senderType
+      );
+
+      res.json({
+        message: "Response added successfully",
+        messageData: message,
+        senderType
+      });
+    } catch (error) {
+      console.error("Error adding ticket response:", error);
+      res.status(500).json({ message: "Failed to add ticket response" });
+    }
+  });
+
+  // Assign ticket to agent (admin only)
+  app.post("/api/support/tickets/:ticketId/assign", requireAdmin, async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const { agentId } = req.body;
+      const user = req.session.user;
+
+      if (!agentId) {
+        return res.status(400).json({ message: "Agent ID is required" });
+      }
+
+      const result = await supportTicketService.assignTicket(
+        parseInt(ticketId),
+        parseInt(agentId),
+        user.id
+      );
+
+      res.json({
+        message: "Ticket assigned successfully",
+        ticketId: parseInt(ticketId),
+        agentId: parseInt(agentId)
+      });
+    } catch (error) {
+      console.error("Error assigning ticket:", error);
+      res.status(500).json({ message: "Failed to assign ticket" });
+    }
+  });
+
+  // Resolve ticket (admin only)
+  app.post("/api/support/tickets/:ticketId/resolve", requireAdmin, async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const { resolutionNote } = req.body;
+      const user = req.session.user;
+
+      const result = await supportTicketService.resolveTicket(
+        parseInt(ticketId),
+        user.id,
+        resolutionNote
+      );
+
+      res.json({
+        message: "Ticket resolved successfully",
+        ticketId: parseInt(ticketId),
+        resolutionTime: result.resolutionTime
+      });
+    } catch (error) {
+      console.error("Error resolving ticket:", error);
+      res.status(500).json({ message: "Failed to resolve ticket" });
+    }
+  });
+
+  // Update ticket status (admin only)
+  app.patch("/api/support/tickets/:ticketId", requireAdmin, async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      const updates = req.body;
+
+      // Only allow certain fields to be updated
+      const allowedFields = ['status', 'priority', 'category', 'assignedAgentId', 'internalNotes'];
+      const filteredUpdates = Object.keys(updates)
+        .filter(key => allowedFields.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = updates[key];
+          return obj;
+        }, {} as any);
+
+      if (Object.keys(filteredUpdates).length === 0) {
+        return res.status(400).json({ message: "No valid fields to update" });
+      }
+
+      filteredUpdates.updatedAt = new Date();
+
+      await storage.updateSupportTicket(parseInt(ticketId), filteredUpdates);
+
+      res.json({
+        message: "Ticket updated successfully",
+        ticketId: parseInt(ticketId),
+        updates: filteredUpdates
+      });
+    } catch (error) {
+      console.error("Error updating ticket:", error);
+      res.status(500).json({ message: "Failed to update ticket" });
+    }
+  });
+
+  // Get escalation statistics (admin only)
+  app.get("/api/admin/support/escalation-stats", requireAdmin, async (req, res) => {
+    try {
+      const stats = supportTicketService.getEscalationStats();
+      const recentTickets = await supportTicketService.getTickets({
+        slaBreached: true,
+        limit: 10,
+        offset: 0
+      });
+
+      res.json({
+        escalationStats: stats,
+        recentBreaches: recentTickets,
+        escalationRules: supportTicketService.escalationRules
+      });
+    } catch (error) {
+      console.error("Error fetching escalation stats:", error);
+      res.status(500).json({ message: "Failed to fetch escalation statistics" });
+    }
+  });
+
+  // Stop escalation monitoring for ticket (admin emergency use)
+  app.post("/api/admin/support/tickets/:ticketId/stop-escalation", requireAdmin, async (req, res) => {
+    try {
+      const { ticketId } = req.params;
+      supportTicketService.stopEscalationMonitoring(parseInt(ticketId));
+      
+      res.json({
+        message: "Escalation monitoring stopped",
+        ticketId: parseInt(ticketId)
+      });
+    } catch (error) {
+      console.error("Error stopping escalation:", error);
+      res.status(500).json({ message: "Failed to stop escalation monitoring" });
+    }
+  });
+
+  // Get support metrics for admin dashboard
+  app.get("/api/admin/support/metrics", requireAdmin, async (req, res) => {
+    try {
+      const { timeframe = '7d' } = req.query;
+      
+      // Get basic ticket counts by status and priority
+      const openTickets = await supportTicketService.getTickets({ status: 'open', limit: 1000 });
+      const inProgressTickets = await supportTicketService.getTickets({ status: 'in_progress', limit: 1000 });
+      const resolvedTickets = await supportTicketService.getTickets({ status: 'resolved', limit: 1000 });
+      const criticalTickets = await supportTicketService.getTickets({ priority: 'critical', limit: 1000 });
+      const breachedTickets = await supportTicketService.getTickets({ slaBreached: true, limit: 1000 });
+
+      const metrics = {
+        totalOpen: openTickets.length,
+        totalInProgress: inProgressTickets.length,
+        totalResolved: resolvedTickets.length,
+        criticalOpen: criticalTickets.filter(t => t.status !== 'resolved' && t.status !== 'closed').length,
+        slaBreaches: breachedTickets.length,
+        escalationStats: supportTicketService.getEscalationStats(),
+        responseTime: {
+          average: 0, // Would calculate from firstResponseTime field
+          target: 60  // 1 hour target
+        }
+      };
+
+      res.json({ metrics, timeframe });
+    } catch (error) {
+      console.error("Error fetching support metrics:", error);
+      res.status(500).json({ message: "Failed to fetch support metrics" });
+    }
+  });
+
+  // Auto-trigger live assignment for new orders
+  // Enhance the existing order creation endpoint to automatically start live assignment
+  const originalOrderPost = app._router.stack.find(layer => 
+    layer.route && layer.route.path === '/api/orders' && layer.route.methods.post
+  );
+  
+  // Add automatic live assignment trigger to order creation
+  app.use('/api/orders', async (req, res, next) => {
+    if (req.method === 'POST') {
+      // Store original end function
+      const originalEnd = res.end;
+      res.end = function(chunk?: any, encoding?: any) {
+        // Check if order was successfully created
+        if (res.statusCode === 200 || res.statusCode === 201) {
+          // Parse response to get order ID
+          try {
+            const responseData = typeof chunk === 'string' ? JSON.parse(chunk) : chunk;
+            if (responseData && responseData.id) {
+              // Trigger live assignment in background
+              setImmediate(async () => {
+                try {
+                  const order = await storage.getOrder(responseData.id);
+                  if (order && order.pickupCoordinates) {
+                    console.log(`🚀 Auto-triggering live assignment for new order ${order.id}`);
+                    await liveAssignmentService.assignOrderToDrivers(order.id, order.pickupCoordinates);
+                  }
+                } catch (error) {
+                  console.error(`Failed to auto-assign order ${responseData.id}:`, error);
+                }
+              });
+            }
+          } catch (error) {
+            console.error('Error parsing order creation response:', error);
+          }
+        }
+        
+        // Call original end function
+        originalEnd.call(this, chunk, encoding);
+      };
+    }
+    next();
   });
 
   const httpServer = createServer(app);
