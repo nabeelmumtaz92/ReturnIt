@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/useAuth-simple";
 import { Screen } from '@/components/screen';
+import { CurrentRoute, RouteOptimization } from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,17 +19,17 @@ export default function RouteOptimization() {
   const queryClient = useQueryClient();
   const [optimizing, setOptimizing] = useState(false);
 
-  const { data: currentRoute } = useQuery({
+  const { data: currentRoute } = useQuery<CurrentRoute>({
     queryKey: ['/api/routes/current'],
     enabled: isAuthenticated && user?.isDriver,
   });
 
-  const { data: routeHistory } = useQuery({
+  const { data: routeHistory } = useQuery<CurrentRoute[]>({
     queryKey: ['/api/routes/history'],
     enabled: isAuthenticated && user?.isDriver,
   });
 
-  const optimizeRouteMutation = useMutation({
+  const optimizeRouteMutation = useMutation<RouteOptimization, Error, number[]>({
     mutationFn: async (orderIds: number[]) => {
       return await apiRequest('/api/routes/optimize', 'POST', {
         orderIds,
@@ -127,7 +128,11 @@ export default function RouteOptimization() {
                   className="bg-green-700 hover:bg-green-800 text-lg px-8"
                   onClick={() => {
                     setOptimizing(true);
-                    optimizeRouteMutation.mutate(currentRoute?.stops?.map((stop: any) => stop.id) || []);
+                    // Convert IDs to numbers for the backend API (handles both string and number IDs)
+                    const orderIds = currentRoute?.stops?.map(stop => 
+                      typeof stop.id === 'string' ? parseInt(stop.id, 10) : stop.id
+                    ).filter(id => !isNaN(id)) || [];
+                    optimizeRouteMutation.mutate(orderIds);
                   }}
                   disabled={optimizing || optimizeRouteMutation.isPending}
                 >
@@ -155,7 +160,7 @@ export default function RouteOptimization() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {currentRoute?.stops?.map((stop: any, index: number) => (
+                    {currentRoute?.stops?.map((stop, index: number) => (
                       <div key={stop.id} className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-green-100">
                         <div className="flex-shrink-0">
                           <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">

@@ -15,6 +15,104 @@ export const LocationSchema = z.object({
 
 export type Location = z.infer<typeof LocationSchema>;
 
+// Business Intelligence API Response Types
+export const KpiDataSchema = z.object({
+  revenue: z.object({
+    current: z.number(),
+    growth: z.number(),
+    trend: z.enum(['up', 'down'])
+  }),
+  orders: z.object({
+    current: z.number(),
+    growth: z.number(),
+    trend: z.enum(['up', 'down'])
+  }),
+  avgOrderValue: z.object({
+    current: z.number(),
+    growth: z.number(),
+    trend: z.enum(['up', 'down'])
+  }),
+  drivers: z.object({
+    current: z.number(),
+    growth: z.number(),
+    trend: z.enum(['up', 'down'])
+  })
+});
+
+export const DemandForecastItemSchema = z.object({
+  day: z.string(),
+  orders: z.number(),
+  predictedOrders: z.number(),
+  date: z.date()
+});
+
+export const PricingOptimizationItemSchema = z.object({
+  service: z.string(),
+  currentPrice: z.number(),
+  recommendedPrice: z.number(),
+  demandScore: z.number(),
+  profitability: z.enum(['high', 'medium', 'low']),
+  reasoning: z.string()
+});
+
+export const MarketExpansionItemSchema = z.object({
+  area: z.string(),
+  score: z.number(),
+  population: z.number(),
+  avgIncome: z.number(),
+  competition: z.enum(['Low', 'Medium', 'High']),
+  estimatedOrders: z.string(),
+  investment: z.string(),
+  breakeven: z.string()
+});
+
+// Route Optimization API Response Types
+export const RouteStopSchema = z.object({
+  id: z.union([z.string(), z.number()]), // Handle both MemStorage (string) and DatabaseStorage (number)
+  address: z.string(),
+  order: z.union([z.string(), z.number()]), // Same issue - order ID can be string or number
+  estimatedTime: z.string(),
+  status: z.string()
+});
+
+export const CurrentRouteSchema = z.object({
+  id: z.string(),
+  estimatedTime: z.number(),
+  estimatedDistance: z.number(),
+  fuelCost: z.number(),
+  optimizationScore: z.number(),
+  stops: z.array(RouteStopSchema)
+});
+
+export const OptimizedWaypointSchema = z.object({
+  orderId: z.union([z.string(), z.number()]).optional(), // Handle mixed ID types
+  sequence: z.number(),
+  address: z.string(),
+  estimatedArrival: z.date()
+});
+
+export const RouteOptimizationSchema = z.object({
+  id: z.number(),
+  orderIds: z.array(z.number()),
+  estimatedDuration: z.number(),
+  estimatedDistance: z.number(),
+  fuelCostEstimate: z.number(),
+  routeStatus: z.string(),
+  optimizedRoute: z.object({
+    waypoints: z.array(OptimizedWaypointSchema)
+  })
+});
+
+// Type exports for frontend usage
+export type KpiData = z.infer<typeof KpiDataSchema>;
+export type DemandForecastItem = z.infer<typeof DemandForecastItemSchema>;
+export type PricingOptimizationItem = z.infer<typeof PricingOptimizationItemSchema>;
+export type MarketExpansionItem = z.infer<typeof MarketExpansionItemSchema>;
+export type RouteStop = z.infer<typeof RouteStopSchema>;
+export type CurrentRoute = z.infer<typeof CurrentRouteSchema>;
+export type OptimizedWaypoint = z.infer<typeof OptimizedWaypointSchema>;
+export type RouteOptimization = z.infer<typeof RouteOptimizationSchema>;
+
 // Enhanced Users table with profiles and preferences
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),

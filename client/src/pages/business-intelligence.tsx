@@ -1,5 +1,11 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { 
+  KpiData, 
+  DemandForecastItem, 
+  PricingOptimizationItem, 
+  MarketExpansionItem 
+} from '@shared/schema';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,26 +23,26 @@ export default function BusinessIntelligence() {
   const [timeRange, setTimeRange] = useState('30d');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Real KPI data from database (replaced mock)
-  const { data: kpiData, isLoading: kpiLoading } = useQuery({
+  // Real KPI data from database (replaced mock) - Now properly typed
+  const { data: kpiData, isLoading: kpiLoading } = useQuery<KpiData>({
     queryKey: ['/api/admin/business-intelligence/kpis', timeRange],
     enabled: true
   });
 
-  // Real demand forecasting data from database (replaced mock)
-  const { data: demandData, isLoading: demandLoading } = useQuery({
+  // Real demand forecasting data from database (replaced mock) - Now properly typed
+  const { data: demandData, isLoading: demandLoading } = useQuery<DemandForecastItem[]>({
     queryKey: ['/api/admin/business-intelligence/demand-forecast', timeRange],
     enabled: true
   });
 
-  // Real pricing optimization data from database (replaced mock)
-  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery({
+  // Real pricing optimization data from database (replaced mock) - Now properly typed
+  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery<PricingOptimizationItem[]>({
     queryKey: ['/api/admin/business-intelligence/pricing-optimization'],
     enabled: true
   });
 
-  // Real market expansion data from database (replaced mock)
-  const { data: marketExpansion, isLoading: marketLoading } = useQuery({
+  // Real market expansion data from database (replaced mock) - Now properly typed
+  const { data: marketExpansion, isLoading: marketLoading } = useQuery<MarketExpansionItem[]>({
     queryKey: ['/api/admin/business-intelligence/market-expansion'],
     enabled: true
   });
