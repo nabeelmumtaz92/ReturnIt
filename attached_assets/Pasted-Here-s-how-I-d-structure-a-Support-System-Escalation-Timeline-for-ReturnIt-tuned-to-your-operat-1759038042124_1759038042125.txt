@@ -1,0 +1,65 @@
+Here’s how I’d structure a **Support System Escalation Timeline** for ReturnIt, tuned to your operations:
+
+---
+
+## ⏱️ Escalation Timeline
+
+### 1. **Critical Tickets (Immediate Ops Impact)**
+
+Examples: Driver stuck with customer’s package, store refusing package, payment failures.
+
+* **Initial Response:** within **15 minutes** (live chat/phone ideally).
+* **Escalation to Tier 2:** if not resolved in **1 hour**.
+* **Resolution Target:** **<4 hours**.
+
+---
+
+### 2. **High Priority (Affects Experience but Not Urgent)**
+
+Examples: Order delays, app crashes, driver no-show.
+
+* **Initial Response:** within **1 hour**.
+* **Escalation to Tier 2:** if not resolved in **4 hours**.
+* **Resolution Target:** **24 hours**.
+
+---
+
+### 3. **Standard / Low Priority (General Questions, Minor Issues)**
+
+Examples: Refund requests, policy clarifications, profile edits.
+
+* **Initial Response:** within **24 hours**.
+* **Escalation to Tier 2:** if not resolved in **72 hours**.
+* **Resolution Target:** **3–5 business days**.
+
+---
+
+## 🔧 Support Tool Integration Options
+
+* **Helpdesk / Ticketing:**
+
+  * **Zendesk** → powerful but pricey.
+  * **Freshdesk** → affordable, good automation.
+  * **Zoho Desk** → budget-friendly, integrates with Zoho ecosystem.
+
+* **Chat / Messaging:**
+
+  * **Intercom** → great in-app chat + bots.
+  * **Twilio SMS/WhatsApp** → driver + customer support via text.
+  * **Slack Integration** → internal ops escalation.
+
+* **Knowledge Base / Self-Service:**
+
+  * Zendesk Guide, Freshdesk KB, or custom FAQ page inside the app.
+
+---
+
+✅ **Recommendation for ReturnIt MVP:**
+
+* Start with **Freshdesk (tickets + email + chat)** → cost-effective.
+* Add **Twilio SMS support** for drivers (many prefer text).
+* Escalation: **15 min → 1 hr → 24 hrs** depending on severity.
+
+---
+
+Would you like me to design a **Support Escalation Flowchart** (visual of ticket creation → assignment → escalation) so you can drop it into your ops manual?
