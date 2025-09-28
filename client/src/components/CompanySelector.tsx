@@ -113,10 +113,32 @@ export default function CompanySelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleCompanySelect = (company: Company, location?: CompanyLocation) => {
-    onCompanySelect(company, location, returnPolicy);
-    setIsOpen(false);
-    setSearchQuery("");
+  const handleCompanySelect = async (company: Company, location?: CompanyLocation) => {
+    try {
+      // Fetch the policy for this specific company
+      const policyResponse = await fetch(`/api/companies/${company.id}/return-policy`, {
+        credentials: 'include'
+      });
+      
+      let companyPolicy = null;
+      if (policyResponse.ok) {
+        companyPolicy = await policyResponse.json();
+      }
+      
+      // Attach the policy to the company object for consistent access
+      const companyWithPolicy = { ...company, returnPolicy: companyPolicy };
+      
+      onCompanySelect(companyWithPolicy, location, companyPolicy);
+      setIsOpen(false);
+      setSearchQuery("");
+    } catch (error) {
+      console.error('Failed to fetch company policy:', error);
+      // Still call onCompanySelect but without policy data
+      const companyWithPolicy = { ...company, returnPolicy: null };
+      onCompanySelect(companyWithPolicy, location, null);
+      setIsOpen(false);
+      setSearchQuery("");
+    }
   };
 
   // Check if return violates policy (past return window)
@@ -354,7 +376,7 @@ export default function CompanySelector({
                 </div>
               </div>
               
-              {returnPolicy && (
+              {selectedCompany?.returnPolicy && (
                 <Button 
                   variant="outline" 
                   size="sm"
@@ -366,9 +388,9 @@ export default function CompanySelector({
               )}
             </div>
 
-            {/* Only show policy violations/warnings */}
-            {returnPolicy && (() => {
-              const violation = checkPolicyViolation(returnPolicy);
+            {/* Only show policy violations/warnings - use selectedCompany's fresh policy data */}
+            {selectedCompany?.returnPolicy && (() => {
+              const violation = checkPolicyViolation(selectedCompany.returnPolicy);
               if (violation.hasViolation) {
                 return (
                   <div className="mt-3 p-3 bg-red-100 border border-red-200 rounded-lg">
@@ -389,7 +411,7 @@ export default function CompanySelector({
       )}
 
       {/* Return Policy Modal */}
-      {showPolicyModal && returnPolicy && (
+      {showPolicyModal && selectedCompany?.returnPolicy && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <Card className="max-w-2xl w-full max-h-[80vh] overflow-hidden">
             <CardHeader className="pb-3">
@@ -416,8 +438,8 @@ export default function CompanySelector({
                     {/* Return Window */}
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Return Window:</span>
-                      <Badge className={getReturnWindowColor(returnPolicy.returnWindowDays)}>
-                        {returnPolicy.returnWindowDays} days
+                      <Badge className={getReturnWindowColor(selectedCompany.returnPolicy.returnWindowDays)}>
+                        {selectedCompany.returnPolicy.returnWindowDays} days
                       </Badge>
                     </div>
 
@@ -425,9 +447,9 @@ export default function CompanySelector({
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Refund Method:</span>
                       <div className="flex items-center gap-1">
-                        {getRefundMethodIcon(returnPolicy.refundMethod)}
+                        {getRefundMethodIcon(selectedCompany.returnPolicy.refundMethod)}
                         <span className="font-medium">
-                          {formatRefundMethod(returnPolicy.refundMethod)}
+                          {formatRefundMethod(selectedCompany.returnPolicy.refundMethod)}
                         </span>
                       </div>
                     </div>
@@ -435,7 +457,7 @@ export default function CompanySelector({
                     {/* Receipt Required */}
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Receipt Required:</span>
-                      {returnPolicy.requiresReceipt ? (
+                      {selectedCompany.returnPolicy.requiresReceipt ? (
                         <div className="flex items-center gap-1 text-red-600">
                           <AlertTriangle className="h-3 w-3" />
                           <span>Yes</span>
@@ -451,7 +473,7 @@ export default function CompanySelector({
                     {/* Tags Required */}
                     <div className="flex items-center justify-between">
                       <span className="text-gray-600">Tags Required:</span>
-                      {returnPolicy.requiresOriginalTags ? (
+                      {selectedCompany.returnPolicy.requiresOriginalTags ? (
                         <div className="flex items-center gap-1 text-red-600">
                           <AlertTriangle className="h-3 w-3" />
                           <span>Yes</span>
@@ -466,11 +488,11 @@ export default function CompanySelector({
                   </div>
 
                   {/* Excluded Categories */}
-                  {returnPolicy.excludedCategories && returnPolicy.excludedCategories.length > 0 && (
+                  {selectedCompany.returnPolicy.excludedCategories && selectedCompany.returnPolicy.excludedCategories.length > 0 && (
                     <div>
                       <p className="text-sm text-gray-600 mb-2">Items that cannot be returned:</p>
                       <div className="flex flex-wrap gap-1">
-                        {returnPolicy.excludedCategories.map((category, index) => (
+                        {selectedCompany.returnPolicy.excludedCategories.map((category, index) => (
                           <Badge key={index} variant="outline" className="text-xs text-red-700 border-red-200">
                             {category.replace(/_/g, ' ')}
                           </Badge>
@@ -480,20 +502,20 @@ export default function CompanySelector({
                   )}
 
                   {/* Additional Terms */}
-                  {returnPolicy.additionalTerms && (
+                  {selectedCompany.returnPolicy.additionalTerms && (
                     <div className="p-3 bg-amber-100 rounded-lg">
                       <p className="text-sm text-amber-800">
-                        <strong>Additional Terms:</strong> {returnPolicy.additionalTerms}
+                        <strong>Additional Terms:</strong> {selectedCompany.returnPolicy.additionalTerms}
                       </p>
                     </div>
                   )}
 
                   {/* Restocking Fee Warning */}
-                  {returnPolicy.chargesRestockingFee && (
+                  {selectedCompany.returnPolicy.chargesRestockingFee && (
                     <div className="p-3 bg-red-100 rounded-lg">
                       <p className="text-sm text-red-800 flex items-center gap-2">
                         <AlertTriangle className="h-4 w-4" />
-                        <strong>Restocking Fee:</strong> {returnPolicy.restockingFeePercent}% fee applies to returned items
+                        <strong>Restocking Fee:</strong> {selectedCompany.returnPolicy.restockingFeePercent}% fee applies to returned items
                       </p>
                     </div>
                   )}
