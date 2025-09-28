@@ -40,27 +40,21 @@ export default function BusinessIntelligence() {
     queryKey: ['/api/admin/business-intelligence/market-expansion'],
     enabled: true
   });
-    {
-      area: 'Chesterfield, MO',
-      score: 8.2,
-      population: 47484,
-      avgIncome: 95000,
-      competition: 'Medium',
-      estimatedOrders: '80-110/week',
-      investment: '$18,000',
-      breakeven: '5 months'
-    },
-    {
-      area: 'Kirkwood, MO',
-      score: 7.8,
-      population: 27540,
-      avgIncome: 75000,
-      competition: 'Medium',
-      estimatedOrders: '35-50/week',
-      investment: '$10,000',
-      breakeven: '6 months'
-    }
-  ];
+
+  // Show loading state while fetching data
+  if (kpiLoading || demandLoading || pricingLoading || marketLoading) {
+    return (
+      <AdminLayout pageTitle="Business Intelligence">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-600 mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-amber-900 mb-2">Loading Business Intelligence...</h2>
+            <p className="text-amber-700">Fetching analytics data from database</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   const handleRefresh = () => {
     setRefreshing(true);

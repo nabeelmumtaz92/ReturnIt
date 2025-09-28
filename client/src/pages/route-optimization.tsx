@@ -64,7 +64,7 @@ export default function RouteOptimization() {
 
   if (!isAuthenticated || !user?.isDriver) {
     return (
-      <Screen className="flex items-center justify-center min-h-screen">
+      <Screen>
         <div className="text-center">
           <Navigation className="h-16 w-16 text-amber-600 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-amber-900 mb-4">Route Optimization</h1>
@@ -75,38 +75,6 @@ export default function RouteOptimization() {
     );
   }
 
-  // Real route data from database (replaced mock)
-  const { data: currentRoute = null, isLoading: isRouteLoading, error: routeError } = useQuery({
-    queryKey: ['/api/driver/current-route'],
-    enabled: true
-  });
-
-  // Show loading state while fetching route data
-  if (isRouteLoading) {
-    return (
-      <Screen className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Navigation className="h-16 w-16 text-green-600 mx-auto mb-4 animate-spin" />
-          <h2 className="text-xl font-semibold text-green-900 mb-2">Loading Route Data...</h2>
-          <p className="text-green-700">Fetching your optimized delivery route</p>
-        </div>
-      </Screen>
-    );
-  }
-
-  // Show message when no route data is available
-  if (!currentRoute) {
-    return (
-      <Screen className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <Navigation className="h-16 w-16 text-green-600 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-green-900 mb-2">No Active Route</h2>
-          <p className="text-green-700 mb-4">You don't have any active delivery routes at the moment</p>
-          <Button className="bg-green-700 hover:bg-green-800">Check for New Orders</Button>
-        </div>
-      </Screen>
-    );
-  }
 
   return (
     <Screen>
@@ -130,25 +98,25 @@ export default function RouteOptimization() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-4 bg-green-100 rounded-lg">
                   <Clock className="h-8 w-8 text-green-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-green-900">{currentRoute?.estimatedTime || '0'}h</div>
+                  <div className="text-2xl font-bold text-green-900">{currentRoute?.estimatedTime || 0}h</div>
                   <div className="text-sm text-green-700">Total Time</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-100 rounded-lg">
                   <MapPin className="h-8 w-8 text-blue-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-blue-900">{currentRoute?.estimatedDistance || '0'} mi</div>
+                  <div className="text-2xl font-bold text-blue-900">{currentRoute?.estimatedDistance || 0} mi</div>
                   <div className="text-sm text-blue-700">Total Distance</div>
                 </div>
                 
                 <div className="text-center p-4 bg-orange-100 rounded-lg">
                   <Fuel className="h-8 w-8 text-orange-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-orange-900">${currentRoute?.fuelCost || '0.00'}</div>
+                  <div className="text-2xl font-bold text-orange-900">${currentRoute?.fuelCost || 0}</div>
                   <div className="text-sm text-orange-700">Fuel Cost</div>
                 </div>
                 
                 <div className="text-center p-4 bg-purple-100 rounded-lg">
                   <TrendingUp className="h-8 w-8 text-purple-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-purple-900">{currentRoute?.optimizationScore || '0'}%</div>
+                  <div className="text-2xl font-bold text-purple-900">{currentRoute?.optimizationScore || 0}%</div>
                   <div className="text-sm text-purple-700">Efficiency</div>
                 </div>
               </div>
@@ -159,7 +127,7 @@ export default function RouteOptimization() {
                   className="bg-green-700 hover:bg-green-800 text-lg px-8"
                   onClick={() => {
                     setOptimizing(true);
-                    optimizeRouteMutation.mutate(currentRoute?.stops?.map(stop => stop.id) || []);
+                    optimizeRouteMutation.mutate(currentRoute?.stops?.map((stop: any) => stop.id) || []);
                   }}
                   disabled={optimizing || optimizeRouteMutation.isPending}
                 >
@@ -182,12 +150,12 @@ export default function RouteOptimization() {
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-green-900">Today's Delivery Route</CardTitle>
                   <Badge className="bg-green-100 text-green-800 border-green-200">
-                    {currentRoute?.totalStops || 0} stops
+                    {currentRoute?.stops?.length || 0} stops
                   </Badge>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {currentRoute?.stops?.map((stop, index) => (
+                    {currentRoute?.stops?.map((stop: any, index: number) => (
                       <div key={stop.id} className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-green-100">
                         <div className="flex-shrink-0">
                           <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">
