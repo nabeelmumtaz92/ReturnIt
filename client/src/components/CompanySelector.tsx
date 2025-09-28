@@ -95,11 +95,8 @@ export default function CompanySelector({
     enabled: isOpen || searchQuery.length > 0,
   });
 
-  // Fetch return policy for selected company
-  const { data: returnPolicy } = useQuery({
-    queryKey: ['/api/companies', selectedCompany?.id, 'return-policy'],
-    enabled: !!selectedCompany && showReturnPolicyDetails,
-  });
+  // Policy data is now fetched in handleCompanySelect and attached to company objects
+  // Removing redundant query to prevent unnecessary API calls
 
   // Close dropdown when clicking outside
   useEffect(() => {
