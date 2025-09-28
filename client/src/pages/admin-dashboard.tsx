@@ -63,6 +63,7 @@ import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import UnifiedAI from "@/components/UnifiedAI";
+import { RoleSwitcher } from "@/components/RoleSwitcher";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -368,6 +369,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <AnalyticsContent />;
       case 'enhanced-analytics':
         return <EnhancedAnalyticsContent />;
+      case 'policy-management':
+        return <PolicyManagementContent />;
       case 'routes':
         return <RoutesContent />;
       case 'quality':
@@ -5215,6 +5218,222 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
+  // Policy Management Content Component
+  const PolicyManagementContent = () => {
+    const [companies, setCompanies] = useState<any[]>([]);
+    const [selectedCompany, setSelectedCompany] = useState<any>(null);
+    const [editingPolicy, setEditingPolicy] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+
+    const { data: companiesData = [] } = useQuery({
+      queryKey: ['/api/companies'],
+      enabled: currentSection === 'policy-management'
+    });
+
+    const updatePolicyMutation = useMutation({
+      mutationFn: async (policyData: any) => {
+        const response = await apiRequest("PUT", `/api/companies/${selectedCompany.id}/return-policy`, policyData);
+        return await response.json();
+      },
+      onSuccess: () => {
+        toast({
+          title: "Policy Updated",
+          description: "Return policy has been updated successfully.",
+        });
+        setEditingPolicy(null);
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          description: "Failed to update policy. Please try again.",
+          variant: "destructive",
+        });
+      }
+    });
+
+    const handleEditPolicy = (company: any) => {
+      setSelectedCompany(company);
+      setEditingPolicy(company.returnPolicy || {
+        returnWindowDays: 30,
+        requiresReceipt: true,
+        requiresOriginalTags: true,
+        allowsWornItems: false,
+        refundMethod: 'original_payment',
+        refundProcessingDays: 7,
+        excludedCategories: [],
+        additionalTerms: '',
+        chargesRestockingFee: false,
+        restockingFeePercent: 0
+      });
+    };
+
+    const handleSavePolicy = (e: React.FormEvent) => {
+      e.preventDefault();
+      updatePolicyMutation.mutate(editingPolicy);
+    };
+
+    return (
+      <div className="p-6 space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-amber-600" />
+              Company Return Policy Management
+            </CardTitle>
+            <CardDescription>
+              Edit and manage return policies for all retail partners
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {!selectedCompany ? (
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Select a Company</h3>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {companiesData.map((company: any) => (
+                    <Card key={company.id} className="cursor-pointer hover:bg-amber-50 transition-colors" onClick={() => handleEditPolicy(company)}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Building2 className="h-4 w-4 text-amber-600" />
+                          <h4 className="font-semibold">{company.name}</h4>
+                        </div>
+                        <p className="text-sm text-gray-600">{company.stLouisLocations?.length || 0} locations</p>
+                        <Badge variant="outline" className="mt-2">
+                          {company.category.replace(/_/g, ' ')}
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="flex items-center gap-4 mb-6">
+                  <Button variant="ghost" onClick={() => setSelectedCompany(null)}>
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Companies
+                  </Button>
+                  <div>
+                    <h2 className="text-xl font-semibold">{selectedCompany.name}</h2>
+                    <p className="text-gray-600">Edit Return Policy</p>
+                  </div>
+                </div>
+
+                {editingPolicy && (
+                  <form onSubmit={handleSavePolicy} className="space-y-6">
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <div>
+                        <Label htmlFor="returnWindowDays">Return Window (Days)</Label>
+                        <Input
+                          id="returnWindowDays"
+                          type="number"
+                          min="1"
+                          max="365"
+                          value={editingPolicy.returnWindowDays}
+                          onChange={(e) => setEditingPolicy(prev => ({...prev, returnWindowDays: parseInt(e.target.value)}))}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="refundProcessingDays">Refund Processing (Days)</Label>
+                        <Input
+                          id="refundProcessingDays"
+                          type="number"
+                          min="1"
+                          max="30"
+                          value={editingPolicy.refundProcessingDays}
+                          onChange={(e) => setEditingPolicy(prev => ({...prev, refundProcessingDays: parseInt(e.target.value)}))}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="requiresReceipt"
+                          checked={editingPolicy.requiresReceipt}
+                          onCheckedChange={(checked) => setEditingPolicy(prev => ({...prev, requiresReceipt: checked}))}
+                        />
+                        <Label htmlFor="requiresReceipt">Requires Receipt</Label>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="requiresOriginalTags"
+                          checked={editingPolicy.requiresOriginalTags}
+                          onCheckedChange={(checked) => setEditingPolicy(prev => ({...prev, requiresOriginalTags: checked}))}
+                        />
+                        <Label htmlFor="requiresOriginalTags">Requires Original Tags</Label>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="chargesRestockingFee"
+                          checked={editingPolicy.chargesRestockingFee}
+                          onCheckedChange={(checked) => setEditingPolicy(prev => ({...prev, chargesRestockingFee: checked}))}
+                        />
+                        <Label htmlFor="chargesRestockingFee">Charges Restocking Fee</Label>
+                      </div>
+                    </div>
+
+                    {editingPolicy.chargesRestockingFee && (
+                      <div>
+                        <Label htmlFor="restockingFeePercent">Restocking Fee (%)</Label>
+                        <Input
+                          id="restockingFeePercent"
+                          type="number"
+                          min="0"
+                          max="50"
+                          value={editingPolicy.restockingFeePercent}
+                          onChange={(e) => setEditingPolicy(prev => ({...prev, restockingFeePercent: parseInt(e.target.value)}))}
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <Label htmlFor="refundMethod">Refund Method</Label>
+                      <Select 
+                        value={editingPolicy.refundMethod} 
+                        onValueChange={(value) => setEditingPolicy(prev => ({...prev, refundMethod: value}))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="original_payment">Original Payment Method</SelectItem>
+                          <SelectItem value="store_credit">Store Credit Only</SelectItem>
+                          <SelectItem value="cash">Cash Only</SelectItem>
+                          <SelectItem value="exchange_only">Exchange Only</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="additionalTerms">Additional Terms</Label>
+                      <Input
+                        id="additionalTerms"
+                        value={editingPolicy.additionalTerms || ''}
+                        onChange={(e) => setEditingPolicy(prev => ({...prev, additionalTerms: e.target.value}))}
+                        placeholder="Any additional policy terms..."
+                      />
+                    </div>
+
+                    <div className="flex gap-4">
+                      <Button type="submit" disabled={updatePolicyMutation.isPending}>
+                        {updatePolicyMutation.isPending ? 'Saving...' : 'Save Policy'}
+                      </Button>
+                      <Button type="button" variant="outline" onClick={() => setEditingPolicy(null)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   // Main AdminDashboard component starts here
   const dashboardTabs = [
     {
@@ -5225,6 +5444,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     {
       label: "Payment Tracking", 
       href: "/admin-payment-tracking",
+      current: false
+    },
+    {
+      label: "Policy Management", 
+      href: "/admin-policy-management",
       current: false
     },
     {
@@ -5254,12 +5478,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </Link>
               </div>
               
-              {/* Admin Login Button - Shows when authentication needed */}
-              <button
-                onClick={handleAdminLogin}
-                className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
-                data-testid="button-admin-login"
-              >
+              {/* Role Switcher and Controls */}
+              <div className="flex items-center gap-3">
+                <RoleSwitcher />
+                
+                {/* Admin Login Button - Shows when authentication needed */}
+                <button
+                  onClick={handleAdminLogin}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+                  data-testid="button-admin-login"
+                >
                 🔑 Admin Login
               </button>
             </div>
@@ -5271,6 +5499,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {currentSection === 'payments' && 'Track payments, payouts, and financial metrics'}
               {currentSection === 'analytics' && 'Advanced business intelligence and insights'}
               {currentSection === 'enhanced-analytics' && 'Real-time performance metrics and analytics'}
+              {currentSection === 'policy-management' && 'Edit and manage company return policies for all retailers'}
               {currentSection === 'routes' && 'Optimize delivery routes for efficiency'}
               {currentSection === 'quality' && 'Monitor service quality and performance standards'}
               {currentSection === 'incentives' && 'Manage driver bonuses and reward programs'}
