@@ -358,6 +358,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <OrdersContent />;
       case 'drivers':
         return <DriversContent />;
+      case 'driver-applications':
+        return <DriverApplicationsContent />;
       case 'customers':
         return <CustomersContent />;
       case 'payments':
@@ -6201,6 +6203,409 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  }
+
+  // Manual Driver Applications Component
+  function DriverApplicationsContent() {
+    const { toast } = useToast();
+    const [pendingApplications, setPendingApplications] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedApplication, setSelectedApplication] = useState<any>(null);
+    const [showApprovalModal, setShowApprovalModal] = useState(false);
+    const [showRejectionModal, setShowRejectionModal] = useState(false);
+    const [approvalNotes, setApprovalNotes] = useState('');
+    const [rejectionReason, setRejectionReason] = useState('');
+    const [rejectionNotes, setRejectionNotes] = useState('');
+
+    // Fetch pending applications
+    const fetchPendingApplications = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch('/api/admin/driver-applications/pending', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const applications = await response.json();
+          setPendingApplications(applications);
+        } else {
+          throw new Error('Failed to fetch applications');
+        }
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load pending applications",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchPendingApplications();
+    }, []);
+
+    // Approve driver application
+    const approveApplication = async (driverId: number) => {
+      try {
+        const response = await fetch(`/api/admin/driver-applications/${driverId}/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            approvalNotes,
+            adminId: 'Manual Admin Review'
+          })
+        });
+
+        if (response.ok) {
+          toast({
+            title: "Driver Approved!",
+            description: "Driver application has been successfully approved.",
+          });
+          setPendingApplications(prev => prev.filter(app => app.id !== driverId));
+          setShowApprovalModal(false);
+          setApprovalNotes('');
+          setSelectedApplication(null);
+        } else {
+          throw new Error('Failed to approve driver');
+        }
+      } catch (error) {
+        console.error('Error approving driver:', error);
+        toast({
+          title: "Error",
+          description: "Failed to approve driver application",
+          variant: "destructive",
+        });
+      }
+    };
+
+    // Reject driver application
+    const rejectApplication = async (driverId: number) => {
+      if (!rejectionReason) {
+        toast({
+          title: "Error",
+          description: "Please provide a rejection reason",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/admin/driver-applications/${driverId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            rejectionReason,
+            rejectionNotes,
+            adminId: 'Manual Admin Review'
+          })
+        });
+
+        if (response.ok) {
+          toast({
+            title: "Driver Rejected",
+            description: "Driver application has been rejected.",
+          });
+          setPendingApplications(prev => prev.filter(app => app.id !== driverId));
+          setShowRejectionModal(false);
+          setRejectionReason('');
+          setRejectionNotes('');
+          setSelectedApplication(null);
+        } else {
+          throw new Error('Failed to reject driver');
+        }
+      } catch (error) {
+        console.error('Error rejecting driver:', error);
+        toast({
+          title: "Error",
+          description: "Failed to reject driver application",
+          variant: "destructive",
+        });
+      }
+    };
+
+    const formatDate = (dateString: string) => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const getStatusBadge = (status: string) => {
+      switch (status) {
+        case 'pending_review':
+          return <Badge className="bg-orange-100 text-orange-800 border-orange-200">Pending Review</Badge>;
+        case 'background_check_pending':
+          return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Background Check</Badge>;
+        default:
+          return <Badge className="bg-gray-100 text-gray-800 border-gray-200">{status}</Badge>;
+      }
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Back Button */}
+        {navigationHistory.length > 0 && (
+          <div className="mb-4">
+            <Button 
+              onClick={goBack}
+              variant="outline"
+              className="border-amber-200 hover:bg-amber-50"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+            </Button>
+          </div>
+        )}
+
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-amber-900 mb-2">Manual Driver Approval System</h2>
+          <p className="text-amber-600">Review and approve driver applications manually. No background check fees required!</p>
+        </div>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Pending Applications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{pendingApplications.length}</div>
+              <p className="text-xs text-amber-500">Awaiting your review</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Cost Savings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">$0</div>
+              <p className="text-xs text-amber-500">Background check fees avoided</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-amber-600">Review Mode</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-amber-900">Manual</div>
+              <p className="text-xs text-amber-500">No automated services</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Applications List */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-amber-900">Pending Driver Applications</CardTitle>
+              <Button 
+                onClick={fetchPendingApplications}
+                variant="outline"
+                size="sm"
+                disabled={loading}
+                className="border-amber-300 text-amber-700"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+                <span className="ml-2 text-amber-600">Loading applications...</span>
+              </div>
+            ) : pendingApplications.length === 0 ? (
+              <div className="text-center py-8">
+                <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-amber-900 mb-2">All Caught Up!</h3>
+                <p className="text-amber-600">No pending driver applications to review.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pendingApplications.map((application) => (
+                  <div key={application.id} className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="font-medium text-amber-900">
+                            {application.firstName} {application.lastName}
+                          </h3>
+                          {getStatusBadge(application.applicationStatus)}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-700">
+                          <div>
+                            <p><strong>Email:</strong> {application.email}</p>
+                            <p><strong>Phone:</strong> {application.phone}</p>
+                            <p><strong>Location:</strong> {application.city}, {application.state} {application.zipCode}</p>
+                          </div>
+                          <div>
+                            {application.vehicleInfo && (
+                              <>
+                                <p><strong>Vehicle:</strong> {application.vehicleInfo.year} {application.vehicleInfo.make} {application.vehicleInfo.model}</p>
+                                <p><strong>Color:</strong> {application.vehicleInfo.color}</p>
+                                <p><strong>License Plate:</strong> {application.vehicleInfo.licensePlate}</p>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="mt-3 text-xs text-amber-600">
+                          <p>Applied: {formatDate(application.createdAt)}</p>
+                          <p>Background Check Consent: {application.backgroundCheckConsent ? '✅ Yes' : '❌ No'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex gap-2 ml-4">
+                        <Button
+                          onClick={() => {
+                            setSelectedApplication(application);
+                            setShowApprovalModal(true);
+                          }}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" />
+                          Approve
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setSelectedApplication(application);
+                            setShowRejectionModal(true);
+                          }}
+                          size="sm"
+                          variant="destructive"
+                        >
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          Reject
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Approval Modal */}
+        {showApprovalModal && selectedApplication && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="text-green-700">Approve Driver Application</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 text-gray-700">
+                  Are you sure you want to approve <strong>{selectedApplication.firstName} {selectedApplication.lastName}</strong> as a driver?
+                </p>
+                <div className="mb-4">
+                  <Label htmlFor="approval-notes">Approval Notes (Optional)</Label>
+                  <Input
+                    id="approval-notes"
+                    value={approvalNotes}
+                    onChange={(e) => setApprovalNotes(e.target.value)}
+                    placeholder="Any notes about the approval..."
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowApprovalModal(false);
+                      setApprovalNotes('');
+                      setSelectedApplication(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => approveApplication(selectedApplication.id)}
+                    className="bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Approve Driver
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Rejection Modal */}
+        {showRejectionModal && selectedApplication && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className="text-red-700">Reject Driver Application</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 text-gray-700">
+                  Reject application from <strong>{selectedApplication.firstName} {selectedApplication.lastName}</strong>?
+                </p>
+                <div className="mb-4">
+                  <Label htmlFor="rejection-reason">Rejection Reason *</Label>
+                  <Select value={rejectionReason} onValueChange={setRejectionReason}>
+                    <SelectTrigger className="mt-1">
+                      <SelectValue placeholder="Select a reason..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="insufficient_experience">Insufficient delivery experience</SelectItem>
+                      <SelectItem value="vehicle_requirements">Vehicle doesn't meet requirements</SelectItem>
+                      <SelectItem value="documentation_incomplete">Incomplete documentation</SelectItem>
+                      <SelectItem value="background_concerns">Background check concerns</SelectItem>
+                      <SelectItem value="application_incomplete">Application information incomplete</SelectItem>
+                      <SelectItem value="other">Other reason</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="mb-4">
+                  <Label htmlFor="rejection-notes">Additional Notes (Optional)</Label>
+                  <Input
+                    id="rejection-notes"
+                    value={rejectionNotes}
+                    onChange={(e) => setRejectionNotes(e.target.value)}
+                    placeholder="Additional details..."
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowRejectionModal(false);
+                      setRejectionReason('');
+                      setRejectionNotes('');
+                      setSelectedApplication(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => rejectApplication(selectedApplication.id)}
+                    variant="destructive"
+                    disabled={!rejectionReason}
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Reject Application
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     );
   }

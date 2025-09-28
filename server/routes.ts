@@ -3595,6 +3595,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual Driver Approval API Endpoints
+  
+  // Get pending driver applications for manual review
+  app.get("/api/admin/driver-applications/pending", requireAdmin, async (req, res) => {
+    try {
+      const drivers = await storage.getDrivers();
+      const pendingApplications = drivers.filter(driver => 
+        driver.applicationStatus === 'pending_review' || 
+        driver.backgroundCheckStatus === 'in_progress' ||
+        driver.onboardingStep === 'background_check_pending'
+      );
+      
+      // Enrich with application details
+      const enrichedApplications = pendingApplications.map(driver => ({
+        id: driver.id,
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        email: driver.email,
+        phone: driver.phone,
+        dateOfBirth: driver.dateOfBirth,
+        address: driver.addresses ? JSON.parse(driver.addresses as string)[0]?.address : null,
+        city: driver.addresses ? JSON.parse(driver.addresses as string)[0]?.city : null,
+        state: driver.addresses ? JSON.parse(driver.addresses as string)[0]?.state : null,
+        zipCode: driver.addresses ? JSON.parse(driver.addresses as string)[0]?.zipCode : null,
+        vehicleInfo: driver.vehicleInfo ? JSON.parse(driver.vehicleInfo as string) : null,
+        applicationStatus: driver.applicationStatus,
+        backgroundCheckStatus: driver.backgroundCheckStatus,
+        onboardingStep: driver.onboardingStep,
+        backgroundCheckConsent: driver.backgroundCheckConsent,
+        createdAt: driver.createdAt,
+        updatedAt: driver.updatedAt
+      }));
+      
+      res.json(enrichedApplications);
+    } catch (error) {
+      console.error('Error fetching pending driver applications:', error);
+      res.status(500).json({ message: 'Failed to fetch pending applications' });
+    }
+  });
+
+  // Manually approve driver application
+  app.post("/api/admin/driver-applications/:id/approve", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { approvalNotes = '', adminId } = req.body;
+      
+      // Update driver status to approved
+      const updatedDriver = await storage.updateUser(driverId, {
+        applicationStatus: 'approved_active',
+        backgroundCheckStatus: 'passed',
+        onboardingStep: 'complete',
+        isActive: true
+      });
+      
+      if (!updatedDriver) {
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+      
+      // Create approval notification for driver
+      await storage.createNotification({
+        userId: driverId,
+        type: 'application_approved',
+        title: 'Application Approved!',
+        message: `Congratulations! Your driver application has been approved. You can now start accepting delivery orders.`,
+        data: { 
+          approvalDate: new Date(),
+          approvedBy: adminId || 'Admin',
+          notes: approvalNotes 
+        },
+        createdAt: new Date()
+      });
+      
+      console.log(`✅ Driver ${driverId} manually approved by admin`);
+      
+      res.json({ 
+        message: 'Driver application approved successfully',
+        driver: updatedDriver
+      });
+    } catch (error) {
+      console.error('Error approving driver application:', error);
+      res.status(500).json({ message: 'Failed to approve driver application' });
+    }
+  });
+
+  // Manually reject driver application
+  app.post("/api/admin/driver-applications/:id/reject", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { rejectionReason = '', rejectionNotes = '', adminId } = req.body;
+      
+      if (!rejectionReason) {
+        return res.status(400).json({ message: 'Rejection reason is required' });
+      }
+      
+      // Update driver status to rejected
+      const updatedDriver = await storage.updateUser(driverId, {
+        applicationStatus: 'rejected',
+        backgroundCheckStatus: 'failed',
+        onboardingStep: 'background_check_failed',
+        isActive: false
+      });
+      
+      if (!updatedDriver) {
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+      
+      // Create rejection notification for driver
+      await storage.createNotification({
+        userId: driverId,
+        type: 'application_rejected',
+        title: 'Application Update',
+        message: `We appreciate your interest in becoming a ReturnIt driver. Unfortunately, we cannot approve your application at this time. Reason: ${rejectionReason}`,
+        data: { 
+          rejectionDate: new Date(),
+          rejectedBy: adminId || 'Admin',
+          reason: rejectionReason,
+          notes: rejectionNotes 
+        },
+        createdAt: new Date()
+      });
+      
+      console.log(`❌ Driver ${driverId} manually rejected by admin: ${rejectionReason}`);
+      
+      res.json({ 
+        message: 'Driver application rejected',
+        driver: updatedDriver
+      });
+    } catch (error) {
+      console.error('Error rejecting driver application:', error);
+      res.status(500).json({ message: 'Failed to reject driver application' });
+    }
+  });
+
   app.get("/api/admin/drivers", requireAdmin, async (req, res) => {
     try {
       const drivers = await storage.getDrivers();

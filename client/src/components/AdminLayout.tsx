@@ -61,6 +61,12 @@ const navigationSections = [
         description: "Driver onboarding and oversight"
       },
       {
+        label: "Driver Applications", 
+        href: "/admin-dashboard?section=driver-applications",
+        icon: UserCheck,
+        description: "Manual driver approval and review"
+      },
+      {
         label: "Customer Management",
         href: "/admin-dashboard?section=customers",
         icon: Users,
