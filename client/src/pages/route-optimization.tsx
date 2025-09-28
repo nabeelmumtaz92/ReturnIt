@@ -19,6 +19,20 @@ export default function RouteOptimization() {
   const queryClient = useQueryClient();
   const [optimizing, setOptimizing] = useState(false);
 
+  // Enhanced type guards for route data
+  const isValidCurrentRoute = (data: any): data is CurrentRoute => {
+    return data && 
+           typeof data === 'object' &&
+           typeof data.id === 'string' &&
+           typeof data.estimatedTime === 'number' &&
+           typeof data.estimatedDistance === 'number' &&
+           Array.isArray(data.stops);
+  };
+
+  const hasValidRouteStops = (route: CurrentRoute | undefined): boolean => {
+    return route?.stops?.length > 0 || false;
+  };
+
   const { data: currentRoute } = useQuery<CurrentRoute>({
     queryKey: ['/api/routes/current'],
     enabled: isAuthenticated && user?.isDriver,
@@ -127,11 +141,31 @@ export default function RouteOptimization() {
                   size="lg"
                   className="bg-green-700 hover:bg-green-800 text-lg px-8"
                   onClick={() => {
+                    if (!isValidCurrentRoute(currentRoute) || !hasValidRouteStops(currentRoute)) {
+                      toast({
+                        title: "No Route Data",
+                        description: "Cannot optimize route without valid stop data.",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
                     setOptimizing(true);
                     // Convert IDs to numbers for the backend API (handles both string and number IDs)
-                    const orderIds = currentRoute?.stops?.map(stop => 
+                    const orderIds = currentRoute.stops.map(stop => 
                       typeof stop.id === 'string' ? parseInt(stop.id, 10) : stop.id
-                    ).filter(id => !isNaN(id)) || [];
+                    ).filter(id => !isNaN(id));
+
+                    if (orderIds.length === 0) {
+                      toast({
+                        title: "Invalid Route Data",
+                        description: "No valid order IDs found for route optimization.",
+                        variant: "destructive",
+                      });
+                      setOptimizing(false);
+                      return;
+                    }
+
                     optimizeRouteMutation.mutate(orderIds);
                   }}
                   disabled={optimizing || optimizeRouteMutation.isPending}

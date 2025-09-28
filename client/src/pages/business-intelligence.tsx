@@ -47,6 +47,20 @@ export default function BusinessIntelligence() {
     enabled: true
   });
 
+  // Enhanced error handling and type guards
+  const isValidKpiData = (data: any): data is KpiData => {
+    return data && 
+           typeof data === 'object' &&
+           data.revenue?.current !== undefined &&
+           data.orders?.current !== undefined &&
+           data.avgOrderValue?.current !== undefined &&
+           data.drivers?.current !== undefined;
+  };
+
+  const isValidArrayData = <T>(data: any, itemValidator?: (item: any) => boolean): data is T[] => {
+    return Array.isArray(data) && (itemValidator ? data.every(itemValidator) : true);
+  };
+
   // Show loading state while fetching data
   if (kpiLoading || demandLoading || pricingLoading || marketLoading) {
     return (
@@ -56,6 +70,22 @@ export default function BusinessIntelligence() {
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-600 mx-auto mb-4"></div>
             <h2 className="text-xl font-semibold text-amber-900 mb-2">Loading Business Intelligence...</h2>
             <p className="text-amber-700">Fetching analytics data from database</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  // Enhanced error handling for invalid data
+  if (!isValidKpiData(kpiData)) {
+    console.warn('Invalid KPI data received:', kpiData);
+    return (
+      <AdminLayout pageTitle="Business Intelligence">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <AlertTriangle className="h-16 w-16 text-amber-600 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-amber-900 mb-2">Data Error</h2>
+            <p className="text-amber-700">Unable to load business intelligence data. Please refresh the page.</p>
           </div>
         </div>
       </AdminLayout>
