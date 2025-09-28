@@ -509,8 +509,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       return {
         success: true,
-        status: 'initiated',
-        estimatedCompletionTime: '24-48 hours'
+        status: 'manual_review_initiated',
+        estimatedCompletionTime: 'Manual admin review (typically same day)',
+        costSavings: '$15-30 per check',
+        reviewLocation: 'Admin Dashboard > Driver Applications'
       };
     } catch (error) {
       console.error(`❌ Failed to initiate background check for driver ${userId}:`, error);
@@ -525,44 +527,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }
 
-  // Real background check integration (Checkr API)
+  // Manual background check system (cost-saving while on waitlist)
   async function initiateRealBackgroundCheck(userId: number, driverInfo: any) {
     try {
-      // Check if Checkr integration is available
-      if (!process.env.CHECKR_API_KEY) {
-        console.log('⚠️ CHECKR_API_KEY not configured - background checks will be processed manually');
-        
-        // Set status to pending manual review
-        await storage.updateUser(userId, {
-          backgroundCheckStatus: 'in_progress',
-          applicationStatus: 'pending_review',
-          onboardingStep: 'background_check_pending'
-        });
-        
-        // Create admin notification for manual processing
-        await storage.createNotification({
-          userId: null, // Admin notification
-          type: 'manual_background_check',
-          title: 'Manual Background Check Required',
-          message: `Driver ${driverInfo.firstName} ${driverInfo.lastName} (${driverInfo.email}) requires manual background check processing`,
-          data: { driverId: userId, driverInfo },
-          createdAt: new Date()
-        });
-        
-        return { success: true, status: 'manual_review_required' };
-      }
+      console.log(`✅ Using manual background check system (saves $15-30 per check while on waitlist)`);
+      console.log(`📋 Manual review initiated for driver ${userId}: ${driverInfo.firstName} ${driverInfo.lastName}`);
       
-      // Real Checkr API integration would go here
-      // For now, set up the structure for future implementation
-      console.log(`🔍 Background check system ready for driver ${userId} - Checkr integration pending`);
-      
+      // Set status to pending manual review (primary mode for cost savings)
       await storage.updateUser(userId, {
         backgroundCheckStatus: 'in_progress',
-        applicationStatus: 'background_check_pending', 
+        applicationStatus: 'pending_review',
         onboardingStep: 'background_check_pending'
       });
       
-      return { success: true, status: 'initiated' };
+      // Create admin notification for manual processing
+      await storage.createNotification({
+        userId: null, // Admin notification
+        type: 'driver_application_ready',
+        title: 'New Driver Application Ready for Review',
+        message: `${driverInfo.firstName} ${driverInfo.lastName} (${driverInfo.email}) has completed their application and is ready for manual approval. Check the Driver Applications section to review and approve.`,
+        data: { 
+          driverId: userId, 
+          driverInfo,
+          reviewType: 'manual_cost_saving',
+          estimatedSavings: '$15-30 per check'
+        },
+        createdAt: new Date()
+      });
+      
+      console.log(`💰 Background check cost savings: $15-30 (using manual review instead of Checkr)`);
+      
+      return { 
+        success: true, 
+        status: 'manual_review_required',
+        costSavings: '$15-30',
+        reviewMode: 'manual_admin_approval'
+      };
+      
+      // FUTURE: Automated background check integration (when ready to pay)
+      // Uncomment this section when ready to use paid Checkr service:
+      /*
+      if (process.env.CHECKR_API_KEY && process.env.USE_AUTOMATED_BACKGROUND_CHECKS === 'true') {
+        console.log(`🔍 Using automated Checkr background check for driver ${userId}`);
+        
+        // Checkr API integration would go here
+        await storage.updateUser(userId, {
+          backgroundCheckStatus: 'in_progress',
+          applicationStatus: 'background_check_pending', 
+          onboardingStep: 'background_check_pending'
+        });
+        
+        return { success: true, status: 'automated_check_initiated' };
+      }
+      */
       
     } catch (error) {
       console.error(`❌ Failed to initiate background check for driver ${userId}:`, error);
