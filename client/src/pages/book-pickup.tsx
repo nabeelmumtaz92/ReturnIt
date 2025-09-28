@@ -61,6 +61,7 @@ export default function BookPickup() {
     zipCode: '',
     // Company selection (enhanced retailer system)
     selectedCompany: null as any,
+    selectedLocation: null as any,
     selectedReturnPolicy: null as any,
     retailer: '', // Keep for backwards compatibility
     retailerQuery: '',
@@ -101,14 +102,15 @@ export default function BookPickup() {
   const [filteredRetailers, setFilteredRetailers] = useState<string[]>([]);
   
   // Company selection handler
-  const handleCompanySelect = (company: any, policy?: any) => {
+  const handleCompanySelect = (company: any, location?: any, policy?: any) => {
     setFormData(prev => ({
       ...prev,
       selectedCompany: company,
+      selectedLocation: location,
       selectedReturnPolicy: policy,
       retailer: company.name // Set retailer name for backwards compatibility
     }));
-    console.log('🏢 Company selected:', company.name, 'Policy:', policy);
+    console.log('🏢 Company selected:', company.name, 'Location:', location?.name, 'Policy:', policy);
   };
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<Location | null>(null);
@@ -609,9 +611,11 @@ export default function BookPickup() {
         </div>
         <CompanySelector
           selectedCompany={formData.selectedCompany}
+          selectedLocation={formData.selectedLocation}
           onCompanySelect={handleCompanySelect}
           placeholder="Search for a store (e.g., Target, Walmart, Best Buy)..."
-          showReturnPolicyDetails={true}
+          showReturnPolicyDetails={false}
+          purchaseDate={formData.purchaseDate}
           className="bg-white/80"
         />
 

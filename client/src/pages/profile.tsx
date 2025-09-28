@@ -41,9 +41,11 @@ export default function Profile() {
     }
   });
 
-  // Update form data when user changes (important for data persistence)
+  // Initialize form data only when user first loads (prevents input deletion bug)
+  const [hasInitializedFormData, setHasInitializedFormData] = React.useState(false);
+  
   React.useEffect(() => {
-    if (user) {
+    if (user && !hasInitializedFormData) {
       setFormData({
         firstName: user.firstName || '',
         lastName: user.lastName || '',
@@ -65,8 +67,9 @@ export default function Profile() {
           timezone: user.preferences?.timezone || 'America/Chicago'
         }
       });
+      setHasInitializedFormData(true);
     }
-  }, [user]);
+  }, [user, hasInitializedFormData]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (profileData: any) => {

@@ -32,7 +32,18 @@ interface Company {
   businessType: string;
   foundedYear?: number;
   isFeatured: boolean;
-  stLouisLocations: any[];
+  stLouisLocations: CompanyLocation[];
+}
+
+interface CompanyLocation {
+  id: number;
+  companyId: number;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  acceptsReturns: boolean;
 }
 
 interface ReturnPolicy {
@@ -54,22 +65,28 @@ interface ReturnPolicy {
 
 interface CompanySelectorProps {
   selectedCompany?: Company;
-  onCompanySelect: (company: Company, policy?: ReturnPolicy) => void;
+  selectedLocation?: CompanyLocation;
+  onCompanySelect: (company: Company, location?: CompanyLocation, policy?: ReturnPolicy) => void;
   className?: string;
   placeholder?: string;
   showReturnPolicyDetails?: boolean;
+  purchaseDate?: string; // To check if return is past policy window
 }
 
 export default function CompanySelector({
   selectedCompany,
+  selectedLocation,
   onCompanySelect,
   className = "",
   placeholder = "Search for a store...",
-  showReturnPolicyDetails = true
+  showReturnPolicyDetails = false,
+  purchaseDate
 }: CompanySelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [showPolicyModal, setShowPolicyModal] = useState(false);
+  const [expandedCompany, setExpandedCompany] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch companies based on search query
@@ -96,10 +113,31 @@ export default function CompanySelector({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleCompanySelect = (company: Company) => {
-    onCompanySelect(company, returnPolicy);
+  const handleCompanySelect = (company: Company, location?: CompanyLocation) => {
+    onCompanySelect(company, location, returnPolicy);
     setIsOpen(false);
     setSearchQuery("");
+  };
+
+  // Check if return violates policy (past return window)
+  const checkPolicyViolation = (policy: ReturnPolicy): { hasViolation: boolean; message: string } => {
+    if (!purchaseDate || !policy) return { hasViolation: false, message: '' };
+
+    const purchaseDateObj = new Date(purchaseDate);
+    const daysPassed = Math.floor((new Date().getTime() - purchaseDateObj.getTime()) / (1000 * 60 * 60 * 24));
+    
+    if (daysPassed > policy.returnWindowDays) {
+      return { 
+        hasViolation: true, 
+        message: `Return window expired: ${policy.returnWindowDays} days allowed, ${daysPassed} days have passed since purchase.` 
+      };
+    }
+    
+    return { hasViolation: false, message: '' };
+  };
+
+  const toggleCompanyExpansion = (companyId: number) => {
+    setExpandedCompany(expandedCompany === companyId ? null : companyId);
   };
 
   const handleSearchChange = (value: string) => {
@@ -193,48 +231,97 @@ export default function CompanySelector({
               ) : (
                 <div className="divide-y divide-gray-100">
                   {companies.map((company: Company, index: number) => (
-                    <div
-                      key={company.id}
-                      onClick={() => handleCompanySelect(company)}
-                      className="p-4 hover:bg-amber-50 cursor-pointer transition-colors"
-                      data-testid={`company-option-${company.id}`}
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-gray-900">{company.name}</h3>
-                            {company.isFeatured && (
-                              <Star className="h-4 w-4 text-amber-500 fill-current" />
+                    <div key={company.id} className="border-b border-gray-100 last:border-b-0">
+                      {/* Company Header */}
+                      <div className="p-4 hover:bg-amber-50 transition-colors">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-semibold text-gray-900">{company.name}</h3>
+                              {company.isFeatured && (
+                                <Star className="h-4 w-4 text-amber-500 fill-current" />
+                              )}
+                              <Badge variant="outline" className="text-xs">
+                                {company.category.replace(/_/g, ' ')}
+                              </Badge>
+                            </div>
+                            
+                            {company.description && (
+                              <p className="text-sm text-gray-600 mb-2">{company.description}</p>
                             )}
-                            <Badge variant="outline" className="text-xs">
-                              {company.category.replace(/_/g, ' ')}
-                            </Badge>
-                          </div>
-                          
-                          {company.description && (
-                            <p className="text-sm text-gray-600 mb-2">{company.description}</p>
-                          )}
-                          
-                          <div className="flex items-center gap-4 text-xs text-gray-500">
-                            <div className="flex items-center gap-1">
-                              <Building2 className="h-3 w-3" />
-                              {company.businessType.replace(/_/g, ' ')}
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {company.stLouisLocations?.length || 0} locations
-                            </div>
-                            {company.websiteUrl && (
+                            
+                            <div className="flex items-center gap-4 text-xs text-gray-500">
                               <div className="flex items-center gap-1">
-                                <ExternalLink className="h-3 w-3" />
-                                Website
+                                <Building2 className="h-3 w-3" />
+                                {company.businessType.replace(/_/g, ' ')}
                               </div>
-                            )}
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-3 w-3" />
+                                {company.stLouisLocations?.length || 0} locations
+                              </div>
+                            </div>
                           </div>
+                          
+                          {company.stLouisLocations && company.stLouisLocations.length > 1 ? (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleCompanyExpansion(company.id)}
+                              className="text-gray-400 hover:text-gray-600"
+                            >
+                              {expandedCompany === company.id ? "Hide Locations" : "Show Locations"}
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCompanySelect(company, company.stLouisLocations?.[0])}
+                              className="text-amber-600 hover:text-amber-800"
+                              data-testid={`select-company-${company.id}`}
+                            >
+                              Select Store
+                            </Button>
+                          )}
                         </div>
-                        
-                        <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0 ml-2" />
                       </div>
+
+                      {/* Store Locations (for multi-location companies) */}
+                      {expandedCompany === company.id && company.stLouisLocations && company.stLouisLocations.length > 1 && (
+                        <div className="bg-gray-50 border-t border-gray-100">
+                          {company.stLouisLocations.map((location, locationIndex) => (
+                            <div
+                              key={location.id || locationIndex}
+                              onClick={() => handleCompanySelect(company, location)}
+                              className="p-3 pl-8 hover:bg-amber-50 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0"
+                              data-testid={`location-option-${company.id}-${locationIndex}`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <h4 className="font-medium text-gray-900 text-sm">{location.name}</h4>
+                                  <p className="text-sm text-gray-600 mt-1">{location.address}</p>
+                                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                    <div className="flex items-center gap-1">
+                                      <MapPin className="h-3 w-3" />
+                                      {location.city}, {location.state} {location.zipCode}
+                                    </div>
+                                    {location.acceptsReturns && (
+                                      <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                        Accepts Returns
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Single Location Company - Auto-select */}
+                      {(!company.stLouisLocations || company.stLouisLocations.length <= 1) && (
+                        <div className="hidden" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -247,119 +334,174 @@ export default function CompanySelector({
       {/* Selected Company Details */}
       {selectedCompany && (
         <Card className="mt-4 border-amber-200 bg-amber-50/30">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Building2 className="h-5 w-5 text-amber-700" />
-              {selectedCompany.name}
-              {selectedCompany.isFeatured && (
-                <Star className="h-4 w-4 text-amber-500 fill-current" />
-              )}
-            </CardTitle>
-            {selectedCompany.description && (
-              <CardDescription>{selectedCompany.description}</CardDescription>
-            )}
-          </CardHeader>
-
-          {/* Return Policy Details */}
-          {showReturnPolicyDetails && returnPolicy && (
-            <CardContent className="pt-0">
-              <Separator className="mb-4" />
-              
-              <div className="space-y-3">
-                <h4 className="font-medium text-gray-900 flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-amber-600" />
-                  Return Policy Summary
-                </h4>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  {/* Return Window */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Return Window:</span>
-                    <Badge className={getReturnWindowColor(returnPolicy.returnWindowDays)}>
-                      {returnPolicy.returnWindowDays} days
-                    </Badge>
-                  </div>
-
-                  {/* Refund Method */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Refund Method:</span>
-                    <div className="flex items-center gap-1">
-                      {getRefundMethodIcon(returnPolicy.refundMethod)}
-                      <span className="font-medium">
-                        {formatRefundMethod(returnPolicy.refundMethod)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Receipt Required */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Receipt Required:</span>
-                    {returnPolicy.requiresReceipt ? (
-                      <div className="flex items-center gap-1 text-red-600">
-                        <AlertTriangle className="h-3 w-3" />
-                        <span>Yes</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <CheckCircle className="h-3 w-3" />
-                        <span>No</span>
-                      </div>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5 text-amber-700" />
+                <div>
+                  <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                    {selectedCompany.name}
+                    {selectedCompany.isFeatured && (
+                      <Star className="h-4 w-4 text-amber-500 fill-current" />
                     )}
-                  </div>
-
-                  {/* Tags Required */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Tags Required:</span>
-                    {returnPolicy.requiresOriginalTags ? (
-                      <div className="flex items-center gap-1 text-red-600">
-                        <AlertTriangle className="h-3 w-3" />
-                        <span>Yes</span>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-1 text-green-600">
-                        <CheckCircle className="h-3 w-3" />
-                        <span>No</span>
-                      </div>
-                    )}
-                  </div>
+                  </h3>
+                  {selectedLocation && (
+                    <p className="text-sm text-gray-600 mt-1">
+                      <MapPin className="h-3 w-3 inline mr-1" />
+                      {selectedLocation.name} - {selectedLocation.address}
+                    </p>
+                  )}
                 </div>
+              </div>
+              
+              {returnPolicy && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowPolicyModal(true)}
+                  className="text-xs"
+                >
+                  View Return Policy
+                </Button>
+              )}
+            </div>
 
-                {/* Excluded Categories */}
-                {returnPolicy.excludedCategories && returnPolicy.excludedCategories.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-sm text-gray-600 mb-2">Items that cannot be returned:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {returnPolicy.excludedCategories.map((category, index) => (
-                        <Badge key={index} variant="outline" className="text-xs text-red-700 border-red-200">
-                          {category.replace(/_/g, ' ')}
-                        </Badge>
-                      ))}
+            {/* Only show policy violations/warnings */}
+            {returnPolicy && (() => {
+              const violation = checkPolicyViolation(returnPolicy);
+              if (violation.hasViolation) {
+                return (
+                  <div className="mt-3 p-3 bg-red-100 border border-red-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-red-800">Return Window Expired</p>
+                        <p className="text-sm text-red-700 mt-1">{violation.message}</p>
+                      </div>
                     </div>
                   </div>
-                )}
-
-                {/* Additional Terms */}
-                {returnPolicy.additionalTerms && (
-                  <div className="mt-3 p-3 bg-amber-100 rounded-lg">
-                    <p className="text-sm text-amber-800">
-                      <strong>Additional Terms:</strong> {returnPolicy.additionalTerms}
-                    </p>
-                  </div>
-                )}
-
-                {/* Restocking Fee Warning */}
-                {returnPolicy.chargesRestockingFee && (
-                  <div className="mt-3 p-3 bg-red-100 rounded-lg">
-                    <p className="text-sm text-red-800 flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
-                      <strong>Restocking Fee:</strong> {returnPolicy.restockingFeePercent}% fee applies to returned items
-                    </p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          )}
+                );
+              }
+              return null;
+            })()}
+          </CardContent>
         </Card>
+      )}
+
+      {/* Return Policy Modal */}
+      {showPolicyModal && returnPolicy && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="max-w-2xl w-full max-h-[80vh] overflow-hidden">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-amber-600" />
+                  Return Policy - {selectedCompany?.name}
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowPolicyModal(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  ×
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            
+            <CardContent>
+              <ScrollArea className="h-96">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    {/* Return Window */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Return Window:</span>
+                      <Badge className={getReturnWindowColor(returnPolicy.returnWindowDays)}>
+                        {returnPolicy.returnWindowDays} days
+                      </Badge>
+                    </div>
+
+                    {/* Refund Method */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Refund Method:</span>
+                      <div className="flex items-center gap-1">
+                        {getRefundMethodIcon(returnPolicy.refundMethod)}
+                        <span className="font-medium">
+                          {formatRefundMethod(returnPolicy.refundMethod)}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Receipt Required */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Receipt Required:</span>
+                      {returnPolicy.requiresReceipt ? (
+                        <div className="flex items-center gap-1 text-red-600">
+                          <AlertTriangle className="h-3 w-3" />
+                          <span>Yes</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <CheckCircle className="h-3 w-3" />
+                          <span>No</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tags Required */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600">Tags Required:</span>
+                      {returnPolicy.requiresOriginalTags ? (
+                        <div className="flex items-center gap-1 text-red-600">
+                          <AlertTriangle className="h-3 w-3" />
+                          <span>Yes</span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1 text-green-600">
+                          <CheckCircle className="h-3 w-3" />
+                          <span>No</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Excluded Categories */}
+                  {returnPolicy.excludedCategories && returnPolicy.excludedCategories.length > 0 && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">Items that cannot be returned:</p>
+                      <div className="flex flex-wrap gap-1">
+                        {returnPolicy.excludedCategories.map((category, index) => (
+                          <Badge key={index} variant="outline" className="text-xs text-red-700 border-red-200">
+                            {category.replace(/_/g, ' ')}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Additional Terms */}
+                  {returnPolicy.additionalTerms && (
+                    <div className="p-3 bg-amber-100 rounded-lg">
+                      <p className="text-sm text-amber-800">
+                        <strong>Additional Terms:</strong> {returnPolicy.additionalTerms}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Restocking Fee Warning */}
+                  {returnPolicy.chargesRestockingFee && (
+                    <div className="p-3 bg-red-100 rounded-lg">
+                      <p className="text-sm text-red-800 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        <strong>Restocking Fee:</strong> {returnPolicy.restockingFeePercent}% fee applies to returned items
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
