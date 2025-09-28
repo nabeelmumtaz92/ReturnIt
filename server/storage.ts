@@ -19,6 +19,9 @@ import {
   type ZipCodeManagement, type InsertZipCodeManagement,
   type OtpVerification, type InsertOtpVerification,
   type SupportTicket, type InsertSupportTicket,
+  type Company, type InsertCompany,
+  type ReturnPolicy, type InsertReturnPolicy,
+  type CompanyLocation, type InsertCompanyLocation,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -29,7 +32,8 @@ import {
   driverApplications, driverEarnings, trackingEvents,
   driverOrderAssignments, orderStatusHistory, driverLocationPings,
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
-  merchantPolicies, supportTicketsEnhanced, supportMessages
+  merchantPolicies, supportTicketsEnhanced, supportMessages,
+  companies, returnPolicies, companyLocations
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -84,6 +88,27 @@ export interface IStorage {
   createDriverDocument(document: InsertDriverDocument): Promise<DriverDocument>;
   updateDriverDocument(id: number, updates: Partial<DriverDocument>): Promise<DriverDocument | undefined>;
   deleteDriverDocument(id: number): Promise<boolean>;
+
+  // Company and Return Policy Methods
+  getCompanies(isActive?: boolean): Promise<Company[]>;
+  getCompany(id: number): Promise<Company | undefined>;
+  getCompanyBySlug(slug: string): Promise<Company | undefined>;
+  createCompany(company: InsertCompany): Promise<Company>;
+  updateCompany(id: number, updates: Partial<Company>): Promise<Company | undefined>;
+  deleteCompany(id: number): Promise<boolean>;
+  
+  getReturnPolicies(companyId?: number): Promise<ReturnPolicy[]>;
+  getReturnPolicy(id: number): Promise<ReturnPolicy | undefined>;
+  getReturnPolicyByCompany(companyId: number): Promise<ReturnPolicy | undefined>;
+  createReturnPolicy(policy: InsertReturnPolicy): Promise<ReturnPolicy>;
+  updateReturnPolicy(id: number, updates: Partial<ReturnPolicy>): Promise<ReturnPolicy | undefined>;
+  deleteReturnPolicy(id: number): Promise<boolean>;
+  
+  getCompanyLocations(companyId?: number): Promise<CompanyLocation[]>;
+  getCompanyLocation(id: number): Promise<CompanyLocation | undefined>;
+  createCompanyLocation(location: InsertCompanyLocation): Promise<CompanyLocation>;
+  updateCompanyLocation(id: number, updates: Partial<CompanyLocation>): Promise<CompanyLocation | undefined>;
+  deleteCompanyLocation(id: number): Promise<boolean>;
   
   // Payment methods
   getPaymentRecords(): Promise<any[]>;
@@ -264,6 +289,9 @@ export class MemStorage implements IStorage {
   private webhookDeliveries: Map<number, WebhookDelivery>;
   private supportTickets: Map<number, SupportTicket>;
   private supportMessages: Map<number, any>;
+  private companies: Map<number, Company>;
+  private returnPolicies: Map<number, ReturnPolicy>;
+  private companyLocations: Map<number, CompanyLocation>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextDocumentId: number = 1;
@@ -278,6 +306,9 @@ export class MemStorage implements IStorage {
   private nextWebhookEndpointId: number = 1;
   private nextWebhookEventId: number = 1;
   private nextWebhookDeliveryId: number = 1;
+  private nextCompanyId: number = 1;
+  private nextReturnPolicyId: number = 1;
+  private nextCompanyLocationId: number = 1;
 
   constructor() {
     this.users = new Map();
@@ -298,6 +329,9 @@ export class MemStorage implements IStorage {
     this.webhookDeliveries = new Map();
     this.supportTickets = new Map();
     this.supportMessages = new Map();
+    this.companies = new Map();
+    this.returnPolicies = new Map();
+    this.companyLocations = new Map();
     
     // Master Administrator account (real data only)
     const masterAdmin: User = {
@@ -1141,6 +1175,191 @@ export class MemStorage implements IStorage {
 
   async deleteDriverDocument(id: number): Promise<boolean> {
     return this.driverDocuments.delete(id);
+  }
+
+  // Company Methods
+  async getCompanies(isActive?: boolean): Promise<Company[]> {
+    let companies = Array.from(this.companies.values());
+    if (isActive !== undefined) {
+      companies = companies.filter(company => company.isActive === isActive);
+    }
+    return companies;
+  }
+
+  async getCompany(id: number): Promise<Company | undefined> {
+    return this.companies.get(id);
+  }
+
+  async getCompanyBySlug(slug: string): Promise<Company | undefined> {
+    return Array.from(this.companies.values()).find(company => company.slug === slug);
+  }
+
+  async createCompany(insertCompany: InsertCompany): Promise<Company> {
+    const company: Company = {
+      id: this.nextCompanyId++,
+      name: insertCompany.name,
+      slug: insertCompany.slug,
+      category: insertCompany.category,
+      description: insertCompany.description || null,
+      logoUrl: insertCompany.logoUrl || null,
+      websiteUrl: insertCompany.websiteUrl || null,
+      headquarters: insertCompany.headquarters || null,
+      stLouisLocations: insertCompany.stLouisLocations ?? [],
+      serviceRadius: insertCompany.serviceRadius ?? 25,
+      businessType: insertCompany.businessType,
+      foundedYear: insertCompany.foundedYear || null,
+      employeeCount: insertCompany.employeeCount || null,
+      prefersInStore: insertCompany.prefersInStore ?? false,
+      allowsMailReturns: insertCompany.allowsMailReturns ?? true,
+      usesReturnItService: insertCompany.usesReturnItService ?? true,
+      isActive: insertCompany.isActive ?? true,
+      isFeatured: insertCompany.isFeatured ?? false,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.companies.set(company.id, company);
+    return company;
+  }
+
+  async updateCompany(id: number, updates: Partial<Company>): Promise<Company | undefined> {
+    const company = this.companies.get(id);
+    if (!company) return undefined;
+    
+    const updatedCompany = {
+      ...company,
+      ...updates,
+      updatedAt: new Date()
+    };
+    this.companies.set(id, updatedCompany);
+    return updatedCompany;
+  }
+
+  async deleteCompany(id: number): Promise<boolean> {
+    return this.companies.delete(id);
+  }
+
+  // Return Policy Methods
+  async getReturnPolicies(companyId?: number): Promise<ReturnPolicy[]> {
+    let policies = Array.from(this.returnPolicies.values());
+    if (companyId !== undefined) {
+      policies = policies.filter(policy => policy.companyId === companyId);
+    }
+    return policies;
+  }
+
+  async getReturnPolicy(id: number): Promise<ReturnPolicy | undefined> {
+    return this.returnPolicies.get(id);
+  }
+
+  async getReturnPolicyByCompany(companyId: number): Promise<ReturnPolicy | undefined> {
+    return Array.from(this.returnPolicies.values()).find(policy => policy.companyId === companyId);
+  }
+
+  async createReturnPolicy(insertPolicy: InsertReturnPolicy): Promise<ReturnPolicy> {
+    const policy: ReturnPolicy = {
+      id: this.nextReturnPolicyId++,
+      companyId: insertPolicy.companyId,
+      returnWindowDays: insertPolicy.returnWindowDays,
+      returnWindowType: insertPolicy.returnWindowType,
+      requiresReceipt: insertPolicy.requiresReceipt ?? true,
+      requiresOriginalPackaging: insertPolicy.requiresOriginalPackaging ?? false,
+      requiresOriginalTags: insertPolicy.requiresOriginalTags ?? true,
+      allowsWornItems: insertPolicy.allowsWornItems ?? false,
+      allowsOpenedItems: insertPolicy.allowsOpenedItems ?? true,
+      conditionRequirements: insertPolicy.conditionRequirements ?? {},
+      acceptsInStoreReturns: insertPolicy.acceptsInStoreReturns ?? true,
+      acceptsMailReturns: insertPolicy.acceptsMailReturns ?? true,
+      acceptsPickupService: insertPolicy.acceptsPickupService ?? true,
+      chargesRestockingFee: insertPolicy.chargesRestockingFee ?? false,
+      restockingFeePercent: insertPolicy.restockingFeePercent ?? 0,
+      refundMethod: insertPolicy.refundMethod,
+      refundProcessingDays: insertPolicy.refundProcessingDays ?? 5,
+      excludedCategories: insertPolicy.excludedCategories ?? [],
+      specialCategoryRules: insertPolicy.specialCategoryRules ?? {},
+      extendedHolidayWindow: insertPolicy.extendedHolidayWindow ?? false,
+      holidayExtensionDays: insertPolicy.holidayExtensionDays ?? 0,
+      additionalTerms: insertPolicy.additionalTerms || null,
+      policyUrl: insertPolicy.policyUrl || null,
+      isActive: insertPolicy.isActive ?? true,
+      effectiveDate: insertPolicy.effectiveDate || new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.returnPolicies.set(policy.id, policy);
+    return policy;
+  }
+
+  async updateReturnPolicy(id: number, updates: Partial<ReturnPolicy>): Promise<ReturnPolicy | undefined> {
+    const policy = this.returnPolicies.get(id);
+    if (!policy) return undefined;
+    
+    const updatedPolicy = {
+      ...policy,
+      ...updates,
+      updatedAt: new Date()
+    };
+    this.returnPolicies.set(id, updatedPolicy);
+    return updatedPolicy;
+  }
+
+  async deleteReturnPolicy(id: number): Promise<boolean> {
+    return this.returnPolicies.delete(id);
+  }
+
+  // Company Location Methods
+  async getCompanyLocations(companyId?: number): Promise<CompanyLocation[]> {
+    let locations = Array.from(this.companyLocations.values());
+    if (companyId !== undefined) {
+      locations = locations.filter(location => location.companyId === companyId);
+    }
+    return locations;
+  }
+
+  async getCompanyLocation(id: number): Promise<CompanyLocation | undefined> {
+    return this.companyLocations.get(id);
+  }
+
+  async createCompanyLocation(insertLocation: InsertCompanyLocation): Promise<CompanyLocation> {
+    const location: CompanyLocation = {
+      id: this.nextCompanyLocationId++,
+      companyId: insertLocation.companyId,
+      name: insertLocation.name,
+      address: insertLocation.address,
+      city: insertLocation.city,
+      state: insertLocation.state,
+      zipCode: insertLocation.zipCode,
+      phone: insertLocation.phone || null,
+      coordinates: insertLocation.coordinates || null,
+      storeType: insertLocation.storeType || null,
+      squareFootage: insertLocation.squareFootage || null,
+      hours: insertLocation.hours || null,
+      acceptsReturns: insertLocation.acceptsReturns ?? true,
+      hasCustomerService: insertLocation.hasCustomerService ?? true,
+      prefersAppointments: insertLocation.prefersAppointments ?? false,
+      maxReturnsPerDay: insertLocation.maxReturnsPerDay || null,
+      isActive: insertLocation.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.companyLocations.set(location.id, location);
+    return location;
+  }
+
+  async updateCompanyLocation(id: number, updates: Partial<CompanyLocation>): Promise<CompanyLocation | undefined> {
+    const location = this.companyLocations.get(id);
+    if (!location) return undefined;
+    
+    const updatedLocation = {
+      ...location,
+      ...updates,
+      updatedAt: new Date()
+    };
+    this.companyLocations.set(id, updatedLocation);
+    return updatedLocation;
+  }
+
+  async deleteCompanyLocation(id: number): Promise<boolean> {
+    return this.companyLocations.delete(id);
   }
 
   // Analytics

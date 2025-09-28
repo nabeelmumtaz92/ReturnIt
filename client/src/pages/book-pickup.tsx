@@ -18,6 +18,7 @@ import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
 import RoutePreview from "@/components/RoutePreview";
 import { PaymentBreakdown } from "@/components/PaymentBreakdown";
+import CompanySelector from "@/components/CompanySelector";
 import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
 import type { RouteInfo as PaymentRouteInfo } from "@shared/paymentCalculator";
 import { validateOrderPolicy, determinePolicyAction, PolicyAction, formatPolicyMessage } from "@shared/policyValidator";
@@ -58,8 +59,10 @@ export default function BookPickup() {
     city: '',
     state: '',
     zipCode: '',
-    // Retailer selection
-    retailer: '',
+    // Company selection (enhanced retailer system)
+    selectedCompany: null as any,
+    selectedReturnPolicy: null as any,
+    retailer: '', // Keep for backwards compatibility
     retailerQuery: '',
     // Return details
     orderName: '', // NEW: Order name like "Black Purse"
@@ -96,6 +99,17 @@ export default function BookPickup() {
   // State for UI interactions  
   const [showRetailerDropdown, setShowRetailerDropdown] = useState(false);
   const [filteredRetailers, setFilteredRetailers] = useState<string[]>([]);
+  
+  // Company selection handler
+  const handleCompanySelect = (company: any, policy?: any) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedCompany: company,
+      selectedReturnPolicy: policy,
+      retailer: company.name // Set retailer name for backwards compatibility
+    }));
+    console.log('🏢 Company selected:', company.name, 'Policy:', policy);
+  };
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<Location | null>(null);
   const [selectedStore, setSelectedStore] = useState<NearbyStore | null>(null);
@@ -593,24 +607,13 @@ export default function BookPickup() {
           <MapPin className="h-5 w-5 text-amber-600" />
           <Label className="text-amber-800 font-semibold text-lg">Retailer Information</Label>
         </div>
-        <div className="relative">
-          <Label htmlFor="retailer" className="text-amber-800 font-medium">Retailer/Store Name *</Label>
-          <Input id="retailer" placeholder="e.g., Target, Walmart, Amazon" value={formData.retailerQuery}
-            onChange={(e) => handleRetailerSearch(e.target.value)}
-            onFocus={() => formData.retailerQuery.length > 0 && setShowRetailerDropdown(true)}
-            className="bg-white/80 border-amber-300 focus:border-amber-500"
-            required data-testid="input-retailer" />
-          {showRetailerDropdown && filteredRetailers.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-amber-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-              {filteredRetailers.map((retailer) => (
-                <button key={retailer} type="button" onClick={() => selectRetailer(retailer)}
-                  className="block w-full px-3 py-2 text-left hover:bg-amber-50 text-amber-800 border-b border-amber-100 last:border-b-0">
-                  {retailer}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <CompanySelector
+          selectedCompany={formData.selectedCompany}
+          onCompanySelect={handleCompanySelect}
+          placeholder="Search for a store (e.g., Target, Walmart, Best Buy)..."
+          showReturnPolicyDetails={true}
+          className="bg-white/80"
+        />
 
         {formData.retailer && (
           <div className="space-y-3">

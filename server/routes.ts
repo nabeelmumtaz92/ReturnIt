@@ -3883,6 +3883,449 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Company and Return Policy API Endpoints
+  
+  // Get all companies (with optional filtering)
+  app.get("/api/companies", async (req, res) => {
+    try {
+      const { active } = req.query;
+      const isActive = active === 'true' ? true : active === 'false' ? false : undefined;
+      const companies = await storage.getCompanies(isActive);
+      res.json(companies);
+    } catch (error) {
+      console.error('Error fetching companies:', error);
+      res.status(500).json({ message: 'Failed to fetch companies' });
+    }
+  });
+
+  // Get single company by ID
+  app.get("/api/companies/:id", async (req, res) => {
+    try {
+      const companyId = parseInt(req.params.id);
+      const company = await storage.getCompany(companyId);
+      if (!company) {
+        return res.status(404).json({ message: 'Company not found' });
+      }
+      res.json(company);
+    } catch (error) {
+      console.error('Error fetching company:', error);
+      res.status(500).json({ message: 'Failed to fetch company' });
+    }
+  });
+
+  // Get company by slug
+  app.get("/api/companies/slug/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const company = await storage.getCompanyBySlug(slug);
+      if (!company) {
+        return res.status(404).json({ message: 'Company not found' });
+      }
+      res.json(company);
+    } catch (error) {
+      console.error('Error fetching company by slug:', error);
+      res.status(500).json({ message: 'Failed to fetch company' });
+    }
+  });
+
+  // Get return policies for a company
+  app.get("/api/companies/:id/return-policy", async (req, res) => {
+    try {
+      const companyId = parseInt(req.params.id);
+      const policy = await storage.getReturnPolicyByCompany(companyId);
+      if (!policy) {
+        return res.status(404).json({ message: 'Return policy not found for this company' });
+      }
+      res.json(policy);
+    } catch (error) {
+      console.error('Error fetching return policy:', error);
+      res.status(500).json({ message: 'Failed to fetch return policy' });
+    }
+  });
+
+  // Get company locations
+  app.get("/api/companies/:id/locations", async (req, res) => {
+    try {
+      const companyId = parseInt(req.params.id);
+      const locations = await storage.getCompanyLocations(companyId);
+      res.json(locations);
+    } catch (error) {
+      console.error('Error fetching company locations:', error);
+      res.status(500).json({ message: 'Failed to fetch company locations' });
+    }
+  });
+
+  // Search companies for dropdown (enhanced retailer search)
+  app.get("/api/companies/search", async (req, res) => {
+    try {
+      const { q: query, category, featured } = req.query;
+      let companies = await storage.getCompanies(true); // Only active companies
+      
+      // Auto-populate with St. Louis companies if none exist
+      if (companies.length === 0) {
+        console.log('🏢 No companies found, initializing with St. Louis business data...');
+        await populateStLouisCompanies(storage);
+        companies = await storage.getCompanies(true);
+      }
+      
+      // Filter by search query
+      if (query) {
+        companies = companies.filter(company => 
+          company.name.toLowerCase().includes((query as string).toLowerCase()) ||
+          company.category.toLowerCase().includes((query as string).toLowerCase())
+        );
+      }
+      
+      // Filter by category
+      if (category) {
+        companies = companies.filter(company => company.category === category);
+      }
+      
+      // Filter for featured companies only
+      if (featured === 'true') {
+        companies = companies.filter(company => company.isFeatured);
+      }
+      
+      // Sort featured companies first, then alphabetically
+      companies.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return a.name.localeCompare(b.name);
+      });
+      
+      res.json(companies);
+    } catch (error) {
+      console.error('Error searching companies:', error);
+      res.status(500).json({ message: 'Failed to search companies' });
+    }
+  });
+
+  // Admin endpoint to populate St. Louis companies data
+  app.post("/api/admin/populate-companies", requireAdmin, async (req, res) => {
+    try {
+      console.log('🏢 Admin requesting St. Louis companies population...');
+      await populateStLouisCompanies(storage);
+      const companies = await storage.getCompanies(true);
+      console.log(`✅ Successfully populated ${companies.length} St. Louis companies`);
+      
+      res.json({
+        message: `Successfully populated ${companies.length} St. Louis companies with return policies`,
+        companiesCount: companies.length
+      });
+    } catch (error) {
+      console.error('Error populating companies:', error);
+      res.status(500).json({ message: 'Failed to populate companies' });
+    }
+  });
+
+  // Company Data Population Function
+  async function populateStLouisCompanies(storage: IStorage) {
+    // Major St. Louis area retailers and businesses that would use return services
+    const stLouisCompaniesData = [
+      // Department Stores & Major Retailers
+      {
+        company: {
+          name: "Dillard's",
+          slug: "dillards",
+          category: "department_store",
+          description: "Upscale department store with clothing, accessories, cosmetics, and home goods",
+          websiteUrl: "https://www.dillards.com",
+          headquarters: "Little Rock, AR",
+          businessType: "national",
+          foundedYear: 1938,
+          employeeCount: "10,000+",
+          stLouisLocations: [
+            { name: "West County Mall", address: "11215 W County Center Dr, Des Peres, MO 63131" },
+            { name: "South County Center", address: "18 S County Center, St. Louis, MO 63129" }
+          ],
+          isFeatured: true,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 30,
+          returnWindowType: "purchase",
+          requiresReceipt: true,
+          requiresOriginalTags: true,
+          allowsWornItems: false,
+          refundMethod: "original_payment",
+          refundProcessingDays: 7,
+          excludedCategories: ["cosmetics", "undergarments", "swimwear"],
+          additionalTerms: "Items must be in original condition with tags attached"
+        }
+      },
+      {
+        company: {
+          name: "Macy's",
+          slug: "macys",
+          category: "department_store", 
+          description: "National department store chain with fashion, home, and beauty products",
+          websiteUrl: "https://www.macys.com",
+          headquarters: "New York, NY",
+          businessType: "national",
+          foundedYear: 1858,
+          employeeCount: "50,000+",
+          stLouisLocations: [
+            { name: "West County Center", address: "11911 W County Center Dr, Des Peres, MO 63131" },
+            { name: "Chesterfield Mall", address: "291 Chesterfield Mall, Chesterfield, MO 63017" }
+          ],
+          isFeatured: true,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 90,
+          returnWindowType: "purchase",
+          requiresReceipt: false,
+          requiresOriginalTags: true,
+          allowsWornItems: false,
+          refundMethod: "original_payment",
+          refundProcessingDays: 5,
+          extendedHolidayWindow: true,
+          holidayExtensionDays: 30,
+          additionalTerms: "Returns without receipt receive store credit at lowest sale price"
+        }
+      },
+      
+      // Local St. Louis Retailers
+      {
+        company: {
+          name: "Local Jones",
+          slug: "local-jones",
+          category: "clothing",
+          description: "Local St. Louis boutique featuring contemporary women's fashion and accessories",
+          websiteUrl: "https://www.localjones.com", 
+          headquarters: "St. Louis, MO",
+          businessType: "local",
+          foundedYear: 2015,
+          employeeCount: "11-50",
+          stLouisLocations: [
+            { name: "Clayton Store", address: "7371 Forsyth Blvd, Clayton, MO 63105" },
+            { name: "Central West End", address: "4622 Maryland Ave, St. Louis, MO 63108" }
+          ],
+          isFeatured: true,
+          usesReturnItService: true,
+          prefersInStore: true
+        },
+        policy: {
+          returnWindowDays: 14,
+          returnWindowType: "purchase",
+          requiresReceipt: true,
+          requiresOriginalTags: true,
+          allowsWornItems: false,
+          refundMethod: "store_credit",
+          refundProcessingDays: 3,
+          excludedCategories: ["sale_items", "undergarments"],
+          additionalTerms: "Final sale items cannot be returned. Store credit valid for 1 year."
+        }
+      },
+
+      // Electronics & Tech
+      {
+        company: {
+          name: "Best Buy",
+          slug: "best-buy",
+          category: "electronics",
+          description: "Consumer electronics retailer with computers, phones, appliances, and more",
+          websiteUrl: "https://www.bestbuy.com",
+          headquarters: "Richfield, MN",
+          businessType: "national", 
+          foundedYear: 1966,
+          employeeCount: "50,000+",
+          stLouisLocations: [
+            { name: "Brentwood", address: "2625 S Brentwood Blvd, Brentwood, MO 63144" },
+            { name: "Chesterfield", address: "17045 N Outer 40 Rd, Chesterfield, MO 63005" },
+            { name: "Bridgeton", address: "3045 N Lindbergh Blvd, Bridgeton, MO 63043" }
+          ],
+          isFeatured: true,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 15,
+          returnWindowType: "purchase", 
+          requiresReceipt: true,
+          requiresOriginalPackaging: true,
+          allowsOpenedItems: true,
+          refundMethod: "original_payment",
+          refundProcessingDays: 5,
+          chargesRestockingFee: true,
+          restockingFeePercent: 15,
+          excludedCategories: ["software", "digital_downloads", "mobile_phones"],
+          specialCategoryRules: {
+            "computers": { returnWindowDays: 15, restockingFee: true },
+            "mobile_phones": { returnWindowDays: 14, requiresOriginalPackaging: true }
+          },
+          additionalTerms: "Opened items subject to restocking fee. Cell phones require original packaging."
+        }
+      },
+
+      // Home & Garden  
+      {
+        company: {
+          name: "Home Depot",
+          slug: "home-depot",
+          category: "home_goods",
+          description: "Home improvement retailer with tools, building supplies, and garden center",
+          websiteUrl: "https://www.homedepot.com",
+          headquarters: "Atlanta, GA",
+          businessType: "national",
+          foundedYear: 1978,
+          employeeCount: "50,000+",
+          stLouisLocations: [
+            { name: "Brentwood", address: "8645 Eager Rd, Brentwood, MO 63144" },
+            { name: "Kirkwood", address: "10423 Manchester Rd, Kirkwood, MO 63122" },
+            { name: "Florissant", address: "14577 New Halls Ferry Rd, Florissant, MO 63031" }
+          ],
+          isFeatured: false,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 90,
+          returnWindowType: "purchase",
+          requiresReceipt: true,
+          allowsOpenedItems: true,
+          refundMethod: "original_payment",
+          refundProcessingDays: 7,
+          excludedCategories: ["plants", "special_orders", "cut_materials"],
+          additionalTerms: "Plants have 1 year guarantee. Special orders non-returnable."
+        }
+      },
+
+      // Specialty Retailers
+      {
+        company: {
+          name: "Nordstrom Rack",
+          slug: "nordstrom-rack",
+          category: "clothing",
+          description: "Off-price retail division of Nordstrom with designer brands at reduced prices",
+          websiteUrl: "https://www.nordstromrack.com",
+          headquarters: "Seattle, WA",
+          businessType: "national",
+          foundedYear: 1973,
+          employeeCount: "10,000+",
+          stLouisLocations: [
+            { name: "Brentwood", address: "1517 S Brentwood Blvd, Brentwood, MO 63144" }
+          ],
+          isFeatured: true,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 45,
+          returnWindowType: "purchase",
+          requiresReceipt: false,
+          requiresOriginalTags: true,
+          allowsWornItems: false,
+          refundMethod: "original_payment",
+          refundProcessingDays: 10,
+          additionalTerms: "Returns without receipt receive store credit. Designer items may have shorter return windows."
+        }
+      },
+
+      // Local Specialty Stores
+      {
+        company: {
+          name: "Putt N' Around",
+          slug: "putt-n-around",
+          category: "sporting_goods",
+          description: "Local St. Louis golf equipment and accessories retailer",
+          websiteUrl: "https://www.puttnaround.com",
+          headquarters: "St. Louis, MO", 
+          businessType: "local",
+          foundedYear: 1995,
+          employeeCount: "11-50",
+          stLouisLocations: [
+            { name: "Main Store", address: "12345 Olive Blvd, Creve Coeur, MO 63141" }
+          ],
+          isFeatured: false,
+          usesReturnItService: true,
+          prefersInStore: true
+        },
+        policy: {
+          returnWindowDays: 30,
+          returnWindowType: "purchase",
+          requiresReceipt: true,
+          allowsOpenedItems: true,
+          refundMethod: "store_credit",
+          refundProcessingDays: 1,
+          excludedCategories: ["custom_items", "personalized_items"],
+          additionalTerms: "Custom golf clubs cannot be returned. Equipment must be in original condition."
+        }
+      },
+
+      // Pharmacy/Health & Beauty
+      {
+        company: {
+          name: "CVS Pharmacy", 
+          slug: "cvs-pharmacy",
+          category: "pharmacy",
+          description: "Pharmacy chain with health, beauty, and convenience products",
+          websiteUrl: "https://www.cvs.com",
+          headquarters: "Woonsocket, RI",
+          businessType: "national",
+          foundedYear: 1963,
+          employeeCount: "50,000+",
+          stLouisLocations: [
+            { name: "Clayton", address: "8001 Bonhomme Ave, Clayton, MO 63105" },
+            { name: "Webster Groves", address: "8888 Ladue Rd, Webster Groves, MO 63119" }
+          ],
+          isFeatured: false,
+          usesReturnItService: true
+        },
+        policy: {
+          returnWindowDays: 60,
+          returnWindowType: "purchase", 
+          requiresReceipt: true,
+          allowsOpenedItems: false,
+          refundMethod: "original_payment",
+          refundProcessingDays: 3,
+          excludedCategories: ["prescriptions", "cosmetics", "personal_care"],
+          additionalTerms: "Unopened items only. Prescriptions cannot be returned for safety reasons."
+        }
+      }
+    ];
+
+    console.log(`🏢 Creating ${stLouisCompaniesData.length} St. Louis companies with return policies...`);
+
+    for (const companyData of stLouisCompaniesData) {
+      try {
+        // Create company
+        const company = await storage.createCompany({
+          ...companyData.company,
+          serviceRadius: 25
+        });
+
+        console.log(`✅ Created company: ${company.name} (ID: ${company.id})`);
+
+        // Create return policy
+        const policy = await storage.createReturnPolicy({
+          companyId: company.id,
+          ...companyData.policy
+        });
+
+        console.log(`📋 Created return policy for ${company.name} (Policy ID: ${policy.id})`);
+
+        // Create company locations if provided
+        if (companyData.company.stLouisLocations && companyData.company.stLouisLocations.length > 0) {
+          for (const locationData of companyData.company.stLouisLocations) {
+            const location = await storage.createCompanyLocation({
+              companyId: company.id,
+              name: locationData.name,
+              address: locationData.address,
+              city: "St. Louis",
+              state: "MO",
+              zipCode: "63000", // Generic St. Louis area zip
+              acceptsReturns: true,
+              hasCustomerService: true
+            });
+            console.log(`📍 Created location: ${location.name} for ${company.name}`);
+          }
+        }
+      } catch (error) {
+        console.error(`❌ Error creating company ${companyData.company.name}:`, error);
+      }
+    }
+
+    console.log(`🎉 Finished populating St. Louis companies database!`);
+  }
+
   // Mock document viewer endpoint (for demo purposes)
   app.get("/api/mock-document/:filename", (req, res) => {
     const { filename } = req.params;
