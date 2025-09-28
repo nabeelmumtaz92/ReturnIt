@@ -79,6 +79,12 @@ export interface IStorage {
   markNotificationRead(id: number): Promise<void>;
   markNotificationAsRead(id: number): Promise<boolean>;
   
+  // Driver Documents operations
+  getDriverDocuments(driverId: number): Promise<DriverDocument[]>;
+  createDriverDocument(document: InsertDriverDocument): Promise<DriverDocument>;
+  updateDriverDocument(id: number, updates: Partial<DriverDocument>): Promise<DriverDocument | undefined>;
+  deleteDriverDocument(id: number): Promise<boolean>;
+  
   // Payment methods
   getPaymentRecords(): Promise<any[]>;
   getPaymentSummary(): Promise<any>;
@@ -244,6 +250,7 @@ export class MemStorage implements IStorage {
   private promoCodes: Map<string, PromoCode>;
   private driverEarnings: Map<number, DriverEarning>;
   private notifications: Map<number, Notification>;
+  private driverDocuments: Map<number, DriverDocument>;
   private analytics: Map<string, Analytics>;
   private driverPayouts: Map<number, DriverPayout>;
   private driverIncentives: Map<number, DriverIncentive>;
@@ -259,6 +266,7 @@ export class MemStorage implements IStorage {
   private supportMessages: Map<number, any>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
+  private nextDocumentId: number = 1;
   private nextEarningId: number = 1;
   private nextPromoId: number = 1;
   private nextAnalyticsId: number = 1;
@@ -277,6 +285,7 @@ export class MemStorage implements IStorage {
     this.promoCodes = new Map();
     this.driverEarnings = new Map();
     this.notifications = new Map();
+    this.driverDocuments = new Map();
     this.analytics = new Map();
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
@@ -1085,6 +1094,53 @@ export class MemStorage implements IStorage {
       return true;
     }
     return false;
+  }
+
+  // Driver Documents
+  async getDriverDocuments(driverId: number): Promise<DriverDocument[]> {
+    return Array.from(this.driverDocuments.values()).filter(doc => doc.driverId === driverId);
+  }
+
+  async createDriverDocument(insertDocument: InsertDriverDocument): Promise<DriverDocument> {
+    const document: DriverDocument = {
+      id: this.nextDocumentId++,
+      driverId: insertDocument.driverId,
+      documentType: insertDocument.documentType,
+      documentTitle: insertDocument.documentTitle,
+      documentCategory: insertDocument.documentCategory,
+      status: insertDocument.status ?? 'pending',
+      fileUrl: insertDocument.fileUrl || null,
+      fileName: insertDocument.fileName || null,
+      fileSize: insertDocument.fileSize || null,
+      mimeType: insertDocument.mimeType || null,
+      uploadedAt: insertDocument.uploadedAt || new Date(),
+      reviewedAt: insertDocument.reviewedAt || null,
+      reviewedBy: insertDocument.reviewedBy || null,
+      reviewNotes: insertDocument.reviewNotes || null,
+      expiresAt: insertDocument.expiresAt || null,
+      metadata: insertDocument.metadata ?? {},
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.driverDocuments.set(document.id, document);
+    return document;
+  }
+
+  async updateDriverDocument(id: number, updates: Partial<DriverDocument>): Promise<DriverDocument | undefined> {
+    const document = this.driverDocuments.get(id);
+    if (!document) return undefined;
+    
+    const updatedDocument = {
+      ...document,
+      ...updates,
+      updatedAt: new Date()
+    };
+    this.driverDocuments.set(id, updatedDocument);
+    return updatedDocument;
+  }
+
+  async deleteDriverDocument(id: number): Promise<boolean> {
+    return this.driverDocuments.delete(id);
   }
 
   // Analytics

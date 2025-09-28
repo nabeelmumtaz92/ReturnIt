@@ -6218,6 +6218,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [approvalNotes, setApprovalNotes] = useState('');
     const [rejectionReason, setRejectionReason] = useState('');
     const [rejectionNotes, setRejectionNotes] = useState('');
+    
+    // Document verification states
+    const [selectedDriverDocuments, setSelectedDriverDocuments] = useState<any[]>([]);
+    const [showDocumentsModal, setShowDocumentsModal] = useState(false);
+    const [documentLoading, setDocumentLoading] = useState(false);
+    const [selectedDocument, setSelectedDocument] = useState<any>(null);
+    const [showDocumentVerifyModal, setShowDocumentVerifyModal] = useState(false);
+    const [documentVerifyStatus, setDocumentVerifyStatus] = useState('');
+    const [documentReviewNotes, setDocumentReviewNotes] = useState('');
 
     // Fetch pending applications
     const fetchPendingApplications = async () => {
@@ -6339,12 +6348,101 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       });
     };
 
+    // Fetch driver documents for verification
+    const fetchDriverDocuments = async (driverId: number) => {
+      setDocumentLoading(true);
+      try {
+        const response = await fetch(`/api/admin/driver-applications/${driverId}/documents`, {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const documents = await response.json();
+          setSelectedDriverDocuments(documents);
+          setShowDocumentsModal(true);
+        } else {
+          throw new Error('Failed to fetch documents');
+        }
+      } catch (error) {
+        console.error('Error fetching driver documents:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load driver documents",
+          variant: "destructive",
+        });
+      } finally {
+        setDocumentLoading(false);
+      }
+    };
+
+    // Verify individual document
+    const verifyDocument = async (documentId: string, status: string) => {
+      try {
+        const response = await fetch(`/api/admin/driver-applications/${selectedApplication.id}/documents/${documentId}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            status,
+            reviewNotes: documentReviewNotes,
+            adminId: 'Manual Admin Review'
+          })
+        });
+
+        if (response.ok) {
+          const responseData = await response.json();
+          const updatedDocument = responseData.document;
+          
+          toast({
+            title: `Document ${status === 'approved' ? 'Approved' : 'Rejected'}!`,
+            description: `Document has been ${status} successfully.`,
+          });
+          
+          // Parse documentId to number for proper comparison and use server response data
+          const numericDocumentId = parseInt(documentId);
+          setSelectedDriverDocuments(prev => 
+            prev.map(doc => 
+              doc.id === numericDocumentId 
+                ? updatedDocument
+                : doc
+            )
+          );
+          
+          setShowDocumentVerifyModal(false);
+          setDocumentVerifyStatus('');
+          setDocumentReviewNotes('');
+          setSelectedDocument(null);
+        } else {
+          throw new Error('Failed to verify document');
+        }
+      } catch (error) {
+        console.error('Error verifying document:', error);
+        toast({
+          title: "Error",
+          description: "Failed to verify document",
+          variant: "destructive",
+        });
+      }
+    };
+
     const getStatusBadge = (status: string) => {
       switch (status) {
         case 'pending_review':
           return <Badge className="bg-orange-100 text-orange-800 border-orange-200">Pending Review</Badge>;
         case 'background_check_pending':
           return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Background Check</Badge>;
+        default:
+          return <Badge className="bg-gray-100 text-gray-800 border-gray-200">{status}</Badge>;
+      }
+    };
+
+    const getDocumentStatusBadge = (status: string) => {
+      switch (status) {
+        case 'uploaded':
+          return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Uploaded</Badge>;
+        case 'approved':
+          return <Badge className="bg-green-100 text-green-800 border-green-200">Approved</Badge>;
+        case 'rejected':
+          return <Badge className="bg-red-100 text-red-800 border-red-200">Rejected</Badge>;
         default:
           return <Badge className="bg-gray-100 text-gray-800 border-gray-200">{status}</Badge>;
       }
@@ -6468,6 +6566,19 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       </div>
                       
                       <div className="flex gap-2 ml-4">
+                        <Button
+                          onClick={() => {
+                            setSelectedApplication(application);
+                            fetchDriverDocuments(application.id);
+                          }}
+                          size="sm"
+                          variant="outline"
+                          className="border-amber-300 text-amber-700"
+                          disabled={documentLoading}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          {documentLoading ? 'Loading...' : 'View Documents'}
+                        </Button>
                         <Button
                           onClick={() => {
                             setSelectedApplication(application);
@@ -6600,6 +6711,177 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   >
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     Reject Application
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Document Verification Modal */}
+        {showDocumentsModal && selectedApplication && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="text-amber-900">
+                    Document Verification - {selectedApplication.firstName} {selectedApplication.lastName}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowDocumentsModal(false);
+                      setSelectedDriverDocuments([]);
+                      setSelectedApplication(null);
+                    }}
+                  >
+                    ✕
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="overflow-y-auto max-h-[calc(90vh-200px)]">
+                <div className="space-y-4">
+                  {selectedDriverDocuments.map((document) => (
+                    <div key={document.id} className="border border-amber-200 rounded-lg p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="font-medium text-amber-900">{document.documentTitle}</h3>
+                            {getDocumentStatusBadge(document.status)}
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-700">
+                            <div>
+                              <p><strong>Category:</strong> {document.documentCategory}</p>
+                              <p><strong>File:</strong> {document.fileName}</p>
+                              <p><strong>Uploaded:</strong> {formatDate(document.uploadedAt)}</p>
+                              {document.expirationDate && (
+                                <p><strong>Expires:</strong> {formatDate(document.expirationDate)}</p>
+                              )}
+                            </div>
+                            <div>
+                              {document.metadata && Object.entries(document.metadata).map(([key, value]) => (
+                                <p key={key}><strong>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}:</strong> {value as string}</p>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex gap-2 ml-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(document.fileUrl, '_blank')}
+                            className="border-blue-300 text-blue-700"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          {document.status === 'uploaded' && (
+                            <>
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => {
+                                  setSelectedDocument(document);
+                                  setDocumentVerifyStatus('approved');
+                                  setShowDocumentVerifyModal(true);
+                                }}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Approve
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => {
+                                  setSelectedDocument(document);
+                                  setDocumentVerifyStatus('rejected');
+                                  setShowDocumentVerifyModal(true);
+                                }}
+                              >
+                                <X className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 pt-4 border-t border-amber-200">
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm text-amber-600">
+                      {selectedDriverDocuments.filter(d => d.status === 'approved').length} of {selectedDriverDocuments.length} documents approved
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowDocumentsModal(false);
+                          setSelectedDriverDocuments([]);
+                          setSelectedApplication(null);
+                        }}
+                      >
+                        Close
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Individual Document Verification Modal */}
+        {showDocumentVerifyModal && selectedDocument && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardHeader>
+                <CardTitle className={documentVerifyStatus === 'approved' ? 'text-green-700' : 'text-red-700'}>
+                  {documentVerifyStatus === 'approved' ? 'Approve' : 'Reject'} Document
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4 text-gray-700">
+                  {documentVerifyStatus === 'approved' ? 'Approve' : 'Reject'} <strong>{selectedDocument.documentTitle}</strong> for {selectedApplication.firstName} {selectedApplication.lastName}?
+                </p>
+                <div className="mb-4">
+                  <Label htmlFor="document-review-notes">Review Notes (Optional)</Label>
+                  <Input
+                    id="document-review-notes"
+                    value={documentReviewNotes}
+                    onChange={(e) => setDocumentReviewNotes(e.target.value)}
+                    placeholder={`Notes about this ${documentVerifyStatus}...`}
+                    className="mt-1"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowDocumentVerifyModal(false);
+                      setDocumentVerifyStatus('');
+                      setDocumentReviewNotes('');
+                      setSelectedDocument(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => verifyDocument(selectedDocument.id, documentVerifyStatus)}
+                    className={documentVerifyStatus === 'approved' ? 'bg-green-600 hover:bg-green-700 text-white' : ''}
+                    variant={documentVerifyStatus === 'rejected' ? 'destructive' : 'default'}
+                  >
+                    {documentVerifyStatus === 'approved' ? (
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                    ) : (
+                      <X className="h-4 w-4 mr-2" />
+                    )}
+                    {documentVerifyStatus === 'approved' ? 'Approve' : 'Reject'} Document
                   </Button>
                 </div>
               </CardContent>

@@ -3745,6 +3745,157 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver Document Verification API Endpoints
+  
+  // Get driver documents for verification
+  app.get("/api/admin/driver-applications/:id/documents", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      
+      // Get driver information
+      const driver = await storage.getUser(driverId);
+      if (!driver || !driver.isDriver) {
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+
+      // Get real driver documents from storage
+      let documents = await storage.getDriverDocuments(driverId);
+      
+      // If no documents exist, create sample documents for demo purposes
+      if (documents.length === 0) {
+        console.log(`📋 Creating sample documents for driver ${driverId} for manual review demo`);
+        
+        // Create sample Driver's License document
+        const licenseDoc = await storage.createDriverDocument({
+          driverId,
+          documentType: 'drivers_license',
+          documentTitle: "Driver's License",
+          documentCategory: 'identity',
+          status: 'uploaded',
+          fileUrl: '/api/mock-document/drivers-license.jpg',
+          fileName: 'drivers_license.jpg',
+          uploadedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+          metadata: {
+            licenseNumber: 'DL123456789',
+            issueState: driver.addresses ? JSON.parse(driver.addresses as string)[0]?.state : 'MO',
+            documentQuality: 'high'
+          }
+        });
+
+        // Create sample Vehicle Registration document
+        const registrationDoc = await storage.createDriverDocument({
+          driverId,
+          documentType: 'vehicle_registration',
+          documentTitle: 'Vehicle Registration',
+          documentCategory: 'vehicle',
+          status: 'uploaded',
+          fileUrl: '/api/mock-document/vehicle-registration.pdf',
+          fileName: 'vehicle_registration.pdf',
+          uploadedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + 180 * 24 * 60 * 60 * 1000),
+          metadata: {
+            vehicleVIN: 'VIN123456789',
+            licensePlate: driver.vehicleInfo ? JSON.parse(driver.vehicleInfo as string).licensePlate : 'ABC123'
+          }
+        });
+
+        // Create sample Insurance document
+        const insuranceDoc = await storage.createDriverDocument({
+          driverId,
+          documentType: 'insurance_proof',
+          documentTitle: 'Insurance Proof',
+          documentCategory: 'insurance',
+          status: 'uploaded',
+          fileUrl: '/api/mock-document/insurance-proof.pdf',
+          fileName: 'insurance_proof.pdf',
+          uploadedAt: new Date(Date.now() - 6 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          metadata: {
+            policyNumber: 'POL123456789',
+            insuranceProvider: 'SafeAuto Insurance'
+          }
+        });
+
+        documents = [licenseDoc, registrationDoc, insuranceDoc];
+        console.log(`✅ Created ${documents.length} sample documents for driver ${driverId}`);
+      }
+      
+      res.json(documents);
+    } catch (error) {
+      console.error('Error fetching driver documents:', error);
+      res.status(500).json({ message: 'Failed to fetch driver documents' });
+    }
+  });
+
+  // Verify individual driver document
+  app.post("/api/admin/driver-applications/:id/documents/:docId/verify", requireAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const documentId = parseInt(req.params.docId);
+      const { status, reviewNotes = '', adminId } = req.body;
+      
+      if (!['approved', 'rejected'].includes(status)) {
+        return res.status(400).json({ message: 'Status must be approved or rejected' });
+      }
+
+      // Update document status in storage
+      const updatedDocument = await storage.updateDriverDocument(documentId, {
+        status,
+        reviewedAt: new Date(),
+        reviewedBy: null, // Would be admin user ID in real system
+        reviewNotes
+      });
+
+      if (!updatedDocument) {
+        return res.status(404).json({ message: 'Document not found' });
+      }
+
+      console.log(`📋 Document ${documentId} ${status} for driver ${driverId} by admin (persisted to storage)`);
+      
+      // Create notification for driver about document verification
+      await storage.createNotification({
+        userId: driverId,
+        type: 'document_verified',
+        title: `Document ${status === 'approved' ? 'Approved' : 'Rejected'}`,
+        message: `Your ${updatedDocument.documentTitle} has been ${status}.${reviewNotes ? ` Notes: ${reviewNotes}` : ''}`,
+        data: { 
+          documentId,
+          documentType: updatedDocument.documentType,
+          verificationStatus: status,
+          reviewedBy: adminId || 'Admin',
+          reviewNotes,
+          reviewDate: new Date()
+        },
+        createdAt: new Date()
+      });
+      
+      res.json({ 
+        message: `Document ${status} successfully`,
+        documentId,
+        status,
+        reviewedBy: adminId || 'Admin',
+        document: updatedDocument
+      });
+    } catch (error) {
+      console.error('Error verifying document:', error);
+      res.status(500).json({ message: 'Failed to verify document' });
+    }
+  });
+
+  // Mock document viewer endpoint (for demo purposes)
+  app.get("/api/mock-document/:filename", (req, res) => {
+    const { filename } = req.params;
+    
+    // Return mock file content for demo
+    res.setHeader('Content-Type', filename.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
+    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+    
+    // Mock file content
+    const mockContent = `Mock ${filename} content for demonstration purposes`;
+    res.send(Buffer.from(mockContent));
+  });
+
   app.get("/api/admin/drivers", requireAdmin, async (req, res) => {
     try {
       const drivers = await storage.getDrivers();
