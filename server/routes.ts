@@ -983,19 +983,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ZIP Code lookup service function (extracted for reuse)
-  function getZipCodeAnalysis(zipCode: string) {
-    // Mock ZIP code data - in production this would query a ZIP management table
-    return {
-      zipCode: zipCode,
-      driverCount: Math.floor(Math.random() * 25) + 5,
-      targetDriverCount: 30,
-      projectedHireDate: new Date(Date.now() + Math.random() * 60 * 24 * 60 * 60 * 1000).toISOString(), // Random date in next 60 days
-      status: Math.random() > 0.6 ? 'hiring' : Math.random() > 0.3 ? 'waitlist' : 'full',
-      priority: Math.floor(Math.random() * 3) + 1, // 1-3 priority
-      estimatedWaitDays: Math.floor(Math.random() * 45) + 7, // 7-52 days
-      marketDemand: Math.random() > 0.5 ? 'high' : 'medium'
-    };
+  // Import ZIP code analytics service and admin middleware
+  const { ZipCodeAnalyticsService } = await import('./zipCodeAnalytics');
+  const { requireAdmin } = await import('./middleware/adminAuth');
+
+  // ZIP Code lookup service function (now uses real analytics)
+  async function getZipCodeAnalysis(zipCode: string) {
+    try {
+      const analytics = await ZipCodeAnalyticsService.getZipCodeAnalytics(zipCode);
+      
+      // Transform comprehensive analytics to legacy format for backward compatibility
+      return {
+        zipCode: analytics.zipCode,
+        driverCount: analytics.supplyMetrics.activeDrivers,
+        targetDriverCount: analytics.supplyMetrics.targetDrivers,
+        projectedHireDate: analytics.serviceStatus.projectedLaunchDate?.toISOString(),
+        status: analytics.serviceStatus.status === 'active' ? 'hiring' : 
+                analytics.serviceStatus.status === 'launching' ? 'waitlist' : 'full',
+        priority: analytics.serviceStatus.priority,
+        estimatedWaitDays: analytics.serviceStatus.estimatedWaitDays,
+        marketDemand: analytics.marketIntelligence.expansionOpportunity > 70 ? 'high' : 'medium',
+        // Additional data from comprehensive analytics
+        city: analytics.city,
+        state: analytics.state,
+        readinessScore: analytics.serviceStatus.readinessScore,
+        totalOrders: analytics.demandMetrics.totalOrders,
+        averageOrderValue: analytics.demandMetrics.averageOrderValue,
+        customerSatisfaction: analytics.operationalMetrics.customerSatisfactionScore,
+        competitionLevel: analytics.marketIntelligence.competitionLevel
+      };
+    } catch (error) {
+      console.error(`Error getting ZIP analytics for ${zipCode}:`, error);
+      // Fallback to basic data
+      return {
+        zipCode: zipCode,
+        driverCount: 0,
+        targetDriverCount: 20,
+        projectedHireDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        status: 'waitlist',
+        priority: 3,
+        estimatedWaitDays: 30,
+        marketDemand: 'medium'
+      };
+    }
   }
 
   // Customer Waitlist Signup endpoint
@@ -1028,7 +1058,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Get ZIP code analysis directly (no HTTP fetch)
-      const zipData = getZipCodeAnalysis(validatedData.zipCode);
+      const zipData = await getZipCodeAnalysis(validatedData.zipCode);
       
       // Create customer waitlist entry
       const customerWaitlist = await storage.createCustomerWaitlist({
@@ -1110,12 +1140,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { zipCode } = req.params;
       
       // Use the same service function for consistency
-      const zipData = getZipCodeAnalysis(zipCode);
+      const zipData = await getZipCodeAnalysis(zipCode);
       
       res.json(zipData);
     } catch (error) {
       console.error('ZIP code lookup error:', error);
       res.status(500).json({ message: "Failed to fetch ZIP code information" });
+    }
+  });
+
+  // Comprehensive ZIP Code Analytics endpoint (Admin only)
+  app.get("/api/admin/zip-codes/:zipCode/analytics", isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { zipCode } = req.params;
+      
+      const analytics = await ZipCodeAnalyticsService.getZipCodeAnalytics(zipCode);
+      
+      res.json(analytics);
+    } catch (error) {
+      console.error('ZIP code analytics error:', error);
+      res.status(500).json({ message: "Failed to fetch ZIP code analytics" });
+    }
+  });
+
+  // ZIP Code trends endpoint (Admin only)
+  app.get("/api/admin/zip-codes/:zipCode/trends", isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { zipCode } = req.params;
+      const { days = 30 } = req.query;
+      
+      const trends = await ZipCodeAnalyticsService.getZipCodeTrends(zipCode, parseInt(days as string));
+      
+      res.json(trends);
+    } catch (error) {
+      console.error('ZIP code trends error:', error);
+      res.status(500).json({ message: "Failed to fetch ZIP code trends" });
+    }
+  });
+
+  // Bulk ZIP Code analytics endpoint (Admin only)
+  app.post("/api/admin/zip-codes/bulk-analytics", isAuthenticated, requireAdmin, async (req, res) => {
+    try {
+      const { zipCodes } = req.body;
+      
+      if (!Array.isArray(zipCodes) || zipCodes.length === 0) {
+        return res.status(400).json({ message: "ZIP codes array is required" });
+      }
+      
+      if (zipCodes.length > 50) {
+        return res.status(400).json({ message: "Maximum 50 ZIP codes allowed per request" });
+      }
+      
+      const analyticsMap = await ZipCodeAnalyticsService.getBulkZipCodeAnalytics(zipCodes);
+      
+      // Convert Map to object for JSON response
+      const analyticsObject = Object.fromEntries(analyticsMap);
+      
+      res.json(analyticsObject);
+    } catch (error) {
+      console.error('Bulk ZIP analytics error:', error);
+      res.status(500).json({ message: "Failed to fetch bulk ZIP code analytics" });
     }
   });
 
