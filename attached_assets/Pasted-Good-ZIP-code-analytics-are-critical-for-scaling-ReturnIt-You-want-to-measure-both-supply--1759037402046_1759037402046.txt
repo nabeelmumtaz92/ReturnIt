@@ -1,0 +1,62 @@
+Good — **ZIP code analytics** are critical for scaling ReturnIt. You want to measure both **supply (drivers)** and **demand (customers/orders)** so you can make smart decisions on pricing, staffing, and marketing.
+
+Here’s a breakdown of the **key metrics per ZIP code** you should track:
+
+---
+
+## 📊 ZIP Code Analytics for ReturnIt
+
+### 1. **Demand Metrics (Customer-Side)**
+
+* **Total Orders Placed** (daily, weekly, monthly)
+* **Orders per Capita** (demand density)
+* **Peak Order Times** (hours, weekdays vs weekends)
+* **Order Growth Rate** (new vs repeat customers)
+* **Cancellation Rate by Customers** (before pickup)
+
+---
+
+### 2. **Supply Metrics (Driver-Side)**
+
+* **Active Drivers per ZIP** (daily/weekly activity)
+* **Driver Response Rate** (how often they accept offers)
+* **Average Acceptance Time** (seconds to accept)
+* **Driver Availability vs Peak Hours** (supply-demand balance)
+* **Driver Retention** (how many stay active week-to-week)
+
+---
+
+### 3. **Operational Metrics**
+
+* **Avg. Pickup Time** (from accept → reaching customer)
+* **Avg. Completion Time** (from pickup → store drop-off)
+* **Late Deliveries** (% completed beyond allowed window)
+* **Order Reassignment Rate** (no driver accepted in time)
+* **Customer Satisfaction Score** (ratings, complaints)
+
+---
+
+### 4. **Financial Metrics**
+
+* **Average Order Value (AOV)** (per return)
+* **Revenue per ZIP**
+* **Driver Payout per Order** (and payout efficiency)
+* **Profit Margin per ZIP** (after driver + ops costs)
+* **Dynamic Pricing Triggers** (e.g., if demand >> drivers → surcharge)
+
+---
+
+### 5. **Market Expansion Insights**
+
+* **Top ZIPs by Demand** (where to add more drivers/ads)
+* **Under-Served ZIPs** (long wait times, high reassignments)
+* **Churn Hotspots** (customers not reordering in certain ZIPs)
+
+---
+
+✅ **Recommendation for ReturnIt MVP Analytics:**
+Start with the **demand + supply metrics** (orders, active drivers, pickup times) — these will show if you have product-market fit in each ZIP. Then layer on financial and expansion insights as volume grows.
+
+---
+
+Would you like me to design a **ReturnIt ZIP Analytics Dashboard mockup** (what charts + tables to display for ops) so you can see how this data would look in the admin panel?

@@ -1,0 +1,63 @@
+Perfect — let’s tackle this as a ReturnIt **driver assignment policy**.
+
+---
+
+## ⏱️ Maximum Time to Accept an Order
+
+* **Industry Norms:**
+
+  * Uber/Lyft: 10–15 seconds.
+  * DoorDash: ~30–45 seconds.
+  * Roadie/Amazon Flex: a few minutes in some cases.
+
+* **For ReturnIt:**
+
+  * Customers are expecting reliability (not immediate food delivery speed).
+  * Drivers might be in transit, not staring at the app constantly.
+  * ✅ **Recommended:** **60 seconds max** before auto-reassignment.
+  * If urgent orders become part of your model later, you could lower it to **30 seconds**.
+
+---
+
+## ⚖️ Assignment Priority
+
+You want fairness + reliability. Here are your 3 options:
+
+1. **First-Come-First-Served**
+
+   * Whoever accepts first gets it.
+   * ✅ Simple, transparent.
+   * ❌ Can reward “fastest tap,” not best driver.
+
+2. **Proximity-Based**
+
+   * Order offered first to the closest driver(s).
+   * ✅ Reduces pickup/delivery time.
+   * ❌ Might exclude higher-rated drivers farther away.
+
+3. **Rating-Based Priority**
+
+   * Higher-rated drivers see jobs first.
+   * ✅ Rewards good performance, improves customer trust.
+   * ❌ Can feel unfair to new drivers trying to build up ratings.
+
+---
+
+## 🚀 Best Hybrid Model for ReturnIt (MVP)
+
+* **Step 1:** Order goes to the **closest drivers within a set radius**.
+* **Step 2:** Within that group, drivers have **60 seconds** to accept.
+* **Step 3:** If multiple accept instantly → break ties by **rating first**, then **first-come-first-served**.
+* **Step 4:** If no one accepts → expand search radius and repeat.
+
+---
+
+✅ **Summary Recommendation for ReturnIt**
+
+* Drivers get **60 seconds** to accept.
+* Prioritize **Proximity → Rating → First-Come** in that order.
+* Reassign automatically if not accepted in time.
+
+---
+
+Do you want me to also sketch the **end-to-end order lifecycle** (customer books → driver acceptance window → countdown → completion or fail) so you can plug it straight into your ops playbook?
