@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,81 +17,29 @@ export default function BusinessIntelligence() {
   const [timeRange, setTimeRange] = useState('30d');
   const [refreshing, setRefreshing] = useState(false);
 
-  const kpiData = {
-    revenue: {
-      current: 28750,
-      previous: 24100,
-      growth: 19.3,
-      trend: 'up'
-    },
-    orders: {
-      current: 1247,
-      previous: 1089,
-      growth: 14.5,
-      trend: 'up'
-    },
-    drivers: {
-      current: 23,
-      previous: 19,
-      growth: 21.1,
-      trend: 'up'
-    },
-    avgOrderValue: {
-      current: 23.06,
-      previous: 22.13,
-      growth: 4.2,
-      trend: 'up'
-    }
-  };
+  // Real KPI data from database (replaced mock)
+  const { data: kpiData, isLoading: kpiLoading } = useQuery({
+    queryKey: ['/api/admin/business-intelligence/kpis', timeRange],
+    enabled: true
+  });
 
-  const demandData = [
-    { day: 'Mon', orders: 45, predicted: 52, confidence: 0.85 },
-    { day: 'Tue', orders: 38, predicted: 41, confidence: 0.92 },
-    { day: 'Wed', orders: 52, predicted: 48, confidence: 0.78 },
-    { day: 'Thu', orders: 41, predicted: 45, confidence: 0.91 },
-    { day: 'Fri', orders: 67, predicted: 71, confidence: 0.87 },
-    { day: 'Sat', orders: 89, predicted: 85, confidence: 0.94 },
-    { day: 'Sun', orders: 76, predicted: 78, confidence: 0.89 }
-  ];
+  // Real demand forecasting data from database (replaced mock)
+  const { data: demandData, isLoading: demandLoading } = useQuery({
+    queryKey: ['/api/admin/business-intelligence/demand-forecast', timeRange],
+    enabled: true
+  });
 
-  const pricingOptimization = {
-    basePrice: 8.99,
-    recommendations: [
-      {
-        scenario: 'Peak Hours (5-7 PM)',
-        suggestedPrice: 11.99,
-        expectedIncrease: '+15% revenue',
-        confidence: 0.87,
-        reason: 'High demand, low driver availability'
-      },
-      {
-        scenario: 'Weekend Rush',
-        suggestedPrice: 10.49,
-        expectedIncrease: '+8% revenue',
-        confidence: 0.92,
-        reason: 'Increased order volume, maintain competitiveness'
-      },
-      {
-        scenario: 'Off-Peak (10 AM - 2 PM)',
-        suggestedPrice: 7.99,
-        expectedIncrease: '+22% orders',
-        confidence: 0.79,
-        reason: 'Drive volume during slow periods'
-      }
-    ]
-  };
+  // Real pricing optimization data from database (replaced mock)
+  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery({
+    queryKey: ['/api/admin/business-intelligence/pricing-optimization'],
+    enabled: true
+  });
 
-  const marketExpansion = [
-    {
-      area: 'Clayton, MO',
-      score: 8.7,
-      population: 15685,
-      avgIncome: 89000,
-      competition: 'Low',
-      estimatedOrders: '45-60/week',
-      investment: '$12,000',
-      breakeven: '4 months'
-    },
+  // Real market expansion data from database (replaced mock)
+  const { data: marketExpansion, isLoading: marketLoading } = useQuery({
+    queryKey: ['/api/admin/business-intelligence/market-expansion'],
+    enabled: true
+  });
     {
       area: 'Chesterfield, MO',
       score: 8.2,

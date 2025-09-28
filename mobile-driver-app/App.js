@@ -4,11 +4,11 @@ import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
   const openWebApp = () => {
-    Linking.openURL('https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev');
+    Linking.openURL('https://returnit.online');
   };
 
   const bookReturn = () => {
-    Linking.openURL('https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev/book-pickup');
+    Linking.openURL('https://returnit.online/book-pickup');
   };
 
   const trackReturn = () => {
@@ -19,7 +19,7 @@ export default function App() {
   };
 
   const driverPortal = () => {
-    Linking.openURL('https://31d2e9c8-ee18-4d8b-a694-284850544705-00-2mu2k62ukku0q.janeway.replit.dev/driver-portal');
+    Linking.openURL('https://returnit.online/driver-portal');
   };
 
   return (

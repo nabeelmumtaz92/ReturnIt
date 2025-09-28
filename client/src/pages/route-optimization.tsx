@@ -75,24 +75,38 @@ export default function RouteOptimization() {
     );
   }
 
-  const mockCurrentRoute = {
-    id: 1,
-    totalStops: 8,
-    estimatedTime: 4.2,
-    estimatedDistance: 32.5,
-    fuelCost: 12.50,
-    optimizationScore: 92,
-    stops: [
-      { id: 1, address: "123 Main St, Clayton, MO", order: "#R001", estimatedTime: "2:15 PM", status: "pending" },
-      { id: 2, address: "456 Oak Ave, University City, MO", order: "#R002", estimatedTime: "2:35 PM", status: "pending" },
-      { id: 3, address: "789 Pine Rd, Webster Groves, MO", order: "#R003", estimatedTime: "2:55 PM", status: "pending" },
-      { id: 4, address: "321 Elm St, Kirkwood, MO", order: "#R004", estimatedTime: "3:20 PM", status: "pending" },
-      { id: 5, address: "654 Maple Dr, Des Peres, MO", order: "#R005", estimatedTime: "3:45 PM", status: "pending" },
-      { id: 6, address: "987 Cedar Ln, Chesterfield, MO", order: "#R006", estimatedTime: "4:10 PM", status: "pending" },
-      { id: 7, address: "147 Birch Way, Ballwin, MO", order: "#R007", estimatedTime: "4:35 PM", status: "pending" },
-      { id: 8, address: "258 Willow Ct, Manchester, MO", order: "#R008", estimatedTime: "5:00 PM", status: "pending" },
-    ]
-  };
+  // Real route data from database (replaced mock)
+  const { data: currentRoute = null, isLoading: isRouteLoading, error: routeError } = useQuery({
+    queryKey: ['/api/driver/current-route'],
+    enabled: true
+  });
+
+  // Show loading state while fetching route data
+  if (isRouteLoading) {
+    return (
+      <Screen className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Navigation className="h-16 w-16 text-green-600 mx-auto mb-4 animate-spin" />
+          <h2 className="text-xl font-semibold text-green-900 mb-2">Loading Route Data...</h2>
+          <p className="text-green-700">Fetching your optimized delivery route</p>
+        </div>
+      </Screen>
+    );
+  }
+
+  // Show message when no route data is available
+  if (!currentRoute) {
+    return (
+      <Screen className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <Navigation className="h-16 w-16 text-green-600 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-green-900 mb-2">No Active Route</h2>
+          <p className="text-green-700 mb-4">You don't have any active delivery routes at the moment</p>
+          <Button className="bg-green-700 hover:bg-green-800">Check for New Orders</Button>
+        </div>
+      </Screen>
+    );
+  }
 
   return (
     <Screen>
@@ -116,25 +130,25 @@ export default function RouteOptimization() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="text-center p-4 bg-green-100 rounded-lg">
                   <Clock className="h-8 w-8 text-green-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-green-900">{mockCurrentRoute.estimatedTime}h</div>
+                  <div className="text-2xl font-bold text-green-900">{currentRoute?.estimatedTime || '0'}h</div>
                   <div className="text-sm text-green-700">Total Time</div>
                 </div>
                 
                 <div className="text-center p-4 bg-blue-100 rounded-lg">
                   <MapPin className="h-8 w-8 text-blue-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-blue-900">{mockCurrentRoute.estimatedDistance} mi</div>
+                  <div className="text-2xl font-bold text-blue-900">{currentRoute?.estimatedDistance || '0'} mi</div>
                   <div className="text-sm text-blue-700">Total Distance</div>
                 </div>
                 
                 <div className="text-center p-4 bg-orange-100 rounded-lg">
                   <Fuel className="h-8 w-8 text-orange-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-orange-900">${mockCurrentRoute.fuelCost}</div>
+                  <div className="text-2xl font-bold text-orange-900">${currentRoute?.fuelCost || '0.00'}</div>
                   <div className="text-sm text-orange-700">Fuel Cost</div>
                 </div>
                 
                 <div className="text-center p-4 bg-purple-100 rounded-lg">
                   <TrendingUp className="h-8 w-8 text-purple-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-purple-900">{mockCurrentRoute.optimizationScore}%</div>
+                  <div className="text-2xl font-bold text-purple-900">{currentRoute?.optimizationScore || '0'}%</div>
                   <div className="text-sm text-purple-700">Efficiency</div>
                 </div>
               </div>
@@ -145,7 +159,7 @@ export default function RouteOptimization() {
                   className="bg-green-700 hover:bg-green-800 text-lg px-8"
                   onClick={() => {
                     setOptimizing(true);
-                    optimizeRouteMutation.mutate(mockCurrentRoute.stops.map(stop => stop.id));
+                    optimizeRouteMutation.mutate(currentRoute?.stops?.map(stop => stop.id) || []);
                   }}
                   disabled={optimizing || optimizeRouteMutation.isPending}
                 >
@@ -168,12 +182,12 @@ export default function RouteOptimization() {
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-green-900">Today's Delivery Route</CardTitle>
                   <Badge className="bg-green-100 text-green-800 border-green-200">
-                    {mockCurrentRoute.totalStops} stops
+                    {currentRoute?.totalStops || 0} stops
                   </Badge>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockCurrentRoute.stops.map((stop, index) => (
+                    {currentRoute?.stops?.map((stop, index) => (
                       <div key={stop.id} className="flex items-center space-x-4 p-4 bg-white rounded-lg border border-green-100">
                         <div className="flex-shrink-0">
                           <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center font-bold">

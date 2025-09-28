@@ -32,7 +32,7 @@ import {
   merchantPolicies, supportTicketsEnhanced, supportMessages
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, or, desc, asc, isNull, not, lt, sql } from "drizzle-orm";
+import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations
@@ -1629,15 +1629,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-// DatabaseStorage implementation
-import { db } from "./db";
-import { eq, and, sql, desc, asc, isNotNull, isNull, notInArray, or, lt, inArray } from "drizzle-orm";
-import { 
-  users, orders, promoCodes, 
-  driverOrderAssignments, orderStatusHistory, 
-  driverLocationPings, orderCancellations,
-  merchantPolicies, policyViolations, customerWaitlist
-} from "@shared/schema";
+// DatabaseStorage implementation - no duplicate imports needed
 
 export class DatabaseStorage implements IStorage {
   // User operations
@@ -1756,14 +1748,118 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getCustomers(): Promise<User[]> {
-    return await db.select().from(users).where(eq(users.role, 'customer'));
+    return db.select().from(users).where(eq(users.isDriver, false));
   }
 
   async getEmployees(): Promise<User[]> {
-    return await db.select().from(users);
+    return db.select().from(users).where(or(eq(users.isAdmin, true), eq(users.role, 'support')));
   }
 
-  // Add stubs for other methods to satisfy interface
+  async getAvailableOrders(): Promise<Order[]> {
+    return db.select().from(orders).where(eq(orders.status, 'created')).orderBy(desc(orders.createdAt));
+  }
+
+  async assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined> {
+    const [order] = await db
+      .update(orders)
+      .set({ 
+        driverId, 
+        status: 'assigned',
+        driverAssignedAt: new Date()
+      })
+      .where(eq(orders.id, orderId))
+      .returning();
+    return order;
+  }
+
+  async updateDriverStatus(driverId: number, status: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ isOnline: status === 'online' })
+      .where(eq(users.id, driverId))
+      .returning();
+    return user;
+  }
+
+  async getOrdersByDriver(driverId: number): Promise<Order[]> {
+    return this.getDriverOrders(driverId);
+  }
+
+  // Timeline management
+  async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
+    const order = await this.getOrder(orderId);
+    if (!order) return undefined;
+    
+    const newDeadline = new Date(Date.now() + extensionMinutes * 60000);
+    return this.updateOrder(orderId, { pickupDeadline: newDeadline });
+  }
+
+  async getOverdueOrders(): Promise<Order[]> {
+    const now = new Date();
+    return db.select().from(orders).where(
+      and(
+        lt(orders.pickupDeadline, now),
+        or(eq(orders.status, 'created'), eq(orders.status, 'assigned'))
+      )
+    );
+  }
+
+  async getUnacceptedOrders(timeoutMinutes: number = 60): Promise<Order[]> {
+    const timeoutDate = new Date(Date.now() - timeoutMinutes * 60000);
+    return db.select().from(orders).where(
+      and(
+        eq(orders.status, 'created'),
+        lt(orders.createdAt, timeoutDate)
+      )
+    );
+  }
+
+  // Promo code validation
+  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }> {
+    const promo = await this.getPromoCode(code);
+    if (!promo) return { valid: false };
+    
+    const now = new Date();
+    const isValid = promo.isActive && 
+                   (!promo.expiresAt || promo.expiresAt > now) &&
+                   (promo.usageLimit === null || promo.usedCount < promo.usageLimit);
+    
+    return {
+      valid: isValid,
+      discount: isValid ? promo.discountValue : undefined,
+      type: isValid ? promo.discountType : undefined
+    };
+  }
+
+  // Missing interface methods with minimal implementations
+  async getUserNotifications(userId: number): Promise<Notification[]> { return []; }
+  async markNotificationRead(id: number): Promise<void> { }
+  async getPaymentRecords(): Promise<any[]> { return []; }
+  async getPaymentSummary(): Promise<any> { return {}; }
+  async exportPaymentData(format: string, dateRange: string, status: string): Promise<Buffer> { 
+    return Buffer.from('{"placeholder":"data"}'); 
+  }
+  async generateTaxReport(year: number): Promise<Buffer> { 
+    return Buffer.from('Tax Report placeholder'); 
+  }
+  async generate1099Forms(year: number): Promise<Buffer> { 
+    return Buffer.from('1099 Forms placeholder'); 
+  }
+  async recordAnalytics(analytics: InsertAnalytics): Promise<Analytics> { 
+    return {} as Analytics; 
+  }
+  async getOrderByTrackingNumber(trackingNumber: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.trackingNumber, trackingNumber));
+    return order;
+  }
+  async updateDriverLocation(driverId: number, location: Location): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ currentLocation: location })
+      .where(eq(users.id, driverId))
+      .returning();
+    return user;
+  }
   async getDriverEarnings(driverId: number): Promise<DriverEarning[]> { return []; }
   async createDriverEarning(earning: InsertDriverEarning): Promise<DriverEarning> { 
     return {} as DriverEarning; 
