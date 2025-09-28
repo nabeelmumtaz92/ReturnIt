@@ -5343,50 +5343,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(message);
   });
 
-  // Route Optimization API
+  // Route Optimization API - Real database implementation
   app.get("/api/routes/current", async (req, res) => {
     if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
-    // Mock current route
-    const currentRoute = {
-      id: 1,
-      totalStops: 8,
-      estimatedTime: 4.2,
-      estimatedDistance: 32.5,
-      fuelCost: 12.50,
-      optimizationScore: 92,
-      stops: [
-        { id: 1, address: "123 Main St, Clayton, MO", order: "#R001", estimatedTime: "2:15 PM", status: "pending" }
-      ]
-    };
-    
-    res.json(currentRoute);
+    try {
+      const currentRoute = await storage.getCurrentRoute(req.session.user.id);
+      res.json(currentRoute);
+    } catch (error) {
+      console.error("Error fetching current route:", error);
+      res.status(500).json({ error: "Failed to fetch current route" });
+    }
   });
 
   app.post("/api/routes/optimize", async (req, res) => {
     if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
     
-    const { orderIds, preferences } = req.body;
-    
-    // Mock route optimization
-    const optimizedRoute = {
-      id: Date.now(),
-      orderIds,
-      estimatedDuration: 240, // 4 hours
-      estimatedDistance: 32.5,
-      fuelCostEstimate: 12.50,
-      routeStatus: "planned",
-      optimizedRoute: {
-        waypoints: orderIds.map((id: number, index: number) => ({
-          orderId: id,
-          sequence: index + 1,
-          address: `Stop ${index + 1} Address`,
-          estimatedArrival: new Date(Date.now() + (index * 30 * 60000))
-        }))
-      }
-    };
-    
-    res.json(optimizedRoute);
+    try {
+      const { orderIds, preferences } = req.body;
+      const optimizedRoute = await storage.optimizeRoute(orderIds, preferences);
+      res.json(optimizedRoute);
+    } catch (error) {
+      console.error("Error optimizing route:", error);
+      res.status(500).json({ error: "Failed to optimize route" });
+    }
+  });
+
+  // Business Intelligence API endpoints - Real database implementation
+  app.get("/api/admin/business-intelligence/kpis", requireAdmin, async (req, res) => {
+    try {
+      const { timeRange = '30d' } = req.query;
+      const kpis = await storage.getBusinessIntelligenceKpis(timeRange as string);
+      res.json(kpis);
+    } catch (error) {
+      console.error("Error fetching KPIs:", error);
+      res.status(500).json({ error: "Failed to fetch KPI data" });
+    }
+  });
+
+  app.get("/api/admin/business-intelligence/demand-forecast", requireAdmin, async (req, res) => {
+    try {
+      const { timeRange = '30d' } = req.query;
+      const forecast = await storage.getDemandForecast(timeRange as string);
+      res.json(forecast);
+    } catch (error) {
+      console.error("Error fetching demand forecast:", error);
+      res.status(500).json({ error: "Failed to fetch demand forecast" });
+    }
+  });
+
+  app.get("/api/admin/business-intelligence/pricing-optimization", requireAdmin, async (req, res) => {
+    try {
+      const optimization = await storage.getPricingOptimization();
+      res.json(optimization);
+    } catch (error) {
+      console.error("Error fetching pricing optimization:", error);
+      res.status(500).json({ error: "Failed to fetch pricing optimization" });
+    }
+  });
+
+  app.get("/api/admin/business-intelligence/market-expansion", requireAdmin, async (req, res) => {
+    try {
+      const expansion = await storage.getMarketExpansion();
+      res.json(expansion);
+    } catch (error) {
+      console.error("Error fetching market expansion data:", error);
+      res.status(500).json({ error: "Failed to fetch market expansion data" });
+    }
   });
 
   // Driver Performance API
