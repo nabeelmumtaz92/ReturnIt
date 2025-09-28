@@ -66,6 +66,121 @@ export const MarketExpansionItemSchema = z.object({
   breakeven: z.string()
 });
 
+// Company and Return Policy Database Tables
+export const companies = pgTable("companies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(), // URL-friendly identifier
+  category: text("category").notNull(), // "department_store", "electronics", "clothing", "home_goods", etc.
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  websiteUrl: text("website_url"),
+  
+  // Location information
+  headquarters: text("headquarters"),
+  stLouisLocations: jsonb("st_louis_locations").default([]), // Array of store locations in St. Louis area
+  serviceRadius: integer("service_radius").default(25), // Miles from St. Louis they serve
+  
+  // Business details
+  businessType: text("business_type").notNull(), // "local", "regional", "national", "online_only"
+  foundedYear: integer("founded_year"),
+  employeeCount: text("employee_count"), // "1-10", "11-50", "51-200", "200+"
+  
+  // Return service preferences
+  prefersInStore: boolean("prefers_in_store").default(false),
+  allowsMailReturns: boolean("allows_mail_returns").default(true),
+  usesReturnItService: boolean("uses_return_it_service").default(true),
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  isFeatured: boolean("is_featured").default(false),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const returnPolicies = pgTable("return_policies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  // Basic policy terms
+  returnWindowDays: integer("return_window_days").notNull(), // e.g., 30, 60, 90 days
+  returnWindowType: text("return_window_type").notNull(), // "purchase", "delivery", "receipt"
+  
+  // Return conditions
+  requiresReceipt: boolean("requires_receipt").default(true),
+  requiresOriginalPackaging: boolean("requires_original_packaging").default(false),
+  requiresOriginalTags: boolean("requires_original_tags").default(true),
+  allowsWornItems: boolean("allows_worn_items").default(false),
+  allowsOpenedItems: boolean("allows_opened_items").default(true),
+  
+  // Item condition requirements
+  conditionRequirements: jsonb("condition_requirements").default({}), // Category-specific conditions
+  
+  // Return methods
+  acceptsInStoreReturns: boolean("accepts_in_store_returns").default(true),
+  acceptsMailReturns: boolean("accepts_mail_returns").default(true),
+  acceptsPickupService: boolean("accepts_pickup_service").default(true),
+  
+  // Fees and refunds
+  chargesRestockingFee: boolean("charges_restocking_fee").default(false),
+  restockingFeePercent: real("restocking_fee_percent").default(0),
+  refundMethod: text("refund_method").notNull(), // "original_payment", "store_credit", "exchange_only"
+  refundProcessingDays: integer("refund_processing_days").default(5),
+  
+  // Special categories and exclusions
+  excludedCategories: jsonb("excluded_categories").default([]), // ["electronics", "undergarments", etc.]
+  specialCategoryRules: jsonb("special_category_rules").default({}),
+  
+  // Holiday and seasonal policies
+  extendedHolidayWindow: boolean("extended_holiday_window").default(false),
+  holidayExtensionDays: integer("holiday_extension_days").default(0),
+  
+  // Additional terms
+  additionalTerms: text("additional_terms"),
+  policyUrl: text("policy_url"), // Link to full policy on company website
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  effectiveDate: timestamp("effective_date").defaultNow(),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
+export const companyLocations = pgTable("company_locations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  // Location details
+  name: text("name").notNull(), // "Chesterfield Mall", "Downtown St. Louis", etc.
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  phone: text("phone"),
+  
+  // Coordinates for mapping
+  coordinates: jsonb("coordinates"), // {lat: number, lng: number}
+  
+  // Store details
+  storeType: text("store_type"), // "flagship", "outlet", "express", "warehouse"
+  squareFootage: integer("square_footage"),
+  
+  // Hours and availability
+  hours: jsonb("hours"), // Store hours by day of week
+  acceptsReturns: boolean("accepts_returns").default(true),
+  hasCustomerService: boolean("has_customer_service").default(true),
+  
+  // Return service preferences
+  prefersAppointments: boolean("prefers_appointments").default(false),
+  maxReturnsPerDay: integer("max_returns_per_day"),
+  
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+});
+
 // Route Optimization API Response Types
 export const RouteStopSchema = z.object({
   id: z.union([z.string(), z.number()]), // Handle both MemStorage (string) and DatabaseStorage (number)
@@ -2046,3 +2161,28 @@ export type ZipCodeManagement = typeof zipCodeManagement.$inferSelect;
 export type InsertZipCodeManagement = z.infer<typeof insertZipCodeManagementSchema>;
 export type OtpVerification = typeof otpVerification.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+
+// Company and Return Policy Types
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = typeof companies.$inferInsert;
+export const insertCompanySchema = createInsertSchema(companies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type ReturnPolicy = typeof returnPolicies.$inferSelect;
+export type InsertReturnPolicy = typeof returnPolicies.$inferInsert;
+export const insertReturnPolicySchema = createInsertSchema(returnPolicies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type CompanyLocation = typeof companyLocations.$inferSelect;
+export type InsertCompanyLocation = typeof companyLocations.$inferInsert;
+export const insertCompanyLocationSchema = createInsertSchema(companyLocations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
