@@ -499,7 +499,7 @@ export class ZipCodeAnalyticsService {
 
   private static calculateSeasonalTrends(orders: any[]): Array<{ month: string; orderCount: number; averageValue: number }> {
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const monthlyData = new Array(12).fill(null).map(() => ({ orders: [], total: 0 }));
+    const monthlyData: { orders: any[]; total: number }[] = new Array(12).fill(null).map(() => ({ orders: [], total: 0 }));
     
     orders.forEach(order => {
       const month = new Date(order.createdAt).getMonth();
