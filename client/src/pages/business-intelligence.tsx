@@ -57,9 +57,9 @@ export default function BusinessIntelligence() {
            data.drivers?.current !== undefined;
   };
 
-  const isValidArrayData = <T>(data: any, itemValidator?: (item: any) => boolean): data is T[] => {
+  function isValidArrayData<T>(data: any, itemValidator?: (item: any) => boolean): data is T[] {
     return Array.isArray(data) && (itemValidator ? data.every(itemValidator) : true);
-  };
+  }
 
   // Show loading state while fetching data
   if (kpiLoading || demandLoading || pricingLoading || marketLoading) {
