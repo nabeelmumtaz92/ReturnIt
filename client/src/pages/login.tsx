@@ -67,6 +67,41 @@ export default function Login() {
   // Dynamic background positioning based on tab
   const backgroundPosition = activeTab === 'register' ? 'right center' : 'center center';
 
+  // Demo login mutation
+  const demoLoginMutation = useMutation({
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/auth/demo-login", {});
+      return await response.json();
+    },
+    onSuccess: async (data: any) => {
+      console.log('Demo login response data:', data);
+      const user = data.user;
+      login(user);
+      
+      // Redirect demo user to home page (not admin since isAdmin: false)
+      console.log('Redirecting demo user to home');
+      setLocation('/');
+      
+      toast({
+        title: "Welcome to the demo!",
+        description: "You're now exploring ReturnIt with demo access.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
+    },
+    onError: (error: any) => {
+      handleError(error, {
+        context: "Demo Login",
+        userMessage: "Demo login failed"
+      });
+      
+      toast({
+        title: "Demo unavailable",
+        description: "Please try again or sign in with your account.",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
@@ -361,6 +396,31 @@ export default function Login() {
                 >
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
+                
+                {/* Demo Account Button */}
+                <div className="relative">
+                  <div className="flex items-center my-3">
+                    <div className="flex-1 h-px bg-amber-200"></div>
+                    <span className="px-3 text-xs font-medium text-amber-700 bg-white">
+                      Try without signing up
+                    </span>
+                    <div className="flex-1 h-px bg-amber-200"></div>
+                  </div>
+                  <Button 
+                    type="button" 
+                    variant="outline"
+                    className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:border-blue-300 text-blue-800 hover:text-blue-900 h-11 font-medium"
+                    disabled={demoLoginMutation.isPending}
+                    onClick={() => demoLoginMutation.mutate()}
+                    data-testid="button-demo-login"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    {demoLoginMutation.isPending ? "Starting demo..." : "Try Demo Account"}
+                  </Button>
+                  <p className="text-xs text-center text-gray-600 mt-2">
+                    Explore all features except admin panel • No signup required
+                  </p>
+                </div>
                 
                 <div className="flex items-center my-4 md:my-8">
                   <div className="flex-1 h-px bg-amber-200"></div>

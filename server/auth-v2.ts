@@ -83,6 +83,34 @@ export class AuthV2 {
     }
   }
 
+  // Demo login endpoint
+  static async demoLogin(req: Request, res: Response) {
+    try {
+      // Create demo user session (no database lookup needed)
+      const demoUser = {
+        id: 999999, // Use a high ID that won't conflict with real users
+        email: 'demo@returnit.demo',
+        phone: '555-DEMO-USER',
+        isDriver: false,
+        isAdmin: false, // Explicitly not admin - can't access admin panel
+        firstName: 'Demo',
+        lastName: 'User'
+      };
+
+      // Create session
+      (req.session as any).user = demoUser;
+
+      // Return user data
+      res.json({
+        message: "Demo login successful",
+        user: demoUser
+      });
+    } catch (error) {
+      console.error('AuthV2 demo login error:', error);
+      res.status(500).json({ message: "Demo login failed" });
+    }
+  }
+
   // Get current user
   static async getCurrentUser(req: Request, res: Response) {
     try {
@@ -156,6 +184,7 @@ export class AuthV2 {
 export const authV2Routes = {
   login: AuthV2.login,
   logout: AuthV2.logout,
+  demoLogin: AuthV2.demoLogin,
   getCurrentUser: AuthV2.getCurrentUser,
   isAuthenticated: AuthV2.isAuthenticated,
   isAdmin: AuthV2.isAdmin

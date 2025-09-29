@@ -1466,6 +1466,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Demo login endpoint
+  app.post("/api/auth/demo-login", async (req, res) => {
+    try {
+      // Import AuthV2 to use the demo login method
+      const { AuthV2 } = await import('./auth-v2');
+      await AuthV2.demoLogin(req, res);
+    } catch (error) {
+      console.error('Demo login route error:', error);
+      res.status(500).json({ message: "Demo login failed" });
+    }
+  });
+
   app.get("/api/auth/me", async (req, res) => {
     if (req.session?.user) {
       try {
