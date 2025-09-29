@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { 
-  KpiData, 
-  DemandForecastItem, 
-  PricingOptimizationItem, 
-  MarketExpansionItem 
-} from '@shared/schema';
+import { useBusinessIntelligenceData } from '@/hooks/useBusinessIntelligenceData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,54 +17,22 @@ export default function BusinessIntelligence() {
   const [timeRange, setTimeRange] = useState('30d');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Real KPI data from database (replaced mock) - Now properly typed
-  const kpiQuery = useQuery({
-    queryKey: ['/api/admin/business-intelligence/kpis', timeRange],
-    enabled: true
-  });
-  const kpiData = kpiQuery.data as KpiData | undefined;
-  const kpiLoading = kpiQuery.isLoading;
-
-  // Real demand forecasting data from database (replaced mock) - Now properly typed
-  const demandQuery = useQuery({
-    queryKey: ['/api/admin/business-intelligence/demand-forecast', timeRange],
-    enabled: true
-  });
-  const demandData = demandQuery.data as DemandForecastItem[] | undefined;
-  const demandLoading = demandQuery.isLoading;
-
-  // Real pricing optimization data from database (replaced mock) - Now properly typed
-  const pricingQuery = useQuery({
-    queryKey: ['/api/admin/business-intelligence/pricing-optimization'],
-    enabled: true
-  });
-  const pricingOptimization = pricingQuery.data as PricingOptimizationItem[] | undefined;
-  const pricingLoading = pricingQuery.isLoading;
-
-  // Real market expansion data from database (replaced mock) - Now properly typed
-  const marketQuery = useQuery({
-    queryKey: ['/api/admin/business-intelligence/market-expansion'],
-    enabled: true
-  });
-  const marketExpansion = marketQuery.data as MarketExpansionItem[] | undefined;
-  const marketLoading = marketQuery.isLoading;
-
-  // Enhanced error handling and type guards
-  const isValidKpiData = (data: any): data is KpiData => {
-    return data && 
-           typeof data === 'object' &&
-           data.revenue?.current !== undefined &&
-           data.orders?.current !== undefined &&
-           data.avgOrderValue?.current !== undefined &&
-           data.drivers?.current !== undefined;
-  };
-
-  function isValidArrayData<T>(data: any, itemValidator?: (item: any) => boolean): data is T[] {
-    return Array.isArray(data) && (itemValidator ? data.every(itemValidator) : true);
-  }
+  // Use the custom hook to get all business intelligence data
+  const {
+    kpiData,
+    kpiLoading,
+    demandData,
+    demandLoading,
+    pricingOptimization,
+    pricingLoading,
+    marketExpansion,
+    marketLoading,
+    hasValidKpiData,
+    isLoading
+  } = useBusinessIntelligenceData(timeRange);
 
   // Show loading state while fetching data
-  if (kpiLoading || demandLoading || pricingLoading || marketLoading) {
+  if (isLoading) {
     return (
       <AdminLayout pageTitle="Business Intelligence">
         <div className="flex items-center justify-center min-h-screen">
@@ -85,7 +47,7 @@ export default function BusinessIntelligence() {
   }
 
   // Enhanced error handling for invalid data
-  if (!isValidKpiData(kpiData)) {
+  if (!hasValidKpiData) {
     console.warn('Invalid KPI data received:', kpiData);
     return (
       <AdminLayout pageTitle="Business Intelligence">
@@ -157,13 +119,13 @@ export default function BusinessIntelligence() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Revenue</p>
-                  <p className="text-2xl font-bold text-gray-900">${kpiData.revenue.current.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">${kpiData?.revenue.current.toLocaleString()}</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-green-600" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                <span className="text-sm text-green-600 font-medium">+{kpiData.revenue.growth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{kpiData?.revenue.growth}%</span>
                 <span className="text-sm text-gray-500 ml-1">vs last period</span>
               </div>
             </CardContent>
@@ -174,13 +136,13 @@ export default function BusinessIntelligence() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                  <p className="text-2xl font-bold text-gray-900">{kpiData.orders.current.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">{kpiData?.orders.current.toLocaleString()}</p>
                 </div>
                 <Package className="h-8 w-8 text-blue-600" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                <span className="text-sm text-green-600 font-medium">+{kpiData.orders.growth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{kpiData?.orders.growth}%</span>
                 <span className="text-sm text-gray-500 ml-1">vs last period</span>
               </div>
             </CardContent>
@@ -191,13 +153,13 @@ export default function BusinessIntelligence() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Active Drivers</p>
-                  <p className="text-2xl font-bold text-gray-900">{kpiData.drivers.current}</p>
+                  <p className="text-2xl font-bold text-gray-900">{kpiData?.drivers.current}</p>
                 </div>
                 <Users className="h-8 w-8 text-purple-600" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                <span className="text-sm text-green-600 font-medium">+{kpiData.drivers.growth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{kpiData?.drivers.growth}%</span>
                 <span className="text-sm text-gray-500 ml-1">vs last period</span>
               </div>
             </CardContent>
@@ -208,13 +170,13 @@ export default function BusinessIntelligence() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
-                  <p className="text-2xl font-bold text-gray-900">${kpiData.avgOrderValue.current}</p>
+                  <p className="text-2xl font-bold text-gray-900">${kpiData?.avgOrderValue.current}</p>
                 </div>
                 <Target className="h-8 w-8 text-amber-600" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
-                <span className="text-sm text-green-600 font-medium">+{kpiData.avgOrderValue.growth}%</span>
+                <span className="text-sm text-green-600 font-medium">+{kpiData?.avgOrderValue.growth}%</span>
                 <span className="text-sm text-gray-500 ml-1">vs last period</span>
               </div>
             </CardContent>
