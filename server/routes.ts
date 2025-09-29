@@ -23,6 +23,7 @@ import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
 import { checkDatabaseHealth, db } from "./db";
 import { requireSecureAdmin } from "./auth/adminControl";
+import { createPaypalOrder, capturePaypalOrder, loadPaypalDefault } from "./paypal";
 import { sql } from "drizzle-orm";
 import { webSocketService } from "./websocket-service";
 import { webhookService } from "./webhook-service";
@@ -1005,7 +1006,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Import ZIP code analytics service and admin middleware
   const { ZipCodeAnalyticsService } = await import('./zipCodeAnalytics');
-  const { requireAdmin } = await import('./middleware/adminAuth');
+  // Admin middleware imported at top of file
 
   // ZIP Code lookup service function (now uses real analytics)
   async function getZipCodeAnalysis(zipCode: string) {
@@ -1476,6 +1477,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Demo login route error:', error);
       res.status(500).json({ message: "Demo login failed" });
     }
+  });
+
+  // PayPal integration routes
+  app.get("/paypal/setup", async (req, res) => {
+    await loadPaypalDefault(req, res);
+  });
+
+  app.post("/paypal/order", async (req, res) => {
+    // Request body should contain: { intent, amount, currency }
+    await createPaypalOrder(req, res);
+  });
+
+  app.post("/paypal/order/:orderID/capture", async (req, res) => {
+    await capturePaypalOrder(req, res);
   });
 
   app.get("/api/auth/me", async (req, res) => {
@@ -2805,7 +2820,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Administrative payment tracking endpoints
-  app.get("/api/admin/payment-records", requireAdmin, async (req, res) => {
+  app.get("/api/admin/payment-records", requireSecureAdmin, async (req, res) => {
     try {
       
       const paymentRecords = await storage.getPaymentRecords();
@@ -2816,7 +2831,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/payment-summary", requireAdmin, async (req, res) => {
+  app.get("/api/admin/payment-summary", requireSecureAdmin, async (req, res) => {
     try {
       
       const summary = await storage.getPaymentSummary();
@@ -2827,7 +2842,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/export-payments", requireAdmin, async (req, res) => {
+  app.post("/api/admin/export-payments", requireSecureAdmin, async (req, res) => {
     try {
       
       const { format, dateRange, status } = req.body;
@@ -2843,7 +2858,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // GET endpoint for tax report data (for dashboard display)
-  app.get("/api/admin/tax-reports", requireAdmin, async (req, res) => {
+  app.get("/api/admin/tax-reports", requireSecureAdmin, async (req, res) => {
     try {
       const year = req.query.year || new Date().getFullYear();
       
@@ -2885,7 +2900,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/tax-report", requireAdmin, async (req, res) => {
+  app.post("/api/admin/tax-report", requireSecureAdmin, async (req, res) => {
     try {
       
       const { year } = req.body;
@@ -2900,7 +2915,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/generate-1099s", requireAdmin, async (req, res) => {
+  app.post("/api/admin/generate-1099s", requireSecureAdmin, async (req, res) => {
     try {
       
       const { year } = req.body;
@@ -3568,7 +3583,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin endpoint: Manually assign order to driver with priority
-  app.post("/api/admin/orders/:orderId/assign", requireAdmin, async (req, res) => {
+  app.post("/api/admin/orders/:orderId/assign", requireSecureAdmin, async (req, res) => {
     try {
       const { orderId } = req.params;
       const { driverId, priority = 1, expiresInMinutes = 15 } = req.body;
@@ -3614,7 +3629,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin routes
-  app.get("/api/admin/orders", requireAdmin, async (req, res) => {
+  app.get("/api/admin/orders", requireSecureAdmin, async (req, res) => {
     try {
       
       const orders = await storage.getAllOrders();
@@ -3627,7 +3642,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Manual Driver Approval API Endpoints
   
   // Get pending driver applications for manual review
-  app.get("/api/admin/driver-applications/pending", requireAdmin, async (req, res) => {
+  app.get("/api/admin/driver-applications/pending", requireSecureAdmin, async (req, res) => {
     try {
       const drivers = await storage.getDrivers();
       const pendingApplications = drivers.filter(driver => 
@@ -3665,7 +3680,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Manually approve driver application
-  app.post("/api/admin/driver-applications/:id/approve", requireAdmin, async (req, res) => {
+  app.post("/api/admin/driver-applications/:id/approve", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       const { approvalNotes = '', adminId } = req.body;
@@ -3709,7 +3724,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Manually reject driver application
-  app.post("/api/admin/driver-applications/:id/reject", requireAdmin, async (req, res) => {
+  app.post("/api/admin/driver-applications/:id/reject", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       const { rejectionReason = '', rejectionNotes = '', adminId } = req.body;
@@ -3760,7 +3775,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Driver Document Verification API Endpoints
   
   // Get driver documents for verification
-  app.get("/api/admin/driver-applications/:id/documents", requireAdmin, async (req, res) => {
+  app.get("/api/admin/driver-applications/:id/documents", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       
@@ -3841,7 +3856,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Verify individual driver document
-  app.post("/api/admin/driver-applications/:id/documents/:docId/verify", requireAdmin, async (req, res) => {
+  app.post("/api/admin/driver-applications/:id/documents/:docId/verify", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       const documentId = parseInt(req.params.docId);
@@ -4013,7 +4028,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin endpoint to populate St. Louis companies data
-  app.post("/api/admin/populate-companies", requireAdmin, async (req, res) => {
+  app.post("/api/admin/populate-companies", requireSecureAdmin, async (req, res) => {
     try {
       console.log('🏢 Admin requesting St. Louis companies population...');
       await populateStLouisCompanies(storage);
@@ -4351,7 +4366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.send(Buffer.from(mockContent));
   });
 
-  app.get("/api/admin/drivers", requireAdmin, async (req, res) => {
+  app.get("/api/admin/drivers", requireSecureAdmin, async (req, res) => {
     try {
       const drivers = await storage.getDrivers();
       res.json(drivers);
@@ -4362,7 +4377,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Driver oversight management endpoint
-  app.patch("/api/admin/drivers/:id/oversight", requireAdmin, async (req, res) => {
+  app.patch("/api/admin/drivers/:id/oversight", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       const { action } = req.body;
@@ -4433,7 +4448,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create new merchant policy - Admin only
-  app.post("/api/merchants/policies", requireAdmin, async (req, res) => {
+  app.post("/api/merchants/policies", requireSecureAdmin, async (req, res) => {
     try {
       // Basic validation - would use insertMerchantPolicySchema if available
       const validatedData = req.body;
@@ -4446,7 +4461,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update merchant policy - Admin only  
-  app.patch("/api/merchants/policies/:id", requireAdmin, async (req, res) => {
+  app.patch("/api/merchants/policies/:id", requireSecureAdmin, async (req, res) => {
     try {
       const policyId = parseInt(req.params.id);
       const updates = req.body;
@@ -4465,7 +4480,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin route to seed retailer policies
-  app.post("/api/admin/seed-policies", requireAdmin, async (req, res) => {
+  app.post("/api/admin/seed-policies", requireSecureAdmin, async (req, res) => {
     try {
       const { seedRetailerPolicies } = await import('./seed-retailer-policies.js');
       const results = await seedRetailerPolicies();
@@ -4477,7 +4492,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Driver status toggle endpoint
-  app.patch("/api/admin/drivers/:id/status", requireAdmin, async (req, res) => {
+  app.patch("/api/admin/drivers/:id/status", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
       const { isOnline } = req.body;
@@ -4503,7 +4518,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/customers", requireAdmin, async (req, res) => {
+  app.get("/api/admin/customers", requireSecureAdmin, async (req, res) => {
     try {
       const customers = await storage.getCustomers();
       res.json(customers);
@@ -4512,7 +4527,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/promo", requireAdmin, async (req, res) => {
+  app.post("/api/admin/promo", requireSecureAdmin, async (req, res) => {
     try {
       
       const validatedData = insertPromoCodeSchema.parse(req.body);
@@ -4524,7 +4539,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Analytics endpoints
-  app.get("/api/admin/analytics/:metric", requireAdmin, async (req, res) => {
+  app.get("/api/admin/analytics/:metric", requireSecureAdmin, async (req, res) => {
     try {
       
       const { metric } = req.params;
@@ -4895,7 +4910,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin cash refund approval endpoint
-  app.post("/api/admin/approve-cash-refund/:orderId", requireAdmin, async (req, res) => {
+  app.post("/api/admin/approve-cash-refund/:orderId", requireSecureAdmin, async (req, res) => {
     try {
       const { orderId } = req.params;
       const { approved, adminNotes } = req.body;
@@ -4945,7 +4960,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Duplicate admin routes removed - using requireAdmin middleware versions above
+  // Duplicate admin routes removed - using requireSecureAdmin middleware versions above
 
   // Promo code validation endpoint
   app.post("/api/promo/validate", async (req, res) => {
@@ -5129,7 +5144,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin bulk payouts
-  app.post("/api/admin/bulk-payouts", requireAdmin, async (req, res) => {
+  app.post("/api/admin/bulk-payouts", requireSecureAdmin, async (req, res) => {
     try {
       const { driverIds, payoutType = 'weekly' } = req.body;
       
@@ -5210,7 +5225,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin instant payout for individual driver
-  app.post("/api/admin/payouts/:driverId/instant", requireAdmin, async (req, res) => {
+  app.post("/api/admin/payouts/:driverId/instant", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.driverId);
       const driver = await storage.getUser(driverId);
@@ -5304,7 +5319,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all payouts for admin dashboard
-  app.get("/api/admin/all-payouts", requireAdmin, async (req, res) => {
+  app.get("/api/admin/all-payouts", requireSecureAdmin, async (req, res) => {
     try {
       const { year, month, driverId, limit = 50 } = req.query;
       
@@ -5373,7 +5388,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/admin/incentives", requireAdmin, async (req, res) => {
+  app.post("/api/admin/incentives", requireSecureAdmin, async (req, res) => {
     try {
       const incentive = await storage.createDriverIncentive(req.body);
       res.status(201).json(incentive);
@@ -5392,7 +5407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/admin/business-info", requireAdmin, async (req, res) => {
+  app.patch("/api/admin/business-info", requireSecureAdmin, async (req, res) => {
     try {
       const updatedInfo = await storage.updateBusinessInfo(req.body);
       res.json(updatedInfo);
@@ -5402,7 +5417,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin analytics endpoint
-  app.get('/api/admin/analytics', requireAdmin, (req, res) => {
+  app.get('/api/admin/analytics', requireSecureAdmin, (req, res) => {
 
     const analytics = {
       totalOrders: 127,
@@ -5417,7 +5432,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Tax reporting endpoints
-  app.get('/api/admin/tax-reports', requireAdmin, async (req, res) => {
+  app.get('/api/admin/tax-reports', requireSecureAdmin, async (req, res) => {
     try {
       const taxYear = req.query.taxYear as string || new Date().getFullYear().toString();
       // Real tax report data from database
@@ -5437,7 +5452,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate tax report export
-  app.post('/api/admin/generate-tax-report', requireAdmin, async (req, res) => {
+  app.post('/api/admin/generate-tax-report', requireSecureAdmin, async (req, res) => {
     try {
       const { taxYear, quarter, format } = req.body;
       
@@ -5471,7 +5486,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate 1099 forms
-  app.post('/api/admin/generate-1099-forms', requireAdmin, async (req, res) => {
+  app.post('/api/admin/generate-1099-forms', requireSecureAdmin, async (req, res) => {
     try {
       const { taxYear, driverIds } = req.body;
       
@@ -5497,7 +5512,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export all tax data
-  app.post('/api/admin/export-tax-data', requireAdmin, async (req, res) => {
+  app.post('/api/admin/export-tax-data', requireSecureAdmin, async (req, res) => {
     try {
       const { taxYear, format } = req.body;
       
@@ -5532,7 +5547,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
 
   // Admin drivers endpoint
-  app.get('/api/admin/drivers', requireAdmin, (req, res) => {
+  app.get('/api/admin/drivers', requireSecureAdmin, (req, res) => {
 
     const drivers = [
       {
@@ -5561,7 +5576,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Update order status
-  app.patch('/api/admin/orders/:orderId/status', requireAdmin, (req, res) => {
+  app.patch('/api/admin/orders/:orderId/status', requireSecureAdmin, (req, res) => {
 
     const { orderId } = req.params;
     const { status } = req.body;
@@ -5570,7 +5585,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Approve driver
-  app.patch('/api/admin/drivers/:driverId/approve', requireAdmin, (req, res) => {
+  app.patch('/api/admin/drivers/:driverId/approve', requireSecureAdmin, (req, res) => {
 
     const { driverId } = req.params;
 
@@ -5872,7 +5887,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Employee Management Routes
   // Get all employees (admin only)
-  app.get('/api/employees', requireAdmin, async (req, res) => {
+  app.get('/api/employees', requireSecureAdmin, async (req, res) => {
     try {
       const employees = await storage.getEmployees();
       res.json(employees);
@@ -5883,7 +5898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Grant admin access to employee - SECURE VERSION
-  app.post('/api/employees/:id/grant-admin', requireAdmin, async (req, res) => {
+  app.post('/api/employees/:id/grant-admin', requireSecureAdmin, async (req, res) => {
     try {
       const { canGrantAdmin } = await import('./auth/adminControl');
       const currentUser = req.session?.user;
@@ -5911,7 +5926,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Revoke admin access from employee - SECURE VERSION
-  app.post('/api/employees/:id/revoke-admin', requireAdmin, async (req, res) => {
+  app.post('/api/employees/:id/revoke-admin', requireSecureAdmin, async (req, res) => {
     try {
       const { canGrantAdmin, MASTER_ADMIN_EMAIL } = await import('./auth/adminControl');
       const currentUser = req.session?.user;
@@ -6126,7 +6141,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Business Intelligence API endpoints - Real database implementation
-  app.get("/api/admin/business-intelligence/kpis", requireAdmin, async (req, res) => {
+  app.get("/api/admin/business-intelligence/kpis", requireSecureAdmin, async (req, res) => {
     try {
       const { timeRange = '30d' } = req.query;
       const kpis = await storage.getBusinessIntelligenceKpis(timeRange as string);
@@ -6137,7 +6152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/business-intelligence/demand-forecast", requireAdmin, async (req, res) => {
+  app.get("/api/admin/business-intelligence/demand-forecast", requireSecureAdmin, async (req, res) => {
     try {
       const { timeRange = '30d' } = req.query;
       const forecast = await storage.getDemandForecast(timeRange as string);
@@ -6148,7 +6163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/business-intelligence/pricing-optimization", requireAdmin, async (req, res) => {
+  app.get("/api/admin/business-intelligence/pricing-optimization", requireSecureAdmin, async (req, res) => {
     try {
       const optimization = await storage.getPricingOptimization();
       res.json(optimization);
@@ -6158,7 +6173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/admin/business-intelligence/market-expansion", requireAdmin, async (req, res) => {
+  app.get("/api/admin/business-intelligence/market-expansion", requireSecureAdmin, async (req, res) => {
     try {
       const expansion = await storage.getMarketExpansion();
       res.json(expansion);
@@ -6385,7 +6400,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Note: Main health endpoint is defined below with comprehensive monitoring
 
   // Advanced business analytics (protected route)
-  app.get("/api/analytics/business-report", requireAdmin, async (req, res) => {
+  app.get("/api/analytics/business-report", requireSecureAdmin, async (req, res) => {
     try {
       const report = await AdvancedAnalytics.generateBusinessReport();
       res.json(report);
@@ -6396,7 +6411,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Real-time dashboard metrics
-  app.get("/api/analytics/realtime", requireAdmin, async (req, res) => {
+  app.get("/api/analytics/realtime", requireSecureAdmin, async (req, res) => {
     try {
       const metrics = await AdvancedAnalytics.getRealTimeMetrics();
       res.json(metrics);
@@ -6407,7 +6422,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Export analytics data
-  app.get("/api/analytics/export", requireAdmin, async (req, res) => {
+  app.get("/api/analytics/export", requireSecureAdmin, async (req, res) => {
     try {
       const format = (req.query.format as string) || 'excel';
       const data = await AdvancedAnalytics.generateExportData(format as 'excel' | 'csv');
@@ -6428,7 +6443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Driver location distribution analytics
-  app.get("/api/analytics/driver-locations", requireAdmin, async (req, res) => {
+  app.get("/api/analytics/driver-locations", requireSecureAdmin, async (req, res) => {
     try {
       // Get driver distribution by city and state from driver applications
       const cityDistributionResult = await db.execute(sql`
@@ -6526,7 +6541,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Assistant API endpoint (removed - using console version below)
 
   // Quick AI actions (admin only)
-  app.post("/api/ai/maintenance-mode", requireAdmin, async (req, res) => {
+  app.post("/api/ai/maintenance-mode", requireSecureAdmin, async (req, res) => {
     try {
       const response = await AIAssistant.enableMaintenanceMode();
       res.json(response);
@@ -6535,7 +6550,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ai/dark-mode", requireAdmin, async (req, res) => {
+  app.post("/api/ai/dark-mode", requireSecureAdmin, async (req, res) => {
     try {
       const response = await AIAssistant.setDarkMode();
       res.json(response);
@@ -7235,7 +7250,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // WebSocket status and monitoring endpoint  
-  app.get("/api/websocket/stats", requireAdmin, async (req, res) => {
+  app.get("/api/websocket/stats", requireSecureAdmin, async (req, res) => {
     try {
       const stats = webSocketService.getStats();
       res.json({
@@ -7320,7 +7335,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Advanced monitoring endpoints
-  app.get("/api/admin/monitoring/metrics", requireAdmin, async (req, res) => {
+  app.get("/api/admin/monitoring/metrics", requireSecureAdmin, async (req, res) => {
     try {
       const { monitoringService } = await import('./monitoring-service.js');
       const latestMetrics = monitoringService.getLatestMetrics();
@@ -7338,7 +7353,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  app.get("/api/admin/monitoring/alerts", requireAdmin, async (req, res) => {
+  app.get("/api/admin/monitoring/alerts", requireSecureAdmin, async (req, res) => {
     try {
       const { monitoringService } = await import('./monitoring-service.js');
       const alerts = monitoringService.getActiveAlerts();
@@ -7349,7 +7364,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  app.get("/api/admin/monitoring/history", requireAdmin, async (req, res) => {
+  app.get("/api/admin/monitoring/history", requireSecureAdmin, async (req, res) => {
     try {
       const { monitoringService } = await import('./monitoring-service.js');
       const limit = parseInt(req.query.limit as string) || 50;
@@ -7361,7 +7376,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  app.post("/api/admin/monitoring/thresholds", requireAdmin, async (req, res) => {
+  app.post("/api/admin/monitoring/thresholds", requireSecureAdmin, async (req, res) => {
     try {
       const { monitoringService } = await import('./monitoring-service.js');
       const thresholds = req.body;
@@ -7373,7 +7388,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  app.post("/api/admin/monitoring/alerts/:alertId/resolve", requireAdmin, async (req, res) => {
+  app.post("/api/admin/monitoring/alerts/:alertId/resolve", requireSecureAdmin, async (req, res) => {
     try {
       const { monitoringService } = await import('./monitoring-service.js');
       const { alertId } = req.params;
@@ -7386,7 +7401,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Real-time analytics endpoint for monitoring dashboard
-  app.get("/api/admin/analytics/realtime", requireAdmin, async (req, res) => {
+  app.get("/api/admin/analytics/realtime", requireSecureAdmin, async (req, res) => {
     try {
       const metrics = PerformanceService.getMetrics();
       const memory = PerformanceService.getMemoryUsage();
@@ -7492,7 +7507,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Trigger live assignment for an order (admin/system use)
-  app.post("/api/admin/orders/:orderId/assign", requireAdmin, async (req, res) => {
+  app.post("/api/admin/orders/:orderId/assign", requireSecureAdmin, async (req, res) => {
     try {
       const { orderId } = req.params;
       const order = await storage.getOrder(orderId);
@@ -7526,7 +7541,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Get live assignment status (admin monitoring)
-  app.get("/api/admin/orders/:orderId/assignment-status", requireAdmin, async (req, res) => {
+  app.get("/api/admin/orders/:orderId/assignment-status", requireSecureAdmin, async (req, res) => {
     try {
       const { orderId } = req.params;
       const status = liveAssignmentService.getAssignmentStatus(orderId);
@@ -7556,7 +7571,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Cancel live assignment (admin intervention)
-  app.post("/api/admin/orders/:orderId/cancel-assignment", requireAdmin, async (req, res) => {
+  app.post("/api/admin/orders/:orderId/cancel-assignment", requireSecureAdmin, async (req, res) => {
     try {
       const { orderId } = req.params;
       const cancelled = liveAssignmentService.cancelAssignment(orderId);
@@ -7740,7 +7755,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Assign ticket to agent (admin only)
-  app.post("/api/support/tickets/:ticketId/assign", requireAdmin, async (req, res) => {
+  app.post("/api/support/tickets/:ticketId/assign", requireSecureAdmin, async (req, res) => {
     try {
       const { ticketId } = req.params;
       const { agentId } = req.body;
@@ -7768,7 +7783,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Resolve ticket (admin only)
-  app.post("/api/support/tickets/:ticketId/resolve", requireAdmin, async (req, res) => {
+  app.post("/api/support/tickets/:ticketId/resolve", requireSecureAdmin, async (req, res) => {
     try {
       const { ticketId } = req.params;
       const { resolutionNote } = req.body;
@@ -7792,7 +7807,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Update ticket status (admin only)
-  app.patch("/api/support/tickets/:ticketId", requireAdmin, async (req, res) => {
+  app.patch("/api/support/tickets/:ticketId", requireSecureAdmin, async (req, res) => {
     try {
       const { ticketId } = req.params;
       const updates = req.body;
@@ -7826,7 +7841,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Get escalation statistics (admin only)
-  app.get("/api/admin/support/escalation-stats", requireAdmin, async (req, res) => {
+  app.get("/api/admin/support/escalation-stats", requireSecureAdmin, async (req, res) => {
     try {
       const stats = supportTicketService.getEscalationStats();
       const recentTickets = await supportTicketService.getTickets({
@@ -7847,7 +7862,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Stop escalation monitoring for ticket (admin emergency use)
-  app.post("/api/admin/support/tickets/:ticketId/stop-escalation", requireAdmin, async (req, res) => {
+  app.post("/api/admin/support/tickets/:ticketId/stop-escalation", requireSecureAdmin, async (req, res) => {
     try {
       const { ticketId } = req.params;
       supportTicketService.stopEscalationMonitoring(parseInt(ticketId));
@@ -7863,7 +7878,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Get support metrics for admin dashboard
-  app.get("/api/admin/support/metrics", requireAdmin, async (req, res) => {
+  app.get("/api/admin/support/metrics", requireSecureAdmin, async (req, res) => {
     try {
       const { timeframe = '7d' } = req.query;
       
@@ -7938,7 +7953,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // Quality Assurance API endpoints - Real data aggregation
-  app.get("/api/admin/quality/events", requireAdmin, async (req, res) => {
+  app.get("/api/admin/quality/events", requireSecureAdmin, async (req, res) => {
     try {
       const { severity, status, type } = req.query;
       
@@ -8026,7 +8041,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
-  app.get("/api/admin/quality/photo-verifications", requireAdmin, async (req, res) => {
+  app.get("/api/admin/quality/photo-verifications", requireSecureAdmin, async (req, res) => {
     try {
       // Get real photo verification data from driver documents and order photos
       const photoVerifications = [];
@@ -8097,7 +8112,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
-  app.get("/api/admin/quality/stats", requireAdmin, async (req, res) => {
+  app.get("/api/admin/quality/stats", requireSecureAdmin, async (req, res) => {
     try {
       // Get quality assurance statistics from real data
       const orders = await storage.getOrders({});
@@ -8136,7 +8151,7 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
-  app.post("/api/admin/quality/events/:eventId/resolve", requireAdmin, async (req, res) => {
+  app.post("/api/admin/quality/events/:eventId/resolve", requireSecureAdmin, async (req, res) => {
     try {
       const { eventId } = req.params;
       const { resolution, compensation } = req.body;
