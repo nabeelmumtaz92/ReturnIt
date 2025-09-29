@@ -61,7 +61,6 @@ import type { users, orders, notifications, driverPayouts } from "@shared/schema
 import AdminSupportModal from "@/components/AdminSupportModal";
 import NotificationBell from "@/components/NotificationBell";
 import ContactSupportButton from "@/components/ContactSupportButton";
-import { AdminLayout } from "@/components/AdminLayout";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import UnifiedAI from "@/components/UnifiedAI";
@@ -461,100 +460,143 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     }
   };
 
-  // Quick Actions Component
-  const QuickActions = () => (
-    <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6 mb-6">
-      <h2 className="text-lg font-semibold text-amber-900 mb-4">Quick Actions</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
-        <Button 
-          onClick={() => changeSection('orders')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-manage-orders"
-        >
-          <Package className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Manage Orders</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('drivers')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-view-drivers"
-        >
-          <Truck className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">View Drivers</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('analytics')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-analytics"
-        >
-          <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Analytics</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('payouts')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-driver-payouts"
-        >
-          <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Driver Payouts</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('tax-reports')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-tax-reports"
-        >
-          <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('chat')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-support-chat"
-        >
-          <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Support Chat</span>
-        </Button>
-        
-        <Button 
-          onClick={() => changeSection('driver-locations')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-driver-locations"
-        >
-          <MapPin className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Driver Locations</span>
-        </Button>
-
-        <Button 
-          onClick={() => changeSection('zone-management')}
-          className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation"
-          variant="outline"
-          data-testid="button-zone-management"
-        >
-          <Target className="h-6 w-6 sm:h-8 sm:w-8" />
-          <span className="text-xs sm:text-sm font-medium text-center">Zone Management</span>
-        </Button>
+  // All Admin Functions - No Sidebar Needed Component
+  const AllAdminFunctions = () => (
+    <div className="space-y-6">
+      {/* Business Operations */}
+      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-amber-900 mb-4">📋 Business Operations</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('orders')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-manage-orders">
+            <Package className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Order Management</span>
+          </Button>
+          <Button onClick={() => changeSection('drivers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-view-drivers">
+            <Truck className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Driver Management</span>
+          </Button>
+          <Button onClick={() => changeSection('driver-applications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-applications">
+            <UserCheck className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Driver Applications</span>
+          </Button>
+          <Button onClick={() => changeSection('customers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customers">
+            <Users className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Customer Management</span>
+          </Button>
+          <Button onClick={() => changeSection('driver-locations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-locations">
+            <Activity className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Real-time Tracking</span>
+          </Button>
+        </div>
       </div>
 
+      {/* Analytics */}
+      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-amber-900 mb-4">📊 Analytics & Intelligence</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('business-intelligence')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-business-intelligence">
+            <PieChart className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Business Intelligence</span>
+          </Button>
+          <Button onClick={() => changeSection('analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-analytics">
+            <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Performance Analytics</span>
+          </Button>
+          <Button onClick={() => changeSection('support-analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-analytics">
+            <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Support Analytics</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Financial Operations */}
+      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-amber-900 mb-4">💰 Financial Operations</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('financial-operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-financial-operations">
+            <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Financial Operations</span>
+          </Button>
+          <Button onClick={() => changeSection('transaction-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-transaction-management">
+            <CreditCard className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Transaction Management</span>
+          </Button>
+          <Button onClick={() => changeSection('enhanced-driver-payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-driver-payouts">
+            <Zap className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Enhanced Payouts</span>
+          </Button>
+          <Button onClick={() => changeSection('enhanced-tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-tax-reports">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Enhanced Tax Reports</span>
+          </Button>
+          <Button onClick={() => changeSection('payment-tracking')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-payment-tracking">
+            <Clock className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Payment Tracking</span>
+          </Button>
+          <Button onClick={() => changeSection('payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-payouts">
+            <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Driver Payouts</span>
+          </Button>
+          <Button onClick={() => changeSection('tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-tax-reports">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Support & Customer Service */}
+      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-amber-900 mb-4">🎧 Support & Customer Service</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('support-center')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-center">
+            <HeadphonesIcon className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Support Center</span>
+          </Button>
+          <Button onClick={() => changeSection('customer-feedback')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customer-feedback">
+            <Star className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Customer Feedback</span>
+          </Button>
+          <Button onClick={() => changeSection('chat')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-chat">
+            <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Live Support Chat</span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Operations & Management */}
+      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-amber-900 mb-4">⚙️ Operations & Management</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('notifications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-notifications">
+            <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Notifications</span>
+          </Button>
+          <Button onClick={() => changeSection('employees')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-employees">
+            <Users2 className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Employees</span>
+          </Button>
+          <Button onClick={() => changeSection('operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-operations">
+            <Building2 className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Operations</span>
+          </Button>
+          <Button onClick={() => changeSection('system-metrics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-system-metrics">
+            <Monitor className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">System Metrics</span>
+          </Button>
+          <Button onClick={() => changeSection('zone-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-zone-management">
+            <Target className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Zone Management</span>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 
   // Individual section components
   const OverviewContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Quick Actions - Moved to top */}
-      <QuickActions />
+      {/* All Admin Functions - No Sidebar Needed */}
+      <AllAdminFunctions />
 
       {/* Update Controls */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
@@ -5209,12 +5251,36 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   ];
 
   return (
-    <AdminLayout 
-      pageTitle="Admin Dashboard" 
-      tabs={dashboardTabs}
-      changeSection={changeSection}
-      currentSection={currentSection}
-    >
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+      {/* Header */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-200">
+        <div className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-4">
+            <h1 className="text-2xl font-bold text-amber-900">ReturnIt Admin Dashboard</h1>
+            <Badge className="bg-amber-100 text-amber-800 border-amber-200">Master Admin</Badge>
+          </div>
+          <div className="flex items-center gap-4">
+            <NotificationBell />
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={logout}
+              className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+              data-testid="button-signout-admin"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+            <Link href="/">
+              <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
+                Back to Site
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
       <div className="relative z-10">
         {/* Section Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 p-4">
@@ -5304,7 +5370,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         )}
 
       </div>
-    </AdminLayout>
+    </div>
   );
 }
 
