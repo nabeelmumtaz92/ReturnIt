@@ -60,7 +60,7 @@ export default function LoginScreen({ navigation, onAuthSuccess }) {
 
     try {
       setLoading(true);
-      // Note: Registration requires master admin email due to security restrictions
+      // Note: Registration may be restricted in production environments
       Alert.alert(
         'Registration Restricted', 
         'Account creation is currently limited to authorized users. Please contact support for access.',
@@ -219,12 +219,6 @@ export default function LoginScreen({ navigation, onAuthSuccess }) {
           </TouchableOpacity>
         </View>
 
-        {/* Demo Info */}
-        <View style={styles.demoInfo}>
-          <Text style={styles.demoText}>
-            Demo App: Use "demo@returnit.com" with password "demo123" for testing
-          </Text>
-        </View>
       </ScrollView>
     </View>
   );
@@ -344,16 +338,5 @@ const styles = StyleSheet.create({
   oauthButtonText: {
     fontSize: 16,
     color: '#4A5568',
-  },
-  demoInfo: {
-    backgroundColor: '#EDF2F7',
-    padding: 16,
-    borderRadius: 8,
-    marginTop: 20,
-  },
-  demoText: {
-    fontSize: 14,
-    color: '#4A5568',
-    textAlign: 'center',
   },
 });

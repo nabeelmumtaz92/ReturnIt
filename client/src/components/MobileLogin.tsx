@@ -47,33 +47,6 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setIsLoading(true);
-    try {
-      const demoEmail = isDriver ? 'driver@returnit.demo' : 'customer@returnit.demo';
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ 
-          email: demoEmail, 
-          password: 'demo123' 
-        }),
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        login(userData);
-        onLogin();
-      }
-    } catch (error) {
-      setError('Demo login failed');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-secondary to-muted flex items-center justify-center p-4">
@@ -140,24 +113,6 @@ export function MobileLogin({ onLogin, isDriver = false }: MobileLoginProps) {
             </Button>
           </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="bg-white px-2 text-muted-foreground">Or try demo</span>
-            </div>
-          </div>
-
-          <Button
-            variant="outline"
-            onClick={handleDemoLogin}
-            className="w-full"
-            disabled={isLoading}
-            data-testid="button-demo"
-          >
-            {isDriver ? 'Demo Driver Account' : 'Demo Customer Account'}
-          </Button>
 
           <div className="text-xs text-center text-muted-foreground space-y-1">
             <p>Stay signed in for 30 days</p>

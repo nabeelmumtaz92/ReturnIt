@@ -33,7 +33,7 @@ export NODE_ENV=production
 ### Option 2: Custom Configuration
 Set the `RETURNLY_ENV_CONFIG` environment variable:
 ```bash
-export RETURNLY_ENV_CONFIG='{"allowPublicRegistration":false,"allowPublicLogin":false,"allowGoogleAuth":false,"allowDriverSignup":false,"enableDemoMode":true,"restrictToWhitelist":true,"whitelistedEmails":["nabeelmumtaz92@gmail.com"]}'
+export RETURNLY_ENV_CONFIG='{"allowPublicRegistration":false,"allowPublicLogin":false,"allowGoogleAuth":false,"allowDriverSignup":false,"enableDemoMode":false,"restrictToWhitelist":true,"whitelistedEmails":["nabeelmumtaz92@gmail.com"]}'
 ```
 
 ## What Happens in Restricted Mode
@@ -56,7 +56,6 @@ When in production/staging mode:
 **Production & Staging:**
 - `nabeelmumtaz92@gmail.com` (Primary testing account)
 - `admin@returnly.tech` (Admin backup)
-- `demo@returnly.tech` (Demo account)
 
 **Development:**
 - All emails allowed (for testing purposes)
