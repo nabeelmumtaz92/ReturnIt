@@ -24,28 +24,28 @@ export default function BusinessIntelligence() {
   const [refreshing, setRefreshing] = useState(false);
 
   // Real KPI data from database (replaced mock) - Now properly typed
-  const { data: kpiData, isLoading: kpiLoading } = useQuery<KpiData>({
+  const { data: kpiData, isLoading: kpiLoading } = useQuery({
     queryKey: ['/api/admin/business-intelligence/kpis', timeRange],
     enabled: true
-  });
+  }) as { data: KpiData | undefined; isLoading: boolean };
 
   // Real demand forecasting data from database (replaced mock) - Now properly typed
-  const { data: demandData, isLoading: demandLoading } = useQuery<DemandForecastItem[]>({
+  const { data: demandData, isLoading: demandLoading } = useQuery({
     queryKey: ['/api/admin/business-intelligence/demand-forecast', timeRange],
     enabled: true
-  });
+  }) as { data: DemandForecastItem[] | undefined; isLoading: boolean };
 
   // Real pricing optimization data from database (replaced mock) - Now properly typed
-  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery<PricingOptimizationItem[]>({
+  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery({
     queryKey: ['/api/admin/business-intelligence/pricing-optimization'],
     enabled: true
-  });
+  }) as { data: PricingOptimizationItem[] | undefined; isLoading: boolean };
 
   // Real market expansion data from database (replaced mock) - Now properly typed
-  const { data: marketExpansion, isLoading: marketLoading } = useQuery<MarketExpansionItem[]>({
+  const { data: marketExpansion, isLoading: marketLoading } = useQuery({
     queryKey: ['/api/admin/business-intelligence/market-expansion'],
     enabled: true
-  });
+  }) as { data: MarketExpansionItem[] | undefined; isLoading: boolean };
 
   // Enhanced error handling and type guards
   const isValidKpiData = (data: any): data is KpiData => {
