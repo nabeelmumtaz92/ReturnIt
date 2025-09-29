@@ -5307,8 +5307,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   );
 }
 
-// Business Intelligence Component
-function BusinessIntelligenceContent() {
+// Business Intelligence Component - Export the function properly
+export function BusinessIntelligenceContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
