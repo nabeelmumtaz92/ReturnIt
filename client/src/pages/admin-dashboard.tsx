@@ -5269,7 +5269,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Render Section Content */}
-        {renderSectionContent()}
+        <>{renderSectionContent()}</>
 
         {/* Admin Support Modal */}
         <AdminSupportModal
