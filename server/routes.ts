@@ -22,7 +22,7 @@ import { registrationSchema, loginSchema, trackingNumberSchema } from "@shared/v
 import { PerformanceService, performanceMiddleware } from "./performance";
 import { AdvancedAnalytics } from "./analytics";
 import { checkDatabaseHealth, db } from "./db";
-import { requireAdmin, isAdmin } from "./middleware/adminAuth";
+import { requireSecureAdmin } from "./auth/adminControl";
 import { sql } from "drizzle-orm";
 import { webSocketService } from "./websocket-service";
 import { webhookService } from "./webhook-service";
@@ -1170,7 +1170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Comprehensive ZIP Code Analytics endpoint (Admin only)
-  app.get("/api/admin/zip-codes/:zipCode/analytics", isAuthenticated, requireAdmin, async (req, res) => {
+  app.get("/api/admin/zip-codes/:zipCode/analytics", requireSecureAdmin, async (req, res) => {
     try {
       const { zipCode } = req.params;
       
@@ -1184,7 +1184,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ZIP Code trends endpoint (Admin only)
-  app.get("/api/admin/zip-codes/:zipCode/trends", isAuthenticated, requireAdmin, async (req, res) => {
+  app.get("/api/admin/zip-codes/:zipCode/trends", requireSecureAdmin, async (req, res) => {
     try {
       const { zipCode } = req.params;
       const { days = 30 } = req.query;
@@ -1199,7 +1199,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Bulk ZIP Code analytics endpoint (Admin only)
-  app.post("/api/admin/zip-codes/bulk-analytics", isAuthenticated, requireAdmin, async (req, res) => {
+  app.post("/api/admin/zip-codes/bulk-analytics", requireSecureAdmin, async (req, res) => {
     try {
       const { zipCodes } = req.body;
       
@@ -1429,7 +1429,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Clear account lockout endpoint - SECURED (master admin only)
-  app.post("/api/auth/clear-lockout", requireAdmin, async (req, res) => {
+  app.post("/api/auth/clear-lockout", requireSecureAdmin, async (req, res) => {
     try {
       const { canGrantAdmin } = await import('./auth/adminControl');
       const currentUser = req.session?.user;
