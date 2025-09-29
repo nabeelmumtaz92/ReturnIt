@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'wouter';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { 
@@ -43,7 +43,9 @@ import {
   AlertTriangle,
   Target,
   Bot,
-  Smartphone
+  Smartphone,
+  Building2,
+  X
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -675,19 +677,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         {/* Header with Refresh Button */}
         <div className="flex justify-between items-center mb-6">
@@ -981,19 +971,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const MobileAnalyticsContent = () => {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         {/* Header */}
         <div className="mb-6">
@@ -1102,19 +1080,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         {/* Header */}
         <div className="mb-6">
@@ -1345,19 +1311,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           {/* Order Pipeline Statistics */}
@@ -1854,19 +1808,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           {/* Driver Statistics */}
@@ -2182,19 +2124,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         {/* Customer Management Header */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -2387,19 +2317,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const PaymentsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+
 
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -2467,19 +2385,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const AnalyticsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+
 
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -2508,19 +2414,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const EnhancedAnalyticsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+
 
       <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
         <CardHeader className="flex flex-row items-center justify-between">
@@ -2635,19 +2529,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
           <CardHeader className="flex flex-row items-center justify-between">
@@ -2760,19 +2642,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -2851,19 +2721,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -3063,19 +2921,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         {reportStatus && (
           <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -3168,19 +3014,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -3311,19 +3145,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -3486,19 +3308,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           {/* Rating Overview */}
@@ -3624,19 +3434,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -3782,19 +3580,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           {/* Operations Overview */}
@@ -4006,19 +3792,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="space-y-6">
           <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
@@ -4346,19 +4120,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-      {/* Back Button */}
-      {navigationHistory.length > 1 && (
-        <div className="mb-4">
-          <Button 
-            onClick={goBack}
-            variant="outline"
-            className="border-amber-200 hover:bg-amber-50"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ')}
-          </Button>
-        </div>
-      )}
+
 
       {/* Status Display */}
       {processingStatus && (
@@ -4739,19 +4501,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
         
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-amber-900 mb-2">Payment Tracking & Tax Management</h1>
@@ -5289,7 +5039,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Select a Company</h3>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {companiesData.map((company: any) => (
+                  {(companiesData as any[]).map((company: any) => (
                     <Card key={company.id} className="cursor-pointer hover:bg-amber-50 transition-colors" onClick={() => handleEditPolicy(company)}>
                       <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-2">
@@ -5555,9 +5305,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
     </AdminLayout>
   );
+}
 
-  // Business Intelligence Component
-  function BusinessIntelligenceContent() {
+// Business Intelligence Component
+function BusinessIntelligenceContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -5674,10 +5425,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Financial Operations Component
-  function FinancialOperationsContent() {
+// Financial Operations Component
+function FinancialOperationsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -5769,10 +5520,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Transaction Management Component
-  function TransactionManagementContent() {
+// Transaction Management Component
+function TransactionManagementContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -5867,10 +5618,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
       </div>
     );
-  }
+}
 
-  // Enhanced Driver Payouts Component
-  function EnhancedDriverPayoutsContent() {
+// Enhanced Driver Payouts Component
+function EnhancedDriverPayoutsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -5982,10 +5733,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Enhanced Tax Reports Component
-  function EnhancedTaxReportsContent() {
+// Enhanced Tax Reports Component
+function EnhancedTaxReportsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -6101,10 +5852,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Payment Tracking Component
-  function PaymentTrackingContent() {
+// Payment Tracking Component
+function PaymentTrackingContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -6201,10 +5952,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Support Center Component
-  function SupportCenterContent() {
+// Support Center Component
+function SupportCenterContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -6318,10 +6069,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Support Analytics Component
-  function SupportAnalyticsContent() {
+// Support Analytics Component
+function SupportAnalyticsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -6434,10 +6185,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
+}
 
-  // Manual Driver Applications Component
-  function DriverApplicationsContent() {
+// Manual Driver Applications Component
+function DriverApplicationsContent() {
     const { toast } = useToast();
     const [pendingApplications, setPendingApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -6679,19 +6430,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        {/* Back Button */}
-        {navigationHistory.length > 0 && (
-          <div className="mb-4">
-            <Button 
-              onClick={goBack}
-              variant="outline"
-              className="border-amber-200 hover:bg-amber-50"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to {navigationHistory[navigationHistory.length - 1] === 'overview' ? 'Dashboard' : navigationHistory[navigationHistory.length - 1].replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-            </Button>
-          </div>
-        )}
+
 
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-amber-900 mb-2">Manual Driver Approval System</h2>
@@ -7119,10 +6858,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         )}
       </div>
     );
-  }
+}
 
-  // Customer Feedback Component
-  function CustomerFeedbackContent() {
+// Customer Feedback Component
+function CustomerFeedbackContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
@@ -7232,5 +6971,4 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
       </div>
     );
-  }
 }
