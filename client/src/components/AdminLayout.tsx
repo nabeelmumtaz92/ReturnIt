@@ -503,34 +503,34 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
                   const isActive = activeSectionProp === sectionName;
                   
                   return (
-                    <div
-                      key={item.href}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer group",
-                        isActive
-                          ? "bg-amber-100 text-amber-900 border border-amber-200"
-                          : "text-amber-700 hover:bg-amber-50 hover:text-amber-900"
-                      )}
-                      title={!sidebarOpen ? item.label : undefined}
-                      onClick={() => changeSection && changeSection(sectionName)}
-                    >
-                      <item.icon className={cn("h-4 w-4 flex-shrink-0", 
-                        isActive ? "text-amber-700" : "text-amber-600"
-                      )} />
-                      {sidebarOpen && (
-                        <>
-                          <div className="flex-1">
-                            <div className="font-medium">{item.label}</div>
-                            <div className="text-xs text-amber-600 mt-0.5">
-                              {item.description}
+                    <Link key={item.href} href={item.href}>
+                      <div
+                        className={cn(
+                          "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer group",
+                          isActive
+                            ? "bg-amber-100 text-amber-900 border border-amber-200"
+                            : "text-amber-700 hover:bg-amber-50 hover:text-amber-900"
+                        )}
+                        title={!sidebarOpen ? item.label : undefined}
+                      >
+                        <item.icon className={cn("h-4 w-4 flex-shrink-0", 
+                          isActive ? "text-amber-700" : "text-amber-600"
+                        )} />
+                        {sidebarOpen && (
+                          <>
+                            <div className="flex-1">
+                              <div className="font-medium">{item.label}</div>
+                              <div className="text-xs text-amber-600 mt-0.5">
+                                {item.description}
+                              </div>
                             </div>
-                          </div>
-                          {isActive && (
-                            <ChevronRight className="h-4 w-4 text-amber-600" />
-                          )}
-                        </>
-                      )}
-                    </div>
+                            {isActive && (
+                              <ChevronRight className="h-4 w-4 text-amber-600" />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </Link>
                   );
                 })}
               </div>
