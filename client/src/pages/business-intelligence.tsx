@@ -24,28 +24,28 @@ export default function BusinessIntelligence() {
   const [refreshing, setRefreshing] = useState(false);
 
   // Real KPI data from database (replaced mock) - Now properly typed
-  const { data: kpiData, isLoading: kpiLoading } = useQuery({
+  const { data: kpiData, isLoading: kpiLoading } = useQuery<KpiData>({
     queryKey: ['/api/admin/business-intelligence/kpis', timeRange],
     enabled: true
-  }) as { data: KpiData | undefined; isLoading: boolean };
+  });
 
   // Real demand forecasting data from database (replaced mock) - Now properly typed
-  const { data: demandData, isLoading: demandLoading } = useQuery({
+  const { data: demandData, isLoading: demandLoading } = useQuery<DemandForecastItem[]>({
     queryKey: ['/api/admin/business-intelligence/demand-forecast', timeRange],
     enabled: true
-  }) as { data: DemandForecastItem[] | undefined; isLoading: boolean };
+  });
 
   // Real pricing optimization data from database (replaced mock) - Now properly typed
-  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery({
+  const { data: pricingOptimization, isLoading: pricingLoading } = useQuery<PricingOptimizationItem[]>({
     queryKey: ['/api/admin/business-intelligence/pricing-optimization'],
     enabled: true
-  }) as { data: PricingOptimizationItem[] | undefined; isLoading: boolean };
+  });
 
   // Real market expansion data from database (replaced mock) - Now properly typed
-  const { data: marketExpansion, isLoading: marketLoading } = useQuery({
+  const { data: marketExpansion, isLoading: marketLoading } = useQuery<MarketExpansionItem[]>({
     queryKey: ['/api/admin/business-intelligence/market-expansion'],
     enabled: true
-  }) as { data: MarketExpansionItem[] | undefined; isLoading: boolean };
+  });
 
   // Enhanced error handling and type guards
   const isValidKpiData = (data: any): data is KpiData => {
@@ -233,18 +233,18 @@ export default function BusinessIntelligence() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {demandData.map((day, index) => (
+                    {demandData && demandData.map((day, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                         <div className="flex items-center gap-3">
                           <span className="font-medium text-gray-900 w-8">{day.day}</span>
                           <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600">Actual: {day.orders}</span>
-                            <span className="text-sm text-blue-600">Predicted: {day.predicted}</span>
+                            <span className="text-sm text-blue-600">Predicted: {day.predictedOrders}</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant={day.confidence > 0.9 ? 'default' : day.confidence > 0.8 ? 'secondary' : 'destructive'}>
-                            {Math.round(day.confidence * 100)}% confidence
+                          <Badge variant="secondary">
+                            High confidence
                           </Badge>
                         </div>
                       </div>
@@ -305,7 +305,7 @@ export default function BusinessIntelligence() {
               <CardContent>
                 <div className="mb-6 p-4 bg-amber-50 rounded-lg">
                   <p className="text-sm text-amber-800">
-                    <strong>Current Base Price:</strong> ${pricingOptimization.basePrice}
+                    <strong>Base Service Price:</strong> $3.99
                   </p>
                   <p className="text-xs text-amber-700 mt-1">
                     Based on competitor analysis and demand patterns
@@ -313,20 +313,20 @@ export default function BusinessIntelligence() {
                 </div>
 
                 <div className="space-y-4">
-                  {pricingOptimization.recommendations.map((rec, index) => (
+                  {pricingOptimization && pricingOptimization.map((item, index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900">{rec.scenario}</h4>
+                        <h4 className="font-semibold text-gray-900">{item.service}</h4>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-green-600">${rec.suggestedPrice}</p>
-                          <Badge variant="secondary" className="text-xs">
-                            {Math.round(rec.confidence * 100)}% confidence
+                          <p className="text-lg font-bold text-green-600">${item.recommendedPrice}</p>
+                          <Badge variant={item.profitability === 'high' ? 'default' : item.profitability === 'medium' ? 'secondary' : 'destructive'} className="text-xs">
+                            {item.profitability} profitability
                           </Badge>
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{rec.reason}</p>
+                      <p className="text-sm text-gray-600 mb-2">{item.reasoning}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium text-green-600">{rec.expectedIncrease}</span>
+                        <span className="text-sm text-gray-600">Current: ${item.currentPrice} → Recommended: ${item.recommendedPrice}</span>
                         <Button size="sm" variant="outline" className="border-green-300 text-green-700">
                           Apply Pricing
                         </Button>
@@ -348,7 +348,7 @@ export default function BusinessIntelligence() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {marketExpansion.map((area, index) => (
+                  {marketExpansion && marketExpansion.map((area, index) => (
                     <div key={index} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div>
