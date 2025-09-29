@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,11 +7,32 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Link } from 'wouter';
 import { AdminNavigation } from '@/components/AdminNavigation';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Camera, Shield, AlertTriangle, CheckCircle, FileImage, 
   Clock, DollarSign, User, Package, MapPin, Eye, Download,
-  Upload, XCircle, RefreshCw, Star, MessageCircle
+  Upload, XCircle, RefreshCw, Star, MessageCircle, Loader2
 } from 'lucide-react';
+
+// API helper function
+const apiRequest = async (url: string, options: RequestInit = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `HTTP ${response.status}`);
+  }
+  
+  return response.json();
+};
 
 interface QualityEvent {
   id: string;
@@ -52,108 +73,93 @@ export default function QualityAssurance() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedSeverity, setSelectedSeverity] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const [qualityEvents] = useState<QualityEvent[]>([
-    {
-      id: 'QE001',
-      orderId: 'RTN12345',
-      type: 'damage_report',
-      status: 'under_review',
-      severity: 'high',
-      reportedBy: 'customer',
-      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-      description: 'Package arrived with visible damage to corner, contents appear intact but box is crushed.',
-      photos: ['/api/uploads/damage_1.jpg', '/api/uploads/damage_2.jpg'],
-      assignedTo: 'Sarah Johnson'
+  // Fetch quality events from API
+  const { data: qualityEvents = [], isLoading: eventsLoading, error: eventsError } = useQuery({
+    queryKey: ['/api/admin/quality/events', selectedSeverity, selectedStatus],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (selectedSeverity !== 'all') params.append('severity', selectedSeverity);
+      if (selectedStatus !== 'all') params.append('status', selectedStatus);
+      const queryString = params.toString();
+      return apiRequest(`/api/admin/quality/events${queryString ? '?' + queryString : ''}`);
     },
-    {
-      id: 'QE002',
-      orderId: 'RTN12344',
-      type: 'photo_verification',
-      status: 'approved',
-      severity: 'low',
-      reportedBy: 'admin',
-      timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-      description: 'Photo quality verification passed all automated checks.',
-      photos: ['/api/uploads/pickup_1.jpg']
-    },
-    {
-      id: 'QE003',
-      orderId: 'RTN12343',
-      type: 'insurance_claim',
-      status: 'pending',
-      severity: 'critical',
-      reportedBy: 'customer',
-      timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000),
-      description: 'High-value electronics damaged during transport. Customer requesting full replacement.',
-      photos: ['/api/uploads/electronics_damage.jpg'],
-      compensation: 450.00,
-      assignedTo: 'Mike Chen'
-    },
-    {
-      id: 'QE004',
-      orderId: 'RTN12342',
-      type: 'dispute',
-      status: 'resolved',
-      severity: 'medium',
-      reportedBy: 'driver',
-      timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000),
-      description: 'Customer claimed package was not picked up, but GPS and photos confirm successful pickup.',
-      photos: ['/api/uploads/pickup_confirmation.jpg'],
-      resolution: 'Dispute resolved in favor of driver. GPS data and photo evidence confirmed pickup.'
-    }
-  ]);
+  });
 
-  const [photoVerifications] = useState<PhotoVerification[]>([
-    {
-      id: 'PV001',
-      orderId: 'RTN12345',
-      driverId: 23,
-      stage: 'pickup',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      photos: [
-        {
-          url: '/api/uploads/pickup_condition_1.jpg',
-          type: 'package_condition',
-          quality: 'good',
-          verified: true
-        },
-        {
-          url: '/api/uploads/pickup_location_1.jpg',
-          type: 'location',
-          quality: 'good',
-          verified: true
-        }
-      ],
-      autoChecks: {
-        timestamp: true,
-        location: true,
-        quality: true,
-        count: true
-      }
+  // Fetch photo verifications from API
+  const { data: photoVerifications = [], isLoading: verificationsLoading, error: verificationsError } = useQuery({
+    queryKey: ['/api/admin/quality/photo-verifications'],
+    queryFn: () => apiRequest('/api/admin/quality/photo-verifications'),
+  });
+
+  // Fetch quality statistics from API
+  const { data: qualityStats = {}, isLoading: statsLoading, error: statsError } = useQuery({
+    queryKey: ['/api/admin/quality/stats'],
+    queryFn: () => apiRequest('/api/admin/quality/stats'),
+  });
+
+  // Resolve quality event mutation
+  const resolveEventMutation = useMutation({
+    mutationFn: async ({ eventId, resolution, compensation }: { eventId: string; resolution: string; compensation?: number }) => {
+      return apiRequest(`/api/admin/quality/events/${eventId}/resolve`, {
+        method: 'POST',
+        body: JSON.stringify({ resolution, compensation }),
+      });
     },
-    {
-      id: 'PV002',
-      orderId: 'RTN12344',
-      driverId: 15,
-      stage: 'delivery',
-      timestamp: new Date(Date.now() - 60 * 60 * 1000),
-      photos: [
-        {
-          url: '/api/uploads/delivery_complete_1.jpg',
-          type: 'package_condition',
-          quality: 'poor',
-          verified: false
-        }
-      ],
-      autoChecks: {
-        timestamp: true,
-        location: true,
-        quality: false,
-        count: false
-      }
-    }
-  ]);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/quality/events'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/quality/stats'] });
+      toast({
+        title: "Event Resolved",
+        description: "Quality event has been resolved successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to resolve event",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Loading state
+  if (eventsLoading || verificationsLoading || statsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+        <AdminNavigation />
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="flex items-center gap-2 text-amber-800">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span>Loading quality assurance data...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (eventsError || verificationsError || statsError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+        <AdminNavigation />
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <h2 className="text-xl font-bold text-red-800 mb-2">Error Loading Data</h2>
+              <p className="text-red-600">
+                {(eventsError || verificationsError || statsError)?.message || 'Failed to load quality assurance data'}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -182,21 +188,14 @@ export default function QualityAssurance() {
       case 'photo_verification': return <Camera className="h-4 w-4 text-blue-500" />;
       case 'insurance_claim': return <Shield className="h-4 w-4 text-red-500" />;
       case 'dispute': return <MessageCircle className="h-4 w-4 text-purple-500" />;
+      case 'policy_violation': return <Shield className="h-4 w-4 text-yellow-500" />;
       default: return <Package className="h-4 w-4 text-gray-500" />;
     }
   };
 
-  const filteredEvents = qualityEvents.filter(event => {
-    if (selectedSeverity !== 'all' && event.severity !== selectedSeverity) return false;
-    if (selectedStatus !== 'all' && event.status !== selectedStatus) return false;
-    return true;
-  });
-
-  const stats = {
-    totalEvents: qualityEvents.length,
-    pending: qualityEvents.filter(e => e.status === 'pending').length,
-    resolved: qualityEvents.filter(e => e.status === 'resolved').length,
-    successRate: Math.round((qualityEvents.filter(e => e.status === 'approved' || e.status === 'resolved').length / qualityEvents.length) * 100)
+  const handleResolveEvent = (eventId: string) => {
+    const resolution = `Quality event ${eventId} resolved through admin review`;
+    resolveEventMutation.mutate({ eventId, resolution });
   };
 
   return (
@@ -229,7 +228,7 @@ export default function QualityAssurance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Total Events</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.totalEvents}</p>
+                  <p className="text-2xl font-bold text-gray-900">{qualityStats.totalEvents || 0}</p>
                 </div>
                 <FileImage className="h-8 w-8 text-blue-600" />
               </div>
@@ -241,7 +240,7 @@ export default function QualityAssurance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Pending Review</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
+                  <p className="text-2xl font-bold text-gray-900">{qualityStats.pendingReview || 0}</p>
                 </div>
                 <Clock className="h-8 w-8 text-yellow-600" />
               </div>
@@ -253,7 +252,7 @@ export default function QualityAssurance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Resolved</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.resolved}</p>
+                  <p className="text-2xl font-bold text-gray-900">{qualityStats.photoVerifications || 0}</p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
@@ -265,7 +264,7 @@ export default function QualityAssurance() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Success Rate</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.successRate}%</p>
+                  <p className="text-2xl font-bold text-gray-900">{qualityStats.qualityScore || 100}%</p>
                 </div>
                 <Star className="h-8 w-8 text-amber-600" />
               </div>
@@ -322,12 +321,12 @@ export default function QualityAssurance() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-amber-900">
                   <Shield className="h-5 w-5" />
-                  Quality Events ({filteredEvents.length})
+                  Quality Events ({qualityEvents.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {filteredEvents.map((event) => (
+                  {qualityEvents.map((event) => (
                     <div key={event.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
@@ -386,9 +385,27 @@ export default function QualityAssurance() {
                               ${event.compensation}
                             </Badge>
                           )}
-                          <Button size="sm" variant="outline">
-                            Review
-                          </Button>
+                          {event.status !== 'resolved' && event.status !== 'approved' ? (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleResolveEvent(event.id)}
+                              disabled={resolveEventMutation.isPending}
+                              data-testid={`button-resolve-${event.id}`}
+                            >
+                              {resolveEventMutation.isPending ? (
+                                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                              ) : (
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                              )}
+                              Resolve
+                            </Button>
+                          ) : (
+                            <Badge variant="default" className="bg-green-600">
+                              <CheckCircle className="h-3 w-3 mr-1" />
+                              Resolved
+                            </Badge>
+                          )}
                         </div>
                       </div>
 

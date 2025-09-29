@@ -1,36 +1,30 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'wouter';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Clock, DollarSign, Phone, ArrowLeft, Navigation, Package, Star } from "lucide-react";
+import { MapPin, Clock, DollarSign, Phone, ArrowLeft, Navigation, Package, Star, Loader2 } from "lucide-react";
 import { calculatePaymentWithValue, getItemSizeByValue } from "@shared/paymentCalculator";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 
-const MOCK_JOBS = {
-  H2K9QZ: {
-    id: 'H2K9QZ',
-    customer: { name: 'Jenny Park', phone: '(555) 012-3456' },
-    pickup: '123 Main St, St. Louis, MO',
-    retailer: 'Target, 1235 Hampton Ave, St. Louis, MO',
-    miles: 5.2,
-    minutes: 14,
-    itemValue: 89.99,
-    numberOfItems: 1,
-    rush: false,
-    notes: 'Leave at front desk if line is long.',
-  },
-  M8P4TR: {
-    id: 'M8P4TR',
-    customer: { name: 'Mason Lee', phone: '(555) 222-0099' },
-    pickup: '742 Evergreen Terrace, St. Louis, MO',
-    retailer: 'Walmart, 201 Highland Blvd, St. Louis, MO',
-    miles: 7.8,
-    minutes: 20,
-    itemValue: 156.50,
-    numberOfItems: 2,
-    rush: true,
-    notes: 'Handle box upright. Return for refund, not exchange.',
-  },
+// API helper function
+const apiRequest = async (url: string, options: RequestInit = {}) => {
+  const response = await fetch(url, {
+    ...options,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `HTTP ${response.status}`);
+  }
+  
+  return response.json();
 };
 
 interface StatusBadgeProps {
@@ -51,36 +45,119 @@ function StatusBadge({ label, active }: StatusBadgeProps) {
 
 export default function DriverJob() {
   const params = useParams();
-  const jobId = params.id || 'H2K9QZ';
-  const [status, setStatus] = useState('assigned'); // 'assigned' -> 'picked_up' -> 'dropped_off' -> 'completed'
+  const jobId = params.id;
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  const job = MOCK_JOBS[jobId as keyof typeof MOCK_JOBS] || MOCK_JOBS.H2K9QZ;
+  // Fetch job data from API
+  const { data: job, isLoading, error } = useQuery({
+    queryKey: ['/api/driver/orders', jobId],
+    queryFn: () => apiRequest(`/api/orders/${jobId}`),
+    enabled: !!jobId,
+  });
+  
+  // Status update mutation
+  const statusMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
+      return apiRequest(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/driver/orders', jobId] });
+      toast({
+        title: "Status Updated",
+        description: "Order status has been updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to update status",
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+        <div className="flex items-center gap-2 text-amber-800">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Loading job details...</span>
+        </div>
+      </div>
+    );
+  }
+  
+  // Error state
+  if (error || !job) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-red-800 mb-2">Job Not Found</h2>
+          <p className="text-red-600 mb-4">
+            {error instanceof Error ? error.message : 'The requested job could not be found.'}
+          </p>
+          <Link href="/driver-portal">
+            <Button className="bg-amber-600 hover:bg-amber-700">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Driver Portal
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  
+  // Extract job data and format for compatibility
+  const formattedJob = {
+    id: job.id,
+    customer: { 
+      name: job.customerName || 'Customer', 
+      phone: job.customerPhone || job.phone || '(555) 000-0000' 
+    },
+    pickup: job.pickupAddress,
+    retailer: job.companyInfo?.name || job.company || 'Store',
+    miles: job.estimatedDistance || 5.0,
+    minutes: job.estimatedTime || 15,
+    itemValue: job.itemValue || job.totalPrice || 50.00,
+    numberOfItems: job.numberOfItems || 1,
+    rush: job.isPriority || job.rush || false,
+    notes: job.notes || '',
+  };
 
   const fareCalculation = useMemo(() => {
     const paymentRouteInfo = {
-      distance: job.miles,
-      estimatedTime: job.minutes / 60, // Convert minutes to hours for calculation
+      distance: formattedJob.miles,
+      estimatedTime: formattedJob.minutes / 60, // Convert minutes to hours for calculation
     };
 
     return calculatePaymentWithValue(
       paymentRouteInfo,
-      job.itemValue,
-      job.numberOfItems,
-      job.rush,
+      formattedJob.itemValue,
+      formattedJob.numberOfItems,
+      formattedJob.rush,
       0 // tip
     );
-  }, [job]);
+  }, [formattedJob]);
 
-  const detectedSize = useMemo(() => getItemSizeByValue(job.itemValue), [job.itemValue]);
+  const detectedSize = useMemo(() => getItemSizeByValue(formattedJob.itemValue), [formattedJob.itemValue]);
 
   const mapsQuery = useMemo(() => {
-    const origin = encodeURIComponent(job.pickup);
-    const dest = encodeURIComponent(job.retailer);
+    const origin = encodeURIComponent(formattedJob.pickup);
+    const dest = encodeURIComponent(formattedJob.retailer);
     return {
       google: `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}`,
       embed: `https://www.google.com/maps?q=${dest}&output=embed`
     };
-  }, [job]);
+  }, [formattedJob]);
+  
+  const handleStatusUpdate = (newStatus: string) => {
+    statusMutation.mutate({ orderId: job.id, status: newStatus });
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
@@ -96,12 +173,12 @@ export default function DriverJob() {
                 </Button>
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-amber-900">Job #{job.id}</h1>
-                <p className="text-sm text-amber-700">{job.retailer.split(',')[0]}</p>
+                <h1 className="text-xl font-bold text-amber-900">Job #{formattedJob.id}</h1>
+                <p className="text-sm text-amber-700">{formattedJob.retailer.split(',')[0]}</p>
               </div>
             </div>
             <StatusBadge 
-              label={status.replace('_', ' ').toUpperCase()} 
+              label={job.status.replace('_', ' ').toUpperCase()} 
               active 
             />
           </div>
@@ -126,12 +203,12 @@ export default function DriverJob() {
                 <div className="text-sm text-emerald-600 font-medium">Total Earnings</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{job.miles.toFixed(1)} mi</div>
+                <div className="text-lg font-bold text-amber-800">{formattedJob.miles.toFixed(1)} mi</div>
                 <div className="text-sm text-amber-600">Distance</div>
                 <div className="text-xs text-green-600 mt-1">+${fareCalculation.driverDistancePay.toFixed(2)}</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{job.minutes} min</div>
+                <div className="text-lg font-bold text-amber-800">{formattedJob.minutes} min</div>
                 <div className="text-sm text-amber-600">Time</div>
                 <div className="text-xs text-green-600 mt-1">+${fareCalculation.driverTimePay.toFixed(2)}</div>
               </div>
@@ -145,8 +222,8 @@ export default function DriverJob() {
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <StatusBadge label={`${job.numberOfItems} item${job.numberOfItems > 1 ? 's' : ''}`} />
-              <StatusBadge label={job.rush ? 'Rush Order' : 'Standard'} />
+              <StatusBadge label={`${formattedJob.numberOfItems} item${formattedJob.numberOfItems > 1 ? 's' : ''}`} />
+              <StatusBadge label={formattedJob.rush ? 'Rush Order' : 'Standard'} />
               <StatusBadge label={`Customer pays $${fareCalculation.totalPrice.toFixed(2)}`} />
               <StatusBadge label="Base: $3.00" />
             </div>
@@ -166,38 +243,38 @@ export default function DriverJob() {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-semibold text-amber-900 mb-1">Pickup Address</h3>
-                <p className="text-sm text-amber-700">{job.pickup}</p>
+                <p className="text-sm text-amber-700">{formattedJob.pickup}</p>
               </div>
               
               <div>
                 <h3 className="font-semibold text-amber-900 mb-1">Drop-off (Retailer)</h3>
-                <p className="text-sm text-amber-700">{job.retailer}</p>
+                <p className="text-sm text-amber-700">{formattedJob.retailer}</p>
               </div>
               
               <div>
                 <h3 className="font-semibold text-amber-900 mb-1">Customer</h3>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-amber-700">{job.customer.name}</p>
+                  <p className="text-sm text-amber-700">{formattedJob.customer.name}</p>
                   <Button 
                     size="sm" 
                     variant="outline"
                     className="text-amber-800 border-amber-300"
                     asChild
                   >
-                    <a href={`tel:${job.customer.phone}`}>
+                    <a href={`tel:${formattedJob.customer.phone}`}>
                       <Phone className="h-4 w-4 mr-1" />
                       Call
                     </a>
                   </Button>
                 </div>
-                <p className="text-xs text-amber-600">{job.customer.phone}</p>
+                <p className="text-xs text-amber-600">{formattedJob.customer.phone}</p>
               </div>
 
-              {job.notes && (
+              {formattedJob.notes && (
                 <div>
                   <h3 className="font-semibold text-amber-900 mb-1">Special Instructions</h3>
                   <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
-                    {job.notes}
+                    {formattedJob.notes}
                   </p>
                 </div>
               )}
@@ -259,37 +336,52 @@ export default function DriverJob() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-3">
-              {status === 'assigned' && (
+              {job.status === 'assigned' && (
                 <Button 
-                  onClick={() => setStatus('picked_up')}
+                  onClick={() => handleStatusUpdate('pickup_confirmed')}
+                  disabled={statusMutation.isPending}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <Package className="h-4 w-4 mr-2" />
+                  {statusMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Package className="h-4 w-4 mr-2" />
+                  )}
                   Mark as Picked Up
                 </Button>
               )}
               
-              {status === 'picked_up' && (
+              {job.status === 'pickup_confirmed' && (
                 <Button 
-                  onClick={() => setStatus('dropped_off')}
+                  onClick={() => handleStatusUpdate('dropped_off')}
+                  disabled={statusMutation.isPending}
                   className="bg-orange-600 hover:bg-orange-700 text-white"
                 >
-                  <MapPin className="h-4 w-4 mr-2" />
+                  {statusMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <MapPin className="h-4 w-4 mr-2" />
+                  )}
                   Mark as Dropped Off
                 </Button>
               )}
               
-              {status === 'dropped_off' && (
+              {job.status === 'dropped_off' && (
                 <Button 
-                  onClick={() => setStatus('completed')}
+                  onClick={() => handleStatusUpdate('completed')}
+                  disabled={statusMutation.isPending}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  <Star className="h-4 w-4 mr-2" />
+                  {statusMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Star className="h-4 w-4 mr-2" />
+                  )}
                   Complete & Submit
                 </Button>
               )}
               
-              {status === 'completed' && (
+              {job.status === 'completed' && (
                 <div className="flex items-center space-x-2 text-green-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
                   <Star className="h-5 w-5" />
                   <span className="font-semibold">Job completed! Earnings processing...</span>
@@ -297,9 +389,9 @@ export default function DriverJob() {
               )}
             </div>
 
-            {status !== 'completed' && (
+            {job.status !== 'completed' && (
               <div className="mt-3 text-sm text-amber-600">
-                <p>Current status: <span className="font-semibold capitalize">{status.replace('_', ' ')}</span></p>
+                <p>Current status: <span className="font-semibold capitalize">{job.status.replace('_', ' ')}</span></p>
               </div>
             )}
           </CardContent>
