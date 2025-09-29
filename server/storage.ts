@@ -2937,13 +2937,142 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getPaymentRecords(): Promise<any[]> {
-    // Stub implementation - would need payment records table
-    return [];
+    try {
+      // Get all completed orders with their driver and payment information
+      const completedOrders = await db
+        .select()
+        .from(orders)
+        .leftJoin(users, eq(orders.driverId, users.id))
+        .where(eq(orders.status, 'completed'));
+
+      // Convert orders to payment records format
+      const paymentRecords = completedOrders.map(({ orders: order, users: user }) => {
+        const driverName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'Unknown Driver';
+        const basePay = order.driverEarnings || 3.00;
+        const distancePay = order.distanceFee || 0;
+        const timePay = order.timeFee || 0;
+        const sizeBonus = 0; // Could be calculated based on item size
+        const tip = order.tip || 0;
+        const driverTotal = basePay + distancePay + timePay + sizeBonus + tip;
+        
+        const serviceFee = order.companyServiceFee || 0.99;
+        const companyDistanceFee = order.distanceFee ? order.distanceFee * 0.3 : 0; // Company takes 30%
+        const companyTimeFee = order.timeFee ? order.timeFee * 0.3 : 0;
+        const companyTotal = serviceFee + companyDistanceFee + companyTimeFee;
+        
+        const basePrice = order.basePrice || 3.99;
+        const surcharges = 0; // Could be calculated from order surcharges
+        const taxes = (order.totalPrice || 3.99) * 0.0899; // 8.99% tax rate
+        const customerTotal = order.totalPrice || 3.99;
+        
+        return {
+          id: `payment_${order.id}`,
+          orderId: order.id,
+          transactionDate: order.updatedAt || order.createdAt,
+          driverEarnings: {
+            basePay,
+            distancePay,
+            timePay,
+            sizeBonus,
+            tip,
+            total: driverTotal
+          },
+          companyRevenue: {
+            serviceFee,
+            distanceFee: companyDistanceFee,
+            timeFee: companyTimeFee,
+            total: companyTotal
+          },
+          customerPayment: {
+            basePrice,
+            surcharges,
+            taxes,
+            total: customerTotal
+          },
+          driverId: order.driverId,
+          driverName,
+          paymentMethod: order.paymentMethod || 'stripe',
+          status: 'completed' as const,
+          taxYear: new Date(order.updatedAt || order.createdAt).getFullYear(),
+          quarter: Math.ceil((new Date(order.updatedAt || order.createdAt).getMonth() + 1) / 3)
+        };
+      });
+
+      return paymentRecords;
+    } catch (error) {
+      console.error('Error fetching payment records:', error);
+      return [];
+    }
   }
 
   async getPaymentSummary(): Promise<any> {
-    // Stub implementation
-    return {};
+    try {
+      const paymentRecords = await this.getPaymentRecords();
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      
+      const monthlyRecords = paymentRecords.filter(r => {
+        const recordDate = new Date(r.transactionDate);
+        return recordDate.getMonth() === currentMonth && recordDate.getFullYear() === currentYear;
+      });
+
+      const yearlyRecords = paymentRecords.filter(r => {
+        const recordDate = new Date(r.transactionDate);
+        return recordDate.getFullYear() === currentYear;
+      });
+
+      const totalDriverEarnings = monthlyRecords.reduce((sum, r) => sum + r.driverEarnings.total, 0);
+      const totalCompanyRevenue = monthlyRecords.reduce((sum, r) => sum + r.companyRevenue.total, 0);
+      const totalCustomerPayments = monthlyRecords.reduce((sum, r) => sum + r.customerPayment.total, 0);
+
+      const quarterlyRevenue = [1, 2, 3, 4].map(quarter => {
+        const quarterRecords = yearlyRecords.filter(r => r.quarter === quarter);
+        return quarterRecords.reduce((sum, r) => sum + r.companyRevenue.total, 0);
+      });
+
+      const activeDrivers = new Set(yearlyRecords.map(r => r.driverId)).size;
+      const driverEarningsMap = new Map();
+      
+      yearlyRecords.forEach(r => {
+        const current = driverEarningsMap.get(r.driverId) || 0;
+        driverEarningsMap.set(r.driverId, current + r.driverEarnings.total);
+      });
+
+      const driversRequiring1099 = Array.from(driverEarningsMap.values()).filter(earnings => earnings >= 600).length;
+
+      return {
+        totalDriverEarnings,
+        totalCompanyRevenue,
+        totalCustomerPayments,
+        totalTransactions: monthlyRecords.length,
+        monthlyDriverPayments: totalDriverEarnings,
+        monthlyCompanyRevenue: totalCompanyRevenue,
+        q1Revenue: quarterlyRevenue[0],
+        q2Revenue: quarterlyRevenue[1],
+        q3Revenue: quarterlyRevenue[2],
+        q4Revenue: quarterlyRevenue[3],
+        activeDriversCount: activeDrivers,
+        totalDriverPayments: yearlyRecords.reduce((sum, r) => sum + r.driverEarnings.total, 0),
+        driversRequiring1099
+      };
+    } catch (error) {
+      console.error('Error calculating payment summary:', error);
+      return {
+        totalDriverEarnings: 0,
+        totalCompanyRevenue: 0,
+        totalCustomerPayments: 0,
+        totalTransactions: 0,
+        monthlyDriverPayments: 0,
+        monthlyCompanyRevenue: 0,
+        q1Revenue: 0,
+        q2Revenue: 0,
+        q3Revenue: 0,
+        q4Revenue: 0,
+        activeDriversCount: 0,
+        totalDriverPayments: 0,
+        driversRequiring1099: 0
+      };
+    }
   }
 
   async exportPaymentData(format: string, dateRange: string, status: string): Promise<Buffer> {
