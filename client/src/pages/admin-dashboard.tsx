@@ -5241,7 +5241,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 🔑 Admin Login
               </button>
             </div>
-            <p className="text-amber-700 text-sm mt-1">
+          </div>
+          <p className="text-amber-700 text-sm mt-1">
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
               {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
               {currentSection === 'drivers' && 'Monitor driver performance and status'}
