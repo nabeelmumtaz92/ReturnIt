@@ -1,36 +1,78 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Switch, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import authService from '../../shared/auth-service';
 
 export default function DriverDashboardScreen({ navigation }) {
   const [isAvailable, setIsAvailable] = useState(false);
   const [stats, setStats] = useState({
-    todayEarnings: 127.50,
-    jobsCompleted: 8,
-    activeJobs: 2,
-    rating: 4.8
+    todayEarnings: 0,
+    jobsCompleted: 0,
+    activeJobs: 0,
+    rating: 5.0
   });
+  const [activeJobs, setActiveJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [performance, setPerformance] = useState(null);
 
-  const activeJobs = [
-    {
-      id: 'RT123456789',
-      type: 'Return to Best Buy',
-      pickupAddress: '123 Main St',
-      dropoffAddress: 'Best Buy - Downtown',
-      estimatedEarnings: 15.50,
-      timeEstimate: '25 min',
-      priority: 'high'
-    },
-    {
-      id: 'RT123456788',
-      type: 'Donation Pickup',
-      pickupAddress: '456 Oak Ave',
-      dropoffAddress: 'Goodwill Center',
-      estimatedEarnings: 12.00,
-      timeEstimate: '30 min',
-      priority: 'normal'
+  // Fetch real driver data
+  useEffect(() => {
+    fetchDriverData();
+  }, []);
+
+  const fetchDriverData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch driver performance metrics
+      const performanceResponse = await authService.apiRequest('/api/driver/performance', 'GET');
+      if (performanceResponse) {
+        setPerformance(performanceResponse);
+        setStats(prevStats => ({
+          ...prevStats,
+          rating: performanceResponse.avgRating || 5.0,
+          jobsCompleted: performanceResponse.weeklyDeliveries || 0
+        }));
+      }
+
+      // Fetch driver earnings for today's earnings
+      const earningsResponse = await authService.apiRequest('/api/driver/earnings', 'GET');
+      if (earningsResponse && earningsResponse.daily) {
+        const todayEarnings = earningsResponse.daily[earningsResponse.daily.length - 1] || 0;
+        setStats(prevStats => ({
+          ...prevStats,
+          todayEarnings: todayEarnings
+        }));
+      }
+
+      // Fetch active orders
+      const ordersResponse = await authService.apiRequest('/api/driver/orders', 'GET');
+      if (ordersResponse) {
+        const activeOrders = ordersResponse.filter(order => 
+          ['assigned', 'picked_up', 'in_transit'].includes(order.status)
+        );
+        setActiveJobs(activeOrders.map(order => ({
+          id: order.trackingNumber || order.id,
+          type: `Return to ${order.retailer}`,
+          pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}`,
+          dropoffAddress: order.returnAddress || `${order.retailer} Store`,
+          estimatedEarnings: order.driverEarnings || 15.00,
+          timeEstimate: '25 min', // Could be calculated based on distance
+          priority: order.priority || 'normal'
+        })));
+        
+        setStats(prevStats => ({
+          ...prevStats,
+          activeJobs: activeOrders.length
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching driver data:', error);
+      // Keep existing state on error to avoid crashes
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const toggleAvailability = () => {
     setIsAvailable(!isAvailable);
@@ -39,6 +81,16 @@ export default function DriverDashboardScreen({ navigation }) {
   const handleAcceptJob = (jobId) => {
     navigation.navigate('JobManagement', { jobId });
   };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <StatusBar style="dark" />
+        <ActivityIndicator size="large" color="#D97706" />
+        <Text style={styles.loadingText}>Loading driver data...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -192,6 +244,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F8F7F4',
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#8B4513',
   },
   scrollContainer: {
     flexGrow: 1,

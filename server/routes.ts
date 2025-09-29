@@ -6158,33 +6158,148 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Driver Performance API
   app.get("/api/driver/performance", async (req, res) => {
-    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
-    
-    // Mock performance data
-    const performance = {
-      weeklyEarnings: 485.50,
-      weeklyDeliveries: 32,
-      avgRating: 4.9,
-      onTimeRate: 96,
-      customerSatisfaction: 98,
-      efficiency: 92
-    };
-    
-    res.json(performance);
+    try {
+      const user = req.session?.user;
+      if (!user?.isDriver && !user?.isAdmin) {
+        return res.status(401).json({ error: "Driver access required" });
+      }
+      
+      const driverId = user.id;
+      
+      // Get driver's completed orders for calculations
+      const completedOrders = await storage.getDriverOrders(driverId, 'completed');
+      
+      // Calculate performance metrics from real data
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - 7);
+      
+      const weeklyOrders = completedOrders.filter(order => 
+        new Date(order.updatedAt) >= weekStart
+      );
+      
+      // Calculate weekly earnings from completed orders
+      const weeklyEarnings = weeklyOrders.reduce((sum, order) => {
+        return sum + (order.driverEarnings || 0);
+      }, 0);
+      
+      // Get driver's rating from user profile
+      const driverProfile = await storage.getUser(driverId);
+      const avgRating = driverProfile?.driverRating || 5.0;
+      
+      // Calculate on-time rate from orders with delivery time data
+      const ordersWithDeliveryTime = completedOrders.filter(order => 
+        order.scheduledPickupDate && order.actualPickupTime
+      );
+      
+      let onTimeRate = 100; // Default to 100% if no data
+      if (ordersWithDeliveryTime.length > 0) {
+        const onTimeDeliveries = ordersWithDeliveryTime.filter(order => {
+          const scheduled = new Date(order.scheduledPickupDate);
+          const actual = new Date(order.actualPickupTime);
+          return actual <= scheduled;
+        });
+        onTimeRate = Math.round((onTimeDeliveries.length / ordersWithDeliveryTime.length) * 100);
+      }
+      
+      // Calculate customer satisfaction from ratings
+      const ordersWithRatings = completedOrders.filter(order => order.customerRating);
+      let customerSatisfaction = 98; // Default high score
+      if (ordersWithRatings.length > 0) {
+        const avgCustomerRating = ordersWithRatings.reduce((sum, order) => 
+          sum + (order.customerRating || 5), 0) / ordersWithRatings.length;
+        customerSatisfaction = Math.round((avgCustomerRating / 5) * 100);
+      }
+      
+      // Calculate efficiency (orders completed per hour online)
+      let efficiency = 92; // Default efficiency score
+      if (weeklyOrders.length > 0) {
+        // Estimate 8 hours per day for 7 days = 56 hours
+        const estimatedHoursWorked = 56;
+        const ordersPerHour = weeklyOrders.length / estimatedHoursWorked;
+        efficiency = Math.min(100, Math.round(ordersPerHour * 40)); // Scale to percentage
+      }
+      
+      const performance = {
+        weeklyEarnings: weeklyEarnings,
+        weeklyDeliveries: weeklyOrders.length,
+        avgRating: avgRating,
+        onTimeRate: onTimeRate,
+        customerSatisfaction: customerSatisfaction,
+        efficiency: efficiency
+      };
+      
+      res.json(performance);
+    } catch (error) {
+      console.error('Driver performance API error:', error);
+      res.status(500).json({ error: "Failed to fetch driver performance" });
+    }
   });
 
   app.get("/api/driver/earnings", async (req, res) => {
-    if (!req.session?.user?.isDriver) return res.status(401).json({ error: "Driver access required" });
-    
-    // Mock earnings data
-    const earnings = {
-      daily: [65, 78, 82, 71, 89, 95, 105],
-      weekly: 485.50,
-      monthly: 2450.00,
-      projectedMonthly: 2850.00
-    };
-    
-    res.json(earnings);
+    try {
+      const user = req.session?.user;
+      if (!user?.isDriver && !user?.isAdmin) {
+        return res.status(401).json({ error: "Driver access required" });
+      }
+      
+      const driverId = user.id;
+      
+      // Get driver's completed orders for earnings calculations
+      const completedOrders = await storage.getDriverOrders(driverId, 'completed');
+      
+      // Calculate daily earnings for the last 7 days
+      const daily = [];
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+        
+        const nextDate = new Date(date);
+        nextDate.setDate(nextDate.getDate() + 1);
+        
+        const dayEarnings = completedOrders
+          .filter(order => {
+            const orderDate = new Date(order.updatedAt);
+            return orderDate >= date && orderDate < nextDate;
+          })
+          .reduce((sum, order) => sum + (order.driverEarnings || 0), 0);
+          
+        daily.push(dayEarnings);
+      }
+      
+      // Calculate weekly earnings (last 7 days)
+      const weekly = daily.reduce((sum, day) => sum + day, 0);
+      
+      // Calculate monthly earnings (current month)
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      monthStart.setHours(0, 0, 0, 0);
+      
+      const monthlyOrders = completedOrders.filter(order => 
+        new Date(order.updatedAt) >= monthStart
+      );
+      
+      const monthly = monthlyOrders.reduce((sum, order) => 
+        sum + (order.driverEarnings || 0), 0);
+      
+      // Project monthly earnings based on current rate
+      const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+      const currentDay = new Date().getDate();
+      const dailyAverage = monthly / currentDay;
+      const projectedMonthly = dailyAverage * daysInMonth;
+      
+      const earnings = {
+        daily: daily,
+        weekly: weekly,
+        monthly: monthly,
+        projectedMonthly: projectedMonthly
+      };
+      
+      res.json(earnings);
+    } catch (error) {
+      console.error('Driver earnings API error:', error);
+      res.status(500).json({ error: "Failed to fetch driver earnings" });
+    }
   });
 
   // Driver Safety API

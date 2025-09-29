@@ -30,6 +30,9 @@ export default function DriverPortal() {
   const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'prompt' | 'checking'>('checking');
   const [watchId, setWatchId] = useState<number | null>(null);
   const [navigatingOrderId, setNavigatingOrderId] = useState<string | null>(null);
+  
+  // Allow both drivers and admins to access driver portal - moved up for earlier use
+  const hasDriverAccess = user?.isDriver || user?.isAdmin;
 
   // Real-time driver status query to ensure background check and waitlist status updates
   const { data: driverStatus, isLoading: statusLoading } = useQuery({
@@ -135,8 +138,6 @@ export default function DriverPortal() {
     }
   };
 
-  // Allow both drivers and admins to access driver portal
-  const hasDriverAccess = user?.isDriver || user?.isAdmin;
 
   // Handle online status changes
   const handleOnlineToggle = async (online: boolean) => {
@@ -168,6 +169,11 @@ export default function DriverPortal() {
 
   const { data: earnings = [] } = useQuery<any[]>({
     queryKey: ["/api/driver/earnings"],
+    enabled: isAuthenticated && hasDriverAccess
+  });
+
+  const { data: driverPerformance } = useQuery({
+    queryKey: ["/api/driver/performance"],
     enabled: isAuthenticated && hasDriverAccess
   });
 
@@ -795,7 +801,7 @@ export default function DriverPortal() {
                     <p className="text-xs text-blue-700 mt-1">${((totalEarnings / (user.completedDeliveries || 1))).toFixed(2)} avg per delivery</p>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
-                    <p className="text-3xl font-bold text-purple-600">4.8</p>
+                    <p className="text-3xl font-bold text-purple-600">{user?.driverRating?.toFixed(1) || '5.0'}</p>
                     <p className="text-sm text-gray-600">Driver Rating</p>
                     <p className="text-xs text-purple-700 mt-1">⭐⭐⭐⭐⭐ Excellent</p>
                   </div>
@@ -814,20 +820,20 @@ export default function DriverPortal() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Average Delivery Time</span>
-                    <span className="font-semibold">32 mins</span>
+                    <span className="text-gray-600">Weekly Deliveries</span>
+                    <span className="font-semibold">{driverPerformance?.weeklyDeliveries || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Distance Traveled (This Week)</span>
-                    <span className="font-semibold">124 miles</span>
+                    <span className="text-gray-600">Weekly Earnings</span>
+                    <span className="font-semibold">${driverPerformance?.weeklyEarnings?.toFixed(2) || '0.00'}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">On-Time Delivery Rate</span>
-                    <span className="font-semibold text-green-600">96%</span>
+                    <span className="font-semibold text-green-600">{driverPerformance?.onTimeRate || 100}%</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-gray-600">Peak Hours Worked</span>
-                    <span className="font-semibold">6-8 PM (most active)</span>
+                    <span className="text-gray-600">Customer Satisfaction</span>
+                    <span className="font-semibold">{driverPerformance?.customerSatisfaction || 98}%</span>
                   </div>
                 </CardContent>
               </Card>
