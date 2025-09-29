@@ -215,7 +215,8 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
   const [isDragging, setIsDragging] = useState(false);
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
 
   // Load sidebar width from localStorage on mount
   useEffect(() => {
@@ -253,6 +254,24 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
     setIsDragging(false);
   }, []);
 
+  // Track navigation history for admin panel
+  useEffect(() => {
+    const currentPath = location + window.location.search;
+    
+    // Only track admin dashboard pages and don't track duplicates
+    if (currentPath.includes('/admin-dashboard') && 
+        navigationHistory[navigationHistory.length - 1] !== currentPath) {
+      setNavigationHistory(prev => {
+        const newHistory = [...prev, currentPath];
+        // Keep only last 10 pages in history
+        if (newHistory.length > 10) {
+          return newHistory.slice(-10);
+        }
+        return newHistory;
+      });
+    }
+  }, [location, navigationHistory]);
+
   // Global mouse event listeners for drag functionality
   useEffect(() => {
     if (isDragging) {
@@ -280,6 +299,22 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
   const currentSection = currentParams.get('section');
   const showBackButton = location.includes('/admin-dashboard') && currentSection;
   const { logout } = useAuth();
+
+  // Function to handle going back to previous admin panel page
+  const handleAdminBack = () => {
+    if (navigationHistory.length >= 2) {
+      // Get the previous page (second to last in history)
+      const previousPage = navigationHistory[navigationHistory.length - 2];
+      
+      // Remove the current page and the page we're going back to from history
+      setNavigationHistory(prev => prev.slice(0, -2));
+      
+      // Navigate to the previous page
+      setLocation(previousPage);
+    }
+  };
+
+  const hasBackHistory = navigationHistory.length >= 2;
 
   const handleGlobalUpdate = async () => {
     // Trigger real-time updates across all dashboard components
@@ -416,14 +451,33 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
           <div className={cn("flex items-center gap-3", !sidebarOpen && "justify-center")}>
             
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-amber-600 hover:text-amber-900 hover:bg-amber-50"
-          >
-            {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="text-amber-600 hover:text-amber-900 hover:bg-amber-50"
+            >
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            </Button>
+            {/* Separator line */}
+            {sidebarOpen && hasBackHistory && (
+              <div className="h-4 w-px bg-amber-300 mx-1"></div>
+            )}
+            {/* Back button */}
+            {sidebarOpen && hasBackHistory && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleAdminBack}
+                className="text-amber-600 hover:text-amber-900 hover:bg-amber-50"
+                title="Go back to previous admin page"
+                data-testid="button-admin-back"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Sidebar Navigation */}
@@ -477,7 +531,7 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
                       )}
                     </div>
                   );
-                })};
+                })}
               </div>
             </div>
           ))}
