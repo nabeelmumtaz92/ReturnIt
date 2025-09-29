@@ -208,7 +208,7 @@ function Router() {
       <Route path="/customer-dashboard">
         {() => {
           // Customer dashboard is available to all authenticated users who are not drivers or admins
-          return user && !user.isDriver && !user.isAdmin ? <CustomerDashboard /> : <NotFound />;
+          return user && isAuthenticated && !user.isDriver && !user.isAdmin ? <CustomerDashboard /> : <NotFound />;
         }}
       </Route>
       <Route path="/payment-structure" component={PaymentStructure} />

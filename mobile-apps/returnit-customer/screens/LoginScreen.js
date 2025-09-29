@@ -60,12 +60,32 @@ export default function LoginScreen({ navigation, onAuthSuccess }) {
 
     try {
       setLoading(true);
-      // Note: Registration may be restricted in production environments
-      Alert.alert(
-        'Registration Restricted', 
-        'Account creation is currently limited to authorized users. Please contact support for access.',
-        [{ text: 'OK', onPress: () => setIsLogin(true) }]
-      );
+      
+      // Call real registration API using authService
+      const registrationData = {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        phone: formData.phone || '',
+        dateOfBirth: '' // Optional field for customer registration
+      };
+      
+      const response = await authService.register(registrationData);
+      
+      if (response.user) {
+        Alert.alert(
+          'Account Created Successfully!', 
+          'Welcome to ReturnIt! You can now access all our return services.',
+          [{ 
+            text: 'Continue', 
+            onPress: () => {
+              setIsLogin(true); // Switch to login tab
+              onAuthSuccess && onAuthSuccess(response.user);
+            }
+          }]
+        );
+      }
     } catch (error) {
       const appError = ErrorHandler.handleAPIError(error);
       Alert.alert('Registration Failed', appError.userFriendly);
