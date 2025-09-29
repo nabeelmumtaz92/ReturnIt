@@ -359,7 +359,7 @@ export default function Login() {
                       onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
                       placeholder="Enter your email address"
                       className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
-                      autoComplete="username"
+                      autoComplete="off"
                     />
                     <Mail className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.email && (
@@ -378,7 +378,7 @@ export default function Login() {
                       onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
                       placeholder="Enter your password"
                       className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
-                      autoComplete="current-password"
+                      autoComplete="off"
                     />
                     <Lock className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.password && (
@@ -479,7 +479,7 @@ export default function Login() {
                           onChange={(e) => setRegisterData(prev => ({...prev, firstName: e.target.value}))}
                           placeholder="First name"
                           className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                          autoComplete="given-name"
+                          autoComplete="off"
                         />
                       </div>
                     </div>
@@ -500,7 +500,7 @@ export default function Login() {
                           onChange={(e) => setRegisterData(prev => ({...prev, lastName: e.target.value}))}
                           placeholder="Last name"
                           className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                          autoComplete="family-name"
+                          autoComplete="off"
                         />
                       </div>
                     </div>
@@ -522,7 +522,7 @@ export default function Login() {
                         onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
                         placeholder="Enter your email address"
                         className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                        autoComplete="email"
+                        autoComplete="off"
                       />
                     </div>
                   </div>
@@ -545,7 +545,7 @@ export default function Login() {
                         onBlur={() => setPasswordFocused(false)}
                         placeholder="Create a password"
                         className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                        autoComplete="new-password"
+                        autoComplete="off"
                       />
                       <button
                         type="button"
@@ -576,7 +576,7 @@ export default function Login() {
                         onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
                         placeholder="Confirm your password"
                         className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
-                        autoComplete="new-password"
+                        autoComplete="off"
                       />
                       <button
                         type="button"
