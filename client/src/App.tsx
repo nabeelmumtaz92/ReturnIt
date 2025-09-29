@@ -199,7 +199,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route path="/admin-dashboard">
+      <Route path="/admin-dashboard*">
         {() => {
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
