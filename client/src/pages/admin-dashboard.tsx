@@ -5256,7 +5256,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-200">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-amber-900">ReturnIt Admin Dashboard</h1>
+            <Link href="/">
+              <h1 className="text-2xl font-bold text-amber-900 hover:text-amber-700 transition-colors cursor-pointer">
+                Return It
+              </h1>
+            </Link>
+            <span className="text-amber-600">|</span>
+            <h2 className="text-xl font-semibold text-amber-800">Admin Dashboard</h2>
             <Badge className="bg-amber-100 text-amber-800 border-amber-200">Master Admin</Badge>
           </div>
           <div className="flex items-center gap-4">
