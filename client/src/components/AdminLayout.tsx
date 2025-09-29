@@ -256,7 +256,8 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
 
   // Track navigation history for admin panel
   useEffect(() => {
-    const currentPath = location + window.location.search;
+    // Use location directly since it already includes the search params in Wouter
+    const currentPath = location;
     
     // Only track admin dashboard pages and don't track duplicates
     if (currentPath.includes('/admin-dashboard') && 
@@ -270,7 +271,7 @@ export function AdminLayout({ children, pageTitle, changeSection, currentSection
         return newHistory;
       });
     }
-  }, [location, navigationHistory]);
+  }, [location]);
 
   // Global mouse event listeners for drag functionality
   useEffect(() => {
