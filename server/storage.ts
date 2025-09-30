@@ -22,6 +22,7 @@ import {
   type Company, type InsertCompany,
   type ReturnPolicy, type InsertReturnPolicy,
   type CompanyLocation, type InsertCompanyLocation,
+  type OrderAuditLog, type InsertOrderAuditLog,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -33,7 +34,7 @@ import {
   driverOrderAssignments, orderStatusHistory, driverLocationPings,
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
   merchantPolicies, supportTicketsEnhanced, supportMessages,
-  companies, returnPolicies, companyLocations
+  companies, returnPolicies, companyLocations, orderAuditLogs
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -182,6 +183,27 @@ export interface IStorage {
   createOrderCancellation(cancellation: InsertOrderCancellation): Promise<OrderCancellation>;
   getOrderCancellation(orderId: string): Promise<OrderCancellation | undefined>;
   getOrderCancellations(filters?: { driverId?: number; storeId?: number; type?: string }): Promise<OrderCancellation[]>;
+
+  // NEW: Order audit log operations
+  createAuditLog(log: InsertOrderAuditLog): Promise<OrderAuditLog>;
+  getOrderAuditLogs(orderId: string): Promise<OrderAuditLog[]>;
+  
+  // NEW: Order data export operations
+  exportOrdersData(filters?: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    retailer?: string;
+    driverId?: number;
+    customerId?: number;
+  }): Promise<any[]>;
+  getOrderDetails(orderId: string): Promise<{
+    order: Order;
+    auditLogs: OrderAuditLog[];
+    statusHistory: OrderStatusHistory[];
+    customer: User;
+    driver?: User;
+  } | undefined>;
 
   // Support Ticket operations
   createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
@@ -3445,6 +3467,137 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error optimizing route:', error);
       return { id: Date.now(), orderIds, estimatedDuration: 0, estimatedDistance: 0, fuelCostEstimate: 0, routeStatus: 'error', optimizedRoute: { waypoints: [] } };
+    }
+  }
+
+  async createAuditLog(log: InsertOrderAuditLog): Promise<OrderAuditLog> {
+    const [auditLog] = await db.insert(orderAuditLogs).values(log).returning();
+    return auditLog;
+  }
+
+  async getOrderAuditLogs(orderId: string): Promise<OrderAuditLog[]> {
+    return await db.select().from(orderAuditLogs)
+      .where(eq(orderAuditLogs.orderId, orderId))
+      .orderBy(desc(orderAuditLogs.timestamp));
+  }
+
+  async exportOrdersData(filters?: {
+    startDate?: string;
+    endDate?: string;
+    status?: string;
+    retailer?: string;
+    driverId?: number;
+    customerId?: number;
+  }): Promise<any[]> {
+    try {
+      let query = db.select({
+        order: orders,
+        customer: users,
+        driver: users
+      })
+      .from(orders)
+      .leftJoin(users, eq(orders.userId, users.id));
+
+      const conditions = [];
+      
+      if (filters?.startDate) {
+        conditions.push(gte(orders.createdAt, new Date(filters.startDate)));
+      }
+      if (filters?.endDate) {
+        conditions.push(lt(orders.createdAt, new Date(filters.endDate)));
+      }
+      if (filters?.status) {
+        conditions.push(eq(orders.status, filters.status));
+      }
+      if (filters?.retailer) {
+        conditions.push(eq(orders.retailer, filters.retailer));
+      }
+      if (filters?.driverId) {
+        conditions.push(eq(orders.driverId, filters.driverId));
+      }
+      if (filters?.customerId) {
+        conditions.push(eq(orders.userId, filters.customerId));
+      }
+
+      if (conditions.length > 0) {
+        query = query.where(and(...conditions)) as any;
+      }
+
+      const results = await query.orderBy(desc(orders.createdAt));
+
+      return results.map(({ order, customer, driver }) => ({
+        orderId: order.id,
+        trackingNumber: order.trackingNumber,
+        status: order.status,
+        customerName: `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim(),
+        customerEmail: customer?.email,
+        customerPhone: customer?.phone,
+        pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+        retailer: order.retailer,
+        itemCategory: order.itemCategory,
+        itemDescription: order.itemDescription,
+        numberOfItems: order.numberOfItems,
+        totalOrderValue: order.totalOrderValue,
+        basePrice: order.basePrice,
+        distanceFee: order.distanceFee,
+        timeFee: order.timeFee,
+        sizeUpcharge: order.sizeUpcharge,
+        serviceFee: order.serviceFee,
+        taxAmount: order.taxAmount,
+        tip: order.tip,
+        totalPrice: order.totalPrice,
+        paymentStatus: order.paymentStatus,
+        refundAmount: order.refundAmount,
+        refundStatus: order.refundStatus,
+        driverName: driver ? `${driver.firstName || ''} ${driver.lastName || ''}`.trim() : 'Unassigned',
+        driverEmail: driver?.email,
+        driverTotalEarning: order.driverTotalEarning,
+        pickupPhotos: JSON.stringify(order.itemPhotos),
+        refundPhotos: JSON.stringify(order.returnRefusedPhotos),
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+        scheduledPickupTime: order.scheduledPickupTime,
+        actualPickupTime: order.actualPickupTime,
+        actualDeliveryTime: order.actualDeliveryTime
+      }));
+    } catch (error) {
+      console.error('Error exporting orders data:', error);
+      return [];
+    }
+  }
+
+  async getOrderDetails(orderId: string): Promise<{
+    order: Order;
+    auditLogs: OrderAuditLog[];
+    statusHistory: OrderStatusHistory[];
+    customer: User;
+    driver?: User;
+  } | undefined> {
+    try {
+      const [order] = await db.select().from(orders).where(eq(orders.id, orderId));
+      if (!order) return undefined;
+
+      const [customer] = await db.select().from(users).where(eq(users.id, order.userId));
+      if (!customer) return undefined;
+
+      let driver = undefined;
+      if (order.driverId) {
+        [driver] = await db.select().from(users).where(eq(users.id, order.driverId));
+      }
+
+      const auditLogs = await this.getOrderAuditLogs(orderId);
+      const statusHistory = await this.getOrderStatusHistory(orderId);
+
+      return {
+        order,
+        auditLogs,
+        statusHistory,
+        customer,
+        driver
+      };
+    } catch (error) {
+      console.error('Error getting order details:', error);
+      return undefined;
     }
   }
 }

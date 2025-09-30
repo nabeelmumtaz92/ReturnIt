@@ -52,6 +52,9 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -1295,6 +1298,49 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     const [selectedTab, setSelectedTab] = useState('active');
     const [showBulkUpload, setShowBulkUpload] = useState(false);
+    const [exportFilters, setExportFilters] = useState({
+      startDate: '',
+      endDate: '',
+      status: '',
+      retailer: ''
+    });
+    const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<string | null>(null);
+    const [orderDetails, setOrderDetails] = useState<any>(null);
+    const [orderAuditLogs, setOrderAuditLogs] = useState<any[]>([]);
+
+    // Load order details and audit logs
+    const loadOrderDetails = async (orderId: string) => {
+      try {
+        setSelectedOrderForDetails(orderId);
+        
+        // Fetch order details
+        const detailsResponse = await fetch(`/api/admin/order/${orderId}/details`);
+        if (detailsResponse.ok) {
+          const details = await detailsResponse.json();
+          setOrderDetails(details);
+        }
+        
+        // Fetch audit logs
+        const auditResponse = await fetch(`/api/audit/order/${orderId}`);
+        if (auditResponse.ok) {
+          const logs = await auditResponse.json();
+          setOrderAuditLogs(logs);
+        }
+      } catch (error) {
+        console.error('Error loading order details:', error);
+        toast({ 
+          title: 'Error', 
+          description: 'Failed to load order details',
+          variant: 'destructive'
+        });
+      }
+    };
+
+    const closeOrderDetails = () => {
+      setSelectedOrderForDetails(null);
+      setOrderDetails(null);
+      setOrderAuditLogs([]);
+    };
 
     // Enhanced order management functions - matching HTML structure functionality
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -1417,6 +1463,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     <Package className="h-4 w-4 mr-2" />
                     Bulk Upload
                   </Button>
+                  <Button
+                    onClick={() => {
+                      const params = new URLSearchParams();
+                      if (exportFilters.startDate) params.append('startDate', exportFilters.startDate);
+                      if (exportFilters.endDate) params.append('endDate', exportFilters.endDate);
+                      if (exportFilters.status) params.append('status', exportFilters.status);
+                      if (exportFilters.retailer) params.append('retailer', exportFilters.retailer);
+                      window.open(`/api/admin/orders/export?${params.toString()}`, '_blank');
+                      toast({ title: 'Export Started', description: 'Your order data is being downloaded...' });
+                    }}
+                    variant="outline"
+                    size="sm"
+                    className="min-h-[44px] touch-manipulation bg-green-50 hover:bg-green-100"
+                    data-testid="button-export-csv"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Export to CSV
+                  </Button>
                   <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       onClick={() => setSelectedTab('active')}
@@ -1437,6 +1501,56 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       Completed ({completedOrders.length})
                     </Button>
                   </div>
+                </div>
+              </div>
+
+              {/* Export Filters */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+                <div>
+                  <Label className="text-xs text-amber-700">Start Date</Label>
+                  <Input
+                    type="date"
+                    value={exportFilters.startDate}
+                    onChange={(e) => setExportFilters({ ...exportFilters, startDate: e.target.value })}
+                    className="mt-1"
+                    data-testid="input-export-start-date"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-amber-700">End Date</Label>
+                  <Input
+                    type="date"
+                    value={exportFilters.endDate}
+                    onChange={(e) => setExportFilters({ ...exportFilters, endDate: e.target.value })}
+                    className="mt-1"
+                    data-testid="input-export-end-date"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-amber-700">Status</Label>
+                  <Select value={exportFilters.status} onValueChange={(value) => setExportFilters({ ...exportFilters, status: value })}>
+                    <SelectTrigger className="mt-1" data-testid="select-export-status">
+                      <SelectValue placeholder="All Statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Statuses</SelectItem>
+                      <SelectItem value="created">Created</SelectItem>
+                      <SelectItem value="assigned">Assigned</SelectItem>
+                      <SelectItem value="picked_up">Picked Up</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-xs text-amber-700">Retailer</Label>
+                  <Input
+                    placeholder="Filter by retailer"
+                    value={exportFilters.retailer}
+                    onChange={(e) => setExportFilters({ ...exportFilters, retailer: e.target.value })}
+                    className="mt-1"
+                    data-testid="input-export-retailer"
+                  />
                 </div>
               </div>
             </CardHeader>
@@ -1569,8 +1683,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
                         {/* Standard Actions - Based on HTML structure */}
                         <Button 
+                          onClick={() => loadOrderDetails(order.id)}
                           variant="outline" 
                           size="sm" 
+                          className="w-full sm:w-auto min-h-[44px] touch-manipulation"
                           data-testid={`button-view-order-${order.id}`}
                         >
                           📋 View Details
@@ -1590,6 +1706,262 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Order Detail Modal */}
+          <Dialog open={selectedOrderForDetails !== null} onOpenChange={(open) => !open && closeOrderDetails()}>
+            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-2xl text-amber-900">
+                  Order Details {orderDetails?.trackingNumber ? `- #${orderDetails.trackingNumber}` : ''}
+                </DialogTitle>
+                <DialogDescription>
+                  Complete order information, audit trail, and photos
+                </DialogDescription>
+              </DialogHeader>
+
+              {orderDetails ? (
+                <div className="space-y-6 mt-4">
+                  {/* Order Summary */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm text-amber-700">Order Status</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Badge className={
+                          orderDetails.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          orderDetails.status === 'in_progress' ? 'bg-blue-100 text-blue-800' :
+                          orderDetails.status === 'pending_assignment' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-gray-100 text-gray-800'
+                        }>
+                          {orderDetails.status?.replace(/_/g, ' ').toUpperCase()}
+                        </Badge>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm text-amber-700">Total Price</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold text-amber-900">${orderDetails.totalPrice?.toFixed(2)}</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm text-amber-700">Created</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm">{orderDetails.createdAt ? new Date(orderDetails.createdAt).toLocaleString() : 'N/A'}</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Customer & Driver Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-amber-900">Customer Information</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        <div>
+                          <Label className="text-xs text-amber-600">Name</Label>
+                          <p className="font-medium">{orderDetails.customerName || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-amber-600">Email</Label>
+                          <p className="font-medium">{orderDetails.customerEmail || 'N/A'}</p>
+                        </div>
+                        <div>
+                          <Label className="text-xs text-amber-600">Phone</Label>
+                          <p className="font-medium">{orderDetails.customerPhone || 'N/A'}</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-amber-900">Driver Information</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-2">
+                        {orderDetails.driverId ? (
+                          <>
+                            <div>
+                              <Label className="text-xs text-amber-600">Driver ID</Label>
+                              <p className="font-medium">#{orderDetails.driverId}</p>
+                            </div>
+                            <div>
+                              <Label className="text-xs text-amber-600">Assigned At</Label>
+                              <p className="font-medium">{orderDetails.assignedAt ? new Date(orderDetails.assignedAt).toLocaleString() : 'N/A'}</p>
+                            </div>
+                          </>
+                        ) : (
+                          <p className="text-amber-600">No driver assigned yet</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Pickup & Dropoff Details */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-amber-900">Pickup & Dropoff Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-xs text-amber-600">Pickup Address</Label>
+                          <p className="font-medium">{orderDetails.pickupAddress || 'N/A'}</p>
+                          {orderDetails.pickupInstructions && (
+                            <p className="text-sm text-amber-600 mt-1">Instructions: {orderDetails.pickupInstructions}</p>
+                          )}
+                        </div>
+                        <div>
+                          <Label className="text-xs text-amber-600">Dropoff Address</Label>
+                          <p className="font-medium">{orderDetails.dropoffAddress || 'N/A'}</p>
+                          {orderDetails.dropoffInstructions && (
+                            <p className="text-sm text-amber-600 mt-1">Instructions: {orderDetails.dropoffInstructions}</p>
+                          )}
+                        </div>
+                      </div>
+                      {orderDetails.itemDescription && (
+                        <div>
+                          <Label className="text-xs text-amber-600">Item Description</Label>
+                          <p className="font-medium">{orderDetails.itemDescription}</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Photo Gallery */}
+                  {(orderDetails.pickupPhotos?.length > 0 || orderDetails.dropoffPhotos?.length > 0 || orderDetails.refundPhotos?.length > 0) && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-amber-900">Photo Gallery</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {orderDetails.pickupPhotos?.length > 0 && (
+                          <div>
+                            <Label className="text-sm text-amber-700 mb-2 block">Pickup Photos</Label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              {orderDetails.pickupPhotos.map((photo: string, idx: number) => (
+                                <img key={idx} src={photo} alt={`Pickup ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-pickup-photo-${idx}`} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {orderDetails.dropoffPhotos?.length > 0 && (
+                          <div>
+                            <Label className="text-sm text-amber-700 mb-2 block">Dropoff Photos</Label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              {orderDetails.dropoffPhotos.map((photo: string, idx: number) => (
+                                <img key={idx} src={photo} alt={`Dropoff ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-dropoff-photo-${idx}`} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        {orderDetails.refundPhotos?.length > 0 && (
+                          <div>
+                            <Label className="text-sm text-amber-700 mb-2 block">Refund Photos</Label>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                              {orderDetails.refundPhotos.map((photo: string, idx: number) => (
+                                <img key={idx} src={photo} alt={`Refund ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-refund-photo-${idx}`} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Payment & Refund Breakdown */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-amber-900">Payment & Refund Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-amber-600">Subtotal</span>
+                        <span className="font-medium">${orderDetails.subtotal?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-amber-600">Service Fee</span>
+                        <span className="font-medium">${orderDetails.serviceFee?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-amber-600">Delivery Fee</span>
+                        <span className="font-medium">${orderDetails.deliveryFee?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      <Separator />
+                      <div className="flex justify-between font-bold text-lg">
+                        <span>Total</span>
+                        <span className="text-amber-900">${orderDetails.totalPrice?.toFixed(2) || '0.00'}</span>
+                      </div>
+                      {orderDetails.refundAmount && (
+                        <>
+                          <Separator />
+                          <div className="flex justify-between text-red-600">
+                            <span>Refund Amount</span>
+                            <span className="font-medium">-${orderDetails.refundAmount.toFixed(2)}</span>
+                          </div>
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Audit Trail Timeline */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-amber-900">Audit Trail</CardTitle>
+                      <CardDescription>Complete history of order changes</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ScrollArea className="h-64">
+                        {orderAuditLogs.length > 0 ? (
+                          <div className="space-y-3">
+                            {orderAuditLogs.map((log: any, idx: number) => (
+                              <div key={idx} className="flex gap-3 p-3 border border-amber-100 rounded-lg bg-amber-50/30" data-testid={`audit-log-${idx}`}>
+                                <div className="flex-shrink-0">
+                                  <div className="w-2 h-2 mt-2 rounded-full bg-amber-500"></div>
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className="text-xs">{log.action?.replace(/_/g, ' ')}</Badge>
+                                    <Badge variant="outline" className="text-xs">{log.performedByRole}</Badge>
+                                  </div>
+                                  <p className="text-sm text-amber-900 mb-1">
+                                    {log.action === 'status_changed' && `Status changed from ${log.oldValue} to ${log.newValue}`}
+                                    {log.action === 'driver_assigned' && `Driver assigned: ${log.newValue}`}
+                                    {log.action === 'photo_uploaded' && `Photo uploaded: ${log.metadata?.photoType}`}
+                                    {log.action === 'payment_processed' && `Payment processed: $${log.newValue}`}
+                                    {log.action === 'refund_issued' && `Refund issued: $${log.newValue}`}
+                                    {!['status_changed', 'driver_assigned', 'photo_uploaded', 'payment_processed', 'refund_issued'].includes(log.action) && `${log.action}: ${log.newValue || 'N/A'}`}
+                                  </p>
+                                  <p className="text-xs text-amber-600">
+                                    {new Date(log.timestamp).toLocaleString()} • {log.ipAddress || 'Unknown IP'}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-amber-600 text-center py-8">No audit logs available</p>
+                        )}
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                </div>
+              )}
+
+              <div className="flex justify-end mt-4">
+                <Button onClick={closeOrderDetails} data-testid="button-close-order-details">
+                  Close
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Assignment System */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

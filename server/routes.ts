@@ -3652,6 +3652,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Audit Log Routes
+  app.post("/api/audit/log", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId, action, oldValue, newValue, metadata } = req.body;
+      const user = req.session?.user;
+      
+      if (!user) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const performedByRole = user.isAdmin ? 'admin' : user.isDriver ? 'driver' : 'customer';
+      
+      const auditLog = await storage.createAuditLog({
+        orderId,
+        action,
+        performedBy: user.id,
+        performedByRole,
+        oldValue: oldValue || null,
+        newValue: newValue || null,
+        metadata: metadata || {},
+        ipAddress: req.ip || req.connection.remoteAddress || null,
+        userAgent: req.headers['user-agent'] || null
+      });
+
+      res.json(auditLog);
+    } catch (error) {
+      console.error("Error creating audit log:", error);
+      res.status(500).json({ message: "Failed to create audit log" });
+    }
+  });
+
+  app.get("/api/audit/order/:orderId", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const auditLogs = await storage.getOrderAuditLogs(orderId);
+      res.json(auditLogs);
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+      res.status(500).json({ message: "Failed to fetch audit logs" });
+    }
+  });
+
+  // Order Export Route
+  app.get("/api/admin/orders/export", requireSecureAdmin, async (req, res) => {
+    try {
+      const { startDate, endDate, status, retailer, driverId, customerId } = req.query;
+      
+      const filters: any = {};
+      if (startDate) filters.startDate = startDate as string;
+      if (endDate) filters.endDate = endDate as string;
+      if (status) filters.status = status as string;
+      if (retailer) filters.retailer = retailer as string;
+      if (driverId) filters.driverId = parseInt(driverId as string);
+      if (customerId) filters.customerId = parseInt(customerId as string);
+
+      const ordersData = await storage.exportOrdersData(filters);
+
+      const csv = [
+        Object.keys(ordersData[0] || {}).join(','),
+        ...ordersData.map(row => Object.values(row).map(val => 
+          typeof val === 'string' && val.includes(',') ? `"${val}"` : val
+        ).join(','))
+      ].join('\n');
+
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', `attachment; filename=orders-export-${new Date().toISOString()}.csv`);
+      res.send(csv);
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      res.status(500).json({ message: "Failed to export orders" });
+    }
+  });
+
+  // Order Details Route
+  app.get("/api/admin/order/:orderId/details", requireSecureAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const orderDetails = await storage.getOrderDetails(orderId);
+      
+      if (!orderDetails) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      res.json(orderDetails);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      res.status(500).json({ message: "Failed to fetch order details" });
+    }
+  });
+
   // Manual Driver Approval API Endpoints
   
   // Get pending driver applications for manual review

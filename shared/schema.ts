@@ -655,6 +655,25 @@ export const orders = pgTable("orders", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Order Audit Logs - Comprehensive tracking of all order actions
+export const orderAuditLogs = pgTable("order_audit_logs", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  
+  action: text("action").notNull(), // status_changed, driver_assigned, photo_uploaded, payment_processed, refund_issued, order_created, order_updated, notes_added, etc.
+  performedBy: integer("performed_by").references(() => users.id), // Can be null for system actions
+  performedByRole: text("performed_by_role").notNull(), // customer, driver, admin, system
+  
+  oldValue: jsonb("old_value"), // Previous state (for updates)
+  newValue: jsonb("new_value"), // New state (for updates)
+  metadata: jsonb("metadata").default({}), // Additional context (e.g., reason for change, location data, etc.)
+  
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 // Promotional codes and discounts
 export const promoCodes = pgTable("promo_codes", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1427,6 +1446,11 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   retailer: z.string().min(2, "Retailer name required"),
 });
 
+export const insertOrderAuditLogSchema = createInsertSchema(orderAuditLogs).omit({
+  id: true,
+  timestamp: true,
+});
+
 export const insertPromoCodeSchema = createInsertSchema(promoCodes).omit({
   id: true,
   currentUses: true,
@@ -1563,6 +1587,8 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type OrderAuditLog = typeof orderAuditLogs.$inferSelect;
+export type InsertOrderAuditLog = z.infer<typeof insertOrderAuditLogSchema>;
 export type PromoCode = typeof promoCodes.$inferSelect;
 export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type DriverEarning = typeof driverEarnings.$inferSelect;
