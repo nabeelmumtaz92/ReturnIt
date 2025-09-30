@@ -100,10 +100,22 @@ app.use((req, res, next) => {
     process.exit(1);
   }
   
-  const server = await registerRoutes(app);
+  // Register routes with error handling
+  let server;
+  try {
+    server = await registerRoutes(app);
+  } catch (error) {
+    console.error('❌ Failed to register routes:', error);
+    process.exit(1);
+  }
 
   // Initialize WebSocket service for real-time tracking
-  webSocketService.initialize(server);
+  try {
+    webSocketService.initialize(server);
+  } catch (error) {
+    console.error('⚠️ WebSocket service initialization failed (non-critical):', error);
+    // Continue without WebSocket - it's not critical for basic functionality
+  }
 
   // Use comprehensive error handler
   app.use(globalErrorHandler);
@@ -111,10 +123,15 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
+  try {
+    if (app.get("env") === "development") {
+      await setupVite(app, server);
+    } else {
+      serveStatic(app);
+    }
+  } catch (error) {
+    console.error('❌ Failed to setup static/vite serving:', error);
+    process.exit(1);
   }
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
@@ -122,6 +139,19 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
+  
+  // Add error handling for server startup
+  server.on('error', (error: any) => {
+    if (error.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${port} is already in use`);
+    } else if (error.code === 'EACCES') {
+      console.error(`❌ Permission denied to bind to port ${port}`);
+    } else {
+      console.error('❌ Server error:', error);
+    }
+    process.exit(1);
+  });
+  
   server.listen({
     port,
     host: "0.0.0.0",
@@ -129,6 +159,12 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     log(`WebSocket tracking available at ws://localhost:${port}/ws/tracking`);
+    
+    // Log environment for debugging deployments
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🚀 Production deployment ready');
+      console.log('📊 Session store:', process.env.DATABASE_URL ? 'PostgreSQL' : 'MemoryStore (fallback)');
+    }
   });
 
   // Graceful shutdown handling
