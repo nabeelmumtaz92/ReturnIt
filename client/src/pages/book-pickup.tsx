@@ -257,6 +257,81 @@ export default function BookPickup() {
     setCurrentStep('step4');
   };
 
+  // Step 4: Payment & Final Submission
+  const handleStep4Submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate payment method selected
+    if (!selectedPaymentMethod) {
+      toast({
+        title: "Payment Method Required",
+        description: "Please select a payment method to continue",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Construct order data from all form data
+    const orderData = {
+      // Customer info
+      customerName: formData.fullName,
+      customerPhone: formData.phone,
+      customerEmail: user?.email,
+      
+      // Pickup details
+      pickupAddress: formData.streetAddress,
+      pickupLocation: formData.pickupLocation,
+      pickupInstructions: formData.pickupInstructions || '',
+      preferredTimeSlot: formData.preferredTimeSlot,
+      
+      // Return details
+      orderName: formData.orderName,
+      returnReason: formData.returnReason,
+      itemDescription: formData.itemDescription,
+      itemCategories: formData.itemCategories,
+      itemValue: parseFloat(formData.itemValue) || 0,
+      numberOfItems: formData.numberOfItems || 1,
+      
+      // Retailer info (CRITICAL for reporting)
+      retailer: formData.retailer,
+      retailerLocation: selectedStore ? {
+        name: selectedStore.name,
+        address: selectedStore.address,
+        lat: selectedStore.lat,
+        lng: selectedStore.lng
+      } : null,
+      dropoffAddress: selectedStore?.address || formData.retailer,
+      
+      // Purchase info
+      purchaseType: formData.purchaseType,
+      purchaseDate: formData.purchaseDate,
+      hasOriginalTags: formData.hasOriginalTags,
+      
+      // Authorization
+      authorizationSigned: formData.authorizationSigned,
+      acceptsLiabilityTerms: formData.acceptsLiabilityTerms,
+      
+      // Pricing & Route
+      totalPrice: pricingBreakdown?.totalPrice || 3.99,
+      basePrice: pricingBreakdown?.basePrice || 3.99,
+      distanceFee: pricingBreakdown?.distanceFee || 0,
+      timeFee: pricingBreakdown?.timeFee || 0,
+      serviceFee: pricingBreakdown?.serviceFee || 0,
+      distance: routeInfo?.distance || 'N/A',
+      estimatedTime: routeInfo?.duration || 'N/A',
+      
+      // Payment
+      paymentMethod: selectedPaymentMethod,
+      paymentStatus: 'pending',
+      
+      // Status
+      status: 'created',
+    };
+
+    // Submit order
+    createOrderMutation.mutate(orderData);
+  };
+
   // Navigate back between steps
   const handleBackStep = () => {
     if (currentStep === 'step4') setCurrentStep('step3');
@@ -1308,7 +1383,7 @@ export default function BookPickup() {
               currentStep === 'step1' ? handleStep1Submit :
               currentStep === 'step2' ? handleStep2Submit :
               currentStep === 'step3' ? handleStep3Submit :
-              (e) => e.preventDefault()
+              handleStep4Submit
             }
           >
             <CardContent className="space-y-6">
