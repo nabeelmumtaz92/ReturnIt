@@ -116,6 +116,17 @@ export default function Welcome() {
                   </Button>
                 </Link>
               )}
+              <Link href="/account-settings">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                  data-testid="button-account-settings"
+                >
+                  <Settings className="h-4 w-4 mr-1 sm:mr-2" />
+                  <span className="hidden sm:inline">Settings</span>
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 size="sm"

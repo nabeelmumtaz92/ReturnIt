@@ -289,6 +289,10 @@ export interface IStorage {
   // Route optimization operations  
   getCurrentRoute(driverId: number): Promise<any>;
   optimizeRoute(orderIds: number[], preferences?: any): Promise<any>;
+  
+  // GDPR/CCPA Compliance operations
+  requestAccountDeletion(userId: number, deletionDate: Date): Promise<User | undefined>;
+  exportUserData(userId: number): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -3673,6 +3677,97 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error getting order details:', error);
       return undefined;
+    }
+  }
+
+  async requestAccountDeletion(userId: number, deletionDate: Date): Promise<User | undefined> {
+    try {
+      const [user] = await db
+        .update(users)
+        .set({
+          accountDeletionRequested: true,
+          deletedAt: deletionDate, // Maps to deleted_at in schema
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId))
+        .returning();
+      return user;
+    } catch (error) {
+      console.error('Error requesting account deletion:', error);
+      return undefined;
+    }
+  }
+
+  async exportUserData(userId: number): Promise<any> {
+    try {
+      const [user] = await db.select().from(users).where(eq(users.id, userId));
+      if (!user) return null;
+
+      const userOrders = await db.select().from(orders).where(eq(orders.userId, userId));
+      
+      const userNotifications = await db.select().from(notifications).where(eq(notifications.userId, userId));
+      
+      let driverEarningsData = [];
+      let driverPayoutsData = [];
+      if (user.isDriver) {
+        driverEarningsData = await db.select().from(driverEarnings).where(eq(driverEarnings.driverId, userId));
+        driverPayoutsData = await db.select().from(driverPayouts).where(eq(driverPayouts.driverId, userId));
+      }
+
+      await db.update(users).set({
+        dataExportRequestedAt: new Date()
+      }).where(eq(users.id, userId));
+
+      return {
+        exportDate: new Date().toISOString(),
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+          dateOfBirth: user.dateOfBirth,
+          isDriver: user.isDriver,
+          profileImage: user.profileImage,
+          preferences: user.preferences,
+          addresses: user.addresses,
+          createdAt: user.createdAt
+        },
+        orders: userOrders.map(order => ({
+          id: order.id,
+          trackingNumber: order.trackingNumber,
+          status: order.status,
+          pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+          dropoffAddress: `${order.dropoffStreetAddress}, ${order.dropoffCity}, ${order.dropoffState} ${order.dropoffZipCode}`,
+          retailer: order.retailer,
+          packageDetails: order.packageDetails,
+          price: order.price,
+          createdAt: order.createdAt
+        })),
+        notifications: userNotifications.map(notif => ({
+          id: notif.id,
+          title: notif.title,
+          message: notif.message,
+          type: notif.type,
+          createdAt: notif.createdAt
+        })),
+        earnings: user.isDriver ? driverEarningsData.map(earning => ({
+          id: earning.id,
+          orderId: earning.orderId,
+          amount: earning.amount,
+          payoutStatus: earning.payoutStatus,
+          createdAt: earning.createdAt
+        })) : [],
+        payouts: user.isDriver ? driverPayoutsData.map(payout => ({
+          id: payout.id,
+          amount: payout.amount,
+          status: payout.status,
+          createdAt: payout.createdAt
+        })) : []
+      };
+    } catch (error) {
+      console.error('Error exporting user data:', error);
+      return null;
     }
   }
 }

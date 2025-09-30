@@ -1480,6 +1480,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // GDPR/CCPA Compliance: Request user data export
+  app.post("/api/user/request-data", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const userData = await storage.exportUserData(userId);
+      
+      if (!userData) {
+        return res.status(404).json({ message: "User data not found" });
+      }
+
+      const filename = `user-data-export-${userId}-${Date.now()}.json`;
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.json(userData);
+    } catch (error) {
+      console.error('Error exporting user data:', error);
+      res.status(500).json({ message: "Failed to export user data" });
+    }
+  });
+
+  // GDPR/CCPA Compliance: Request account deletion
+  app.post("/api/user/delete-account", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { password } = req.body;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      if (!password) {
+        return res.status(400).json({ message: "Password is required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+
+      const deletionDate = new Date();
+      deletionDate.setDate(deletionDate.getDate() + 30);
+
+      const updatedUser = await storage.requestAccountDeletion(userId, deletionDate);
+      
+      if (!updatedUser) {
+        return res.status(500).json({ message: "Failed to request account deletion" });
+      }
+
+      req.session?.regenerate(() => {
+        res.json({ 
+          message: "Account deletion requested successfully. Your account will be permanently deleted in 30 days.",
+          deletionDate: deletionDate.toISOString()
+        });
+      });
+    } catch (error) {
+      console.error('Error requesting account deletion:', error);
+      res.status(500).json({ message: "Failed to request account deletion" });
+    }
+  });
+
   // Demo login endpoint
   app.post("/api/auth/demo-login", async (req, res) => {
     try {

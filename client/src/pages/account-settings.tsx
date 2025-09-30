@@ -24,6 +24,7 @@ import { useAuth } from '@/hooks/useAuth-simple';
 
 // Account deletion validation schema
 const accountDeletionSchema = z.object({
+  password: z.string().min(1, "Password is required"),
   confirmationText: z.string().refine(
     (val) => val === "DELETE MY ACCOUNT",
     "Please type 'DELETE MY ACCOUNT' exactly as shown"
@@ -42,7 +43,8 @@ export default function AccountSettings() {
   const form = useForm<AccountDeletionForm>({
     resolver: zodResolver(accountDeletionSchema),
     defaultValues: {
-      confirmationText: '' as any,
+      password: '',
+      confirmationText: '',
       reason: '',
     },
   });
@@ -50,8 +52,8 @@ export default function AccountSettings() {
   // Data export mutation
   const exportData = useMutation({
     mutationFn: async () => {
-      const response = await fetch('/api/account/export', {
-        method: 'GET',
+      const response = await fetch('/api/user/request-data', {
+        method: 'POST',
         credentials: 'include',
       });
       
@@ -91,13 +93,15 @@ export default function AccountSettings() {
   // Account deletion mutation
   const deleteAccount = useMutation({
     mutationFn: async (data: AccountDeletionForm) => {
-      const response = await apiRequest('POST', '/api/account/delete', data);
+      const response = await apiRequest('POST', '/api/user/delete-account', {
+        password: data.password
+      });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: "Account Deleted",
-        description: "Your account has been permanently deleted.",
+        title: "Account Deletion Requested",
+        description: data.message || "Your account will be permanently deleted in 30 days.",
       });
       // Redirect to home page
       setTimeout(() => setLocation('/'), 2000);
@@ -232,11 +236,28 @@ export default function AccountSettings() {
                   <Alert className="border-red-200 bg-red-50">
                     <AlertTriangle className="h-4 w-4 text-red-600" />
                     <AlertDescription className="text-red-800">
-                      <strong>This action is permanent and cannot be undone.</strong>
+                      <strong>This action will request account deletion.</strong>
                       <br />
-                      All your data including orders, payment history, and account information will be permanently deleted.
+                      Your account will be marked for deletion and permanently deleted in 30 days. All your data including orders, payment history, and account information will be permanently removed.
                     </AlertDescription>
                   </Alert>
+
+                  <div>
+                    <Label htmlFor="password" className="text-red-800 font-medium">
+                      Confirm Your Password *
+                    </Label>
+                    <Input
+                      id="password"
+                      type="password"
+                      {...form.register('password')}
+                      className="mt-1 border-red-300 focus:border-red-500"
+                      placeholder="Enter your password"
+                      data-testid="input-password"
+                    />
+                    {form.formState.errors.password && (
+                      <p className="text-red-600 text-sm mt-1">{form.formState.errors.password.message}</p>
+                    )}
+                  </div>
 
                   <div>
                     <Label htmlFor="confirmationText" className="text-red-800 font-medium">

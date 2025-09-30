@@ -305,6 +305,11 @@ export const users = pgTable("users", {
   emergencyContacts: jsonb("emergency_contacts").default([]),
   lastSafetyCheck: timestamp("last_safety_check"),
   
+  // GDPR/CCPA Compliance fields
+  accountDeletionRequested: boolean("account_deletion_requested").default(false),
+  deletedAt: timestamp("deleted_at"),
+  dataExportRequestedAt: timestamp("data_export_requested_at"),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
