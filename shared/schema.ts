@@ -1293,6 +1293,18 @@ export const businessInfo = pgTable("business_info", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// System Settings - stores configurable app-wide settings
+export const appSettings = pgTable("app_settings", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  key: text("key").notNull().unique(), // e.g., 'base_price', 'holiday_surge_enabled'
+  value: jsonb("value").notNull(), // Flexible storage for any JSON value
+  description: text("description"),
+  category: text("category").default("general"), // pricing, features, notifications, etc.
+  updatedBy: integer("updated_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Cities and Market Management
 export const cities = pgTable("cities", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1491,6 +1503,12 @@ export const insertBusinessInfoSchema = createInsertSchema(businessInfo).omit({
   updatedAt: true,
 });
 
+export const insertAppSettingsSchema = createInsertSchema(appSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // POLICY ENGINE SCHEMAS
 // Policy Configuration TypeScript Interface (must be declared first)
 export const PolicyConfigSchema = z.object({
@@ -1608,6 +1626,8 @@ export type DriverIncentive = typeof driverIncentives.$inferSelect;
 export type InsertDriverIncentive = z.infer<typeof insertDriverIncentiveSchema>;
 export type BusinessInfo = typeof businessInfo.$inferSelect;
 export type InsertBusinessInfo = z.infer<typeof insertBusinessInfoSchema>;
+export type AppSetting = typeof appSettings.$inferSelect;
+export type InsertAppSetting = z.infer<typeof insertAppSettingsSchema>;
 
 // New table types
 export type City = typeof cities.$inferSelect;

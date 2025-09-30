@@ -5652,6 +5652,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // App Settings endpoints
+  app.get("/api/settings", async (req, res) => {
+    try {
+      const { category } = req.query;
+      const settings = await storage.getAllSettings(category as string | undefined);
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.get("/api/settings/:key", async (req, res) => {
+    try {
+      const setting = await storage.getSetting(req.params.key);
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  app.put("/api/admin/settings/:key", requireSecureAdmin, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { value, description, category } = req.body;
+      const userId = (req.session as any).user.id;
+      
+      const setting = await storage.updateSetting(key, value, userId, description, category);
+      res.json(setting);
+    } catch (error) {
+      console.error("Error updating setting:", error);
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
   // Admin analytics endpoint
   app.get('/api/admin/analytics', requireSecureAdmin, (req, res) => {
 

@@ -4,6 +4,7 @@ import {
   type Notification, type InsertNotification, type Analytics, type InsertAnalytics,
   type DriverPayout, type InsertDriverPayout, type DriverIncentive, type InsertDriverIncentive,
   type BusinessInfo, type InsertBusinessInfo,
+  type AppSetting, type InsertAppSetting,
   type DriverApplication, type InsertDriverApplication,
   type TrackingEvent, type InsertTrackingEvent,
   type DriverOrderAssignment, type InsertDriverOrderAssignment,
@@ -29,7 +30,7 @@ import {
 import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
 import { 
   users, orders, promoCodes, notifications, analytics, 
-  driverPayouts, driverIncentives, businessInfo, 
+  driverPayouts, driverIncentives, businessInfo, appSettings,
   driverApplications, driverEarnings, trackingEvents,
   driverOrderAssignments, orderStatusHistory, driverLocationPings,
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
@@ -135,6 +136,11 @@ export interface IStorage {
   // Business information
   getBusinessInfo(): Promise<BusinessInfo | undefined>;
   updateBusinessInfo(info: InsertBusinessInfo): Promise<BusinessInfo>;
+
+  // App Settings
+  getSetting(key: string): Promise<AppSetting | undefined>;
+  updateSetting(key: string, value: any, updatedBy: number, description?: string, category?: string): Promise<AppSetting>;
+  getAllSettings(category?: string): Promise<AppSetting[]>;
 
   // Driver Applications
   createDriverApplication(application: InsertDriverApplication): Promise<DriverApplication>;
@@ -306,6 +312,7 @@ export class MemStorage implements IStorage {
   private driverPayouts: Map<number, DriverPayout>;
   private driverIncentives: Map<number, DriverIncentive>;
   private businessInfo: BusinessInfo | undefined;
+  private appSettings: Map<string, AppSetting>;
   private driverApplications: Map<string, DriverApplication>;
   private paymentRecords: Map<string, any>;
   private trackingEvents: Map<number, TrackingEvent>;
@@ -346,6 +353,7 @@ export class MemStorage implements IStorage {
     this.analytics = new Map();
     this.driverPayouts = new Map();
     this.driverIncentives = new Map();
+    this.appSettings = new Map();
     this.driverApplications = new Map();
     this.paymentRecords = new Map();
     this.trackingEvents = new Map();
@@ -1551,6 +1559,36 @@ export class MemStorage implements IStorage {
     
     return this.businessInfo;
   }
+
+  // App Settings methods
+  async getSetting(key: string): Promise<AppSetting | undefined> {
+    return this.appSettings.get(key);
+  }
+
+  async updateSetting(key: string, value: any, updatedBy: number, description?: string, category?: string): Promise<AppSetting> {
+    const existing = this.appSettings.get(key);
+    const setting: AppSetting = {
+      id: existing?.id || this.appSettings.size + 1,
+      key,
+      value,
+      description: description || existing?.description || null,
+      category: category || existing?.category || 'general',
+      updatedBy,
+      createdAt: existing?.createdAt || new Date(),
+      updatedAt: new Date()
+    };
+    this.appSettings.set(key, setting);
+    return setting;
+  }
+
+  async getAllSettings(category?: string): Promise<AppSetting[]> {
+    const allSettings = Array.from(this.appSettings.values());
+    if (category) {
+      return allSettings.filter(s => s.category === category);
+    }
+    return allSettings;
+  }
+
   // Driver Application methods
   async createDriverApplication(application: InsertDriverApplication): Promise<DriverApplication> {
     const id = `app_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -3769,6 +3807,50 @@ export class DatabaseStorage implements IStorage {
       console.error('Error exporting user data:', error);
       return null;
     }
+  }
+
+  // App Settings methods - Database implementation
+  async getSetting(key: string): Promise<AppSetting | undefined> {
+    const [setting] = await db.select().from(appSettings).where(eq(appSettings.key, key));
+    return setting;
+  }
+
+  async updateSetting(key: string, value: any, updatedBy: number, description?: string, category?: string): Promise<AppSetting> {
+    const existing = await this.getSetting(key);
+    
+    if (existing) {
+      const [updated] = await db
+        .update(appSettings)
+        .set({
+          value,
+          description: description || existing.description,
+          category: category || existing.category,
+          updatedBy,
+          updatedAt: new Date()
+        })
+        .where(eq(appSettings.key, key))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(appSettings)
+        .values({
+          key,
+          value,
+          description: description || null,
+          category: category || 'general',
+          updatedBy
+        })
+        .returning();
+      return created;
+    }
+  }
+
+  async getAllSettings(category?: string): Promise<AppSetting[]> {
+    if (category) {
+      return await db.select().from(appSettings).where(eq(appSettings.category, category));
+    }
+    return await db.select().from(appSettings);
   }
 }
 

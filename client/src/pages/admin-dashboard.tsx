@@ -70,6 +70,7 @@ import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import UnifiedAI from "@/components/UnifiedAI";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
+import { PricingSettings } from "@/components/PricingSettings";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -401,6 +402,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <PayoutsManagementContent />;
       case 'tax-reports':
         return <TaxReportsContent />;
+      case 'pricing-settings':
+        return (
+          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+            <PricingSettings />
+          </div>
+        );
       case 'system-metrics':
         return <SystemMetricsContent />;
       case 'mobile-analytics':
@@ -545,6 +552,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Button onClick={() => changeSection('tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-tax-reports">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
+          </Button>
+          <Button onClick={() => changeSection('pricing-settings')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-pricing-settings">
+            <Settings className="h-6 w-6 sm:h-8 sm:w-8" />
+            <span className="text-xs sm:text-sm font-medium text-center">Pricing Settings</span>
           </Button>
         </div>
       </div>
