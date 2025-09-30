@@ -8,7 +8,16 @@ Preferred communication style: Simple, everyday language.
 
 # Launch Status
 
-As of January 22, 2025, ReturnIt is launch-ready with comprehensive admin dashboard functionality including driver payouts ($0.50 instant fee structure), tax reporting (1099-NEC generation), and fully functional notification management systems. All generate buttons in tax and payout sections are operational with proper API integration. Production data cleanup completed with SMS notification system active for real-time order alerts to 6362544821.
+As of September 30, 2025, ReturnIt is launch-ready with comprehensive admin dashboard functionality including driver payouts ($0.50 instant fee structure), tax reporting (1099-NEC generation), fully functional notification management systems, dynamic pricing configuration, and complete order tracking with retailer logging. All generate buttons in tax and payout sections are operational with proper API integration. Production data cleanup completed with SMS notification system active for real-time order alerts to 6362544821.
+
+## Recent Updates (September 30, 2025)
+- ✅ **Admin Pricing Settings**: Added database-backed pricing configuration system allowing admins to modify base flat fee through admin dashboard (stored in app_settings table)
+- ✅ **Order Submission Fix**: Fixed critical booking form bug where orders weren't being submitted - implemented handleStep4Submit function that constructs complete order payload and calls createOrderMutation
+- ✅ **Retailer Logging**: Orders now capture and store retailer name, retailer location, and dropoff address for comprehensive reporting and analytics
+- ✅ **Companies Table**: Created companies database table with auto-population logic for St. Louis area businesses (Target, Walmart, etc.)
+- ✅ **Audit Logging**: Complete order lifecycle tracking with timestamps for all state changes
+- ✅ **GDPR/CCPA Compliance**: Account deletion and data export functionality in account settings
+- 🔴 **Known Issue**: Google Maps API address autocomplete requires configuration - fallback manual address entry recommended for production deployment
 
 ## Mobile Deployment Status
 ReturnIt mobile deployment features a fully functional Progressive Web App (PWA) with service worker, web manifest, and native-like mobile experience. Chrome automatically offers "Add to Home Screen" functionality, providing users with app-like access to all ReturnIt features. Alternative Expo-based native app deployment encountered prebuild configuration issues but PWA solution delivers professional mobile experience without app store complexity.
@@ -53,10 +62,12 @@ ReturnIt mobile deployment features a fully functional Progressive Web App (PWA)
 
 ## Core Data Models
 - **Users**: Authentication with driver/customer roles, Stripe Connect integration, payment preferences.
-- **Orders**: Full lifecycle management (created, assigned, picked_up, dropped_off, refunded), payment processing with 70/30 split.
+- **Orders**: Full lifecycle management (created, assigned, picked_up, dropped_off, refunded), payment processing with 70/30 split, retailer tracking for reporting.
 - **Driver Payouts**: Tracking for instant vs. weekly payments, Stripe transfers, 1099 generation.
 - **Driver Incentives**: Bonus system (size-based, peak season, multi-stop).
 - **Business Information**: Company profile, contact details, mission statements.
+- **Companies**: St. Louis area business directory with auto-population, category filtering, return policy preferences.
+- **App Settings**: System-wide configuration storage (pricing, surge multipliers, feature flags) with admin management interface.
 
 ## Authentication and Authorization
 - **Authentication**: Email/Password (bcrypt), Google, Apple, Facebook sign-in via Passport.js. Exclusive admin access restricted to a specific email, with auto-redirection to the admin dashboard. Persistent authentication system for mobile apps (30-day session).
