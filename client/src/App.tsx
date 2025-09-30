@@ -201,8 +201,29 @@ function Router() {
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/admin-dashboard*">
         {() => {
+          // Show loading while auth is being checked
+          if (isLoading) {
+            return <PageLoader />;
+          }
+          
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
-          return user?.isAdmin && masterAdmins.includes(user?.email) ? <AdminDashboard /> : <NotFound />;
+          
+          // Check if user is authenticated and is admin
+          if (!user || !isAuthenticated) {
+            // Not logged in - redirect to login
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          
+          // Check if user has admin privileges
+          if (user.isAdmin && masterAdmins.includes(user.email)) {
+            return <AdminDashboard />;
+          }
+          
+          // User is logged in but not an admin
+          return <NotFound />;
         }}
       </Route>
       <Route path="/customer-dashboard">

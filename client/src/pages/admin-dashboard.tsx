@@ -45,7 +45,8 @@ import {
   Bot,
   Smartphone,
   Building2,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -91,7 +92,7 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [location, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { toast } = useToast();
   
   // Get current section from URL parameters or props
