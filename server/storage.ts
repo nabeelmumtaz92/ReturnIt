@@ -2293,6 +2293,16 @@ export class DatabaseStorage implements IStorage {
       .insert(orders)
       .values(orderData)
       .returning();
+    
+    await this.createAuditLog({
+      orderId: order.id,
+      action: 'order_created',
+      performedBy: order.userId,
+      performedByRole: 'customer',
+      newValue: { status: order.status, total: order.totalPrice },
+      metadata: { orderType: 'new', retailer: order.retailer }
+    });
+    
     return order;
   }
 
@@ -2302,11 +2312,76 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrder(id: string, updates: Partial<Order>): Promise<Order | undefined> {
+    const oldOrder = await this.getOrder(id);
+    if (!oldOrder) return undefined;
+
     const [order] = await db
       .update(orders)
       .set(updates)
       .where(eq(orders.id, id))
       .returning();
+    
+    if (updates.status && updates.status !== oldOrder.status) {
+      await this.createAuditLog({
+        orderId: id,
+        action: 'status_changed',
+        performedBy: null,
+        performedByRole: 'system',
+        oldValue: { status: oldOrder.status },
+        newValue: { status: updates.status },
+        metadata: { changedFields: Object.keys(updates) }
+      });
+    }
+    
+    if (updates.driverId && updates.driverId !== oldOrder.driverId) {
+      await this.createAuditLog({
+        orderId: id,
+        action: 'driver_assigned',
+        performedBy: null,
+        performedByRole: 'system',
+        oldValue: { driverId: oldOrder.driverId },
+        newValue: { driverId: updates.driverId },
+        metadata: { assignedAt: new Date() }
+      });
+    }
+    
+    if (updates.pickupPhotos || updates.deliveryPhotos) {
+      await this.createAuditLog({
+        orderId: id,
+        action: 'photo_uploaded',
+        performedBy: updates.driverId || oldOrder.driverId || null,
+        performedByRole: 'driver',
+        metadata: { 
+          photoType: updates.pickupPhotos ? 'pickup' : 'delivery',
+          photoCount: (updates.pickupPhotos || updates.deliveryPhotos || []).length
+        }
+      });
+    }
+    
+    if (updates.paymentStatus && updates.paymentStatus !== oldOrder.paymentStatus) {
+      await this.createAuditLog({
+        orderId: id,
+        action: 'payment_processed',
+        performedBy: null,
+        performedByRole: 'system',
+        oldValue: { paymentStatus: oldOrder.paymentStatus },
+        newValue: { paymentStatus: updates.paymentStatus },
+        metadata: { stripePaymentId: updates.stripePaymentIntentId }
+      });
+    }
+    
+    if (updates.refundStatus && updates.refundStatus !== oldOrder.refundStatus) {
+      await this.createAuditLog({
+        orderId: id,
+        action: 'refund_issued',
+        performedBy: null,
+        performedByRole: 'system',
+        oldValue: { refundStatus: oldOrder.refundStatus },
+        newValue: { refundStatus: updates.refundStatus },
+        metadata: { refundAmount: updates.refundAmount, stripeRefundId: updates.stripeRefundId }
+      });
+    }
+    
     return order;
   }
 

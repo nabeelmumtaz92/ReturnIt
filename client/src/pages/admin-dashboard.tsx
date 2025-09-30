@@ -69,6 +69,7 @@ import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 import CompletedOrdersAnalytics from "@/components/CompletedOrdersAnalytics";
 import UnifiedAI from "@/components/UnifiedAI";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
+import OrderDetailsModal from "@/components/OrderDetailsModal";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -1258,6 +1259,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const OrdersContent = () => {
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
     
     // Fetch real orders from database
     const fetchOrders = async () => {
@@ -1278,7 +1280,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             time: new Date(order.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
             type: 'return',
             trackingNumber: order.trackingNumber,
-            totalPrice: order.totalPrice
+            totalPrice: order.totalPrice,
+            retailer: order.retailer,
+            createdAt: order.createdAt
           }));
           setOrders(transformedOrders);
         }
@@ -1305,42 +1309,20 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       retailer: ''
     });
     const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<string | null>(null);
-    const [orderDetails, setOrderDetails] = useState<any>(null);
-    const [orderAuditLogs, setOrderAuditLogs] = useState<any[]>([]);
 
-    // Load order details and audit logs
-    const loadOrderDetails = async (orderId: string) => {
-      try {
-        setSelectedOrderForDetails(orderId);
-        
-        // Fetch order details
-        const detailsResponse = await fetch(`/api/admin/order/${orderId}/details`);
-        if (detailsResponse.ok) {
-          const details = await detailsResponse.json();
-          setOrderDetails(details);
-        }
-        
-        // Fetch audit logs
-        const auditResponse = await fetch(`/api/audit/order/${orderId}`);
-        if (auditResponse.ok) {
-          const logs = await auditResponse.json();
-          setOrderAuditLogs(logs);
-        }
-      } catch (error) {
-        console.error('Error loading order details:', error);
-        toast({ 
-          title: 'Error', 
-          description: 'Failed to load order details',
-          variant: 'destructive'
-        });
-      }
-    };
-
-    const closeOrderDetails = () => {
-      setSelectedOrderForDetails(null);
-      setOrderDetails(null);
-      setOrderAuditLogs([]);
-    };
+    // Filter orders based on search and filters
+    const filteredOrders = orders.filter((order: any) => {
+      const matchesSearch = !searchTerm || 
+        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = !exportFilters.status || order.status === exportFilters.status;
+      const matchesRetailer = !exportFilters.retailer || 
+        order.retailer?.toLowerCase().includes(exportFilters.retailer.toLowerCase());
+      
+      return matchesSearch && matchesStatus && matchesRetailer;
+    });
 
     // Enhanced order management functions - matching HTML structure functionality
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
@@ -1394,9 +1376,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       ));
     };
 
-    const activeOrders = orders.filter((o: any) => o.status === 'in_progress' || o.status === 'pending_assignment' || o.status === 'requested');
-    const completedOrders = orders.filter((o: any) => o.status === 'completed');
-    const pendingOrders = orders.filter((o: any) => o.status === 'pending' || o.status === 'requested');
+    const activeOrders = filteredOrders.filter((o: any) => 
+      ['created', 'assigned', 'in_progress', 'pending_assignment', 'requested', 'picked_up'].includes(o.status)
+    );
+    const completedOrders = filteredOrders.filter((o: any) => o.status === 'completed');
+    const pendingOrders = filteredOrders.filter((o: any) => o.status === 'pending' || o.status === 'requested');
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
@@ -1504,53 +1488,65 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               </div>
 
-              {/* Export Filters */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+              {/* Search and Filters */}
+              <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-amber-700">Start Date</Label>
+                  <Label className="text-xs text-amber-700">Search Orders</Label>
                   <Input
-                    type="date"
-                    value={exportFilters.startDate}
-                    onChange={(e) => setExportFilters({ ...exportFilters, startDate: e.target.value })}
+                    placeholder="Search by Order ID, Tracking Number, or Customer..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="mt-1"
-                    data-testid="input-export-start-date"
+                    data-testid="input-search-orders"
                   />
                 </div>
-                <div>
-                  <Label className="text-xs text-amber-700">End Date</Label>
-                  <Input
-                    type="date"
-                    value={exportFilters.endDate}
-                    onChange={(e) => setExportFilters({ ...exportFilters, endDate: e.target.value })}
-                    className="mt-1"
-                    data-testid="input-export-end-date"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-amber-700">Status</Label>
-                  <Select value={exportFilters.status} onValueChange={(value) => setExportFilters({ ...exportFilters, status: value })}>
-                    <SelectTrigger className="mt-1" data-testid="select-export-status">
-                      <SelectValue placeholder="All Statuses" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Statuses</SelectItem>
-                      <SelectItem value="created">Created</SelectItem>
-                      <SelectItem value="assigned">Assigned</SelectItem>
-                      <SelectItem value="picked_up">Picked Up</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-amber-700">Retailer</Label>
-                  <Input
-                    placeholder="Filter by retailer"
-                    value={exportFilters.retailer}
-                    onChange={(e) => setExportFilters({ ...exportFilters, retailer: e.target.value })}
-                    className="mt-1"
-                    data-testid="input-export-retailer"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+                  <div>
+                    <Label className="text-xs text-amber-700">Start Date</Label>
+                    <Input
+                      type="date"
+                      value={exportFilters.startDate}
+                      onChange={(e) => setExportFilters({ ...exportFilters, startDate: e.target.value })}
+                      className="mt-1"
+                      data-testid="input-export-start-date"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-amber-700">End Date</Label>
+                    <Input
+                      type="date"
+                      value={exportFilters.endDate}
+                      onChange={(e) => setExportFilters({ ...exportFilters, endDate: e.target.value })}
+                      className="mt-1"
+                      data-testid="input-export-end-date"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-amber-700">Status</Label>
+                    <Select value={exportFilters.status} onValueChange={(value) => setExportFilters({ ...exportFilters, status: value })}>
+                      <SelectTrigger className="mt-1" data-testid="select-export-status">
+                        <SelectValue placeholder="All Statuses" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">All Statuses</SelectItem>
+                        <SelectItem value="created">Created</SelectItem>
+                        <SelectItem value="assigned">Assigned</SelectItem>
+                        <SelectItem value="picked_up">Picked Up</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-amber-700">Retailer</Label>
+                    <Input
+                      placeholder="Filter by retailer"
+                      value={exportFilters.retailer}
+                      onChange={(e) => setExportFilters({ ...exportFilters, retailer: e.target.value })}
+                      className="mt-1"
+                      data-testid="input-export-retailer"
+                    />
+                  </div>
                 </div>
               </div>
             </CardHeader>
@@ -1683,10 +1679,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
                         {/* Standard Actions - Based on HTML structure */}
                         <Button 
-                          onClick={() => loadOrderDetails(order.id)}
+                          onClick={() => setSelectedOrderForDetails(order.id)}
                           variant="outline" 
                           size="sm" 
-                          className="w-full sm:w-auto min-h-[44px] touch-manipulation"
+                          className="w-full sm:w-auto min-h-[44px] touch-manipulation cursor-pointer hover:bg-amber-100"
                           data-testid={`button-view-order-${order.id}`}
                         >
                           📋 View Details
@@ -2019,6 +2015,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </Card>
           </div>
         </div>
+        
+        {/* Order Details Modal */}
+        <OrderDetailsModal
+          orderId={selectedOrderForDetails}
+          isOpen={!!selectedOrderForDetails}
+          onClose={() => setSelectedOrderForDetails(null)}
+        />
       </div>
     );
   };

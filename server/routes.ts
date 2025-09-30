@@ -3742,6 +3742,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Order Audit Logs Route (Admin specific)
+  app.get("/api/admin/orders/:orderId/audit-logs", requireSecureAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const auditLogs = await storage.getOrderAuditLogs(orderId);
+      
+      const enrichedLogs = await Promise.all(auditLogs.map(async (log) => {
+        let performedByUser = null;
+        if (log.performedBy) {
+          performedByUser = await storage.getUser(log.performedBy);
+        }
+        
+        return {
+          ...log,
+          performedByName: performedByUser 
+            ? `${performedByUser.firstName || ''} ${performedByUser.lastName || ''}`.trim() || performedByUser.email
+            : 'System'
+        };
+      }));
+
+      res.json(enrichedLogs);
+    } catch (error) {
+      console.error("Error fetching audit logs:", error);
+      res.status(500).json({ message: "Failed to fetch audit logs" });
+    }
+  });
+
+  // POST version of export for better filter handling
+  app.post("/api/admin/orders/export", requireSecureAdmin, async (req, res) => {
+    try {
+      const { startDate, endDate, status, retailer, driverId, customerId, format = 'csv' } = req.body;
+      
+      const filters: any = {};
+      if (startDate) filters.startDate = startDate;
+      if (endDate) filters.endDate = endDate;
+      if (status) filters.status = status;
+      if (retailer) filters.retailer = retailer;
+      if (driverId) filters.driverId = driverId;
+      if (customerId) filters.customerId = customerId;
+
+      const ordersData = await storage.exportOrdersData(filters);
+
+      if (format === 'csv') {
+        const csv = [
+          Object.keys(ordersData[0] || {}).join(','),
+          ...ordersData.map(row => Object.values(row).map(val => 
+            typeof val === 'string' && val.includes(',') ? `"${val}"` : val
+          ).join(','))
+        ].join('\n');
+
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename=orders-export-${new Date().toISOString()}.csv`);
+        res.send(csv);
+      } else {
+        res.json(ordersData);
+      }
+    } catch (error) {
+      console.error("Error exporting orders:", error);
+      res.status(500).json({ message: "Failed to export orders" });
+    }
+  });
+
   // Manual Driver Approval API Endpoints
   
   // Get pending driver applications for manual review
