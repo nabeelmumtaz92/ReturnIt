@@ -9,6 +9,7 @@ import { SupportTicketService } from "./supportTicketService.js";
 import { AIAssistant } from "./ai-assistant";
 import Stripe from "stripe";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import passport from "./auth/strategies";
 import bcrypt from "bcrypt";
 import { z } from "zod";
@@ -447,7 +448,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     throw new Error('SECURITY ERROR: SESSION_SECRET environment variable must be set in production');
   }
   
+  // Configure PostgreSQL session store for production
+  const PgSession = connectPgSimple(session);
+  const sessionStore = process.env.DATABASE_URL 
+    ? new PgSession({
+        conString: process.env.DATABASE_URL,
+        tableName: 'user_sessions',
+        createTableIfMissing: true,
+        pruneSessionInterval: 60 * 15, // Prune expired sessions every 15 minutes
+      })
+    : undefined; // Fall back to MemoryStore in development without database
+  
   app.use(session({
+    store: sessionStore,
     secret: process.env.SESSION_SECRET || 'dev-fallback-' + Math.random().toString(36),
     resave: false,
     saveUninitialized: false,
