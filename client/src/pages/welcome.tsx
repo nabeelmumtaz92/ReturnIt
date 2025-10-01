@@ -12,7 +12,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 // LogoIcon removed
 import { ReturnItLogo } from "@/components/ReturnItLogo";
-import ContactSupportButton from "@/components/ContactSupportButton";
 import deliveryHandoffImg from "@assets/generated_images/Professional_delivery_homepage_hero_4017d9ae.png";
 
 interface EnvironmentConfig {
@@ -335,15 +334,6 @@ export default function Welcome() {
 
       {/* Footer */}
       <Footer />
-      
-      {/* Floating Support Chat Button */}
-      <ContactSupportButton 
-        context={{
-          type: isAuthenticated ? (user?.isAdmin ? 'customer' : 'customer') : 'customer',
-          id: user?.id ? String(user.id) : 'GUEST',
-          name: user?.firstName || 'Customer'
-        }}
-      />
     </div>
   );
 }

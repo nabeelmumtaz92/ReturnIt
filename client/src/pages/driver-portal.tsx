@@ -15,7 +15,6 @@ import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
 import DriverOrderCard from "@/components/DriverOrderCard";
-import ContactSupportButton from "@/components/ContactSupportButton";
 import DriverScheduleManager from "@/components/DriverScheduleManager";
 import GPSNavigation from "@/components/GPSNavigation";
 import { useLocation, Link } from "wouter";
@@ -984,11 +983,6 @@ export default function DriverPortal() {
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Contact Support Button */}
-      <ContactSupportButton 
-        context={{ type: 'driver', id: String(user?.id) || 'DRIVER', name: user?.firstName || 'Driver' }}
-      />
     </div>
   );
 }
