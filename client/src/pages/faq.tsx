@@ -156,7 +156,7 @@ export default function FAQ() {
     {
       id: "business-pricing",
       question: "Do you offer business or bulk pricing?",
-      answer: "Yes! Businesses with 10+ returns per month qualify for volume discounts starting at 15% off. We offer dedicated account management, priority scheduling, and custom invoicing. Contact our business team at business@returnly.com for a custom quote.",
+      answer: "Yes! Businesses with 10+ returns per month qualify for volume discounts starting at 15% off. We offer dedicated account management, priority scheduling, and custom invoicing. Contact our business team at support@returnit.online for a custom quote.",
       category: "pricing",
       tags: ["business", "bulk", "volume", "enterprise", "discount"],
       isPopular: false
@@ -514,7 +514,7 @@ export default function FAQ() {
                   <CardContent className="p-4 text-center">
                     <Mail className="h-8 w-8 mx-auto mb-2" />
                     <h3 className="font-semibold mb-1">Email Support</h3>
-                    <p className="text-sm text-amber-100 mb-3">support@returnly.com</p>
+                    <p className="text-sm text-amber-100 mb-3">support@returnit.online</p>
                     <Button 
                       className="w-full bg-white text-amber-600 hover:bg-amber-50"
                       data-testid="button-email-support"
