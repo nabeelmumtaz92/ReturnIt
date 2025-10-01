@@ -574,10 +574,12 @@ export default function HelpCenter() {
                 <CardContent className="p-4 text-center">
                   <Mail className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Email Support</h3>
-                  <p className="text-sm text-amber-100 mb-3">support@returnly.com</p>
-                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-email-support">
-                    Send Email
-                  </Button>
+                  <p className="text-sm text-amber-100 mb-3">support@returnit.online</p>
+                  <a href="mailto:support@returnit.online">
+                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-email-support">
+                      Send Email
+                    </Button>
+                  </a>
                 </CardContent>
               </Card>
               <Card className="bg-white/10 backdrop-blur border-0">
