@@ -299,7 +299,7 @@ export default function About() {
                 <Mail className="w-8 h-8 mx-auto mb-3 text-amber-600" />
                 <h3 className="font-semibold text-amber-900 mb-2">Email</h3>
                 <p className="text-amber-700" data-testid="text-email">
-                  {businessInfo?.supportEmail || "support@returnly.com"}
+                  {businessInfo?.supportEmail || "support@returnit.online"}
                 </p>
               </CardContent>
             </Card>

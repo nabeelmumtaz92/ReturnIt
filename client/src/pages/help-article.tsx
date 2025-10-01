@@ -100,7 +100,7 @@ Booking a return pickup with ReturnIt is quick and easy! Follow this step-by-ste
 If you run into any issues during booking:
 - **Live Chat**: Available 8 AM - 8 PM CST
 - **Phone**: (636) 254-4821
-- **Email**: support@returnly.com
+- **Email**: support@returnit.online
 
 ## Related Articles
 - [Understanding ReturnIt Pricing](/help-article/pricing-guide)
@@ -240,7 +240,7 @@ We accept all major payment methods:
 Our support team can help clarify any charges:
 - **Live Chat**: Instant pricing estimates
 - **Phone**: (636) 254-4821
-- **Email**: billing@returnly.com
+- **Email**: support@returnit.online
       `,
       relatedArticles: ['how-to-book-return', 'promo-codes', 'payment-methods'],
       tags: ['pricing', 'fees', 'cost', 'payment', 'billing', 'transparent']
@@ -374,7 +374,7 @@ Stay informed about your return pickup with real-time tracking updates from book
 ### Quick Support Options
 - **Live Chat**: Instant help with tracking
 - **Phone**: (636) 254-4821
-- **Email**: tracking@returnly.com
+- **Email**: support@returnit.online
 
 ### Emergency Support
 Available 24/7 for urgent tracking issues:
@@ -530,7 +530,7 @@ We deliver to major retailers throughout our service area:
 ## How to Request Service Expansion
 
 ### Community Interest
-- **Contact us** at expansion@returnly.com
+- **Contact us** at support@returnit.online
 - **Provide ZIP codes** for requested areas
 - **Share demand information** from your community
 - **Join our expansion waitlist**
@@ -560,7 +560,7 @@ We deliver to major retailers throughout our service area:
 ## Questions About Service Areas?
 
 **Contact our expansion team**:
-- **Email**: expansion@returnly.com
+- **Email**: support@returnit.online
 - **Phone**: (636) 254-4821 ext. 3
 - **Live Chat**: Available 9 AM - 5 PM CST
 
@@ -737,7 +737,7 @@ Everything drivers need to know about working with ReturnIt, from getting starte
 - **In-app support**: Chat feature for quick questions
 - **Phone support**: (636) 254-4821 for drivers
 - **Emergency line**: (636) 254-4821 for urgent issues
-- **Email support**: drivers@returnly.com
+- **Email support**: support@returnit.online
 - **Driver community**: Facebook group for tips
 
 ### What about insurance while driving?
@@ -823,16 +823,16 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Email Support ✉️
 
 ### General Support
-- **Email**: support@returnly.com
+- **Email**: support@returnit.online
 - **Response time**: 2-4 hours during business hours
 - **Best for**: Non-urgent questions, detailed issues
 - **Include**: Order number, detailed description
 
 ### Specialized Teams
-- **Billing**: billing@returnly.com
-- **Drivers**: drivers@returnly.com
-- **Partnerships**: partnerships@returnly.com
-- **Press/Media**: media@returnly.com
+- **Billing**: support@returnit.online
+- **Drivers**: support@returnit.online
+- **Partnerships**: support@returnit.online
+- **Press/Media**: support@returnit.online
 
 ## In-App Support 📱
 
@@ -905,10 +905,10 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 - **Billing options**: Net-30 terms, bulk pricing
 
 ### Partnership Inquiries
-- **Retailer partnerships**: integration@returnly.com
-- **Corporate clients**: enterprise@returnly.com
-- **API access**: developers@returnly.com
-- **White-label**: solutions@returnly.com
+- **Retailer partnerships**: support@returnit.online
+- **Corporate clients**: support@returnit.online
+- **API access**: support@returnit.online
+- **White-label**: support@returnit.online
 
 ## Social Media Support 📱
 
@@ -944,9 +944,9 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Feedback & Suggestions 💡
 
 ### Help Us Improve
-- **Feature requests**: features@returnly.com
-- **Service feedback**: feedback@returnly.com
-- **Bug reports**: tech@returnly.com
+- **Feature requests**: support@returnit.online
+- **Service feedback**: support@returnit.online
+- **Bug reports**: support@returnit.online
 - **Survey responses**: Brief post-support surveys
 
 ### Recognition Programs
@@ -960,7 +960,7 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 1. **Ask for supervisor** during initial contact
 2. **Reference ticket number** for complex issues
 3. **Request callback** from management
-4. **Email escalation**: escalation@returnly.com
+4. **Email escalation**: support@returnit.online
 5. **Executive team**: Only for unresolved issues
 
 ## Related Articles
@@ -1063,7 +1063,7 @@ Quick solutions for common delivery issues, from delays to damage claims.
 
 ### If Charged Incorrectly
 1. **Review charge breakdown** in app
-2. **Contact billing support**: billing@returnly.com
+2. **Contact billing support**: support@returnit.online
 3. **Dispute within 7 days** for fastest resolution
 4. **Automatic refund** for verified errors
 
@@ -1364,9 +1364,9 @@ Multiple secure payment options to make your return pickup convenient and safe.
 
 ### Common Questions
 - **Failed payments**: (636) 254-4821 ext. 3
-- **Billing disputes**: billing@returnly.com
+- **Billing disputes**: support@returnit.online
 - **Refund status**: Check account or contact support
-- **Business accounts**: enterprise@returnly.com
+- **Business accounts**: support@returnit.online
 
 ### Resolution Times
 - **Payment failures**: Immediate assistance
@@ -1602,9 +1602,9 @@ Complete guide to our return policies including accepted items, size restriction
 
 ### Policy Questions
 - **General policies**: (636) 254-4821
-- **Legal questions**: legal@returnly.com
-- **Dispute resolution**: disputes@returnly.com
-- **Insurance claims**: insurance@returnly.com
+- **Legal questions**: support@returnit.online
+- **Dispute resolution**: support@returnit.online
+- **Insurance claims**: support@returnit.online
 
 ### Emergency Situations
 - **Safety concerns**: (636) 254-4821
