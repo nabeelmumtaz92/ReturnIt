@@ -8451,6 +8451,42 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // Contact Form Submission
+  app.post("/api/contact", async (req, res) => {
+    try {
+      const { name, email, subject, message } = req.body;
+      
+      if (!name || !email || !message) {
+        return res.status(400).json({ message: "Name, email, and message are required" });
+      }
+
+      // Import Resend client
+      const { getUncachableResendClient } = await import("./resend-client");
+      const { client, fromEmail } = await getUncachableResendClient();
+
+      // Send email to admin
+      await client.emails.send({
+        from: fromEmail,
+        to: 'nabeelmumtaz92@gmail.com',
+        subject: `Contact Form: ${subject || 'New Message'}`,
+        html: `
+          <h2>New Contact Form Submission</h2>
+          <p><strong>From:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject || 'No subject'}</p>
+          <hr>
+          <p><strong>Message:</strong></p>
+          <p>${message.replace(/\n/g, '<br>')}</p>
+        `,
+      });
+
+      res.json({ message: "Message sent successfully!" });
+    } catch (error) {
+      console.error("Error sending contact form:", error);
+      res.status(500).json({ message: "Failed to send message. Please try again later." });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

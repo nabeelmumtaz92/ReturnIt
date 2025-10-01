@@ -28,6 +28,7 @@ const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
 const CustomerWaitlist = lazy(() => import("@/pages/customer-waitlist"));
 const AccountSettings = lazy(() => import("@/pages/account-settings"));
 const About = lazy(() => import("@/pages/about"));
+const Contact = lazy(() => import("@/pages/contact"));
 
 // Admin and heavy components (lazy-loaded)
 const MobileAppDemo = lazy(() => import("@/pages/mobile-app-demo"));
@@ -243,6 +244,7 @@ function Router() {
         }}
       </Route>
       <Route path="/about" component={About} />
+      <Route path="/contact" component={Contact} />
 
       {/* Smart App Routing */}
       <Route path="/customer-app">
