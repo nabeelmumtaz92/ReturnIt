@@ -5649,7 +5649,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </h1>
             </Link>
             <span className="text-amber-600">|</span>
-            <h2 className="text-xl font-semibold text-amber-800">Admin Dashboard</h2>
+            <h2 
+              className="text-xl font-semibold text-amber-800 hover:text-amber-600 transition-colors cursor-pointer" 
+              onClick={() => changeSection('overview')}
+              data-testid="button-admin-home"
+            >
+              Admin Dashboard
+            </h2>
             <Badge className="bg-amber-100 text-amber-800 border-amber-200">Master Admin</Badge>
           </div>
           <div className="flex items-center gap-4">
