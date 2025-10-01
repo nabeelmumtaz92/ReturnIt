@@ -8462,12 +8462,13 @@ Always think strategically, explain your reasoning, and provide value beyond bas
 
       // Import Resend client
       const { getUncachableResendClient } = await import("./resend-client");
-      const { client, fromEmail } = await getUncachableResendClient();
+      const { client } = await getUncachableResendClient();
 
-      // Send email to admin
+      // Send email to admin from professional custom domain email
       await client.emails.send({
-        from: fromEmail,
+        from: 'Return It Support <support@returnit.online>',
         to: 'nabeelmumtaz92@gmail.com',
+        replyTo: email,
         subject: `Contact Form: ${subject || 'New Message'}`,
         html: `
           <h2>New Contact Form Submission</h2>
