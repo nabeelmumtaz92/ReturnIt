@@ -10,7 +10,10 @@ Preferred communication style: Simple, everyday language.
 
 As of September 30, 2025, ReturnIt is launch-ready with comprehensive admin dashboard functionality including driver payouts ($0.50 instant fee structure), tax reporting (1099-NEC generation), fully functional notification management systems, dynamic pricing configuration, and complete order tracking with retailer logging. All generate buttons in tax and payout sections are operational with proper API integration. Production data cleanup completed with SMS notification system active for real-time order alerts to 6362544821.
 
-## Recent Updates (September 30, 2025)
+## Recent Updates (October 1, 2025)
+- ✅ **Email Infrastructure Upgrade**: Switched to ImprovMX for FREE email forwarding (support@returnit.online → nabeelmumtaz92@gmail.com), updated ALL website emails from old returnly.com domain to support@returnit.online
+- ✅ **Support System Integration**: Tawk.to live chat on all customer pages, Resend for outbound emails (contact form), professional email forwarding via ImprovMX
+- ✅ **AI Assistant Knowledge Update**: Refreshed AI assistant with complete October 2025 platform knowledge including all integrations, features, and contact information
 - ✅ **Admin Pricing Settings**: Added database-backed pricing configuration system allowing admins to modify base flat fee through admin dashboard (stored in app_settings table)
 - ✅ **Order Submission Fix**: Fixed critical booking form bug where orders weren't being submitted - implemented handleStep4Submit function that constructs complete order payload and calls createOrderMutation
 - ✅ **Retailer Logging**: Orders now capture and store retailer name, retailer location, and dropoff address for comprehensive reporting and analytics
