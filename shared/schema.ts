@@ -668,6 +668,12 @@ export const orders = pgTable("orders", {
   requiresSignature: boolean("requires_signature").default(false),
   insuranceValue: real("insurance_value"),
   
+  // API Integration Fields (Tier 2)
+  externalOrderId: text("external_order_id"), // Retailer's original order ID
+  apiMetadata: jsonb("api_metadata").default({}), // Additional retailer data
+  createdViaApi: boolean("created_via_api").default(false), // Programmatic vs manual creation
+  apiKeyId: integer("api_key_id").references(() => retailerApiKeys.id), // Which API key created this
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

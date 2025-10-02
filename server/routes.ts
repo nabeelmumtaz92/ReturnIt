@@ -8620,6 +8620,361 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   // ============================================================================
+  // RETAILER API V1 - PROGRAMMATIC ACCESS
+  // ============================================================================
+  
+  // API Key Authentication Middleware
+  const authenticateApiKey = async (req: any, res: any, next: any) => {
+    try {
+      const authHeader = req.headers.authorization;
+      
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ 
+          error: 'unauthorized',
+          message: 'Missing or invalid Authorization header. Use: Authorization: Bearer ret_live_xxxxx' 
+        });
+      }
+      
+      const apiKey = authHeader.substring(7); // Remove 'Bearer ' prefix
+      
+      if (!apiKey.startsWith('ret_live_') && !apiKey.startsWith('ret_test_')) {
+        return res.status(401).json({ 
+          error: 'invalid_key',
+          message: 'Invalid API key format' 
+        });
+      }
+      
+      // Hash the API key for lookup
+      const crypto = await import('crypto');
+      const keyHash = crypto.createHash('sha256').update(apiKey).digest('hex');
+      
+      // Find the API key in database
+      const apiKeyRecord = await storage.getRetailerApiKeyByHash(keyHash);
+      
+      if (!apiKeyRecord) {
+        return res.status(401).json({ 
+          error: 'invalid_key',
+          message: 'API key not found or has been revoked' 
+        });
+      }
+      
+      if (!apiKeyRecord.isActive) {
+        return res.status(401).json({ 
+          error: 'key_inactive',
+          message: 'API key has been deactivated' 
+        });
+      }
+      
+      if (apiKeyRecord.expiresAt && new Date(apiKeyRecord.expiresAt) < new Date()) {
+        return res.status(401).json({ 
+          error: 'key_expired',
+          message: 'API key has expired' 
+        });
+      }
+      
+      // Check rate limit
+      const now = new Date();
+      const hourStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours());
+      
+      if (apiKeyRecord.currentUsage >= apiKeyRecord.rateLimit) {
+        return res.status(429).json({ 
+          error: 'rate_limit_exceeded',
+          message: `Rate limit of ${apiKeyRecord.rateLimit} requests per hour exceeded`,
+          reset_at: new Date(hourStart.getTime() + 3600000).toISOString()
+        });
+      }
+      
+      // Update usage and last used timestamp
+      await storage.updateRetailerApiKey(apiKeyRecord.id, {
+        currentUsage: apiKeyRecord.currentUsage + 1,
+        lastUsedAt: now
+      });
+      
+      // Attach API key info to request
+      req.apiKey = {
+        id: apiKeyRecord.id,
+        companyId: apiKeyRecord.companyId,
+        permissions: apiKeyRecord.permissions,
+        scopes: apiKeyRecord.scopes
+      };
+      
+      next();
+    } catch (error) {
+      console.error('API key authentication error:', error);
+      res.status(500).json({ 
+        error: 'server_error',
+        message: 'Authentication failed' 
+      });
+    }
+  };
+  
+  // Check API permission
+  const requireApiPermission = (permission: string) => {
+    return (req: any, res: any, next: any) => {
+      if (!req.apiKey || !req.apiKey.permissions.includes(permission)) {
+        return res.status(403).json({ 
+          error: 'forbidden',
+          message: `This API key does not have '${permission}' permission` 
+        });
+      }
+      next();
+    };
+  };
+  
+  // POST /api/v1/returns - Create return programmatically
+  app.post("/api/v1/returns", authenticateApiKey, requireApiPermission('write'), async (req, res) => {
+    try {
+      const { companyId } = req.apiKey;
+      
+      // Validate required fields
+      const schema = z.object({
+        customer_email: z.string().email(),
+        customer_phone: z.string(),
+        customer_name: z.string(),
+        
+        pickup_address: z.string(),
+        pickup_city: z.string().optional(),
+        pickup_state: z.string().optional(),
+        pickup_zip: z.string().optional(),
+        pickup_date: z.string().optional(),
+        pickup_time_preference: z.enum(['morning', 'afternoon', 'evening']).optional(),
+        
+        dropoff_address: z.string().optional(),
+        dropoff_name: z.string().optional(),
+        
+        item_description: z.string(),
+        item_value: z.number().positive().optional(),
+        item_weight: z.number().positive().optional(),
+        
+        return_reason: z.string().optional(),
+        special_instructions: z.string().optional(),
+        
+        external_order_id: z.string().optional(), // Retailer's order ID
+        metadata: z.record(z.any()).optional() // Additional data
+      });
+      
+      const validationResult = schema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          error: 'validation_error',
+          message: 'Invalid request data',
+          details: validationResult.error.issues 
+        });
+      }
+      
+      const data = validationResult.data;
+      
+      // Get company info for dropoff address if not provided
+      const company = await storage.getCompany(companyId);
+      if (!company) {
+        return res.status(404).json({ 
+          error: 'company_not_found',
+          message: 'Retailer company not found' 
+        });
+      }
+      
+      // Create user if doesn't exist
+      let user = await storage.getUserByEmail(data.customer_email);
+      if (!user) {
+        // Create minimal user account for API orders
+        const nameParts = data.customer_name.split(' ');
+        user = await storage.createUser({
+          email: data.customer_email,
+          password: Math.random().toString(36), // Random password, won't be used
+          firstName: nameParts[0] || data.customer_name,
+          lastName: nameParts.slice(1).join(' ') || '',
+          phone: data.customer_phone,
+          isDriver: false
+        });
+      }
+      
+      // Create order
+      const order = await storage.createOrder({
+        userId: user.id,
+        pickupAddress: data.pickup_address,
+        pickupCity: data.pickup_city || '',
+        pickupState: data.pickup_state || 'MO',
+        pickupZip: data.pickup_zip || '',
+        pickupDate: data.pickup_date || new Date().toISOString().split('T')[0],
+        pickupTimePreference: data.pickup_time_preference || 'afternoon',
+        
+        dropoffAddress: data.dropoff_address || company.headquarters || company.name,
+        dropoffName: data.dropoff_name || company.name,
+        retailerName: company.name,
+        retailerLocation: company.headquarters || '',
+        
+        itemDescription: data.item_description,
+        itemValue: data.item_value || 0,
+        itemWeight: data.item_weight || 0,
+        returnReason: data.return_reason || 'Other',
+        specialInstructions: data.special_instructions || '',
+        
+        paymentMethod: 'api',
+        paymentStatus: 'pending',
+        totalAmount: 0, // Will be calculated
+        
+        status: OrderStatus.ASSIGNED, // Ready for auto-dispatch
+        
+        // API-specific fields
+        externalOrderId: data.external_order_id,
+        apiMetadata: data.metadata,
+        createdViaApi: true,
+        apiKeyId: req.apiKey.id
+      });
+      
+      // Trigger auto-assignment
+      try {
+        await autoAssignmentService.autoAssignOrder(order.id);
+      } catch (error) {
+        console.error('Auto-assignment failed for API order:', error);
+        // Don't fail the request, assignment will be retried
+      }
+      
+      // Fire webhook
+      await webhookService.fireReturnCreated({
+        orderId: order.id,
+        companyId,
+        externalOrderId: data.external_order_id,
+        status: order.status,
+        createdAt: order.createdAt
+      });
+      
+      res.status(201).json({
+        id: order.id,
+        external_order_id: data.external_order_id,
+        status: order.status,
+        tracking_number: order.trackingNumber,
+        created_at: order.createdAt,
+        pickup_date: order.pickupDate,
+        customer: {
+          email: data.customer_email,
+          phone: data.customer_phone,
+          name: data.customer_name
+        },
+        pickup_address: {
+          street: order.pickupAddress,
+          city: order.pickupCity,
+          state: order.pickupState,
+          zip: order.pickupZip
+        },
+        dropoff_address: {
+          name: order.dropoffName,
+          address: order.dropoffAddress
+        }
+      });
+    } catch (error) {
+      console.error('API return creation error:', error);
+      res.status(500).json({ 
+        error: 'server_error',
+        message: 'Failed to create return' 
+      });
+    }
+  });
+  
+  // GET /api/v1/returns/:id - Get return status
+  app.get("/api/v1/returns/:id", authenticateApiKey, requireApiPermission('read'), async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ 
+          error: 'not_found',
+          message: 'Return not found' 
+        });
+      }
+      
+      // Verify API key has access to this order's company
+      if (order.apiKeyId !== req.apiKey.id) {
+        const orderCompany = await storage.getCompanyBySlug(order.retailerName?.toLowerCase().replace(/\s+/g, '-') || '');
+        if (!orderCompany || orderCompany.id !== req.apiKey.companyId) {
+          return res.status(403).json({ 
+            error: 'forbidden',
+            message: 'Access denied to this return' 
+          });
+        }
+      }
+      
+      res.json({
+        id: order.id,
+        external_order_id: order.externalOrderId,
+        status: order.status,
+        tracking_number: order.trackingNumber,
+        created_at: order.createdAt,
+        updated_at: order.updatedAt,
+        pickup_date: order.pickupDate,
+        driver_assigned_at: order.driverAssignedAt,
+        actual_pickup_time: order.actualPickupTime,
+        actual_delivery_time: order.actualDeliveryTime,
+        customer: {
+          email: order.userId ? (await storage.getUser(order.userId))?.email : null,
+          phone: (await storage.getUser(order.userId || 0))?.phone
+        },
+        driver: order.driverId ? {
+          id: order.driverId,
+          name: (await storage.getUser(order.driverId))?.firstName + ' ' + (await storage.getUser(order.driverId))?.lastName
+        } : null,
+        metadata: order.apiMetadata
+      });
+    } catch (error) {
+      console.error('API return fetch error:', error);
+      res.status(500).json({ 
+        error: 'server_error',
+        message: 'Failed to fetch return' 
+      });
+    }
+  });
+  
+  // GET /api/v1/returns - List all returns for this retailer
+  app.get("/api/v1/returns", authenticateApiKey, requireApiPermission('read'), async (req, res) => {
+    try {
+      const { limit = 50, offset = 0, status, external_order_id } = req.query;
+      
+      // Get company
+      const company = await storage.getCompany(req.apiKey.companyId);
+      if (!company) {
+        return res.status(404).json({ error: 'company_not_found' });
+      }
+      
+      // Get all orders for this retailer
+      const allOrders = await storage.getOrders({});
+      
+      let filtered = allOrders.filter(order => {
+        const matchesCompany = order.retailerName === company.name || order.apiKeyId === req.apiKey.id;
+        const matchesStatus = !status || order.status === status;
+        const matchesExternal = !external_order_id || order.externalOrderId === external_order_id;
+        return matchesCompany && matchesStatus && matchesExternal;
+      });
+      
+      const total = filtered.length;
+      const returns = filtered.slice(Number(offset), Number(offset) + Number(limit));
+      
+      res.json({
+        data: returns.map(order => ({
+          id: order.id,
+          external_order_id: order.externalOrderId,
+          status: order.status,
+          tracking_number: order.trackingNumber,
+          created_at: order.createdAt,
+          pickup_date: order.pickupDate
+        })),
+        pagination: {
+          total,
+          limit: Number(limit),
+          offset: Number(offset),
+          has_more: Number(offset) + Number(limit) < total
+        }
+      });
+    } catch (error) {
+      console.error('API returns list error:', error);
+      res.status(500).json({ 
+        error: 'server_error',
+        message: 'Failed to fetch returns' 
+      });
+    }
+  });
+
+  // ============================================================================
   // RETAILER SELF-SERVICE PORTAL API ROUTES
   // ============================================================================
 
@@ -9070,10 +9425,15 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         return res.status(400).json({ message: "API key name is required" });
       }
 
-      // Generate random API key
-      const keyString = `rtn_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+      // Generate random API key with environment prefix
+      const envPrefix = process.env.NODE_ENV === 'production' ? 'ret_live_' : 'ret_test_';
+      const randomString = `${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+      const keyString = `${envPrefix}${randomString}`;
       const keyPrefix = keyString.substring(0, 12);
-      const keyHash = await bcrypt.hash(keyString, 10);
+      
+      // Use crypto for hashing API keys (more secure than bcrypt for this use case)
+      const crypto = await import('crypto');
+      const keyHash = crypto.createHash('sha256').update(keyString).digest('hex');
 
       const apiKey = await storage.createRetailerApiKey({
         companyId: parseInt(companyId),
