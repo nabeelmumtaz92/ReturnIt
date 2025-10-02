@@ -80,6 +80,8 @@ export default function CustomerMobileAppEnhanced() {
 
   // WebSocket state for real-time GPS tracking
   const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttemptsRef = useRef(0);
   const [wsConnected, setWsConnected] = useState(false);
   const [driverLocation, setDriverLocation] = useState<{
     lat: number;
@@ -287,13 +289,23 @@ export default function CustomerMobileAppEnhanced() {
     },
   });
 
-  // WebSocket connection for real-time GPS tracking
+  // WebSocket connection for real-time GPS tracking with auto-reconnect
   useEffect(() => {
-    if (currentView === 'track-live' && selectedOrderData?.trackingNumber) {
+    if (currentView !== 'track-live' || !selectedOrderData?.trackingNumber) {
+      return;
+    }
+
+    let isActive = true;
+    const maxReconnectAttempts = 5;
+    const baseDelay = 1000;
+
+    const connectWebSocket = () => {
+      if (!isActive) return;
+
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       const wsUrl = `${protocol}//${window.location.host}/ws/tracking`;
       
-      console.log('🔌 Connecting to WebSocket for GPS tracking:', wsUrl);
+      console.log(`🔌 Connecting to WebSocket (attempt ${reconnectAttemptsRef.current + 1})...`);
       
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
@@ -301,6 +313,7 @@ export default function CustomerMobileAppEnhanced() {
       ws.onopen = () => {
         console.log('✅ WebSocket connected');
         setWsConnected(true);
+        reconnectAttemptsRef.current = 0;
         
         // Join tracking room for this order
         ws.send(JSON.stringify({
@@ -315,7 +328,6 @@ export default function CustomerMobileAppEnhanced() {
           console.log('📨 WebSocket message:', message);
 
           if (message.type === 'location_update') {
-            // Update driver location from WebSocket
             setDriverLocation({
               lat: message.data.location.latitude,
               lng: message.data.location.longitude,
@@ -324,7 +336,6 @@ export default function CustomerMobileAppEnhanced() {
               distance: message.data.distance
             });
           } else if (message.type === 'initial_data') {
-            // Set initial driver location when joining
             if (message.data.driverLocation) {
               setDriverLocation({
                 lat: message.data.driverLocation.latitude,
@@ -335,7 +346,6 @@ export default function CustomerMobileAppEnhanced() {
               });
             }
           } else if (message.type === 'status_update') {
-            // Refresh order data when status changes
             queryClient.invalidateQueries({ queryKey: ["/api/customers/orders"] });
             toast({
               title: "Order Status Updated",
@@ -352,23 +362,69 @@ export default function CustomerMobileAppEnhanced() {
         setWsConnected(false);
       };
 
-      ws.onclose = () => {
+      ws.onclose = (event) => {
         console.log('🔌 WebSocket disconnected');
         setWsConnected(false);
+        
+        // Attempt reconnection with exponential backoff
+        if (isActive && reconnectAttemptsRef.current < maxReconnectAttempts) {
+          const delay = baseDelay * Math.pow(2, reconnectAttemptsRef.current);
+          reconnectAttemptsRef.current++;
+          
+          console.log(`🔄 Reconnecting in ${delay}ms... (attempt ${reconnectAttemptsRef.current})`);
+          
+          reconnectTimerRef.current = setTimeout(() => {
+            connectWebSocket();
+          }, delay);
+        } else if (isActive && reconnectAttemptsRef.current >= maxReconnectAttempts) {
+          toast({
+            title: "Connection Lost",
+            description: "Unable to connect to live tracking. Please refresh the page.",
+            variant: "destructive"
+          });
+        }
       };
+    };
 
-      // Cleanup on unmount or view change
-      return () => {
+    // Start initial connection
+    connectWebSocket();
+
+    // Cleanup on unmount or view change
+    return () => {
+      isActive = false;
+      
+      // Clear reconnection timer
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      
+      // Close WebSocket in all states
+      if (wsRef.current) {
+        const ws = wsRef.current;
+        
+        // Send leave message only if connection is open
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({
-            type: 'leave_tracking'
-          }));
+          try {
+            ws.send(JSON.stringify({ type: 'leave_tracking' }));
+          } catch (error) {
+            console.error('Error sending leave_tracking:', error);
+          }
+        }
+        
+        // Close socket regardless of state
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
           ws.close();
         }
+        
         wsRef.current = null;
-        setDriverLocation(null);
-      };
-    }
+      }
+      
+      // Reset state
+      reconnectAttemptsRef.current = 0;
+      setDriverLocation(null);
+      setWsConnected(false);
+    };
   }, [currentView, selectedOrderData?.trackingNumber, queryClient, toast]);
 
   const calculateTotal = () => {
