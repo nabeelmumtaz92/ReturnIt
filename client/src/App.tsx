@@ -45,6 +45,10 @@ const FAQ = lazy(() => import("@/pages/faq"));
 const CustomerMobileApp = lazy(() => import("@/pages/customer-mobile-app"));
 const ReturnItDriverApp = lazy(() => import("@/pages/mobile-driver"));
 const RealTimeTracking = lazy(() => import("@/pages/real-time-tracking"));
+
+// Retailer Portal (lazy-loaded)
+const RetailerDashboard = lazy(() => import("@/pages/retailer-dashboard"));
+const RetailerRegister = lazy(() => import("@/pages/retailer-register"));
 const DriverAnalytics = lazy(() => import("@/pages/driver-analytics"));
 const CustomerRating = lazy(() => import("@/pages/customer-rating"));
 const AdvancedReporting = lazy(() => import("@/pages/advanced-reporting"));
@@ -237,6 +241,33 @@ function Router() {
           return user && isAuthenticated && !user.isDriver && !user.isAdmin ? <CustomerDashboard /> : <NotFound />;
         }}
       </Route>
+
+      {/* Retailer Portal Routes */}
+      <Route path="/retailer/dashboard">
+        {() => {
+          // Retailer dashboard is available to all authenticated users
+          if (!user || !isAuthenticated) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          return <RetailerDashboard />;
+        }}
+      </Route>
+      <Route path="/retailer/register">
+        {() => {
+          // Retailer registration is available to all authenticated users
+          if (!user || !isAuthenticated) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          return <RetailerRegister />;
+        }}
+      </Route>
+
       <Route path="/payment-structure" component={PaymentStructure} />
       <Route path="/admin-payment-tracking">
         {() => {
