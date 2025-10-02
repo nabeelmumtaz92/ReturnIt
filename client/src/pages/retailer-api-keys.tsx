@@ -32,21 +32,22 @@ export default function RetailerAPIKeys() {
   const { toast } = useToast();
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newKeyData, setNewKeyData] = useState<any>(null);
-  const [environment, setEnvironment] = useState("test");
+  const [keyName, setKeyName] = useState("");
   const [permissions, setPermissions] = useState<string[]>(["read"]);
 
   const { data: apiKeys, isLoading } = useQuery({
-    queryKey: ["/api/retailer/api-keys", companyId],
+    queryKey: [`/api/retailer/companies/${companyId}/api-keys`],
     enabled: !!companyId,
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("POST", "/api/retailer/api-keys", data);
+      return await apiRequest("POST", `/api/retailer/companies/${companyId}/api-keys`, data);
     },
     onSuccess: (data) => {
-      setNewKeyData(data);
-      queryClient.invalidateQueries({ queryKey: ["/api/retailer/api-keys", companyId] });
+      setNewKeyData(data.apiKey);
+      setShowCreateDialog(false);
+      queryClient.invalidateQueries({ queryKey: [`/api/retailer/companies/${companyId}/api-keys`] });
       toast({
         title: "API Key Created",
         description: "Your new API key has been generated. Make sure to copy it now!",
@@ -63,10 +64,10 @@ export default function RetailerAPIKeys() {
 
   const revokeMutation = useMutation({
     mutationFn: async (keyId: number) => {
-      return await apiRequest("POST", `/api/retailer/api-keys/${keyId}/revoke`, {});
+      return await apiRequest("DELETE", `/api/retailer/companies/${companyId}/api-keys/${keyId}`, {});
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/retailer/api-keys", companyId] });
+      queryClient.invalidateQueries({ queryKey: [`/api/retailer/companies/${companyId}/api-keys`] });
       toast({
         title: "API Key Revoked",
         description: "The API key has been revoked and can no longer be used.",
@@ -75,10 +76,18 @@ export default function RetailerAPIKeys() {
   });
 
   const handleCreateKey = () => {
+    if (!keyName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a name for the API key",
+        variant: "destructive",
+      });
+      return;
+    }
     createMutation.mutate({
-      companyId: parseInt(companyId!),
-      environment,
-      permissions,
+      name: keyName,
+      scopes: permissions,
+      rateLimit: 1000,
     });
   };
 
@@ -199,8 +208,8 @@ export default function RetailerAPIKeys() {
                         <CardTitle className="text-lg">
                           {key.keyPrefix}••••••••
                         </CardTitle>
-                        <Badge variant={key.environment === 'live' ? 'default' : 'secondary'}>
-                          {key.environment}
+                        <Badge variant={key.keyPrefix.startsWith('ret_live_') ? 'default' : 'secondary'}>
+                          {key.keyPrefix.startsWith('ret_live_') ? 'live' : 'test'}
                         </Badge>
                         <Badge variant={key.isActive ? 'default' : 'destructive'}>
                           {key.isActive ? 'Active' : 'Revoked'}
@@ -283,20 +292,16 @@ export default function RetailerAPIKeys() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="environment">Environment</Label>
-                <Select value={environment} onValueChange={setEnvironment}>
-                  <SelectTrigger id="environment" data-testid="select-environment">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="test">Test (ret_test_...)</SelectItem>
-                    <SelectItem value="live">Live (ret_live_...)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="keyName">API Key Name</Label>
+                <Input
+                  id="keyName"
+                  placeholder="e.g., Production API Key"
+                  value={keyName}
+                  onChange={(e) => setKeyName(e.target.value)}
+                  data-testid="input-key-name"
+                />
                 <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {environment === 'test'
-                    ? 'Use test keys for development and testing'
-                    : 'Use live keys for production only'}
+                  A descriptive name to help you identify this key
                 </p>
               </div>
 
@@ -324,6 +329,14 @@ export default function RetailerAPIKeys() {
                   <p className="text-xs text-red-600">At least one permission is required</p>
                 )}
               </div>
+              
+              <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-900/20">
+                <AlertCircle className="h-4 w-4 text-orange-600" />
+                <AlertDescription className="text-xs text-gray-700 dark:text-gray-300">
+                  API keys are generated as <strong>test keys (ret_test_...)</strong> in development.
+                  In production, keys will use the <strong>ret_live_...</strong> prefix.
+                </AlertDescription>
+              </Alert>
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setShowCreateDialog(false)}>
@@ -331,7 +344,7 @@ export default function RetailerAPIKeys() {
               </Button>
               <Button
                 onClick={handleCreateKey}
-                disabled={permissions.length === 0 || createMutation.isPending}
+                disabled={!keyName.trim() || permissions.length === 0 || createMutation.isPending}
                 data-testid="button-confirm-create-key"
               >
                 {createMutation.isPending ? 'Creating...' : 'Create API Key'}
