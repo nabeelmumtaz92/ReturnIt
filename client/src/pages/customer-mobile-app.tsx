@@ -76,7 +76,6 @@ export default function CustomerMobileAppEnhanced() {
   const [orderToRate, setOrderToRate] = useState<string | null>(null);
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
-  const [chatMessages, setChatMessages] = useState<Array<{sender: string, message: string, time: string}>>([]);
   const [newMessage, setNewMessage] = useState('');
 
   // Booking state with promo code
@@ -345,23 +344,25 @@ Thank you for using ReturnIt!
     });
   };
 
+  // Order Messages Query
+  const { data: orderMessages = [] } = useQuery<any[]>({
+    queryKey: ["/api/orders", selectedOrder, "messages"],
+    enabled: isAuthenticated && currentView === 'chat' && !!selectedOrder,
+    refetchInterval: 5000, // Poll every 5 seconds for new messages
+  });
+
+  // Send Message Mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: (message: string) => apiRequest("POST", `/api/orders/${selectedOrder}/messages`, { message }),
+    onSuccess: () => {
+      setNewMessage('');
+      queryClient.invalidateQueries({ queryKey: ["/api/orders", selectedOrder, "messages"] });
+    },
+  });
+
   const sendMessage = () => {
-    if (!newMessage.trim()) return;
-    setChatMessages([...chatMessages, {
-      sender: 'You',
-      message: newMessage,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    }]);
-    setNewMessage('');
-    
-    // Simulate driver response
-    setTimeout(() => {
-      setChatMessages(prev => [...prev, {
-        sender: 'Driver',
-        message: 'Got it, I\'ll be there soon!',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }]);
-    }, 2000);
+    if (!newMessage.trim() || !selectedOrder) return;
+    sendMessageMutation.mutate(newMessage);
   };
 
   // Payment Methods Dialog
@@ -601,25 +602,28 @@ Thank you for using ReturnIt!
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3 mb-4 border rounded-lg p-4 bg-amber-50/50">
-        {chatMessages.length === 0 ? (
+        {orderMessages.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
             <MessageCircle className="h-12 w-12 mx-auto mb-2 text-amber-400" />
             <p>No messages yet</p>
             <p className="text-sm">Send a message to your driver</p>
           </div>
         ) : (
-          chatMessages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] rounded-lg p-3 ${
-                msg.sender === 'You' ? 'bg-amber-600 text-white' : 'bg-white border'
-              }`}>
-                <p className="text-sm">{msg.message}</p>
-                <p className={`text-xs mt-1 ${msg.sender === 'You' ? 'text-amber-100' : 'text-muted-foreground'}`}>
-                  {msg.time}
-                </p>
+          orderMessages.map((msg) => {
+            const isFromCustomer = msg.sender === 'customer' || msg.sender === 'You';
+            return (
+              <div key={msg.id} className={`flex ${isFromCustomer ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] rounded-lg p-3 ${
+                  isFromCustomer ? 'bg-amber-600 text-white' : 'bg-white border'
+                }`}>
+                  <p className="text-sm">{msg.message}</p>
+                  <p className={`text-xs mt-1 ${isFromCustomer ? 'text-amber-100' : 'text-muted-foreground'}`}>
+                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
