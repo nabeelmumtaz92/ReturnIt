@@ -2622,17 +2622,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Promo code validation
-  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }> {
+  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string; code?: string }> {
     const promo = await this.getPromoCode(code);
     if (!promo) return { valid: false };
     
     const now = new Date();
     const isValid = promo.isActive && 
-                   (!promo.expiresAt || promo.expiresAt > now) &&
-                   (promo.usageLimit === null || promo.usedCount < promo.usageLimit);
+                   (!promo.validUntil || promo.validUntil > now) &&
+                   (promo.maxUses === null || (promo.currentUses || 0) < promo.maxUses);
     
     return {
       valid: isValid,
+      code: isValid ? promo.code : undefined,
       discount: isValid ? promo.discountValue : undefined,
       type: isValid ? promo.discountType : undefined
     };
@@ -3052,15 +3053,22 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string }> {
+  async validatePromoCode(code: string): Promise<{ valid: boolean; discount?: number; type?: string; code?: string }> {
     const [promoCode] = await db.select().from(promoCodes).where(eq(promoCodes.code, code));
     if (!promoCode || !promoCode.isActive) {
       return { valid: false };
     }
+    
+    const now = new Date();
+    const isValid = promoCode.isActive && 
+                   (!promoCode.validUntil || promoCode.validUntil > now) &&
+                   (promoCode.maxUses === null || (promoCode.currentUses || 0) < promoCode.maxUses);
+    
     return {
-      valid: true,
-      discount: promoCode.discountValue,
-      type: promoCode.discountType
+      valid: isValid,
+      code: isValid ? promoCode.code : undefined,
+      discount: isValid ? promoCode.discountValue : undefined,
+      type: isValid ? promoCode.discountType : undefined
     };
   }
 
