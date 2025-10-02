@@ -55,7 +55,7 @@ Preferred communication style: Simple, everyday language.
 ### **Customer Features (28 features)**
 - Account creation & management with multi-address support
 - Social login (Google, Facebook, Apple) and email/password authentication
-- Real-time GPS order tracking with live driver location
+- **Real-time WebSocket GPS tracking** with live driver location, auto-reconnect, and connection status
 - Order history, status updates, and receipt generation
 - Multi-payment methods (cards, Apple Pay, Google Pay, PayPal)
 - Promotional code support and pricing transparency
@@ -195,6 +195,16 @@ Preferred communication style: Simple, everyday language.
 ---
 
 ## Recent Progress (October 2025)
+
+### **WebSocket GPS Tracking - Customer Mobile App (October 2, 2025)**
+- ✅ **Real-time Location Updates**: WebSocket integration connects to `ws://localhost:5000/ws/tracking` for live driver GPS tracking
+- ✅ **Auto-Reconnection**: Exponential backoff reconnection strategy (1s → 16s) with max 5 attempts
+- ✅ **Connection Status UI**: Live connection badge (🟢 Live / ⚫ Offline) with real-time ETA, distance, and timestamp display
+- ✅ **Robust Cleanup**: Proper WebSocket cleanup handling all socket states (OPEN, CONNECTING, CLOSING)
+- ✅ **User Feedback**: Toast notifications when connection fails after max retry attempts
+- ✅ **Message Handling**: Processes location_update, initial_data, and status_update events
+- ✅ **Database Fix**: Added missing `receipt_url` column to orders table
+- **Architect-Approved**: Production-ready implementation with comprehensive error handling
 
 ### **Tier 3 Implementation - Retailer Developer Portal**
 - ✅ **API Keys Management UI**: Complete interface for viewing, creating, and revoking API keys with permission controls, usage tracking, and secure one-time key display
