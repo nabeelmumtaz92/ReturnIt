@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
@@ -10,33 +10,18 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Package, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
-  Star, 
-  Phone, 
-  User, 
-  Home,
-  Plus,
-  Search,
-  Bell,
-  Settings,
-  Camera,
-  MessageCircle,
-  CreditCard,
-  ArrowLeft,
-  CheckCircle,
-  Truck,
-  Navigation,
-  HeadphonesIcon,
-  LogOut
+  Package, MapPin, Clock, DollarSign, Star, Phone, User, Home, Plus, Search,
+  Bell, Settings, Camera, MessageCircle, CreditCard, ArrowLeft, CheckCircle,
+  Truck, Navigation, LogOut, Download, X, Send, ImageIcon, Tag, XCircle, Edit, Trash2
 } from 'lucide-react';
-import { Link, useLocation } from 'wouter';
+import { Link } from 'wouter';
 
-type MobileView = 'home' | 'book' | 'orders' | 'order-detail' | 'profile' | 'help';
+type MobileView = 'home' | 'book' | 'orders' | 'order-detail' | 'profile' | 'help' | 'track-live' | 'chat' | 'photo-view';
 
 interface CustomerOrder {
   id: string;
@@ -51,25 +36,92 @@ interface CustomerOrder {
   driverName?: string;
   driverPhone?: string;
   driverRating?: number;
+  packagePhoto?: string;
+  promoCode?: string;
+  discount?: number;
 }
 
-export default function CustomerMobileApp() {
+interface PaymentMethod {
+  id: string;
+  type: 'card' | 'paypal' | 'apple_pay' | 'google_pay';
+  last4?: string;
+  expiryDate?: string;
+  isDefault: boolean;
+}
+
+interface SavedAddress {
+  id: string;
+  label: string;
+  address: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  isDefault: boolean;
+}
+
+export default function CustomerMobileAppEnhanced() {
   const [currentView, setCurrentView] = useState<MobileView>('home');
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const { user, isAuthenticated, logout } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [, setLocation] = useLocation();
 
-  // Show login screen if not authenticated
+  // Modal states
+  const [showPaymentMethods, setShowPaymentMethods] = useState(false);
+  const [showAddresses, setShowAddresses] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState<string | null>(null);
+  const [orderToRate, setOrderToRate] = useState<string | null>(null);
+  const [rating, setRating] = useState(0);
+  const [feedback, setFeedback] = useState('');
+  const [chatMessages, setChatMessages] = useState<Array<{sender: string, message: string, time: string}>>([]);
+  const [newMessage, setNewMessage] = useState('');
+
+  // Booking state with promo code
+  const [bookingStep, setBookingStep] = useState<'details' | 'schedule' | 'payment' | 'confirmation'>('details');
+  const [bookingData, setBookingData] = useState({
+    retailer: '',
+    pickupAddress: '',
+    dropoffLocation: 'UPS Store',
+    estimatedValue: '',
+    pickupDate: '',
+    pickupTime: '',
+    specialInstructions: '',
+    paymentMethod: 'card',
+    promoCode: '',
+    discount: 0
+  });
+
+  // Mock data for demo
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+    { id: '1', type: 'card', last4: '4242', expiryDate: '12/25', isDefault: true },
+    { id: '2', type: 'paypal', isDefault: false }
+  ]);
+
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([
+    { id: '1', label: 'Home', address: '123 Main St', city: 'St. Louis', state: 'MO', zipCode: '63101', isDefault: true },
+    { id: '2', label: 'Work', address: '456 Business Ave', city: 'St. Louis', state: 'MO', zipCode: '63102', isDefault: false }
+  ]);
+
+  const [notificationSettings, setNotificationSettings] = useState({
+    orderUpdates: true,
+    driverMessages: true,
+    promotions: false,
+    push: true,
+    sms: true,
+    email: true
+  });
+
   if (!isAuthenticated) {
     return <MobileLogin onLogin={() => {}} isDriver={false} />;
   }
 
-  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery<CustomerOrder[]>({
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<CustomerOrder[]>({
     queryKey: ["/api/customers/orders"],
     enabled: isAuthenticated,
-    refetchInterval: 30000, // Auto-refresh every 30 seconds
+    refetchInterval: 30000,
     retry: 3
   });
 
@@ -77,263 +129,9 @@ export default function CustomerMobileApp() {
     ['pending', 'assigned', 'picked_up'].includes(order.status)
   );
 
-  const recentOrders = orders.filter(order => 
-    ['completed', 'cancelled'].includes(order.status)
-  ).slice(0, 5);
+  const selectedOrderData = orders.find(order => order.id === selectedOrder);
 
-
-
-  const renderHome = () => (
-    <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="text-center">
-        <div className="flex items-center justify-center mb-4">
-          <ReturnItIcon size={48} className="text-[#A47C48]" />
-        </div>
-        <h1 className="text-2xl font-bold text-[#A47C48] mb-2">
-          Hello, {user?.firstName || 'Customer'}!
-        </h1>
-        <p className="text-[#7B5E3B]">Ready to return something?</p>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-4 w-full">
-        <Button 
-          onClick={() => setCurrentView('book')}
-          className="h-20 bg-[#A47C48] hover:bg-[#8B5A2B] flex flex-col items-center gap-2 text-white"
-          data-testid="button-book-pickup"
-        >
-          <Plus className="h-6 w-6" />
-          <span>Book Pickup</span>
-        </Button>
-        <Button 
-          onClick={() => setCurrentView('orders')}
-          variant="outline"
-          className="h-20 border-[#A47C48] text-[#A47C48] hover:bg-[#F5F0E6] flex flex-col items-center gap-2"
-          data-testid="button-my-orders"
-        >
-          <Package className="h-6 w-6" />
-          <span>My Orders</span>
-        </Button>
-      </div>
-
-      {/* How It Works - Always visible */}
-      <div>
-        <h2 className="text-lg font-semibold text-[#A47C48] mb-3">How It Works</h2>
-        <div className="grid grid-cols-1 gap-3">
-          <Card className="border-[#A47C48]/20">
-            <CardContent className="p-4 flex items-start gap-3">
-              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
-                1
-              </div>
-              <div>
-                <h3 className="font-medium text-[#A47C48] mb-1">Book Your Pickup</h3>
-                <p className="text-sm text-[#7B5E3B]">Schedule a pickup for your returns with just a few taps</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-[#A47C48]/20">
-            <CardContent className="p-4 flex items-start gap-3">
-              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
-                2
-              </div>
-              <div>
-                <h3 className="font-medium text-[#A47C48] mb-1">Package & Wait</h3>
-                <p className="text-sm text-[#7B5E3B]">Package your items and wait for our driver to arrive</p>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-[#A47C48]/20">
-            <CardContent className="p-4 flex items-start gap-3">
-              <div className="w-8 h-8 bg-[#A47C48] text-white rounded-full flex items-center justify-center font-bold text-sm">
-                3
-              </div>
-              <div>
-                <h3 className="font-medium text-[#A47C48] mb-1">We Handle the Rest</h3>
-                <p className="text-sm text-[#7B5E3B]">Our driver takes care of returning your items to the store</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Popular Retailers */}
-      <div>
-        <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Popular Retailers</h2>
-        <Card className="border-[#A47C48]/20">
-          <CardContent className="p-4">
-            <p className="text-sm text-[#7B5E3B] mb-3">We handle returns for all major retailers:</p>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Amazon</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Target</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Best Buy</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Walmart</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>Home Depot</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-600" />
-                <span>+ Many More</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Active Orders */}
-      {activeOrders.length > 0 && (
-        <div>
-          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Active Orders</h2>
-          <div className="space-y-3">
-            {activeOrders.map(order => (
-              <Card 
-                key={order.id} 
-                className="cursor-pointer hover:shadow-md transition-shadow border-amber-200"
-                onClick={() => {
-                  setSelectedOrder(order.id);
-                  setCurrentView('order-detail');
-                }}
-                data-testid={`order-card-${order.id}`}
-              >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium text-amber-900">{order.retailer}</p>
-                      <p className="text-sm text-amber-600">#{order.trackingNumber}</p>
-                    </div>
-                    <Badge 
-                      variant={order.status === 'picked_up' ? 'default' : 'secondary'}
-                      className={order.status === 'picked_up' ? 'bg-green-100 text-green-800' : ''}
-                    >
-                      {order.status.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-amber-700">
-                    <MapPin className="h-4 w-4" />
-                    <span className="truncate">{order.pickupAddress}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Service Info - Always visible when no recent orders */}
-      {recentOrders.length === 0 && (
-        <div>
-          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Service Information</h2>
-          <div className="space-y-3">
-            <Card className="border-[#A47C48]/20 bg-blue-50">
-              <CardContent className="p-4 flex items-start gap-3">
-                <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-blue-900 mb-1">Same-Day Pickup Available</h3>
-                  <p className="text-sm text-blue-700">Book before 2 PM for same-day pickup service</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-[#A47C48]/20 bg-green-50">
-              <CardContent className="p-4 flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-green-600 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-green-900 mb-1">Serving St. Louis Area</h3>
-                  <p className="text-sm text-green-700">Available throughout St. Louis City and County</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="border-[#A47C48]/20 bg-amber-50">
-              <CardContent className="p-4 flex items-start gap-3">
-                <DollarSign className="h-5 w-5 text-amber-600 mt-0.5" />
-                <div>
-                  <h3 className="font-medium text-amber-900 mb-1">Starting at $3.99</h3>
-                  <p className="text-sm text-amber-700">Base fee plus size-based upcharges</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Recent Orders */}
-      {recentOrders.length > 0 && (
-        <div>
-          <h2 className="text-lg font-semibold text-[#A47C48] mb-3">Recent Orders</h2>
-          <div className="space-y-3">
-            {recentOrders.slice(0, 3).map(order => (
-              <Card 
-                key={order.id} 
-                className="cursor-pointer hover:shadow-md transition-shadow border-amber-200"
-                onClick={() => {
-                  setSelectedOrder(order.id);
-                  setCurrentView('order-detail');
-                }}
-                data-testid={`recent-order-${order.id}`}
-              >
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium text-amber-900">{order.retailer}</p>
-                      <p className="text-sm text-amber-600">#{order.trackingNumber}</p>
-                    </div>
-                    <div className="text-right">
-                      <Badge 
-                        variant={order.status === 'completed' ? 'default' : 'destructive'}
-                        className={order.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
-                      >
-                        {order.status}
-                      </Badge>
-                      <p className="text-sm text-amber-700">${order.amount.toFixed(2)}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-          {recentOrders.length > 3 && (
-            <Button 
-              variant="ghost" 
-              onClick={() => setCurrentView('orders')}
-              className="w-full text-[#A47C48] hover:bg-[#F5F0E6]"
-            >
-              View All Orders
-            </Button>
-          )}
-        </div>
-      )}
-    </div>
-  );
-
-  const [bookingStep, setBookingStep] = useState<'details' | 'items' | 'schedule' | 'payment' | 'confirmation'>('details');
-  const [bookingData, setBookingData] = useState({
-    retailer: '',
-    pickupAddress: '',
-    dropoffLocation: 'UPS Store',
-    itemCount: 1,
-    estimatedValue: '',
-    pickupDate: '',
-    pickupTime: '',
-    specialInstructions: '',
-    paymentMethod: 'card'
-  });
-
+  // Mutations
   const bookPickupMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/orders", data),
     onSuccess: (newOrder: any) => {
@@ -348,356 +146,453 @@ export default function CustomerMobileApp() {
         retailer: '',
         pickupAddress: '',
         dropoffLocation: 'UPS Store',
-        itemCount: 1,
         estimatedValue: '',
         pickupDate: '',
         pickupTime: '',
         specialInstructions: '',
-        paymentMethod: 'card'
+        paymentMethod: 'card',
+        promoCode: '',
+        discount: 0
       });
     },
     onError: (error: any) => {
-      console.error('Booking error:', error);
       toast({
         title: "Booking Failed",
-        description: error.message || "Unable to book pickup. Please try again.",
+        description: error.message || "Unable to book pickup",
         variant: "destructive",
       });
     },
   });
 
-  const handleBookingSubmit = () => {
-    // Calculate pricing (same logic as website)
-    const estimatedValue = parseFloat(bookingData.estimatedValue) || 0;
-    let itemSize = 'Small';
-    let itemSizeMultiplier = 1.0;
+  const cancelOrderMutation = useMutation({
+    mutationFn: (orderId: string) => apiRequest("POST", `/api/orders/${orderId}/cancel`, {}),
+    onSuccess: () => {
+      toast({
+        title: "Order Cancelled",
+        description: "Your pickup has been cancelled successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/orders"] });
+      setShowCancelDialog(false);
+      setOrderToCancel(null);
+    },
+  });
 
-    if (estimatedValue >= 300) {
-      itemSize = 'Extra Large';
-      itemSizeMultiplier = 2.0;
-    } else if (estimatedValue >= 100) {
-      itemSize = 'Large';
-      itemSizeMultiplier = 1.75;
-    } else if (estimatedValue >= 25) {
-      itemSize = 'Medium';
-      itemSizeMultiplier = 1.25;
-    }
+  const rateOrderMutation = useMutation({
+    mutationFn: (data: { orderId: string; rating: number; feedback: string }) => 
+      apiRequest("POST", `/api/orders/${data.orderId}/rate`, { rating: data.rating, feedback: data.feedback }),
+    onSuccess: () => {
+      toast({
+        title: "Thank you for your feedback!",
+        description: "Your rating has been submitted",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/orders"] });
+      setShowRatingDialog(false);
+      setOrderToRate(null);
+      setRating(0);
+      setFeedback('');
+    },
+  });
+
+  const applyPromoCodeMutation = useMutation({
+    mutationFn: (code: string) => apiRequest("POST", "/api/promo/validate", { code }),
+    onSuccess: (data: any) => {
+      if (data.valid) {
+        setBookingData({
+          ...bookingData,
+          promoCode: data.code,
+          discount: data.discount || 0
+        });
+        toast({
+          title: "Promo Code Applied!",
+          description: `You saved $${data.discount?.toFixed(2) || '0.00'}`,
+        });
+      } else {
+        toast({
+          title: "Invalid Promo Code",
+          variant: "destructive",
+        });
+      }
+    },
+  });
+
+  const calculateTotal = () => {
+    const estimatedValue = parseFloat(bookingData.estimatedValue) || 0;
+    let itemSizeMultiplier = 1.0;
+    if (estimatedValue >= 300) itemSizeMultiplier = 2.0;
+    else if (estimatedValue >= 100) itemSizeMultiplier = 1.75;
+    else if (estimatedValue >= 25) itemSizeMultiplier = 1.25;
 
     const baseAmount = 3.99;
     const sizeAmount = baseAmount * itemSizeMultiplier;
-    const totalAmount = parseFloat(sizeAmount.toFixed(2));
+    const subtotal = parseFloat(sizeAmount.toFixed(2));
+    const total = subtotal - bookingData.discount;
+    return { subtotal, total };
+  };
+
+  const handleBookingSubmit = () => {
+    const { total } = calculateTotal();
+    const estimatedValue = parseFloat(bookingData.estimatedValue) || 0;
+    let itemSize = 'Small';
+    if (estimatedValue >= 300) itemSize = 'Extra Large';
+    else if (estimatedValue >= 100) itemSize = 'Large';
+    else if (estimatedValue >= 25) itemSize = 'Medium';
 
     bookPickupMutation.mutate({
       ...bookingData,
       estimatedValue,
       itemSize,
-      amount: totalAmount,
-      driverEarning: Math.round(totalAmount * 0.7 * 100) / 100,
+      amount: total,
+      driverEarning: Math.round(total * 0.7 * 100) / 100,
       serviceFee: 3.99,
       status: 'pending'
     });
   };
 
-  const renderBookingStep = () => {
-    switch (bookingStep) {
-      case 'details':
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label className="text-amber-800">Store/Retailer</Label>
-              <Input
-                value={bookingData.retailer}
-                onChange={(e) => setBookingData({...bookingData, retailer: e.target.value})}
-                placeholder="e.g., Amazon, Target, Best Buy"
-                className="border-amber-300"
-              />
-            </div>
-            <div>
-              <Label className="text-amber-800">Pickup Address</Label>
-              <Input
-                value={bookingData.pickupAddress}
-                onChange={(e) => setBookingData({...bookingData, pickupAddress: e.target.value})}
-                placeholder="123 Main St, City, State 12345"
-                className="border-amber-300"
-              />
-            </div>
-            <div>
-              <Label className="text-amber-800">Estimated Item Value</Label>
-              <Input
-                type="number"
-                value={bookingData.estimatedValue}
-                onChange={(e) => setBookingData({...bookingData, estimatedValue: e.target.value})}
-                placeholder="0.00"
-                className="border-amber-300"
-              />
-              <p className="text-xs text-amber-600 mt-1">
-                Helps us determine pickup fee and insurance
-              </p>
-            </div>
-            <Button 
-              onClick={() => setBookingStep('schedule')}
-              disabled={!bookingData.retailer || !bookingData.pickupAddress}
-              className="w-full bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
-            >
-              Continue to Scheduling
-            </Button>
-          </div>
-        );
+  const downloadReceipt = (order: CustomerOrder) => {
+    const receiptData = `
+RETURNIT RECEIPT
+================
+Order #${order.trackingNumber}
+Date: ${new Date(order.createdAt).toLocaleString()}
 
-      case 'schedule':
-        return (
-          <div className="space-y-4">
-            <div>
-              <Label className="text-amber-800">Pickup Date</Label>
-              <Input
-                type="date"
-                value={bookingData.pickupDate}
-                onChange={(e) => setBookingData({...bookingData, pickupDate: e.target.value})}
-                min={new Date().toISOString().split('T')[0]}
-                className="border-amber-300"
-              />
-            </div>
-            <div>
-              <Label className="text-amber-800">Preferred Time</Label>
-              <select 
-                value={bookingData.pickupTime}
-                onChange={(e) => setBookingData({...bookingData, pickupTime: e.target.value})}
-                className="w-full p-2 border border-amber-300 rounded-md"
-              >
-                <option value="">Select time</option>
-                <option value="morning">Morning (9 AM - 12 PM)</option>
-                <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
-                <option value="evening">Evening (5 PM - 8 PM)</option>
-              </select>
-            </div>
-            <div>
-              <Label className="text-amber-800">Special Instructions (Optional)</Label>
-              <textarea
-                value={bookingData.specialInstructions}
-                onChange={(e) => setBookingData({...bookingData, specialInstructions: e.target.value})}
-                placeholder="Building access, parking info, etc."
-                className="w-full p-2 border border-amber-300 rounded-md h-20 resize-none"
-              />
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline"
-                onClick={() => setBookingStep('details')}
-                className="flex-1 border-amber-300"
-              >
-                Back
-              </Button>
-              <Button 
-                onClick={() => setBookingStep('payment')}
-                disabled={!bookingData.pickupDate || !bookingData.pickupTime}
-                className="flex-1 bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
-              >
-                Continue to Payment
-              </Button>
-            </div>
-          </div>
-        );
+Retailer: ${order.retailer}
+Pickup: ${order.pickupAddress}
+Dropoff: ${order.dropoffLocation}
 
-      case 'payment':
-        const estimatedValue = parseFloat(bookingData.estimatedValue) || 0;
-        let itemSize = 'Small';
-        let itemSizeMultiplier = 1.0;
+Amount: $${order.amount.toFixed(2)}
+${order.promoCode ? `Promo: ${order.promoCode} (-$${order.discount?.toFixed(2) || '0.00'})` : ''}
 
-        if (estimatedValue >= 300) {
-          itemSize = 'Extra Large';
-          itemSizeMultiplier = 2.0;
-        } else if (estimatedValue >= 100) {
-          itemSize = 'Large';
-          itemSizeMultiplier = 1.75;
-        } else if (estimatedValue >= 25) {
-          itemSize = 'Medium';
-          itemSizeMultiplier = 1.25;
-        }
+Status: ${order.status}
+Driver: ${order.driverName || 'TBD'}
 
-        const baseAmount = 3.99;
-        const sizeAmount = baseAmount * itemSizeMultiplier;
-        const totalAmount = parseFloat(sizeAmount.toFixed(2));
+Thank you for using ReturnIt!
+================
+    `.trim();
 
-        return (
-          <div className="space-y-4">
-            <Card className="border-[#A47C48]/30 bg-[#F5F0E6]">
-              <CardContent className="p-4">
-                <h3 className="font-semibold text-[#A47C48] mb-3">Order Summary</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-amber-700">Base Service Fee</span>
-                    <span className="text-amber-900">$3.99</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-amber-700">Item Size ({itemSize})</span>
-                    <span className="text-amber-900">{itemSizeMultiplier}x</span>
-                  </div>
-                  <Separator className="bg-amber-200" />
-                  <div className="flex justify-between font-semibold">
-                    <span className="text-amber-900">Total</span>
-                    <span className="text-amber-900">${totalAmount.toFixed(2)}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+    const blob = new Blob([receiptData], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `receipt-${order.trackingNumber}.txt`;
+    a.click();
+    window.URL.revokeObjectURL(url);
 
-            <div>
-              <Label className="text-amber-800">Payment Method</Label>
-              <select 
-                value={bookingData.paymentMethod}
-                onChange={(e) => setBookingData({...bookingData, paymentMethod: e.target.value})}
-                className="w-full p-2 border border-amber-300 rounded-md"
-              >
-                <option value="card">Credit/Debit Card</option>
-                <option value="paypal">PayPal</option>
-                <option value="apple_pay">Apple Pay</option>
-                <option value="google_pay">Google Pay</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <Button 
-                variant="outline"
-                onClick={() => setBookingStep('schedule')}
-                className="flex-1 border-amber-300"
-              >
-                Back
-              </Button>
-              <Button 
-                onClick={handleBookingSubmit}
-                disabled={bookPickupMutation.isPending}
-                className="flex-1 bg-[#A47C48] hover:bg-[#8B5A2B] text-white"
-              >
-                {bookPickupMutation.isPending ? 'Booking...' : `Book Pickup - $${totalAmount.toFixed(2)}`}
-              </Button>
-            </div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+    toast({
+      title: "Receipt Downloaded",
+      description: "Your receipt has been downloaded",
+    });
   };
 
-  const renderBooking = () => (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => {
-            if (bookingStep === 'details') {
-              setCurrentView('home');
-            } else {
-              setBookingStep('details');
-            }
-          }}
-          className="p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-xl font-bold text-amber-900">Book Pickup</h1>
-      </div>
+  const sendMessage = () => {
+    if (!newMessage.trim()) return;
+    setChatMessages([...chatMessages, {
+      sender: 'You',
+      message: newMessage,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }]);
+    setNewMessage('');
+    
+    // Simulate driver response
+    setTimeout(() => {
+      setChatMessages(prev => [...prev, {
+        sender: 'Driver',
+        message: 'Got it, I\'ll be there soon!',
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+    }, 2000);
+  };
 
-      {/* Progress Indicator */}
-      <div className="flex items-center gap-2 mb-6">
-        <div className={`w-3 h-3 rounded-full ${bookingStep === 'details' ? 'bg-amber-600' : 'bg-amber-200'}`} />
-        <div className="flex-1 h-px bg-amber-200" />
-        <div className={`w-3 h-3 rounded-full ${bookingStep === 'schedule' ? 'bg-amber-600' : 'bg-amber-200'}`} />
-        <div className="flex-1 h-px bg-amber-200" />
-        <div className={`w-3 h-3 rounded-full ${bookingStep === 'payment' ? 'bg-amber-600' : 'bg-amber-200'}`} />
-      </div>
-
-      <Card className="border-amber-200">
-        <CardContent className="p-6">
-          {renderBookingStep()}
-        </CardContent>
-      </Card>
-    </div>
+  // Payment Methods Dialog
+  const renderPaymentMethodsDialog = () => (
+    <Dialog open={showPaymentMethods} onOpenChange={setShowPaymentMethods}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Payment Methods</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          {paymentMethods.map((method) => (
+            <Card key={method.id} className="border-amber-200">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <CreditCard className="h-5 w-5 text-amber-600" />
+                  <div>
+                    <p className="font-medium">
+                      {method.type === 'card' ? `Card ending in ${method.last4}` : 
+                       method.type === 'paypal' ? 'PayPal' :
+                       method.type === 'apple_pay' ? 'Apple Pay' : 'Google Pay'}
+                    </p>
+                    {method.expiryDate && (
+                      <p className="text-sm text-muted-foreground">Expires {method.expiryDate}</p>
+                    )}
+                    {method.isDefault && (
+                      <Badge variant="secondary" className="mt-1">Default</Badge>
+                    )}
+                  </div>
+                </div>
+                <Button variant="ghost" size="sm">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+          <Button className="w-full" variant="outline">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Payment Method
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 
-  const renderOrders = () => (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => setCurrentView('home')}
-          className="p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-xl font-bold text-amber-900">My Orders</h1>
-      </div>
-
-      {ordersLoading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full mx-auto" />
-        </div>
-      ) : orders.length === 0 ? (
-        <Card className="border-amber-200">
-          <CardContent className="p-8 text-center">
-            <Package className="h-12 w-12 text-amber-400 mx-auto mb-4" />
-            <h2 className="text-lg font-semibold text-amber-900 mb-2">No Orders Yet</h2>
-            <p className="text-amber-700 mb-4">Book your first pickup to get started!</p>
-            <Button 
-              onClick={() => setCurrentView('book')}
-              className="bg-amber-600 hover:bg-amber-700"
-            >
-              Book First Pickup
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {orders.map(order => (
-            <Card 
-              key={order.id} 
-              className="cursor-pointer hover:shadow-md transition-shadow border-amber-200"
-              onClick={() => {
-                setSelectedOrder(order.id);
-                setCurrentView('order-detail');
-              }}
-              data-testid={`order-list-${order.id}`}
-            >
+  // Saved Addresses Dialog
+  const renderAddressesDialog = () => (
+    <Dialog open={showAddresses} onOpenChange={setShowAddresses}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Saved Addresses</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-3">
+          {savedAddresses.map((addr) => (
+            <Card key={addr.id} className="border-amber-200">
               <CardContent className="p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <p className="font-medium text-amber-900">{order.retailer}</p>
-                    <p className="text-sm text-amber-600">#{order.trackingNumber}</p>
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium">{addr.label}</p>
+                      {addr.isDefault && (
+                        <Badge variant="secondary" className="text-xs">Default</Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {addr.address}<br/>
+                      {addr.city}, {addr.state} {addr.zipCode}
+                    </p>
                   </div>
-                  <Badge 
-                    variant={order.status === 'completed' ? 'default' : 
-                             order.status === 'cancelled' ? 'destructive' : 'secondary'}
-                    className={order.status === 'completed' ? 'bg-green-100 text-green-800' : ''}
-                  >
-                    {order.status.replace('_', ' ')}
-                  </Badge>
-                </div>
-                <div className="space-y-1 text-sm text-amber-700">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span className="truncate">{order.pickupAddress}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="h-4 w-4" />
-                    <span>${order.amount.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
-                    <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+                  <div className="flex gap-1">
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
             </Card>
           ))}
+          <Button className="w-full" variant="outline">
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Address
+          </Button>
         </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // Notifications Dialog
+  const renderNotificationsDialog = () => (
+    <Dialog open={showNotifications} onOpenChange={setShowNotifications}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Notification Settings</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          {[
+            { key: 'orderUpdates', label: 'Order Updates', desc: 'Get notified about order status changes' },
+            { key: 'driverMessages', label: 'Driver Messages', desc: 'Receive messages from your driver' },
+            { key: 'promotions', label: 'Promotions & Offers', desc: 'Special deals and promo codes' },
+            { key: 'push', label: 'Push Notifications', desc: 'Mobile push notifications' },
+            { key: 'sms', label: 'SMS Alerts', desc: 'Text message notifications' },
+            { key: 'email', label: 'Email Notifications', desc: 'Email updates' },
+          ].map(({ key, label, desc }) => (
+            <div key={key} className="flex items-center justify-between p-3 rounded-lg border">
+              <div className="flex-1">
+                <p className="font-medium">{label}</p>
+                <p className="text-sm text-muted-foreground">{desc}</p>
+              </div>
+              <Button
+                variant={notificationSettings[key as keyof typeof notificationSettings] ? "default" : "outline"}
+                size="sm"
+                onClick={() => setNotificationSettings({
+                  ...notificationSettings,
+                  [key]: !notificationSettings[key as keyof typeof notificationSettings]
+                })}
+              >
+                {notificationSettings[key as keyof typeof notificationSettings] ? 'On' : 'Off'}
+              </Button>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
+  // Live Tracking View
+  const renderLiveTracking = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 mb-6">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setCurrentView('order-detail')}
+          className="p-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-bold text-amber-900">Live Tracking</h1>
+      </div>
+
+      <Card className="border-amber-200">
+        <CardContent className="p-0">
+          <div className="aspect-video bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center relative">
+            <MapPin className="h-16 w-16 text-amber-600" />
+            <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg">
+              <p className="text-sm font-medium">Driver is 5 min away</p>
+              <p className="text-xs text-muted-foreground">Moving towards pickup location</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {selectedOrderData?.driverName && (
+        <Card className="border-amber-200">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                  <User className="h-6 w-6 text-amber-600" />
+                </div>
+                <div>
+                  <p className="font-medium">{selectedOrderData.driverName}</p>
+                  <div className="flex items-center gap-1">
+                    <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <span className="text-sm">{selectedOrderData.driverRating || 4.9}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => setCurrentView('chat')}
+                  data-testid="button-message-driver"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                </Button>
+                <Button 
+                  size="sm"
+                  onClick={() => window.location.href = `tel:${selectedOrderData.driverPhone}`}
+                  data-testid="button-call-driver"
+                >
+                  <Phone className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
 
-  const selectedOrderData = orders.find(order => order.id === selectedOrder);
+  // Chat View
+  const renderChat = () => (
+    <div className="flex flex-col h-[calc(100vh-200px)]">
+      <div className="flex items-center gap-3 mb-4">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setCurrentView('track-live')}
+          className="p-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-bold text-amber-900">Chat with Driver</h1>
+      </div>
 
+      <div className="flex-1 overflow-y-auto space-y-3 mb-4 border rounded-lg p-4 bg-amber-50/50">
+        {chatMessages.length === 0 ? (
+          <div className="text-center text-muted-foreground py-8">
+            <MessageCircle className="h-12 w-12 mx-auto mb-2 text-amber-400" />
+            <p>No messages yet</p>
+            <p className="text-sm">Send a message to your driver</p>
+          </div>
+        ) : (
+          chatMessages.map((msg, idx) => (
+            <div key={idx} className={`flex ${msg.sender === 'You' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-lg p-3 ${
+                msg.sender === 'You' ? 'bg-amber-600 text-white' : 'bg-white border'
+              }`}>
+                <p className="text-sm">{msg.message}</p>
+                <p className={`text-xs mt-1 ${msg.sender === 'You' ? 'text-amber-100' : 'text-muted-foreground'}`}>
+                  {msg.time}
+                </p>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <Input
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Type a message..."
+          className="flex-1"
+          data-testid="input-chat-message"
+        />
+        <Button onClick={sendMessage} data-testid="button-send-message">
+          <Send className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+
+  // Photo View
+  const renderPhotoView = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 mb-6">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={() => setCurrentView('order-detail')}
+          className="p-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-bold text-amber-900">Package Photo</h1>
+      </div>
+
+      <Card className="border-amber-200">
+        <CardContent className="p-0">
+          <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+            {selectedOrderData?.packagePhoto ? (
+              <img 
+                src={selectedOrderData.packagePhoto} 
+                alt="Package" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-center">
+                <ImageIcon className="h-16 w-16 text-gray-400 mx-auto mb-2" />
+                <p className="text-muted-foreground">No photo available</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-amber-200">
+        <CardContent className="p-4">
+          <p className="text-sm text-muted-foreground">
+            This photo was taken by your driver as proof of pickup. All photos are encrypted and stored securely.
+          </p>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  // Enhanced Order Detail
   const renderOrderDetail = () => {
     if (!selectedOrderData) {
       setCurrentView('orders');
@@ -762,96 +657,395 @@ export default function CustomerMobileApp() {
                 <div className="flex items-center justify-between mt-1">
                   <div>
                     <p className="text-amber-700">{selectedOrderData.driverName}</p>
-                    {selectedOrderData.driverRating && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="text-sm text-amber-600">{selectedOrderData.driverRating.toFixed(1)}</span>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-1">
+                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm text-amber-600">{selectedOrderData.driverRating || 4.9}</span>
+                    </div>
                   </div>
-                  {selectedOrderData.driverPhone && (
-                    <Button size="sm" variant="outline" className="border-amber-300">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call
-                    </Button>
-                  )}
                 </div>
-              </div>
-            )}
-
-            {selectedOrderData.estimatedDelivery && (
-              <div>
-                <Label className="text-amber-800 font-medium">Estimated Delivery</Label>
-                <p className="text-amber-700">{selectedOrderData.estimatedDelivery}</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          {['pending', 'assigned', 'picked_up'].includes(selectedOrderData.status) && (
-            <Link href={`/order-status?tracking=${selectedOrderData.trackingNumber}`}>
-              <Button className="w-full bg-amber-600 hover:bg-amber-700" data-testid="button-track-order">
-                <Navigation className="h-4 w-4 mr-2" />
-                Track Live
-              </Button>
-            </Link>
+        <div className="grid grid-cols-2 gap-3">
+          {['assigned', 'picked_up'].includes(selectedOrderData.status) && (
+            <Button
+              onClick={() => setCurrentView('track-live')}
+              className="bg-amber-600 hover:bg-amber-700"
+              data-testid="button-track-live"
+            >
+              <Navigation className="h-4 w-4 mr-2" />
+              Track Live
+            </Button>
           )}
           
-          <Button 
-            variant="outline" 
-            className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
-            data-testid="button-contact-support"
-          >
-            <MessageCircle className="h-4 w-4 mr-2" />
-            Contact Support
-          </Button>
+          {selectedOrderData.packagePhoto && (
+            <Button
+              variant="outline"
+              onClick={() => setCurrentView('photo-view')}
+              className="border-amber-300"
+              data-testid="button-view-photo"
+            >
+              <Camera className="h-4 w-4 mr-2" />
+              View Photo
+            </Button>
+          )}
+
+          {selectedOrderData.status === 'completed' && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => downloadReceipt(selectedOrderData)}
+                className="border-amber-300"
+                data-testid="button-download-receipt"
+              >
+                <Download className="h-4 w-4 mr-2" />
+                Receipt
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setOrderToRate(selectedOrderData.id);
+                  setShowRatingDialog(true);
+                }}
+                className="border-amber-300"
+                data-testid="button-rate-driver"
+              >
+                <Star className="h-4 w-4 mr-2" />
+                Rate Driver
+              </Button>
+            </>
+          )}
+
+          {['pending', 'assigned'].includes(selectedOrderData.status) && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                setOrderToCancel(selectedOrderData.id);
+                setShowCancelDialog(true);
+              }}
+              className="border-red-300 text-red-700 hover:bg-red-50 col-span-2"
+              data-testid="button-cancel-order"
+            >
+              <XCircle className="h-4 w-4 mr-2" />
+              Cancel Order
+            </Button>
+          )}
         </div>
       </div>
     );
   };
 
-  const renderProfile = () => (
+  // Booking with Promo Code
+  const renderBooking = () => (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <Button 
           variant="ghost" 
           size="sm" 
-          onClick={() => setCurrentView('home')}
+          onClick={() => {
+            if (bookingStep === 'details') {
+              setCurrentView('home');
+            } else if (bookingStep === 'schedule') {
+              setBookingStep('details');
+            } else if (bookingStep === 'payment') {
+              setBookingStep('schedule');
+            }
+          }}
           className="p-2"
         >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-bold text-amber-900">Book Pickup</h1>
+      </div>
+
+      {bookingStep === 'details' && (
+        <div className="space-y-4">
+          <div>
+            <Label>Store/Retailer</Label>
+            <Input
+              value={bookingData.retailer}
+              onChange={(e) => setBookingData({...bookingData, retailer: e.target.value})}
+              placeholder="e.g., Amazon, Target"
+            />
+          </div>
+          <div>
+            <Label>Pickup Address</Label>
+            <Input
+              value={bookingData.pickupAddress}
+              onChange={(e) => setBookingData({...bookingData, pickupAddress: e.target.value})}
+              placeholder="123 Main St"
+            />
+          </div>
+          <div>
+            <Label>Estimated Value</Label>
+            <Input
+              type="number"
+              value={bookingData.estimatedValue}
+              onChange={(e) => setBookingData({...bookingData, estimatedValue: e.target.value})}
+              placeholder="0.00"
+            />
+          </div>
+          <Button 
+            onClick={() => setBookingStep('schedule')}
+            disabled={!bookingData.retailer || !bookingData.pickupAddress}
+            className="w-full bg-amber-600"
+          >
+            Continue
+          </Button>
+        </div>
+      )}
+
+      {bookingStep === 'schedule' && (
+        <div className="space-y-4">
+          <div>
+            <Label>Pickup Date</Label>
+            <Input
+              type="date"
+              value={bookingData.pickupDate}
+              onChange={(e) => setBookingData({...bookingData, pickupDate: e.target.value})}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+          <div>
+            <Label>Preferred Time</Label>
+            <select 
+              value={bookingData.pickupTime}
+              onChange={(e) => setBookingData({...bookingData, pickupTime: e.target.value})}
+              className="w-full p-2 border rounded-md"
+            >
+              <option value="">Select time</option>
+              <option value="morning">Morning (9-12)</option>
+              <option value="afternoon">Afternoon (12-5)</option>
+              <option value="evening">Evening (5-8)</option>
+            </select>
+          </div>
+          <div>
+            <Label>Special Instructions</Label>
+            <Textarea
+              value={bookingData.specialInstructions}
+              onChange={(e) => setBookingData({...bookingData, specialInstructions: e.target.value})}
+              placeholder="Building access, parking info, etc."
+            />
+          </div>
+          <Button 
+            onClick={() => setBookingStep('payment')}
+            disabled={!bookingData.pickupDate || !bookingData.pickupTime}
+            className="w-full bg-amber-600"
+          >
+            Continue to Payment
+          </Button>
+        </div>
+      )}
+
+      {bookingStep === 'payment' && (
+        <div className="space-y-4">
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="p-4">
+              <h3 className="font-semibold mb-3">Order Summary</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Service Fee</span>
+                  <span>${calculateTotal().subtotal.toFixed(2)}</span>
+                </div>
+                {bookingData.promoCode && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Promo: {bookingData.promoCode}</span>
+                    <span>-${bookingData.discount.toFixed(2)}</span>
+                  </div>
+                )}
+                <Separator />
+                <div className="flex justify-between font-semibold">
+                  <span>Total</span>
+                  <span>${calculateTotal().total.toFixed(2)}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div>
+            <Label>Promo Code</Label>
+            <div className="flex gap-2">
+              <Input
+                value={bookingData.promoCode}
+                onChange={(e) => setBookingData({...bookingData, promoCode: e.target.value})}
+                placeholder="Enter code"
+                data-testid="input-promo-code"
+              />
+              <Button 
+                variant="outline"
+                onClick={() => bookingData.promoCode && applyPromoCodeMutation.mutate(bookingData.promoCode)}
+                disabled={!bookingData.promoCode}
+                data-testid="button-apply-promo"
+              >
+                <Tag className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label>Payment Method</Label>
+            <select 
+              value={bookingData.paymentMethod}
+              onChange={(e) => setBookingData({...bookingData, paymentMethod: e.target.value})}
+              className="w-full p-2 border rounded-md"
+            >
+              <option value="card">Credit/Debit Card</option>
+              <option value="paypal">PayPal</option>
+              <option value="apple_pay">Apple Pay</option>
+              <option value="google_pay">Google Pay</option>
+            </select>
+          </div>
+
+          <Button 
+            onClick={handleBookingSubmit}
+            disabled={bookPickupMutation.isPending}
+            className="w-full bg-amber-600"
+            data-testid="button-book-confirm"
+          >
+            {bookPickupMutation.isPending ? 'Booking...' : `Book - $${calculateTotal().total.toFixed(2)}`}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+
+  // Home, Orders, Profile (keeping existing implementations)
+  const renderHome = () => (
+    <div className="space-y-6">
+      <div className="text-center">
+        <div className="flex items-center justify-center mb-4">
+          <ReturnItIcon size={48} className="text-amber-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-amber-900 mb-2">
+          Hello, {user?.firstName || 'Customer'}!
+        </h1>
+        <p className="text-amber-700">Ready to return something?</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Button 
+          onClick={() => setCurrentView('book')}
+          className="h-20 bg-amber-600 hover:bg-amber-700 flex flex-col gap-2"
+          data-testid="button-book-pickup"
+        >
+          <Plus className="h-6 w-6" />
+          <span>Book Pickup</span>
+        </Button>
+        <Button 
+          onClick={() => setCurrentView('orders')}
+          variant="outline"
+          className="h-20 border-amber-300 flex flex-col gap-2"
+          data-testid="button-my-orders"
+        >
+          <Package className="h-6 w-6" />
+          <span>My Orders</span>
+        </Button>
+      </div>
+
+      {activeOrders.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-amber-900 mb-3">Active Orders</h2>
+          {activeOrders.map(order => (
+            <Card 
+              key={order.id} 
+              className="cursor-pointer hover:shadow-md transition-shadow mb-3"
+              onClick={() => {
+                setSelectedOrder(order.id);
+                setCurrentView('order-detail');
+              }}
+              data-testid={`order-card-${order.id}`}
+            >
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-medium">{order.retailer}</p>
+                    <p className="text-sm text-muted-foreground">#{order.trackingNumber}</p>
+                  </div>
+                  <Badge>{order.status.replace('_', ' ')}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const renderOrders = () => (
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 mb-6">
+        <Button variant="ghost" size="sm" onClick={() => setCurrentView('home')} className="p-2">
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h1 className="text-xl font-bold text-amber-900">My Orders</h1>
+      </div>
+      {orders.length === 0 ? (
+        <div className="text-center py-12">
+          <Package className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <p className="text-muted-foreground">No orders yet</p>
+        </div>
+      ) : (
+        orders.map(order => (
+          <Card 
+            key={order.id} 
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => {
+              setSelectedOrder(order.id);
+              setCurrentView('order-detail');
+            }}
+            data-testid={`order-item-${order.id}`}
+          >
+            <CardContent className="p-4">
+              <div className="flex justify-between">
+                <div>
+                  <p className="font-medium">{order.retailer}</p>
+                  <p className="text-sm text-muted-foreground">#{order.trackingNumber}</p>
+                </div>
+                <div className="text-right">
+                  <Badge>{order.status}</Badge>
+                  <p className="text-sm">${order.amount.toFixed(2)}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))
+      )}
+    </div>
+  );
+
+  const renderProfile = () => (
+    <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <Button variant="ghost" size="sm" onClick={() => setCurrentView('home')} className="p-2">
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-xl font-bold text-amber-900">Profile</h1>
       </div>
 
-      <Card className="border-amber-200">
+      <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
               <User className="h-8 w-8 text-amber-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-amber-900">
-                {user?.firstName} {user?.lastName}
-              </h2>
-              <p className="text-amber-600">{user?.email}</p>
+              <h2 className="text-lg font-semibold">{user?.firstName} {user?.lastName}</h2>
+              <p className="text-muted-foreground">{user?.email}</p>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="bg-amber-50 rounded-lg p-4">
-                <p className="text-2xl font-bold text-amber-900">{orders.length}</p>
-                <p className="text-sm text-amber-600">Total Orders</p>
-              </div>
-              <div className="bg-amber-50 rounded-lg p-4">
-                <p className="text-2xl font-bold text-amber-900">
-                  ${orders.reduce((sum, order) => sum + order.amount, 0).toFixed(0)}
-                </p>
-                <p className="text-sm text-amber-600">Total Spent</p>
-              </div>
+          <div className="grid grid-cols-2 gap-4 text-center">
+            <div className="bg-amber-50 rounded-lg p-4">
+              <p className="text-2xl font-bold">{orders.length}</p>
+              <p className="text-sm text-muted-foreground">Total Orders</p>
+            </div>
+            <div className="bg-amber-50 rounded-lg p-4">
+              <p className="text-2xl font-bold">
+                ${orders.reduce((sum, order) => sum + order.amount, 0).toFixed(0)}
+              </p>
+              <p className="text-sm text-muted-foreground">Total Spent</p>
             </div>
           </div>
         </CardContent>
@@ -860,8 +1054,8 @@ export default function CustomerMobileApp() {
       <div className="space-y-2">
         <Button 
           variant="outline" 
-          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
-          onClick={() => toast({ title: "Payment Methods", description: "Opening payment settings..." })}
+          className="w-full justify-start"
+          onClick={() => setShowPaymentMethods(true)}
           data-testid="button-payment-methods"
         >
           <CreditCard className="h-4 w-4 mr-3" />
@@ -869,8 +1063,8 @@ export default function CustomerMobileApp() {
         </Button>
         <Button 
           variant="outline" 
-          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
-          onClick={() => toast({ title: "Saved Addresses", description: "Managing your addresses..." })}
+          className="w-full justify-start"
+          onClick={() => setShowAddresses(true)}
           data-testid="button-saved-addresses"
         >
           <Home className="h-4 w-4 mr-3" />
@@ -878,86 +1072,21 @@ export default function CustomerMobileApp() {
         </Button>
         <Button 
           variant="outline" 
-          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
-          onClick={() => toast({ title: "Notifications", description: "Updating notification preferences..." })}
+          className="w-full justify-start"
+          onClick={() => setShowNotifications(true)}
           data-testid="button-notifications"
         >
           <Bell className="h-4 w-4 mr-3" />
           Notifications
         </Button>
         <Button 
-          variant="outline" 
-          className="w-full justify-start border-amber-300 text-amber-700 hover:bg-amber-50"
-          onClick={() => toast({ title: "Settings", description: "Opening app settings..." })}
-          data-testid="button-settings"
-        >
-          <Settings className="h-4 w-4 mr-3" />
-          Settings
-        </Button>
-        <Button 
-          variant="outline" 
+          variant="outline"
           onClick={logout} 
-          className="w-full justify-start border-red-300 text-red-700 hover:bg-red-50"
+          className="w-full justify-start border-red-300 text-red-700"
         >
           <LogOut className="h-4 w-4 mr-3" />
           Sign Out
         </Button>
-      </div>
-    </div>
-  );
-
-  const renderHelp = () => (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={() => setCurrentView('home')}
-          className="p-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-xl font-bold text-amber-900">Help & Support</h1>
-      </div>
-
-      <div className="space-y-4">
-        <Card className="border-amber-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <MessageCircle className="h-6 w-6 text-amber-600" />
-              <div>
-                <h3 className="font-medium text-amber-900">Live Chat</h3>
-                <p className="text-sm text-amber-700">Get instant help from our support team</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-amber-200">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <Phone className="h-6 w-6 text-amber-600" />
-              <div>
-                <h3 className="font-medium text-amber-900">Call Support</h3>
-                <p className="text-sm text-amber-700">(636) 254-4821</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Link href="/help-center">
-          <Card className="border-amber-200 cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <Search className="h-6 w-6 text-amber-600" />
-                <div>
-                  <h3 className="font-medium text-amber-900">Help Center</h3>
-                  <p className="text-sm text-amber-700">Browse articles and FAQs</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
     </div>
   );
@@ -969,90 +1098,133 @@ export default function CustomerMobileApp() {
       case 'orders': return renderOrders();
       case 'order-detail': return renderOrderDetail();
       case 'profile': return renderProfile();
-      case 'help': return renderHelp();
+      case 'track-live': return renderLiveTracking();
+      case 'chat': return renderChat();
+      case 'photo-view': return renderPhotoView();
       default: return renderHome();
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary to-muted w-full max-w-md mx-auto overflow-x-hidden">
-      {/* Mobile App Header */}
-      <div className="bg-white shadow-sm border-b border-border sticky top-0 z-40 w-full">
-        <div className="px-4 py-3 w-full">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <ReturnItIcon size={32} className="text-primary" />
-              <h1 className="text-lg font-bold text-primary">Return It</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setCurrentView('book')}
-                className={`p-2 ${currentView === 'book' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'}`}
-                data-testid="header-book"
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setCurrentView('profile')}
-                className={`p-2 ${currentView === 'profile' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'}`}
-                data-testid="header-profile"
-              >
-                <User className="h-5 w-5" />
-              </Button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-secondary to-muted w-full max-w-md mx-auto">
+      <div className="bg-white shadow-sm border-b sticky top-0 z-40">
+        <div className="px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <ReturnItIcon size={32} className="text-primary" />
+            <h1 className="text-lg font-bold">Return It</h1>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setCurrentView('book')} className="p-2">
+              <Plus className="h-5 w-5" />
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setCurrentView('profile')} className="p-2">
+              <User className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="p-4 pb-20">
         {renderCurrentView()}
       </div>
 
-      {/* Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-amber-200 shadow-lg">
-        <div className="grid grid-cols-3 h-16">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg">
+        <div className="grid grid-cols-3 h-16 max-w-md mx-auto">
           <Button
             variant="ghost"
             onClick={() => setCurrentView('home')}
-            className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
-              currentView === 'home' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
-            }`}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'home' ? 'bg-amber-50 text-amber-700' : ''}`}
             data-testid="nav-home"
           >
             <Home className="h-5 w-5" />
             <span className="text-xs">Home</span>
           </Button>
-          
           <Button
             variant="ghost"
             onClick={() => setCurrentView('orders')}
-            className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
-              currentView === 'orders' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
-            }`}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'orders' ? 'bg-amber-50 text-amber-700' : ''}`}
             data-testid="nav-orders"
           >
             <Package className="h-5 w-5" />
             <span className="text-xs">Orders</span>
           </Button>
-          
           <Button
             variant="ghost"
-            onClick={() => setCurrentView('help')}
-            className={`flex flex-col items-center justify-center gap-1 rounded-none h-full ${
-              currentView === 'help' ? 'bg-amber-50 text-amber-700' : 'text-amber-600'
-            }`}
-            data-testid="nav-help"
+            onClick={() => setCurrentView('profile')}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'profile' ? 'bg-amber-50 text-amber-700' : ''}`}
+            data-testid="nav-profile"
           >
-            <MessageCircle className="h-5 w-5" />
-            <span className="text-xs">Help</span>
+            <User className="h-5 w-5" />
+            <span className="text-xs">Profile</span>
           </Button>
         </div>
       </div>
+
+      {renderPaymentMethodsDialog()}
+      {renderAddressesDialog()}
+      {renderNotificationsDialog()}
+
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Order?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel this pickup? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-no">No, Keep It</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => orderToCancel && cancelOrderMutation.mutate(orderToCancel)}
+              className="bg-red-600 hover:bg-red-700"
+              data-testid="button-cancel-yes"
+            >
+              Yes, Cancel Order
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={showRatingDialog} onOpenChange={setShowRatingDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Rate Your Driver</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRating(star)}
+                  className="p-1"
+                  data-testid={`star-${star}`}
+                >
+                  <Star 
+                    className={`h-8 w-8 ${star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+                  />
+                </button>
+              ))}
+            </div>
+            <div>
+              <Label>Feedback (Optional)</Label>
+              <Textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Share your experience..."
+                data-testid="input-feedback"
+              />
+            </div>
+            <Button 
+              onClick={() => orderToRate && rateOrderMutation.mutate({ orderId: orderToRate, rating, feedback })}
+              disabled={rating === 0}
+              className="w-full"
+              data-testid="button-submit-rating"
+            >
+              Submit Rating
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
