@@ -8619,6 +8619,570 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // ============================================================================
+  // RETAILER SELF-SERVICE PORTAL API ROUTES
+  // ============================================================================
+
+  // Middleware to check if user is a retailer
+  const isRetailer = async (req: any, res: any, next: any) => {
+    if (!req.session?.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      // Check if user has any retailer accounts
+      const retailerAccounts = await storage.getRetailerAccountsByUser(req.session.user.id);
+      if (retailerAccounts.length === 0) {
+        return res.status(403).json({ message: "Access denied. Not a retailer account." });
+      }
+
+      // Attach retailer accounts to request
+      (req as any).retailerAccounts = retailerAccounts;
+      next();
+    } catch (error) {
+      console.error("Error checking retailer status:", error);
+      res.status(500).json({ message: "Failed to verify retailer status" });
+    }
+  };
+
+  // === RETAILER REGISTRATION & ONBOARDING ===
+  
+  app.post("/api/retailer/register", isAuthenticated, async (req, res) => {
+    try {
+      const { companyId, role = 'admin', acceptedTerms } = req.body;
+
+      if (!companyId) {
+        return res.status(400).json({ message: "Company ID is required" });
+      }
+
+      if (!acceptedTerms) {
+        return res.status(400).json({ message: "You must accept the terms and conditions" });
+      }
+
+      const userId = req.session!.user!.id;
+
+      // Check if company exists
+      const company = await storage.getCompany(companyId);
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+
+      // Check if user already has an account for this company
+      const existingAccount = await storage.getRetailerAccount(userId, companyId);
+      if (existingAccount) {
+        return res.status(400).json({ message: "You already have an account for this company" });
+      }
+
+      // Create Stripe customer for the company if not exists
+      let subscription = await storage.getRetailerSubscriptionByCompany(companyId);
+      
+      if (!subscription) {
+        const stripeCustomer = await stripe.customers.create({
+          name: company.name,
+          email: req.session!.user!.email,
+          metadata: {
+            companyId: companyId.toString(),
+            userId: userId.toString()
+          }
+        });
+
+        // Create initial subscription (trial or paid)
+        subscription = await storage.createRetailerSubscription({
+          companyId,
+          stripeCustomerId: stripeCustomer.id,
+          planType: 'standard',
+          billingCycle: 'monthly',
+          monthlyFee: 99.00,
+          transactionFee: 2.50,
+          status: 'trial',
+          includedOrders: 100,
+          totalOrders: 0,
+          currentMonthOrders: 0,
+          trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14-day trial
+          currentPeriodStart: new Date(),
+          currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        });
+      }
+
+      // Create retailer account
+      const retailerAccount = await storage.createRetailerAccount({
+        userId,
+        companyId,
+        role,
+        permissions: ['view_orders', 'manage_locations', 'view_analytics'],
+        isActive: true
+      });
+
+      res.json({
+        message: "Retailer account created successfully",
+        account: retailerAccount,
+        subscription
+      });
+    } catch (error) {
+      console.error("Error creating retailer account:", error);
+      res.status(500).json({ message: "Failed to create retailer account" });
+    }
+  });
+
+  // === RETAILER DASHBOARD ===
+  
+  app.get("/api/retailer/dashboard", isRetailer, async (req, res) => {
+    try {
+      const userId = req.session!.user!.id;
+      const retailerAccounts = (req as any).retailerAccounts;
+
+      // Get stats for all companies user manages
+      const dashboardData = await Promise.all(
+        retailerAccounts.map(async (account: any) => {
+          const stats = await storage.getRetailerDashboardStats(account.companyId);
+          const company = await storage.getCompany(account.companyId);
+          const subscription = await storage.getRetailerSubscriptionByCompany(account.companyId);
+
+          return {
+            company,
+            account,
+            subscription,
+            stats
+          };
+        })
+      );
+
+      res.json({ dashboardData });
+    } catch (error) {
+      console.error("Error fetching retailer dashboard:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard data" });
+    }
+  });
+
+  app.get("/api/retailer/companies/:companyId/stats", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      // Verify user has access to this company
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const stats = await storage.getRetailerDashboardStats(parseInt(companyId));
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching company stats:", error);
+      res.status(500).json({ message: "Failed to fetch company statistics" });
+    }
+  });
+
+  // === ORDER MANAGEMENT ===
+  
+  app.get("/api/retailer/companies/:companyId/orders", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { status, limit = '50', startDate, endDate } = req.query;
+      const userId = req.session!.user!.id;
+
+      // Verify access
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const filters: any = { limit: parseInt(limit as string) };
+      if (status) filters.status = status as string;
+      if (startDate) filters.startDate = new Date(startDate as string);
+      if (endDate) filters.endDate = new Date(endDate as string);
+
+      const orders = await storage.getRetailerOrderHistory(parseInt(companyId), filters);
+      res.json({ orders });
+    } catch (error) {
+      console.error("Error fetching retailer orders:", error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // === LOCATION MANAGEMENT ===
+  
+  app.get("/api/retailer/companies/:companyId/locations", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const locations = await storage.getCompanyLocations(parseInt(companyId));
+      res.json({ locations });
+    } catch (error) {
+      console.error("Error fetching locations:", error);
+      res.status(500).json({ message: "Failed to fetch locations" });
+    }
+  });
+
+  app.post("/api/retailer/companies/:companyId/locations", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_locations')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { name, address, city, state, zipCode, phone, acceptsReturns = true } = req.body;
+
+      if (!name || !address) {
+        return res.status(400).json({ message: "Name and address are required" });
+      }
+
+      const location = await storage.createCompanyLocation({
+        companyId: parseInt(companyId),
+        name,
+        address,
+        city,
+        state,
+        zipCode,
+        phone,
+        acceptsReturns
+      });
+
+      res.json({ location });
+    } catch (error) {
+      console.error("Error creating location:", error);
+      res.status(500).json({ message: "Failed to create location" });
+    }
+  });
+
+  app.patch("/api/retailer/companies/:companyId/locations/:locationId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, locationId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_locations')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const location = await storage.updateCompanyLocation(parseInt(locationId), req.body);
+      res.json({ location });
+    } catch (error) {
+      console.error("Error updating location:", error);
+      res.status(500).json({ message: "Failed to update location" });
+    }
+  });
+
+  app.delete("/api/retailer/companies/:companyId/locations/:locationId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, locationId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_locations')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await storage.deleteCompanyLocation(parseInt(locationId));
+      res.json({ message: "Location deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting location:", error);
+      res.status(500).json({ message: "Failed to delete location" });
+    }
+  });
+
+  // === RETURN POLICY MANAGEMENT ===
+  
+  app.get("/api/retailer/companies/:companyId/return-policy", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const policy = await storage.getReturnPolicyByCompany(parseInt(companyId));
+      res.json({ policy });
+    } catch (error) {
+      console.error("Error fetching return policy:", error);
+      res.status(500).json({ message: "Failed to fetch return policy" });
+    }
+  });
+
+  app.post("/api/retailer/companies/:companyId/return-policy", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_policies')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { returnWindow, requiresReceipt, acceptsOpenedItems, restockingFee, conditions } = req.body;
+
+      const policy = await storage.createReturnPolicy({
+        companyId: parseInt(companyId),
+        returnWindow: returnWindow || 30,
+        requiresReceipt: requiresReceipt !== false,
+        acceptsOpenedItems: acceptsOpenedItems === true,
+        restockingFee: restockingFee || 0,
+        conditions: conditions || []
+      });
+
+      res.json({ policy });
+    } catch (error) {
+      console.error("Error creating return policy:", error);
+      res.status(500).json({ message: "Failed to create return policy" });
+    }
+  });
+
+  app.patch("/api/retailer/companies/:companyId/return-policy/:policyId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, policyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_policies')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const policy = await storage.updateReturnPolicy(parseInt(policyId), req.body);
+      res.json({ policy });
+    } catch (error) {
+      console.error("Error updating return policy:", error);
+      res.status(500).json({ message: "Failed to update return policy" });
+    }
+  });
+
+  // === SUBSCRIPTION & BILLING ===
+  
+  app.get("/api/retailer/companies/:companyId/subscription", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const subscription = await storage.getRetailerSubscriptionByCompany(parseInt(companyId));
+      res.json({ subscription });
+    } catch (error) {
+      console.error("Error fetching subscription:", error);
+      res.status(500).json({ message: "Failed to fetch subscription" });
+    }
+  });
+
+  app.post("/api/retailer/companies/:companyId/subscription/cancel", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { cancelAtPeriodEnd = true } = req.body;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || account.role !== 'admin') {
+        return res.status(403).json({ message: "Only admins can cancel subscriptions" });
+      }
+
+      const subscription = await storage.getRetailerSubscriptionByCompany(parseInt(companyId));
+      if (!subscription) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+
+      // Cancel in Stripe if subscription ID exists
+      if (subscription.stripeSubscriptionId) {
+        await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+          cancel_at_period_end: cancelAtPeriodEnd
+        });
+      }
+
+      const updatedSubscription = await storage.cancelRetailerSubscription(
+        subscription.id,
+        cancelAtPeriodEnd
+      );
+
+      res.json({ subscription: updatedSubscription });
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      res.status(500).json({ message: "Failed to cancel subscription" });
+    }
+  });
+
+  // === INVOICES ===
+  
+  app.get("/api/retailer/companies/:companyId/invoices", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { status, limit = '20' } = req.query;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const filters: any = { limit: parseInt(limit as string) };
+      if (status) filters.status = status as string;
+
+      const invoices = await storage.getRetailerInvoicesByCompany(parseInt(companyId), filters);
+      res.json({ invoices });
+    } catch (error) {
+      console.error("Error fetching invoices:", error);
+      res.status(500).json({ message: "Failed to fetch invoices" });
+    }
+  });
+
+  // === API KEY MANAGEMENT ===
+  
+  app.get("/api/retailer/companies/:companyId/api-keys", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_api_keys')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const apiKeys = await storage.getRetailerApiKeysByCompany(parseInt(companyId));
+      res.json({ apiKeys });
+    } catch (error) {
+      console.error("Error fetching API keys:", error);
+      res.status(500).json({ message: "Failed to fetch API keys" });
+    }
+  });
+
+  app.post("/api/retailer/companies/:companyId/api-keys", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { name, scopes = [], rateLimit = 1000 } = req.body;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_api_keys')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      if (!name) {
+        return res.status(400).json({ message: "API key name is required" });
+      }
+
+      // Generate random API key
+      const keyString = `rtn_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
+      const keyPrefix = keyString.substring(0, 12);
+      const keyHash = await bcrypt.hash(keyString, 10);
+
+      const apiKey = await storage.createRetailerApiKey({
+        companyId: parseInt(companyId),
+        name,
+        keyPrefix,
+        keyHash,
+        permissions: scopes,
+        scopes,
+        isActive: true,
+        rateLimit,
+        currentUsage: 0,
+        createdBy: userId
+      });
+
+      // Return the full key only once (won't be shown again)
+      res.json({ 
+        apiKey: {
+          ...apiKey,
+          key: keyString // Only returned on creation
+        }
+      });
+    } catch (error) {
+      console.error("Error creating API key:", error);
+      res.status(500).json({ message: "Failed to create API key" });
+    }
+  });
+
+  app.delete("/api/retailer/companies/:companyId/api-keys/:keyId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, keyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_api_keys')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await storage.revokeRetailerApiKey(parseInt(keyId));
+      res.json({ message: "API key revoked successfully" });
+    } catch (error) {
+      console.error("Error revoking API key:", error);
+      res.status(500).json({ message: "Failed to revoke API key" });
+    }
+  });
+
+  // === USAGE METRICS ===
+  
+  app.get("/api/retailer/companies/:companyId/metrics", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { startDate, endDate } = req.query;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const dateRange = startDate && endDate ? {
+        start: new Date(startDate as string),
+        end: new Date(endDate as string)
+      } : undefined;
+
+      const metrics = await storage.getRetailerUsageMetrics(parseInt(companyId), dateRange);
+      res.json({ metrics });
+    } catch (error) {
+      console.error("Error fetching usage metrics:", error);
+      res.status(500).json({ message: "Failed to fetch usage metrics" });
+    }
+  });
+
+  // === COMPANY PROFILE ===
+  
+  app.get("/api/retailer/companies/:companyId/profile", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const company = await storage.getCompany(parseInt(companyId));
+      res.json({ company });
+    } catch (error) {
+      console.error("Error fetching company profile:", error);
+      res.status(500).json({ message: "Failed to fetch company profile" });
+    }
+  });
+
+  app.patch("/api/retailer/companies/:companyId/profile", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || account.role !== 'admin') {
+        return res.status(403).json({ message: "Only admins can update company profile" });
+      }
+
+      const company = await storage.updateCompany(parseInt(companyId), req.body);
+      res.json({ company });
+    } catch (error) {
+      console.error("Error updating company profile:", error);
+      res.status(500).json({ message: "Failed to update company profile" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
