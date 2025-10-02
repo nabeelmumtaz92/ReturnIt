@@ -11,6 +11,17 @@ Preferred communication style: Simple, everyday language.
 As of September 30, 2025, ReturnIt is launch-ready with comprehensive admin dashboard functionality including driver payouts ($0.50 instant fee structure), tax reporting (1099-NEC generation), fully functional notification management systems, dynamic pricing configuration, and complete order tracking with retailer logging. All generate buttons in tax and payout sections are operational with proper API integration. Production data cleanup completed with SMS notification system active for real-time order alerts to 6362544821.
 
 ## Recent Updates (October 2, 2025)
+
+### Physical Gift Card Delivery System (COMPLETED)
+- ✅ **New Feature**: Drivers can now handle retailer-issued physical gift cards (Target cards, Walmart cards, etc.)
+- ✅ **Security**: Server-side fee validation prevents tampering - always charges exactly $3.99 for gift card delivery
+- ✅ **No Double Reimbursement**: System enforces either Stripe refund OR gift card delivery (never both)
+- ✅ **Customer Flow**: When retailer issues gift card, customer gets NO monetary refund + charged $3.99 delivery fee + receives physical card within 1-2 days
+- ✅ **Removed**: Confusing "store credit" option that implied ReturnIt account balance (not implemented)
+- ✅ **Database**: New fields track gift card delivery status (pending, in_transit, delivered) and fee payment
+- ✅ **Audit Trail**: All gift card transactions logged with Stripe PaymentIntent IDs and admin notes
+
+### Previous Updates
 - ✅ **Critical Booking Flow Fixes**: Resolved complete retailer selection system failure that prevented order creation
   - Fixed DatabaseStorage missing all company-related methods (getCompany, getCompanies, getCompanyBySlug, createCompany, updateCompany, deleteCompany, getReturnPolicyByCompany, getCompanyLocations) - production database calls were failing while in-memory storage worked
   - Fixed API route ordering bug: moved `/api/companies/search` before `/api/companies/:id` to prevent "search" from being interpreted as an ID parameter causing "invalid input syntax for type integer: 'NaN'" errors
