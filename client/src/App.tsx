@@ -50,6 +50,7 @@ const RealTimeTracking = lazy(() => import("@/pages/real-time-tracking"));
 const RetailerDashboard = lazy(() => import("@/pages/retailer-dashboard"));
 const RetailerRegister = lazy(() => import("@/pages/retailer-register"));
 const RetailerAPIKeys = lazy(() => import("@/pages/retailer-api-keys"));
+const RetailerWebhooks = lazy(() => import("@/pages/retailer-webhooks"));
 const DriverAnalytics = lazy(() => import("@/pages/driver-analytics"));
 const CustomerRating = lazy(() => import("@/pages/customer-rating"));
 const AdvancedReporting = lazy(() => import("@/pages/advanced-reporting"));
@@ -277,6 +278,17 @@ function Router() {
             return null;
           }
           return <RetailerAPIKeys />;
+        }}
+      </Route>
+      <Route path="/retailer/companies/:companyId/webhooks">
+        {() => {
+          if (!user || !isAuthenticated) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          return <RetailerWebhooks />;
         }}
       </Route>
 
