@@ -1,0 +1,237 @@
+Awesome—let’s do a clean, copy-pasteable **step-by-step** with the exact links you’ll need. We’ll set up:
+
+* **Supabase** (DB/Auth/Storage)
+* **Google Cloud Run** (backend API)
+* **Vercel** (frontend hosting)
+* **UptimeRobot** (monitoring)
+
+I’ll assume your backend is Node/Express, but this works for most stacks.
+
+---
+
+# 0) One-time setup (accounts, tools)
+
+* **Supabase (free):** [https://supabase.com/](https://supabase.com/)
+* **Google Cloud Console:** [https://console.cloud.google.com/](https://console.cloud.google.com/)
+
+  * Free program: [https://cloud.google.com/free](https://cloud.google.com/free)
+  * Cloud Run docs: [https://cloud.google.com/run/docs](https://cloud.google.com/run/docs)
+  * Install gcloud CLI: [https://cloud.google.com/sdk/docs/install](https://cloud.google.com/sdk/docs/install)
+* **GitHub:** [https://github.com/](https://github.com/)
+* **Vercel:** [https://vercel.com/signup](https://vercel.com/signup) (Docs: [https://vercel.com/docs](https://vercel.com/docs))
+* **UptimeRobot:** [https://uptimerobot.com/](https://uptimerobot.com/) (Getting started: [https://blog.uptimerobot.com/getting-started/](https://blog.uptimerobot.com/getting-started/))
+
+Tools you should have locally: **Node 18+**, **Git**, **gcloud CLI**.
+
+---
+
+# 1) Supabase – create project & keys
+
+1. Sign in → **New project** → choose region → wait for provisioning: [https://supabase.com/](https://supabase.com/)
+2. Grab credentials:
+
+   * **Project URL** & **anon**/**service_role** keys → **Project Settings → API**
+
+     * `SUPABASE_URL` = Project URL
+     * `SUPABASE_ANON_KEY` = use on **frontend** only
+     * `SUPABASE_SERVICE_ROLE_KEY` = **server only** (Cloud Run)
+3. (Optional) Create a starter table in **SQL Editor**:
+
+   ```sql
+   create table if not exists orders (
+     id uuid primary key default gen_random_uuid(),
+     user_id uuid,
+     status text check (status in ('new','assigned','picked_up','dropped','refunded')) default 'new',
+     created_at timestamptz default now()
+   );
+   ```
+4. (Optional) Import data:
+
+   * Via Table editor (CSV/Spreadsheet): [https://supabase.com/docs/guides/database/tables#table-editor](https://supabase.com/docs/guides/database/tables#table-editor)
+   * Or script an import with `@supabase/supabase-js`.
+
+> **Security rule of thumb:** only the **backend** should use `SERVICE_ROLE_KEY`. The **frontend** uses `ANON_KEY`.
+
+---
+
+# 2) Backend → Google Cloud Run (serverless API)
+
+### 2.1 Enable services & set project
+
+* Create/choose a GCP project: [https://console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate)
+* In terminal:
+
+  ```bash
+  gcloud auth login
+  gcloud config set project YOUR_GCP_PROJECT_ID
+  gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+  ```
+
+### 2.2 Add a Dockerfile (Node/Express example)
+
+In your backend repo root:
+
+**Dockerfile**
+
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY . .
+ENV NODE_ENV=production
+# Cloud Run uses PORT env var
+CMD ["npm", "start"]
+```
+
+**index.js** (minimal health + Supabase example)
+
+```js
+import express from 'express';
+import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
+
+const app = express();
+app.use(express.json());
+app.use(cors({ origin: process.env.CORS_ORIGIN?.split(',') ?? true, credentials: true }));
+
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+app.get('/health', (_req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
+
+app.get('/orders', async (_req, res) => {
+  const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false });
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post('/orders', async (req, res) => {
+  const { user_id, status = 'new' } = req.body ?? {};
+  const { data, error } = await supabase.from('orders').insert({ user_id, status }).select().single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.status(201).json(data);
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log(`API listening on :${PORT}`));
+```
+
+### 2.3 Push to GitHub (if not already)
+
+```bash
+git init
+git add .
+git commit -m "Cloud Run setup"
+git branch -M main
+git remote add origin https://github.com/<you>/<backend-repo>.git
+git push -u origin main
+```
+
+### 2.4 Build & deploy to Cloud Run
+
+```bash
+# build container image with Cloud Build
+gcloud builds submit --tag gcr.io/YOUR_GCP_PROJECT_ID/returnit-backend
+
+# deploy to Cloud Run
+gcloud run deploy returnit-backend \
+  --image gcr.io/YOUR_GCP_PROJECT_ID/returnit-backend \
+  --platform managed \
+  --region us-central1 \
+  --allow-unauthenticated
+```
+
+Copy the **Service URL** from the output (e.g., `https://returnit-backend-xxxxx-uc.a.run.app`).
+
+### 2.5 Set environment variables on Cloud Run
+
+```bash
+gcloud run services update returnit-backend \
+  --region us-central1 \
+  --set-env-vars SUPABASE_URL=https://YOUR-PROJECT.supabase.co \
+  --set-env-vars SUPABASE_SERVICE_ROLE_KEY=YOUR_SUPABASE_SERVICE_ROLE_KEY \
+  --set-env-vars CORS_ORIGIN=https://your-frontend-on-vercel.vercel.app
+```
+
+Test:
+
+```bash
+curl https://YOUR_CLOUD_RUN_URL/health
+```
+
+> **Optional (best practice):** Store secrets in **Secret Manager**: [https://cloud.google.com/secret-manager/docs](https://cloud.google.com/secret-manager/docs)
+> Then mount secrets into Cloud Run: [https://cloud.google.com/run/docs/configuring/secrets](https://cloud.google.com/run/docs/configuring/secrets)
+
+---
+
+# 3) Frontend → Vercel (connect to your API)
+
+1. Push your frontend repo to GitHub.
+2. Import to Vercel: [https://vercel.com/new](https://vercel.com/new)
+3. In **Vercel → Project Settings → Environment Variables**, add:
+
+   * `NEXT_PUBLIC_API_BASE_URL = https://YOUR_CLOUD_RUN_URL`
+   * (Any other public values you need)
+4. Deploy → you’ll get `https://your-frontend-on-vercel.vercel.app`.
+
+Example call (Next.js):
+
+```ts
+const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/orders`, { cache: 'no-store' });
+const orders = await res.json();
+```
+
+**Vercel custom domains (optional):** [https://vercel.com/docs/projects/domains/add-a-domain](https://vercel.com/docs/projects/domains/add-a-domain)
+
+---
+
+# 4) Monitoring → UptimeRobot
+
+* Sign in: [https://uptimerobot.com/](https://uptimerobot.com/)
+* Add **HTTP(s) monitors**:
+
+  * Frontend: `https://your-frontend-on-vercel.vercel.app`
+  * Backend health: `https://YOUR_CLOUD_RUN_URL/health`
+* Choose alert contacts (email/SMS).
+* Docs: [https://blog.uptimerobot.com/getting-started/](https://blog.uptimerobot.com/getting-started/)
+
+---
+
+# 5) Data migration (if you were on Replit DB / files)
+
+* **CSV import via Table Editor:** [https://supabase.com/docs/guides/database/tables#table-editor](https://supabase.com/docs/guides/database/tables#table-editor)
+* Or write a one-off Node script using `@supabase/supabase-js` to upsert rows.
+* If you were on **Postgres already**, use `pg_dump`/`psql` to move data: [https://www.postgresql.org/docs/current/app-pgdump.html](https://www.postgresql.org/docs/current/app-pgdump.html)
+
+---
+
+# 6) Cutover plan (safe & fast)
+
+1. With Cloud Run & Supabase working (test `/health`, test a POST/GET to `/orders`).
+2. Switch frontend env var on Vercel to the **Cloud Run** URL → redeploy.
+3. Confirm in **Supabase Table Editor** that new data is appearing.
+4. **Stop relying on Replit** for production; keep it only for dev if you like.
+
+---
+
+# 7) Optional: CI/CD on push (backend)
+
+* **GitHub Actions → Cloud Run** quickstart:
+  [https://cloud.google.com/run/docs/continuous-deployment-with-github-actions](https://cloud.google.com/run/docs/continuous-deployment-with-github-actions)
+
+(That guide shows how to connect your repo so every push to `main` builds & deploys automatically.)
+
+---
+
+# 8) Common gotchas (quick fixes)
+
+* **CORS error in browser:** ensure `CORS_ORIGIN` includes your Vercel domain (and local dev `http://localhost:3000` while testing).
+* **401/403 from Supabase:** using `SERVICE_ROLE_KEY` only on server; frontend must use `ANON_KEY` (if you directly call Supabase from browser).
+* **Cold starts on Cloud Run:** free tier scales to zero; first request may be slower—keep a light UptimeRobot interval (5 min) to keep it warm enough.
+* **Env vars not picked up:** re-deploy after changing env vars, or use Cloud Run “Revisions” to verify the latest is serving traffic.
+
+---
+
+## You’re good to start now
+
+Follow sections **1 → 4** in order with those links open. If you want, paste your **current backend repo structure** and I’ll hand you the exact `Dockerfile`/`gcloud` commands tailored to it so you can deploy immediately.
