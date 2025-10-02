@@ -24,6 +24,11 @@ import {
   type ReturnPolicy, type InsertReturnPolicy,
   type CompanyLocation, type InsertCompanyLocation,
   type OrderAuditLog, type InsertOrderAuditLog,
+  type RetailerAccount, type InsertRetailerAccount,
+  type RetailerSubscription, type InsertRetailerSubscription,
+  type RetailerApiKey, type InsertRetailerApiKey,
+  type RetailerInvoice, type InsertRetailerInvoice,
+  type RetailerUsageMetric, type InsertRetailerUsageMetric,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -35,7 +40,8 @@ import {
   driverOrderAssignments, orderStatusHistory, driverLocationPings,
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
   merchantPolicies, supportTicketsEnhanced, supportMessages,
-  companies, returnPolicies, companyLocations, orderAuditLogs
+  companies, returnPolicies, companyLocations, orderAuditLogs,
+  retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -299,6 +305,57 @@ export interface IStorage {
   // GDPR/CCPA Compliance operations
   requestAccountDeletion(userId: number, deletionDate: Date): Promise<User | undefined>;
   exportUserData(userId: number): Promise<any>;
+
+  // === RETAILER SELF-SERVICE PORTAL OPERATIONS ===
+  
+  // Retailer Account operations
+  createRetailerAccount(account: InsertRetailerAccount): Promise<RetailerAccount>;
+  getRetailerAccount(userId: number, companyId: number): Promise<RetailerAccount | undefined>;
+  getRetailerAccountsByUser(userId: number): Promise<RetailerAccount[]>;
+  getRetailerAccountsByCompany(companyId: number): Promise<RetailerAccount[]>;
+  updateRetailerAccount(id: number, updates: Partial<RetailerAccount>): Promise<RetailerAccount | undefined>;
+  deleteRetailerAccount(id: number): Promise<boolean>;
+  
+  // Retailer Subscription operations
+  createRetailerSubscription(subscription: InsertRetailerSubscription): Promise<RetailerSubscription>;
+  getRetailerSubscription(id: number): Promise<RetailerSubscription | undefined>;
+  getRetailerSubscriptionByCompany(companyId: number): Promise<RetailerSubscription | undefined>;
+  getRetailerSubscriptionByStripeCustomer(stripeCustomerId: string): Promise<RetailerSubscription | undefined>;
+  updateRetailerSubscription(id: number, updates: Partial<RetailerSubscription>): Promise<RetailerSubscription | undefined>;
+  cancelRetailerSubscription(id: number, cancelAtPeriodEnd: boolean): Promise<RetailerSubscription | undefined>;
+  
+  // Retailer API Key operations
+  createRetailerApiKey(apiKey: InsertRetailerApiKey): Promise<RetailerApiKey>;
+  getRetailerApiKey(id: number): Promise<RetailerApiKey | undefined>;
+  getRetailerApiKeyByHash(keyHash: string): Promise<RetailerApiKey | undefined>;
+  getRetailerApiKeysByCompany(companyId: number): Promise<RetailerApiKey[]>;
+  updateRetailerApiKey(id: number, updates: Partial<RetailerApiKey>): Promise<RetailerApiKey | undefined>;
+  revokeRetailerApiKey(id: number): Promise<RetailerApiKey | undefined>;
+  deleteRetailerApiKey(id: number): Promise<boolean>;
+  
+  // Retailer Invoice operations
+  createRetailerInvoice(invoice: InsertRetailerInvoice): Promise<RetailerInvoice>;
+  getRetailerInvoice(id: number): Promise<RetailerInvoice | undefined>;
+  getRetailerInvoiceByNumber(invoiceNumber: string): Promise<RetailerInvoice | undefined>;
+  getRetailerInvoicesByCompany(companyId: number, filters?: { status?: string; limit?: number }): Promise<RetailerInvoice[]>;
+  updateRetailerInvoice(id: number, updates: Partial<RetailerInvoice>): Promise<RetailerInvoice | undefined>;
+  markRetailerInvoicePaid(id: number, paymentDate: Date, amountPaid: number): Promise<RetailerInvoice | undefined>;
+  
+  // Retailer Usage Metrics operations
+  createRetailerUsageMetric(metric: InsertRetailerUsageMetric): Promise<RetailerUsageMetric>;
+  getRetailerUsageMetrics(companyId: number, dateRange?: { start: Date; end: Date }): Promise<RetailerUsageMetric[]>;
+  updateRetailerUsageMetric(id: number, updates: Partial<RetailerUsageMetric>): Promise<RetailerUsageMetric | undefined>;
+  
+  // Retailer Analytics operations (aggregated data)
+  getRetailerDashboardStats(companyId: number): Promise<{
+    totalOrders: number;
+    completedOrders: number;
+    activeOrders: number;
+    totalRevenue: number;
+    thisMonthOrders: number;
+    thisMonthRevenue: number;
+  }>;
+  getRetailerOrderHistory(companyId: number, filters?: { startDate?: Date; endDate?: Date; status?: string; limit?: number }): Promise<Order[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -3933,6 +3990,323 @@ export class DatabaseStorage implements IStorage {
   async deleteCompanyLocation(id: number): Promise<boolean> {
     const result = await db.delete(companyLocations).where(eq(companyLocations.id, id));
     return result.rowCount > 0;
+  }
+
+  // === RETAILER SELF-SERVICE PORTAL IMPLEMENTATIONS ===
+  
+  // Retailer Account Methods
+  async createRetailerAccount(accountData: InsertRetailerAccount): Promise<RetailerAccount> {
+    const [account] = await db.insert(retailerAccounts).values(accountData).returning();
+    return account;
+  }
+
+  async getRetailerAccount(userId: number, companyId: number): Promise<RetailerAccount | undefined> {
+    const [account] = await db
+      .select()
+      .from(retailerAccounts)
+      .where(and(eq(retailerAccounts.userId, userId), eq(retailerAccounts.companyId, companyId)));
+    return account;
+  }
+
+  async getRetailerAccountsByUser(userId: number): Promise<RetailerAccount[]> {
+    return await db.select().from(retailerAccounts).where(eq(retailerAccounts.userId, userId));
+  }
+
+  async getRetailerAccountsByCompany(companyId: number): Promise<RetailerAccount[]> {
+    return await db.select().from(retailerAccounts).where(eq(retailerAccounts.companyId, companyId));
+  }
+
+  async updateRetailerAccount(id: number, updates: Partial<RetailerAccount>): Promise<RetailerAccount | undefined> {
+    const [account] = await db
+      .update(retailerAccounts)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(retailerAccounts.id, id))
+      .returning();
+    return account;
+  }
+
+  async deleteRetailerAccount(id: number): Promise<boolean> {
+    const result = await db.delete(retailerAccounts).where(eq(retailerAccounts.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Retailer Subscription Methods
+  async createRetailerSubscription(subscriptionData: InsertRetailerSubscription): Promise<RetailerSubscription> {
+    const [subscription] = await db.insert(retailerSubscriptions).values(subscriptionData).returning();
+    return subscription;
+  }
+
+  async getRetailerSubscription(id: number): Promise<RetailerSubscription | undefined> {
+    const [subscription] = await db.select().from(retailerSubscriptions).where(eq(retailerSubscriptions.id, id));
+    return subscription;
+  }
+
+  async getRetailerSubscriptionByCompany(companyId: number): Promise<RetailerSubscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(retailerSubscriptions)
+      .where(eq(retailerSubscriptions.companyId, companyId));
+    return subscription;
+  }
+
+  async getRetailerSubscriptionByStripeCustomer(stripeCustomerId: string): Promise<RetailerSubscription | undefined> {
+    const [subscription] = await db
+      .select()
+      .from(retailerSubscriptions)
+      .where(eq(retailerSubscriptions.stripeCustomerId, stripeCustomerId));
+    return subscription;
+  }
+
+  async updateRetailerSubscription(id: number, updates: Partial<RetailerSubscription>): Promise<RetailerSubscription | undefined> {
+    const [subscription] = await db
+      .update(retailerSubscriptions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(retailerSubscriptions.id, id))
+      .returning();
+    return subscription;
+  }
+
+  async cancelRetailerSubscription(id: number, cancelAtPeriodEnd: boolean): Promise<RetailerSubscription | undefined> {
+    const updates: Partial<RetailerSubscription> = {
+      cancelAtPeriodEnd,
+      status: cancelAtPeriodEnd ? 'active' : 'canceled',
+      updatedAt: new Date()
+    };
+    
+    if (!cancelAtPeriodEnd) {
+      updates.canceledAt = new Date();
+    }
+    
+    const [subscription] = await db
+      .update(retailerSubscriptions)
+      .set(updates)
+      .where(eq(retailerSubscriptions.id, id))
+      .returning();
+    return subscription;
+  }
+
+  // Retailer API Key Methods
+  async createRetailerApiKey(apiKeyData: InsertRetailerApiKey): Promise<RetailerApiKey> {
+    const [apiKey] = await db.insert(retailerApiKeys).values(apiKeyData).returning();
+    return apiKey;
+  }
+
+  async getRetailerApiKey(id: number): Promise<RetailerApiKey | undefined> {
+    const [apiKey] = await db.select().from(retailerApiKeys).where(eq(retailerApiKeys.id, id));
+    return apiKey;
+  }
+
+  async getRetailerApiKeyByHash(keyHash: string): Promise<RetailerApiKey | undefined> {
+    const [apiKey] = await db.select().from(retailerApiKeys).where(eq(retailerApiKeys.keyHash, keyHash));
+    return apiKey;
+  }
+
+  async getRetailerApiKeysByCompany(companyId: number): Promise<RetailerApiKey[]> {
+    return await db
+      .select()
+      .from(retailerApiKeys)
+      .where(and(eq(retailerApiKeys.companyId, companyId), eq(retailerApiKeys.isActive, true)));
+  }
+
+  async updateRetailerApiKey(id: number, updates: Partial<RetailerApiKey>): Promise<RetailerApiKey | undefined> {
+    const [apiKey] = await db
+      .update(retailerApiKeys)
+      .set(updates)
+      .where(eq(retailerApiKeys.id, id))
+      .returning();
+    return apiKey;
+  }
+
+  async revokeRetailerApiKey(id: number): Promise<RetailerApiKey | undefined> {
+    const [apiKey] = await db
+      .update(retailerApiKeys)
+      .set({ isActive: false, revokedAt: new Date() })
+      .where(eq(retailerApiKeys.id, id))
+      .returning();
+    return apiKey;
+  }
+
+  async deleteRetailerApiKey(id: number): Promise<boolean> {
+    const result = await db.delete(retailerApiKeys).where(eq(retailerApiKeys.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Retailer Invoice Methods
+  async createRetailerInvoice(invoiceData: InsertRetailerInvoice): Promise<RetailerInvoice> {
+    const [invoice] = await db.insert(retailerInvoices).values(invoiceData).returning();
+    return invoice;
+  }
+
+  async getRetailerInvoice(id: number): Promise<RetailerInvoice | undefined> {
+    const [invoice] = await db.select().from(retailerInvoices).where(eq(retailerInvoices.id, id));
+    return invoice;
+  }
+
+  async getRetailerInvoiceByNumber(invoiceNumber: string): Promise<RetailerInvoice | undefined> {
+    const [invoice] = await db
+      .select()
+      .from(retailerInvoices)
+      .where(eq(retailerInvoices.invoiceNumber, invoiceNumber));
+    return invoice;
+  }
+
+  async getRetailerInvoicesByCompany(companyId: number, filters?: { status?: string; limit?: number }): Promise<RetailerInvoice[]> {
+    let query = db.select().from(retailerInvoices).where(eq(retailerInvoices.companyId, companyId));
+    
+    if (filters?.status) {
+      query = query.where(eq(retailerInvoices.status, filters.status)) as any;
+    }
+    
+    query = query.orderBy(desc(retailerInvoices.invoiceDate)) as any;
+    
+    if (filters?.limit) {
+      query = query.limit(filters.limit) as any;
+    }
+    
+    return await query;
+  }
+
+  async updateRetailerInvoice(id: number, updates: Partial<RetailerInvoice>): Promise<RetailerInvoice | undefined> {
+    const [invoice] = await db
+      .update(retailerInvoices)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(retailerInvoices.id, id))
+      .returning();
+    return invoice;
+  }
+
+  async markRetailerInvoicePaid(id: number, paymentDate: Date, amountPaid: number): Promise<RetailerInvoice | undefined> {
+    const [invoice] = await db
+      .update(retailerInvoices)
+      .set({
+        status: 'paid',
+        paidAt: paymentDate,
+        amountPaid,
+        amountDue: 0,
+        updatedAt: new Date()
+      })
+      .where(eq(retailerInvoices.id, id))
+      .returning();
+    return invoice;
+  }
+
+  // Retailer Usage Metrics Methods
+  async createRetailerUsageMetric(metricData: InsertRetailerUsageMetric): Promise<RetailerUsageMetric> {
+    const [metric] = await db.insert(retailerUsageMetrics).values(metricData).returning();
+    return metric;
+  }
+
+  async getRetailerUsageMetrics(companyId: number, dateRange?: { start: Date; end: Date }): Promise<RetailerUsageMetric[]> {
+    let query = db.select().from(retailerUsageMetrics).where(eq(retailerUsageMetrics.companyId, companyId));
+    
+    if (dateRange) {
+      query = query.where(
+        and(
+          gte(retailerUsageMetrics.date, dateRange.start),
+          lt(retailerUsageMetrics.date, dateRange.end)
+        )
+      ) as any;
+    }
+    
+    return await query.orderBy(desc(retailerUsageMetrics.date));
+  }
+
+  async updateRetailerUsageMetric(id: number, updates: Partial<RetailerUsageMetric>): Promise<RetailerUsageMetric | undefined> {
+    const [metric] = await db
+      .update(retailerUsageMetrics)
+      .set(updates)
+      .where(eq(retailerUsageMetrics.id, id))
+      .returning();
+    return metric;
+  }
+
+  // Retailer Analytics Methods
+  async getRetailerDashboardStats(companyId: number): Promise<{
+    totalOrders: number;
+    completedOrders: number;
+    activeOrders: number;
+    totalRevenue: number;
+    thisMonthOrders: number;
+    thisMonthRevenue: number;
+  }> {
+    // Get all orders for this company (matched by retailer name)
+    const company = await this.getCompany(companyId);
+    if (!company) {
+      return {
+        totalOrders: 0,
+        completedOrders: 0,
+        activeOrders: 0,
+        totalRevenue: 0,
+        thisMonthOrders: 0,
+        thisMonthRevenue: 0
+      };
+    }
+
+    const allOrders = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.retailerName, company.name));
+
+    const now = new Date();
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const totalOrders = allOrders.length;
+    const completedOrders = allOrders.filter((o: Order) => o.status === 'completed' || o.status === 'delivered').length;
+    const activeOrders = allOrders.filter((o: Order) => !['completed', 'delivered', 'cancelled', 'refunded'].includes(o.status || '')).length;
+    const totalRevenue = allOrders
+      .filter((o: Order) => o.status === 'completed' || o.status === 'delivered')
+      .reduce((sum: number, o: Order) => sum + (o.totalPrice || 0), 0);
+
+    const thisMonthOrdersList = allOrders.filter((o: Order) => {
+      const orderDate = new Date(o.createdAt);
+      return orderDate >= thisMonthStart;
+    });
+
+    const thisMonthOrders = thisMonthOrdersList.length;
+    const thisMonthRevenue = thisMonthOrdersList
+      .filter((o: Order) => o.status === 'completed' || o.status === 'delivered')
+      .reduce((sum: number, o: Order) => sum + (o.totalPrice || 0), 0);
+
+    return {
+      totalOrders,
+      completedOrders,
+      activeOrders,
+      totalRevenue,
+      thisMonthOrders,
+      thisMonthRevenue
+    };
+  }
+
+  async getRetailerOrderHistory(companyId: number, filters?: { startDate?: Date; endDate?: Date; status?: string; limit?: number }): Promise<Order[]> {
+    const company = await this.getCompany(companyId);
+    if (!company) {
+      return [];
+    }
+
+    let query = db
+      .select()
+      .from(orders)
+      .where(eq(orders.retailerName, company.name));
+
+    if (filters?.status) {
+      query = query.where(eq(orders.status, filters.status)) as any;
+    }
+
+    if (filters?.startDate) {
+      query = query.where(gte(orders.createdAt, filters.startDate)) as any;
+    }
+
+    if (filters?.endDate) {
+      query = query.where(lt(orders.createdAt, filters.endDate)) as any;
+    }
+
+    query = query.orderBy(desc(orders.createdAt)) as any;
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit) as any;
+    }
+
+    return await query;
   }
 }
 
