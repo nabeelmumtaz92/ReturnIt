@@ -1,0 +1,44 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Development files
+.env
+.env.local
+*.log
+
+# Git
+.git
+.gitignore
+
+# Documentation
+*.md
+docs/
+screenshots/
+design/
+
+# Test files
+tests/
+*.test.ts
+*.test.js
+playwright.config.ts
+
+# Mobile apps
+mobile-apps/
+mobile-driver-app/
+quick-mobile-test/
+
+# Build artifacts
+dist/
+.cache
+
+# IDE
+.vscode
+.idea
+
+# Misc
+attached_assets/
+reports/
+*.png
+*.jpg
+*.jpeg
