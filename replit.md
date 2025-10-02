@@ -32,12 +32,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Core Data Models
 - **Users**: Authentication with driver/customer roles, Stripe Connect integration, payment preferences.
-- **Orders**: Full lifecycle management (created, assigned, picked_up, dropped_off, refunded), payment processing with 70/30 split, retailer tracking.
+- **Orders**: Full lifecycle management (created, assigned, picked_up, dropped_off, refunded), payment processing with 70/30 split, retailer tracking, API metadata for programmatic returns.
 - **Driver Payouts**: Tracking for instant vs. weekly payments, Stripe transfers, 1099 generation.
 - **Driver Incentives**: Bonus system (size-based, peak season, multi-stop).
 - **Business Information**: Company profile, contact details, mission statements.
 - **Companies**: St. Louis area business directory with auto-population, category filtering, return policy preferences.
 - **App Settings**: System-wide configuration storage (pricing, surge multipliers, feature flags) with admin management interface.
+- **Retailer Accounts**: Multi-admin access control with role management, company association, invitation system.
+- **Retailer Subscriptions**: Stripe billing integration, plan management, usage tracking.
+- **Retailer API Keys**: Environment-aware key generation (test/live), SHA-256 hashing, scoped permissions, rate limiting, usage tracking.
+- **Retailer Webhooks**: Event subscription management, HMAC signature verification, retry logic, health monitoring.
+- **Retailer Webhook Deliveries**: Complete audit trail of delivery attempts, response tracking, failure analysis.
 
 ## Authentication and Authorization
 - **Authentication**: Email/Password (bcrypt), Google, Apple, Facebook sign-in via Passport.js. Exclusive admin access restricted to specific emails with auto-redirection to the admin dashboard. Persistent authentication (30-day session) for mobile.
@@ -55,7 +60,8 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Developer Console AI**: Upgraded AI console with real OpenAI integration (GPT-4o), conversational responses, project-aware context, and intelligent code suggestions.
 - **Payment Processing**: Multi-method (cards, Apple Pay, Google Pay, PayPal via Stripe), promotional codes, driver incentive system, 70/30 payment split, instant payout capabilities.
 - **SEO Optimization**: Comprehensive meta tags, Open Graph tags, Twitter cards, structured data, canonical URLs, and performance-optimized DNS prefetch.
-- **Retailer API & Integration System**: Programmatic access for retailers to create returns, manage API keys, and integrate via webhooks. Supports physical gift card delivery system.
+- **Retailer Self-Service Portal (Tier 1)**: Complete onboarding system with company registration, subscription management ($99/mo), API key generation, invoice tracking, usage analytics dashboard with 20+ API endpoints and 5 database tables.
+- **Retailer API & Integration System (Tier 2)**: RESTful API v1 with Bearer token auth, POST/GET /api/v1/returns endpoints, rate limiting (1000 req/hr), environment-aware API keys (ret_test_/ret_live_), auto-dispatch integration, webhook notification system with HMAC signatures, retry logic, and delivery tracking. Creates competitive moat through network effects and high switching costs.
 
 # External Dependencies
 
