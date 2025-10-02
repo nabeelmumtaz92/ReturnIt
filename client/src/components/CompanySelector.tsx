@@ -36,14 +36,14 @@ interface Company {
 }
 
 interface CompanyLocation {
-  id: number;
-  companyId: number;
+  id?: number;
+  companyId?: number;
   name: string;
   address: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  acceptsReturns: boolean;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  acceptsReturns?: boolean;
 }
 
 interface ReturnPolicy {
@@ -91,7 +91,21 @@ export default function CompanySelector({
 
   // Fetch companies based on search query
   const { data: companies = [], isLoading } = useQuery({
-    queryKey: ['/api/companies/search', { q: searchQuery, category: selectedCategory }],
+    queryKey: ['/api/companies/search', searchQuery, selectedCategory],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (searchQuery) params.append('q', searchQuery);
+      if (selectedCategory) params.append('category', selectedCategory);
+      
+      const url = `/api/companies/search${params.toString() ? '?' + params.toString() : ''}`;
+      const res = await fetch(url, { credentials: 'include' });
+      
+      if (!res.ok) {
+        throw new Error(`Failed to fetch companies: ${res.statusText}`);
+      }
+      
+      return res.json();
+    },
     enabled: isOpen || searchQuery.length > 0,
   });
 
@@ -162,6 +176,10 @@ export default function CompanySelector({
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     setIsOpen(true);
+    // Clear selected company when user starts typing to allow new search
+    if (selectedCompany && value !== selectedCompany.name) {
+      // Don't clear selection state here, parent component manages it
+    }
   };
 
   const categories = [
@@ -205,7 +223,7 @@ export default function CompanySelector({
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             type="text"
-            value={selectedCompany?.name || searchQuery}
+            value={isOpen ? searchQuery : (selectedCompany?.name || searchQuery)}
             onChange={(e) => handleSearchChange(e.target.value)}
             onFocus={() => setIsOpen(true)}
             placeholder={placeholder}
@@ -252,7 +270,17 @@ export default function CompanySelector({
                   {companies.map((company: Company, index: number) => (
                     <div key={company.id} className="border-b border-gray-100 last:border-b-0">
                       {/* Company Header */}
-                      <div className="p-4 hover:bg-amber-50 transition-colors">
+                      <div 
+                        className={`p-4 hover:bg-amber-50 transition-colors ${
+                          (!company.stLouisLocations || company.stLouisLocations.length <= 1) ? 'cursor-pointer' : ''
+                        }`}
+                        onClick={() => {
+                          if (!company.stLouisLocations || company.stLouisLocations.length <= 1) {
+                            handleCompanySelect(company, company.stLouisLocations?.[0]);
+                          }
+                        }}
+                        data-testid={`company-card-${company.id}`}
+                      >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -285,7 +313,10 @@ export default function CompanySelector({
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => toggleCompanyExpansion(company.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleCompanyExpansion(company.id);
+                              }}
                               className="text-gray-400 hover:text-gray-600"
                             >
                               {expandedCompany === company.id ? "Hide Locations" : "Show Locations"}
@@ -294,7 +325,10 @@ export default function CompanySelector({
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => handleCompanySelect(company, company.stLouisLocations?.[0])}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCompanySelect(company, company.stLouisLocations?.[0]);
+                              }}
                               className="text-amber-600 hover:text-amber-800"
                               data-testid={`select-company-${company.id}`}
                             >
@@ -318,17 +352,24 @@ export default function CompanySelector({
                                 <div className="flex-1">
                                   <h4 className="font-medium text-gray-900 text-sm">{location.name}</h4>
                                   <p className="text-sm text-gray-600 mt-1">{location.address}</p>
-                                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                                    <div className="flex items-center gap-1">
-                                      <MapPin className="h-3 w-3" />
-                                      {location.city}, {location.state} {location.zipCode}
+                                  {(location.city || location.state || location.zipCode || location.acceptsReturns) && (
+                                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+                                      {(location.city || location.state || location.zipCode) && (
+                                        <div className="flex items-center gap-1">
+                                          <MapPin className="h-3 w-3" />
+                                          {location.city && location.state && location.zipCode 
+                                            ? `${location.city}, ${location.state} ${location.zipCode}`
+                                            : (location.city || location.state || location.zipCode)
+                                          }
+                                        </div>
+                                      )}
+                                      {location.acceptsReturns && (
+                                        <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                          Accepts Returns
+                                        </Badge>
+                                      )}
                                     </div>
-                                    {location.acceptsReturns && (
-                                      <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
-                                        Accepts Returns
-                                      </Badge>
-                                    )}
-                                  </div>
+                                  )}
                                 </div>
                                 <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
                               </div>

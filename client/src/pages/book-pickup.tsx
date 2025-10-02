@@ -196,6 +196,16 @@ export default function BookPickup() {
     const required = ['retailer', 'orderName', 'returnReason', 'itemValue'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
+    // DEBUG: Log all values to help troubleshoot
+    console.log('🔍 Step 2 Validation Debug:', {
+      retailer: formData.retailer,
+      orderName: formData.orderName,
+      returnReason: formData.returnReason,
+      itemValue: formData.itemValue,
+      itemCategories: formData.itemCategories,
+      missing: missing
+    });
+    
     if (formData.itemCategories.length === 0) {
       toast({
         title: "Item Categories Required",
@@ -208,12 +218,14 @@ export default function BookPickup() {
     if (missing.length > 0) {
       toast({
         title: "Missing information",
-        description: "Please fill in all required fields",
+        description: `Please fill in all required fields. Missing: ${missing.join(', ')}`,
         variant: "destructive",
       });
+      console.error('❌ Missing required fields:', missing);
       return;
     }
     
+    console.log('✅ Step 2 validation passed, advancing to step 3');
     setCurrentStep('step3');
   };
 
