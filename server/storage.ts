@@ -29,6 +29,8 @@ import {
   type RetailerApiKey, type InsertRetailerApiKey,
   type RetailerInvoice, type InsertRetailerInvoice,
   type RetailerUsageMetric, type InsertRetailerUsageMetric,
+  type RetailerWebhook, type InsertRetailerWebhook,
+  type RetailerWebhookDelivery, type InsertRetailerWebhookDelivery,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -41,7 +43,8 @@ import {
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
   merchantPolicies, supportTicketsEnhanced, supportMessages,
   companies, returnPolicies, companyLocations, orderAuditLogs,
-  retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics
+  retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics,
+  retailerWebhooks, retailerWebhookDeliveries
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -345,6 +348,18 @@ export interface IStorage {
   createRetailerUsageMetric(metric: InsertRetailerUsageMetric): Promise<RetailerUsageMetric>;
   getRetailerUsageMetrics(companyId: number, dateRange?: { start: Date; end: Date }): Promise<RetailerUsageMetric[]>;
   updateRetailerUsageMetric(id: number, updates: Partial<RetailerUsageMetric>): Promise<RetailerUsageMetric | undefined>;
+  
+  // Retailer Webhook operations
+  createRetailerWebhook(webhook: InsertRetailerWebhook): Promise<RetailerWebhook>;
+  getRetailerWebhook(id: number): Promise<RetailerWebhook | undefined>;
+  getRetailerWebhooksByCompany(companyId: number): Promise<RetailerWebhook[]>;
+  getActiveRetailerWebhooks(companyId: number, eventType?: string): Promise<RetailerWebhook[]>;
+  updateRetailerWebhook(id: number, updates: Partial<RetailerWebhook>): Promise<RetailerWebhook | undefined>;
+  deleteRetailerWebhook(id: number): Promise<boolean>;
+  
+  createRetailerWebhookDelivery(delivery: InsertRetailerWebhookDelivery): Promise<RetailerWebhookDelivery>;
+  getRetailerWebhookDeliveries(webhookId: number, limit?: number): Promise<RetailerWebhookDelivery[]>;
+  getRetailerWebhookDeliveriesByOrder(orderId: string): Promise<RetailerWebhookDelivery[]>;
   
   // Retailer Analytics operations (aggregated data)
   getRetailerDashboardStats(companyId: number): Promise<{

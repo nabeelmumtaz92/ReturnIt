@@ -2508,3 +2508,18 @@ export const insertRetailerUsageMetricSchema = createInsertSchema(retailerUsageM
   id: true,
   createdAt: true,
 });
+
+export type RetailerWebhook = typeof retailerWebhooks.$inferSelect;
+export type InsertRetailerWebhook = typeof retailerWebhooks.$inferInsert;
+export const insertRetailerWebhookSchema = createInsertSchema(retailerWebhooks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RetailerWebhookDelivery = typeof retailerWebhookDeliveries.$inferSelect;
+export type InsertRetailerWebhookDelivery = typeof retailerWebhookDeliveries.$inferInsert;
+export const insertRetailerWebhookDeliverySchema = createInsertSchema(retailerWebhookDeliveries).omit({
+  id: true,
+  createdAt: true,
+});
