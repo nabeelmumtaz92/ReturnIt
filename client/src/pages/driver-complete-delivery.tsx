@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, CheckCircle, CreditCard, DollarSign, Gift, FileText } from "lucide-react";
+import { AlertTriangle, CheckCircle, CreditCard, Gift, FileText } from "lucide-react";
 
 export default function DriverCompleteDelivery() {
   const [, params] = useRoute("/driver/complete/:orderId");
@@ -204,17 +204,6 @@ export default function DriverCompleteDelivery() {
                     <div>
                       <p className="font-medium">Store Credit</p>
                       <p className="text-sm text-gray-500">Instant credit to customer's ReturnIt account</p>
-                    </div>
-                  </Label>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="cash" id="cash" data-testid="radio-cash" />
-                  <Label htmlFor="cash" className="flex items-center gap-2 cursor-pointer">
-                    <DollarSign className="w-4 h-4" />
-                    <div>
-                      <p className="font-medium">Cash Refund</p>
-                      <p className="text-sm text-gray-500">Driver provides cash to customer (requires admin approval)</p>
                     </div>
                   </Label>
                 </div>

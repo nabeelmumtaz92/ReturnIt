@@ -4951,7 +4951,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Fire webhook for return delivered to store
       await webhookService.fireReturnDelivered(completedOrder);
 
-      // 3. Process customer refund based on selected method
+      // 3. Validate refund method (only original_payment and store_credit allowed)
+      const validRefundMethods = ['original_payment', 'store_credit'];
+      if (!validRefundMethods.includes(refundMethod || '')) {
+        return res.status(400).json({ 
+          message: `Invalid refund method. Allowed methods: ${validRefundMethods.join(', ')}` 
+        });
+      }
+
+      // 4. Process customer refund based on selected method
       let refundResult: any = null;
 
       if (refundMethod === 'store_credit') {
@@ -4993,38 +5001,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           method: 'store_credit',
           status: 'completed',
           message: 'Store credit added instantly'
-        };
-
-      } else if (refundMethod === 'cash') {
-        // Cash refund - requires admin approval but mark as pending
-        await storage.updateOrder(orderId, {
-          paymentStatus: 'refund_processing',
-          status: 'delivered', // Keep as delivered until cash is provided
-          refundStatus: 'pending',
-          refundProcessedAt: new Date(),
-          refundNotes: `Cash refund requested by driver ${driverId}`
-        });
-
-        // Notify admin about cash refund request
-        await storage.createNotification({
-          userId: 1, // Admin user ID
-          type: 'cash_refund_request',
-          title: 'Cash Refund Request',
-          message: `Driver requested cash refund of $${refundAmount.toFixed(2)} for order ${orderId}. Admin approval required.`,
-          orderId: orderId,
-          data: {
-            refundAmount,
-            refundMethod: 'cash',
-            requestedBy: driverId,
-            requestedAt: new Date().toISOString()
-          }
-        });
-
-        refundResult = {
-          amount: refundAmount,
-          method: 'cash',
-          status: 'pending_approval',
-          message: 'Cash refund request submitted for admin approval'
         };
 
       } else {
@@ -5145,56 +5121,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin cash refund approval endpoint
-  app.post("/api/admin/approve-cash-refund/:orderId", requireSecureAdmin, async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const { approved, adminNotes } = req.body;
-      
-      const order = await storage.getOrder(orderId);
-      if (!order) {
-        return res.status(404).json({ message: "Order not found" });
-      }
-      
-      if (approved) {
-        // Approve cash refund
-        await storage.updateOrder(orderId, {
-          refundStatus: 'completed',
-          paymentStatus: 'refunded',
-          status: 'refunded',
-          refundCompletedAt: new Date(),
-          adminNotes: `Cash refund approved: ${adminNotes || 'No additional notes'}`
-        });
-        
-        // Notify customer
-        await storage.createNotification({
-          userId: order.userId,
-          type: 'refund_completed',
-          title: 'Cash Refund Approved',
-          message: `Your cash refund of $${(order.refundAmount || 0).toFixed(2)} has been approved and processed.`,
-          orderId: orderId,
-          data: {
-            refundAmount: order.refundAmount || 0,
-            refundMethod: 'cash',
-            approvedBy: 'admin'
-          }
-        });
-        
-        res.json({ success: true, message: "Cash refund approved" });
-      } else {
-        // Deny cash refund - revert to original payment method
-        await storage.updateOrder(orderId, {
-          refundStatus: 'failed',
-          adminNotes: `Cash refund denied: ${adminNotes || 'No reason provided'}`
-        });
-        
-        res.json({ success: true, message: "Cash refund denied" });
-      }
-    } catch (error: any) {
-      console.error("Error processing cash refund approval:", error);
-      res.status(500).json({ message: "Failed to process cash refund approval" });
-    }
-  });
 
   // Duplicate admin routes removed - using requireSecureAdmin middleware versions above
 

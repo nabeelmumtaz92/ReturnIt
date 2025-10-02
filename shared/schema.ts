@@ -595,7 +595,7 @@ export const orders = pgTable("orders", {
   stripeRefundId: text("stripe_refund_id"),
   refundAmount: real("refund_amount"), // Actual amount refunded (item cost only)
   itemCost: real("item_cost"), // Item cost only (excludes service fee and taxes)
-  refundMethod: text("refund_method"), // original_payment, store_credit, cash, check
+  refundMethod: text("refund_method"), // original_payment, store_credit
   refundStatus: text("refund_status"), // pending, processing, completed, failed
   refundProcessedAt: timestamp("refund_processed_at"),
   refundCompletedAt: timestamp("refund_completed_at"),
