@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
@@ -77,6 +77,17 @@ export default function CustomerMobileAppEnhanced() {
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
   const [newMessage, setNewMessage] = useState('');
+
+  // WebSocket state for real-time GPS tracking
+  const wsRef = useRef<WebSocket | null>(null);
+  const [wsConnected, setWsConnected] = useState(false);
+  const [driverLocation, setDriverLocation] = useState<{
+    lat: number;
+    lng: number;
+    timestamp: string;
+    eta?: string;
+    distance?: string;
+  } | null>(null);
 
   // Booking state with promo code
   const [bookingStep, setBookingStep] = useState<'details' | 'schedule' | 'payment' | 'confirmation'>('details');
@@ -275,6 +286,90 @@ export default function CustomerMobileAppEnhanced() {
       queryClient.invalidateQueries({ queryKey: ["/api/customers/notification-settings"] });
     },
   });
+
+  // WebSocket connection for real-time GPS tracking
+  useEffect(() => {
+    if (currentView === 'track-live' && selectedOrderData?.trackingNumber) {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/tracking`;
+      
+      console.log('🔌 Connecting to WebSocket for GPS tracking:', wsUrl);
+      
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        console.log('✅ WebSocket connected');
+        setWsConnected(true);
+        
+        // Join tracking room for this order
+        ws.send(JSON.stringify({
+          type: 'join_tracking',
+          trackingNumber: selectedOrderData.trackingNumber
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          console.log('📨 WebSocket message:', message);
+
+          if (message.type === 'location_update') {
+            // Update driver location from WebSocket
+            setDriverLocation({
+              lat: message.data.location.latitude,
+              lng: message.data.location.longitude,
+              timestamp: message.timestamp,
+              eta: message.data.eta,
+              distance: message.data.distance
+            });
+          } else if (message.type === 'initial_data') {
+            // Set initial driver location when joining
+            if (message.data.driverLocation) {
+              setDriverLocation({
+                lat: message.data.driverLocation.latitude,
+                lng: message.data.driverLocation.longitude,
+                timestamp: message.timestamp,
+                eta: message.data.estimatedArrival,
+                distance: message.data.distanceToPickup
+              });
+            }
+          } else if (message.type === 'status_update') {
+            // Refresh order data when status changes
+            queryClient.invalidateQueries({ queryKey: ["/api/customers/orders"] });
+            toast({
+              title: "Order Status Updated",
+              description: message.data.status,
+            });
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('❌ WebSocket error:', error);
+        setWsConnected(false);
+      };
+
+      ws.onclose = () => {
+        console.log('🔌 WebSocket disconnected');
+        setWsConnected(false);
+      };
+
+      // Cleanup on unmount or view change
+      return () => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'leave_tracking'
+          }));
+          ws.close();
+        }
+        wsRef.current = null;
+        setDriverLocation(null);
+      };
+    }
+  }, [currentView, selectedOrderData?.trackingNumber, queryClient, toast]);
 
   const calculateTotal = () => {
     const estimatedValue = parseFloat(bookingData.estimatedValue) || 0;
@@ -538,9 +633,38 @@ Thank you for using ReturnIt!
         <CardContent className="p-0">
           <div className="aspect-video bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center relative">
             <MapPin className="h-16 w-16 text-amber-600" />
+            
+            {/* WebSocket Connection Status */}
+            <div className="absolute top-4 right-4">
+              <Badge variant={wsConnected ? "default" : "secondary"} className={wsConnected ? "bg-green-500" : ""}>
+                {wsConnected ? "🟢 Live" : "⚫ Offline"}
+              </Badge>
+            </div>
+            
+            {/* Real-time Location Info */}
             <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg">
-              <p className="text-sm font-medium">Driver is 5 min away</p>
-              <p className="text-xs text-muted-foreground">Moving towards pickup location</p>
+              {driverLocation ? (
+                <>
+                  <p className="text-sm font-medium">
+                    {driverLocation.eta || "Calculating ETA..."}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {driverLocation.distance || "Moving towards pickup"}
+                  </p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Last updated: {new Date(driverLocation.timestamp).toLocaleTimeString()}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm font-medium">
+                    {wsConnected ? "Waiting for location..." : "Connecting..."}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {wsConnected ? "Driver location will appear shortly" : "Establishing connection"}
+                  </p>
+                </>
+              )}
             </div>
           </div>
         </CardContent>
