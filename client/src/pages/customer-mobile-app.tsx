@@ -94,24 +94,27 @@ export default function CustomerMobileAppEnhanced() {
     discount: 0
   });
 
-  // Mock data for demo
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
-    { id: '1', type: 'card', last4: '4242', expiryDate: '12/25', isDefault: true },
-    { id: '2', type: 'paypal', isDefault: false }
-  ]);
+  // Backend-connected data with React Query
+  const { data: paymentMethods = [], isLoading: paymentMethodsLoading } = useQuery<PaymentMethod[]>({
+    queryKey: ["/api/customers/payment-methods"],
+    enabled: isAuthenticated,
+  });
 
-  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([
-    { id: '1', label: 'Home', address: '123 Main St', city: 'St. Louis', state: 'MO', zipCode: '63101', isDefault: true },
-    { id: '2', label: 'Work', address: '456 Business Ave', city: 'St. Louis', state: 'MO', zipCode: '63102', isDefault: false }
-  ]);
+  const { data: savedAddresses = [], isLoading: addressesLoading } = useQuery<SavedAddress[]>({
+    queryKey: ["/api/customers/addresses"],
+    enabled: isAuthenticated,
+  });
 
-  const [notificationSettings, setNotificationSettings] = useState({
+  const { data: notificationSettings = {
     orderUpdates: true,
     driverMessages: true,
     promotions: false,
     push: true,
     sms: true,
     email: true
+  }, isLoading: notificationsLoading } = useQuery<any>({
+    queryKey: ["/api/customers/notification-settings"],
+    enabled: isAuthenticated,
   });
 
   if (!isAuthenticated) {
@@ -212,6 +215,65 @@ export default function CustomerMobileAppEnhanced() {
           variant: "destructive",
         });
       }
+    },
+  });
+
+  // Payment Methods Mutations
+  const addPaymentMethodMutation = useMutation({
+    mutationFn: (method: any) => apiRequest("POST", "/api/customers/payment-methods", method),
+    onSuccess: () => {
+      toast({ title: "Payment Method Added" });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/payment-methods"] });
+      setShowPaymentMethods(false);
+    },
+  });
+
+  const deletePaymentMethodMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/customers/payment-methods/${id}`, {}),
+    onSuccess: () => {
+      toast({ title: "Payment Method Removed" });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/payment-methods"] });
+    },
+  });
+
+  const setDefaultPaymentMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("POST", `/api/customers/payment-methods/${id}/set-default`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/payment-methods"] });
+    },
+  });
+
+  // Addresses Mutations
+  const addAddressMutation = useMutation({
+    mutationFn: (address: any) => apiRequest("POST", "/api/customers/addresses", address),
+    onSuccess: () => {
+      toast({ title: "Address Added" });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/addresses"] });
+      setShowAddresses(false);
+    },
+  });
+
+  const deleteAddressMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("DELETE", `/api/customers/addresses/${id}`, {}),
+    onSuccess: () => {
+      toast({ title: "Address Removed" });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/addresses"] });
+    },
+  });
+
+  const setDefaultAddressMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("POST", `/api/customers/addresses/${id}/set-default`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/addresses"] });
+    },
+  });
+
+  // Notification Settings Mutation
+  const updateNotificationsMutation = useMutation({
+    mutationFn: (settings: any) => apiRequest("PATCH", "/api/customers/notification-settings", settings),
+    onSuccess: () => {
+      toast({ title: "Notification Settings Updated" });
+      queryClient.invalidateQueries({ queryKey: ["/api/customers/notification-settings"] });
     },
   });
 
@@ -329,13 +391,23 @@ Thank you for using ReturnIt!
                     )}
                   </div>
                 </div>
-                <Button variant="ghost" size="sm">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => deletePaymentMethodMutation.mutate(method.id)}
+                  disabled={deletePaymentMethodMutation.isPending}
+                  data-testid={`button-delete-payment-${method.id}`}
+                >
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </CardContent>
             </Card>
           ))}
-          <Button className="w-full" variant="outline">
+          <Button 
+            className="w-full" 
+            variant="outline"
+            data-testid="button-add-payment-method"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add Payment Method
           </Button>
@@ -369,10 +441,20 @@ Thank you for using ReturnIt!
                     </p>
                   </div>
                   <div className="flex gap-1">
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      data-testid={`button-edit-address-${addr.id}`}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => deleteAddressMutation.mutate(addr.id)}
+                      disabled={deleteAddressMutation.isPending}
+                      data-testid={`button-delete-address-${addr.id}`}
+                    >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
@@ -380,7 +462,11 @@ Thank you for using ReturnIt!
               </CardContent>
             </Card>
           ))}
-          <Button className="w-full" variant="outline">
+          <Button 
+            className="w-full" 
+            variant="outline"
+            data-testid="button-add-address"
+          >
             <Plus className="h-4 w-4 mr-2" />
             Add New Address
           </Button>
@@ -413,10 +499,15 @@ Thank you for using ReturnIt!
               <Button
                 variant={notificationSettings[key as keyof typeof notificationSettings] ? "default" : "outline"}
                 size="sm"
-                onClick={() => setNotificationSettings({
-                  ...notificationSettings,
-                  [key]: !notificationSettings[key as keyof typeof notificationSettings]
-                })}
+                onClick={() => {
+                  const updated = {
+                    ...notificationSettings,
+                    [key]: !notificationSettings[key as keyof typeof notificationSettings]
+                  };
+                  updateNotificationsMutation.mutate(updated);
+                }}
+                disabled={updateNotificationsMutation.isPending}
+                data-testid={`button-toggle-${key}`}
               >
                 {notificationSettings[key as keyof typeof notificationSettings] ? 'On' : 'Off'}
               </Button>
