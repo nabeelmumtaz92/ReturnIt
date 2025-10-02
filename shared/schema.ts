@@ -2225,6 +2225,155 @@ export type InsertZipCodeManagement = z.infer<typeof insertZipCodeManagementSche
 export type OtpVerification = typeof otpVerification.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
 
+// === RETAILER SELF-SERVICE PORTAL TABLES ===
+
+// Retailer Accounts - Links users to companies with admin permissions
+export const retailerAccounts = pgTable("retailer_accounts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  role: text("role").notNull().default("admin"), // admin, manager, viewer
+  permissions: jsonb("permissions").default([]), // Array of specific permissions
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Retailer Subscriptions - Stripe billing and subscription management
+export const retailerSubscriptions = pgTable("retailer_subscriptions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  // Stripe details
+  stripeCustomerId: text("stripe_customer_id").notNull().unique(),
+  stripeSubscriptionId: text("stripe_subscription_id").unique(),
+  stripePriceId: text("stripe_price_id"),
+  
+  // Plan details
+  planType: text("plan_type").notNull().default("standard"), // starter, standard, premium, enterprise
+  billingCycle: text("billing_cycle").notNull().default("monthly"), // monthly, annual
+  monthlyFee: real("monthly_fee").notNull().default(0), // Base monthly fee
+  transactionFee: real("transaction_fee").default(0), // Per-transaction fee (can be 0)
+  
+  // Status
+  status: text("status").notNull().default("active"), // active, past_due, canceled, paused
+  currentPeriodStart: timestamp("current_period_start"),
+  currentPeriodEnd: timestamp("current_period_end"),
+  cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
+  canceledAt: timestamp("canceled_at"),
+  
+  // Usage tracking
+  includedOrders: integer("included_orders").default(0), // Orders included in monthly fee
+  totalOrders: integer("total_orders").default(0), // Total orders processed
+  currentMonthOrders: integer("current_month_orders").default(0),
+  
+  // Trial
+  trialEndsAt: timestamp("trial_ends_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Retailer API Keys - API authentication tokens
+export const retailerApiKeys = pgTable("retailer_api_keys", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  name: text("name").notNull(), // User-friendly name
+  keyPrefix: text("key_prefix").notNull(), // First 8 chars for identification (e.g., "ret_live_")
+  keyHash: text("key_hash").notNull(), // Hashed full key
+  
+  // Permissions
+  permissions: jsonb("permissions").default([]), // read, write, delete
+  scopes: jsonb("scopes").default([]), // orders, analytics, webhooks
+  
+  // Status
+  isActive: boolean("is_active").default(true).notNull(),
+  lastUsedAt: timestamp("last_used_at"),
+  expiresAt: timestamp("expires_at"),
+  
+  // Rate limiting
+  rateLimit: integer("rate_limit").default(1000), // Requests per hour
+  currentUsage: integer("current_usage").default(0),
+  
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  revokedAt: timestamp("revoked_at"),
+});
+
+// Retailer Invoices - Billing history and records
+export const retailerInvoices = pgTable("retailer_invoices", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  subscriptionId: integer("subscription_id").references(() => retailerSubscriptions.id),
+  
+  // Stripe details
+  stripeInvoiceId: text("stripe_invoice_id").unique(),
+  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  
+  // Invoice details
+  invoiceNumber: text("invoice_number").notNull().unique(),
+  invoiceDate: timestamp("invoice_date").defaultNow().notNull(),
+  dueDate: timestamp("due_date").notNull(),
+  paidAt: timestamp("paid_at"),
+  
+  // Amounts
+  subtotal: real("subtotal").notNull(),
+  tax: real("tax").default(0),
+  total: real("total").notNull(),
+  amountPaid: real("amount_paid").default(0),
+  amountDue: real("amount_due").notNull(),
+  
+  // Line items
+  lineItems: jsonb("line_items").default([]), // Array of {description, quantity, unitPrice, total}
+  
+  // Status
+  status: text("status").notNull().default("draft"), // draft, open, paid, void, uncollectible
+  
+  // Billing period
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  
+  // Documents
+  pdfUrl: text("pdf_url"),
+  
+  // Metadata
+  notes: text("notes"),
+  metadata: jsonb("metadata").default({}),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Retailer Usage Metrics - Track API usage and order volume
+export const retailerUsageMetrics = pgTable("retailer_usage_metrics", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  date: timestamp("date").notNull(), // Daily metrics
+  
+  // Order metrics
+  ordersCreated: integer("orders_created").default(0),
+  ordersCompleted: integer("orders_completed").default(0),
+  ordersCancelled: integer("orders_cancelled").default(0),
+  totalOrderValue: real("total_order_value").default(0),
+  
+  // API metrics
+  apiRequestsTotal: integer("api_requests_total").default(0),
+  apiRequestsSuccessful: integer("api_requests_successful").default(0),
+  apiRequestsFailed: integer("api_requests_failed").default(0),
+  
+  // Webhook metrics
+  webhooksDelivered: integer("webhooks_delivered").default(0),
+  webhooksFailed: integer("webhooks_failed").default(0),
+  
+  // Financial metrics
+  revenueGenerated: real("revenue_generated").default(0),
+  feesCharged: real("fees_charged").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Company and Return Policy Types
 export type Company = typeof companies.$inferSelect;
 export type InsertCompany = typeof companies.$inferInsert;
@@ -2248,4 +2397,44 @@ export const insertCompanyLocationSchema = createInsertSchema(companyLocations).
   id: true,
   createdAt: true,
   updatedAt: true,
+});
+
+// Retailer Portal Types
+export type RetailerAccount = typeof retailerAccounts.$inferSelect;
+export type InsertRetailerAccount = typeof retailerAccounts.$inferInsert;
+export const insertRetailerAccountSchema = createInsertSchema(retailerAccounts).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RetailerSubscription = typeof retailerSubscriptions.$inferSelect;
+export type InsertRetailerSubscription = typeof retailerSubscriptions.$inferInsert;
+export const insertRetailerSubscriptionSchema = createInsertSchema(retailerSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RetailerApiKey = typeof retailerApiKeys.$inferSelect;
+export type InsertRetailerApiKey = typeof retailerApiKeys.$inferInsert;
+export const insertRetailerApiKeySchema = createInsertSchema(retailerApiKeys).omit({
+  id: true,
+  createdAt: true,
+  revokedAt: true,
+});
+
+export type RetailerInvoice = typeof retailerInvoices.$inferSelect;
+export type InsertRetailerInvoice = typeof retailerInvoices.$inferInsert;
+export const insertRetailerInvoiceSchema = createInsertSchema(retailerInvoices).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RetailerUsageMetric = typeof retailerUsageMetrics.$inferSelect;
+export type InsertRetailerUsageMetric = typeof retailerUsageMetrics.$inferInsert;
+export const insertRetailerUsageMetricSchema = createInsertSchema(retailerUsageMetrics).omit({
+  id: true,
+  createdAt: true,
 });
