@@ -9479,6 +9479,209 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === WEBHOOKS ===
+  
+  // Get all webhooks for a company
+  app.get("/api/retailer/companies/:companyId/webhooks", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const webhooks = await storage.getRetailerWebhooksByCompany(parseInt(companyId));
+      res.json({ webhooks });
+    } catch (error) {
+      console.error("Error fetching webhooks:", error);
+      res.status(500).json({ message: "Failed to fetch webhooks" });
+    }
+  });
+
+  // Create a new webhook
+  app.post("/api/retailer/companies/:companyId/webhooks", isRetailer, async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const { url, name, description, subscribedEvents } = req.body;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_webhooks')) {
+        return res.status(403).json({ message: "Access denied - manage_webhooks permission required" });
+      }
+
+      // Generate webhook secret
+      const crypto = await import('crypto');
+      const secret = `whsec_${crypto.randomBytes(32).toString('hex')}`;
+
+      const webhook = await storage.createRetailerWebhook({
+        companyId: parseInt(companyId),
+        url,
+        name,
+        description,
+        secret,
+        subscribedEvents: subscribedEvents || [],
+        isActive: true,
+        maxRetries: 3,
+        retryBackoffMultiplier: 2,
+        timeoutSeconds: 10,
+        createdBy: userId
+      });
+
+      res.json({ webhook: { ...webhook, secret } });
+    } catch (error) {
+      console.error("Error creating webhook:", error);
+      res.status(500).json({ message: "Failed to create webhook" });
+    }
+  });
+
+  // Update webhook
+  app.patch("/api/retailer/companies/:companyId/webhooks/:webhookId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, webhookId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_webhooks')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const webhook = await storage.updateRetailerWebhook(parseInt(webhookId), req.body);
+      res.json({ webhook });
+    } catch (error) {
+      console.error("Error updating webhook:", error);
+      res.status(500).json({ message: "Failed to update webhook" });
+    }
+  });
+
+  // Delete webhook
+  app.delete("/api/retailer/companies/:companyId/webhooks/:webhookId", isRetailer, async (req, res) => {
+    try {
+      const { companyId, webhookId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_webhooks')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await storage.deleteRetailerWebhook(parseInt(webhookId));
+      res.json({ message: "Webhook deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting webhook:", error);
+      res.status(500).json({ message: "Failed to delete webhook" });
+    }
+  });
+
+  // Get webhook deliveries (logs)
+  app.get("/api/retailer/companies/:companyId/webhooks/:webhookId/deliveries", isRetailer, async (req, res) => {
+    try {
+      const { companyId, webhookId } = req.params;
+      const { limit = 50 } = req.query;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const deliveries = await storage.getRetailerWebhookDeliveries(
+        parseInt(webhookId), 
+        parseInt(limit as string)
+      );
+      res.json({ deliveries });
+    } catch (error) {
+      console.error("Error fetching webhook deliveries:", error);
+      res.status(500).json({ message: "Failed to fetch webhook deliveries" });
+    }
+  });
+
+  // Test webhook - send test event
+  app.post("/api/retailer/companies/:companyId/webhooks/:webhookId/test", isRetailer, async (req, res) => {
+    try {
+      const { companyId, webhookId } = req.params;
+      const userId = req.session!.user!.id;
+
+      const account = await storage.getRetailerAccount(userId, parseInt(companyId));
+      if (!account || !account.permissions.includes('manage_webhooks')) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const webhook = await storage.getRetailerWebhook(parseInt(webhookId));
+      if (!webhook) {
+        return res.status(404).json({ message: "Webhook not found" });
+      }
+
+      // Create test payload
+      const testPayload = {
+        event: "webhook.test",
+        data: {
+          message: "This is a test webhook delivery from ReturnIt",
+          timestamp: new Date().toISOString(),
+          webhook_id: webhook.id,
+          company_id: webhook.companyId
+        },
+        metadata: {
+          test: true,
+          triggered_by: userId
+        }
+      };
+
+      // Sign payload
+      const crypto = await import('crypto');
+      const payloadString = JSON.stringify(testPayload);
+      const signature = `sha256=${crypto.createHmac('sha256', webhook.secret).update(payloadString).digest('hex')}`;
+
+      // Send test webhook
+      const response = await fetch(webhook.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-ReturnIt-Event': 'webhook.test',
+          'X-ReturnIt-Signature': signature,
+          'X-ReturnIt-Webhook-ID': webhook.id.toString(),
+          'X-ReturnIt-Timestamp': new Date().toISOString()
+        },
+        body: payloadString,
+        signal: AbortSignal.timeout(webhook.timeoutSeconds * 1000)
+      });
+
+      const responseText = await response.text();
+
+      // Log the test delivery
+      await storage.createRetailerWebhookDelivery({
+        webhookId: webhook.id,
+        eventType: "webhook.test",
+        requestPayload: testPayload,
+        requestHeaders: {
+          'Content-Type': 'application/json',
+          'X-ReturnIt-Event': 'webhook.test',
+          'X-ReturnIt-Signature': signature
+        },
+        responseStatus: response.status,
+        responseBody: responseText.slice(0, 1000),
+        responseHeaders: Object.fromEntries(response.headers.entries()),
+        attemptNumber: 1,
+        isSuccessful: response.ok
+      });
+
+      res.json({ 
+        success: response.ok,
+        status: response.status,
+        response: responseText.slice(0, 500),
+        message: response.ok ? "Test webhook delivered successfully" : "Test webhook delivery failed"
+      });
+    } catch (error: any) {
+      console.error("Error testing webhook:", error);
+      res.status(500).json({ 
+        success: false,
+        message: error.message || "Failed to test webhook" 
+      });
+    }
+  });
+
   // === USAGE METRICS ===
   
   app.get("/api/retailer/companies/:companyId/metrics", isRetailer, async (req, res) => {
