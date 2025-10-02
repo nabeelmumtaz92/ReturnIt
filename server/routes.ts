@@ -5174,6 +5174,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complete gift card delivery to customer (second trip)
+  app.post("/api/driver/orders/:orderId/complete-gift-card-delivery", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const driverId = (req.session as any).user?.id;
+      const { deliveryNotes, deliveryPhotos, customerSignature } = req.body;
+
+      // 1. Verify driver is assigned to this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (order.driverId !== driverId) {
+        return res.status(403).json({ message: "You are not assigned to this order" });
+      }
+
+      // 2. Verify order has a gift card pending delivery
+      if (!order.hasPhysicalGiftCard) {
+        return res.status(400).json({ message: "This order does not have a gift card" });
+      }
+
+      if (order.giftCardDeliveryStatus === 'delivered') {
+        return res.status(400).json({ message: "Gift card has already been delivered" });
+      }
+
+      // 3. SECURITY: Require delivery photos (proof of delivery)
+      if (!deliveryPhotos || !Array.isArray(deliveryPhotos) || deliveryPhotos.length === 0) {
+        return res.status(400).json({ message: "Delivery photos are required for security" });
+      }
+
+      // 4. Update order with delivery completion
+      const updatedOrder = await storage.updateOrder(orderId, {
+        giftCardDeliveryStatus: 'delivered',
+        giftCardDeliveredAt: new Date(),
+        giftCardDeliveryPhotos: deliveryPhotos,
+        giftCardDeliveryNotes: deliveryNotes || '',
+        giftCardCustomerSignature: customerSignature || null
+      });
+
+      // 5. Notify customer that gift card has been delivered
+      await storage.createNotification({
+        userId: order.userId,
+        type: 'gift_card_delivered',
+        title: 'Gift Card Delivered',
+        message: `Your $${order.giftCardAmount?.toFixed(2) || '0.00'} gift card has been successfully delivered! You can now use it at the retailer.`,
+        orderId: orderId,
+        data: {
+          giftCardAmount: order.giftCardAmount,
+          deliveredAt: new Date().toISOString()
+        }
+      });
+
+      // 6. Log for audit trail
+      console.log(`✅ Gift card ($${order.giftCardAmount?.toFixed(2)}) delivered to customer for order ${orderId}`);
+
+      res.json({
+        success: true,
+        message: "Gift card delivery completed successfully",
+        order: updatedOrder
+      });
+
+    } catch (error: any) {
+      console.error("Error completing gift card delivery:", error);
+      res.status(500).json({ message: "Failed to complete gift card delivery" });
+    }
+  });
+
   // Customer refund preferences endpoint
   app.patch("/api/user/refund-preferences", isAuthenticated, async (req, res) => {
     try {

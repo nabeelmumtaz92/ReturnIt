@@ -623,11 +623,14 @@ export const orders = pgTable("orders", {
   // Physical gift card handling
   hasPhysicalGiftCard: boolean("has_physical_gift_card").default(false), // Retailer issued physical gift card
   giftCardAmount: real("gift_card_amount"), // Dollar value shown on the retailer's gift card
-  giftCardPhotos: jsonb("gift_card_photos").default([]), // Photos of the gift card
+  giftCardPhotos: jsonb("gift_card_photos").default([]), // Photos of the gift card from retailer
   giftCardDeliveryStatus: text("gift_card_delivery_status").default("pending"), // pending, in_transit, delivered
   giftCardDeliveredAt: timestamp("gift_card_delivered_at"), // When gift card was delivered to customer
   giftCardDeliveryFee: real("gift_card_delivery_fee").default(0), // $3.99 for returning gift card
   giftCardDeliveryPaymentIntentId: text("gift_card_delivery_payment_intent_id"), // Stripe PI for delivery fee charge
+  giftCardDeliveryPhotos: jsonb("gift_card_delivery_photos").default([]), // Photos of gift card delivery to customer (proof of delivery)
+  giftCardDeliveryNotes: text("gift_card_delivery_notes"), // Driver notes from delivery to customer
+  giftCardCustomerSignature: text("gift_card_customer_signature"), // Customer signature/confirmation upon receipt
   
   // Customer refund preferences
   customerRefundPreference: text("customer_refund_preference").default("original_payment"), // original_payment, store_credit

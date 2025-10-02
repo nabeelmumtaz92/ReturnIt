@@ -58,6 +58,8 @@ const DriverPerformance = lazy(() => import("@/pages/driver-performance"));
 const RouteOptimization = lazy(() => import("@/pages/route-optimization"));
 const ChatCenter = lazy(() => import("@/pages/chat-center"));
 const DriverJob = lazy(() => import("@/pages/driver-job"));
+const DriverCompleteDelivery = lazy(() => import("@/pages/driver-complete-delivery"));
+const DriverCompleteGiftCardDelivery = lazy(() => import("@/pages/driver-complete-gift-card-delivery"));
 const RealTimeTrackingAdvanced = lazy(() => import("@/pages/real-time-tracking-advanced"));
 const BusinessIntelligence = lazy(() => import("@/pages/business-intelligence"));
 const NotificationCenter = lazy(() => import("@/pages/notification-center"));
@@ -186,6 +188,8 @@ function Router() {
       </Route>
       <Route path="/driver-portal" component={DriverPortal} />
       <Route path="/driver-portal/job/:id" component={DriverJob} />
+      <Route path="/driver/complete/:orderId" component={DriverCompleteDelivery} />
+      <Route path="/driver/complete-gift-card/:orderId" component={DriverCompleteGiftCardDelivery} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
