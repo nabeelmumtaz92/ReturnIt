@@ -5200,9 +5200,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Gift card has already been delivered" });
       }
 
-      // 3. SECURITY: Require delivery photos (proof of delivery)
-      if (!deliveryPhotos || !Array.isArray(deliveryPhotos) || deliveryPhotos.length === 0) {
+      // 3. SECURITY: Require minimum 2 delivery photos (proof of delivery)
+      if (!deliveryPhotos || !Array.isArray(deliveryPhotos)) {
         return res.status(400).json({ message: "Delivery photos are required for security" });
+      }
+
+      if (deliveryPhotos.length < 2) {
+        return res.status(400).json({ 
+          message: `At least 2 delivery proof photos are required for security. You provided ${deliveryPhotos.length}.` 
+        });
+      }
+
+      // Validate that photos are valid base64 data URLs
+      const dataUrlPattern = /^data:image\/(jpeg|jpg|png|gif|webp);base64,([A-Za-z0-9+/=]+)$/;
+      
+      for (let i = 0; i < deliveryPhotos.length; i++) {
+        const photo = deliveryPhotos[i];
+        
+        // Check if it's a string
+        if (typeof photo !== 'string') {
+          return res.status(400).json({ 
+            message: `Photo ${i + 1} is invalid. All photos must be base64-encoded image data URLs.` 
+          });
+        }
+
+        // Check if it matches the data URL pattern
+        const match = photo.match(dataUrlPattern);
+        if (!match) {
+          return res.status(400).json({ 
+            message: `Photo ${i + 1} has invalid format. Expected format: data:image/[jpeg|png|gif|webp];base64,[base64data]` 
+          });
+        }
+
+        // Extract and validate base64 data
+        const base64Data = match[2];
+        if (!base64Data || base64Data.length < 100) {
+          return res.status(400).json({ 
+            message: `Photo ${i + 1} appears to be empty or too small. Please upload actual photos.` 
+          });
+        }
+
+        // Try to decode the base64 data to verify it's valid
+        try {
+          const buffer = Buffer.from(base64Data, 'base64');
+          if (buffer.length < 100) {
+            return res.status(400).json({ 
+              message: `Photo ${i + 1} is too small to be a valid image. Please upload actual photos.` 
+            });
+          }
+        } catch (error) {
+          return res.status(400).json({ 
+            message: `Photo ${i + 1} contains invalid base64 data. Please upload valid photos.` 
+          });
+        }
       }
 
       // 4. Update order with delivery completion

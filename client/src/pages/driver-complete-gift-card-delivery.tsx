@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useRoute } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -7,9 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { Camera, CheckCircle, Gift, FileText, ArrowLeft } from "lucide-react";
+import { Camera, CheckCircle, Gift, ArrowLeft, Upload, X, Image as ImageIcon } from "lucide-react";
 import { Link } from "wouter";
 
 export default function DriverCompleteGiftCardDelivery() {
@@ -17,11 +16,13 @@ export default function DriverCompleteGiftCardDelivery() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [deliveryNotes, setDeliveryNotes] = useState("");
-  const [deliveryPhotosUploaded, setDeliveryPhotosUploaded] = useState(false);
   const [customerSignature, setCustomerSignature] = useState("");
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   // Fetch order details
   const { data: order, isLoading } = useQuery({
@@ -51,20 +52,88 @@ export default function DriverCompleteGiftCardDelivery() {
     },
   });
 
-  const handleComplete = () => {
-    // Validate delivery photos
-    if (!deliveryPhotosUploaded) {
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const fileArray = Array.from(files);
+    
+    // Limit to 5 photos total
+    const currentPhotosCount = photoFiles.length;
+    const remainingSlots = 5 - currentPhotosCount;
+    
+    if (fileArray.length > remainingSlots) {
       toast({
-        title: "Delivery Photos Required",
-        description: "Please upload photos of the delivery for security purposes.",
+        title: "Photo Limit Reached",
+        description: `You can upload up to 5 photos total. You have ${remainingSlots} slots remaining.`,
         variant: "destructive",
       });
       return;
     }
 
+    // Validate file sizes (max 10MB each)
+    const oversizedFiles = fileArray.filter(file => file.size > 10 * 1024 * 1024);
+    if (oversizedFiles.length > 0) {
+      toast({
+        title: "File Too Large",
+        description: "Each photo must be under 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create preview URLs for images
+    const newPreviewUrls: string[] = [];
+    fileArray.forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newPreviewUrls.push(reader.result as string);
+        if (newPreviewUrls.length === fileArray.length) {
+          setPreviewUrls(prev => [...prev, ...newPreviewUrls]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+
+    setPhotoFiles(prev => [...prev, ...fileArray]);
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+    setPreviewUrls(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleComplete = async () => {
+    // Validate delivery photos - require at least 2 photos
+    if (photoFiles.length < 2) {
+      toast({
+        title: "More Photos Required",
+        description: "Please upload at least 2 delivery proof photos (customer receiving gift card + address/location).",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Convert photos to base64 data URLs for storage
+    const photoDataUrls: string[] = [];
+    
+    for (const file of photoFiles) {
+      const reader = new FileReader();
+      const dataUrl = await new Promise<string>((resolve) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+      photoDataUrls.push(dataUrl);
+    }
+
     completeMutation.mutate({
       deliveryNotes,
-      deliveryPhotos: photoUrls.length > 0 ? photoUrls : ["placeholder_photo_url"], // In production, use actual photo URLs
+      deliveryPhotos: photoDataUrls,
       customerSignature: customerSignature || null
     });
   };
@@ -114,7 +183,7 @@ export default function DriverCompleteGiftCardDelivery() {
             Complete Gift Card Delivery
           </h1>
           <p className="text-gray-600 mt-2">
-            Deliver the ${order.giftCardAmount?.toFixed(2)} gift card to the customer
+            Deliver the ${((order as any).giftCardAmount || 0).toFixed(2)} gift card to the customer
           </p>
         </div>
 
@@ -126,21 +195,21 @@ export default function DriverCompleteGiftCardDelivery() {
           <CardContent className="space-y-3">
             <div>
               <p className="text-sm text-gray-500">Order ID</p>
-              <p className="font-semibold">#{order.id}</p>
+              <p className="font-semibold">#{(order as any).id}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Gift Card Amount</p>
               <p className="font-semibold text-lg text-green-600">
-                ${order.giftCardAmount?.toFixed(2)}
+                ${((order as any).giftCardAmount || 0).toFixed(2)}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Customer Address</p>
-              <p className="font-semibold">{order.pickupAddress}</p>
+              <p className="font-semibold">{(order as any).pickupAddress || (order as any).pickupStreetAddress || 'Not available'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Customer Phone</p>
-              <p className="font-semibold">{order.customerPhone || 'Not provided'}</p>
+              <p className="font-semibold">{(order as any).customerPhone || 'Not provided'}</p>
             </div>
           </CardContent>
         </Card>
@@ -156,33 +225,97 @@ export default function DriverCompleteGiftCardDelivery() {
           <CardContent className="space-y-6">
             {/* Photo Upload Section */}
             <div className="border-2 border-dashed border-amber-200 rounded-lg p-6 bg-amber-50">
-              <div className="flex items-start space-x-2">
-                <Checkbox
-                  id="deliveryPhotos"
-                  checked={deliveryPhotosUploaded}
-                  onCheckedChange={(checked) => setDeliveryPhotosUploaded(checked as boolean)}
-                  data-testid="checkbox-delivery-photos"
-                />
+              <div className="flex items-start gap-3 mb-4">
+                <Camera className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <Label htmlFor="deliveryPhotos" className="flex items-center gap-2 cursor-pointer">
-                    <Camera className="w-4 h-4" />
-                    <span className="font-medium">Delivery Photos Required *</span>
+                  <Label className="text-base font-semibold text-amber-900">
+                    Delivery Photos Required * (Minimum 2)
                   </Label>
-                  <p className="text-sm text-gray-600 mt-1 ml-6">
-                    Take photos showing the gift card being handed to the customer or left at their door (with customer permission)
+                  <p className="text-sm text-gray-600 mt-1">
+                    Take photos showing proof of delivery
                   </p>
-                  <div className="mt-3 ml-6">
-                    <p className="text-xs text-amber-800 font-medium">
+                  <div className="mt-2">
+                    <p className="text-xs text-amber-800 font-medium mb-1">
                       📸 Required photos:
                     </p>
-                    <ul className="text-xs text-gray-600 mt-1 space-y-1 ml-4">
-                      <li>• Photo of customer receiving gift card OR gift card at doorstep</li>
-                      <li>• Photo of delivery location/address number</li>
-                      <li>• Any additional proof of delivery</li>
+                    <ul className="text-xs text-gray-600 space-y-1 ml-4">
+                      <li>• Customer receiving gift card OR gift card at doorstep</li>
+                      <li>• Delivery location/address number</li>
+                      <li>• Any additional proof of delivery (optional)</li>
                     </ul>
                   </div>
                 </div>
               </div>
+
+              {/* Photo Upload Button */}
+              <div className="mt-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  capture="environment"
+                  onChange={handlePhotoSelect}
+                  className="hidden"
+                  data-testid="input-photo-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full border-amber-300 hover:bg-amber-100"
+                  disabled={photoFiles.length >= 5}
+                  data-testid="button-upload-photo"
+                >
+                  <Upload className="w-4 h-4 mr-2" />
+                  {photoFiles.length === 0 ? "Upload Delivery Photos" : `Add More Photos (${photoFiles.length}/5)`}
+                </Button>
+              </div>
+
+              {/* Photo Previews */}
+              {previewUrls.length > 0 && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {previewUrls.map((url, index) => (
+                    <div key={index} className="relative group">
+                      <img
+                        src={url}
+                        alt={`Delivery proof ${index + 1}`}
+                        className="w-full h-32 object-cover rounded border border-amber-200"
+                      />
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="sm"
+                        className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removePhoto(index)}
+                        data-testid={`button-remove-photo-${index}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                      <div className="absolute bottom-1 left-1 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                        Photo {index + 1}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Photo Count Status */}
+              {photoFiles.length > 0 && (
+                <div className="mt-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-green-600" />
+                    <span className="text-sm font-medium text-green-700">
+                      {photoFiles.length} photo{photoFiles.length !== 1 ? 's' : ''} uploaded
+                    </span>
+                  </div>
+                  {photoFiles.length < 2 && (
+                    <span className="text-xs text-amber-700">
+                      Upload at least {2 - photoFiles.length} more
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Customer Signature (Optional) */}
@@ -232,8 +365,8 @@ export default function DriverCompleteGiftCardDelivery() {
             {/* Complete Button */}
             <Button
               onClick={handleComplete}
-              disabled={!deliveryPhotosUploaded || completeMutation.isPending}
-              className="w-full bg-amber-800 hover:bg-amber-900 text-white"
+              disabled={photoFiles.length < 2 || completeMutation.isPending}
+              className="w-full bg-amber-800 hover:bg-amber-900 text-white disabled:opacity-50"
               size="lg"
               data-testid="button-complete-delivery"
             >
@@ -246,6 +379,7 @@ export default function DriverCompleteGiftCardDelivery() {
                 <>
                   <Gift className="w-5 h-5 mr-2" />
                   Complete Gift Card Delivery
+                  {photoFiles.length < 2 && ` (${photoFiles.length}/2 photos)`}
                 </>
               )}
             </Button>
