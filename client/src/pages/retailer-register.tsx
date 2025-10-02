@@ -28,6 +28,13 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { ShoppingBag, CheckCircle2, Building2 } from "lucide-react";
 
+// Validation schema for company selection step
+const selectSchema = z.object({
+  companyId: z.number({ required_error: "Please select a company" }),
+  acceptedTerms: z.boolean().optional(),
+});
+
+// Validation schema for final registration step
 const registrationSchema = z.object({
   companyId: z.number({ required_error: "Please select a company" }),
   acceptedTerms: z.boolean().refine((val) => val === true, {
@@ -47,7 +54,7 @@ export default function RetailerRegister() {
   });
 
   const form = useForm<RegistrationFormData>({
-    resolver: zodResolver(registrationSchema),
+    // No resolver - we'll do manual validation in onSubmit based on step
     defaultValues: {
       acceptedTerms: false,
     },
@@ -55,10 +62,7 @@ export default function RetailerRegister() {
 
   const registerMutation = useMutation({
     mutationFn: async (data: RegistrationFormData) => {
-      return await apiRequest("/api/retailer/register", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("POST", "/api/retailer/register", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/retailer/dashboard"] });
@@ -76,15 +80,35 @@ export default function RetailerRegister() {
     },
   });
 
-  const onSubmit = (data: RegistrationFormData) => {
+  const onSubmit = async (data: RegistrationFormData) => {
+    console.log('Form submitted with data:', data);
+    console.log('Current step:', step);
+    console.log('Form errors:', form.formState.errors);
+    
     if (step === 'select') {
+      // Only validate companyId in select step
+      const selectResult = selectSchema.safeParse(data);
+      if (!selectResult.success) {
+        console.log('Select validation failed:', selectResult.error);
+        return;
+      }
       setStep('confirm');
     } else if (step === 'confirm') {
+      // Validate full registration in confirm step
+      const registrationResult = registrationSchema.safeParse(data);
+      if (!registrationResult.success) {
+        console.log('Registration validation failed:', registrationResult.error);
+        return;
+      }
       registerMutation.mutate(data);
     }
   };
+  
+  // Log form value changes
+  const watchedCompanyId = form.watch('companyId');
+  console.log('Watched companyId:', watchedCompanyId);
 
-  const selectedCompany = companiesData?.companies?.find(
+  const selectedCompany = companiesData?.find(
     (c: any) => c.id === form.watch('companyId')
   );
 
@@ -161,7 +185,7 @@ export default function RetailerRegister() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {companiesData?.companies?.map((company: any) => (
+                            {companiesData?.map((company: any) => (
                               <SelectItem
                                 key={company.id}
                                 value={company.id.toString()}
