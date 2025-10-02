@@ -4978,7 +4978,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: order.userId,
           type: 'refund_completed',
           title: 'Return Complete & Store Credit Added',
-          message: `Your return has been delivered successfully! $${refundAmount.toFixed(2)} in store credit has been added to your account and is ready to use.`,
+          message: `Your driver completed the return! $${refundAmount.toFixed(2)} in store credit has been added to your account and is ready to use.`,
           orderId: orderId,
           data: {
             refundAmount,
@@ -5057,7 +5057,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               userId: order.userId,
               type: 'refund_processed',
               title: 'Return Complete & Refund Processed',
-              message: `Your return has been delivered successfully! Your refund of $${refundAmount.toFixed(2)} has been processed and will appear in your original payment method within 5-10 business days.`,
+              message: `Your driver completed the return! Your refund of $${refundAmount.toFixed(2)} is now processing and will appear in your original payment method within 5-10 business days.`,
               orderId: orderId,
               data: {
                 refundAmount,
