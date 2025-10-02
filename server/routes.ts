@@ -4915,10 +4915,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const driverId = (req.session as any).user?.id;
-      const { deliveryNotes, photosUploaded, refundMethod, customRefundAmount, refundReason, hasPhysicalGiftCard } = req.body;
+      const { deliveryNotes, photosUploaded, refundMethod, customRefundAmount, refundReason, hasPhysicalGiftCard, giftCardAmount } = req.body;
       
       // SECURITY: Server-side constant for gift card delivery fee - never trust client input
       const GIFT_CARD_DELIVERY_FEE = 3.99;
+      
+      // Validate and sanitize gift card amount if gift card checkbox is checked
+      let validatedGiftCardAmount: number | null = null;
+      if (hasPhysicalGiftCard) {
+        // Coerce to number and validate
+        const parsedAmount = typeof giftCardAmount === 'number' ? giftCardAmount : parseFloat(giftCardAmount);
+        
+        // SECURITY: Reject NaN, Infinity, and non-finite values
+        if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+          return res.status(400).json({ 
+            message: "Gift card amount must be a valid finite number greater than 0" 
+          });
+        }
+        
+        // Reject unreasonably large amounts (max $100,000 for gift cards)
+        if (parsedAmount > 100000) {
+          return res.status(400).json({ 
+            message: "Gift card amount cannot exceed $100,000" 
+          });
+        }
+        
+        // Normalize to 2 decimal places
+        validatedGiftCardAmount = Math.round(parsedAmount * 100) / 100;
+        
+        // Double-check after normalization
+        if (!Number.isFinite(validatedGiftCardAmount) || validatedGiftCardAmount <= 0) {
+          return res.status(400).json({ 
+            message: "Invalid gift card amount after normalization" 
+          });
+        }
+      }
       
       // 1. Verify driver is assigned to this order
       const order = await storage.getOrder(orderId);
@@ -4956,6 +4987,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         refundReason: refundReason || 'return_delivered',
         refundAmount: refundAmount,
         hasPhysicalGiftCard: hasPhysicalGiftCard || false,
+        giftCardAmount: validatedGiftCardAmount, // Store the validated/normalized gift card value
         giftCardDeliveryFee: hasPhysicalGiftCard ? GIFT_CARD_DELIVERY_FEE : 0, // SECURITY: Use server constant
         giftCardDeliveryStatus: hasPhysicalGiftCard ? 'pending' : null
       });
@@ -4988,9 +5020,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           userId: order.userId,
           type: 'gift_card_issued',
           title: 'Retailer Issued Gift Card',
-          message: `The retailer processed your return as a gift card instead of a refund. Your driver will deliver the physical gift card to you within 1-2 business days (delivery fee: $${GIFT_CARD_DELIVERY_FEE.toFixed(2)}).`,
+          message: `The retailer processed your return as a $${validatedGiftCardAmount.toFixed(2)} gift card. Your driver will deliver the physical card to you within 1-2 business days (delivery fee: $${GIFT_CARD_DELIVERY_FEE.toFixed(2)}).`,
           orderId: orderId,
           data: {
+            giftCardAmount: validatedGiftCardAmount,
             giftCardDeliveryFee: GIFT_CARD_DELIVERY_FEE,
             giftCardDeliveryStatus: 'pending',
             estimatedDelivery: '1-2 business days'
@@ -5089,7 +5122,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Persist the payment intent ID and fee amount
           await storage.updateOrder(orderId, {
             giftCardDeliveryFee: GIFT_CARD_DELIVERY_FEE,
-            adminNotes: `Gift card delivery fee charged: $${GIFT_CARD_DELIVERY_FEE} (PI: ${deliveryFeeIntent.id})`
+            giftCardDeliveryPaymentIntentId: deliveryFeeIntent.id,
+            adminNotes: `Gift card ($${validatedGiftCardAmount!.toFixed(2)}) delivery fee charged: $${GIFT_CARD_DELIVERY_FEE} (PI: ${deliveryFeeIntent.id})`
           });
 
           // Log for audit trail
@@ -5126,7 +5160,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Order completed successfully",
         order: completedOrder,
         refund: refundResult,
-        giftCardDelivery: hasPhysicalGiftCard ? {
+        giftCardDelivery: hasPhysicalGiftCard && validatedGiftCardAmount ? {
+          amount: validatedGiftCardAmount,
           fee: GIFT_CARD_DELIVERY_FEE,
           status: 'pending',
           estimatedDelivery: '1-2 business days'

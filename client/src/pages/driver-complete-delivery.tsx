@@ -23,6 +23,7 @@ export default function DriverCompleteDelivery() {
   const [refundAmount, setRefundAmount] = useState("");
   const [isCustomAmount, setIsCustomAmount] = useState(false);
   const [hasPhysicalGiftCard, setHasPhysicalGiftCard] = useState(false);
+  const [giftCardAmount, setGiftCardAmount] = useState("");
 
   // Fetch order details
   const { data: order, isLoading } = useQuery({
@@ -66,13 +67,25 @@ export default function DriverCompleteDelivery() {
       return;
     }
 
-    if (hasPhysicalGiftCard && !photosUploaded) {
-      toast({
-        title: "Photo Required",
-        description: "Please upload photos of the gift card before completing.",
-        variant: "destructive",
-      });
-      return;
+    if (hasPhysicalGiftCard) {
+      if (!photosUploaded) {
+        toast({
+          title: "Photo Required",
+          description: "Please upload photos of the gift card before completing.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const cardAmount = parseFloat(giftCardAmount);
+      if (!giftCardAmount || isNaN(cardAmount) || cardAmount <= 0) {
+        toast({
+          title: "Gift Card Amount Required",
+          description: "Please enter the gift card amount shown on the card.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     const customRefundAmount = isCustomAmount ? parseFloat(refundAmount) : undefined;
@@ -83,7 +96,8 @@ export default function DriverCompleteDelivery() {
       refundMethod,
       customRefundAmount,
       refundReason: "return_delivered",
-      hasPhysicalGiftCard
+      hasPhysicalGiftCard,
+      giftCardAmount: hasPhysicalGiftCard ? parseFloat(giftCardAmount) : undefined
       // Note: giftCardDeliveryFee is determined server-side for security
     });
   };
@@ -213,7 +227,10 @@ export default function DriverCompleteDelivery() {
                 <Checkbox
                   id="hasPhysicalGiftCard"
                   checked={hasPhysicalGiftCard}
-                  onCheckedChange={(checked) => setHasPhysicalGiftCard(checked as boolean)}
+                  onCheckedChange={(checked) => {
+                    setHasPhysicalGiftCard(checked as boolean);
+                    if (!checked) setGiftCardAmount(""); // Clear amount when unchecked
+                  }}
                   data-testid="checkbox-physical-gift-card"
                 />
                 <div className="flex-1">
@@ -224,12 +241,37 @@ export default function DriverCompleteDelivery() {
                   <p className="text-sm text-gray-500 mt-1 ml-6">
                     I will deliver the gift card back to the customer (+$3.99 delivery fee charged to customer)
                   </p>
+                  
                   {hasPhysicalGiftCard && (
-                    <div className="mt-2 ml-6 p-3 bg-yellow-50 rounded border border-yellow-200">
-                      <p className="text-sm text-yellow-800">
-                        <strong>Important:</strong> You must photograph the gift card and complete a second delivery to return it to the customer. 
-                        Customer will be charged an additional $3.99 delivery fee.
-                      </p>
+                    <div className="mt-3 ml-6 space-y-3">
+                      {/* Gift Card Amount Input */}
+                      <div>
+                        <Label htmlFor="giftCardAmount" className="text-sm font-medium">
+                          Gift Card Amount *
+                        </Label>
+                        <Input
+                          id="giftCardAmount"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          placeholder="Enter amount shown on card (e.g., 45.00)"
+                          value={giftCardAmount}
+                          onChange={(e) => setGiftCardAmount(e.target.value)}
+                          className="mt-1"
+                          data-testid="input-gift-card-amount"
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                          Enter the exact dollar amount shown on the retailer's gift card
+                        </p>
+                      </div>
+                      
+                      {/* Warning Banner */}
+                      <div className="p-3 bg-yellow-50 rounded border border-yellow-200">
+                        <p className="text-sm text-yellow-800">
+                          <strong>Required:</strong> Take photos of the gift card (front & back) and complete a second delivery to the customer. 
+                          Customer will be charged $3.99 delivery fee.
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
