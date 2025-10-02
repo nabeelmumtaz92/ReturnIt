@@ -110,13 +110,14 @@ export default function RetailerWebhooks() {
 
   const createMutation = useMutation({
     mutationFn: async (data: WebhookFormData) => {
-      return await apiRequest<{ webhook: RetailerWebhook & { secret: string } }>(
+      const response = await apiRequest(
         `/api/retailer/companies/${companyId}/webhooks`,
         { 
           method: "POST",
           body: JSON.stringify(data)
         }
       );
+      return response as { webhook: RetailerWebhook & { secret: string } };
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/retailer/companies", companyId, "webhooks"] });
@@ -139,7 +140,7 @@ export default function RetailerWebhooks() {
 
   const deleteMutation = useMutation({
     mutationFn: async (webhookId: number) => {
-      await apiRequest(`/api/retailer/companies/${companyId}/webhooks/${webhookId}`, {
+      return await apiRequest(`/api/retailer/companies/${companyId}/webhooks/${webhookId}`, {
         method: "DELETE",
       });
     },
@@ -162,10 +163,11 @@ export default function RetailerWebhooks() {
 
   const testMutation = useMutation({
     mutationFn: async (webhookId: number) => {
-      return await apiRequest<{ success: boolean; message: string; status?: number }>(
+      const response = await apiRequest(
         `/api/retailer/companies/${companyId}/webhooks/${webhookId}/test`,
         { method: "POST" }
       );
+      return response as { success: boolean; message: string; status?: number };
     },
     onSuccess: (data) => {
       setTestingWebhookId(null);
@@ -510,7 +512,7 @@ export default function RetailerWebhooks() {
                     Subscribed Events
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {webhook.subscribedEvents.map((event) => (
+                    {(webhook.subscribedEvents as string[]).map((event: string) => (
                       <Badge key={event} variant="outline" data-testid={`badge-event-${webhook.id}-${event}`}>
                         <Activity className="h-3 w-3 mr-1" />
                         {event}
@@ -532,11 +534,11 @@ export default function RetailerWebhooks() {
                   </div>
                   <div>
                     <span className="text-muted-foreground">Success Count:</span>
-                    <span className="ml-2 font-medium text-green-600">{webhook.successCount || 0}</span>
+                    <span className="ml-2 font-medium text-green-600">{(webhook as any).successCount || 0}</span>
                   </div>
                   <div>
                     <span className="text-muted-foreground">Failure Count:</span>
-                    <span className="ml-2 font-medium text-red-600">{webhook.failureCount || 0}</span>
+                    <span className="ml-2 font-medium text-red-600">{(webhook as any).failureCount || 0}</span>
                   </div>
                 </div>
               </CardContent>
