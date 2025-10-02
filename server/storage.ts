@@ -3852,6 +3852,88 @@ export class DatabaseStorage implements IStorage {
     }
     return await db.select().from(appSettings);
   }
+
+  // Company Methods - Database implementation
+  async getCompanies(isActive?: boolean): Promise<Company[]> {
+    if (isActive !== undefined) {
+      return await db.select().from(companies).where(eq(companies.isActive, isActive));
+    }
+    return await db.select().from(companies);
+  }
+
+  async getCompany(id: number): Promise<Company | undefined> {
+    const [company] = await db.select().from(companies).where(eq(companies.id, id));
+    return company;
+  }
+
+  async getCompanyBySlug(slug: string): Promise<Company | undefined> {
+    const [company] = await db.select().from(companies).where(eq(companies.slug, slug));
+    return company;
+  }
+
+  async createCompany(companyData: InsertCompany): Promise<Company> {
+    const [company] = await db.insert(companies).values(companyData).returning();
+    return company;
+  }
+
+  async updateCompany(id: number, updates: Partial<Company>): Promise<Company | undefined> {
+    const [company] = await db.update(companies).set(updates).where(eq(companies.id, id)).returning();
+    return company;
+  }
+
+  async deleteCompany(id: number): Promise<boolean> {
+    const result = await db.delete(companies).where(eq(companies.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Return Policy Methods - Database implementation
+  async getReturnPolicyByCompany(companyId: number): Promise<ReturnPolicy | undefined> {
+    const [policy] = await db.select().from(returnPolicies).where(eq(returnPolicies.companyId, companyId));
+    return policy;
+  }
+
+  async createReturnPolicy(policyData: InsertReturnPolicy): Promise<ReturnPolicy> {
+    const [policy] = await db.insert(returnPolicies).values(policyData).returning();
+    return policy;
+  }
+
+  async updateReturnPolicy(id: number, updates: Partial<ReturnPolicy>): Promise<ReturnPolicy | undefined> {
+    const [policy] = await db.update(returnPolicies).set(updates).where(eq(returnPolicies.id, id)).returning();
+    return policy;
+  }
+
+  async deleteReturnPolicy(id: number): Promise<boolean> {
+    const result = await db.delete(returnPolicies).where(eq(returnPolicies.id, id));
+    return result.rowCount > 0;
+  }
+
+  // Company Location Methods - Database implementation
+  async getCompanyLocations(companyId?: number): Promise<CompanyLocation[]> {
+    if (companyId !== undefined) {
+      return await db.select().from(companyLocations).where(eq(companyLocations.companyId, companyId));
+    }
+    return await db.select().from(companyLocations);
+  }
+
+  async getCompanyLocation(id: number): Promise<CompanyLocation | undefined> {
+    const [location] = await db.select().from(companyLocations).where(eq(companyLocations.id, id));
+    return location;
+  }
+
+  async createCompanyLocation(locationData: InsertCompanyLocation): Promise<CompanyLocation> {
+    const [location] = await db.insert(companyLocations).values(locationData).returning();
+    return location;
+  }
+
+  async updateCompanyLocation(id: number, updates: Partial<CompanyLocation>): Promise<CompanyLocation | undefined> {
+    const [location] = await db.update(companyLocations).set(updates).where(eq(companyLocations.id, id)).returning();
+    return location;
+  }
+
+  async deleteCompanyLocation(id: number): Promise<boolean> {
+    const result = await db.delete(companyLocations).where(eq(companyLocations.id, id));
+    return result.rowCount > 0;
+  }
 }
 
 // Switch to DatabaseStorage - temporarily using MemStorage for testing

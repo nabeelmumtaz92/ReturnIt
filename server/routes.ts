@@ -4161,6 +4161,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search companies for dropdown (enhanced retailer search) - MUST come before /:id route
+  app.get("/api/companies/search", async (req, res) => {
+    try {
+      const { q: query, category, featured } = req.query;
+      let companies = await storage.getCompanies(true); // Only active companies
+      
+      // Auto-populate with St. Louis companies if none exist
+      if (companies.length === 0) {
+        console.log('🏢 No companies found, initializing with St. Louis business data...');
+        await populateStLouisCompanies(storage);
+        companies = await storage.getCompanies(true);
+      }
+      
+      // Filter by search query
+      if (query) {
+        companies = companies.filter(company => 
+          company.name.toLowerCase().includes((query as string).toLowerCase()) ||
+          company.category.toLowerCase().includes((query as string).toLowerCase())
+        );
+      }
+      
+      // Filter by category
+      if (category) {
+        companies = companies.filter(company => company.category === category);
+      }
+      
+      // Filter for featured companies only
+      if (featured === 'true') {
+        companies = companies.filter(company => company.isFeatured);
+      }
+      
+      // Sort featured companies first, then alphabetically
+      companies.sort((a, b) => {
+        if (a.isFeatured && !b.isFeatured) return -1;
+        if (!a.isFeatured && b.isFeatured) return 1;
+        return a.name.localeCompare(b.name);
+      });
+      
+      res.json(companies);
+    } catch (error) {
+      console.error('Error searching companies:', error);
+      res.status(500).json({ message: 'Failed to search companies' });
+    }
+  });
+
   // Get single company by ID
   app.get("/api/companies/:id", async (req, res) => {
     try {
@@ -4215,51 +4260,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error fetching company locations:', error);
       res.status(500).json({ message: 'Failed to fetch company locations' });
-    }
-  });
-
-  // Search companies for dropdown (enhanced retailer search)
-  app.get("/api/companies/search", async (req, res) => {
-    try {
-      const { q: query, category, featured } = req.query;
-      let companies = await storage.getCompanies(true); // Only active companies
-      
-      // Auto-populate with St. Louis companies if none exist
-      if (companies.length === 0) {
-        console.log('🏢 No companies found, initializing with St. Louis business data...');
-        await populateStLouisCompanies(storage);
-        companies = await storage.getCompanies(true);
-      }
-      
-      // Filter by search query
-      if (query) {
-        companies = companies.filter(company => 
-          company.name.toLowerCase().includes((query as string).toLowerCase()) ||
-          company.category.toLowerCase().includes((query as string).toLowerCase())
-        );
-      }
-      
-      // Filter by category
-      if (category) {
-        companies = companies.filter(company => company.category === category);
-      }
-      
-      // Filter for featured companies only
-      if (featured === 'true') {
-        companies = companies.filter(company => company.isFeatured);
-      }
-      
-      // Sort featured companies first, then alphabetically
-      companies.sort((a, b) => {
-        if (a.isFeatured && !b.isFeatured) return -1;
-        if (!a.isFeatured && b.isFeatured) return 1;
-        return a.name.localeCompare(b.name);
-      });
-      
-      res.json(companies);
-    } catch (error) {
-      console.error('Error searching companies:', error);
-      res.status(500).json({ message: 'Failed to search companies' });
     }
   });
 
