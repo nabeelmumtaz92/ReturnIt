@@ -2314,6 +2314,165 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // === CUSTOMER MOBILE APP ROUTES ===
+  
+  // Payment Methods Management
+  app.get("/api/customers/payment-methods", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const methods = await storage.getCustomerPaymentMethods(userId);
+      res.json(methods);
+    } catch (error) {
+      console.error('Get payment methods error:', error);
+      res.status(500).json({ message: "Failed to fetch payment methods" });
+    }
+  });
+  
+  app.post("/api/customers/payment-methods", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const methods = await storage.addCustomerPaymentMethod(userId, req.body);
+      res.json(methods);
+    } catch (error) {
+      console.error('Add payment method error:', error);
+      res.status(500).json({ message: "Failed to add payment method" });
+    }
+  });
+  
+  app.patch("/api/customers/payment-methods/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const methods = await storage.updateCustomerPaymentMethod(userId, req.params.id, req.body);
+      res.json(methods);
+    } catch (error) {
+      console.error('Update payment method error:', error);
+      res.status(500).json({ message: "Failed to update payment method" });
+    }
+  });
+  
+  app.delete("/api/customers/payment-methods/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const methods = await storage.deleteCustomerPaymentMethod(userId, req.params.id);
+      res.json(methods);
+    } catch (error) {
+      console.error('Delete payment method error:', error);
+      res.status(500).json({ message: "Failed to delete payment method" });
+    }
+  });
+  
+  app.post("/api/customers/payment-methods/:id/set-default", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const methods = await storage.setDefaultPaymentMethod(userId, req.params.id);
+      res.json(methods);
+    } catch (error) {
+      console.error('Set default payment method error:', error);
+      res.status(500).json({ message: "Failed to set default payment method" });
+    }
+  });
+  
+  // Addresses Management
+  app.get("/api/customers/addresses", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const addresses = await storage.getCustomerAddresses(userId);
+      res.json(addresses);
+    } catch (error) {
+      console.error('Get addresses error:', error);
+      res.status(500).json({ message: "Failed to fetch addresses" });
+    }
+  });
+  
+  app.post("/api/customers/addresses", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const addresses = await storage.addCustomerAddress(userId, req.body);
+      res.json(addresses);
+    } catch (error) {
+      console.error('Add address error:', error);
+      res.status(500).json({ message: "Failed to add address" });
+    }
+  });
+  
+  app.patch("/api/customers/addresses/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const addresses = await storage.updateCustomerAddress(userId, req.params.id, req.body);
+      res.json(addresses);
+    } catch (error) {
+      console.error('Update address error:', error);
+      res.status(500).json({ message: "Failed to update address" });
+    }
+  });
+  
+  app.delete("/api/customers/addresses/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const addresses = await storage.deleteCustomerAddress(userId, req.params.id);
+      res.json(addresses);
+    } catch (error) {
+      console.error('Delete address error:', error);
+      res.status(500).json({ message: "Failed to delete address" });
+    }
+  });
+  
+  app.post("/api/customers/addresses/:id/set-default", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const addresses = await storage.setDefaultAddress(userId, req.params.id);
+      res.json(addresses);
+    } catch (error) {
+      console.error('Set default address error:', error);
+      res.status(500).json({ message: "Failed to set default address" });
+    }
+  });
+  
+  // Notification Settings
+  app.get("/api/customers/notification-settings", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const settings = await storage.getCustomerNotificationSettings(userId);
+      res.json(settings);
+    } catch (error) {
+      console.error('Get notification settings error:', error);
+      res.status(500).json({ message: "Failed to fetch notification settings" });
+    }
+  });
+  
+  app.patch("/api/customers/notification-settings", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const settings = await storage.updateCustomerNotificationSettings(userId, req.body);
+      res.json(settings);
+    } catch (error) {
+      console.error('Update notification settings error:', error);
+      res.status(500).json({ message: "Failed to update notification settings" });
+    }
+  });
+  
+  // Order Messages
+  app.get("/api/orders/:orderId/messages", isAuthenticated, async (req, res) => {
+    try {
+      const messages = await storage.getOrderMessages(req.params.orderId);
+      res.json(messages);
+    } catch (error) {
+      console.error('Get order messages error:', error);
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+  
+  app.post("/api/orders/:orderId/messages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const message = await storage.sendOrderMessage(req.params.orderId, userId, req.body.message);
+      res.json(message);
+    } catch (error) {
+      console.error('Send order message error:', error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
   // Driver-specific endpoints
   app.get("/api/driver/orders/available", isAuthenticated, async (req, res) => {
     try {

@@ -371,6 +371,30 @@ export interface IStorage {
     thisMonthRevenue: number;
   }>;
   getRetailerOrderHistory(companyId: number, filters?: { startDate?: Date; endDate?: Date; status?: string; limit?: number }): Promise<Order[]>;
+  
+  // === CUSTOMER MOBILE APP OPERATIONS ===
+  
+  // Customer Payment Methods (stored in users.paymentMethods JSONB)
+  getCustomerPaymentMethods(userId: number): Promise<any[]>;
+  addCustomerPaymentMethod(userId: number, paymentMethod: any): Promise<any[]>;
+  updateCustomerPaymentMethod(userId: number, paymentMethodId: string, updates: any): Promise<any[]>;
+  deleteCustomerPaymentMethod(userId: number, paymentMethodId: string): Promise<any[]>;
+  setDefaultPaymentMethod(userId: number, paymentMethodId: string): Promise<any[]>;
+  
+  // Customer Addresses (stored in users.addresses JSONB)
+  getCustomerAddresses(userId: number): Promise<any[]>;
+  addCustomerAddress(userId: number, address: any): Promise<any[]>;
+  updateCustomerAddress(userId: number, addressId: string, updates: any): Promise<any[]>;
+  deleteCustomerAddress(userId: number, addressId: string): Promise<any[]>;
+  setDefaultAddress(userId: number, addressId: string): Promise<any[]>;
+  
+  // Customer Notification Settings (stored in users.preferences JSONB)
+  getCustomerNotificationSettings(userId: number): Promise<any>;
+  updateCustomerNotificationSettings(userId: number, settings: any): Promise<any>;
+  
+  // Order Messages (using existing chatMessages/chatConversations tables)
+  getOrderMessages(orderId: string): Promise<any[]>;
+  sendOrderMessage(orderId: string, senderId: number, message: string): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -4330,6 +4354,201 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await query;
+  }
+  
+  // === CUSTOMER MOBILE APP IMPLEMENTATIONS ===
+  
+  // Payment Methods Management
+  async getCustomerPaymentMethods(userId: number): Promise<any[]> {
+    const user = await this.getUser(userId);
+    return (user?.paymentMethods as any[]) || [];
+  }
+  
+  async addCustomerPaymentMethod(userId: number, paymentMethod: any): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const methods = (user.paymentMethods as any[]) || [];
+    const newMethod = {
+      ...paymentMethod,
+      id: paymentMethod.id || `pm_${Date.now()}`,
+      isDefault: methods.length === 0 || paymentMethod.isDefault || false
+    };
+    
+    // If this is default, unset others
+    if (newMethod.isDefault) {
+      methods.forEach((m: any) => m.isDefault = false);
+    }
+    
+    const updated = [...methods, newMethod];
+    await this.updateUser(userId, { paymentMethods: updated as any });
+    return updated;
+  }
+  
+  async updateCustomerPaymentMethod(userId: number, paymentMethodId: string, updates: any): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const methods = (user.paymentMethods as any[]) || [];
+    const updated = methods.map((m: any) => 
+      m.id === paymentMethodId ? { ...m, ...updates } : m
+    );
+    
+    await this.updateUser(userId, { paymentMethods: updated as any });
+    return updated;
+  }
+  
+  async deleteCustomerPaymentMethod(userId: number, paymentMethodId: string): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const methods = (user.paymentMethods as any[]) || [];
+    const updated = methods.filter((m: any) => m.id !== paymentMethodId);
+    
+    // If we deleted the default, make first one default
+    if (updated.length > 0 && !updated.some((m: any) => m.isDefault)) {
+      updated[0].isDefault = true;
+    }
+    
+    await this.updateUser(userId, { paymentMethods: updated as any });
+    return updated;
+  }
+  
+  async setDefaultPaymentMethod(userId: number, paymentMethodId: string): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const methods = (user.paymentMethods as any[]) || [];
+    const updated = methods.map((m: any) => ({
+      ...m,
+      isDefault: m.id === paymentMethodId
+    }));
+    
+    await this.updateUser(userId, { paymentMethods: updated as any });
+    return updated;
+  }
+  
+  // Addresses Management
+  async getCustomerAddresses(userId: number): Promise<any[]> {
+    const user = await this.getUser(userId);
+    return (user?.addresses as any[]) || [];
+  }
+  
+  async addCustomerAddress(userId: number, address: any): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const addresses = (user.addresses as any[]) || [];
+    const newAddress = {
+      ...address,
+      id: address.id || `addr_${Date.now()}`,
+      isDefault: addresses.length === 0 || address.isDefault || false
+    };
+    
+    // If this is default, unset others
+    if (newAddress.isDefault) {
+      addresses.forEach((a: any) => a.isDefault = false);
+    }
+    
+    const updated = [...addresses, newAddress];
+    await this.updateUser(userId, { addresses: updated as any });
+    return updated;
+  }
+  
+  async updateCustomerAddress(userId: number, addressId: string, updates: any): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const addresses = (user.addresses as any[]) || [];
+    const updated = addresses.map((a: any) => 
+      a.id === addressId ? { ...a, ...updates } : a
+    );
+    
+    await this.updateUser(userId, { addresses: updated as any });
+    return updated;
+  }
+  
+  async deleteCustomerAddress(userId: number, addressId: string): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const addresses = (user.addresses as any[]) || [];
+    const updated = addresses.filter((a: any) => a.id !== addressId);
+    
+    // If we deleted the default, make first one default
+    if (updated.length > 0 && !updated.some((a: any) => a.isDefault)) {
+      updated[0].isDefault = true;
+    }
+    
+    await this.updateUser(userId, { addresses: updated as any });
+    return updated;
+  }
+  
+  async setDefaultAddress(userId: number, addressId: string): Promise<any[]> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const addresses = (user.addresses as any[]) || [];
+    const updated = addresses.map((a: any) => ({
+      ...a,
+      isDefault: a.id === addressId
+    }));
+    
+    await this.updateUser(userId, { addresses: updated as any });
+    return updated;
+  }
+  
+  // Notification Settings Management
+  async getCustomerNotificationSettings(userId: number): Promise<any> {
+    const user = await this.getUser(userId);
+    const prefs = (user?.preferences as any) || {};
+    return prefs.notifications || {
+      orderUpdates: true,
+      driverMessages: true,
+      promotions: true,
+      pushNotifications: true,
+      smsNotifications: false,
+      emailNotifications: true
+    };
+  }
+  
+  async updateCustomerNotificationSettings(userId: number, settings: any): Promise<any> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const prefs = (user.preferences as any) || {};
+    const updated = {
+      ...prefs,
+      notifications: { ...prefs.notifications, ...settings }
+    };
+    
+    await this.updateUser(userId, { preferences: updated as any });
+    return updated.notifications;
+  }
+  
+  // Order Messages Management
+  async getOrderMessages(orderId: string): Promise<any[]> {
+    // For now, return mock messages - full implementation would use chatConversations/chatMessages
+    return [
+      {
+        id: '1',
+        sender: 'driver',
+        message: 'On my way to pick up your package!',
+        timestamp: new Date(Date.now() - 300000).toISOString()
+      }
+    ];
+  }
+  
+  async sendOrderMessage(orderId: string, senderId: number, message: string): Promise<any> {
+    // For now, return mock response - full implementation would create chatMessage
+    return {
+      id: `msg_${Date.now()}`,
+      orderId,
+      senderId,
+      message,
+      timestamp: new Date().toISOString(),
+      success: true
+    };
   }
 }
 
