@@ -2351,6 +2351,70 @@ export const retailerInvoices = pgTable("retailer_invoices", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Retailer Webhooks - Outbound event notifications to retailer systems
+export const retailerWebhooks = pgTable("retailer_webhooks", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  
+  // Endpoint configuration
+  url: text("url").notNull(),
+  name: text("name").notNull(),
+  description: text("description"),
+  secret: text("secret").notNull(), // HMAC signing secret
+  
+  // Event subscriptions
+  subscribedEvents: jsonb("subscribed_events").default([]).notNull(), // Array of event names
+  
+  // Status and health
+  isActive: boolean("is_active").default(true).notNull(),
+  lastTriggeredAt: timestamp("last_triggered_at"),
+  lastSuccessAt: timestamp("last_success_at"),
+  lastFailureAt: timestamp("last_failure_at"),
+  consecutiveFailures: integer("consecutive_failures").default(0),
+  
+  // Retry configuration
+  maxRetries: integer("max_retries").default(3),
+  retryBackoffMultiplier: integer("retry_backoff_multiplier").default(2),
+  timeoutSeconds: integer("timeout_seconds").default(10),
+  
+  // Metadata
+  metadata: jsonb("metadata").default({}),
+  
+  createdBy: integer("created_by").references(() => users.id).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Retailer Webhook Deliveries - Track webhook delivery attempts
+export const retailerWebhookDeliveries = pgTable("retailer_webhook_deliveries", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  webhookId: integer("webhook_id").references(() => retailerWebhooks.id).notNull(),
+  
+  // Event details
+  eventType: text("event_type").notNull(),
+  orderId: text("order_id").references(() => orders.id),
+  
+  // Request/Response
+  requestPayload: jsonb("request_payload").notNull(),
+  requestHeaders: jsonb("request_headers").default({}),
+  responseStatus: integer("response_status"),
+  responseBody: text("response_body"),
+  responseHeaders: jsonb("response_headers"),
+  
+  // Timing
+  attemptNumber: integer("attempt_number").default(1).notNull(),
+  durationMs: integer("duration_ms"),
+  
+  // Status
+  isSuccessful: boolean("is_successful").default(false),
+  errorMessage: text("error_message"),
+  
+  // Next retry
+  nextRetryAt: timestamp("next_retry_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Retailer Usage Metrics - Track API usage and order volume
 export const retailerUsageMetrics = pgTable("retailer_usage_metrics", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
