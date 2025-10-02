@@ -4915,7 +4915,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { orderId } = req.params;
       const driverId = (req.session as any).user?.id;
-      const { deliveryNotes, photosUploaded, refundMethod, customRefundAmount, refundReason } = req.body;
+      const { deliveryNotes, photosUploaded, refundMethod, customRefundAmount, refundReason, hasPhysicalGiftCard } = req.body;
+      
+      // SECURITY: Server-side constant for gift card delivery fee - never trust client input
+      const GIFT_CARD_DELIVERY_FEE = 3.99;
       
       // 1. Verify driver is assigned to this order
       const order = await storage.getOrder(orderId);
@@ -4931,11 +4934,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Order already completed" });
       }
 
-      // Determine refund amount - only refund the item cost, not service fee or taxes
+      // Determine refund amount - SECURITY: Force to 0 if gift card (customer gets gift card instead)
       const itemCost = (order.itemCost) || ((order.totalPrice || 0) - (order.serviceFee || 0) - (order.taxAmount || 0));
-      const refundAmount = customRefundAmount && customRefundAmount > 0 && customRefundAmount <= itemCost
-        ? customRefundAmount
-        : itemCost;
+      let refundAmount = 0;
+      
+      if (!hasPhysicalGiftCard) {
+        // Only allow refund if NOT a gift card
+        refundAmount = customRefundAmount && customRefundAmount > 0 && customRefundAmount <= itemCost
+          ? customRefundAmount
+          : itemCost;
+      }
+      // If gift card: refundAmount stays 0 (customer gets gift card, not money)
 
       // 2. Mark order as delivered to retailer
       const completedOrder = await storage.updateOrder(orderId, {
@@ -4945,69 +4954,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // photosUploaded field not in schema - using driverNotes to store photo info
         refundMethod: refundMethod || 'original_payment',
         refundReason: refundReason || 'return_delivered',
-        refundAmount: refundAmount
+        refundAmount: refundAmount,
+        hasPhysicalGiftCard: hasPhysicalGiftCard || false,
+        giftCardDeliveryFee: hasPhysicalGiftCard ? GIFT_CARD_DELIVERY_FEE : 0, // SECURITY: Use server constant
+        giftCardDeliveryStatus: hasPhysicalGiftCard ? 'pending' : null
       });
 
       // Fire webhook for return delivered to store
       await webhookService.fireReturnDelivered(completedOrder);
 
-      // 3. Validate refund method (only original_payment and store_credit allowed)
-      const validRefundMethods = ['original_payment', 'store_credit'];
-      if (!validRefundMethods.includes(refundMethod || '')) {
-        return res.status(400).json({ 
-          message: `Invalid refund method. Allowed methods: ${validRefundMethods.join(', ')}` 
-        });
-      }
-
-      // 4. Process customer refund based on selected method
+      // 3. Determine if we should process a monetary refund
+      // If retailer issued a physical gift card, customer gets NO stripe refund - they only get the gift card
       let refundResult: any = null;
-
-      if (refundMethod === 'store_credit') {
-        // Process as store credit - instant
+      
+      if (hasPhysicalGiftCard) {
+        // Retailer issued gift card - NO Stripe refund to customer
         await storage.updateOrder(orderId, {
-          paymentStatus: 'refunded',
-          status: 'refunded',
-          refundStatus: 'completed',
-          refundProcessedAt: new Date(),
-          refundCompletedAt: new Date()
-        });
-
-        // Add store credit to customer account - would need to add this field to user schema
-        // TODO: Add storeCreditBalance field to users table if store credit feature is needed
-        // const customer = await storage.getUser(order.userId);
-        // if (customer) {
-        //   await storage.updateUser(order.userId, {
-        //     storeCreditBalance: (customer.storeCreditBalance || 0) + refundAmount
-        //   });
-        // }
-
-        // Notify customer about store credit
-        await storage.createNotification({
-          userId: order.userId,
-          type: 'refund_completed',
-          title: 'Return Complete & Store Credit Added',
-          message: `Your driver completed the return! $${refundAmount.toFixed(2)} in store credit has been added to your account and is ready to use.`,
-          orderId: orderId,
-          data: {
-            refundAmount,
-            refundMethod: 'store_credit',
-            deliveredBy: driverId,
-            deliveredAt: new Date().toISOString()
-          }
+          paymentStatus: 'gift_card_pending',
+          status: 'delivered',
+          refundStatus: 'not_applicable',
+          refundMethod: 'retailer_gift_card'
         });
 
         refundResult = {
-          amount: refundAmount,
-          method: 'store_credit',
-          status: 'completed',
-          message: 'Store credit added instantly'
+          amount: 0,
+          method: 'retailer_gift_card',
+          status: 'not_applicable',
+          message: 'Customer will receive physical gift card from retailer instead of monetary refund'
         };
 
-      } else {
-        // Original payment method via Stripe
-        if (order.stripePaymentIntentId && order.paymentStatus !== 'refunded') {
-          try {
-            const refund = await stripe.refunds.create({
+        // Notify customer they're getting a gift card instead of refund
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'gift_card_issued',
+          title: 'Retailer Issued Gift Card',
+          message: `The retailer processed your return as a gift card instead of a refund. Your driver will deliver the physical gift card to you within 1-2 business days (delivery fee: $${GIFT_CARD_DELIVERY_FEE.toFixed(2)}).`,
+          orderId: orderId,
+          data: {
+            giftCardDeliveryFee: GIFT_CARD_DELIVERY_FEE,
+            giftCardDeliveryStatus: 'pending',
+            estimatedDelivery: '1-2 business days'
+          }
+        });
+
+      } else if (order.stripePaymentIntentId && order.paymentStatus !== 'refunded') {
+        // Normal flow - Process Stripe refund to original payment method
+        try {
+          const refund = await stripe.refunds.create({
               payment_intent: order.stripePaymentIntentId,
               amount: Math.round(refundAmount * 100), // Convert to cents
               metadata: {
@@ -5070,6 +5063,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
             };
           }
         }
+
+      // 5. Charge customer the gift card delivery fee via Stripe (using server-side constant)
+      let deliveryFeePaymentIntentId: string | null = null;
+      if (hasPhysicalGiftCard) {
+        try {
+          // SECURITY: Use server-side constant, never trust client input
+          const deliveryFeeIntent = await stripe.paymentIntents.create({
+            amount: Math.round(GIFT_CARD_DELIVERY_FEE * 100), // $3.99 in cents
+            currency: 'usd',
+            customer: order.stripeCustomerId,
+            payment_method: order.stripePaymentMethodId,
+            off_session: true,
+            confirm: true,
+            description: `Gift card delivery fee for order #${orderId}`,
+            metadata: {
+              orderId,
+              type: 'gift_card_delivery_fee',
+              originalOrderTotal: order.totalPrice?.toString() || '0'
+            }
+          });
+
+          deliveryFeePaymentIntentId = deliveryFeeIntent.id;
+
+          // Persist the payment intent ID and fee amount
+          await storage.updateOrder(orderId, {
+            giftCardDeliveryFee: GIFT_CARD_DELIVERY_FEE,
+            adminNotes: `Gift card delivery fee charged: $${GIFT_CARD_DELIVERY_FEE} (PI: ${deliveryFeeIntent.id})`
+          });
+
+          // Log for audit trail
+          console.log(`✅ Charged customer $${GIFT_CARD_DELIVERY_FEE} for gift card delivery (order ${orderId}, PI: ${deliveryFeeIntent.id})`);
+          
+        } catch (paymentError: any) {
+          console.error('❌ Failed to charge gift card delivery fee:', paymentError);
+          
+          // Log the failure but don't block order completion
+          await storage.updateOrder(orderId, {
+            adminNotes: `⚠️ Gift card delivery fee charge FAILED: ${paymentError.message}. Admin must manually charge customer $${GIFT_CARD_DELIVERY_FEE}.`
+          });
+
+          // Notify admin of failed charge
+          await storage.createNotification({
+            userId: order.userId,
+            type: 'admin_action_required',
+            title: 'Gift Card Delivery Fee Charge Failed',
+            message: `Failed to charge $${GIFT_CARD_DELIVERY_FEE} delivery fee for order #${orderId}. Manual charge required.`,
+            orderId: orderId,
+            data: {
+              error: paymentError.message,
+              feeAmount: GIFT_CARD_DELIVERY_FEE,
+              requiresManualCharge: true
+            }
+          });
+        }
       }
 
       console.log(`Order ${orderId} completed by driver ${driverId}, refund: ${JSON.stringify(refundResult)}`);
@@ -5078,7 +5125,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: true, 
         message: "Order completed successfully",
         order: completedOrder,
-        refund: refundResult
+        refund: refundResult,
+        giftCardDelivery: hasPhysicalGiftCard ? {
+          fee: GIFT_CARD_DELIVERY_FEE,
+          status: 'pending',
+          estimatedDelivery: '1-2 business days'
+        } : null
       });
 
     } catch (error: any) {

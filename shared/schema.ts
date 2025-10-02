@@ -620,6 +620,13 @@ export const orders = pgTable("orders", {
   additionalDeliveryFee: real("additional_delivery_fee").default(0), // Extra fee for return to customer trip
   refundNotes: text("refund_notes"),
   
+  // Physical gift card handling
+  hasPhysicalGiftCard: boolean("has_physical_gift_card").default(false), // Retailer issued physical gift card
+  giftCardPhotos: jsonb("gift_card_photos").default([]), // Photos of the gift card
+  giftCardDeliveryStatus: text("gift_card_delivery_status").default("pending"), // pending, in_transit, delivered
+  giftCardDeliveredAt: timestamp("gift_card_delivered_at"), // When gift card was delivered to customer
+  giftCardDeliveryFee: real("gift_card_delivery_fee").default(0), // $3.99 for returning gift card
+  
   // Customer refund preferences
   customerRefundPreference: text("customer_refund_preference").default("original_payment"), // original_payment, store_credit
   storeCreditBalance: real("store_credit_balance").default(0),

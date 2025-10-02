@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, CheckCircle, CreditCard, Gift, FileText } from "lucide-react";
@@ -23,6 +22,7 @@ export default function DriverCompleteDelivery() {
   const [refundMethod, setRefundMethod] = useState("original_payment");
   const [refundAmount, setRefundAmount] = useState("");
   const [isCustomAmount, setIsCustomAmount] = useState(false);
+  const [hasPhysicalGiftCard, setHasPhysicalGiftCard] = useState(false);
 
   // Fetch order details
   const { data: order, isLoading } = useQuery({
@@ -36,9 +36,13 @@ export default function DriverCompleteDelivery() {
       return apiRequest("POST", `/api/driver/orders/${params?.orderId}/complete`, data);
     },
     onSuccess: (data) => {
+      const isGiftCard = data.giftCardDelivery?.status === 'pending';
+      
       toast({
         title: "Delivery Completed Successfully",
-        description: `Customer refund of $${data.refund?.amount?.toFixed(2) || 0} has been processed.`,
+        description: isGiftCard 
+          ? `Retailer issued a gift card. You must deliver it to the customer within 1-2 business days.`
+          : `Customer refund of $${data.refund?.amount?.toFixed(2) || 0} has been processed.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/driver/orders"] });
       setLocation("/driver-dashboard");
@@ -62,6 +66,15 @@ export default function DriverCompleteDelivery() {
       return;
     }
 
+    if (hasPhysicalGiftCard && !photosUploaded) {
+      toast({
+        title: "Photo Required",
+        description: "Please upload photos of the gift card before completing.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const customRefundAmount = isCustomAmount ? parseFloat(refundAmount) : undefined;
     
     completeMutation.mutate({
@@ -69,7 +82,9 @@ export default function DriverCompleteDelivery() {
       photosUploaded,
       refundMethod,
       customRefundAmount,
-      refundReason: "return_delivered"
+      refundReason: "return_delivered",
+      hasPhysicalGiftCard
+      // Note: giftCardDeliveryFee is determined server-side for security
     });
   };
 
@@ -178,36 +193,47 @@ export default function DriverCompleteDelivery() {
               </Label>
             </div>
 
-            {/* Refund Method Selection */}
+            {/* Refund Method */}
             <div>
               <Label className="text-base font-semibold">Customer Refund Method</Label>
-              <RadioGroup
-                value={refundMethod}
-                onValueChange={setRefundMethod}
-                className="mt-3"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="original_payment" id="original_payment" data-testid="radio-original-payment" />
-                  <Label htmlFor="original_payment" className="flex items-center gap-2 cursor-pointer">
-                    <CreditCard className="w-4 h-4" />
-                    <div>
-                      <p className="font-medium">Original Payment Method</p>
-                      <p className="text-sm text-gray-500">Refund to customer's card/account (5-10 business days)</p>
-                    </div>
-                  </Label>
+              <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-4 h-4" />
+                  <div>
+                    <p className="font-medium">Original Payment Method</p>
+                    <p className="text-sm text-gray-500">Refund to customer's card/account (5-10 business days)</p>
+                  </div>
                 </div>
-                
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="store_credit" id="store_credit" data-testid="radio-store-credit" />
-                  <Label htmlFor="store_credit" className="flex items-center gap-2 cursor-pointer">
+              </div>
+            </div>
+
+            {/* Physical Gift Card Handling */}
+            <div className="border-t pt-4">
+              <div className="flex items-start space-x-2">
+                <Checkbox
+                  id="hasPhysicalGiftCard"
+                  checked={hasPhysicalGiftCard}
+                  onCheckedChange={(checked) => setHasPhysicalGiftCard(checked as boolean)}
+                  data-testid="checkbox-physical-gift-card"
+                />
+                <div className="flex-1">
+                  <Label htmlFor="hasPhysicalGiftCard" className="flex items-center gap-2 cursor-pointer">
                     <Gift className="w-4 h-4" />
-                    <div>
-                      <p className="font-medium">Store Credit</p>
-                      <p className="text-sm text-gray-500">Instant credit to customer's ReturnIt account</p>
-                    </div>
+                    <span className="font-medium">Retailer issued physical gift card</span>
                   </Label>
+                  <p className="text-sm text-gray-500 mt-1 ml-6">
+                    I will deliver the gift card back to the customer (+$3.99 delivery fee charged to customer)
+                  </p>
+                  {hasPhysicalGiftCard && (
+                    <div className="mt-2 ml-6 p-3 bg-yellow-50 rounded border border-yellow-200">
+                      <p className="text-sm text-yellow-800">
+                        <strong>Important:</strong> You must photograph the gift card and complete a second delivery to return it to the customer. 
+                        Customer will be charged an additional $3.99 delivery fee.
+                      </p>
+                    </div>
+                  )}
                 </div>
-              </RadioGroup>
+              </div>
             </div>
 
             {/* Custom Refund Amount */}
