@@ -125,6 +125,7 @@ export default function CompanySelector({
   }, []);
 
   const handleCompanySelect = async (company: Company, location?: CompanyLocation) => {
+    console.log('🏪 CompanySelector.handleCompanySelect called:', company.name, location);
     try {
       // Fetch the policy for this specific company
       const policyResponse = await fetch(`/api/companies/${company.id}/return-policy`, {
@@ -139,13 +140,16 @@ export default function CompanySelector({
       // Attach the policy to the company object for consistent access
       const companyWithPolicy = { ...company, returnPolicy: companyPolicy };
       
+      console.log('🔔 Calling parent onCompanySelect with:', companyWithPolicy.name);
       onCompanySelect(companyWithPolicy, location, companyPolicy);
+      console.log('✅ Parent callback completed, closing dropdown');
       setIsOpen(false);
       setSearchQuery("");
     } catch (error) {
-      console.error('Failed to fetch company policy:', error);
+      console.error('❌ Failed to fetch company policy:', error);
       // Still call onCompanySelect but without policy data
       const companyWithPolicy = { ...company, returnPolicy: null };
+      console.log('🔔 Calling parent onCompanySelect (no policy) with:', companyWithPolicy.name);
       onCompanySelect(companyWithPolicy, location, null);
       setIsOpen(false);
       setSearchQuery("");

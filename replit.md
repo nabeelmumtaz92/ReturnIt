@@ -10,7 +10,20 @@ Preferred communication style: Simple, everyday language.
 
 As of September 30, 2025, ReturnIt is launch-ready with comprehensive admin dashboard functionality including driver payouts ($0.50 instant fee structure), tax reporting (1099-NEC generation), fully functional notification management systems, dynamic pricing configuration, and complete order tracking with retailer logging. All generate buttons in tax and payout sections are operational with proper API integration. Production data cleanup completed with SMS notification system active for real-time order alerts to 6362544821.
 
-## Recent Updates (October 1, 2025)
+## Recent Updates (October 2, 2025)
+- ✅ **Critical Booking Flow Fixes**: Resolved complete retailer selection system failure that prevented order creation
+  - Fixed DatabaseStorage missing all company-related methods (getCompany, getCompanies, getCompanyBySlug, createCompany, updateCompany, deleteCompany, getReturnPolicyByCompany, getCompanyLocations) - production database calls were failing while in-memory storage worked
+  - Fixed API route ordering bug: moved `/api/companies/search` before `/api/companies/:id` to prevent "search" from being interpreted as an ID parameter causing "invalid input syntax for type integer: 'NaN'" errors
+  - Fixed CompanySelector query parameter serialization: implemented custom queryFn to properly serialize `{q: searchQuery, category: selectedCategory}` into URL query string instead of `[object Object]`
+  - Fixed CompanyLocation TypeScript interface schema mismatch: made id, city, state, zipCode, acceptsReturns optional to match simplified database structure (locations stored as `{name, address}` objects)
+  - Fixed CompanySelector input value handling: changed from `selectedCompany?.name || searchQuery` to `isOpen ? searchQuery : (selectedCompany?.name || searchQuery)` to allow re-searching after selection
+  - Auto-populated database with 8 St. Louis retailers (Best Buy, Dillard's, Macy's, Local Jones, Nordstrom Rack, Home Depot, CVS Pharmacy, Putt N' Around)
+- ✅ **End-to-End Testing**: Successfully validated complete customer booking flow from retailer search through Step 3 (Pickup Preferences)
+- 🔴 **Known Issues**: 
+  - Google Maps API address autocomplete requires configuration - fallback manual address entry functional
+  - Server 500 error when fetching return policies (non-blocking, company selection still works)
+
+## Previous Updates (October 1, 2025)
 - ✅ **Email Infrastructure Upgrade**: Switched to ImprovMX for FREE email forwarding (support@returnit.online → nabeelmumtaz92@gmail.com), updated ALL website emails from old returnly.com domain to support@returnit.online
 - ✅ **Support System Integration**: Tawk.to live chat on all customer pages, Resend for outbound emails (contact form), professional email forwarding via ImprovMX
 - ✅ **AI Assistant Knowledge Update**: Refreshed AI assistant with complete October 2025 platform knowledge including all integrations, features, and contact information
@@ -20,7 +33,6 @@ As of September 30, 2025, ReturnIt is launch-ready with comprehensive admin dash
 - ✅ **Companies Table**: Created companies database table with auto-population logic for St. Louis area businesses (Target, Walmart, etc.)
 - ✅ **Audit Logging**: Complete order lifecycle tracking with timestamps for all state changes
 - ✅ **GDPR/CCPA Compliance**: Account deletion and data export functionality in account settings
-- 🔴 **Known Issue**: Google Maps API address autocomplete requires configuration - fallback manual address entry recommended for production deployment
 
 ## Mobile Deployment Status
 ReturnIt mobile deployment features a fully functional Progressive Web App (PWA) with service worker, web manifest, and native-like mobile experience. Chrome automatically offers "Add to Home Screen" functionality, providing users with app-like access to all ReturnIt features. Alternative Expo-based native app deployment encountered prebuild configuration issues but PWA solution delivers professional mobile experience without app store complexity.
