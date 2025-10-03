@@ -62,7 +62,15 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
           const data = JSON.parse(event.data);
           
           // Listen for new order events
-          if (data.type === 'NEW_ORDER' || data.type === 'ORDER_STATUS_UPDATE') {
+          if (data.type === 'NEW_ORDER') {
+            // Show popup notification for new on-demand order
+            toast({
+              title: "🚨 New Order Available!",
+              description: data.order?.pickupAddress ? `Pickup at ${data.order.pickupAddress}` : "Tap to view on map",
+              duration: 8000,
+            });
+            fetchAvailableOrders();
+          } else if (data.type === 'ORDER_STATUS_UPDATE') {
             fetchAvailableOrders();
           }
         } catch (error) {
