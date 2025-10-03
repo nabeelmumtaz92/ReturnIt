@@ -2512,16 +2512,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const { orderId } = req.params;
-      const order = await storage.assignOrderToDriver(orderId, user.id);
+      
+      // Check if order is still available
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      if (order.driverId) {
+        return res.status(400).json({ message: "Order already assigned to another driver" });
+      }
+      
+      if (order.status !== 'created' && order.status !== 'confirmed') {
+        return res.status(400).json({ message: "Order is no longer available" });
+      }
+      
+      // LIMIT: Check how many active orders the driver currently has
+      const activeOrders = await storage.getDriverOrders(user.id);
+      const activeOrderCount = activeOrders.filter(o => 
+        !['completed', 'cancelled', 'delivered'].includes(o.status)
+      ).length;
+      
+      // MAX 3 concurrent active orders per driver
+      const MAX_CONCURRENT_ORDERS = 3;
+      if (activeOrderCount >= MAX_CONCURRENT_ORDERS) {
+        return res.status(400).json({ 
+          message: `You can only have ${MAX_CONCURRENT_ORDERS} active orders at a time. Complete or cancel existing orders first.`,
+          currentActiveOrders: activeOrderCount
+        });
+      }
+      
+      const updatedOrder = await storage.assignOrderToDriver(orderId, user.id);
       
       // Send timeline info back to driver
       const response = {
-        ...order,
+        ...updatedOrder,
         timeline: {
-          acceptedAt: order?.driverAcceptedAt,
-          completionDeadline: order?.completionDeadline,
-          timeRemaining: order?.completionDeadline 
-            ? Math.max(0, order.completionDeadline.getTime() - Date.now())
+          acceptedAt: updatedOrder?.driverAcceptedAt,
+          completionDeadline: updatedOrder?.completionDeadline,
+          timeRemaining: updatedOrder?.completionDeadline 
+            ? Math.max(0, updatedOrder.completionDeadline.getTime() - Date.now())
             : null
         }
       };
