@@ -1,0 +1,68 @@
+~/.../mobile-apps/returnit-driver$ npx eas init
+Failed to read the app config from the project using "npx expo config" command: npx expo config --json exited with non-zero code: 1.
+Falling back to the version of "@expo/config" shipped with the EAS CLI.
+Failed to resolve plugin for module "expo-location" relative to "/home/runner/workspace/mobile-apps/returnit-driver"
+    Error: project:init command failed.
+~/.../mobile-apps/returnit-driver$ cd mobile-apps/returnit-driver
+npm install
+npx eas init
+bash: cd: mobile-apps/returnit-driver: No such file or directory
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: returnit-driver@1.0.0
+npm error Found: react@18.2.0
+npm error node_modules/react
+npm error   react@"18.2.0" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer react@">= 18.3.1" from react-native-maps@1.26.0
+npm error node_modules/react-native-maps
+npm error   react-native-maps@"^1.14.0" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/runner/.npm/_logs/2025-10-03T22_42_05_311Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-10-03T22_42_05_311Z-debug-0.log
+Failed to read the app config from the project using "npx expo config" command: npx expo config --json exited with non-zero code: 1.
+Falling back to the version of "@expo/config" shipped with the EAS CLI.
+Failed to resolve plugin for module "expo-location" relative to "/home/runner/workspace/mobile-apps/returnit-driver"
+    Error: project:init command failed.
+~/.../mobile-apps/returnit-driver$ npm install
+npx eas init
+npx eas build --profile preview --platform android
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: returnit-driver@1.0.0
+npm error Found: react@18.3.1
+npm error node_modules/react
+npm error   react@"18.3.1" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"18.2.0" from react-native@0.74.5
+npm error node_modules/react-native
+npm error   react-native@"0.74.5" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /home/runner/.npm/_logs/2025-10-03T22_42_59_890Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-10-03T22_42_59_890Z-debug-0.log
+Failed to read the app config from the project using "npx expo config" command: npx expo config --json exited with non-zero code: 1.
+Falling back to the version of "@expo/config" shipped with the EAS CLI.
+Failed to resolve plugin for module "expo-location" relative to "/home/runner/workspace/mobile-apps/returnit-driver"
+    Error: project:init command failed.
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+Failed to read the app config from the project using "npx expo config" command: npx expo config --json exited with non-zero code: 1.
+Falling back to the version of "@expo/config" shipped with the EAS CLI.
+Failed to resolve plugin for module "expo-location" relative to "/home/runner/workspace/mobile-apps/returnit-driver"
+    Error: build command failed.
+~/.../mobile-apps/returnit-driver$ 
