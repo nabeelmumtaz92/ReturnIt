@@ -8,13 +8,18 @@
     "userInterfaceStyle": "light",
     "description": "Professional reverse delivery service - Book returns, exchanges, and donations with real-time tracking",
     "privacy": "public",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#F8F7F4"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.customer",
@@ -43,7 +48,11 @@
         "CAMERA",
         "INTERNET",
         "VIBRATE",
-        "RECEIVE_BOOT_COMPLETED"
+        "RECEIVE_BOOT_COMPLETED",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -54,7 +63,10 @@
               "host": "returnit.online"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -76,7 +88,11 @@
     "extra": {
       "apiUrl": "https://returnit.online",
       "stripePublishableKey": "pk_live_51QnggfGqTEOZPKe7XDuSWfJHUUE3Wz1d9V2l4sJpDI3RAwF3yjZ9cYH1JqNqxGOO4BmJmW9JYlUZLjRyP3vQRxd300NtX3b9Hm",
-      "googleClientId": "YOUR_GOOGLE_CLIENT_ID"
-    }
+      "googleClientId": "YOUR_GOOGLE_CLIENT_ID",
+      "eas": {
+        "projectId": "afe3f0da-5c84-4d7b-80bd-51bfff61ef6a"
+      }
+    },
+    "owner": "nabeelmumtaz92"
   }
 }
