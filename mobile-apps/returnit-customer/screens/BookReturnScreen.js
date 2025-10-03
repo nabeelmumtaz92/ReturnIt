@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import apiClient from '../../shared/api-client';
 
 export default function BookReturnScreen({ navigation, route }) {
   const [formData, setFormData] = useState({
@@ -14,8 +15,63 @@ export default function BookReturnScreen({ navigation, route }) {
     specialInstructions: ''
   });
 
+  const [promoCode, setPromoCode] = useState('');
+  const [promoValidation, setPromoValidation] = useState(null);
+  const [validatingPromo, setValidatingPromo] = useState(false);
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const validatePromoCode = async () => {
+    if (!promoCode.trim()) {
+      Alert.alert('Invalid Code', 'Please enter a promo code');
+      return;
+    }
+
+    try {
+      setValidatingPromo(true);
+      const response = await apiClient.request('/api/promo/validate', {
+        method: 'POST',
+        body: { code: promoCode.trim().toUpperCase() }
+      });
+
+      if (response.valid) {
+        setPromoValidation(response);
+        Alert.alert(
+          'Promo Code Applied! 🎉',
+          `You'll save ${response.type === 'percentage' ? response.discount + '%' : '$' + response.discount.toFixed(2)} on this order!`
+        );
+      } else {
+        setPromoValidation(null);
+        Alert.alert('Invalid Code', 'This promo code is not valid or has expired.');
+      }
+    } catch (error) {
+      console.error('Promo validation error:', error);
+      Alert.alert('Error', 'Failed to validate promo code. Please try again.');
+    } finally {
+      setValidatingPromo(false);
+    }
+  };
+
+  const removePromoCode = () => {
+    setPromoCode('');
+    setPromoValidation(null);
+  };
+
+  const calculateDiscount = (basePrice) => {
+    if (!promoValidation || !promoValidation.valid) return 0;
+
+    const { type, discount } = promoValidation;
+    
+    if (type === 'percentage') {
+      return basePrice * (discount / 100);
+    } else if (type === 'fixed') {
+      return Math.min(discount, basePrice);
+    } else if (type === 'free_delivery') {
+      return basePrice;
+    }
+    return 0;
   };
 
   const handleSubmitBooking = () => {
@@ -25,14 +81,19 @@ export default function BookReturnScreen({ navigation, route }) {
       return;
     }
 
-    const estimatedCost = 15.00;
+    const baseCost = 15.00;
+    const discount = calculateDiscount(baseCost);
+    const finalCost = Math.max(0, baseCost - discount);
 
     navigation.navigate('PaymentCheckout', {
       orderDetails: {
         pickupAddress: formData.pickupAddress,
         returnAddress: formData.returnAddress || 'Store Return Center',
         packageType: formData.packageType,
-        estimatedCost: estimatedCost,
+        estimatedCost: finalCost,
+        baseCost: baseCost,
+        discount: discount,
+        promoCode: promoValidation ? promoCode.toUpperCase() : null,
         formData: formData
       }
     });
@@ -44,6 +105,10 @@ export default function BookReturnScreen({ navigation, route }) {
     { key: 'donation', label: '💝 Donate to Charity' },
     { key: 'warranty', label: '🛠️ Warranty Return' }
   ];
+
+  const baseCost = 15.00;
+  const discount = calculateDiscount(baseCost);
+  const finalCost = Math.max(0, baseCost - discount);
 
   return (
     <View style={styles.container}>
@@ -96,6 +161,7 @@ export default function BookReturnScreen({ navigation, route }) {
               onChangeText={(value) => handleInputChange('pickupAddress', value)}
               placeholder="Enter your pickup address"
               multiline
+              data-testid="input-pickup-address"
             />
           </View>
 
@@ -107,6 +173,7 @@ export default function BookReturnScreen({ navigation, route }) {
               onChangeText={(value) => handleInputChange('contactPhone', value)}
               placeholder="(555) 123-4567"
               keyboardType="phone-pad"
+              data-testid="input-contact-phone"
             />
           </View>
 
@@ -117,6 +184,7 @@ export default function BookReturnScreen({ navigation, route }) {
               value={formData.preferredDate}
               onChangeText={(value) => handleInputChange('preferredDate', value)}
               placeholder="MM/DD/YYYY or 'ASAP'"
+              data-testid="input-preferred-date"
             />
           </View>
         </View>
@@ -134,6 +202,7 @@ export default function BookReturnScreen({ navigation, route }) {
                 onChangeText={(value) => handleInputChange('returnAddress', value)}
                 placeholder="Store address or return center"
                 multiline
+                data-testid="input-return-address"
               />
             </View>
           </View>
@@ -151,6 +220,7 @@ export default function BookReturnScreen({ navigation, route }) {
               onChangeText={(value) => handleInputChange('description', value)}
               placeholder="Describe the items (clothing, electronics, etc.)"
               multiline
+              data-testid="input-description"
             />
           </View>
 
@@ -162,6 +232,7 @@ export default function BookReturnScreen({ navigation, route }) {
               onChangeText={(value) => handleInputChange('estimatedWeight', value)}
               placeholder="5"
               keyboardType="numeric"
+              data-testid="input-weight"
             />
           </View>
 
@@ -173,13 +244,87 @@ export default function BookReturnScreen({ navigation, route }) {
               onChangeText={(value) => handleInputChange('specialInstructions', value)}
               placeholder="Any special handling instructions..."
               multiline
+              data-testid="input-special-instructions"
             />
           </View>
         </View>
 
+        {/* Promo Code Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Promo Code</Text>
+          
+          {!promoValidation ? (
+            <View style={styles.promoInputContainer}>
+              <TextInput
+                style={styles.promoInput}
+                value={promoCode}
+                onChangeText={setPromoCode}
+                placeholder="Enter promo code"
+                autoCapitalize="characters"
+                data-testid="input-promo-code"
+              />
+              <TouchableOpacity
+                style={[styles.applyButton, validatingPromo && styles.disabledButton]}
+                onPress={validatePromoCode}
+                disabled={validatingPromo}
+                data-testid="button-apply-promo"
+              >
+                {validatingPromo ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.applyButtonText}>Apply</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.promoAppliedContainer}>
+              <View style={styles.promoAppliedBadge}>
+                <Text style={styles.promoAppliedText}>
+                  ✓ {promoCode.toUpperCase()} Applied
+                </Text>
+                <Text style={styles.promoSavingsText}>
+                  Save{' '}
+                  {promoValidation.type === 'percentage'
+                    ? `${promoValidation.discount}%`
+                    : `$${promoValidation.discount.toFixed(2)}`}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={removePromoCode} data-testid="button-remove-promo">
+                <Text style={styles.removePromoText}>Remove</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        {/* Price Summary */}
+        <View style={styles.priceSummaryContainer}>
+          <View style={styles.priceRow}>
+            <Text style={styles.priceLabel}>Base Price:</Text>
+            <Text style={styles.priceValue}>${baseCost.toFixed(2)}</Text>
+          </View>
+          
+          {discount > 0 && (
+            <View style={styles.priceRow}>
+              <Text style={styles.discountLabel}>Discount:</Text>
+              <Text style={styles.discountValue}>-${discount.toFixed(2)}</Text>
+            </View>
+          )}
+          
+          <View style={[styles.priceRow, styles.totalRow]}>
+            <Text style={styles.totalLabel}>Total:</Text>
+            <Text style={styles.totalValue}>${finalCost.toFixed(2)}</Text>
+          </View>
+        </View>
+
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmitBooking}>
-          <Text style={styles.submitButtonText}>Schedule Pickup</Text>
+        <TouchableOpacity 
+          style={styles.submitButton} 
+          onPress={handleSubmitBooking}
+          data-testid="button-schedule-pickup"
+        >
+          <Text style={styles.submitButtonText}>
+            Continue to Payment (${finalCost.toFixed(2)})
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -263,6 +408,113 @@ const styles = StyleSheet.create({
     borderColor: '#FED7AA',
     fontSize: 16,
     color: '#374151',
+  },
+  promoInputContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  promoInput: {
+    flex: 1,
+    backgroundColor: 'white',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FED7AA',
+    fontSize: 16,
+    color: '#374151',
+  },
+  applyButton: {
+    backgroundColor: '#FB923C',
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 80,
+  },
+  disabledButton: {
+    backgroundColor: '#9CA3AF',
+    opacity: 0.6,
+  },
+  applyButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'white',
+  },
+  promoAppliedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#D1FAE5',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#10B981',
+  },
+  promoAppliedBadge: {
+    flex: 1,
+  },
+  promoAppliedText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#065F46',
+    marginBottom: 4,
+  },
+  promoSavingsText: {
+    fontSize: 14,
+    color: '#047857',
+  },
+  removePromoText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#DC2626',
+    textDecorationLine: 'underline',
+  },
+  priceSummaryContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#FED7AA',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  priceLabel: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  priceValue: {
+    fontSize: 16,
+    color: '#374151',
+  },
+  discountLabel: {
+    fontSize: 16,
+    color: '#10B981',
+  },
+  discountValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#10B981',
+  },
+  totalRow: {
+    borderTopWidth: 1,
+    borderTopColor: '#FED7AA',
+    marginTop: 8,
+    paddingTop: 16,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#92400E',
+  },
+  totalValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FB923C',
   },
   submitButton: {
     backgroundColor: '#FB923C',
