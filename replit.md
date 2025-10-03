@@ -5,10 +5,14 @@ ReturnIt is a reverse delivery service platform designed to streamline returns, 
 ## Recent Mobile App Development Progress (October 2024)
 - ✅ Customer App: Stripe Payment Sheet integration with ephemeral keys and automatic payment methods
 - ✅ Customer App: PayPal payment flow with browser-based approval and React Native-safe deep-link handling  
+- ✅ Customer App: Google OAuth social login via expo-auth-session with dedicated mobile endpoint
+- ✅ Customer App: Promo code validation and discount application in booking flow (percentage/fixed/free_delivery)
 - ✅ Driver App: Camera verification system (expo-camera) with up to 5 photos per delivery
 - ✅ Driver App: Digital signature capture (text-based) with delivery notes
 - ✅ Driver App: Mapbox GL v7.1.x Live Order Map with real-time WebSocket updates
-- 🔄 In Progress: Social login (Google/Facebook/Apple) for Customer mobile app
+- ✅ Driver App: Stripe Connect payout management with instant payout requests ($0.50 fee, 15-30 min arrival)
+- 📝 Documentation: Facebook & Apple OAuth setup guide (credentials pending)
+- 🔄 Planned: Real-time GPS tracking visualization for customer app (Mapbox integration)
 
 # User Preferences
 
