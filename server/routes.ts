@@ -2533,11 +2533,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         !['completed', 'cancelled', 'delivered'].includes(o.status)
       ).length;
       
-      // MAX 3 concurrent active orders per driver
-      const MAX_CONCURRENT_ORDERS = 3;
+      // STRICT LIMIT: Only 1 order at a time - must complete before accepting next
+      const MAX_CONCURRENT_ORDERS = 1;
       if (activeOrderCount >= MAX_CONCURRENT_ORDERS) {
         return res.status(400).json({ 
-          message: `You can only have ${MAX_CONCURRENT_ORDERS} active orders at a time. Complete or cancel existing orders first.`,
+          message: "You can only have 1 active order at a time. Complete your current order before accepting a new one.",
           currentActiveOrders: activeOrderCount
         });
       }
