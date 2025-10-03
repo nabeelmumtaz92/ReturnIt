@@ -10,6 +10,7 @@ import DriverDashboardScreen from './screens/DriverDashboardScreen';
 import LiveOrderMapScreen from './screens/LiveOrderMapScreen';
 import JobManagementScreen from './screens/JobManagementScreen';
 import EarningsScreen from './screens/EarningsScreen';
+import PayoutManagementScreen from './screens/PayoutManagementScreen';
 import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
 import DriverProfileScreen from './screens/DriverProfileScreen';
 import DriverSupportScreen from './screens/DriverSupportScreen';
@@ -112,6 +113,7 @@ export default function App() {
         <Stack.Screen name="LiveOrderMap" component={LiveOrderMapScreen} />
         <Stack.Screen name="JobManagement" component={JobManagementScreen} />
         <Stack.Screen name="Earnings" component={EarningsScreen} />
+        <Stack.Screen name="PayoutManagement" component={PayoutManagementScreen} />
         <Stack.Screen name="RouteOptimization" component={RouteOptimizationScreen} />
         <Stack.Screen name="DriverProfile" component={DriverProfileScreen} />
         <Stack.Screen name="DriverSupport" component={DriverSupportScreen} />
