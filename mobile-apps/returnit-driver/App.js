@@ -17,8 +17,8 @@ import DriverSupportScreen from './screens/DriverSupportScreen';
 import PackageVerificationScreen from './screens/PackageVerificationScreen';
 
 // Import auth and API services
-import authService from '../shared/auth-service';
-import apiClient from '../shared/api-client';
+import authService from './services/auth-service';
+import apiClient from './services/api-client';
 
 const Stack = createStackNavigator();
 

@@ -17,8 +17,8 @@ import ProfileScreen from './screens/ProfileScreen';
 import SupportScreen from './screens/SupportScreen';
 
 // Import auth and API services
-import authService from '../shared/auth-service';
-import apiClient from '../shared/api-client';
+import authService from './services/auth-service';
+import apiClient from './services/api-client';
 
 const Stack = createStackNavigator();
 
