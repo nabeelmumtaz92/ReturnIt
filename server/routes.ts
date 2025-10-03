@@ -4042,6 +4042,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const drivers = await storage.getDrivers();
       const pendingApplications = drivers.filter(driver => 
         driver.applicationStatus === 'pending_review' || 
+        driver.applicationStatus === 'waitlist' ||
         driver.backgroundCheckStatus === 'in_progress' ||
         driver.onboardingStep === 'background_check_pending'
       );

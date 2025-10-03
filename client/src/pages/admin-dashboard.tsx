@@ -2513,6 +2513,358 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     );
   };
 
+  const DriverApplicationsContent = () => {
+    const [applications, setApplications] = useState<any[]>([]);
+    const [selectedApplications, setSelectedApplications] = useState<Set<number>>(new Set());
+    const [isLoading, setIsLoading] = useState(false);
+    const [filterStatus, setFilterStatus] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState<'date' | 'location' | 'name'>('date');
+    
+    const fetchApplications = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/admin/driver-applications/pending', {
+          credentials: 'include'
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setApplications(data);
+        }
+      } catch (error) {
+        console.error('Error fetching driver applications:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load driver applications",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    useEffect(() => {
+      fetchApplications();
+    }, []);
+
+    const toggleSelection = (driverId: number) => {
+      setSelectedApplications(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(driverId)) {
+          newSet.delete(driverId);
+        } else {
+          newSet.add(driverId);
+        }
+        return newSet;
+      });
+    };
+
+    const selectAll = () => {
+      const filtered = getFilteredApplications();
+      setSelectedApplications(new Set(filtered.map(app => app.id)));
+    };
+
+    const clearSelection = () => {
+      setSelectedApplications(new Set());
+    };
+
+    const approveSelected = async () => {
+      if (selectedApplications.size === 0) {
+        toast({
+          title: "No Selection",
+          description: "Please select at least one driver to approve",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      try {
+        const approvalPromises = Array.from(selectedApplications).map(driverId =>
+          fetch(`/api/admin/driver-applications/${driverId}/approve`, {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reason: 'Approved - Good location for partners' })
+          })
+        );
+
+        await Promise.all(approvalPromises);
+
+        toast({
+          title: "Success!",
+          description: `Approved ${selectedApplications.size} driver(s)`,
+        });
+
+        clearSelection();
+        fetchApplications();
+      } catch (error) {
+        console.error('Error approving drivers:', error);
+        toast({
+          title: "Error",
+          description: "Failed to approve selected drivers",
+          variant: "destructive"
+        });
+      }
+    };
+
+    const getFilteredApplications = () => {
+      let filtered = applications;
+
+      if (filterStatus !== 'all') {
+        filtered = filtered.filter(app => app.applicationStatus === filterStatus);
+      }
+
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(app =>
+          app.firstName?.toLowerCase().includes(query) ||
+          app.lastName?.toLowerCase().includes(query) ||
+          app.email?.toLowerCase().includes(query) ||
+          app.city?.toLowerCase().includes(query) ||
+          app.zipCode?.includes(query)
+        );
+      }
+
+      if (sortBy === 'date') {
+        filtered.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      } else if (sortBy === 'location') {
+        filtered.sort((a, b) => (a.city || '').localeCompare(b.city || ''));
+      } else if (sortBy === 'name') {
+        filtered.sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''));
+      }
+
+      return filtered;
+    };
+
+    const filteredApplications = getFilteredApplications();
+    const stats = {
+      total: applications.length,
+      pending: applications.filter(a => a.applicationStatus === 'pending_review').length,
+      waitlist: applications.filter(a => a.applicationStatus === 'waitlist').length,
+      approved: applications.filter(a => a.applicationStatus === 'approved').length,
+    };
+
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Total Applications</p>
+                  <p className="text-2xl font-bold text-amber-900">{stats.total}</p>
+                </div>
+                <UserPlus className="h-8 w-8 text-amber-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Pending Review</p>
+                  <p className="text-2xl font-bold text-orange-700">{stats.pending}</p>
+                </div>
+                <Clock className="h-8 w-8 text-orange-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">On Waitlist</p>
+                  <p className="text-2xl font-bold text-blue-700">{stats.waitlist}</p>
+                </div>
+                <Users2 className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-amber-600">Selected</p>
+                  <p className="text-2xl font-bold text-green-700">{selectedApplications.size}</p>
+                </div>
+                <CheckCircle2 className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Actions and Filters */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+          <CardContent className="p-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  onClick={selectAll}
+                  variant="outline"
+                  size="sm"
+                  data-testid="button-select-all"
+                >
+                  <CheckCircle2 className="h-4 w-4 mr-2" />
+                  Select All ({filteredApplications.length})
+                </Button>
+                <Button
+                  onClick={clearSelection}
+                  variant="outline"
+                  size="sm"
+                  data-testid="button-clear-selection"
+                >
+                  Clear Selection
+                </Button>
+                <Button
+                  onClick={approveSelected}
+                  disabled={selectedApplications.size === 0}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                  data-testid="button-approve-selected"
+                >
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  Approve Selected ({selectedApplications.size})
+                </Button>
+              </div>
+
+              <div className="flex gap-2 flex-wrap">
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="border border-amber-200 rounded-md px-3 py-1.5 text-sm"
+                  data-testid="select-filter-status"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending_review">Pending Review</option>
+                  <option value="waitlist">Waitlist</option>
+                  <option value="approved">Approved</option>
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="border border-amber-200 rounded-md px-3 py-1.5 text-sm"
+                  data-testid="select-sort-by"
+                >
+                  <option value="date">Sort by Date</option>
+                  <option value="location">Sort by Location</option>
+                  <option value="name">Sort by Name</option>
+                </select>
+
+                <Input
+                  placeholder="Search name, email, city, ZIP..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-64 border-amber-200"
+                  data-testid="input-search-drivers"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Applications List */}
+        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <CardHeader>
+            <CardTitle className="text-amber-900 text-xl">
+              Driver Applications ({filteredApplications.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="text-center py-8 text-amber-600">Loading applications...</div>
+            ) : filteredApplications.length === 0 ? (
+              <div className="text-center py-8 text-amber-600">No applications found</div>
+            ) : (
+              <div className="space-y-4">
+                {filteredApplications.map(app => {
+                  const isSelected = selectedApplications.has(app.id);
+                  const vehicleInfo = typeof app.vehicleInfo === 'string' 
+                    ? JSON.parse(app.vehicleInfo) 
+                    : app.vehicleInfo;
+
+                  return (
+                    <div
+                      key={app.id}
+                      onClick={() => toggleSelection(app.id)}
+                      className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                        isSelected
+                          ? 'border-green-400 bg-green-50/50 shadow-md'
+                          : 'border-amber-200 bg-amber-50/30 hover:border-amber-400'
+                      }`}
+                      data-testid={`card-driver-${app.id}`}
+                    >
+                      <div className="flex items-start gap-4">
+                        <div className="flex items-center justify-center w-12 h-12">
+                          {isSelected ? (
+                            <CheckCircle2 className="h-8 w-8 text-green-600" />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full border-2 border-gray-300" />
+                          )}
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <div>
+                              <p className="font-semibold text-lg text-amber-900">
+                                {app.firstName} {app.lastName}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge className={
+                                  app.applicationStatus === 'approved' ? 'bg-green-100 text-green-800' :
+                                  app.applicationStatus === 'waitlist' ? 'bg-blue-100 text-blue-800' :
+                                  'bg-orange-100 text-orange-800'
+                                }>
+                                  {app.applicationStatus}
+                                </Badge>
+                                <Badge variant="outline" className="text-amber-700">
+                                  {app.backgroundCheckStatus || 'pending'}
+                                </Badge>
+                              </div>
+                            </div>
+                            <p className="text-sm text-amber-600">
+                              Applied: {new Date(app.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                              <p className="text-amber-600 font-medium mb-1">Contact</p>
+                              <p className="text-amber-900">{app.email}</p>
+                              <p className="text-amber-900">{app.phone}</p>
+                            </div>
+                            <div>
+                              <p className="text-amber-600 font-medium mb-1">Location</p>
+                              <p className="text-amber-900">{app.city}, {app.state}</p>
+                              <p className="text-amber-900">ZIP: {app.zipCode}</p>
+                            </div>
+                            {vehicleInfo && (
+                              <div>
+                                <p className="text-amber-600 font-medium mb-1">Vehicle</p>
+                                <p className="text-amber-900">
+                                  {vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}
+                                </p>
+                                <p className="text-amber-900 text-xs">{vehicleInfo.licensePlate}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const CustomersContent = () => {
     const [customers, setCustomers] = useState<any[]>([]);
     const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
