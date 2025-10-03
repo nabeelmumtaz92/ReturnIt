@@ -9905,6 +9905,71 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === SEO ROUTES ===
+  
+  // Sitemap.xml - Dynamic sitemap generation for search engines
+  app.get("/sitemap.xml", async (req, res) => {
+    try {
+      const baseUrl = "https://returnit.online";
+      const currentDate = new Date().toISOString();
+      
+      // Core pages with priorities
+      const staticPages = [
+        { url: "/", changefreq: "daily", priority: "1.0" },
+        { url: "/about", changefreq: "monthly", priority: "0.8" },
+        { url: "/pricing", changefreq: "weekly", priority: "0.9" },
+        { url: "/contact", changefreq: "monthly", priority: "0.7" },
+        { url: "/customer-mobile-app", changefreq: "weekly", priority: "0.8" },
+        { url: "/companies", changefreq: "weekly", priority: "0.7" },
+        { url: "/privacy-policy.html", changefreq: "monthly", priority: "0.5" },
+        { url: "/terms", changefreq: "monthly", priority: "0.5" },
+      ];
+
+      // Build XML sitemap
+      let sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n';
+      sitemap += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" ';
+      sitemap += 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ';
+      sitemap += 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 ';
+      sitemap += 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">\n';
+
+      // Add static pages
+      staticPages.forEach(page => {
+        sitemap += '  <url>\n';
+        sitemap += `    <loc>${baseUrl}${page.url}</loc>\n`;
+        sitemap += `    <lastmod>${currentDate}</lastmod>\n`;
+        sitemap += `    <changefreq>${page.changefreq}</changefreq>\n`;
+        sitemap += `    <priority>${page.priority}</priority>\n`;
+        sitemap += '  </url>\n';
+      });
+
+      // Optionally add dynamic company pages (limited to active companies)
+      try {
+        const companies = await storage.getCompanies();
+        const activeCompanies = companies.filter(c => c.isActive).slice(0, 100); // Limit to 100 for sitemap size
+        
+        activeCompanies.forEach(company => {
+          sitemap += '  <url>\n';
+          sitemap += `    <loc>${baseUrl}/companies/${company.slug}</loc>\n`;
+          sitemap += `    <lastmod>${company.updatedAt?.toISOString() || currentDate}</lastmod>\n`;
+          sitemap += `    <changefreq>weekly</changefreq>\n`;
+          sitemap += `    <priority>0.6</priority>\n`;
+          sitemap += '  </url>\n';
+        });
+      } catch (error) {
+        console.error("Error fetching companies for sitemap:", error);
+        // Continue without company pages if there's an error
+      }
+
+      sitemap += '</urlset>';
+
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error) {
+      console.error("Error generating sitemap:", error);
+      res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><error>Failed to generate sitemap</error>');
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

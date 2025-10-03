@@ -1,0 +1,49 @@
+# ReturnIt - Reverse Logistics Platform
+# robots.txt for https://returnit.online
+
+User-agent: *
+Allow: /
+Allow: /customer-mobile-app
+Allow: /about
+Allow: /pricing
+Allow: /contact
+Allow: /companies
+
+# Disallow admin and private pages
+Disallow: /admin*
+Disallow: /dashboard*
+Disallow: /retailer*
+Disallow: /api/*
+Disallow: /driver*
+Disallow: /login
+Disallow: /register
+
+# Disallow dev/staging environments
+Disallow: /*.replit.dev$
+Disallow: /*.replit.app$
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://returnit.online/sitemap.xml
+
+# Special rules for Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+# Special rules for Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
