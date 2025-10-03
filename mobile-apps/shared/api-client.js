@@ -303,6 +303,30 @@ class APIClient {
     });
   }
 
+  async uploadDeliveryPhoto(formData) {
+    const url = `${this.baseURL}/api/driver/upload-delivery-photo`;
+    
+    const response = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData, // FormData already has the correct Content-Type
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to upload photo');
+    }
+
+    return await response.json();
+  }
+
+  async completeDelivery(orderId, deliveryData) {
+    return await this.request(`/api/driver/orders/${orderId}/complete`, {
+      method: 'POST',
+      body: deliveryData,
+    });
+  }
+
   /**
    * Utility methods
    */

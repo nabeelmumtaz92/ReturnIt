@@ -13,6 +13,7 @@ import EarningsScreen from './screens/EarningsScreen';
 import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
 import DriverProfileScreen from './screens/DriverProfileScreen';
 import DriverSupportScreen from './screens/DriverSupportScreen';
+import PackageVerificationScreen from './screens/PackageVerificationScreen';
 
 // Import auth and API services
 import authService from '../shared/auth-service';
@@ -114,6 +115,7 @@ export default function App() {
         <Stack.Screen name="RouteOptimization" component={RouteOptimizationScreen} />
         <Stack.Screen name="DriverProfile" component={DriverProfileScreen} />
         <Stack.Screen name="DriverSupport" component={DriverSupportScreen} />
+        <Stack.Screen name="PackageVerification" component={PackageVerificationScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

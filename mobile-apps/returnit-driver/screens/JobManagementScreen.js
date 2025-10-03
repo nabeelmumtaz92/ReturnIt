@@ -221,16 +221,16 @@ export default function JobManagementScreen({ navigation }) {
         }
         break;
       case 'complete':
-        try {
-          const location = await getCurrentLocation();
-          await apiClient.updateOrderStatus(job.id, 'dropped_off', location);
-          Alert.alert('Job Completed!', 'Package successfully delivered to store. Earnings have been added to your account.', [
-            { text: 'OK', onPress: () => loadJobs() }
-          ]);
-        } catch (err) {
-          const appError = ErrorHandler.handleAPIError(err);
-          Alert.alert('Error', appError.userFriendly);
-        }
+        // Navigate to package verification screen for photos and signature
+        navigation.navigate('PackageVerification', {
+          orderId: job.id,
+          orderDetails: {
+            customer: job.customer,
+            pickupAddress: job.pickupAddress,
+            dropoffAddress: job.dropoffAddress,
+            status: job.status,
+          }
+        });
         break;
       case 'en_route':
         try {
