@@ -4036,16 +4036,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Manual Driver Approval API Endpoints
   
-  // Get pending driver applications for manual review
+  // Get all driver applications for admin management (includes pending, waitlist, approved, etc.)
   app.get("/api/admin/driver-applications/pending", requireSecureAdmin, async (req, res) => {
     try {
       const drivers = await storage.getDrivers();
-      const pendingApplications = drivers.filter(driver => 
-        driver.applicationStatus === 'pending_review' || 
-        driver.applicationStatus === 'waitlist' ||
-        driver.backgroundCheckStatus === 'in_progress' ||
-        driver.onboardingStep === 'background_check_pending'
-      );
+      // Return ALL driver applications for comprehensive management
+      const pendingApplications = drivers.filter(driver => driver.isDriver === true);
       
       // Enrich with application details
       const enrichedApplications = pendingApplications.map(driver => ({
