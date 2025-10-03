@@ -79,10 +79,6 @@
       ]
     ],
     "scheme": "returnit-driver",
-    "extra": {
-      "eas": {
-        "projectId": "48e318b4-ed99-4048-9215-ec76e57f0b9b"
-      }
-    }
+    "extra": {}
   }
 }

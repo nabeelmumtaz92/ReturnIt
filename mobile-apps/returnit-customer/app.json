@@ -74,18 +74,9 @@
     ],
     "scheme": "returnit-customer",
     "extra": {
-      "eas": {
-        "projectId": "c4a21c2e-2cbc-4b1d-8b72-31fb299a017f"
-      },
       "apiUrl": "https://returnit.online",
       "stripePublishableKey": "pk_live_51QnggfGqTEOZPKe7XDuSWfJHUUE3Wz1d9V2l4sJpDI3RAwF3yjZ9cYH1JqNqxGOO4BmJmW9JYlUZLjRyP3vQRxd300NtX3b9Hm",
       "googleClientId": "YOUR_GOOGLE_CLIENT_ID"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/c4a21c2e-2cbc-4b1d-8b72-31fb299a017f"
-    },
-    "runtimeVersion": {
-      "policy": "sdkVersion"
     }
   }
 }
