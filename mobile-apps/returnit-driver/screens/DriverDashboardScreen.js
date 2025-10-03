@@ -203,6 +203,14 @@ export default function DriverDashboardScreen({ navigation }) {
         <View style={styles.actionsContainer}>
           <Text style={styles.sectionTitle}>Quick Actions</Text>
           
+          <TouchableOpacity 
+            style={styles.liveMapButton}
+            onPress={() => navigation.navigate('LiveOrderMap')}
+          >
+            <Text style={styles.liveMapButtonText}>🗺️ Live Order Map</Text>
+            <Text style={styles.liveMapButtonSubtext}>View available orders on map (Uber-style)</Text>
+          </TouchableOpacity>
+          
           <View style={styles.actionRow}>
             <TouchableOpacity 
               style={styles.actionButton}
@@ -434,6 +442,29 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     marginBottom: 30,
+  },
+  liveMapButton: {
+    backgroundColor: '#10B981',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  liveMapButtonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  liveMapButtonSubtext: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
   },
   actionRow: {
     flexDirection: 'row',

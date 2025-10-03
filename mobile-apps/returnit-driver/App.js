@@ -7,6 +7,7 @@ import 'react-native-gesture-handler';
 // Import screens
 import LoginScreen from './screens/LoginScreen';
 import DriverDashboardScreen from './screens/DriverDashboardScreen';
+import LiveOrderMapScreen from './screens/LiveOrderMapScreen';
 import JobManagementScreen from './screens/JobManagementScreen';
 import EarningsScreen from './screens/EarningsScreen';
 import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
@@ -107,6 +108,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="DriverDashboard" component={DriverDashboardScreen} />
+        <Stack.Screen name="LiveOrderMap" component={LiveOrderMapScreen} />
         <Stack.Screen name="JobManagement" component={JobManagementScreen} />
         <Stack.Screen name="Earnings" component={EarningsScreen} />
         <Stack.Screen name="RouteOptimization" component={RouteOptimizationScreen} />
