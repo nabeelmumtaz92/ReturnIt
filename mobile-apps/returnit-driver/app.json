@@ -8,13 +8,18 @@
     "userInterfaceStyle": "light",
     "description": "ReturnIt Driver App - Manage pickups, deliveries, route optimization, and earnings with real-time job tracking",
     "privacy": "public",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "splash": {
       "image": "./assets/splash-driver.png",
       "resizeMode": "contain",
       "backgroundColor": "#F8F7F4"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.driver",
@@ -24,7 +29,11 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt Driver to track your location for pickup and delivery assignments, even when the app is in the background.",
         "NSLocationAlwaysUsageDescription": "Allow ReturnIt Driver to access location for background job tracking and route optimization.",
         "NSCameraUsageDescription": "Allow ReturnIt Driver to take photos for package verification and proof of delivery.",
-        "UIBackgroundModes": ["location", "background-processing", "background-fetch"],
+        "UIBackgroundModes": [
+          "location",
+          "background-processing",
+          "background-fetch"
+        ],
         "CFBundleDisplayName": "ReturnIt Driver",
         "CFBundleName": "ReturnIt Driver"
       },
@@ -41,14 +50,18 @@
       },
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION", 
+        "ACCESS_COARSE_LOCATION",
         "ACCESS_BACKGROUND_LOCATION",
         "CAMERA",
         "INTERNET",
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED",
         "WAKE_LOCK",
-        "FOREGROUND_SERVICE"
+        "FOREGROUND_SERVICE",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -59,7 +72,10 @@
               "host": "driver.returnit.online"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -79,6 +95,11 @@
       ]
     ],
     "scheme": "returnit-driver",
-    "extra": {}
+    "extra": {
+      "eas": {
+        "projectId": "6dc97462-a28e-4563-adeb-5de73d87e0ce"
+      }
+    },
+    "owner": "nabeelmumtaz92"
   }
 }
