@@ -11,8 +11,8 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
-import apiClient from '../../shared/api-client';
-import authService from '../../shared/auth-service';
+import apiClient from '../services/api-client';
+import authService from '../services/auth-service';
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;

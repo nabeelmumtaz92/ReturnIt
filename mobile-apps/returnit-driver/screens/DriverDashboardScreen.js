@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Switch, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import authService from '../../shared/auth-service';
+import authService from '../services/auth-service';
 
 export default function DriverDashboardScreen({ navigation }) {
   const [isAvailable, setIsAvailable] = useState(false);

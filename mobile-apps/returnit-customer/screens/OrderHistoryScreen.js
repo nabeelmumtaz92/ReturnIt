@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, FlatList, ActivityIndicator, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import apiClient from '../../shared/api-client';
-import authService from '../../shared/auth-service';
-import ErrorHandler from '../../shared/error-handler';
+import apiClient from '../services/api-client';
+import authService from '../services/auth-service';
+import ErrorHandler from '../services/error-handler';
 
 export default function OrderHistoryScreen({ navigation }) {
   const [orderHistory, setOrderHistory] = useState([]);

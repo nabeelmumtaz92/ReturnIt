@@ -10,8 +10,8 @@ import {
   RefreshControl
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import apiClient from '../../shared/api-client';
-import authService from '../../shared/auth-service';
+import apiClient from '../services/api-client';
+import authService from '../services/auth-service';
 
 export default function PayoutManagementScreen({ navigation }) {
   const [loading, setLoading] = useState(true);

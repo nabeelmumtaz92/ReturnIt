@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
-import apiClient from '../../shared/api-client';
+import apiClient from '../services/api-client';
 
 export default function PackageVerificationScreen({ route, navigation }) {
   const { orderId, orderDetails } = route.params || {};

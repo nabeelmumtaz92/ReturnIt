@@ -10,8 +10,8 @@ import {
   Alert 
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import authService from '../../shared/auth-service';
-import ErrorHandler from '../../shared/error-handler';
+import authService from '../services/auth-service';
+import ErrorHandler from '../services/error-handler';
 
 export default function LoginScreen({ navigation, onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);

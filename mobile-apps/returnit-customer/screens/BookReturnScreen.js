@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import apiClient from '../../shared/api-client';
+import apiClient from '../services/api-client';
 
 export default function BookReturnScreen({ navigation, route }) {
   const [formData, setFormData] = useState({

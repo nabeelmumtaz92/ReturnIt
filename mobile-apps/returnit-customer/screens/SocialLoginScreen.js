@@ -12,8 +12,8 @@ import { StatusBar } from 'expo-status-bar';
 import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
-import apiClient from '../../shared/api-client';
-import authService from '../../shared/auth-service';
+import apiClient from '../services/api-client';
+import authService from '../services/auth-service';
 
 // Complete auth session on web
 WebBrowser.maybeCompleteAuthSession();
