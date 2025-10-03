@@ -25,21 +25,17 @@ export default function BookReturnScreen({ navigation, route }) {
       return;
     }
 
-    // In a real app, this would make an API call
-    Alert.alert(
-      'Booking Submitted!',
-      'Your return pickup has been scheduled. You will receive a confirmation shortly.',
-      [
-        {
-          text: 'Track Order',
-          onPress: () => navigation.navigate('TrackPackage')
-        },
-        {
-          text: 'Home',
-          onPress: () => navigation.navigate('Home')
-        }
-      ]
-    );
+    const estimatedCost = 15.00;
+
+    navigation.navigate('PaymentCheckout', {
+      orderDetails: {
+        pickupAddress: formData.pickupAddress,
+        returnAddress: formData.returnAddress || 'Store Return Center',
+        packageType: formData.packageType,
+        estimatedCost: estimatedCost,
+        formData: formData
+      }
+    });
   };
 
   const packageTypes = [

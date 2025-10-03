@@ -2148,29 +2148,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({received: true});
   });
 
-  // Process PayPal payment
+  // Process PayPal payment (mobile and web)
   app.post('/api/payments/paypal/create-order', isAuthenticated, async (req, res) => {
+    const { createPaypalOrder } = await import('./paypal');
+    await createPaypalOrder(req, res);
+  });
+
+  // Alias for mobile compatibility with app return URLs
+  app.post('/api/create-paypal-order', isAuthenticated, async (req, res) => {
     try {
-      const { amount } = req.body;
-      
-      // Real PayPal integration using PayPal SDK
-      if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
-        return res.status(500).json({ 
-          message: 'PayPal integration not configured. Please contact support.',
-          error: 'missing_paypal_credentials'
-        });
+      const { amount, currency, intent } = req.body;
+
+      if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+        return res.status(400).json({ error: "Invalid amount. Amount must be a positive number." });
       }
 
-      // TODO: Integrate with real PayPal SDK
-      // For production use: @paypal/paypal-server-sdk
-      return res.status(501).json({
-        message: 'PayPal integration requires PayPal SDK implementation',
-        requiredAction: 'implement_paypal_sdk',
-        documentationUrl: 'https://developer.paypal.com/docs/api/orders/v2/'
+      if (!currency) {
+        return res.status(400).json({ error: "Invalid currency. Currency is required." });
+      }
+
+      if (!intent) {
+        return res.status(400).json({ error: "Invalid intent. Intent is required." });
+      }
+
+      // Import PayPal SDK
+      const { default: paypalModule } = await import('@paypal/paypal-server-sdk');
+      const { Client, Environment, OrdersController } = paypalModule;
+
+      const client = new Client({
+        clientCredentialsAuthCredentials: {
+          oAuthClientId: process.env.PAYPAL_CLIENT_ID!,
+          oAuthClientSecret: process.env.PAYPAL_CLIENT_SECRET!,
+        },
+        timeout: 0,
+        environment: process.env.NODE_ENV === 'production' 
+          ? Environment.Production 
+          : Environment.Sandbox,
       });
+
+      const ordersController = new OrdersController(client);
+
+      const collect = {
+        body: {
+          intent: intent,
+          purchaseUnits: [
+            {
+              amount: {
+                currencyCode: currency,
+                value: amount,
+              },
+            },
+          ],
+          applicationContext: {
+            returnUrl: 'returnit-customer://paypal-success',
+            cancelUrl: 'returnit-customer://paypal-cancel',
+            userAction: 'PAY_NOW',
+          },
+        },
+        prefer: "return=minimal",
+      };
+
+      const { body, ...httpResponse } = await ordersController.createOrder(collect);
+      const jsonResponse = JSON.parse(String(body));
+      
+      res.status(httpResponse.statusCode).json(jsonResponse);
     } catch (error) {
-      console.error('PayPal payment error:', error);
-      res.status(500).json({ message: 'Failed to create PayPal order' });
+      console.error("Failed to create PayPal order:", error);
+      res.status(500).json({ error: "Failed to create order." });
+    }
+  });
+
+  // Capture PayPal order
+  app.post('/api/capture-paypal-order', isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.body;
+      
+      if (!orderId) {
+        return res.status(400).json({ error: 'Order ID is required' });
+      }
+
+      // Import PayPal module and capture order
+      const { default: paypalModule } = await import('@paypal/paypal-server-sdk');
+      const { Client, Environment, OrdersController } = paypalModule;
+
+      const client = new Client({
+        clientCredentialsAuthCredentials: {
+          oAuthClientId: process.env.PAYPAL_CLIENT_ID!,
+          oAuthClientSecret: process.env.PAYPAL_CLIENT_SECRET!,
+        },
+        timeout: 0,
+        environment: process.env.NODE_ENV === 'production' 
+          ? Environment.Production 
+          : Environment.Sandbox,
+      });
+
+      const ordersController = new OrdersController(client);
+      
+      const { body, ...httpResponse } = await ordersController.captureOrder({
+        id: orderId,
+        prefer: 'return=minimal',
+      });
+
+      const jsonResponse = JSON.parse(String(body));
+      res.status(httpResponse.statusCode).json(jsonResponse);
+    } catch (error) {
+      console.error('Failed to capture PayPal order:', error);
+      res.status(500).json({ error: 'Failed to capture order.' });
     }
   });
 
@@ -6216,25 +6299,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ message: 'Document uploaded successfully' });
   });
 
-  // Stripe payment route for customer bookings
+  // Stripe payment route for customer bookings (supports both web and mobile)
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { amount, orderId } = req.body;
+      const { amount, currency = 'usd', description, orderId, mobile } = req.body;
       
       // Validate amount
       if (!amount || amount <= 0) {
         return res.status(400).json({ message: "Invalid amount" });
       }
 
+      // Smart amount detection: if amount > 100 and mobile is not explicitly true, assume it's already in cents
+      // Otherwise, if amount <= 100 or mobile is explicitly false, assume dollars and convert
+      const amountInCents = mobile === true 
+        ? Math.round(amount)  // Mobile explicitly sends cents
+        : (amount > 100 ? Math.round(amount) : Math.round(amount * 100));  // Auto-detect: >100 = already cents, <=100 = dollars
+
+      const user = (req.session as any)?.user;
+      const userEmail = user?.email || 'guest@returnit.online';
+
+      // Get or create Stripe customer
+      const customers = await stripe.customers.list({
+        email: userEmail,
+        limit: 1
+      });
+
+      let customer;
+      if (customers.data.length > 0) {
+        customer = customers.data[0];
+      } else {
+        customer = await stripe.customers.create({
+          email: userEmail,
+          name: user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : undefined,
+          metadata: {
+            userId: user?.id?.toString() || 'guest'
+          }
+        });
+      }
+
+      // Create ephemeral key for Payment Sheet (mobile apps)
+      const ephemeralKey = await stripe.ephemeralKeys.create(
+        { customer: customer.id },
+        { apiVersion: '2024-11-20.acacia' }
+      );
+
+      // Create payment intent
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
-        currency: "usd",
+        amount: amountInCents,
+        currency: currency,
+        customer: customer.id,
+        description: description || 'ReturnIt Service',
         metadata: {
-          orderId: orderId || 'unknown'
+          orderId: orderId || 'unknown',
+          userId: user?.id?.toString() || 'guest'
+        },
+        automatic_payment_methods: {
+          enabled: true,
         }
       });
       
-      res.json({ clientSecret: paymentIntent.client_secret });
+      // Return both formats for compatibility with web and mobile
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntent: paymentIntent.client_secret,
+        ephemeralKey: ephemeralKey.secret,
+        customer: customer.id
+      });
     } catch (error: any) {
       console.error("Payment intent creation error:", error);
       res.status(500).json({ message: "Error creating payment intent: " + error.message });

@@ -8,6 +8,8 @@ import 'react-native-gesture-handler';
 import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import BookReturnScreen from './screens/BookReturnScreen';
+import PaymentCheckoutScreen from './screens/PaymentCheckoutScreen';
+import PayPalCheckoutScreen from './screens/PayPalCheckoutScreen';
 import TrackPackageScreen from './screens/TrackPackageScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
@@ -104,6 +106,8 @@ export default function App() {
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="BookReturn" component={BookReturnScreen} />
+        <Stack.Screen name="PaymentCheckout" component={PaymentCheckoutScreen} />
+        <Stack.Screen name="PayPalCheckout" component={PayPalCheckoutScreen} />
         <Stack.Screen name="TrackPackage" component={TrackPackageScreen} />
         <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
