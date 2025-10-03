@@ -45,9 +45,51 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
     fetchAvailableOrders();
     getCurrentLocation();
 
-    // Refresh orders every 10 seconds
-    const interval = setInterval(fetchAvailableOrders, 10000);
-    return () => clearInterval(interval);
+    // Connect to WebSocket for real-time order updates
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/tracking`;
+    let ws: WebSocket | null = null;
+
+    try {
+      ws = new WebSocket(wsUrl);
+      
+      ws.onopen = () => {
+        console.log('WebSocket connected for live order updates');
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          // Listen for new order events
+          if (data.type === 'NEW_ORDER' || data.type === 'ORDER_STATUS_UPDATE') {
+            fetchAvailableOrders();
+          }
+        } catch (error) {
+          console.error('Error parsing WebSocket message:', error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+      };
+    } catch (error) {
+      console.error('Failed to connect to WebSocket:', error);
+    }
+
+    // Fallback: Refresh orders every 15 seconds
+    const interval = setInterval(fetchAvailableOrders, 15000);
+    
+    return () => {
+      clearInterval(interval);
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
   }, []);
 
   const getCurrentLocation = () => {
@@ -102,9 +144,16 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
 
         setAvailableOrders(orderLocations);
         setIsLoading(false);
+      } else {
+        throw new Error('Failed to fetch orders');
       }
     } catch (error) {
       console.error('Error fetching available orders:', error);
+      toast({
+        title: "Connection Issue",
+        description: "Unable to load available orders. Check your connection.",
+        variant: "destructive"
+      });
       setIsLoading(false);
     }
   };
@@ -144,34 +193,9 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
   };
 
   const handleAcceptOrder = async (orderId: string) => {
-    try {
-      const response = await fetch(`/api/driver/orders/${orderId}/accept`, {
-        method: 'POST',
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Order Accepted!",
-          description: "Navigate to the pickup location to begin",
-        });
-        
-        setSelectedOrder(null);
-        fetchAvailableOrders();
-        
-        if (onOrderAccept) {
-          onOrderAccept(orderId);
-        }
-      } else {
-        throw new Error('Failed to accept order');
-      }
-    } catch (error) {
-      console.error('Error accepting order:', error);
-      toast({
-        title: "Error",
-        description: "Failed to accept order. Please try again.",
-        variant: "destructive"
-      });
+    if (onOrderAccept) {
+      setSelectedOrder(null);
+      onOrderAccept(orderId);
     }
   };
 
