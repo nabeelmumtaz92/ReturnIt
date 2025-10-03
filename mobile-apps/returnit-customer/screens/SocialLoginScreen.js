@@ -9,6 +9,7 @@ import {
   Platform
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import Constants from 'expo-constants';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import apiClient from '../../shared/api-client';
@@ -30,9 +31,13 @@ export default function SocialLoginScreen({ navigation, route }) {
     revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
   };
 
+  // Get Google Client ID from Expo config
+  const googleClientId = Constants.expoConfig?.extra?.googleClientId || 
+                         Constants.manifest?.extra?.googleClientId;
+
   const [request, response, promptAsync] = AuthSession.useAuthRequest(
     {
-      clientId: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com', // Will be configured via env
+      clientId: googleClientId,
       scopes: ['openid', 'profile', 'email'],
       redirectUri: AuthSession.makeRedirectUri({
         scheme: 'returnit-customer',
@@ -82,16 +87,41 @@ export default function SocialLoginScreen({ navigation, route }) {
       }
     } catch (error) {
       console.error('Google auth error:', error);
-      Alert.alert(
-        'Authentication Failed',
-        error.message || 'Unable to complete Google sign-in. Please try again.'
-      );
+      
+      // Handle specific error codes from backend
+      if (error.response?.status === 404 && error.response?.data?.error === 'USER_NOT_FOUND') {
+        Alert.alert(
+          'Account Not Found',
+          `No ReturnIt account exists for ${error.response.data.email}. Please create an account first.`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Sign Up', 
+              onPress: () => navigation.replace('Login') 
+            }
+          ]
+        );
+      } else {
+        Alert.alert(
+          'Authentication Failed',
+          error.response?.data?.message || error.message || 'Unable to complete Google sign-in. Please try again.'
+        );
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const signInWithGoogle = async () => {
+    if (!googleClientId || googleClientId.includes('YOUR_GOOGLE')) {
+      Alert.alert(
+        'Configuration Required',
+        'Google Sign-In requires additional setup. Please use email login or contact support.',
+        [{ text: 'OK' }]
+      );
+      return;
+    }
+
     try {
       setLoading(true);
       setProvider('google');

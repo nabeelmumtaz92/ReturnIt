@@ -6,6 +6,7 @@ import 'react-native-gesture-handler';
 
 // Import screens
 import LoginScreen from './screens/LoginScreen';
+import SocialLoginScreen from './screens/SocialLoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import BookReturnScreen from './screens/BookReturnScreen';
 import PaymentCheckoutScreen from './screens/PaymentCheckoutScreen';
@@ -88,6 +89,7 @@ export default function App() {
               />
             )}
           </Stack.Screen>
+          <Stack.Screen name="SocialLogin" component={SocialLoginScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     );

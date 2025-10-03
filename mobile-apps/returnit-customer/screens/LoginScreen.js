@@ -226,15 +226,27 @@ export default function LoginScreen({ navigation, onAuthSuccess }) {
           {/* OAuth Options */}
           <Text style={styles.orText}>Or continue with</Text>
           
-          <TouchableOpacity style={styles.oauthButton} testID="button-google">
+          <TouchableOpacity 
+            style={styles.oauthButton} 
+            testID="button-google"
+            onPress={() => navigation.navigate('SocialLogin')}
+          >
             <Text style={styles.oauthButtonText}>🔍 Continue with Google</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.oauthButton} testID="button-apple">
+          <TouchableOpacity 
+            style={styles.oauthButton} 
+            testID="button-apple"
+            onPress={() => navigation.navigate('SocialLogin')}
+          >
             <Text style={styles.oauthButtonText}>🍎 Continue with Apple</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.oauthButton} testID="button-facebook">
+          <TouchableOpacity 
+            style={styles.oauthButton} 
+            testID="button-facebook"
+            onPress={() => navigation.navigate('SocialLogin')}
+          >
             <Text style={styles.oauthButtonText}>📘 Continue with Facebook</Text>
           </TouchableOpacity>
         </View>

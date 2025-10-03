@@ -1922,6 +1922,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Mobile Google OAuth - Authorization code exchange
+  app.post('/api/auth/google/mobile', async (req, res) => {
+    try {
+      const { code, redirectUri } = req.body;
+
+      if (!code) {
+        return res.status(400).json({ error: 'Authorization code required' });
+      }
+
+      // Exchange authorization code for access token
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code',
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        console.error('Google token exchange failed:', await tokenResponse.text());
+        return res.status(400).json({ error: 'Failed to exchange authorization code' });
+      }
+
+      const tokens = await tokenResponse.json();
+
+      // Get user info from Google
+      const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+        headers: { Authorization: `Bearer ${tokens.access_token}` },
+      });
+
+      if (!userInfoResponse.ok) {
+        return res.status(400).json({ error: 'Failed to get user info' });
+      }
+
+      const googleUser = await userInfoResponse.json();
+      const userEmail = googleUser.email;
+
+      // Check if user exists in our database
+      const existingUser = await storage.getUserByEmail(userEmail);
+
+      if (!existingUser) {
+        // User doesn't exist - they need to sign up first
+        return res.status(404).json({
+          error: 'USER_NOT_FOUND',
+          message: 'Please create an account first before using Google sign-in',
+          email: userEmail,
+        });
+      }
+
+      // User exists - create session and return user data
+      const userData = {
+        id: existingUser.id,
+        email: existingUser.email,
+        phone: existingUser.phone || '',
+        isDriver: existingUser.isDriver || false,
+        isAdmin: existingUser.isAdmin || false,
+        firstName: existingUser.firstName || '',
+        lastName: existingUser.lastName || '',
+      };
+
+      // Set session for mobile (though mobile typically uses token-based auth)
+      req.session.user = userData;
+
+      console.log('Mobile Google OAuth success:', { id: userData.id, email: userData.email });
+
+      return res.json({
+        success: true,
+        user: userData,
+      });
+    } catch (error) {
+      console.error('Mobile Google OAuth error:', error);
+      return res.status(500).json({ error: 'Authentication failed' });
+    }
+  });
+
   // Facebook Auth
   app.get('/api/auth/facebook', passport.authenticate('facebook', { 
     scope: ['email'] 
