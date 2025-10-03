@@ -17,6 +17,7 @@ import DriverOnlineToggle from "@/components/DriverOnlineToggle";
 import DriverOrderCard from "@/components/DriverOrderCard";
 import DriverScheduleManager from "@/components/DriverScheduleManager";
 import GPSNavigation from "@/components/GPSNavigation";
+import LiveOrderMap from "@/components/LiveOrderMap";
 import { useLocation, Link } from "wouter";
 
 export default function DriverPortal() {
@@ -514,8 +515,11 @@ export default function DriverPortal() {
         </Card>
 
         {/* Orders Management */}
-        <Tabs defaultValue="available" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4 bg-white/80 backdrop-blur-sm">
+        <Tabs defaultValue="map" className="space-y-4">
+          <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="map" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              Live Map
+            </TabsTrigger>
             <TabsTrigger value="available" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               Available ({availableOrders.length})
             </TabsTrigger>
@@ -529,6 +533,28 @@ export default function DriverPortal() {
               Earnings
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="map" className="space-y-4">
+            <Card className="bg-white shadow-lg border-amber-200">
+              <CardHeader>
+                <CardTitle className="text-amber-900 flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  Live Order Map
+                </CardTitle>
+                <CardDescription>
+                  Tap on order markers to view details and accept on-demand pickups
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="h-[600px]">
+                <LiveOrderMap 
+                  driverId={user?.id}
+                  onOrderAccept={(orderId) => {
+                    acceptOrderMutation.mutate(orderId);
+                  }}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
 
           <TabsContent value="available" className="space-y-4">
             <div className="grid gap-4">
