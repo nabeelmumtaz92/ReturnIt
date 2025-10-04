@@ -103,6 +103,7 @@ export default function DriverDashboardScreen({ navigation }) {
           <TouchableOpacity 
             style={styles.profileButton}
             onPress={() => navigation.navigate('DriverProfile')}
+            activeOpacity={0.8}
           >
             <Text style={styles.profileButtonText}>👤</Text>
           </TouchableOpacity>
@@ -190,6 +191,7 @@ export default function DriverDashboardScreen({ navigation }) {
                   <TouchableOpacity 
                     style={styles.acceptButton}
                     onPress={() => handleAcceptJob(job.id)}
+                    activeOpacity={0.8}
                   >
                     <Text style={styles.acceptButtonText}>Accept</Text>
                   </TouchableOpacity>
@@ -206,6 +208,7 @@ export default function DriverDashboardScreen({ navigation }) {
           <TouchableOpacity 
             style={styles.liveMapButton}
             onPress={() => navigation.navigate('LiveOrderMap')}
+            activeOpacity={0.8}
           >
             <Text style={styles.liveMapButtonText}>🗺️ Live Order Map</Text>
             <Text style={styles.liveMapButtonSubtext}>View available orders on map (Uber-style)</Text>
@@ -215,6 +218,7 @@ export default function DriverDashboardScreen({ navigation }) {
             <TouchableOpacity 
               style={styles.actionButton}
               onPress={() => navigation.navigate('JobManagement')}
+              activeOpacity={0.7}
             >
               <Text style={styles.actionButtonText}>🚚 My Jobs</Text>
             </TouchableOpacity>
@@ -222,6 +226,7 @@ export default function DriverDashboardScreen({ navigation }) {
             <TouchableOpacity 
               style={styles.actionButton}
               onPress={() => navigation.navigate('Earnings')}
+              activeOpacity={0.7}
             >
               <Text style={styles.actionButtonText}>💰 Earnings</Text>
             </TouchableOpacity>
@@ -231,6 +236,7 @@ export default function DriverDashboardScreen({ navigation }) {
             <TouchableOpacity 
               style={styles.actionButton}
               onPress={() => navigation.navigate('RouteOptimization')}
+              activeOpacity={0.7}
             >
               <Text style={styles.actionButtonText}>📍 Routes</Text>
             </TouchableOpacity>
@@ -238,6 +244,7 @@ export default function DriverDashboardScreen({ navigation }) {
             <TouchableOpacity 
               style={styles.actionButton}
               onPress={() => navigation.navigate('DriverSupport')}
+              activeOpacity={0.7}
             >
               <Text style={styles.actionButtonText}>🆘 Support</Text>
             </TouchableOpacity>
@@ -274,17 +281,23 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 30,
+    fontWeight: '700',
     color: '#92400E',
+    letterSpacing: -0.5,
   },
   profileButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#FB923C',
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#FB923C',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   profileButtonText: {
     fontSize: 20,
@@ -292,11 +305,16 @@ const styles = StyleSheet.create({
   },
   availabilityContainer: {
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 12,
+    padding: 22,
+    borderRadius: 14,
     marginBottom: 20,
     borderWidth: 2,
     borderColor: '#FED7AA',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   availabilityRow: {
     flexDirection: 'row',
@@ -304,14 +322,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   availabilityText: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 19,
+    fontWeight: '700',
     color: '#92400E',
+    letterSpacing: 0.2,
   },
   availabilitySubtext: {
     fontSize: 14,
     color: '#78716C',
     marginTop: 4,
+    letterSpacing: 0.1,
+    lineHeight: 20,
   },
   statsContainer: {
     flexDirection: 'row',
@@ -320,40 +341,54 @@ const styles = StyleSheet.create({
   },
   statCard: {
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 12,
+    padding: 22,
+    borderRadius: 14,
     flex: 0.48,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#FED7AA',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   statNumber: {
-    fontSize: 22,
-    fontWeight: 'bold',
+    fontSize: 24,
+    fontWeight: '700',
     color: '#92400E',
-    marginBottom: 4,
+    marginBottom: 6,
+    letterSpacing: -0.3,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#78716C',
     textAlign: 'center',
+    letterSpacing: 0.1,
+    lineHeight: 18,
   },
   section: {
     marginBottom: 30,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 21,
+    fontWeight: '700',
     color: '#92400E',
     marginBottom: 16,
+    letterSpacing: 0.2,
   },
   jobCard: {
     backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 14,
     borderWidth: 1,
     borderColor: '#FED7AA',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   jobHeader: {
     flexDirection: 'row',
@@ -431,40 +466,49 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     backgroundColor: '#FB923C',
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 10,
+    shadowColor: '#FB923C',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   acceptButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 14,
+    letterSpacing: 0.3,
   },
   actionsContainer: {
     marginBottom: 30,
   },
   liveMapButton: {
     backgroundColor: '#10B981',
-    paddingVertical: 20,
+    paddingVertical: 22,
     paddingHorizontal: 20,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#10B981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   liveMapButtonText: {
     color: 'white',
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
     marginBottom: 4,
+    letterSpacing: 0.3,
   },
   liveMapButtonSubtext: {
-    color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.95)',
+    fontSize: 13,
+    letterSpacing: 0.1,
+    lineHeight: 18,
   },
   actionRow: {
     flexDirection: 'row',
@@ -473,17 +517,23 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     backgroundColor: 'white',
-    paddingVertical: 16,
+    paddingVertical: 18,
     paddingHorizontal: 20,
-    borderRadius: 8,
+    borderRadius: 12,
     flex: 0.48,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#FED7AA',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 3,
+    elevation: 2,
   },
   actionButtonText: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '600',
     color: '#92400E',
+    letterSpacing: 0.2,
   },
 });
