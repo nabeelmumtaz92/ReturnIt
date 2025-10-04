@@ -61,9 +61,11 @@ export interface IStorage {
   
   // Order operations
   getOrder(id: string): Promise<Order | undefined>;
-  getUserOrders(userId: number): Promise<Order[]>;
+  getUserOrders(userId: number, limit?: number, offset?: number): Promise<Order[]>;
+  getUserOrdersCount(userId: number): Promise<number>;
   getAllOrders(): Promise<Order[]>;
-  getDriverOrders(driverId: number): Promise<Order[]>;
+  getDriverOrders(driverId: number, limit?: number, offset?: number): Promise<Order[]>;
+  getDriverOrdersCount(driverId: number): Promise<number>;
   getAvailableOrders(): Promise<Order[]>;
   getOrdersByStatus(status: OrderStatusType): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
@@ -741,16 +743,38 @@ export class MemStorage implements IStorage {
     return this.orders.get(id);
   }
 
-  async getUserOrders(userId: number): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(order => order.userId === userId);
+  async getUserOrders(userId: number, limit?: number, offset?: number): Promise<Order[]> {
+    const filtered = Array.from(this.orders.values())
+      .filter(order => order.userId === userId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+    
+    if (limit === undefined) return filtered;
+    
+    const start = offset || 0;
+    return filtered.slice(start, start + limit);
+  }
+
+  async getUserOrdersCount(userId: number): Promise<number> {
+    return Array.from(this.orders.values()).filter(order => order.userId === userId).length;
   }
 
   async getAllOrders(): Promise<Order[]> {
     return Array.from(this.orders.values());
   }
 
-  async getDriverOrders(driverId: number): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter(order => order.driverId === driverId);
+  async getDriverOrders(driverId: number, limit?: number, offset?: number): Promise<Order[]> {
+    const filtered = Array.from(this.orders.values())
+      .filter(order => order.driverId === driverId)
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+    
+    if (limit === undefined) return filtered;
+    
+    const start = offset || 0;
+    return filtered.slice(start, start + limit);
+  }
+
+  async getDriverOrdersCount(driverId: number): Promise<number> {
+    return Array.from(this.orders.values()).filter(order => order.driverId === driverId).length;
   }
 
   async getAvailableOrders(): Promise<Order[]> {
@@ -2532,12 +2556,44 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
-  async getUserOrders(userId: number): Promise<Order[]> {
-    return db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
+  async getUserOrders(userId: number, limit?: number, offset?: number): Promise<Order[]> {
+    let query = db.select().from(orders).where(eq(orders.userId, userId)).orderBy(desc(orders.createdAt));
+    
+    if (limit !== undefined) {
+      query = query.limit(limit) as any;
+    }
+    if (offset !== undefined) {
+      query = query.offset(offset) as any;
+    }
+    
+    return query;
   }
 
-  async getDriverOrders(driverId: number): Promise<Order[]> {
-    return db.select().from(orders).where(eq(orders.driverId, driverId)).orderBy(desc(orders.createdAt));
+  async getUserOrdersCount(userId: number): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)::int` })
+      .from(orders)
+      .where(eq(orders.userId, userId));
+    return result[0]?.count || 0;
+  }
+
+  async getDriverOrders(driverId: number, limit?: number, offset?: number): Promise<Order[]> {
+    let query = db.select().from(orders).where(eq(orders.driverId, driverId)).orderBy(desc(orders.createdAt));
+    
+    if (limit !== undefined) {
+      query = query.limit(limit) as any;
+    }
+    if (offset !== undefined) {
+      query = query.offset(offset) as any;
+    }
+    
+    return query;
+  }
+
+  async getDriverOrdersCount(driverId: number): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)::int` })
+      .from(orders)
+      .where(eq(orders.driverId, driverId));
+    return result[0]?.count || 0;
   }
 
   async getOrdersByStatus(status: string): Promise<Order[]> {

@@ -2429,8 +2429,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Customer access only" });
       }
       
-      const orders = await storage.getUserOrders(user.id);
-      res.json(orders);
+      // Add pagination support
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100); // Max 100 per page
+      const offset = (page - 1) * limit;
+      
+      const orders = await storage.getUserOrders(user.id, limit, offset);
+      
+      // Get total count for pagination metadata
+      const totalOrders = await storage.getUserOrdersCount(user.id);
+      
+      res.json({
+        orders,
+        pagination: {
+          page,
+          limit,
+          total: totalOrders,
+          totalPages: Math.ceil(totalOrders / limit),
+          hasMore: offset + orders.length < totalOrders
+        }
+      });
     } catch (error) {
       console.error('Customer orders error:', error);
       res.status(500).json({ message: "Failed to fetch customer orders" });
@@ -2658,8 +2676,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Driver access required" });
       }
       
-      const driverOrders = await storage.getDriverOrders(user.id);
-      res.json(driverOrders);
+      // Add pagination support
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100); // Max 100 per page
+      const offset = (page - 1) * limit;
+      
+      const driverOrders = await storage.getDriverOrders(user.id, limit, offset);
+      
+      // Get total count for pagination metadata
+      const totalOrders = await storage.getDriverOrdersCount(user.id);
+      
+      res.json({
+        orders: driverOrders,
+        pagination: {
+          page,
+          limit,
+          total: totalOrders,
+          totalPages: Math.ceil(totalOrders / limit),
+          hasMore: offset + driverOrders.length < totalOrders
+        }
+      });
     } catch (error) {
       console.error("Error fetching driver orders:", error);
       res.status(500).json({ message: "Failed to fetch driver orders" });
