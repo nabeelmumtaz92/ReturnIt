@@ -20,6 +20,7 @@ ReturnIt is a reverse delivery service platform designed to streamline returns, 
 - ✅ React Component Optimization: Added React.memo to frequently rendered list components (DriverOrderCard, CustomerOrderCard, DriverJobCard) to prevent unnecessary re-renders
 - ✅ Response Caching: Implemented 15-minute LRU cache for static data endpoints (companies, return policies, locations) with unique cache keys per query/filter combination
 - ✅ Lazy Loading: Verified 80+ heavy components already use React.lazy with Suspense fallbacks for optimal code splitting
+- ✅ Database Schema Fixes: Resolved schema drift by adding missing columns to orders table (return_label_url, authorization_signed, authorization_signature, authorization_timestamp)
 
 # User Preferences
 
