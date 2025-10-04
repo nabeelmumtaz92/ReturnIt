@@ -48,6 +48,9 @@
         "foregroundImage": "./assets/adaptive-icon-driver.png",
         "backgroundColor": "#F8F7F4"
       },
+      "buildToolsVersion": "34.0.0",
+      "compileSdkVersion": 34,
+      "targetSdkVersion": 34,
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
