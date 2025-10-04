@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, real, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, real, jsonb, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -97,7 +97,12 @@ export const companies = pgTable("companies", {
   
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow()
-});
+}, (table) => ({
+  slugIdx: index("companies_slug_idx").on(table.slug),
+  categoryIdx: index("companies_category_idx").on(table.category),
+  isActiveIdx: index("companies_is_active_idx").on(table.isActive),
+  isFeaturedIdx: index("companies_is_featured_idx").on(table.isFeatured),
+}));
 
 export const returnPolicies = pgTable("return_policies", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -312,7 +317,14 @@ export const users = pgTable("users", {
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  emailIdx: index("users_email_idx").on(table.email),
+  isDriverIdx: index("users_is_driver_idx").on(table.isDriver),
+  isOnlineIdx: index("users_is_online_idx").on(table.isOnline),
+  roleIdx: index("users_role_idx").on(table.role),
+  applicationStatusIdx: index("users_application_status_idx").on(table.applicationStatus),
+  stripeConnectAccountIdIdx: index("users_stripe_connect_account_id_idx").on(table.stripeConnectAccountId),
+}));
 
 // SMS Notifications table
 export const smsNotifications = pgTable("sms_notifications", {
@@ -676,7 +688,15 @@ export const orders = pgTable("orders", {
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  userIdIdx: index("orders_user_id_idx").on(table.userId),
+  driverIdIdx: index("orders_driver_id_idx").on(table.driverId),
+  statusIdx: index("orders_status_idx").on(table.status),
+  trackingNumberIdx: index("orders_tracking_number_idx").on(table.trackingNumber),
+  createdAtIdx: index("orders_created_at_idx").on(table.createdAt),
+  statusUserIdIdx: index("orders_status_user_id_idx").on(table.status, table.userId),
+  statusDriverIdIdx: index("orders_status_driver_id_idx").on(table.status, table.driverId),
+}));
 
 // Order Audit Logs - Comprehensive tracking of all order actions
 export const orderAuditLogs = pgTable("order_audit_logs", {
@@ -725,7 +745,12 @@ export const driverEarnings = pgTable("driver_earnings", {
   status: text("status").default("pending"), // pending, paid, cancelled
   paidAt: timestamp("paid_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  driverIdIdx: index("driver_earnings_driver_id_idx").on(table.driverId),
+  orderIdIdx: index("driver_earnings_order_id_idx").on(table.orderId),
+  statusIdx: index("driver_earnings_status_idx").on(table.status),
+  driverIdStatusIdx: index("driver_earnings_driver_id_status_idx").on(table.driverId, table.status),
+}));
 
 // Notifications system
 export const notifications = pgTable("notifications", {
@@ -739,7 +764,13 @@ export const notifications = pgTable("notifications", {
   isRead: boolean("is_read").default(false),
   channel: text("channel").default("app"), // app, email, sms, push
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  userIdIdx: index("notifications_user_id_idx").on(table.userId),
+  isReadIdx: index("notifications_is_read_idx").on(table.isRead),
+  typeIdx: index("notifications_type_idx").on(table.type),
+  createdAtIdx: index("notifications_created_at_idx").on(table.createdAt),
+  userIdIsReadIdx: index("notifications_user_id_is_read_idx").on(table.userId, table.isRead),
+}));
 
 // Analytics and metrics
 export const analytics = pgTable("analytics", {
@@ -1274,7 +1305,13 @@ export const driverPayouts = pgTable("driver_payouts", {
   form1099Url: text("form_1099_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   completedAt: timestamp("completed_at"),
-});
+}, (table) => ({
+  driverIdIdx: index("driver_payouts_driver_id_idx").on(table.driverId),
+  statusIdx: index("driver_payouts_status_idx").on(table.status),
+  taxYearIdx: index("driver_payouts_tax_year_idx").on(table.taxYear),
+  createdAtIdx: index("driver_payouts_created_at_idx").on(table.createdAt),
+  driverIdStatusIdx: index("driver_payouts_driver_id_status_idx").on(table.driverId, table.status),
+}));
 
 // Incentives and bonuses tracking
 export const driverIncentives = pgTable("driver_incentives", {
