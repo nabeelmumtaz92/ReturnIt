@@ -4537,7 +4537,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { active } = req.query;
       const isActive = active === 'true' ? true : active === 'false' ? false : undefined;
-      const companies = await storage.getCompanies(isActive);
+      
+      // Cache companies for 15 minutes (static data that rarely changes)
+      const cacheKey = `companies_${isActive}`;
+      const companies = await PerformanceService.withCache(
+        cacheKey,
+        () => storage.getCompanies(isActive),
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+      
       res.json(companies);
     } catch (error) {
       console.error('Error fetching companies:', error);
@@ -4549,39 +4557,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/companies/search", async (req, res) => {
     try {
       const { q: query, category, featured } = req.query;
-      let companies = await storage.getCompanies(true); // Only active companies
       
-      // Auto-populate with St. Louis companies if none exist
-      if (companies.length === 0) {
-        console.log('🏢 No companies found, initializing with St. Louis business data...');
-        await populateStLouisCompanies(storage);
-        companies = await storage.getCompanies(true);
-      }
+      // Cache with unique key per query/category/featured combination
+      const cacheKey = `companies_search_${query || 'all'}_${category || 'all'}_${featured || 'all'}`;
       
-      // Filter by search query
-      if (query) {
-        companies = companies.filter(company => 
-          company.name.toLowerCase().includes((query as string).toLowerCase()) ||
-          company.category.toLowerCase().includes((query as string).toLowerCase())
-        );
-      }
-      
-      // Filter by category
-      if (category) {
-        companies = companies.filter(company => company.category === category);
-      }
-      
-      // Filter for featured companies only
-      if (featured === 'true') {
-        companies = companies.filter(company => company.isFeatured);
-      }
-      
-      // Sort featured companies first, then alphabetically
-      companies.sort((a, b) => {
-        if (a.isFeatured && !b.isFeatured) return -1;
-        if (!a.isFeatured && b.isFeatured) return 1;
-        return a.name.localeCompare(b.name);
-      });
+      // For search endpoint, cache the final filtered result instead of base list
+      const companies = await PerformanceService.withCache(
+        cacheKey,
+        async () => {
+          let companyList = await storage.getCompanies(true); // Only active companies
+          
+          // Auto-populate with St. Louis companies if none exist
+          if (companyList.length === 0) {
+            console.log('🏢 No companies found, initializing with St. Louis business data...');
+            await populateStLouisCompanies(storage);
+            companyList = await storage.getCompanies(true);
+          }
+          
+          // Filter by search query
+          if (query) {
+            companyList = companyList.filter(company => 
+              company.name.toLowerCase().includes((query as string).toLowerCase()) ||
+              company.category.toLowerCase().includes((query as string).toLowerCase())
+            );
+          }
+          
+          // Filter by category
+          if (category) {
+            companyList = companyList.filter(company => company.category === category);
+          }
+          
+          // Filter for featured companies only
+          if (featured === 'true') {
+            companyList = companyList.filter(company => company.isFeatured);
+          }
+          
+          // Sort featured companies first, then alphabetically
+          companyList.sort((a, b) => {
+            if (a.isFeatured && !b.isFeatured) return -1;
+            if (!a.isFeatured && b.isFeatured) return 1;
+            return a.name.localeCompare(b.name);
+          });
+          
+          return companyList;
+        },
+        1000 * 60 * 15 // 15 minutes TTL
+      );
       
       res.json(companies);
     } catch (error) {
@@ -4594,7 +4615,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/companies/:id", async (req, res) => {
     try {
       const companyId = parseInt(req.params.id);
-      const company = await storage.getCompany(companyId);
+      
+      // Cache individual company for 15 minutes
+      const cacheKey = `company_${companyId}`;
+      const company = await PerformanceService.withCache(
+        cacheKey,
+        () => storage.getCompany(companyId),
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+      
       if (!company) {
         return res.status(404).json({ message: 'Company not found' });
       }
@@ -4609,7 +4638,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/companies/slug/:slug", async (req, res) => {
     try {
       const { slug } = req.params;
-      const company = await storage.getCompanyBySlug(slug);
+      
+      // Cache company by slug for 15 minutes
+      const cacheKey = `company_slug_${slug}`;
+      const company = await PerformanceService.withCache(
+        cacheKey,
+        () => storage.getCompanyBySlug(slug),
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+      
       if (!company) {
         return res.status(404).json({ message: 'Company not found' });
       }
@@ -4624,7 +4661,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/companies/:id/return-policy", async (req, res) => {
     try {
       const companyId = parseInt(req.params.id);
-      const policy = await storage.getReturnPolicyByCompany(companyId);
+      
+      // Cache return policies for 15 minutes (rarely change)
+      const cacheKey = `return_policy_${companyId}`;
+      const policy = await PerformanceService.withCache(
+        cacheKey,
+        () => storage.getReturnPolicyByCompany(companyId),
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+      
       if (!policy) {
         return res.status(404).json({ message: 'Return policy not found for this company' });
       }
@@ -4639,7 +4684,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/companies/:id/locations", async (req, res) => {
     try {
       const companyId = parseInt(req.params.id);
-      const locations = await storage.getCompanyLocations(companyId);
+      
+      // Cache company locations for 15 minutes
+      const cacheKey = `company_locations_${companyId}`;
+      const locations = await PerformanceService.withCache(
+        cacheKey,
+        () => storage.getCompanyLocations(companyId),
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+      
       res.json(locations);
     } catch (error) {
       console.error('Error fetching company locations:', error);
