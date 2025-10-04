@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { cn } from '@/lib/utils';
 import { Card, CardContent } from './Card';
 import { Button } from './Button';
@@ -18,7 +18,7 @@ export interface CustomerOrderCardProps {
   className?: string;
 }
 
-const CustomerOrderCard = React.forwardRef<HTMLDivElement, CustomerOrderCardProps>(
+const CustomerOrderCard = memo(React.forwardRef<HTMLDivElement, CustomerOrderCardProps>(
   ({ 
     id, 
     retailer, 
@@ -103,7 +103,7 @@ const CustomerOrderCard = React.forwardRef<HTMLDivElement, CustomerOrderCardProp
       </Card>
     );
   }
-);
+));
 CustomerOrderCard.displayName = "CustomerOrderCard";
 
 // Driver Job Card  
@@ -120,7 +120,7 @@ export interface DriverJobCardProps {
   className?: string;
 }
 
-const DriverJobCard = React.forwardRef<HTMLDivElement, DriverJobCardProps>(
+const DriverJobCard = memo(React.forwardRef<HTMLDivElement, DriverJobCardProps>(
   ({ 
     id, 
     retailer, 
@@ -224,7 +224,7 @@ const DriverJobCard = React.forwardRef<HTMLDivElement, DriverJobCardProps>(
       </Card>
     );
   }
-);
+));
 DriverJobCard.displayName = "DriverJobCard";
 
 export { CustomerOrderCard, DriverJobCard };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,7 +50,7 @@ interface DriverOrderCardProps {
   showActions?: boolean;
 }
 
-export default function DriverOrderCard({ 
+const DriverOrderCard = memo(function DriverOrderCard({ 
   order, 
   onAccept, 
   onDecline, 
@@ -295,4 +295,6 @@ export default function DriverOrderCard({
       </CardContent>
     </Card>
   );
-}
+});
+
+export default DriverOrderCard;
