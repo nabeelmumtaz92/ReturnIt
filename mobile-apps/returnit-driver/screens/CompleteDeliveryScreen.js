@@ -15,7 +15,7 @@ import { StatusBar } from 'expo-status-bar';
 import apiClient from '../services/api-client';
 
 export default function CompleteDeliveryScreen({ route, navigation }) {
-  const { orderId, orderDetails } = route.params || {};
+  const { orderId, orderDetails, verificationPhotos, customerSignature, deliveryNotes } = route.params || {};
   
   const [permission, requestPermission] = useCameraPermissions();
   const [cameraActive, setCameraActive] = useState(false);
@@ -170,11 +170,23 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         Alert.alert('Timeline Required', 'Please select the refund timeline.');
         return false;
       }
+      const refundAmountStr = refundAmount?.trim();
+      const numericPattern = /^(\d+(\.\d{0,2})?|\.\d{1,2})$/; // Only allow pure numeric values (e.g., 49.99, .99, 100)
+      const parsedRefundAmount = parseFloat(refundAmountStr);
+      
+      if (!refundAmountStr || !numericPattern.test(refundAmountStr) || !Number.isFinite(parsedRefundAmount) || parsedRefundAmount <= 0) {
+        Alert.alert('Refund Amount Required', 'Please enter a valid numeric refund amount greater than $0 (e.g., 49.99).');
+        return false;
+      }
     }
 
     if (selectedOutcome === 'store_credit_issued') {
-      if (!storeCreditAmount || parseFloat(storeCreditAmount) <= 0) {
-        Alert.alert('Amount Required', 'Please enter the store credit amount.');
+      const creditAmountStr = storeCreditAmount?.trim();
+      const numericPattern = /^(\d+(\.\d{0,2})?|\.\d{1,2})$/; // Only allow pure numeric values (e.g., 49.99, .99, 100)
+      const parsedCreditAmount = parseFloat(creditAmountStr);
+      
+      if (!creditAmountStr || !numericPattern.test(creditAmountStr) || !Number.isFinite(parsedCreditAmount) || parsedCreditAmount <= 0) {
+        Alert.alert('Amount Required', 'Please enter a valid numeric store credit amount greater than $0 (e.g., 49.99).');
         return false;
       }
     }
@@ -212,8 +224,13 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         actualReturnOutcome: selectedOutcome,
         driverCompletionConfirmed: true,
         driverCompletionTimestamp: new Date().toISOString(),
-        driverCompletionNotes: driverNotes.trim() || undefined,
+        driverCompletionNotes: driverNotes.trim() || deliveryNotes || undefined,
         driverCompletionPhotos: photoDataUrls,
+        
+        // Include verification evidence from PackageVerificationScreen
+        verificationPhotos: verificationPhotos?.map(p => `data:image/jpeg;base64,${p.base64}`) || [],
+        customerSignature: customerSignature || undefined,
+        deliveryNotes: deliveryNotes || undefined,
         
         // Refund details
         retailerAcceptedReturn: selectedOutcome === 'refund_processed' ? retailerAccepted : undefined,

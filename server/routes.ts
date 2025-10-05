@@ -5629,6 +5629,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actualReturnOutcome,
         driverCompletionNotes,
         driverCompletionPhotos,
+        // Verification evidence from PackageVerificationScreen
+        verificationPhotos,
+        customerSignature,
+        deliveryNotes,
         // Refund details
         retailerAcceptedReturn,
         retailerIssuedRefund,
@@ -5671,6 +5675,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actualReturnOutcome,
         driverCompletionNotes,
         driverCompletionPhotos: driverCompletionPhotos || [],
+        // Verification evidence from PackageVerificationScreen
+        verificationPhotos: verificationPhotos || [],
+        customerSignature: customerSignature || null,
+        deliveryNotes: deliveryNotes || null,
         status: 'completed' // Mark order as completed
       };
 
