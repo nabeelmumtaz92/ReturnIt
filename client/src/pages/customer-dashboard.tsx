@@ -203,9 +203,9 @@ export default function CustomerDashboard() {
             </div>
           </div>
 
-          {/* Stats Cards */}
+          {/* Stats Cards - Stitch Pattern */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
+            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -223,7 +223,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -241,7 +241,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -259,7 +259,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -279,9 +279,9 @@ export default function CustomerDashboard() {
           </div>
         </div>
 
-        {/* Profile Summary Panel */}
+        {/* Profile Summary Panel - Stitch Pattern */}
         <div className="mb-8">
-          <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+          <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
             <CardHeader>
               <CardTitle className="text-xl text-amber-900 flex items-center">
                 <User className="h-5 w-5 mr-2" />
@@ -377,7 +377,7 @@ export default function CustomerDashboard() {
             </h2>
             <div className="space-y-4">
               {activeOrders.map((order) => (
-                <Card key={order.id} className="border-blue-200">
+                <Card key={order.id} className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
                       <div className="flex items-center gap-3">
