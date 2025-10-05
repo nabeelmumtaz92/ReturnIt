@@ -108,7 +108,7 @@ export default function PackageVerificationScreen({ route, navigation }) {
     if (photos.length === 0) {
       Alert.alert(
         'Photos Required',
-        'Please take at least one photo of the package before completing delivery.',
+        'Please take at least one photo of the package before proceeding.',
         [{ text: 'OK' }]
       );
       return;
@@ -117,45 +117,20 @@ export default function PackageVerificationScreen({ route, navigation }) {
     if (!customerSignature.trim()) {
       Alert.alert(
         'Signature Required',
-        'Please collect the customer signature before completing delivery.',
+        'Please collect the customer signature before proceeding.',
         [{ text: 'OK' }]
       );
       return;
     }
 
-    setLoading(true);
-
-    try {
-      // Convert photos to base64 data URLs
-      const photoDataUrls = photos.map(photo => `data:image/jpeg;base64,${photo.base64}`);
-      
-      // Complete delivery using the correct backend endpoint
-      const response = await apiClient.completeDelivery(orderId, {
-        deliveryNotes: notes.trim() || undefined,
-        photos: photoDataUrls,
-        customerSignature: customerSignature.trim(),
-        photosUploaded: true,
-      });
-
-      Alert.alert(
-        'Delivery Completed',
-        response.message || 'Package delivery has been marked as complete!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.navigate('DriverDashboard')
-          }
-        ]
-      );
-    } catch (error) {
-      console.error('Error completing delivery:', error);
-      Alert.alert(
-        'Error',
-        error.message || 'Failed to complete delivery. Please try again.'
-      );
-    } finally {
-      setLoading(false);
-    }
+    // Navigate to completion checklist screen
+    navigation.navigate('CompleteDelivery', {
+      orderId,
+      orderDetails,
+      verificationPhotos: photos,
+      customerSignature: customerSignature.trim(),
+      deliveryNotes: notes.trim()
+    });
   };
 
   if (cameraActive) {
@@ -284,7 +259,7 @@ export default function PackageVerificationScreen({ route, navigation }) {
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.completeButtonText}>Complete Delivery</Text>
+            <Text style={styles.completeButtonText}>Continue to Completion Checklist</Text>
           )}
         </TouchableOpacity>
       </ScrollView>
