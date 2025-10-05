@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
@@ -11,8 +12,8 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: #FF8C42;
-  --primary-foreground: #FAF8F4;
+  --primary: #f99806;
+  --primary-foreground: #ffffff;
   --secondary: #FAF8F4;
   --secondary-foreground: #B8956A;
   --muted: hsl(39, 20%, 85%);
@@ -37,10 +38,10 @@
   --sidebar-accent-foreground: hsl(30, 32%, 39%);
   --sidebar-border: hsl(30, 40%, 25%);
   --sidebar-ring: hsl(30, 32%, 39%);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-sans: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-  --radius: 0.75rem;
+  --radius: 0.5rem;
   
   /* Brand specific colors - Cardboard Theme - Optimized for crisp rendering */
   --brand-cardboard: #B8956A;
@@ -48,7 +49,7 @@
   --brand-cardboard-dark: hsl(30, 40%, 25%);
   --brand-barcode-black: hsl(210, 7%, 10%);
   --brand-tape-brown: hsl(30, 32%, 39%);
-  --brand-accent-orange: #FF8C42;
+  --brand-accent-orange: #f99806;
   --brand-accent-green: hsl(123, 43%, 32%);
   
   /* Mapped brand variables */
