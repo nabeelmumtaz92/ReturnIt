@@ -5620,6 +5620,162 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver Completion Checklist - Track actual return outcomes (like Spark delivery)
+  app.post("/api/driver/complete-delivery/:orderId", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const driverId = (req.session as any).user?.id;
+      const {
+        actualReturnOutcome,
+        driverCompletionNotes,
+        driverCompletionPhotos,
+        // Refund details
+        retailerAcceptedReturn,
+        retailerIssuedRefund,
+        retailerRefundMethod,
+        retailerRefundAmount,
+        retailerRefundTimeline,
+        // Store credit details
+        storeCreditIssued,
+        storeCreditAmount,
+        storeCreditCardNumber,
+        // Donation details
+        donationConfirmed,
+        donationReceiptProvided,
+        donationOrganization,
+        donationReceiptPhotos,
+        // Return refused
+        returnRefused,
+        returnRefusedReason,
+        returnRefusedPhotos
+      } = req.body;
+
+      // 1. Verify driver is assigned to this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (order.driverId !== driverId) {
+        return res.status(403).json({ message: "Not authorized for this order" });
+      }
+
+      if (order.status === 'completed') {
+        return res.status(400).json({ message: "Order already completed" });
+      }
+
+      // 2. Prepare completion data
+      const completionData: any = {
+        driverCompletionConfirmed: true,
+        driverCompletionTimestamp: new Date(),
+        actualReturnOutcome,
+        driverCompletionNotes,
+        driverCompletionPhotos: driverCompletionPhotos || [],
+        status: 'completed' // Mark order as completed
+      };
+
+      // Add outcome-specific data
+      if (actualReturnOutcome === 'refund_processed') {
+        completionData.retailerAcceptedReturn = retailerAcceptedReturn;
+        completionData.retailerIssuedRefund = retailerIssuedRefund;
+        completionData.retailerRefundMethod = retailerRefundMethod;
+        completionData.retailerRefundAmount = retailerRefundAmount;
+        completionData.retailerRefundTimeline = retailerRefundTimeline;
+      }
+
+      if (actualReturnOutcome === 'store_credit_issued') {
+        completionData.storeCreditIssued = storeCreditIssued;
+        completionData.storeCreditAmount = storeCreditAmount;
+        completionData.storeCreditCardNumber = storeCreditCardNumber;
+      }
+
+      if (actualReturnOutcome === 'donation_accepted') {
+        completionData.donationConfirmed = donationConfirmed;
+        completionData.donationReceiptProvided = donationReceiptProvided;
+        completionData.donationOrganization = donationOrganization;
+        completionData.donationReceiptPhotos = donationReceiptPhotos || [];
+      }
+
+      if (actualReturnOutcome === 'return_refused') {
+        completionData.returnRefused = returnRefused;
+        completionData.returnRefusedReason = returnRefusedReason;
+        completionData.returnRefusedPhotos = returnRefusedPhotos || [];
+      }
+
+      // 3. Update order with completion data
+      const updatedOrder = await storage.updateOrder(orderId, completionData);
+
+      // 4. Send customer notification based on outcome
+      let notificationTitle = '';
+      let notificationMessage = '';
+      let notificationType = 'order_completed';
+
+      if (actualReturnOutcome === 'refund_processed') {
+        notificationTitle = '✅ Return Delivered Successfully!';
+        const timelineText = retailerRefundTimeline === 'immediate' ? 'today' :
+                           retailerRefundTimeline === '3-5_days' ? '3-5 business days' :
+                           retailerRefundTimeline === '7-10_days' ? '7-10 business days' : '14+ business days';
+        
+        notificationMessage = `Your return to ${order.retailer || 'the store'} has been completed.\n\nRefund Details:\n• Amount: $${retailerRefundAmount?.toFixed(2) || '0.00'}\n• Method: ${retailerRefundMethod === 'original_payment' ? 'Original payment method' : retailerRefundMethod}\n• Timeline: ${timelineText}\n\nYou'll receive your refund directly from ${order.retailer || 'the retailer'}.`;
+        notificationType = 'refund_confirmed';
+      } 
+      else if (actualReturnOutcome === 'store_credit_issued') {
+        notificationTitle = '✅ Return Completed - Gift Card Issued!';
+        notificationMessage = `${order.retailer || 'The store'} issued a store credit for your return.\n\nGift Card Details:\n• Amount: $${storeCreditAmount?.toFixed(2) || '0.00'}\n• Card #: •••• ${storeCreditCardNumber || 'N/A'}\n\nYour driver will deliver the physical gift card to you within 24 hours for a $3.99 delivery fee.`;
+        notificationType = 'gift_card_issued';
+      }
+      else if (actualReturnOutcome === 'donation_accepted') {
+        notificationTitle = '✅ Donation Successful!';
+        notificationMessage = `Your items were donated to ${donationOrganization || 'the charity'}.\n\nDonation Details:\n• Organization: ${donationOrganization || 'Unknown'}\n• Receipt: ${donationReceiptProvided ? 'Provided (for tax deduction)' : 'Not provided'}\n\nView your donation receipt in Order Details.`;
+        notificationType = 'donation_confirmed';
+      }
+      else if (actualReturnOutcome === 'exchange_completed') {
+        notificationTitle = '✅ Exchange Completed!';
+        notificationMessage = `Your exchange at ${order.retailer || 'the store'} has been completed successfully.\n\nYour new item has been provided by the retailer.`;
+        notificationType = 'exchange_confirmed';
+      }
+      else if (actualReturnOutcome === 'return_refused') {
+        notificationTitle = '⚠️ Return Not Accepted';
+        const reasonText = returnRefusedReason === 'expired_window' ? 'Item past return window' :
+                          returnRefusedReason === 'no_receipt' ? 'No receipt/proof of purchase' :
+                          returnRefusedReason === 'damaged' ? 'Item damaged/used' :
+                          returnRefusedReason === 'policy_violation' ? 'Policy violation' : 'Other reason';
+        
+        notificationMessage = `Unfortunately, ${order.retailer || 'the store'} could not accept your return.\n\nReason: ${reasonText}\n\nNext Steps:\n• Your driver is returning items to you\n• Delivery fee: $3.99\n• Estimated delivery: Today`;
+        notificationType = 'return_refused';
+      }
+
+      await storage.createNotification({
+        userId: order.userId,
+        type: notificationType,
+        title: notificationTitle,
+        message: notificationMessage,
+        orderId: orderId,
+        data: {
+          actualOutcome: actualReturnOutcome,
+          completedAt: new Date().toISOString(),
+          driverId
+        }
+      });
+
+      // 5. Fire webhook for completion
+      await webhookService.fireReturnDelivered(updatedOrder);
+
+      console.log(`✅ Order ${orderId} completion checklist submitted by driver ${driverId}, outcome: ${actualReturnOutcome}`);
+      
+      res.json({ 
+        success: true, 
+        message: "Delivery completion confirmed successfully",
+        order: updatedOrder,
+        outcome: actualReturnOutcome
+      });
+
+    } catch (error: any) {
+      console.error("Error completing delivery checklist:", error);
+      res.status(500).json({ message: "Failed to complete delivery: " + error.message });
+    }
+  });
+
   // Complete gift card delivery to customer (second trip)
   app.post("/api/driver/orders/:orderId/complete-gift-card-delivery", isAuthenticated, async (req, res) => {
     try {
