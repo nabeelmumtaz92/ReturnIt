@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Pricing Analysis</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+          },
+        },
+      };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex h-auto min-h-screen w-full flex-col justify-between overflow-x-hidden">
+<div>
+<header class="flex items-center justify-between p-4 pb-2">
+<button class="flex size-10 items-center justify-center rounded-full bg-background-light text-background-dark/80 dark:bg-background-dark/50 dark:text-background-light/80">
+<span class="material-symbols-outlined"> arrow_back </span>
+</button>
+<h1 class="flex-1 text-center text-lg font-bold text-background-dark dark:text-background-light pr-10">Pricing Analysis</h1>
+</header>
+<main class="p-4 space-y-8">
+<div>
+<h2 class="text-xl font-bold text-background-dark dark:text-background-light mb-4">Pricing Model Overview</h2>
+<div class="rounded-xl border border-primary/20 dark:border-primary/30 bg-background-light dark:bg-background-dark p-6 shadow-sm">
+<p class="text-base font-medium text-background-dark dark:text-background-light">Return It Pricing Trends</p>
+<p class="text-3xl font-bold text-background-dark dark:text-background-light">$12.50</p>
+<div class="flex items-center gap-2">
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Last 30 Days</p>
+<p class="text-sm font-medium text-green-500">+2.3%</p>
+</div>
+<div class="mt-4 h-48">
+<svg fill="none" height="100%" preserveAspectRatio="none" viewBox="0 0 472 150" width="100%" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25V149H0V109Z" fill="url(#paint0_linear_)"></path>
+<path d="M0 109C18.1538 109 18.1538 21 36.3077 21C54.4615 21 54.4615 41 72.6154 41C90.7692 41 90.7692 93 108.923 93C127.077 93 127.077 33 145.231 33C163.385 33 163.385 101 181.538 101C199.692 101 199.692 61 217.846 61C236 61 236 45 254.154 45C272.308 45 272.308 121 290.462 121C308.615 121 308.615 149 326.769 149C344.923 149 344.923 1 363.077 1C381.231 1 381.231 81 399.385 81C417.538 81 417.538 129 435.692 129C453.846 129 453.846 25 472 25" stroke="#f99806" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient gradientUnits="userSpaceOnUse" id="paint0_linear_" x1="236" x2="236" y1="1" y2="149">
+<stop stop-color="#f99806" stop-opacity="0.3"></stop>
+<stop offset="1" stop-color="#f99806" stop-opacity="0"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-xl font-bold text-background-dark dark:text-background-light mb-4">Competitive Rate Comparison</h2>
+<div class="rounded-xl border border-primary/20 dark:border-primary/30 bg-background-light dark:bg-background-dark p-6 shadow-sm">
+<p class="text-base font-medium text-background-dark dark:text-background-light">Return It vs. Competitors</p>
+<p class="text-3xl font-bold text-background-dark dark:text-background-light">$10.00</p>
+<div class="flex items-center gap-2">
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Current</p>
+<p class="text-sm font-medium text-red-500">-1.5%</p>
+</div>
+<div class="mt-4 space-y-4 pt-3">
+<div class="grid grid-cols-[auto_1fr] items-center gap-x-4">
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Return It</p>
+<div class="h-2.5 w-full rounded-full bg-primary/20 dark:bg-primary/30">
+<div class="h-full rounded-full bg-primary" style="width: 50%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-[auto_1fr] items-center gap-x-4">
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Competitor A</p>
+<div class="h-2.5 w-full rounded-full bg-primary/20 dark:bg-primary/30">
+<div class="h-full rounded-full bg-primary" style="width: 90%;"></div>
+</div>
+</div>
+<div class="grid grid-cols-[auto_1fr] items-center gap-x-4">
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Competitor B</p>
+<div class="h-2.5 w-full rounded-full bg-primary/20 dark:bg-primary/30">
+<div class="h-full rounded-full bg-primary" style="width: 20%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-xl font-bold text-background-dark dark:text-background-light mb-4">Profitability Impact</h2>
+<div class="rounded-xl border border-primary/20 dark:border-primary/30 bg-background-light dark:bg-background-dark p-6 shadow-sm">
+<p class="text-base font-medium text-background-dark dark:text-background-light">Return It Profitability Analysis</p>
+<p class="text-3xl font-bold text-background-dark dark:text-background-light">$5.25</p>
+<div class="flex items-center gap-2">
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Q2 2024</p>
+<p class="text-sm font-medium text-green-500">+4.1%</p>
+</div>
+<div class="mt-4 grid grid-cols-4 gap-4 items-end h-40 pt-3 px-3">
+<div class="flex flex-col items-center gap-2">
+<div class="w-full h-full bg-primary/20 dark:bg-primary/30 rounded-t-lg flex items-end">
+<div class="w-full bg-primary rounded-t-lg" style="height: 90%;"></div>
+</div>
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Q1</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-full h-full bg-primary/20 dark:bg-primary/30 rounded-t-lg flex items-end">
+<div class="w-full bg-primary rounded-t-lg" style="height: 20%;"></div>
+</div>
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Q2</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-full h-full bg-primary/20 dark:bg-primary/30 rounded-t-lg flex items-end">
+<div class="w-full bg-primary rounded-t-lg" style="height: 10%;"></div>
+</div>
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Q3</p>
+</div>
+<div class="flex flex-col items-center gap-2">
+<div class="w-full h-full bg-primary/20 dark:bg-primary/30 rounded-t-lg flex items-end">
+<div class="w-full bg-primary rounded-t-lg" style="height: 10%;"></div>
+</div>
+<p class="text-xs font-bold text-background-dark/60 dark:text-background-light/60">Q4</p>
+</div>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-xl font-bold text-background-dark dark:text-background-light mb-4">Scenario Planning</h2>
+<div class="space-y-4">
+<label class="block">
+<span class="text-base font-medium text-background-dark dark:text-background-light pb-2">Adjust Pricing by (%)</span>
+<input class="form-input mt-1 block w-full rounded-lg border-primary/30 bg-background-light dark:bg-background-dark/50 text-background-dark dark:text-background-light placeholder-background-dark/40 dark:placeholder-background-light/40 focus:border-primary focus:ring-primary/50" placeholder="Enter percentage" type="text"/>
+</label>
+<div class="flex justify-end">
+<button class="flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-background-dark shadow-sm hover:bg-primary/90">
+                  Apply Scenario
+                </button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<footer class="sticky bottom-0 border-t border-primary/20 dark:border-primary/30 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center justify-center gap-1 w-1/5 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined"> home </span>
+<span class="text-xs font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-1/5 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined"> inventory_2 </span>
+<span class="text-xs font-medium">Returns</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-1/5 text-primary" href="#">
+<span class="material-symbols-outlined"> monetization_on </span>
+<span class="text-xs font-medium">Pricing</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-1/5 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined"> leaderboard </span>
+<span class="text-xs font-medium">Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-1/5 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined"> settings </span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Generate Labels</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              "display": ["Work Sans"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23f99806' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<button class="text-stone-800 dark:text-stone-200">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="flex-1 text-center text-lg font-bold text-stone-900 dark:text-stone-100 pr-8">Return It</h1>
+</div>
+</header>
+<main class="flex-grow p-4 md:px-6 lg:px-8 xl:px-10 2xl:px-12">
+<div class="max-w-md mx-auto">
+<h2 class="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-6">Generate Return Labels</h2>
+<div class="space-y-4">
+<div>
+<label class="sr-only" for="order-select">Select Order</label>
+<select class="form-select w-full rounded-lg border-primary/50 dark:border-primary/40 bg-background-light dark:bg-background-dark/50 text-stone-900 dark:text-stone-100 focus:ring-primary focus:border-primary placeholder-stone-500 dark:placeholder-stone-400" id="order-select">
+<option disabled="" selected="">Select Order</option>
+<option value="order1">Order #12345</option>
+<option value="order2">Order #67890</option>
+<option value="order3">Order #11223</option>
+</select>
+</div>
+<div>
+<label class="sr-only" for="return-address">Return Address</label>
+<input class="w-full rounded-lg border-primary/50 dark:border-primary/40 bg-background-light dark:bg-background-dark/50 text-stone-900 dark:text-stone-100 focus:ring-primary focus:border-primary placeholder-stone-500 dark:placeholder-stone-400" id="return-address" placeholder="Return Address" type="text"/>
+</div>
+<div>
+<label class="sr-only" for="barcode">Barcode</label>
+<input class="w-full rounded-lg border-primary/50 dark:border-primary/40 bg-background-light dark:bg-background-dark/50 text-stone-900 dark:text-stone-100 focus:ring-primary focus:border-primary placeholder-stone-500 dark:placeholder-stone-400" id="barcode" placeholder="Barcode" type="text"/>
+</div>
+<div>
+<label class="sr-only" for="return-reason">Return Reason</label>
+<input class="w-full rounded-lg border-primary/50 dark:border-primary/40 bg-background-light dark:bg-background-dark/50 text-stone-900 dark:text-stone-100 focus:ring-primary focus:border-primary placeholder-stone-500 dark:placeholder-stone-400" id="return-reason" placeholder="Return Reason (optional)" type="text"/>
+</div>
+</div>
+<div class="flex items-center justify-between mt-8 space-x-4">
+<button class="flex-1 py-3 px-4 rounded-lg bg-primary/20 dark:bg-primary/30 text-primary font-bold hover:bg-primary/30 dark:hover:bg-primary/40 transition-colors">
+              Cancel
+            </button>
+<button class="flex-1 py-3 px-4 rounded-lg bg-primary text-background-dark font-bold hover:opacity-90 transition-opacity">
+              Generate Labels
+            </button>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 z-10 border-t border-primary/20 dark:border-primary/10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center justify-center gap-1 text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-xs font-medium">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-primary dark:text-primary" href="#">
+<span class="material-symbols-outlined">autorenew</span>
+<span class="text-xs font-bold">Returns</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

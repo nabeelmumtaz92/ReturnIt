@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It Staff Portal</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              "display": ["Work Sans"]
+            },
+            borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+          },
+        },
+      };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center justify-between p-4">
+<button class="p-2">
+<span class="material-symbols-outlined text-gray-900 dark:text-gray-100"> menu </span>
+</button>
+<h1 class="text-lg font-bold text-gray-900 dark:text-gray-100">Return It</h1>
+<div class="w-10"></div>
+</div>
+</header>
+<main class="flex-grow px-6 py-8">
+<h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Welcome, Alex</h2>
+<div class="mt-8 space-y-6">
+<div class="flex items-center gap-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 p-4 shadow-sm">
+<div class="flex-1">
+<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Assigned Tasks</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">View and manage your current tasks.</p>
+<button class="mt-4 bg-primary text-white text-sm font-semibold py-2 px-4 rounded-full">
+                View Tasks
+              </button>
+</div>
+<div class="w-28 h-28 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCU_mX3ghtyOn_Ss3pH410OwBq7-HSdOWYr_eqD-J28PInPiW7x9uEVWLKUCslHiszDLttAKsb1HB-6AjEh7Klm39_Vpa1MWo90vC-OMyU_m6wGnUTlPudLtte014RIlnMQjhZJPW-9uW1GHSkMm2V6BhvjXzghE005Iz8JJ5pZrxbAdii1sUQhhJURPj2hoe_Oyygneffo6JpKBAfHJWbBkr-KtkOITHzoDa3qymY6cs6TLP58icAflC6_IeMPNrA4mt_bVcCiQSdJ")'></div>
+</div>
+<div class="flex items-center gap-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 p-4 shadow-sm">
+<div class="flex-1">
+<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Internal Announcements</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Stay updated with the latest company news.</p>
+<button class="mt-4 bg-primary text-white text-sm font-semibold py-2 px-4 rounded-full">
+                View Announcements
+              </button>
+</div>
+<div class="w-28 h-28 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCOD4oYnX6x8LcbF2P_-PKHIJTTITsbDOP6RROtsSFaWUfY7Ln4su9oLxHW3t9KEqw-ZWSXnkV7T27I-v-GZDrhr7fhx7g-rk38IiZHeZwvS1QWlWr6Kuun4OE0ThEGXBmQXKvnUyecM1pnC0O4R8Dxma6tm74Z8SH3-v4k8_-A0l_FdBp7rlxcjgE9Pi6X6jJYasLSXcVvH6BtQeSzEUUbV_ZFYqLaBMHMDCfo3vLWP6pOfhQqMWZVCcxj5IXMmruQSZPpR55viBbO")'></div>
+</div>
+<div class="flex items-center gap-4 rounded-xl bg-background-light/50 dark:bg-background-dark/50 p-4 shadow-sm">
+<div class="flex-1">
+<h3 class="text-lg font-bold text-gray-900 dark:text-gray-100">Team Performance</h3>
+<p class="text-sm text-gray-600 dark:text-gray-400">Track your team's key performance indicators.</p>
+<button class="mt-4 bg-primary text-white text-sm font-semibold py-2 px-4 rounded-full">
+                View Performance
+              </button>
+</div>
+<div class="w-28 h-28 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdHBNdjEM3OCouZbRrZKgEhtHM_xwwxgH5wkEgq4k_P6oPkY39up086hkgbJ3tq_G1JxY-o04r_s4XsbMiyGOgWRA4yGtMU_nkZNsIu6xacyoypXHJx0zYKW0FgiapLx2n73mCwt5X8V_kKkPf4ydS625bdVvyTZuTyOU_U5Bi_agBCqunenM553mrkucdjAC77zmDVpwhm9QxsDz_UrtN1rOvhDop9tsZtPynzLQiONY8posmHS-92B63CWrCM-E99YjtISCu1cQ4")'></div>
+</div>
+</div>
+<div class="mt-12">
+<h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">Quick Links</h2>
+<div class="grid grid-cols-2 gap-4 mt-4">
+<a class="flex flex-col items-center justify-center gap-2 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-4 text-center" href="#">
+<div class="flex items-center justify-center h-12 w-12 rounded-full bg-primary/20 dark:bg-primary/30">
+<span class="material-symbols-outlined text-primary"> inventory_2 </span>
+</div>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Returns Mgmt</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-2 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-4 text-center" href="#">
+<div class="flex items-center justify-center h-12 w-12 rounded-full bg-primary/20 dark:bg-primary/30">
+<span class="material-symbols-outlined text-primary"> local_shipping </span>
+</div>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Delivery Schedules</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-2 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-4 text-center" href="#">
+<div class="flex items-center justify-center h-12 w-12 rounded-full bg-primary/20 dark:bg-primary/30">
+<span class="material-symbols-outlined text-primary"> settings </span>
+</div>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-200">System Settings</p>
+</a>
+<a class="flex flex-col items-center justify-center gap-2 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-4 text-center" href="#">
+<div class="flex items-center justify-center h-12 w-12 rounded-full bg-primary/20 dark:bg-primary/30">
+<span class="material-symbols-outlined text-primary"> leaderboard </span>
+</div>
+<p class="text-sm font-semibold text-gray-800 dark:text-gray-200">Analytics</p>
+</a>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-background-dark/20 dark:border-background-light/10">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-primary" href="#">
+<span class="material-symbols-outlined"> home </span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined"> task_alt </span>
+<span class="text-xs font-medium">Tasks</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined"> campaign </span>
+<span class="text-xs font-medium">Alerts</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined"> person </span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

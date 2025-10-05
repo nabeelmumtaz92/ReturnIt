@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It Help Center</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-background-dark dark:text-background-light">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center justify-between p-4 border-b border-primary/20 dark:border-primary/30">
+<button class="p-2 -m-2">
+<span class="material-symbols-outlined text-background-dark dark:text-background-light">arrow_back</span>
+</button>
+<h2 class="text-lg font-bold text-center text-background-dark dark:text-background-light flex-1">Return It Help Center</h2>
+<div class="w-8"></div>
+</div>
+</header>
+<main class="flex-grow p-6 space-y-6">
+<div class="space-y-2">
+<h1 class="text-2xl font-bold text-background-dark dark:text-background-light">How to Process a Return in Return It</h1>
+<p class="text-base text-background-dark/80 dark:text-background-light/80">
+                    This guide provides step-by-step instructions on how to efficiently process a return using the Return It platform. Follow these steps to ensure a smooth and accurate return process.
+                </p>
+</div>
+<div class="flex gap-2">
+<button class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-primary/20 dark:bg-primary/30 text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">print</span>
+                    Print
+                </button>
+<button class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-primary/20 dark:bg-primary/30 text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">share</span>
+                    Share
+                </button>
+</div>
+<div class="space-y-4">
+<h3 class="text-xl font-bold text-background-dark dark:text-background-light border-b border-primary/20 dark:border-primary/30 pb-2">Step-by-Step Guide</h3>
+<ul class="space-y-4 list-decimal list-inside text-base text-background-dark/90 dark:text-background-light/90">
+<li><strong>Locate the Return Request:</strong> Navigate to the 'Returns' section in your Return It dashboard. Use the search bar to find the specific return request by order number, customer name, or other relevant details.</li>
+<li><strong>Review Return Details:</strong> Click on the return request to view detailed information, including the reason for return, items being returned, and customer notes. Verify that all information is accurate and complete.</li>
+<li><strong>Authorize the Return:</strong> If the return meets your return policy criteria, click the 'Authorize Return' button. You may need to provide a return shipping label or instructions for the customer.</li>
+<li><strong>Receive the Returned Items:</strong> Once the customer ships the items back, track the shipment using the provided tracking number. Upon receiving the items, inspect them to ensure they are in the condition described in the return request.</li>
+<li><strong>Process the Refund or Exchange:</strong> If the items are in acceptable condition, proceed with processing the refund or exchange. Use the Return It platform to initiate the refund or create a new order for the exchange.</li>
+<li><strong>Complete the Return:</strong> After processing the refund or exchange, mark the return as 'Completed' in the Return It system. This will update the return status and notify the customer of the completion.</li>
+</ul>
+</div>
+<div class="space-y-4">
+<h3 class="text-xl font-bold text-background-dark dark:text-background-light border-b border-primary/20 dark:border-primary/30 pb-2">Related Articles</h3>
+<div class="divide-y divide-primary/20 dark:divide-primary/30">
+<a class="flex items-center justify-between py-4 text-base text-background-dark dark:text-background-light hover:bg-primary/10 dark:hover:bg-primary/20 rounded" href="#">
+<span>Managing Return Policies in Return It</span>
+<span class="material-symbols-outlined">chevron_right</span>
+</a>
+<a class="flex items-center justify-between py-4 text-base text-background-dark dark:text-background-light hover:bg-primary/10 dark:hover:bg-primary/20 rounded" href="#">
+<span>Troubleshooting Common Return Issues</span>
+<span class="material-symbols-outlined">chevron_right</span>
+</a>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 z-10 bg-background-light dark:bg-background-dark border-t border-primary/20 dark:border-primary/30">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-primary bg-primary/20 dark:bg-primary/30" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">inventory_2</span>
+<span class="text-xs font-medium">Returns</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Admin Support Chat</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" },
+          },
+        },
+      };
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="flex h-screen flex-col">
+<header class="sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between border-b border-primary/20 bg-background-light px-4 dark:border-primary/30 dark:bg-background-dark">
+<button class="flex items-center justify-center rounded-full p-2 text-slate-600 hover:bg-primary/10 dark:text-slate-400 dark:hover:bg-primary/20">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-slate-900 dark:text-white">Support Chat</h1>
+<div class="w-10"></div>
+</header>
+<main class="flex-1 overflow-y-auto p-6">
+<div class="space-y-6">
+<div>
+<h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Active Chats</h2>
+<div class="space-y-2">
+<a class="flex items-center gap-4 rounded-lg bg-background-light p-3 shadow-sm transition-shadow hover:shadow-md dark:bg-black/20" href="#">
+<div class="h-12 w-12 shrink-0 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxmh4mTE8PfdAzXrzLEk6QbtTHqRtJrLOVpzqTaUFueDMJVIEMHv1rd1SfNVTrw09Y8iEUkeExpwQ1bG2G3zuDmVDPzu8nq53dJE8R2mOqqqectPlonUzVcpCjRotDKiE1G5uj7pKMggfBmYiqi5nGs4RI61T4iZp--hRMXj_s7Qr0NwealqNuj8ooO_HBGZ3yI8sZhKbXr19x6QVLf-GTERBQt-Pr8hfDcYOKlIliPoQdTBl9Ve842_aJ-M8TGn1S8LI-lD1qOVOI")'></div>
+<div class="flex-1">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Customer A</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Customer Support</p>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">2m ago</span>
+</a>
+<a class="flex items-center gap-4 rounded-lg bg-background-light p-3 shadow-sm transition-shadow hover:shadow-md dark:bg-black/20" href="#">
+<div class="h-12 w-12 shrink-0 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDtPPMG-heOymav56CqSfNm1GL9XJqW__cYeoPMGdO3YEyz24u7klNj_t8DSTmJ6srbg0x7iNBn_hqFEMSp_mQyXkLQfNHTgsq6NcEtqqXaiYNkddPNbQGcl6FFicHVnlIV8QlrnI-lVRbQ9KXfkShdL_bkWIX2s4Q-MWvcJt2sBpYo9Y-9_naTrnlFCrT4QIFAmvSySDBuClA0fgQy8Zbcswr87OUuClz-X3YS2RykyFb_S45xrKy1oFVI1wASZpQAie63iQdsUIwt")'></div>
+<div class="flex-1">
+<p class="font-semibold text-slate-800 dark:text-slate-100">Driver B</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Driver Support</p>
+</div>
+<span class="text-xs text-slate-400 dark:text-slate-500">5m ago</span>
+</a>
+</div>
+</div>
+<div>
+<h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chat with Customer A</h2>
+<div class="space-y-6">
+<div class="flex items-start gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCVt6Zi1QXHkjRDMM7nlRpjc5nGrIXGziWYxqDeSOBOzPbfX1-FpRvULtRXbzWbRTpR_vPsxxdjwj-HCRisTfsNTNOrXBmC7HG-QNaZkZcf1cwytaR6_qPY5u3NAk8-ghDcbprbW2EwuT9EekiYB8QLsDZ87gzRrHQCnCEvRmL4NYVPSLYK5ARwdVibdF908cLQ-NvkHrv8gVv6VKL2P4VakLcS5EY5dXWo4cahRnS9Lcnu_TinoDA3izTKB6owwbSmNyuJ1Zz8SoDC")'></div>
+<div class="flex flex-col items-start">
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400">Customer A · 10:30 AM</p>
+<div class="mt-1 rounded-lg rounded-tl-none bg-primary/10 p-3 dark:bg-primary/20">
+<p class="text-slate-700 dark:text-slate-200">Hi, I need help with my return.</p>
+</div>
+</div>
+</div>
+<div class="flex items-start justify-end gap-3">
+<div class="flex flex-col items-end">
+<p class="text-xs font-medium text-slate-500 dark:text-slate-400">Return It Admin · 10:31 AM</p>
+<div class="mt-1 rounded-lg rounded-tr-none bg-primary p-3 text-white">
+<p>Sure, how can I assist you?</p>
+</div>
+</div>
+<div class="h-10 w-10 shrink-0 rounded-full bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDeM4-rbeL-38jgUZPmUCY2TeNu95bKf_cqjrXhW9zfEGp233kWeJThYizS6OSC0yaoo0UJJFy9dHHN0T1RYGJ2Zu49PW7MeZe-sq_uh059bXpN9xE5tRwFxNzIdr0YiorXzsodXUQobEcNOD-qXId3Eo_BD5Spbh_R0RzRA8TDxMSkNsDEBt1J1F2cYRXUgrwpIxgFuZB5avxyk6GPpMttn1yf12XHdRBmK_kRS8iwrnVYKKBm9BChBw29ianfI8OPUlHYBeUdMQIN")'></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 flex items-center gap-2 border-t border-primary/20 bg-background-light p-4 dark:border-primary/30 dark:bg-background-dark">
+<div class="relative flex-1">
+<input class="w-full rounded-full border-primary/20 bg-background-light py-3 pl-4 pr-12 text-slate-800 placeholder-slate-400 focus:border-primary focus:ring-primary dark:border-primary/30 dark:bg-black/20 dark:text-slate-200 dark:placeholder-slate-500 dark:focus:border-primary dark:focus:ring-primary" placeholder="Type a message..." type="text"/>
+<button class="absolute inset-y-0 right-0 flex items-center pr-3">
+<span class="material-symbols-outlined text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary">attach_file</span>
+</button>
+</div>
+<button class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined">send</span>
+</button>
+</footer>
+</div>
+
+
+</body></html>

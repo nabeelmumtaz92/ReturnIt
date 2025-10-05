@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              display: ["Work Sans"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<title>Return It - Waitlist Management</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden p-6">
+<header class="flex items-center justify-between pb-6">
+<button class="text-gray-600 dark:text-gray-400">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+</svg>
+</button>
+<h1 class="text-lg font-bold text-gray-900 dark:text-white">Return It</h1>
+<div class="w-6"></div>
+</header>
+<main class="flex-1">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white pb-4">Waitlist Management</h2>
+<div class="relative pb-4">
+<input class="w-full rounded-lg border-primary/50 bg-background-light dark:bg-background-dark py-3 pl-10 pr-4 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:border-primary focus:ring-primary" placeholder="Search by name or email" type="text"/>
+<div class="absolute inset-y-0 left-0 flex items-center pl-3">
+<svg class="h-5 w-5 text-gray-400" fill="currentColor" height="20" viewBox="0 0 256 256" width="20" xmlns="http://www.w3.org/2000/svg">
+<path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+</svg>
+</div>
+</div>
+<h3 class="text-lg font-bold text-gray-900 dark:text-white pt-4 pb-2">Waitlist Entries</h3>
+<div class="space-y-2">
+<div class="flex items-center gap-4 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-3 hover:bg-primary/10 dark:hover:bg-primary/20">
+<img alt="Liam Carter" class="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDfKkuom-1ZnQiATw-LTwV9v0u1XO6NWYW9_dT9JqIC-v3DCTihu4cFg4hqGJ2SAlvlITzfk--l1rCdXOP8ipjGomnZZcajA10AieH2lnO7Wpg6lW4LsMXWdi0LjCihAxxafXxcY54UVDZXAMzIo_q8YvfpAD7UHJYYeMfvq5gbc28rbBcodzDOBTfsBuazKjSzjIzs0lnnQUBNm8ltuKwN3MibepLSyfoDy_QYcNt4I8O70AVNyXLnQP6A_vq8SAU13zRF5ALoyNi7"/>
+<div class="flex-1">
+<p class="font-semibold text-gray-900 dark:text-white">Liam Carter</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Joined: 2024-01-15</p>
+</div>
+<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+</svg>
+</div>
+<div class="flex items-center gap-4 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-3 hover:bg-primary/10 dark:hover:bg-primary/20">
+<img alt="Sophia Bennett" class="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhSyC9JrZyEAIBE3aXip7kV0D32WjB0tzXnTPpphPypHVzRuumNp0JcYUNw5QR4qfdo4RcHlx7nfavNrBxES20kHUojkU3Nbbt4FU13M1ykt-V4EM-_PSi3KrSQEnexsHY322hbar5XyJqdNFg81-YQsfHn-XxT9izcHGmcCT855KYp_IOFSGalFoDX6MkFkt8yukLEdQQmUh-Q_8rttqk3khR5V3thvsY56ePM8PTrk0PeLMW3uC0AXv4MDSRX6g-oqtdOvgc93nU"/>
+<div class="flex-1">
+<p class="font-semibold text-gray-900 dark:text-white">Sophia Bennett</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Joined: 2024-02-20</p>
+</div>
+<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+</svg>
+</div>
+<div class="flex items-center gap-4 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-3 hover:bg-primary/10 dark:hover:bg-primary/20">
+<img alt="Ethan Harper" class="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSfd1Ul1F5SjqgnyB6ooXczQO2KR1i44j3SIJig04bhqJ_3PfcQ0Oki_n0ibEFsC9nn8OvkwFklwALFyb7cjrsBJqXuM3ZaxswYGBKnPLLWiYaRe_IX-i_z7YP_Yx-t4P0HnrtSUl4AjRvTgWqV7Ix_aXBKCPjStm0ONh-VDjkeI__COTyjV-gaP6Y3nIWmeZQC-y9EET1p8r2WBS2s-t6Wmw4WMco3PS8zxBInxqCPwUiIIO64Vf8eKJkIeCKCM4-X_wzFO-3ljgy"/>
+<div class="flex-1">
+<p class="font-semibold text-gray-900 dark:text-white">Ethan Harper</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Joined: 2024-03-05</p>
+</div>
+<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+</svg>
+</div>
+<div class="flex items-center gap-4 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-3 hover:bg-primary/10 dark:hover:bg-primary/20">
+<img alt="Olivia Hayes" class="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6W-b_jieHkolkkQhgjCngzurHN63R65wgWK6LUi7oJ5MeqvRBlMW0xA_jyBlwk9nYFflzdHoLoKgU5qIfa2qwUQfuK7x7ZbBpElhX6Yt0o3pKweDx72ajfIHBDzNe1ZO7pIEvKbGrppldmKgSES6GKqSNjMHAiz0QwXhnRSzYrLGU4tdstahBrkHYGxGwLC5dGE3ceQ_Y8X9eLcmSwau7uSAIfTzJVrq48jmABzkmeGYd9B0qQykUAj6N-ikqi-sseZlsSXPosHmH"/>
+<div class="flex-1">
+<p class="font-semibold text-gray-900 dark:text-white">Olivia Hayes</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Joined: 2024-04-10</p>
+</div>
+<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+</svg>
+</div>
+<div class="flex items-center gap-4 rounded-lg bg-background-light/50 dark:bg-background-dark/50 p-3 hover:bg-primary/10 dark:hover:bg-primary/20">
+<img alt="Noah Foster" class="h-12 w-12 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6Z7HUidfe_ANA7_UBtXMKBi5YGCm5R8xNr1XNqypBCWXJpTEJQVBQ00VVJj0LlohAmOWtigNOfsDaqeBZPwtZ_Jki14lGembF_iBexjBo5o-FBV17tHNJIxK7Z61dLQnr3h-_Q095YKeDjgmey-mCyOtghpOv0j_ScAeoDqDmgz4sPegHpKjXniVE_frABTmF15-08-G4xqkwLjhLe4Ly9xKunISVbdxzZLedp6-UGT12mq-lWqrVWB7k876ujpzPafs885lKqXwV"/>
+<div class="flex-1">
+<p class="font-semibold text-gray-900 dark:text-white">Noah Foster</p>
+<p class="text-sm text-gray-500 dark:text-gray-400">Joined: 2024-05-15</p>
+</div>
+<svg class="h-6 w-6 text-gray-400 dark:text-gray-500" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+</svg>
+</div>
+</div>
+</main>
+<footer class="pt-6">
+<div class="flex justify-end">
+<button class="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-background-dark shadow-lg">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path>
+</svg>
+</button>
+</div>
+</footer>
+</div>
+
+</body></html>

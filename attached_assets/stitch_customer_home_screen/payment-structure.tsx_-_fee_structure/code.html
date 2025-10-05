@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<title>Return It - Payment Fee Management</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              "display": ["Work Sans"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<button class="text-black dark:text-white">
+<span class="material-symbols-outlined">arrow_back_ios_new</span>
+</button>
+<h1 class="flex-1 text-lg font-bold text-center text-black dark:text-white mr-8">Payment Fees</h1>
+</div>
+</header>
+<main class="flex-1 px-6 py-8 space-y-8">
+<section>
+<h2 class="text-xl font-bold text-black dark:text-white mb-4">Service Fees</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="base-fee">Base Fee</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-black/50 dark:text-white/50">$</span>
+<input class="form-input w-full pl-8 pr-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="base-fee" placeholder="0.00" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="item-fee">Per Item Fee</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-black/50 dark:text-white/50">$</span>
+<input class="form-input w-full pl-8 pr-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="item-fee" placeholder="0.00" type="text"/>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold text-black dark:text-white mb-4">Transaction Charges</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="transaction-fee">Transaction Fee (%)</label>
+<div class="relative">
+<input class="form-input w-full pr-10 pl-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="transaction-fee" placeholder="0.0" type="text"/>
+<span class="absolute inset-y-0 right-0 flex items-center pr-4 text-black/50 dark:text-white/50">%</span>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="min-fee">Minimum Transaction Fee</label>
+<div class="relative">
+<span class="absolute inset-y-0 left-0 flex items-center pl-4 text-black/50 dark:text-white/50">$</span>
+<input class="form-input w-full pl-8 pr-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="min-fee" placeholder="0.00" type="text"/>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold text-black dark:text-white mb-4">Driver Compensation</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="driver-payout">Driver Payout (%)</label>
+<div class="relative">
+<input class="form-input w-full pr-10 pl-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="driver-payout" placeholder="0.0" type="text"/>
+<span class="absolute inset-y-0 right-0 flex items-center pr-4 text-black/50 dark:text-white/50">%</span>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold text-black dark:text-white mb-4">Promotional Discounts</h2>
+<div class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="discount-code">Discount Code</label>
+<input class="form-input w-full px-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="discount-code" placeholder="e.g., SAVE10" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium text-black/70 dark:text-white/70 mb-2" for="discount-percentage">Discount Amount (%)</label>
+<div class="relative">
+<input class="form-input w-full pr-10 pl-4 py-3 bg-background-light/50 dark:bg-background-dark/50 border border-black/20 dark:border-white/20 rounded-lg text-black dark:text-white focus:ring-primary focus:border-primary" id="discount-percentage" placeholder="0.0" type="text"/>
+<span class="absolute inset-y-0 right-0 flex items-center pr-4 text-black/50 dark:text-white/50">%</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm p-4">
+<button class="w-full bg-primary text-background-dark font-bold py-4 rounded-lg text-base shadow-lg shadow-primary/30 hover:bg-primary/90 transition-all duration-200">
+          Save Changes
+        </button>
+</footer>
+</div>
+
+</body></html>

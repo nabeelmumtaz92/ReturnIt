@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Pricing Calculator</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f99806",
+              "background-light": "#f8f7f5",
+              "background-dark": "#231b0f",
+            },
+            fontFamily: {
+              "display": ["Work Sans"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+          },
+        },
+      }
+    </script>
+<style>
+      .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23f99806' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-white p-6">
+<div class="flex flex-col h-screen justify-between">
+<main class="flex-grow">
+<header class="flex items-center justify-between pb-8">
+<div class="w-10"></div>
+<h1 class="text-lg font-bold text-center text-white dark:text-white">Return It</h1>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/20 dark:bg-primary/30">
+<svg class="w-6 h-6 text-primary" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<circle cx="9" cy="21" r="1"></circle>
+<circle cx="20" cy="21" r="1"></circle>
+<path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+</svg>
+</button>
+</header>
+<div class="text-center mb-8">
+<h2 class="text-3xl font-bold text-white dark:text-white mb-2">Calculate Your Return It Cost</h2>
+<p class="text-white/70 dark:text-white/60">Get an instant estimate for your return shipment. Adjust parameters to see how pricing changes.</p>
+</div>
+<div class="space-y-4 mb-8">
+<div class="relative">
+<select class="form-select appearance-none w-full bg-background-dark/80 dark:bg-background-dark/90 border border-primary/30 dark:border-primary/50 text-white rounded-lg h-14 px-4">
+<option>Small Box (up to 12")</option>
+<option>Medium Box (up to 18")</option>
+<option>Large Box (up to 24")</option>
+</select>
+<label class="absolute -top-2 left-3 text-xs text-primary bg-background-light dark:bg-background-dark px-1">Package Size</label>
+</div>
+<div class="relative">
+<select class="form-select appearance-none w-full bg-background-dark/80 dark:bg-background-dark/90 border border-primary/30 dark:border-primary/50 text-white rounded-lg h-14 px-4">
+<option>0-50 Miles</option>
+<option>51-150 Miles</option>
+<option>151+ Miles</option>
+</select>
+<label class="absolute -top-2 left-3 text-xs text-primary bg-background-light dark:bg-background-dark px-1">Distance</label>
+</div>
+<div class="relative">
+<select class="form-select appearance-none w-full bg-background-dark/80 dark:bg-background-dark/90 border border-primary/30 dark:border-primary/50 text-white rounded-lg h-14 px-4">
+<option>Standard (3-5 days)</option>
+<option>Express (1-2 days)</option>
+<option>Same-Day</option>
+</select>
+<label class="absolute -top-2 left-3 text-xs text-primary bg-background-light dark:bg-background-dark px-1">Service Type</label>
+</div>
+</div>
+<div class="bg-background-dark/80 dark:bg-black/20 rounded-xl p-6">
+<h3 class="text-lg font-bold text-white dark:text-white mb-4">Pricing Breakdown</h3>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm">
+<p class="text-white/70 dark:text-white/60">Base Fee</p>
+<p class="font-medium text-white dark:text-white">$5.00</p>
+</div>
+<div class="flex justify-between items-center text-sm">
+<p class="text-white/70 dark:text-white/60">Distance Surcharge</p>
+<p class="font-medium text-white dark:text-white">$2.50</p>
+</div>
+<div class="flex justify-between items-center text-sm">
+<p class="text-white/70 dark:text-white/60">Service Fee</p>
+<p class="font-medium text-white dark:text-white">$1.00</p>
+</div>
+</div>
+<div class="border-t border-primary/30 dark:border-primary/50 my-4"></div>
+<div class="flex justify-between items-center">
+<p class="font-bold text-white dark:text-white">Total Estimated Cost</p>
+<p class="text-2xl font-bold text-primary">$8.50</p>
+</div>
+</div>
+<div class="mt-8">
+<button class="w-full bg-primary text-background-dark font-bold h-14 rounded-lg text-base">Get Started</button>
+</div>
+</main>
+<footer class="bg-background-dark/80 dark:bg-black/20 rounded-full p-2">
+<nav class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-white/70 dark:text-white/60 p-2" href="#">
+<svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+<polyline points="9 22 9 12 15 12 15 22"></polyline>
+</svg>
+<span class="text-xs">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/70 dark:text-white/60 p-2" href="#">
+<svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v2"></path>
+<path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5"></path>
+<path d="M12 12 2 7l10 5 10-5-10 5z"></path>
+<path d="m3.13 9.78 4.47-2.24"></path>
+<path d="m16.4 7.54 4.47 2.24"></path>
+</svg>
+<span class="text-xs">Track</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary p-2 bg-primary/20 rounded-full" href="#">
+<svg class="w-6 h-6" fill="currentColor" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM9 18a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm0-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm-8-4h8V5H9v5z"></path>
+</svg>
+<span class="text-xs font-bold">Calculate</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-white/70 dark:text-white/60 p-2" href="#">
+<svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+<circle cx="12" cy="7" r="4"></circle>
+</svg>
+<span class="text-xs">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>
