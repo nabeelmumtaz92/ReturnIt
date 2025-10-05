@@ -287,7 +287,7 @@ export default function Login() {
     <Button
       type="button"
       variant="outline"
-      className={`w-full h-10 text-sm ${color} border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900`}
+      className={`w-full h-10 text-sm ${color}`}
       onClick={onClick}
       data-testid={`button-${provider.toLowerCase()}-auth`}
     >
@@ -297,25 +297,25 @@ export default function Login() {
   );
 
   return (
-    <div className="min-h-screen bg-amber-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Header */}
+        {/* Header - Stitch Pattern */}
         <div className="text-center mb-8">
           <Link href="/">
-            <div className="text-3xl font-bold text-amber-900 mb-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="text-3xl font-bold mb-2 cursor-pointer hover:opacity-80 transition-opacity">
               ReturnIt
             </div>
           </Link>
-          <p className="text-amber-700">Professional return service</p>
+          <p className="text-muted-foreground">Professional return service</p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex bg-white rounded-lg border border-amber-200 shadow-sm mb-6">
+        {/* Tab Navigation - Stitch Pattern */}
+        <div className="flex bg-card rounded-xl border border-border shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_12px_-4px_rgba(249,152,6,0.15)] mb-6">
           <button
-            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-l-lg transition-colors ${
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-l-xl transition-colors ${
               activeTab === 'login' 
-                ? 'bg-amber-600 text-white' 
-                : 'bg-white text-amber-600 hover:bg-amber-50'
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-transparent hover:bg-accent'
             }`}
             onClick={() => setActiveTab('login')}
             data-testid="tab-sign-in"
@@ -323,10 +323,10 @@ export default function Login() {
             Sign In
           </button>
           <button
-            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-r-lg transition-colors ${
+            className={`flex-1 py-3 px-4 text-sm font-medium text-center rounded-r-xl transition-colors ${
               activeTab === 'register' 
-                ? 'bg-amber-600 text-white' 
-                : 'bg-white text-amber-600 hover:bg-amber-50'
+                ? 'bg-primary text-primary-foreground' 
+                : 'bg-transparent hover:bg-accent'
             }`}
             onClick={() => setActiveTab('register')}
             data-testid="tab-sign-up"
@@ -335,13 +335,13 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Forms */}
-        <Card className="bg-white border-amber-200 shadow-sm">
+        {/* Forms - Stitch Shadow */}
+        <Card className="bg-card border-border shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)]">
           <CardHeader className="text-center pb-2 md:pb-6">
-            <CardTitle className="text-amber-900 text-lg md:text-xl">
+            <CardTitle className="text-lg md:text-xl">
               {activeTab === 'login' ? 'Sign In' : 'Create Account'}
             </CardTitle>
-            <CardDescription className="text-amber-700 text-xs md:text-sm">
+            <CardDescription className="text-xs md:text-sm">
               {activeTab === 'login' ? 'Access your Return It account' : 'Join Return It today'}
             </CardDescription>
           </CardHeader>
@@ -349,7 +349,7 @@ export default function Login() {
             <form onSubmit={handleLogin}>
               <CardContent className="space-y-4 md:space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-xs sm:text-sm text-amber-800 font-medium">Email Address</Label>
+                  <Label htmlFor="login-email" className="text-xs sm:text-sm font-medium">Email Address</Label>
                   <div className="relative">
                     <Input
                       id="login-email"
@@ -358,17 +358,17 @@ export default function Login() {
                       value={loginData.email}
                       onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
                       placeholder="Enter your email address"
-                      className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
+                      className="pl-10 h-11"
                       autoComplete="off"
                     />
-                    <Mail className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                    <Mail className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.email && (
                       <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
                     )}
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-xs sm:text-sm text-amber-800 font-medium">Password</Label>
+                  <Label htmlFor="login-password" className="text-xs sm:text-sm font-medium">Password</Label>
                   <div className="relative">
                     <Input
                       id="login-password"
@@ -377,10 +377,10 @@ export default function Login() {
                       value={loginData.password}
                       onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
                       placeholder="Enter your password"
-                      className="pl-10 h-11 border-amber-200 focus:border-amber-400 focus:ring-amber-200"
+                      className="pl-10 h-11"
                       autoComplete="off"
                     />
-                    <Lock className="h-4 w-4 text-amber-600 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                    <Lock className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
                     {validationErrors.password && (
                       <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
                     )}
@@ -390,7 +390,7 @@ export default function Login() {
               <CardFooter className="flex flex-col space-y-3 md:space-y-4 pt-2 md:pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-600 hover:bg-amber-700 h-11"
+                  className="w-full h-11"
                   disabled={loginMutation.isPending}
                   data-testid="button-login-submit"
                 >
@@ -400,11 +400,11 @@ export default function Login() {
                 {/* Demo Account Button */}
                 <div className="relative">
                   <div className="flex items-center my-3">
-                    <div className="flex-1 h-px bg-amber-200"></div>
-                    <span className="px-3 text-xs font-medium text-amber-700 bg-white">
+                    <div className="flex-1 h-px bg-accent"></div>
+                    <span className="px-3 text-xs font-medium text-muted-foreground bg-white">
                       Try without signing up
                     </span>
-                    <div className="flex-1 h-px bg-amber-200"></div>
+                    <div className="flex-1 h-px bg-accent"></div>
                   </div>
                   <Button 
                     type="button" 
@@ -423,11 +423,11 @@ export default function Login() {
                 </div>
                 
                 <div className="flex items-center my-4 md:my-8">
-                  <div className="flex-1 h-px bg-amber-200"></div>
-                  <span className="px-3 md:px-4 text-xs md:text-sm font-medium text-amber-700 bg-white">
+                  <div className="flex-1 h-px bg-accent"></div>
+                  <span className="px-3 md:px-4 text-xs md:text-sm font-medium text-muted-foreground bg-white">
                     Or continue with
                   </span>
-                  <div className="flex-1 h-px bg-amber-200"></div>
+                  <div className="flex-1 h-px bg-accent"></div>
                 </div>
                 
                 <div className="space-y-2">
@@ -467,10 +467,10 @@ export default function Login() {
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="register-firstName" className="text-amber-800 font-medium">First Name</Label>
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                    <Label htmlFor="register-firstName" className="text-foreground font-medium">First Name</Label>
+                    <div className="bg-accent p-4 rounded-lg border border-border">
                       <div className="flex items-center space-x-3">
-                        <User className="h-5 w-5 text-amber-600" />
+                        <User className="h-5 w-5 text-primary" />
                         <Input
                           id="register-firstName"
                           data-testid="input-register-firstName"
@@ -478,7 +478,7 @@ export default function Login() {
                           value={registerData.firstName}
                           onChange={(e) => setRegisterData(prev => ({...prev, firstName: e.target.value}))}
                           placeholder="First name"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
                           autoComplete="off"
                         />
                       </div>
@@ -488,10 +488,10 @@ export default function Login() {
                     )}
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="register-lastName" className="text-amber-800 font-medium">Last Name</Label>
-                    <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                    <Label htmlFor="register-lastName" className="text-foreground font-medium">Last Name</Label>
+                    <div className="bg-accent p-4 rounded-lg border border-border">
                       <div className="flex items-center space-x-3">
-                        <User className="h-5 w-5 text-amber-600" />
+                        <User className="h-5 w-5 text-primary" />
                         <Input
                           id="register-lastName"
                           data-testid="input-register-lastName"
@@ -499,7 +499,7 @@ export default function Login() {
                           value={registerData.lastName}
                           onChange={(e) => setRegisterData(prev => ({...prev, lastName: e.target.value}))}
                           placeholder="Last name"
-                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                          className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
                           autoComplete="off"
                         />
                       </div>
@@ -510,10 +510,10 @@ export default function Login() {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="register-email" className="text-amber-800 font-medium">Email Address</Label>
-                  <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                  <Label htmlFor="register-email" className="text-foreground font-medium">Email Address</Label>
+                  <div className="bg-accent p-4 rounded-lg border border-border">
                     <div className="flex items-center space-x-3">
-                      <Mail className="h-5 w-5 text-amber-600" />
+                      <Mail className="h-5 w-5 text-primary" />
                       <Input
                         id="register-email"
                         data-testid="input-register-email"
@@ -521,7 +521,7 @@ export default function Login() {
                         value={registerData.email}
                         onChange={(e) => setRegisterData(prev => ({...prev, email: e.target.value}))}
                         placeholder="Enter your email address"
-                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
                         autoComplete="off"
                       />
                     </div>
@@ -531,10 +531,10 @@ export default function Login() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="register-password" className="text-amber-800 font-medium">Password</Label>
-                  <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                  <Label htmlFor="register-password" className="text-foreground font-medium">Password</Label>
+                  <div className="bg-accent p-4 rounded-lg border border-border">
                     <div className="flex items-center space-x-3">
-                      <Lock className="h-5 w-5 text-amber-600" />
+                      <Lock className="h-5 w-5 text-primary" />
                       <Input
                         id="register-password"
                         data-testid="input-register-password"
@@ -544,13 +544,13 @@ export default function Login() {
                         onFocus={() => setPasswordFocused(true)}
                         onBlur={() => setPasswordFocused(false)}
                         placeholder="Create a password"
-                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
                         autoComplete="off"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="text-amber-600 hover:text-amber-800"
+                        className="text-primary hover:text-foreground"
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -564,10 +564,10 @@ export default function Login() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="register-confirmPassword" className="text-amber-800 font-medium">Confirm Password</Label>
-                  <div className="bg-gradient-to-r from-amber-50 to-stone-50 p-4 rounded-lg border border-amber-200">
+                  <Label htmlFor="register-confirmPassword" className="text-foreground font-medium">Confirm Password</Label>
+                  <div className="bg-accent p-4 rounded-lg border border-border">
                     <div className="flex items-center space-x-3">
-                      <Lock className="h-5 w-5 text-amber-600" />
+                      <Lock className="h-5 w-5 text-primary" />
                       <Input
                         id="register-confirmPassword"
                         data-testid="input-register-confirmPassword"
@@ -575,13 +575,13 @@ export default function Login() {
                         value={registerData.confirmPassword}
                         onChange={(e) => setRegisterData(prev => ({...prev, confirmPassword: e.target.value}))}
                         placeholder="Confirm your password"
-                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-amber-900 placeholder:text-amber-500"
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
                         autoComplete="off"
                       />
                       <button
                         type="button"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        className="text-amber-600 hover:text-amber-800"
+                        className="text-primary hover:text-foreground"
                       >
                         {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
@@ -595,7 +595,7 @@ export default function Login() {
               <CardFooter className="flex flex-col space-y-4">
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-800 hover:bg-amber-900 h-12"
+                  className="w-full h-12"
                   disabled={registerMutation.isPending}
                   data-testid="button-register-submit"
                 >
@@ -604,11 +604,11 @@ export default function Login() {
                 </Button>
                 
                 <div className="flex items-center my-8">
-                  <div className="flex-1 h-px bg-amber-200"></div>
-                  <span className="px-4 text-sm font-medium text-amber-700 bg-white">
+                  <div className="flex-1 h-px bg-accent"></div>
+                  <span className="px-4 text-sm font-medium text-muted-foreground bg-white">
                     Or continue with
                   </span>
-                  <div className="flex-1 h-px bg-amber-200"></div>
+                  <div className="flex-1 h-px bg-accent"></div>
                 </div>
                 
                 <div className="space-y-2">

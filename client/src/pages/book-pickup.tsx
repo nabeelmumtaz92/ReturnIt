@@ -614,22 +614,22 @@ export default function BookPickup() {
       {/* Contact */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <User className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Contact Information</Label>
+          <User className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Contact Information</Label>
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <Label htmlFor="fullName" className="text-amber-800 font-medium">Full Name *</Label>
+            <Label htmlFor="fullName" className="text-foreground font-medium">Full Name *</Label>
             <Input id="fullName" placeholder="John Doe" value={formData.fullName}
               onChange={(e) => handleInputChange('fullName', e.target.value)}
-              className="bg-white/80 border-amber-300 focus:border-amber-500"
+              className="bg-white/80 border-border focus:border-primary"
               required data-testid="input-full-name" />
           </div>
           <div>
-            <Label htmlFor="phone" className="text-amber-800 font-medium">Phone Number *</Label>
+            <Label htmlFor="phone" className="text-foreground font-medium">Phone Number *</Label>
             <Input id="phone" type="tel" placeholder="(555) 123-4567" value={formData.phone}
               onChange={(e) => handleInputChange('phone', e.target.value)}
-              className="bg-white/80 border-amber-300 focus:border-amber-500"
+              className="bg-white/80 border-border focus:border-primary"
               required data-testid="input-phone" />
           </div>
         </div>
@@ -653,7 +653,7 @@ export default function BookPickup() {
 
       {/* Next */}
       <div className="flex justify-end pt-4">
-        <Button type="submit" className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2" data-testid="button-step1-next">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2" data-testid="button-step1-next">
           Next Step
         </Button>
       </div>
@@ -665,21 +665,21 @@ export default function BookPickup() {
       {/* Return details */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Package className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Return Details</Label>
+          <Package className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Return Details</Label>
         </div>
         <div className="flex flex-col gap-4">
           <div>
-            <Label htmlFor="orderName" className="text-amber-800 font-medium">Order Name/Description *</Label>
+            <Label htmlFor="orderName" className="text-foreground font-medium">Order Name/Description *</Label>
             <Input id="orderName" placeholder="e.g., Black Purse, Nike Shoes" value={formData.orderName}
               onChange={(e) => handleInputChange('orderName', e.target.value)}
-              className="bg-white/80 border-amber-300 focus:border-amber-500"
+              className="bg-white/80 border-border focus:border-primary"
               required data-testid="input-order-name" />
           </div>
           <div>
-            <Label htmlFor="returnReason" className="text-amber-800 font-medium">Return Reason *</Label>
+            <Label htmlFor="returnReason" className="text-foreground font-medium">Return Reason *</Label>
             <Select value={formData.returnReason} onValueChange={(v) => handleInputChange('returnReason', v)}>
-              <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-return-reason">
+              <SelectTrigger className="bg-white/80 border-border focus:border-primary" data-testid="select-return-reason">
                 <SelectValue placeholder="Select reason" />
               </SelectTrigger>
               <SelectContent>
@@ -693,8 +693,8 @@ export default function BookPickup() {
       {/* Retailer */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <MapPin className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Retailer Information</Label>
+          <MapPin className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Retailer Information</Label>
         </div>
         <CompanySelector
           selectedCompany={formData.selectedCompany}
@@ -708,7 +708,7 @@ export default function BookPickup() {
 
         {formData.retailer && (
           <div className="space-y-3">
-            <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 rounded">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-accent/60 p-2 rounded">
               <span>Selected:</span><span className="font-medium">{formData.retailer}</span>
             </div>
             <StoreLocator
@@ -836,13 +836,13 @@ export default function BookPickup() {
       {/* Item categories + value */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Package className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Item Information</Label>
+          <Package className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Item Information</Label>
         </div>
 
         {/* Categories */}
         <div>
-          <Label className="text-amber-800 font-medium">Item Categories *</Label>
+          <Label className="text-foreground font-medium">Item Categories *</Label>
           <div className="grid grid-cols-2 gap-2 mt-2">
             {itemCategories.map((category) => (
               <label key={category} className="flex items-center space-x-2 cursor-pointer">
@@ -851,12 +851,12 @@ export default function BookPickup() {
                   onCheckedChange={() => handleCategoryToggle(category)}
                   data-testid={`checkbox-category-${category.toLowerCase().replace(/\s+/g, '-')}`}
                 />
-                <span className="text-amber-800">{category}</span>
+                <span className="text-foreground">{category}</span>
               </label>
             ))}
           </div>
           {formData.itemCategories.length > 0 && (
-            <div className="flex items-center space-x-2 text-sm text-amber-700 bg-amber-50/60 p-2 mt-2 rounded">
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-accent/60 p-2 mt-2 rounded">
               <span>Selected:</span><span className="font-medium">{formData.itemCategories.join(', ')}</span>
             </div>
           )}
@@ -864,34 +864,34 @@ export default function BookPickup() {
 
         {/* Value */}
         <div>
-          <Label htmlFor="itemValue" className="text-amber-800 font-medium">Item Value (USD) *</Label>
+          <Label htmlFor="itemValue" className="text-foreground font-medium">Item Value (USD) *</Label>
           <Input id="itemValue" type="number" placeholder="25.99" value={formData.itemValue}
             onChange={(e) => handleInputChange('itemValue', e.target.value)}
-            className="bg-white/80 border-amber-300 focus:border-amber-500"
+            className="bg-white/80 border-border focus:border-primary"
             required data-testid="input-item-value" />
         </div>
 
         {/* Auto size + qty */}
         <div className="flex flex-col gap-4">
           <div>
-            <Label className="text-amber-800 font-medium">Auto-Detected Size Category</Label>
-            <div className="p-3 bg-amber-50/60 border border-amber-300 rounded-md">
+            <Label className="text-foreground font-medium">Auto-Detected Size Category</Label>
+            <div className="p-3 bg-accent/60 border border-border rounded-md">
               {(() => {
                 const v = parseFloat(formData.itemValue);
-                if (isNaN(v) || v <= 0) return <span className="text-amber-600 text-sm">Enter item value to see category</span>;
+                if (isNaN(v) || v <= 0) return <span className="text-primary text-sm">Enter item value to see category</span>;
                 const detected = getItemSizeByValue(v);
                 const sizeInfo = itemSizes.find(s => s.size === detected);
                 return (
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-medium text-amber-800">{sizeInfo?.label}</span>
+                      <span className="font-medium text-foreground">{sizeInfo?.label}</span>
                       {sizeInfo?.upcharge && sizeInfo.upcharge > 0 && (
-                        <span className="text-xs bg-amber-200 text-amber-800 px-2 py-1 rounded">
+                        <span className="text-xs bg-accent text-foreground px-2 py-1 rounded">
                           +${sizeInfo.upcharge.toFixed(2)}
                         </span>
                       )}
                     </div>
-                    <span className="text-xs text-amber-600">{sizeInfo?.valueRange}</span>
+                    <span className="text-xs text-primary">{sizeInfo?.valueRange}</span>
                   </div>
                 );
               })()}
@@ -899,14 +899,14 @@ export default function BookPickup() {
           </div>
 
           <div>
-            <Label htmlFor="numberOfItems" className="text-amber-800 font-medium">Number of Items *</Label>
+            <Label htmlFor="numberOfItems" className="text-foreground font-medium">Number of Items *</Label>
             <div className="flex items-center space-x-2">
               <Button type="button" variant="outline" size="sm"
                 onClick={() => handleInputChange('numberOfItems', Math.max(1, formData.numberOfItems - 1).toString())}
                 disabled={formData.numberOfItems <= 1} data-testid="button-decrease-items">
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="px-3 py-2 bg-amber-50 border border-amber-300 rounded text-center min-w-[60px]" data-testid="text-item-count">
+              <span className="px-3 py-2 bg-accent border border-border rounded text-center min-w-[60px]" data-testid="text-item-count">
                 {formData.numberOfItems}
               </span>
               <Button type="button" variant="outline" size="sm"
@@ -915,24 +915,24 @@ export default function BookPickup() {
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-amber-600 mt-1">Each additional item +$1.00</p>
+            <p className="text-xs text-primary mt-1">Each additional item +$1.00</p>
           </div>
         </div>
 
         {/* Optional details */}
         <div className="space-y-2">
-          <Label htmlFor="estimatedWeight" className="text-amber-800 font-medium">Estimated Weight (optional)</Label>
+          <Label htmlFor="estimatedWeight" className="text-foreground font-medium">Estimated Weight (optional)</Label>
           <Input id="estimatedWeight" placeholder="e.g., 2 lbs, 5 lbs, 10+ lbs" value={formData.estimatedWeight}
             onChange={(e) => handleInputChange('estimatedWeight', e.target.value)}
-            className="bg-white/80 border-amber-300 focus:border-amber-500"
+            className="bg-white/80 border-border focus:border-primary"
             data-testid="input-estimated-weight" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="itemDescription" className="text-amber-800 font-medium">Item Description (optional)</Label>
+          <Label htmlFor="itemDescription" className="text-foreground font-medium">Item Description (optional)</Label>
           <Textarea id="itemDescription" rows={3} placeholder="Describe what you're returning..."
             value={formData.itemDescription}
             onChange={(e) => handleInputChange('itemDescription', e.target.value)}
-            className="bg-white/80 border-amber-300 focus:border-amber-500"
+            className="bg-white/80 border-border focus:border-primary"
             data-testid="textarea-item-description" />
         </div>
       </div>
@@ -940,11 +940,11 @@ export default function BookPickup() {
       {/* Nav */}
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={handleBackStep}
-          className="border-amber-300 text-amber-800 hover:bg-amber-50"
+          className="border-border text-foreground hover:bg-accent/50"
           data-testid="button-step2-back">
           Back
         </Button>
-        <Button type="submit" className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2" data-testid="button-step2-next">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2" data-testid="button-step2-next">
           Next Step
         </Button>
       </div>
@@ -956,15 +956,15 @@ export default function BookPickup() {
       {/* Pickup prefs */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Clock className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Pickup Preferences</Label>
+          <Clock className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Pickup Preferences</Label>
         </div>
 
         {/* Time slot */}
         <div>
-          <Label className="text-amber-800 font-medium">Preferred Time Slot *</Label>
+          <Label className="text-foreground font-medium">Preferred Time Slot *</Label>
           <Select value={formData.preferredTimeSlot} onValueChange={(v) => handleInputChange('preferredTimeSlot', v)}>
-            <SelectTrigger className="bg-white/80 border-amber-300 focus:border-amber-500" data-testid="select-time-slot">
+            <SelectTrigger className="bg-white/80 border-border focus:border-primary" data-testid="select-time-slot">
               <SelectValue placeholder="Select preferred time" />
             </SelectTrigger>
             <SelectContent>
@@ -975,21 +975,21 @@ export default function BookPickup() {
 
         {/* Pickup location */}
         <div className="space-y-3">
-          <Label className="text-amber-800 font-medium">Pickup Location Preference *</Label>
+          <Label className="text-foreground font-medium">Pickup Location Preference *</Label>
           <div className="flex gap-4">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input type="radio" name="pickupLocation" value="inside"
                 checked={formData.pickupLocation === 'inside'}
                 onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
-                className="text-amber-600 focus:ring-amber-500" data-testid="radio-pickup-inside" />
-              <span className="text-amber-800">Inside (at door)</span>
+                className="text-primary focus:ring-primary" data-testid="radio-pickup-inside" />
+              <span className="text-foreground">Inside (at door)</span>
             </label>
             <label className="flex items-center space-x-2 cursor-pointer">
               <input type="radio" name="pickupLocation" value="outside"
                 checked={formData.pickupLocation === 'outside'}
                 onChange={(e) => handleInputChange('pickupLocation', e.target.value)}
-                className="text-amber-600 focus:ring-amber-500" data-testid="radio-pickup-outside" />
-              <span className="text-amber-800">Outside (specific location)</span>
+                className="text-primary focus:ring-primary" data-testid="radio-pickup-outside" />
+              <span className="text-foreground">Outside (specific location)</span>
             </label>
           </div>
 
@@ -1046,51 +1046,51 @@ export default function BookPickup() {
       {/* Authorization */}
       <div className="space-y-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Shield className="h-5 w-5 text-amber-600" />
-          <Label className="text-amber-800 font-semibold text-lg">Return Authorization</Label>
+          <Shield className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Return Authorization</Label>
         </div>
 
         {/* Purchase type */}
-        <div className="space-y-3 p-4 bg-amber-50/80 rounded-lg border border-amber-200">
-          <Label className="text-amber-800 font-medium text-base">Was this purchase made online? *</Label>
+        <div className="space-y-3 p-4 bg-accent/80 rounded-lg border border-border">
+          <Label className="text-foreground font-medium text-base">Was this purchase made online? *</Label>
           <div className="flex gap-4">
             <label className="flex items-center space-x-2 cursor-pointer">
               <input type="radio" name="purchaseType" value="online"
                 checked={formData.purchaseType === 'online'}
                 onChange={(e) => handleInputChange('purchaseType', e.target.value)}
-                className="text-amber-600 focus:ring-amber-500" data-testid="radio-purchase-online" />
-              <span className="text-amber-800">Yes - Online Purchase</span>
+                className="text-primary focus:ring-primary" data-testid="radio-purchase-online" />
+              <span className="text-foreground">Yes - Online Purchase</span>
             </label>
             <label className="flex items-center space-x-2 cursor-pointer">
               <input type="radio" name="purchaseType" value="in_store"
                 checked={formData.purchaseType === 'in_store'}
                 onChange={(e) => handleInputChange('purchaseType', e.target.value)}
-                className="text-amber-600 focus:ring-amber-500" data-testid="radio-purchase-store" />
-              <span className="text-amber-800">No - In-Store Purchase</span>
+                className="text-primary focus:ring-primary" data-testid="radio-purchase-store" />
+              <span className="text-foreground">No - In-Store Purchase</span>
             </label>
           </div>
         </div>
 
         {formData.purchaseType && (
-          <div className="space-y-4 p-4 bg-white/60 rounded-lg border border-amber-200">
+          <div className="space-y-4 p-4 bg-white/60 rounded-lg border border-border">
             <div className="flex items-center space-x-2">
               <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
                 onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked === true)}
-                className="border-amber-400 text-amber-600"
+                className="border-primary text-primary"
                 data-testid="checkbox-original-tags" />
-              <Label htmlFor="hasOriginalTags" className="text-amber-800 font-medium">
+              <Label htmlFor="hasOriginalTags" className="text-foreground font-medium">
                 Original tags are still attached *
               </Label>
             </div>
 
             {/* Receipt upload */}
             <div className="space-y-2">
-              <Label className="text-amber-800 font-medium">
+              <Label className="text-foreground font-medium">
                 {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation *' : 'Upload Store Receipt *'}
               </Label>
               <input
                 type="file" accept="image/*,application/pdf" onChange={handleReceiptUpload}
-                className="block w-full text-sm text-amber-8 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200"
+                className="block w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent file:text-foreground hover:file:bg-accent"
                 data-testid="input-receipt-upload"
               />
             </div>
@@ -1098,26 +1098,26 @@ export default function BookPickup() {
             {/* Optional return label for online */}
             {formData.purchaseType === 'online' && (
               <div className="space-y-2">
-                <Label className="text-amber-800 font-medium">Upload Return Label or QR Code (Optional)</Label>
+                <Label className="text-foreground font-medium">Upload Return Label or QR Code (Optional)</Label>
                 <input
                   type="file" accept="image/*,application/pdf" onChange={handleReturnLabelUpload}
-                  className="block w-full text-sm text-amber-8 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-amber-100 file:text-amber-800 hover:file:bg-amber-200"
+                  className="block w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent file:text-foreground hover:file:bg-accent"
                   data-testid="input-return-label-upload"
                 />
               </div>
             )}
 
             {/* Authorization */}
-            <div className="space-y-3 p-3 bg-amber-50/50 rounded border border-amber-300">
+            <div className="space-y-3 p-3 bg-accent/50 rounded border border-border">
               <div className="flex items-center space-x-2">
                 <Checkbox id="authorizationSigned" checked={!!formData.authorizationSigned}
                   onCheckedChange={(checked) => handleInputChange('authorizationSigned', checked === true)}
-                  className="border-amber-400 text-amber-600" data-testid="checkbox-authorization" />
-                <Label htmlFor="authorizationSigned" className="text-amber-800 font-medium">
+                  className="border-primary text-primary" data-testid="checkbox-authorization" />
+                <Label htmlFor="authorizationSigned" className="text-foreground font-medium">
                   I authorize ReturnIt to process this return on my behalf *
                 </Label>
               </div>
-              <p className="text-amber-700 text-xs ml-6">
+              <p className="text-muted-foreground text-xs ml-6">
                 This digital authorization allows our driver to act as your proxy when returning items
                 {formData.purchaseType === 'online' ? ' to carrier locations.' : ' to the store.'}
               </p>
@@ -1151,10 +1151,10 @@ export default function BookPickup() {
       {/* Nav */}
       <div className="flex justify-between pt-4">
         <Button type="button" variant="outline" onClick={handleBackStep}
-          className="border-amber-300 text-amber-800 hover:bg-amber-50">
+          className="border-border text-foreground hover:bg-accent/50">
           Back
         </Button>
-        <Button type="submit" className="bg-amber-800 hover:bg-amber-900 text-white font-bold px-6 py-2">
+        <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2">
           Next Step
         </Button>
       </div>
@@ -1178,13 +1178,13 @@ export default function BookPickup() {
       <div className="space-y-4">
         {pricingBreakdown ? (
           <>
-            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+            <div className="bg-accent p-4 rounded-lg border border-border">
               <div className="flex justify-between items-center">
-                <span className="text-amber-900 font-semibold text-lg">Base Service:</span>
-                <span className="text-amber-900 font-bold text-xl" data-testid="text-base-amount">${pricingBreakdown.basePrice.toFixed(2)}</span>
+                <span className="text-foreground font-semibold text-lg">Base Service:</span>
+                <span className="text-foreground font-bold text-xl" data-testid="text-base-amount">${pricingBreakdown.basePrice.toFixed(2)}</span>
               </div>
               {routeInfo && (
-                <p className="text-xs text-amber-600">
+                <p className="text-xs text-primary">
                   ETA: {routeInfo.duration} • Distance: {routeInfo.distance}
                 </p>
               )}
@@ -1238,12 +1238,12 @@ export default function BookPickup() {
             </div>
           </>
         ) : (
-          <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+          <div className="bg-accent p-4 rounded-lg border border-border">
             <div className="flex justify-between items-center">
-              <span className="text-amber-900 font-semibold text-lg">Base Service:</span>
-              <span className="text-amber-900 font-bold text-xl" data-testid="text-base-amount">$3.99</span>
+              <span className="text-foreground font-semibold text-lg">Base Service:</span>
+              <span className="text-foreground font-bold text-xl" data-testid="text-base-amount">$3.99</span>
             </div>
-            <p className="text-xs text-amber-600 mt-2">Final pricing will be calculated with route information</p>
+            <p className="text-xs text-primary mt-2">Final pricing will be calculated with route information</p>
           </div>
         )}
       </div>
@@ -1292,7 +1292,7 @@ export default function BookPickup() {
       <div className="pt-2">
         <Button
           type="submit"
-          className="w-full bg-amber-800 hover:bg-amber-900 text-white font-bold py-3"
+          className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3"
           disabled={createOrderMutation.isPending || !selectedPaymentMethod}
           data-testid="button-book-pickup"
         >
@@ -1310,10 +1310,10 @@ export default function BookPickup() {
   // ---------- AUTH GUARDS ----------
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-3xl font-bold text-amber-900 mx-auto mb-4 animate-pulse">Return It</div>
-          <p className="text-amber-800">Loading...</p>
+          <div className="text-3xl font-bold text-foreground mx-auto mb-4 animate-pulse">Return It</div>
+          <p className="text-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -1324,24 +1324,24 @@ export default function BookPickup() {
   const selectedImage = deliveryHandoffImg;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-transparent to-transparent">
       {/* Hero */}
-      <div className="w-full bg-white/90 border-b border-amber-100">
+      <div className="w-full bg-white/90 border-b border-border">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
             <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold text-amber-900 mb-4">Schedule Your Return</h1>
-              <p className="text-xl text-amber-700 mb-6">On Demand Returns for returns, exchanges, and donations</p>
-              <div className="flex items-center justify-center lg:justify-start gap-4 text-amber-600">
+              <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Schedule Your Return</h1>
+              <p className="text-xl text-muted-foreground mb-6">On Demand Returns for returns, exchanges, and donations</p>
+              <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
                 <div className="flex items-center gap-2"><Package className="h-5 w-5" /><span>Free Pickup</span></div>
                 <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span>Same Day</span></div>
               </div>
             </div>
             <div className="flex-1 max-w-md">
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-amber-100">
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-border">
                 <img src={selectedImage} alt="Professional delivery service" className="w-full h-64 object-cover" />
-                <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50">
-                  <p className="text-sm text-amber-700 font-medium">On Demand Returns pickup and delivery service</p>
+                <div className="p-4 bg-gradient-to-r from-transparent to-transparent">
+                  <p className="text-sm text-muted-foreground font-medium">On Demand Returns pickup and delivery service</p>
                 </div>
               </div>
             </div>

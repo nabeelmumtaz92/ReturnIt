@@ -44,19 +44,19 @@ export default function MobileDriver() {
   // Redirect to login if not authenticated or not a driver/admin
   if (!isAuthenticated || (!user?.isDriver && !user?.isAdmin)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
-            <h1 className="text-xl font-bold text-amber-900 mb-4">Driver Access Required</h1>
-            <p className="text-amber-700 mb-6">This app is for ReturnIt drivers only.</p>
+            <h1 className="text-xl font-bold text-foreground mb-4">Driver Access Required</h1>
+            <p className="text-muted-foreground mb-6">This app is for ReturnIt drivers only.</p>
             <div className="space-y-3">
               <Link href="/login" className="block">
-                <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                   Sign In as Driver
                 </Button>
               </Link>
               <Link href="/" className="block">
-                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                <Button variant="outline" className="w-full border-border text-muted-foreground">
                   Back to Customer App
                 </Button>
               </Link>
@@ -205,13 +205,13 @@ export default function MobileDriver() {
   const driverRating = user?.driverRating || 4.8;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
       {/* Header with Availability Toggle */}
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-amber-900">ReturnIt Driver</h1>
-            <p className="text-sm text-amber-600">Hello, {user?.firstName || 'Driver'}!</p>
+            <h1 className="text-xl font-bold text-foreground">ReturnIt Driver</h1>
+            <p className="text-sm text-primary">Hello, {user?.firstName || 'Driver'}!</p>
             {user?.isAdmin && (
               <Badge variant="outline" className="mt-1 text-xs border-blue-300 text-blue-700">
                 Admin View
@@ -270,7 +270,7 @@ export default function MobileDriver() {
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-amber-600" />
+              <DollarSign className="h-5 w-5 text-primary" />
               <div>
                 <p className="text-sm text-gray-600">This Week</p>
                 <p className="text-lg font-bold" data-testid="text-weekly-earnings">
@@ -338,7 +338,7 @@ export default function MobileDriver() {
 
                 <Button 
                   size="sm" 
-                  className="w-full bg-amber-600 hover:bg-amber-700"
+                  className="w-full bg-primary hover:bg-primary/90"
                   onClick={() => acceptJob(order.id)}
                   disabled={acceptJobMutation.isPending}
                   data-testid={`button-accept-${order.id}`}

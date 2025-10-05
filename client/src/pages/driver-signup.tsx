@@ -174,7 +174,7 @@ export default function DriverSignup() {
 
     const statusConfig = {
       hiring: { color: 'bg-green-100 text-green-800 border-green-200', text: 'Actively Hiring' },
-      waitlist: { color: 'bg-amber-100 text-amber-800 border-amber-200', text: 'Waitlist Open' },
+      waitlist: { color: 'bg-accent text-foreground border-border', text: 'Waitlist Open' },
       full: { color: 'bg-gray-100 text-gray-800 border-gray-200', text: 'Currently Full' },
     };
 
@@ -207,12 +207,12 @@ export default function DriverSignup() {
       );
     } else if (zipCodeInfo.status === 'waitlist') {
       return (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
           <div className="flex items-center space-x-2 mb-2">
-            <Clock className="h-5 w-5 text-amber-600" />
-            <span className="font-semibold text-amber-900">Projected Hire Date</span>
+            <Clock className="h-5 w-5 text-primary" />
+            <span className="font-semibold text-foreground">Projected Hire Date</span>
           </div>
-          <p className="text-amber-800 text-sm">
+          <p className="text-foreground text-sm">
             We expect to have openings in your area within <strong>{daysUntil} days</strong>. Join our waitlist to be notified first!
           </p>
         </div>
@@ -234,25 +234,25 @@ export default function DriverSignup() {
 
   if (applicationSubmitted && applicationStatus) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
         <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-8">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
-            <h1 className="text-3xl font-bold text-amber-900 mb-2">Application Submitted!</h1>
-            <p className="text-amber-700">Thank you for your interest in becoming a Return It driver</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">Application Submitted!</h1>
+            <p className="text-muted-foreground">Thank you for your interest in becoming a Return It driver</p>
           </div>
 
-          <Card className="border-amber-200 shadow-lg">
-            <CardHeader className="bg-amber-50 border-b border-amber-200">
-              <CardTitle className="text-amber-900">Application Status</CardTitle>
+          <Card className="border-border shadow-lg">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f] border-b border-border">
+              <CardTitle className="text-foreground">Application Status</CardTitle>
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">Current Status:</span>
-                  <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-200">
+                  <Badge variant="outline" className="bg-accent text-foreground border-border">
                     Under Review
                   </Badge>
                 </div>
@@ -284,7 +284,7 @@ export default function DriverSignup() {
                 <div className="pt-4">
                   <Button
                     onClick={() => setLocation('/driver-onboarding')}
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                    className="w-full bg-primary hover:bg-primary/90 text-white"
                     data-testid="button-continue-onboarding"
                   >
                     Continue Onboarding Process
@@ -295,9 +295,9 @@ export default function DriverSignup() {
           </Card>
 
           <div className="mt-6 text-center">
-            <p className="text-amber-700 text-sm">
+            <p className="text-muted-foreground text-sm">
               Questions? Contact our driver support team at{' '}
-              <a href="mailto:drivers@returnit.app" className="text-amber-600 hover:underline">
+              <a href="mailto:drivers@returnit.app" className="text-primary hover:underline">
                 drivers@returnit.app
               </a>
             </p>
@@ -308,16 +308,16 @@ export default function DriverSignup() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       {/* Hero Section */}
-      <div className="relative bg-amber-600 text-white py-16">
+      <div className="relative bg-primary text-white py-16">
         <div 
           className="absolute inset-0 bg-cover bg-center opacity-20"
           style={{ backgroundImage: `url(${deliveryDriverSignupImg})` }}
         />
         <div className="relative max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-4xl font-bold mb-4">Join the Return It Driver Team</h1>
-          <p className="text-xl text-amber-100 mb-6">
+          <p className="text-xl text-primary-foreground mb-6">
             Earn competitive pay helping customers with returns and exchanges
           </p>
           <div className="flex flex-wrap justify-center gap-6 text-sm">
@@ -341,10 +341,10 @@ export default function DriverSignup() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Application Form */}
           <div className="lg:col-span-2">
-            <Card className="border-amber-200 shadow-lg">
-              <CardHeader className="bg-amber-50 border-b border-amber-200">
-                <CardTitle className="text-amber-900">Driver Application</CardTitle>
-                <p className="text-amber-700 text-sm">
+            <Card className="border-border shadow-lg">
+              <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f] border-b border-border">
+                <CardTitle className="text-foreground">Driver Application</CardTitle>
+                <p className="text-muted-foreground text-sm">
                   Complete your application to start earning with Return It
                 </p>
               </CardHeader>
@@ -352,7 +352,7 @@ export default function DriverSignup() {
                 <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
                   {/* Personal Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-amber-900 flex items-center">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center">
                       <User className="h-5 w-5 mr-2" />
                       Personal Information
                     </h3>
@@ -363,7 +363,7 @@ export default function DriverSignup() {
                         <Input
                           id="firstName"
                           {...form.register('firstName')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-first-name"
                         />
                         {form.formState.errors.firstName && (
@@ -378,7 +378,7 @@ export default function DriverSignup() {
                         <Input
                           id="lastName"
                           {...form.register('lastName')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-last-name"
                         />
                         {form.formState.errors.lastName && (
@@ -397,7 +397,7 @@ export default function DriverSignup() {
                           type="email"
                           autoComplete="off"
                           {...form.register('email')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-email"
                         />
                         {form.formState.errors.email && (
@@ -413,7 +413,7 @@ export default function DriverSignup() {
                           id="phone"
                           type="tel"
                           {...form.register('phone')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-phone"
                         />
                         {form.formState.errors.phone && (
@@ -432,7 +432,7 @@ export default function DriverSignup() {
                           type="password"
                           autoComplete="new-password"
                           {...form.register('password')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-password"
                         />
                         {form.formState.errors.password && (
@@ -449,7 +449,7 @@ export default function DriverSignup() {
                           type="password"
                           autoComplete="new-password"
                           {...form.register('confirmPassword')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-confirm-password"
                         />
                         {form.formState.errors.confirmPassword && (
@@ -466,7 +466,7 @@ export default function DriverSignup() {
                         id="dateOfBirth"
                         type="date"
                         {...form.register('dateOfBirth')}
-                        className="border-amber-200 focus:border-amber-400"
+                        className="border-border focus:border-border"
                         data-testid="input-date-of-birth"
                       />
                       {form.formState.errors.dateOfBirth && (
@@ -479,7 +479,7 @@ export default function DriverSignup() {
 
                   {/* Address Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-amber-900 flex items-center">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center">
                       <MapPin className="h-5 w-5 mr-2" />
                       Address Information
                     </h3>
@@ -489,7 +489,7 @@ export default function DriverSignup() {
                       <Input
                         id="address"
                         {...form.register('address')}
-                        className="border-amber-200 focus:border-amber-400"
+                        className="border-border focus:border-border"
                         data-testid="input-address"
                       />
                       {form.formState.errors.address && (
@@ -505,7 +505,7 @@ export default function DriverSignup() {
                         <Input
                           id="city"
                           {...form.register('city')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-city"
                         />
                         {form.formState.errors.city && (
@@ -520,7 +520,7 @@ export default function DriverSignup() {
                         <Input
                           id="state"
                           {...form.register('state')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-state"
                         />
                         {form.formState.errors.state && (
@@ -535,7 +535,7 @@ export default function DriverSignup() {
                         <Input
                           id="zipCode"
                           {...form.register('zipCode')}
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-zip-code"
                         />
                         {form.formState.errors.zipCode && (
@@ -549,7 +549,7 @@ export default function DriverSignup() {
 
                   {/* Vehicle Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-amber-900 flex items-center">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center">
                       <Car className="h-5 w-5 mr-2" />
                       Vehicle Information
                     </h3>
@@ -561,7 +561,7 @@ export default function DriverSignup() {
                           id="vehicleMake"
                           {...form.register('vehicleMake')}
                           placeholder="e.g., Toyota, Honda, Ford"
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-vehicle-make"
                         />
                         {form.formState.errors.vehicleMake && (
@@ -577,7 +577,7 @@ export default function DriverSignup() {
                           id="vehicleModel"
                           {...form.register('vehicleModel')}
                           placeholder="e.g., Camry, Civic, F-150"
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-vehicle-model"
                         />
                         {form.formState.errors.vehicleModel && (
@@ -595,7 +595,7 @@ export default function DriverSignup() {
                           id="vehicleYear"
                           {...form.register('vehicleYear')}
                           placeholder="2020"
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-vehicle-year"
                         />
                         {form.formState.errors.vehicleYear && (
@@ -611,7 +611,7 @@ export default function DriverSignup() {
                           id="vehicleColor"
                           {...form.register('vehicleColor')}
                           placeholder="e.g., Red, Blue, Silver"
-                          className="border-amber-200 focus:border-amber-400"
+                          className="border-border focus:border-border"
                           data-testid="input-vehicle-color"
                         />
                         {form.formState.errors.vehicleColor && (
@@ -626,7 +626,7 @@ export default function DriverSignup() {
                         <select
                           id="vehicleType"
                           {...form.register('vehicleType')}
-                          className="w-full p-2 border border-amber-200 rounded-md focus:border-amber-400 focus:outline-none"
+                          className="w-full p-2 border border-border rounded-md focus:border-border focus:outline-none"
                           data-testid="select-vehicle-type"
                         >
                           <option value="">Select vehicle type</option>
@@ -651,7 +651,7 @@ export default function DriverSignup() {
                         id="licensePlate"
                         {...form.register('licensePlate')}
                         placeholder="e.g., ABC-1234"
-                        className="border-amber-200 focus:border-amber-400"
+                        className="border-border focus:border-border"
                         data-testid="input-license-plate"
                       />
                       {form.formState.errors.licensePlate && (
@@ -664,7 +664,7 @@ export default function DriverSignup() {
 
                   {/* Additional Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-amber-900">Additional Information</h3>
+                    <h3 className="text-lg font-semibold text-foreground">Additional Information</h3>
                     
                     <div>
                       <Label htmlFor="experience">Previous Delivery Experience (Optional)</Label>
@@ -672,7 +672,7 @@ export default function DriverSignup() {
                         id="experience"
                         {...form.register('experience')}
                         placeholder="Tell us about any previous delivery or driving experience..."
-                        className="border-amber-200 focus:border-amber-400"
+                        className="border-border focus:border-border"
                         data-testid="textarea-experience"
                       />
                     </div>
@@ -683,7 +683,7 @@ export default function DriverSignup() {
                         id="referralCode"
                         {...form.register('referralCode')}
                         placeholder="Enter referral code if you have one"
-                        className="border-amber-200 focus:border-amber-400"
+                        className="border-border focus:border-border"
                         data-testid="input-referral-code"
                       />
                     </div>
@@ -691,7 +691,7 @@ export default function DriverSignup() {
 
                   {/* Background Check Consent */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-amber-900 flex items-center">
+                    <h3 className="text-lg font-semibold text-foreground flex items-center">
                       <CheckCircle className="h-5 w-5 mr-2" />
                       Background Check Authorization
                     </h3>
@@ -712,7 +712,7 @@ export default function DriverSignup() {
                         type="checkbox"
                         id="backgroundCheckConsent"
                         {...form.register('backgroundCheckConsent')}
-                        className="mt-1 h-4 w-4 text-amber-600 focus:ring-amber-500 border-amber-300 rounded"
+                        className="mt-1 h-4 w-4 text-primary focus:ring-primary border-border rounded"
                         data-testid="checkbox-background-check-consent"
                       />
                       <label htmlFor="backgroundCheckConsent" className="text-sm text-gray-700 leading-5">
@@ -731,7 +731,7 @@ export default function DriverSignup() {
                   <Button
                     type="submit"
                     disabled={signupMutation.isPending}
-                    className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3"
+                    className="w-full bg-primary hover:bg-primary/90 text-white py-3"
                     data-testid="button-submit-application"
                   >
                     {signupMutation.isPending ? (
@@ -753,9 +753,9 @@ export default function DriverSignup() {
             <div className="space-y-6 sticky top-6">
               {/* ZIP Code Information */}
               {zipCodeInfo && (
-                <Card className="border-amber-200 shadow-lg">
-                  <CardHeader className="bg-amber-50 border-b border-amber-200">
-                    <CardTitle className="text-amber-900 text-lg flex items-center">
+                <Card className="border-border shadow-lg">
+                  <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f] border-b border-border">
+                    <CardTitle className="text-foreground text-lg flex items-center">
                       <MapPinned className="h-5 w-5 mr-2" />
                       Your Area: {zipCodeInfo.zipCode}
                     </CardTitle>
@@ -774,7 +774,7 @@ export default function DriverSignup() {
                       
                       <div className="w-full bg-gray-200 rounded-full h-2">
                         <div 
-                          className="bg-amber-600 h-2 rounded-full transition-all duration-300"
+                          className="bg-primary h-2 rounded-full transition-all duration-300"
                           style={{ width: `${Math.min((zipCodeInfo.driverCount / zipCodeInfo.targetDriverCount) * 100, 100)}%` }}
                         />
                       </div>
@@ -786,9 +786,9 @@ export default function DriverSignup() {
               )}
 
               {/* Driver Benefits */}
-              <Card className="border-amber-200 shadow-lg">
-                <CardHeader className="bg-amber-50 border-b border-amber-200">
-                  <CardTitle className="text-amber-900 text-lg">Driver Benefits</CardTitle>
+              <Card className="border-border shadow-lg">
+                <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f] border-b border-border">
+                  <CardTitle className="text-foreground text-lg">Driver Benefits</CardTitle>
                 </CardHeader>
                 <CardContent className="p-4">
                   <div className="space-y-3 text-sm">
@@ -797,7 +797,7 @@ export default function DriverSignup() {
                       <span>Competitive hourly rates</span>
                     </div>
                     <div className="flex items-center">
-                      <Star className="h-4 w-4 text-amber-500 mr-2" />
+                      <Star className="h-4 w-4 text-primary mr-2" />
                       <span>Performance bonuses</span>
                     </div>
                     <div className="flex items-center">
@@ -813,11 +813,11 @@ export default function DriverSignup() {
               </Card>
 
               {/* Have an Account */}
-              <Card className="border-amber-200 shadow-lg">
+              <Card className="border-border shadow-lg">
                 <CardContent className="p-4 text-center">
                   <p className="text-sm text-gray-600 mb-3">Already have an account?</p>
                   <Link href="/login?tab=login">
-                    <Button variant="outline" className="w-full border-amber-300 text-amber-700 hover:bg-amber-50">
+                    <Button variant="outline" className="w-full border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                       Sign In
                     </Button>
                   </Link>

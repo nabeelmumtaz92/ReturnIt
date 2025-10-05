@@ -65,7 +65,7 @@ export default function Welcome() {
                 <div className="flex items-center gap-2">
                   {user?.isAdmin && (
                     <Link href="/admin-dashboard">
-                      <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700" data-testid="button-admin-dashboard">
+                      <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-admin-dashboard">
                         <User className="h-4 w-4 sm:mr-2" />
                         <span className="hidden sm:inline">Admin</span>
                       </Button>
@@ -195,7 +195,7 @@ export default function Welcome() {
           {/* Become a Driver Section - Stitch Card Pattern */}
           {envConfig?.allowDriverSignup && (
             <div className="mt-8">
-              <div className="bg-gradient-to-br from-primary via-orange-500 to-amber-500 rounded-xl p-6 sm:p-8 text-white shadow-lg">
+              <div className="bg-gradient-to-br from-primary via-orange-500 to-transparent0 rounded-xl p-6 sm:p-8 text-white shadow-lg">
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="flex-shrink-0">
                     <div className="bg-white/20 backdrop-blur-sm rounded-full p-4">

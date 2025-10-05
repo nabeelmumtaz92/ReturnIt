@@ -37,9 +37,9 @@ export default function BusinessIntelligence() {
       <AdminLayout pageTitle="Business Intelligence">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-amber-600 mx-auto mb-4"></div>
-            <h2 className="text-xl font-semibold text-amber-900 mb-2">Loading Business Intelligence...</h2>
-            <p className="text-amber-700">Fetching analytics data from database</p>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-border mx-auto mb-4"></div>
+            <h2 className="text-xl font-semibold text-foreground mb-2">Loading Business Intelligence...</h2>
+            <p className="text-muted-foreground">Fetching analytics data from database</p>
           </div>
         </div>
       </AdminLayout>
@@ -53,9 +53,9 @@ export default function BusinessIntelligence() {
       <AdminLayout pageTitle="Business Intelligence">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
-            <AlertTriangle className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-amber-900 mb-2">Data Error</h2>
-            <p className="text-amber-700">Unable to load business intelligence data. Please refresh the page.</p>
+            <AlertTriangle className="h-16 w-16 text-primary mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">Data Error</h2>
+            <p className="text-muted-foreground">Unable to load business intelligence data. Please refresh the page.</p>
           </div>
         </div>
       </AdminLayout>
@@ -80,8 +80,8 @@ export default function BusinessIntelligence() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Business Intelligence</h1>
-            <p className="text-amber-700">Strategic insights and performance analytics</p>
+            <h1 className="text-3xl font-bold text-foreground">Business Intelligence</h1>
+            <p className="text-muted-foreground">Strategic insights and performance analytics</p>
           </div>
           <div className="flex items-center gap-4">
             <Select value={timeRange} onValueChange={setTimeRange}>
@@ -99,13 +99,13 @@ export default function BusinessIntelligence() {
               variant="outline" 
               onClick={handleRefresh}
               disabled={refreshing}
-              className="border-amber-300 text-amber-700"
+              className="border-border text-muted-foreground"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
             <Link href="/admin-dashboard">
-              <Button variant="outline" className="border-amber-300 text-amber-700">
+              <Button variant="outline" className="border-border text-muted-foreground">
                 Back to Dashboard
               </Button>
             </Link>
@@ -172,7 +172,7 @@ export default function BusinessIntelligence() {
                   <p className="text-sm font-medium text-gray-600">Avg Order Value</p>
                   <p className="text-2xl font-bold text-gray-900">${kpiData?.avgOrderValue.current}</p>
                 </div>
-                <Target className="h-8 w-8 text-amber-600" />
+                <Target className="h-8 w-8 text-primary" />
               </div>
               <div className="flex items-center mt-2">
                 <TrendingUp className="h-4 w-4 text-green-600 mr-1" />
@@ -196,7 +196,7 @@ export default function BusinessIntelligence() {
             <div className="grid lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <LineChart className="h-5 w-5" />
                     Weekly Demand Prediction
                   </CardTitle>
@@ -225,7 +225,7 @@ export default function BusinessIntelligence() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <Calendar className="h-5 w-5" />
                     Seasonal Trends
                   </CardTitle>
@@ -236,8 +236,8 @@ export default function BusinessIntelligence() {
                       <h4 className="font-semibold text-blue-900 mb-2">Holiday Season Forecast</h4>
                       <p className="text-sm text-blue-700">Expected 45% increase in return requests during December</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <AlertTriangle className="h-4 w-4 text-amber-500" />
-                        <span className="text-xs text-amber-700">Recommend hiring 8-12 temporary drivers</span>
+                        <AlertTriangle className="h-4 w-4 text-primary" />
+                        <span className="text-xs text-muted-foreground">Recommend hiring 8-12 temporary drivers</span>
                       </div>
                     </div>
                     
@@ -267,17 +267,17 @@ export default function BusinessIntelligence() {
           <TabsContent value="pricing" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <DollarSign className="h-5 w-5" />
                   Dynamic Pricing Recommendations
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="mb-6 p-4 bg-amber-50 rounded-lg">
-                  <p className="text-sm text-amber-800">
+                <div className="mb-6 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
+                  <p className="text-sm text-foreground">
                     <strong>Base Service Price:</strong> $3.99
                   </p>
-                  <p className="text-xs text-amber-700 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Based on competitor analysis and demand patterns
                   </p>
                 </div>
@@ -311,7 +311,7 @@ export default function BusinessIntelligence() {
           <TabsContent value="expansion" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <MapPin className="h-5 w-5" />
                   Market Expansion Opportunities
                 </CardTitle>
@@ -352,7 +352,7 @@ export default function BusinessIntelligence() {
                           <p className="font-medium">{area.estimatedOrders}</p>
                         </div>
                         <div className="flex items-center">
-                          <Button size="sm" className="bg-amber-600 hover:bg-amber-700">
+                          <Button size="sm" className="bg-primary hover:bg-primary/90">
                             Launch Analysis
                           </Button>
                         </div>
@@ -368,7 +368,7 @@ export default function BusinessIntelligence() {
             <div className="grid lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <BarChart3 className="h-5 w-5" />
                     Competitive Pricing Analysis
                   </CardTitle>
@@ -413,7 +413,7 @@ export default function BusinessIntelligence() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-amber-900">
+                  <CardTitle className="flex items-center gap-2 text-foreground">
                     <PieChart className="h-5 w-5" />
                     Market Share Analysis
                   </CardTitle>

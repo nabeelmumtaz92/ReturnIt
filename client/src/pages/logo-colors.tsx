@@ -24,7 +24,7 @@ export default function LogoColors() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Cardboard Brown Shade</h1>
@@ -45,7 +45,7 @@ export default function LogoColors() {
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
             >
               {/* Preview against orange background (like your hero) */}
-              <div className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-500 h-40 flex items-center justify-center">
+              <div className="bg-gradient-to-r from-orange-600 via-red-500 to-transparent0 h-40 flex items-center justify-center">
                 <img 
                   src={`/${option.file}?v=${cacheBuster}`}
                   alt={`${option.name} logo`}

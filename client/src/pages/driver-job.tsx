@@ -36,7 +36,7 @@ function StatusBadge({ label, active }: StatusBadgeProps) {
   return (
     <Badge 
       variant={active ? "default" : "secondary"}
-      className={active ? "bg-amber-800 text-white" : "bg-amber-100 text-amber-800"}
+      className={active ? "bg-primary text-white" : "bg-accent text-foreground"}
     >
       {label}
     </Badge>
@@ -83,8 +83,8 @@ export default function DriverJob() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
-        <div className="flex items-center gap-2 text-amber-800">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center">
+        <div className="flex items-center gap-2 text-foreground">
           <Loader2 className="h-6 w-6 animate-spin" />
           <span>Loading job details...</span>
         </div>
@@ -95,14 +95,14 @@ export default function DriverJob() {
   // Error state
   if (error || !job) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-800 mb-2">Job Not Found</h2>
           <p className="text-red-600 mb-4">
             {error instanceof Error ? error.message : 'The requested job could not be found.'}
           </p>
           <Link href="/driver-portal">
-            <Button className="bg-amber-600 hover:bg-amber-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Driver Portal
             </Button>
@@ -160,21 +160,21 @@ export default function DriverJob() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Link href="/driver-portal">
-                <Button variant="ghost" size="sm" className="text-amber-800">
+                <Button variant="ghost" size="sm" className="text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-1" />
                   Back
                 </Button>
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-amber-900">Job #{formattedJob.id}</h1>
-                <p className="text-sm text-amber-700">{formattedJob.retailer.split(',')[0]}</p>
+                <h1 className="text-xl font-bold text-foreground">Job #{formattedJob.id}</h1>
+                <p className="text-sm text-muted-foreground">{formattedJob.retailer.split(',')[0]}</p>
               </div>
             </div>
             <StatusBadge 
@@ -187,9 +187,9 @@ export default function DriverJob() {
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
         {/* Earnings Summary */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-900 flex items-center space-x-2">
+            <CardTitle className="text-foreground flex items-center space-x-2">
               <DollarSign className="h-5 w-5" />
               <span>Your Earnings</span>
             </CardTitle>
@@ -203,18 +203,18 @@ export default function DriverJob() {
                 <div className="text-sm text-emerald-600 font-medium">Total Earnings</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{formattedJob.miles.toFixed(1)} mi</div>
-                <div className="text-sm text-amber-600">Distance</div>
+                <div className="text-lg font-bold text-foreground">{formattedJob.miles.toFixed(1)} mi</div>
+                <div className="text-sm text-primary">Distance</div>
                 <div className="text-xs text-green-600 mt-1">+${fareCalculation.driverDistancePay.toFixed(2)}</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{formattedJob.minutes} min</div>
-                <div className="text-sm text-amber-600">Time</div>
+                <div className="text-lg font-bold text-foreground">{formattedJob.minutes} min</div>
+                <div className="text-sm text-primary">Time</div>
                 <div className="text-xs text-green-600 mt-1">+${fareCalculation.driverTimePay.toFixed(2)}</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">Size {detectedSize}</div>
-                <div className="text-sm text-amber-600">Category</div>
+                <div className="text-lg font-bold text-foreground">Size {detectedSize}</div>
+                <div className="text-sm text-primary">Category</div>
                 <div className="text-xs text-green-600 mt-1">
                   +${fareCalculation.driverSizeBonus.toFixed(2)}
                 </div>
@@ -233,32 +233,32 @@ export default function DriverJob() {
         {/* Job Details Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Addresses & Customer */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 flex items-center space-x-2">
+              <CardTitle className="text-foreground flex items-center space-x-2">
                 <MapPin className="h-5 w-5" />
                 <span>Job Details</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <h3 className="font-semibold text-amber-900 mb-1">Pickup Address</h3>
-                <p className="text-sm text-amber-700">{formattedJob.pickup}</p>
+                <h3 className="font-semibold text-foreground mb-1">Pickup Address</h3>
+                <p className="text-sm text-muted-foreground">{formattedJob.pickup}</p>
               </div>
               
               <div>
-                <h3 className="font-semibold text-amber-900 mb-1">Drop-off (Retailer)</h3>
-                <p className="text-sm text-amber-700">{formattedJob.retailer}</p>
+                <h3 className="font-semibold text-foreground mb-1">Drop-off (Retailer)</h3>
+                <p className="text-sm text-muted-foreground">{formattedJob.retailer}</p>
               </div>
               
               <div>
-                <h3 className="font-semibold text-amber-900 mb-1">Customer</h3>
+                <h3 className="font-semibold text-foreground mb-1">Customer</h3>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-amber-700">{formattedJob.customer.name}</p>
+                  <p className="text-sm text-muted-foreground">{formattedJob.customer.name}</p>
                   <Button 
                     size="sm" 
                     variant="outline"
-                    className="text-amber-800 border-amber-300"
+                    className="text-foreground border-border"
                     asChild
                   >
                     <a href={`tel:${formattedJob.customer.phone}`}>
@@ -267,13 +267,13 @@ export default function DriverJob() {
                     </a>
                   </Button>
                 </div>
-                <p className="text-xs text-amber-600">{formattedJob.customer.phone}</p>
+                <p className="text-xs text-primary">{formattedJob.customer.phone}</p>
               </div>
 
               {formattedJob.notes && (
                 <div>
-                  <h3 className="font-semibold text-amber-900 mb-1">Special Instructions</h3>
-                  <p className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200">
+                  <h3 className="font-semibold text-foreground mb-1">Special Instructions</h3>
+                  <p className="text-sm text-muted-foreground bg-[#f8f7f5] dark:bg-[#231b0f] p-3 rounded-lg border border-border">
                     {formattedJob.notes}
                   </p>
                 </div>
@@ -281,7 +281,7 @@ export default function DriverJob() {
 
               <div className="pt-2">
                 <Button 
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                  className="w-full bg-primary hover:bg-primary/90 text-white"
                   asChild
                 >
                   <a 
@@ -298,15 +298,15 @@ export default function DriverJob() {
           </Card>
 
           {/* Map Preview */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Route Preview</CardTitle>
+              <CardTitle className="text-foreground">Route Preview</CardTitle>
               <CardDescription>
                 Embedded map for quick reference
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-lg overflow-hidden border border-amber-200">
+              <div className="rounded-lg overflow-hidden border border-border">
                 <iframe
                   title="Route Map"
                   src={mapsQuery.embed}
@@ -316,7 +316,7 @@ export default function DriverJob() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-              <p className="text-xs text-amber-600 mt-2">
+              <p className="text-xs text-primary mt-2">
                 Tap "Open in Google Maps" above for turn-by-turn navigation
               </p>
             </CardContent>
@@ -324,9 +324,9 @@ export default function DriverJob() {
         </div>
 
         {/* Status Update Actions */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 flex items-center space-x-2">
+            <CardTitle className="text-foreground flex items-center space-x-2">
               <Package className="h-5 w-5" />
               <span>Update Job Status</span>
             </CardTitle>
@@ -390,7 +390,7 @@ export default function DriverJob() {
             </div>
 
             {job.status !== 'completed' && (
-              <div className="mt-3 text-sm text-amber-600">
+              <div className="mt-3 text-sm text-primary">
                 <p>Current status: <span className="font-semibold capitalize">{job.status.replace('_', ' ')}</span></p>
               </div>
             )}

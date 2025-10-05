@@ -219,7 +219,7 @@ export default function DriverDocuments() {
 
   if (selectedDocument) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-transparent p-4">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <Button 
@@ -232,15 +232,15 @@ export default function DriverDocuments() {
             </Button>
           </div>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-xl text-amber-900 flex items-center gap-3">
+                  <CardTitle className="text-xl text-foreground flex items-center gap-3">
                     <selectedDocument.icon className="h-6 w-6" />
                     {selectedDocument.title}
                   </CardTitle>
-                  <p className="text-amber-700 mt-2">{selectedDocument.description}</p>
+                  <p className="text-muted-foreground mt-2">{selectedDocument.description}</p>
                 </div>
                 {getStatusBadge(selectedDocument.status)}
               </div>
@@ -258,7 +258,7 @@ export default function DriverDocuments() {
                   <Button 
                     size="sm"
                     onClick={() => handleUpload(selectedDocument.id)}
-                    className="bg-amber-700 hover:bg-amber-800"
+                    className="bg-primary hover:bg-primary/90"
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Signed Copy
@@ -274,18 +274,18 @@ export default function DriverDocuments() {
                   </pre>
                 </div>
               ) : (
-                <div className="text-center py-8 text-amber-600">
-                  <FileText className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+                <div className="text-center py-8 text-primary">
+                  <FileText className="h-12 w-12 mx-auto mb-4 text-primary" />
                   <p className="text-lg font-medium">Document Preview Not Available</p>
                   <p className="text-sm">Please upload this document to proceed with onboarding</p>
                 </div>
               )}
               
               {(selectedDocument.dueDate || selectedDocument.submittedDate) && (
-                <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div className="mt-6 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                   <div className="flex items-center justify-between text-sm">
                     {selectedDocument.dueDate && (
-                      <p className="text-amber-800">
+                      <p className="text-foreground">
                         <Clock className="h-4 w-4 inline mr-1" />
                         Due Date: {selectedDocument.dueDate}
                       </p>
@@ -307,20 +307,20 @@ export default function DriverDocuments() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-transparent">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200">
+      <div className="bg-white shadow-sm border-b border-border">
         <div className="px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/driver-portal">
-                <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
                   ReturnIt
                 </div>
               </Link>
               <div>
-                <h1 className="text-xl font-bold text-amber-900">Driver Documents</h1>
-                <p className="text-amber-700 text-sm">Onboarding & Compliance Center</p>
+                <h1 className="text-xl font-bold text-foreground">Driver Documents</h1>
+                <p className="text-muted-foreground text-sm">Onboarding & Compliance Center</p>
               </div>
             </div>
             <Button 
@@ -340,11 +340,11 @@ export default function DriverDocuments() {
       <div className="p-6 max-w-6xl mx-auto">
         {/* Document Status Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-amber-600 text-sm font-medium">Required</p>
+                  <p className="text-primary text-sm font-medium">Required</p>
                   <p className="text-2xl font-bold text-red-600">
                     {documents.filter(d => d.status === 'required').length}
                   </p>
@@ -354,11 +354,11 @@ export default function DriverDocuments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-amber-600 text-sm font-medium">Submitted</p>
+                  <p className="text-primary text-sm font-medium">Submitted</p>
                   <p className="text-2xl font-bold text-yellow-600">
                     {documents.filter(d => d.status === 'submitted').length}
                   </p>
@@ -368,11 +368,11 @@ export default function DriverDocuments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-amber-600 text-sm font-medium">Approved</p>
+                  <p className="text-primary text-sm font-medium">Approved</p>
                   <p className="text-2xl font-bold text-green-600">
                     {documents.filter(d => d.status === 'approved').length}
                   </p>
@@ -382,16 +382,16 @@ export default function DriverDocuments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-amber-600 text-sm font-medium">Total</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-primary text-sm font-medium">Total</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {documents.length}
                   </p>
                 </div>
-                <FileText className="h-8 w-8 text-amber-600" />
+                <FileText className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -399,17 +399,17 @@ export default function DriverDocuments() {
 
         {/* Documents List */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-white border-amber-200">
-            <TabsTrigger value="required" className="data-[state=active]:bg-amber-100">
+          <TabsList className="bg-white border-border">
+            <TabsTrigger value="required" className="data-[state=active]:bg-accent">
               Required ({documents.filter(d => d.status === 'required').length})
             </TabsTrigger>
-            <TabsTrigger value="submitted" className="data-[state=active]:bg-amber-100">
+            <TabsTrigger value="submitted" className="data-[state=active]:bg-accent">
               Under Review ({documents.filter(d => d.status === 'submitted').length})
             </TabsTrigger>
-            <TabsTrigger value="completed" className="data-[state=active]:bg-amber-100">
+            <TabsTrigger value="completed" className="data-[state=active]:bg-accent">
               Completed ({documents.filter(d => d.status === 'approved').length})
             </TabsTrigger>
-            <TabsTrigger value="all" className="data-[state=active]:bg-amber-100">
+            <TabsTrigger value="all" className="data-[state=active]:bg-accent">
               All Documents ({documents.length})
             </TabsTrigger>
           </TabsList>
@@ -421,23 +421,23 @@ export default function DriverDocuments() {
                 return (
                   <Card 
                     key={doc.id} 
-                    className="bg-white/90 backdrop-blur-sm border-amber-200 hover:shadow-md transition-shadow cursor-pointer"
+                    className="bg-white/90 backdrop-blur-sm border-border hover:shadow-md transition-shadow cursor-pointer"
                     onClick={() => handleDocumentView(doc)}
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-4">
-                          <div className="p-2 bg-amber-100 rounded-lg">
-                            <IconComponent className="h-6 w-6 text-amber-700" />
+                          <div className="p-2 bg-accent rounded-lg">
+                            <IconComponent className="h-6 w-6 text-muted-foreground" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="font-semibold text-amber-900 text-lg mb-1">
+                            <h3 className="font-semibold text-foreground text-lg mb-1">
                               {doc.title}
                             </h3>
-                            <p className="text-amber-700 text-sm mb-3">
+                            <p className="text-muted-foreground text-sm mb-3">
                               {doc.description}
                             </p>
-                            <div className="flex items-center gap-4 text-xs text-amber-600">
+                            <div className="flex items-center gap-4 text-xs text-primary">
                               {doc.dueDate && (
                                 <span>
                                   <Clock className="h-3 w-3 inline mr-1" />
@@ -475,8 +475,8 @@ export default function DriverDocuments() {
             </div>
 
             {filteredDocuments.length === 0 && (
-              <div className="text-center py-12 text-amber-600">
-                <FileText className="h-16 w-16 mx-auto mb-4 text-amber-400" />
+              <div className="text-center py-12 text-primary">
+                <FileText className="h-16 w-16 mx-auto mb-4 text-primary" />
                 <p className="text-xl font-medium">No documents found</p>
                 <p className="text-sm">No documents match the current filter</p>
               </div>

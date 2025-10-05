@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Onboarding</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f99806" fill-opacity="0.04"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-700 dark:text-gray-300">
+<div class="flex flex-col h-screen justify-between p-12">
+<header class="flex justify-between items-center">
+<h1 class="text-xl font-bold text-gray-900 dark:text-white">Return It</h1>
+<button class="text-sm font-semibold text-primary/80 dark:text-primary/90">Skip</button>
+</header>
+<main class="flex flex-col items-center text-center">
+<div class="h-72 flex items-center justify-center">
+<img alt="Easy Booking Illustration" class="h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBesdolAOTk7fREV5KrNl8JhZRzu92RihckoRJm-TZC4qV4kE0fG2HbxMjbJKWqa68z2HbgijLIoNMdpeeKxbJfULCBltXeSf5iV5sZknhjvr2lJ8KVBpSrSJNr1UNvlqMEJyus4ALbay1HHvKwJQlUZ6vzhCZWA2sVkE88hEDjnipjyVmi8lNNHWv111zlozOnQAUitP7qSGJN20td3yxqF-YKB5YY2CEFMzjyLBCS8-d-U_ff8J11cbKcFwS3pDVJgAPGnQj03CK4"/>
+</div>
+<div class="flex space-x-2 my-8">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary/20 dark:bg-primary/30"></div>
+<div class="w-2 h-2 rounded-full bg-primary/20 dark:bg-primary/30"></div>
+</div>
+<h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Returns Made Simple</h2>
+<p class="max-w-sm text-gray-700 dark:text-gray-300 mb-8">
+                Book a pickup in seconds. No more waiting in line or dealing with return labels. We handle everything from pickup to delivery.
+            </p>
+<ul class="space-y-3 text-sm text-left w-full max-w-sm">
+<li class="flex items-center">
+<span class="material-symbols-outlined text-primary mr-3">check_circle</span>
+<span>Schedule pickup in 2 minutes</span>
+</li>
+<li class="flex items-center">
+<span class="material-symbols-outlined text-primary mr-3">check_circle</span>
+<span>Professional drivers at your door</span>
+</li>
+<li class="flex items-center">
+<span class="material-symbols-outlined text-primary mr-3">check_circle</span>
+<span>Same-day or next-day service</span>
+</li>
+</ul>
+</main>
+<footer class="flex justify-end items-center">
+<button class="bg-primary text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors">
+<span class="material-symbols-outlined text-4xl">arrow_forward</span>
+</button>
+</footer>
+</div>
+
+</body></html>

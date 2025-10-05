@@ -99,12 +99,12 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
 
   if (isLoading || orderLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-3xl font-bold text-amber-900 mx-auto mb-4 animate-pulse">
+          <div className="text-3xl font-bold text-foreground mx-auto mb-4 animate-pulse">
             Return It
           </div>
-          <p className="text-amber-800">Loading order details...</p>
+          <p className="text-foreground">Loading order details...</p>
         </div>
       </div>
     );
@@ -116,7 +116,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Order Not Found</CardTitle>
@@ -151,27 +151,27 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
       />
       <div className="absolute inset-0 bg-white/75"></div>
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
+      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation('/')}
-              className="text-amber-800 hover:text-amber-900"
+              className="text-foreground hover:text-foreground"
               data-testid="button-back-home"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
             <Link href="/">
-              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">
+              <div className="text-xl font-bold text-foreground cursor-pointer hover:text-muted-foreground transition-colors">
                 Return It
               </div>
             </Link>
-            <span className="text-xl font-bold text-amber-900">Order Status</span>
+            <span className="text-xl font-bold text-foreground">Order Status</span>
           </div>
-          <div className="text-amber-800 text-sm">
+          <div className="text-foreground text-sm">
             Welcome, {user?.firstName || user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'User'}
           </div>
         </div>
@@ -181,7 +181,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
       <div className="container mx-auto px-4 py-8 max-w-2xl relative z-10">
         <Card className="bg-white/90 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center justify-between text-amber-900">
+            <CardTitle className="flex items-center justify-between text-foreground">
               <span>Order #{order?.id || orderId}</span>
               <Badge className={getStatusColor(order?.status || 'created')}>
                 {getStatusIcon(order?.status || 'created')}
@@ -244,8 +244,8 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
             )}
 
             {/* Status Description */}
-            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <p className="text-amber-900">
+            <div className="bg-accent p-4 rounded-lg border border-border">
+              <p className="text-foreground">
                 {getStatusDescription(order?.status || 'created')}
               </p>
             </div>
@@ -253,10 +253,10 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
             {/* Order Details */}
             <div className="grid gap-4">
               <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-amber-700 mt-0.5" />
+                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-amber-900">Pickup Address</h4>
-                  <p className="text-amber-700">
+                  <h4 className="font-medium text-foreground">Pickup Address</h4>
+                  <p className="text-muted-foreground">
                     {order?.pickupStreetAddress ? 
                       `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}` :
                       'Address not available'
@@ -266,17 +266,17 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Package className="h-5 w-5 text-amber-700 mt-0.5" />
+                <Package className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-amber-900">Return Details</h4>
-                  <p className="text-amber-700">
+                  <h4 className="font-medium text-foreground">Return Details</h4>
+                  <p className="text-muted-foreground">
                     <strong>Retailer:</strong> {order?.retailer || 'N/A'}
                   </p>
-                  <p className="text-amber-700">
+                  <p className="text-muted-foreground">
                     <strong>Items:</strong> {order?.itemCategory || 'N/A'}
                   </p>
                   {order?.itemDescription && (
-                    <p className="text-amber-700">
+                    <p className="text-muted-foreground">
                       <strong>Description:</strong> {order.itemDescription}
                     </p>
                   )}
@@ -284,10 +284,10 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
               </div>
 
               <div className="flex items-start space-x-3">
-                <Truck className="h-5 w-5 text-amber-700 mt-0.5" />
+                <Truck className="h-5 w-5 text-muted-foreground mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-amber-900">Service Cost</h4>
-                  <p className="text-amber-700 font-bold">${order?.totalPrice?.toFixed(2) || '0.00'}</p>
+                  <h4 className="font-medium text-foreground">Service Cost</h4>
+                  <p className="text-muted-foreground font-bold">${order?.totalPrice?.toFixed(2) || '0.00'}</p>
                 </div>
               </div>
             </div>
@@ -296,7 +296,7 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
             <div className="pt-4">
               <Button
                 onClick={() => setLocation('/book-pickup')}
-                className="w-full bg-amber-800 hover:bg-amber-900 text-white"
+                className="w-full bg-primary hover:bg-primary/90 text-white"
                 data-testid="button-book-another"
               >
                 Book Another Pickup

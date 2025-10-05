@@ -258,7 +258,7 @@ export default function CancellationAlerts() {
       </div>
 
       {/* Filters and Search */}
-      <Card className="bg-white border-amber-200">
+      <Card className="bg-white border-border">
         <CardContent className="p-4">
           <div className="flex items-center space-x-4">
             <div className="flex-1">
@@ -268,13 +268,13 @@ export default function CancellationAlerts() {
                   placeholder="Search by customer name or email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-amber-300 focus:border-amber-500"
+                  className="pl-10 border-border focus:border-border"
                 />
               </div>
             </div>
             
             <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-40 border-amber-300 focus:border-amber-500">
+              <SelectTrigger className="w-40 border-border focus:border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -286,7 +286,7 @@ export default function CancellationAlerts() {
             </Select>
             
             <Select value={filterTier} onValueChange={setFilterTier}>
-              <SelectTrigger className="w-40 border-amber-300 focus:border-amber-500">
+              <SelectTrigger className="w-40 border-border focus:border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -367,9 +367,9 @@ export default function CancellationAlerts() {
               </div>
               
               {/* Alert Details */}
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-4">
+              <div className="bg-[#f8f7f5] dark:bg-[#231b0f] p-4 rounded-lg border border-border mb-4">
                 <div className="flex items-start justify-between">
-                  <div className="text-sm text-amber-800">
+                  <div className="text-sm text-foreground">
                     <p><strong>Alert Triggered:</strong> {new Date(alert.alertTriggered).toLocaleString()}</p>
                     <p><strong>Last Cancellation:</strong> {new Date(alert.lastCancellation).toLocaleString()}</p>
                     {alert.assignedTo && <p><strong>Assigned To:</strong> {alert.assignedTo}</p>}
@@ -478,14 +478,14 @@ export default function CancellationAlerts() {
   // Settings Panel
   const SettingsPanel = () => (
     <div className="space-y-6">
-      <Card className="bg-white border-amber-200">
+      <Card className="bg-white border-border">
         <CardHeader>
-          <CardTitle className="text-amber-900">Alert Thresholds</CardTitle>
+          <CardTitle className="text-foreground">Alert Thresholds</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="threshold" className="text-amber-800 font-medium">
+              <Label htmlFor="threshold" className="text-foreground font-medium">
                 Cancellation Rate Threshold (%)
               </Label>
               <Input
@@ -493,17 +493,17 @@ export default function CancellationAlerts() {
                 type="number"
                 value={settings.thresholdPercentage}
                 onChange={(e) => setSettings(prev => ({...prev, thresholdPercentage: parseInt(e.target.value) || 0}))}
-                className="border-amber-300 focus:border-amber-500"
+                className="border-border focus:border-border"
                 min="1"
                 max="100"
               />
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-primary">
                 Alert triggered when cancellation rate exceeds this percentage
               </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="minOrders" className="text-amber-800 font-medium">
+              <Label htmlFor="minOrders" className="text-foreground font-medium">
                 Minimum Orders Required
               </Label>
               <Input
@@ -511,16 +511,16 @@ export default function CancellationAlerts() {
                 type="number"
                 value={settings.minimumOrders}
                 onChange={(e) => setSettings(prev => ({...prev, minimumOrders: parseInt(e.target.value) || 0}))}
-                className="border-amber-300 focus:border-amber-500"
+                className="border-border focus:border-border"
                 min="1"
               />
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-primary">
                 Customer must have at least this many orders before alerts trigger
               </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="timeWindow" className="text-amber-800 font-medium">
+              <Label htmlFor="timeWindow" className="text-foreground font-medium">
                 Time Window (Days)
               </Label>
               <Input
@@ -528,16 +528,16 @@ export default function CancellationAlerts() {
                 type="number"
                 value={settings.timeWindowDays}
                 onChange={(e) => setSettings(prev => ({...prev, timeWindowDays: parseInt(e.target.value) || 0}))}
-                className="border-amber-300 focus:border-amber-500"
+                className="border-border focus:border-border"
                 min="1"
               />
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-primary">
                 Consider orders within this time period for rate calculation
               </p>
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="consecutive" className="text-amber-800 font-medium">
+              <Label htmlFor="consecutive" className="text-foreground font-medium">
                 Consecutive Cancellation Limit
               </Label>
               <Input
@@ -545,10 +545,10 @@ export default function CancellationAlerts() {
                 type="number"
                 value={settings.consecutiveLimit}
                 onChange={(e) => setSettings(prev => ({...prev, consecutiveLimit: parseInt(e.target.value) || 0}))}
-                className="border-amber-300 focus:border-amber-500"
+                className="border-border focus:border-border"
                 min="1"
               />
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-primary">
                 Alert for consecutive cancellations above this number
               </p>
             </div>
@@ -556,42 +556,42 @@ export default function CancellationAlerts() {
         </CardContent>
       </Card>
 
-      <Card className="bg-white border-amber-200">
+      <Card className="bg-white border-border">
         <CardHeader>
-          <CardTitle className="text-amber-900">Notification Settings</CardTitle>
+          <CardTitle className="text-foreground">Notification Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="flex items-center space-x-3 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
             <input
               type="checkbox"
               id="autoNotify"
               checked={settings.autoNotifyAdmin}
               onChange={(e) => setSettings(prev => ({...prev, autoNotifyAdmin: e.target.checked}))}
-              className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
+              className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
             />
             <div className="flex-1">
-              <Label htmlFor="autoNotify" className="text-amber-900 font-medium">
+              <Label htmlFor="autoNotify" className="text-foreground font-medium">
                 Auto-notify Administrators
               </Label>
-              <p className="text-sm text-amber-700">
+              <p className="text-sm text-muted-foreground">
                 Automatically send notifications to admin users when new alerts are created
               </p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-4 bg-amber-50 rounded-lg border border-amber-200">
+          <div className="flex items-center space-x-3 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
             <input
               type="checkbox"
               id="emailNotifications"
               checked={settings.emailNotifications}
               onChange={(e) => setSettings(prev => ({...prev, emailNotifications: e.target.checked}))}
-              className="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
+              className="w-4 h-4 text-primary border-border rounded focus:ring-primary"
             />
             <div className="flex-1">
-              <Label htmlFor="emailNotifications" className="text-amber-900 font-medium">
+              <Label htmlFor="emailNotifications" className="text-foreground font-medium">
                 Email Notifications
               </Label>
-              <p className="text-sm text-amber-700">
+              <p className="text-sm text-muted-foreground">
                 Send email alerts to designated team members for high-priority cancellations
               </p>
             </div>
@@ -602,7 +602,7 @@ export default function CancellationAlerts() {
       <div className="flex justify-end">
         <Button
           onClick={saveSettings}
-          className="bg-amber-600 hover:bg-amber-700 text-white"
+          className="bg-primary hover:bg-primary/90 text-white"
         >
           <Settings className="h-4 w-4 mr-2" />
           Save Settings
@@ -612,16 +612,16 @@ export default function CancellationAlerts() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               
               <div>
-                <h1 className="text-3xl font-bold text-amber-900">Cancellation Alert System</h1>
-                <p className="text-amber-700">Monitor and manage high cancellation rate customers</p>
+                <h1 className="text-3xl font-bold text-foreground">Cancellation Alert System</h1>
+                <p className="text-muted-foreground">Monitor and manage high cancellation rate customers</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -631,7 +631,7 @@ export default function CancellationAlerts() {
                 <AlertTriangle className="h-4 w-4 mr-1" />
                 {summaryStats.activeAlerts} Active Alerts
               </Badge>
-              <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
+              <Badge className="bg-accent text-foreground px-3 py-1">
                 <Target className="h-4 w-4 mr-1" />
                 {settings.thresholdPercentage}% Threshold
               </Badge>
@@ -640,7 +640,7 @@ export default function CancellationAlerts() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-lg border border-amber-200 mb-6">
+        <div className="bg-white rounded-lg border border-border mb-6">
           <div className="flex">
             {[
               { id: 'alerts', label: 'Alert Dashboard', icon: <Bell className="h-4 w-4" /> },
@@ -651,7 +651,7 @@ export default function CancellationAlerts() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 p-4 text-center border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-amber-500 bg-amber-50 text-amber-900'
+                    ? 'border-border bg-[#f8f7f5] dark:bg-[#231b0f] text-foreground'
                     : 'border-transparent text-gray-600 hover:bg-gray-50'
                 }`}
               >

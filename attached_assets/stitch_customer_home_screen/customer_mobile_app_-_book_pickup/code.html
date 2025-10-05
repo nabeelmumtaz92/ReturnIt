@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Book Pickup</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#fcfaf8",
+                        "background-dark": "#1c160d",
+                        "foreground-light": "#1c160d",
+                        "foreground-dark": "#fcfaf8",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2a2216",
+                        "subtle-light": "#e9dece",
+                        "subtle-dark": "#3f3629",
+                        "placeholder-light": "#9e7b47",
+                        "placeholder-dark": "#9e7b47"
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem", // 8px
+                        "lg": "0.75rem", // 12px
+                        "xl": "1.5rem", // 24px
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .form-radio:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23f99806' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark">
+<div class="flex flex-col h-screen justify-between">
+<main class="overflow-y-auto pb-32">
+<header class="sticky top-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm z-10 p-6">
+<div class="flex items-center justify-between">
+<button class="text-foreground-light dark:text-foreground-dark">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+</button>
+<h1 class="text-xl font-bold">Return It</h1>
+<div class="w-6"></div>
+</div>
+</header>
+<div class="px-6 space-y-8">
+<div>
+<h2 class="text-2xl font-bold mb-4">Book a Pickup</h2>
+<div class="bg-card-light dark:bg-card-dark p-6 rounded-lg space-y-6">
+<h3 class="text-lg font-bold">Package Details</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-2" for="packages-number">Number of Packages</label>
+<input class="w-full bg-background-light dark:bg-background-dark border border-subtle-light dark:border-subtle-dark rounded-DEFAULT h-12 px-4 placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-primary focus:border-primary" id="packages-number" placeholder="1" type="number"/>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="package-size">Package Size</label>
+<select class="w-full bg-background-light dark:bg-background-dark border border-subtle-light dark:border-subtle-dark rounded-DEFAULT h-12 px-4 focus:ring-primary focus:border-primary" id="package-size">
+<option>Select size</option>
+<option>Small (e.g. shoebox)</option>
+<option>Medium (e.g. backpack)</option>
+<option>Large (e.g. microwave)</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div class="bg-card-light dark:bg-card-dark p-6 rounded-lg space-y-6">
+<h3 class="text-lg font-bold">Pickup Address</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-2" for="address">Address</label>
+<input class="w-full bg-background-light dark:bg-background-dark border border-subtle-light dark:border-subtle-dark rounded-DEFAULT h-12 px-4 placeholder:text-placeholder-light dark:placeholder:text-placeholder-dark focus:ring-primary focus:border-primary" id="address" placeholder="Enter your address" type="text"/>
+</div>
+<div class="w-full h-48 bg-center bg-cover rounded-lg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCxnbB6kM4Vc4NJagdHGmEuI_0uwZfkeuNNc0maN00WBjQg__UnrX9o99tpeN_JwfVtD1Zui9nUA5HvLRrB4axZXDsauCNlear0h_ffXyezR3LHvXG5zbHDuy5-NxVVymv7TB7BIzIaET6x1yP4RKdHwmv4M63Cr2lgKrDpybAOdcjNNrUayLZWxU3hbyR-O2ukvA_jhBlkdRKUQYq1DpqqscyHbsK0WDqZHBk8mdBxG9Pmhfi2FPvgH9LcngrFe9FLs-lOmkETx2o8");'></div>
+</div>
+</div>
+</div>
+<div>
+<div class="bg-card-light dark:bg-card-dark p-6 rounded-lg space-y-4">
+<h3 class="text-lg font-bold">Desired Action</h3>
+<div class="space-y-3">
+<label class="flex items-center p-4 rounded-lg border border-subtle-light dark:border-subtle-dark has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+<span class="flex-grow text-sm font-medium">Return</span>
+<input checked="" class="form-radio h-5 w-5 border-2 border-subtle-light dark:border-subtle-dark text-primary focus:ring-primary focus:ring-offset-0" name="action" type="radio"/>
+</label>
+<label class="flex items-center p-4 rounded-lg border border-subtle-light dark:border-subtle-dark has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+<span class="flex-grow text-sm font-medium">Exchange</span>
+<input class="form-radio h-5 w-5 border-2 border-subtle-light dark:border-subtle-dark text-primary focus:ring-primary focus:ring-offset-0" name="action" type="radio"/>
+</label>
+<label class="flex items-center p-4 rounded-lg border border-subtle-light dark:border-subtle-dark has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+<span class="flex-grow text-sm font-medium">Donation</span>
+<input class="form-radio h-5 w-5 border-2 border-subtle-light dark:border-subtle-dark text-primary focus:ring-primary focus:ring-offset-0" name="action" type="radio"/>
+</label>
+</div>
+</div>
+</div>
+<div>
+<div class="bg-card-light dark:bg-card-dark p-6 rounded-lg space-y-6">
+<h3 class="text-lg font-bold">Payment</h3>
+<div>
+<label class="block text-sm font-medium mb-2" for="payment-method">Payment Method</label>
+<select class="w-full bg-background-light dark:bg-background-dark border border-subtle-light dark:border-subtle-dark rounded-DEFAULT h-12 px-4 focus:ring-primary focus:border-primary" id="payment-method">
+<option>Select method</option>
+<option>Credit Card ending in 1234</option>
+<option>PayPal</option>
+</select>
+</div>
+</div>
+</div>
+<div>
+<div class="bg-card-light dark:bg-card-dark p-6 rounded-lg space-y-4">
+<h3 class="text-lg font-bold">Summary</h3>
+<div class="space-y-4 text-sm">
+<div class="flex justify-between border-b border-subtle-light dark:border-subtle-dark py-3">
+<span class="text-placeholder-light dark:text-placeholder-dark">Packages</span>
+<span>1</span>
+</div>
+<div class="flex justify-between border-b border-subtle-light dark:border-subtle-dark py-3">
+<span class="text-placeholder-light dark:text-placeholder-dark">Pickup Address</span>
+<span>123 Main St, SF</span>
+</div>
+<div class="flex justify-between border-b border-subtle-light dark:border-subtle-dark py-3">
+<span class="text-placeholder-light dark:text-placeholder-dark">Action</span>
+<span>Return</span>
+</div>
+<div class="flex justify-between pt-3">
+<span class="text-placeholder-light dark:text-placeholder-dark">Payment</span>
+<span>Credit Card</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 right-0 bg-background-light dark:bg-background-dark border-t border-subtle-light dark:border-subtle-dark p-6 space-y-4">
+<button class="w-full bg-primary text-white font-bold h-12 rounded-lg flex items-center justify-center">
+                Submit Order
+            </button>
+<nav class="flex justify-around items-center">
+<a class="flex flex-col items-center gap-1 text-placeholder-light dark:text-placeholder-dark" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"></path></svg>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>
+<span class="text-xs font-bold">Book</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-placeholder-light dark:text-placeholder-dark" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path></svg>
+<span class="text-xs font-medium">Track</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-placeholder-light dark:text-placeholder-dark" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z"></path></svg>
+<span class="text-xs font-medium">History</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-placeholder-light dark:text-placeholder-dark" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

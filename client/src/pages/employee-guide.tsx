@@ -220,16 +220,16 @@ export default function EmployeeGuide() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-amber-900">Employee Guide</h1>
-              <p className="text-amber-700">Complete guide to using the ReturnIt platform</p>
+              <h1 className="text-3xl font-bold text-foreground">Employee Guide</h1>
+              <p className="text-muted-foreground">Complete guide to using the ReturnIt platform</p>
             </div>
-            <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
+            <Badge className="bg-accent text-foreground px-3 py-1">
               <BookOpen className="h-4 w-4 mr-1" />
               Comprehensive Manual
             </Badge>
@@ -239,12 +239,12 @@ export default function EmployeeGuide() {
         {/* Search */}
         <div className="mb-8">
           <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-4 w-4" />
             <Input
               placeholder="Search guide topics..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 border-amber-300 focus:border-amber-500"
+              className="pl-10 border-border focus:border-primary"
             />
           </div>
         </div>
@@ -253,9 +253,9 @@ export default function EmployeeGuide() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Table of Contents */}
           <div className="lg:col-span-1">
-            <Card className="bg-white border-amber-200 sticky top-6">
+            <Card className="bg-white border-border sticky top-6">
               <CardHeader>
-                <CardTitle className="text-amber-900 flex items-center">
+                <CardTitle className="text-foreground flex items-center">
                   <BookOpen className="h-5 w-5 mr-2" />
                   Quick Navigation
                 </CardTitle>
@@ -266,14 +266,14 @@ export default function EmployeeGuide() {
                     <Button
                       key={section.id}
                       variant="ghost"
-                      className="w-full justify-start text-left h-auto p-3 hover:bg-amber-50"
+                      className="w-full justify-start text-left h-auto p-3 hover:bg-accent/50"
                       onClick={() => {
                         document.getElementById(section.id)?.scrollIntoView({ behavior: 'smooth' });
                       }}
                     >
                       <div className="flex items-center space-x-3">
                         {section.icon}
-                        <span className="text-amber-900">{section.title}</span>
+                        <span className="text-foreground">{section.title}</span>
                       </div>
                     </Button>
                   ))}
@@ -285,23 +285,23 @@ export default function EmployeeGuide() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {filteredContent.map((section) => (
-              <Card key={section.id} id={section.id} className="bg-white border-amber-200">
+              <Card key={section.id} id={section.id} className="bg-white border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900 flex items-center text-xl">
+                  <CardTitle className="text-foreground flex items-center text-xl">
                     {section.icon}
                     <span className="ml-2">{section.title}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {section.content.map((item, idx) => (
-                    <div key={idx} className="border-l-4 border-amber-300 pl-4">
-                      <h3 className="font-semibold text-amber-900 mb-2">{item.title}</h3>
-                      <p className="text-amber-700 mb-3">{item.description}</p>
+                    <div key={idx} className="border-l-4 border-border pl-4">
+                      <h3 className="font-semibold text-foreground mb-2">{item.title}</h3>
+                      <p className="text-muted-foreground mb-3">{item.description}</p>
                       <ul className="space-y-2">
                         {item.steps.map((step, stepIdx) => (
                           <li key={stepIdx} className="flex items-start space-x-2">
                             <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-amber-800">{step}</span>
+                            <span className="text-foreground">{step}</span>
                           </li>
                         ))}
                       </ul>
@@ -314,9 +314,9 @@ export default function EmployeeGuide() {
         </div>
 
         {/* Quick Reference Card */}
-        <Card className="bg-amber-50 border-amber-300 mt-8">
+        <Card className="bg-accent border-border mt-8">
           <CardHeader>
-            <CardTitle className="text-amber-900 flex items-center">
+            <CardTitle className="text-foreground flex items-center">
               <Lightbulb className="h-5 w-5 mr-2" />
               Quick Reference
             </CardTitle>
@@ -324,24 +324,24 @@ export default function EmployeeGuide() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="text-center">
-                <Phone className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-amber-900">Support Hotline</h4>
-                <p className="text-sm text-amber-700">(555) 123-4567</p>
+                <Phone className="h-8 w-8 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-foreground">Support Hotline</h4>
+                <p className="text-sm text-muted-foreground">(555) 123-4567</p>
               </div>
               <div className="text-center">
-                <Mail className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-amber-900">IT Support</h4>
-                <p className="text-sm text-amber-700">it@returnit.com</p>
+                <Mail className="h-8 w-8 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-foreground">IT Support</h4>
+                <p className="text-sm text-muted-foreground">it@returnit.com</p>
               </div>
               <div className="text-center">
-                <Clock className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-amber-900">Hours</h4>
-                <p className="text-sm text-amber-700">24/7 Operations</p>
+                <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-foreground">Hours</h4>
+                <p className="text-sm text-muted-foreground">24/7 Operations</p>
               </div>
               <div className="text-center">
-                <Shield className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <h4 className="font-semibold text-amber-900">Emergency</h4>
-                <p className="text-sm text-amber-700">911 or Security</p>
+                <Shield className="h-8 w-8 text-primary mx-auto mb-2" />
+                <h4 className="font-semibold text-foreground">Emergency</h4>
+                <p className="text-sm text-muted-foreground">911 or Security</p>
               </div>
             </div>
           </CardContent>

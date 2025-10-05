@@ -125,12 +125,12 @@ export default function CustomerDashboard() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
+      <div className="min-h-screen bg-accent flex items-center justify-center">
         <div className="text-center space-y-4">
-          <div className="text-3xl font-bold text-amber-900 animate-pulse">
+          <div className="text-3xl font-bold text-foreground animate-pulse">
             Return It
           </div>
-          <p className="text-amber-800">Loading your dashboard...</p>
+          <p className="text-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -152,23 +152,23 @@ export default function CustomerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-amber-50">
+    <div className="min-h-screen bg-accent">
       {/* Header */}
-      <header className="bg-white border-b border-amber-200">
+      <header className="bg-white border-b border-border">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <Link href="/">
-                <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">
+                <div className="text-2xl font-bold text-foreground cursor-pointer hover:text-primary transition-colors">
                   Return It
                 </div>
               </Link>
-              <p className="text-amber-700 mt-1">Customer Dashboard</p>
+              <p className="text-muted-foreground mt-1">Customer Dashboard</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-                <User className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-medium text-amber-900">
+              <div className="flex items-center gap-2 px-3 py-2 bg-accent border border-border rounded-lg">
+                <User className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium text-foreground">
                   {user?.firstName && user?.lastName 
                     ? `${user.firstName} ${user.lastName}`
                     : user?.email?.split('@')[0] || 'User'
@@ -179,7 +179,7 @@ export default function CustomerDashboard() {
                 variant="outline"
                 size="sm"
                 onClick={() => setLocation('/')}
-                className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                className="border-border text-muted-foreground hover:bg-accent"
                 data-testid="button-home"
               >
                 Home
@@ -194,10 +194,10 @@ export default function CustomerDashboard() {
         <div className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-amber-900 mb-2">
+              <h1 className="text-3xl font-bold text-foreground mb-2">
                 Welcome back, {user?.firstName || 'there'}! 👋
               </h1>
-              <p className="text-amber-700">
+              <p className="text-muted-foreground">
                 Track your returns and manage your pickups from here.
               </p>
             </div>
@@ -213,12 +213,12 @@ export default function CustomerDashboard() {
                     {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-16 mt-2" />
                     ) : (
-                      <div className="text-2xl font-bold text-amber-900" data-testid="stat-total-orders">
+                      <div className="text-2xl font-bold text-foreground" data-testid="stat-total-orders">
                         {displayStats.totalOrders}
                       </div>
                     )}
                   </div>
-                  <BarChart3 className="h-8 w-8 text-amber-600" />
+                  <BarChart3 className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -267,12 +267,12 @@ export default function CustomerDashboard() {
                     {ordersLoading || statsLoading ? (
                       <Skeleton className="h-8 w-20 mt-2" />
                     ) : (
-                      <div className="text-2xl font-bold text-amber-900" data-testid="stat-total-spent">
+                      <div className="text-2xl font-bold text-foreground" data-testid="stat-total-spent">
                         ${(displayStats.totalSpent || 0).toFixed(2)}
                       </div>
                     )}
                   </div>
-                  <DollarSign className="h-8 w-8 text-amber-600" />
+                  <DollarSign className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -283,7 +283,7 @@ export default function CustomerDashboard() {
         <div className="mb-8">
           <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
             <CardHeader>
-              <CardTitle className="text-xl text-amber-900 flex items-center">
+              <CardTitle className="text-xl text-foreground flex items-center">
                 <User className="h-5 w-5 mr-2" />
                 Profile Summary
               </CardTitle>
@@ -312,7 +312,7 @@ export default function CustomerDashboard() {
                     variant="outline"
                     size="sm"
                     onClick={() => setLocation('/profile')}
-                    className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                    className="border-border text-muted-foreground hover:bg-accent"
                     data-testid="button-edit-profile"
                   >
                     <User className="h-4 w-4 mr-2" />
@@ -326,11 +326,11 @@ export default function CustomerDashboard() {
 
         {/* Quick Actions */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold text-amber-900 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Button
               onClick={() => setLocation('/book-pickup')}
-              className="bg-amber-600 hover:bg-amber-700 text-white h-auto p-6 flex flex-col items-center gap-3"
+              className="bg-primary hover:bg-primary/90 text-white h-auto p-6 flex flex-col items-center gap-3"
               data-testid="button-book-pickup"
             >
               <Plus className="h-8 w-8" />
@@ -343,7 +343,7 @@ export default function CustomerDashboard() {
             <Button
               variant="outline"
               onClick={() => setLocation('/track')}
-              className="border-amber-300 text-amber-700 hover:bg-amber-100 h-auto p-6 flex flex-col items-center gap-3"
+              className="border-border text-muted-foreground hover:bg-accent h-auto p-6 flex flex-col items-center gap-3"
               data-testid="button-track-order"
             >
               <Search className="h-8 w-8" />
@@ -356,7 +356,7 @@ export default function CustomerDashboard() {
             <Button
               variant="outline"
               onClick={() => setLocation('/profile')}
-              className="border-amber-300 text-amber-700 hover:bg-amber-100 h-auto p-6 flex flex-col items-center gap-3"
+              className="border-border text-muted-foreground hover:bg-accent h-auto p-6 flex flex-col items-center gap-3"
               data-testid="button-profile"
             >
               <User className="h-8 w-8" />
@@ -371,7 +371,7 @@ export default function CustomerDashboard() {
         {/* Active Orders Section */}
         {activeOrders.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-amber-900 mb-4 flex items-center">
+            <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
               <Activity className="h-5 w-5 mr-2" />
               Active Orders ({activeOrders.length})
             </h2>
@@ -471,7 +471,7 @@ export default function CustomerDashboard() {
         {/* Order History Table */}
         <div>
           <div className="flex items-center justify-between flex-wrap gap-4 mb-6">
-            <h2 className="text-xl font-semibold text-amber-900 flex items-center">
+            <h2 className="text-xl font-semibold text-foreground flex items-center">
               <Package className="h-5 w-5 mr-2" />
               Order History
             </h2>
@@ -546,7 +546,7 @@ export default function CustomerDashboard() {
                 {!searchTerm && (
                   <Button
                     onClick={() => setLocation('/book-pickup')}
-                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                    className="bg-primary hover:bg-primary/90 text-white"
                     data-testid="button-first-pickup"
                   >
                     <Plus className="h-4 w-4 mr-2" />

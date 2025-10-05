@@ -21,10 +21,10 @@ export default function ReturnLabelGeneration() {
     return (
       <Screen className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Tag className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-amber-900 mb-4">Return Label Generator</h1>
-          <p className="text-amber-700 mb-4">Sign in to generate return labels</p>
-          <Button className="bg-amber-800 hover:bg-amber-900">Sign In</Button>
+          <Tag className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-4">Return Label Generator</h1>
+          <p className="text-muted-foreground mb-4">Sign in to generate return labels</p>
+          <Button className="bg-primary hover:bg-primary/90">Sign In</Button>
         </div>
       </Screen>
     );

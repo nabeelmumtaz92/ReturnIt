@@ -48,7 +48,7 @@ export default function FailedReturnDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-transparent">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Failed Return Scenario Demo</h1>
@@ -351,9 +351,9 @@ export default function FailedReturnDemo() {
               </div>
             </div>
 
-            <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <h4 className="font-semibold text-amber-800 mb-2">Why Service Fees Aren't Refunded:</h4>
-              <ul className="text-sm text-amber-700 space-y-1">
+            <div className="mt-6 p-4 bg-accent border border-border rounded-lg">
+              <h4 className="font-semibold text-foreground mb-2">Why Service Fees Aren't Refunded:</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• ReturnIt provided the complete pickup and delivery attempt service</li>
                 <li>• Store refusal is outside ReturnIt's control (store policy, timing, condition)</li>
                 <li>• Driver compensation must be covered for both trips</li>

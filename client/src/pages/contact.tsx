@@ -63,22 +63,22 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-amber-900 hover:text-amber-700 transition-colors cursor-pointer">
+              <h1 className="text-2xl font-bold text-foreground hover:text-muted-foreground transition-colors cursor-pointer">
                 Return It
               </h1>
             </Link>
             <nav className="flex items-center gap-6">
               <Link href="/">
-                <span className="text-amber-800 hover:text-amber-600 cursor-pointer">Home</span>
+                <span className="text-foreground hover:text-primary cursor-pointer">Home</span>
               </Link>
               <Link href="/about">
-                <span className="text-amber-800 hover:text-amber-600 cursor-pointer">About</span>
+                <span className="text-foreground hover:text-primary cursor-pointer">About</span>
               </Link>
             </nav>
           </div>
@@ -89,10 +89,10 @@ export default function Contact() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Get in Touch
             </h1>
-            <p className="text-lg text-amber-700">
+            <p className="text-lg text-muted-foreground">
               Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
             </p>
           </div>
@@ -100,43 +100,43 @@ export default function Contact() {
           <div className="grid md:grid-cols-3 gap-8">
             {/* Contact Info Cards */}
             <div className="space-y-6">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-border">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="bg-amber-100 p-3 rounded-lg">
-                      <Mail className="h-6 w-6 text-amber-700" />
+                    <div className="bg-accent p-3 rounded-lg">
+                      <Mail className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-900 mb-1">Email</h3>
-                      <p className="text-sm text-amber-700">support@returnit.online</p>
+                      <h3 className="font-semibold text-foreground mb-1">Email</h3>
+                      <p className="text-sm text-muted-foreground">support@returnit.online</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-border">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="bg-amber-100 p-3 rounded-lg">
-                      <Phone className="h-6 w-6 text-amber-700" />
+                    <div className="bg-accent p-3 rounded-lg">
+                      <Phone className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-900 mb-1">Phone</h3>
-                      <p className="text-sm text-amber-700">(636) 254-4821</p>
+                      <h3 className="font-semibold text-foreground mb-1">Phone</h3>
+                      <p className="text-sm text-muted-foreground">(636) 254-4821</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-border">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <div className="bg-amber-100 p-3 rounded-lg">
-                      <MapPin className="h-6 w-6 text-amber-700" />
+                    <div className="bg-accent p-3 rounded-lg">
+                      <MapPin className="h-6 w-6 text-muted-foreground" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-amber-900 mb-1">Location</h3>
-                      <p className="text-sm text-amber-700">
+                      <h3 className="font-semibold text-foreground mb-1">Location</h3>
+                      <p className="text-sm text-muted-foreground">
                         St. Louis, MO<br />
                         Serving the Greater Metro Area
                       </p>
@@ -148,9 +148,9 @@ export default function Contact() {
 
             {/* Contact Form */}
             <div className="md:col-span-2">
-              <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+              <Card className="bg-white/90 backdrop-blur-sm border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Send us a message</CardTitle>
+                  <CardTitle className="text-foreground">Send us a message</CardTitle>
                   <CardDescription>
                     Fill out the form below and we'll get back to you within 24 hours.
                   </CardDescription>
@@ -165,7 +165,7 @@ export default function Contact() {
                       <Button
                         onClick={() => setIsSubmitted(false)}
                         variant="outline"
-                        className="border-amber-300 text-amber-800 hover:bg-amber-50"
+                        className="border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                         data-testid="button-send-another"
                       >
                         Send another message
@@ -179,12 +179,12 @@ export default function Contact() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-amber-900">Name *</FormLabel>
+                              <FormLabel className="text-foreground">Name *</FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
                                   placeholder="Your name"
-                                  className="border-amber-200 focus:border-amber-400"
+                                  className="border-border focus:border-border"
                                   data-testid="input-name"
                                 />
                               </FormControl>
@@ -198,13 +198,13 @@ export default function Contact() {
                           name="email"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-amber-900">Email *</FormLabel>
+                              <FormLabel className="text-foreground">Email *</FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
                                   type="email"
                                   placeholder="your.email@example.com"
-                                  className="border-amber-200 focus:border-amber-400"
+                                  className="border-border focus:border-border"
                                   data-testid="input-email"
                                 />
                               </FormControl>
@@ -218,12 +218,12 @@ export default function Contact() {
                           name="subject"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-amber-900">Subject</FormLabel>
+                              <FormLabel className="text-foreground">Subject</FormLabel>
                               <FormControl>
                                 <Input
                                   {...field}
                                   placeholder="What is this about?"
-                                  className="border-amber-200 focus:border-amber-400"
+                                  className="border-border focus:border-border"
                                   data-testid="input-subject"
                                 />
                               </FormControl>
@@ -237,12 +237,12 @@ export default function Contact() {
                           name="message"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-amber-900">Message *</FormLabel>
+                              <FormLabel className="text-foreground">Message *</FormLabel>
                               <FormControl>
                                 <Textarea
                                   {...field}
                                   placeholder="Tell us what's on your mind..."
-                                  className="border-amber-200 focus:border-amber-400 min-h-[150px]"
+                                  className="border-border focus:border-border min-h-[150px]"
                                   data-testid="textarea-message"
                                 />
                               </FormControl>
@@ -253,7 +253,7 @@ export default function Contact() {
 
                         <Button
                           type="submit"
-                          className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                          className="w-full bg-primary hover:bg-primary/90 text-white"
                           disabled={sendMessageMutation.isPending}
                           data-testid="button-submit-contact"
                         >

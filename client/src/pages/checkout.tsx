@@ -129,11 +129,11 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
         </div>
       )}
       
-      <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-        <h3 className="font-medium text-amber-900 mb-2">Order Summary</h3>
+      <div className="bg-[#f8f7f5] dark:bg-[#231b0f] p-4 rounded-lg border border-border">
+        <h3 className="font-medium text-foreground mb-2">Order Summary</h3>
         <div className="flex justify-between items-center">
-          <span className="text-amber-700">On Demand Returns Fee</span>
-          <span className="font-bold text-amber-900">${amount.toFixed(2)}</span>
+          <span className="text-muted-foreground">On Demand Returns Fee</span>
+          <span className="font-bold text-foreground">${amount.toFixed(2)}</span>
         </div>
       </div>
       
@@ -141,7 +141,7 @@ const CheckoutForm = ({ orderId, amount }: CheckoutFormProps) => {
       
       <Button 
         type="submit" 
-        className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+        className="w-full bg-primary hover:bg-primary/90 text-white"
         disabled={!stripe || isProcessing}
         data-testid="button-submit-payment"
       >
@@ -203,7 +203,7 @@ export default function Checkout() {
 
   if (!clientSecret) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 flex items-center justify-center relative">
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center relative">
         {/* Background Hero Image */}
         <div 
           className="absolute inset-0 z-0 opacity-10"
@@ -215,15 +215,15 @@ export default function Checkout() {
         />
         
         <div className="relative z-10">
-          <div className="animate-spin w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-amber-800">Setting up payment...</p>
+          <div className="animate-spin w-8 h-8 border-4 border-border border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-foreground">Setting up payment...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-200 via-yellow-100 to-orange-100 relative">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] relative">
       {/* Background Hero Image */}
       <div 
         className="absolute inset-0 z-0 opacity-10"
@@ -235,34 +235,34 @@ export default function Checkout() {
       />
 
       {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
+      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-50 relative">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation('/book-pickup')}
-              className="text-amber-800 hover:text-amber-900"
+              className="text-foreground hover:text-foreground"
               data-testid="button-back-booking"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
             <Link href="/">
-              <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="text-xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
                 Return It
               </div>
             </Link>
-            <span className="text-xl font-bold text-amber-900">Secure Payment</span>
+            <span className="text-xl font-bold text-foreground">Secure Payment</span>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-lg relative z-10">
-        <Card className="bg-white/95 backdrop-blur-sm border-amber-300 shadow-lg">
+        <Card className="bg-white/95 backdrop-blur-sm border-border shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="text-amber-900 flex items-center justify-center">
+            <CardTitle className="text-foreground flex items-center justify-center">
               <CreditCard className="h-5 w-5 mr-2" />
               Complete Your Booking
             </CardTitle>
@@ -276,25 +276,25 @@ export default function Checkout() {
         
         {/* Security Features */}
         <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/80 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
-              <Shield className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-amber-900 text-sm">Secure Payment</h3>
-              <p className="text-xs text-amber-700">SSL encrypted</p>
+              <Shield className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-foreground text-sm">Secure Payment</h3>
+              <p className="text-xs text-muted-foreground">SSL encrypted</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/80 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
-              <Clock className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-amber-900 text-sm">Quick Pickup</h3>
-              <p className="text-xs text-amber-700">Same-day available</p>
+              <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-foreground text-sm">Quick Pickup</h3>
+              <p className="text-xs text-muted-foreground">Same-day available</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/80 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/80 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
-              <CreditCard className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-semibold text-amber-900 text-sm">Multiple Payment</h3>
-              <p className="text-xs text-amber-700">Cards, Apple Pay, Google Pay</p>
+              <CreditCard className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-semibold text-foreground text-sm">Multiple Payment</h3>
+              <p className="text-xs text-muted-foreground">Cards, Apple Pay, Google Pay</p>
             </CardContent>
           </Card>
         </div>

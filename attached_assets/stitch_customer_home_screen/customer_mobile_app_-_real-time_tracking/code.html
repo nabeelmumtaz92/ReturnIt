@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Onboarding</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                        "amber-50": "#fffbeb",
+                        "amber-600": "#d97706",
+                        "amber-700": "#b45309",
+                        "amber-900": "#78350f",
+                        "white": "#ffffff"
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        '2xl': '3rem' // 48px
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .pulsing-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(1.5);
+            }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-amber-50 dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen p-2xl">
+<header class="flex justify-between items-center">
+<svg class="h-6 text-amber-900 dark:text-primary" fill="currentColor" viewBox="0 0 102 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.2968 18.26C11.5968 18.26 11.0168 18.1 10.5568 17.78C10.0968 17.46 9.8668 17.02 9.8668 16.46V10.26C9.8668 9.7 10.0968 9.26 10.5568 8.94C11.0168 8.62 11.5968 8.46 12.2968 8.46C12.9968 8.46 13.5768 8.62 14.0368 8.94C14.4968 9.26 14.7268 9.7 14.7268 10.26V11.22H12.9868V10.3C12.9868 10.08 12.9168 9.9 12.7768 9.76C12.6368 9.62 12.4568 9.55 12.2368 9.55C12.0168 9.55 11.8368 9.62 11.6968 9.76C11.5568 9.9 11.4868 10.08 11.4868 10.3V16.42C11.4868 16.64 11.5568 16.82 11.6968 16.96C11.8368 17.1 12.0168 17.17 12.2368 17.17C12.4568 17.17 12.6368 17.1 12.7768 16.96C12.9168 16.82 12.9868 16.64 12.9868 16.42V15.5H14.7268V16.46C14.7268 17.02 14.4968 17.46 14.0368 17.78C13.5768 18.1 12.9968 18.26 12.2968 18.26ZM16.4868 8.58V18.14H14.8668V8.58H16.4868ZM24.0868 18.14H22.4668L19.5268 12.64V18.14H17.9068V8.58H19.5268L22.4668 14.08V8.58H24.0868V18.14ZM31.1448 13.46C31.1448 14.5 30.8948 15.37 30.3948 16.07C29.8948 16.77 29.2048 17.27 28.3248 17.57L31.3448 24H29.1848L26.6648 18.22H25.7448V24H24.1248V8.58H27.5648C28.4648 8.58 29.2148 8.75 29.8148 9.09C30.4148 9.43 30.8448 9.9 31.1048 10.5C31.3648 11.1 31.5048 11.8 31.4848 12.6C31.4848 13.1 31.3748 13.57 31.1548 14.01C30.9348 14.45 30.6348 14.83 30.2548 15.15L32.2248 12.66C32.1248 12.28 32.0548 11.89 32.0148 11.49C31.9748 11.09 31.9548 10.69 31.9548 10.29C31.9548 9.49 31.7648 8.85 31.3848 8.37C31.0048 7.89 30.4748 7.55 29.7948 7.35C29.1148 7.15 28.3248 7.05 27.4248 7.05H22.5048V24H21.0848V7.05H19.4648V5.51H27.4248C28.5248 5.51 29.4748 5.67 30.2748 5.99C31.0748 6.31 31.6948 6.79 32.1348 7.43C32.5748 8.07 32.7948 8.93 32.7948 10.01C32.7948 10.45 32.7448 10.87 32.6448 11.27C32.5448 11.67 32.3948 12.08 32.1948 12.5L29.5348 15.83C29.9348 15.45 30.2648 15.01 30.5248 14.51C30.7848 14.01 30.9148 13.47 30.9148 12.89H32.7548V24H31.1448V13.46ZM25.7448 16.68H27.5648C28.1648 16.68 28.6648 16.55 29.0648 16.29C29.4648 16.03 29.7448 15.68 29.9048 15.24C30.0648 14.8 30.1448 14.31 30.1448 13.77C30.1448 13.23 30.0648 12.74 29.9048 12.3C29.7448 11.86 29.4648 11.51 29.0648 11.25C28.6648 10.99 28.1648 10.86 27.5648 10.86H25.7448V16.68ZM34.7828 12.34C34.7828 14.12 35.3428 15.54 36.4628 16.6C37.5828 17.66 39.0628 18.2 40.9028 18.2C42.7428 18.2 44.2228 17.66 45.3428 16.6C46.4628 15.54 47.0228 14.12 47.0228 12.34C47.0228 10.56 46.4628 9.14 45.3428 8.08C44.2228 7.02 42.7428 6.48 40.9028 6.48C39.0628 6.48 37.5828 7.02 36.4628 8.08C35.3428 9.14 34.7828 10.56 34.7828 12.34ZM45.4028 12.34C45.4028 13.78 45.0328 14.92 44.2928 15.76C43.5528 16.6 42.4228 17.02 40.9028 17.02C39.3828 17.02 38.2528 16.6 37.5128 15.76C36.7728 14.92 36.4028 13.78 36.4028 12.34C36.4028 10.9 36.7728 9.76 37.5128 8.92C38.2528 8.08 39.3828 7.66 40.9028 7.66C42.4228 7.66 43.5528 8.08 44.2928 8.92C45.0328 9.76 45.4028 10.9 45.4028 12.34ZM48.3378 18.14V0H49.9578V18.14H48.3378ZM56.3418 18.14H54.7218V8.58H52.4818V7.05H59.8618V8.58H57.6218V18.14H56.3418V18.14ZM65.8618 18.26C65.0418 18.26 64.3618 18.06 63.8218 17.66C63.2818 17.26 62.9018 16.73 62.6818 16.07L64.2418 15.47C64.3818 15.89 64.6318 16.24 64.9918 16.52C65.3518 16.8 65.8018 16.94 66.3418 16.94C67.1218 16.94 67.7218 16.67 68.1418 16.13C68.5618 15.59 68.7718 14.8 68.7718 13.76V13.06C68.4518 13.14 68.0718 13.2 67.6318 13.24C67.1918 13.28 66.7518 13.3 66.3118 13.3C64.9718 13.3 63.8918 12.83 63.0718 11.89C62.2518 10.95 61.8418 9.71 61.8418 8.17C61.8418 6.73 62.2618 5.58 63.1018 4.72C63.9418 3.86 65.0318 3.42 66.3718 3.42C67.7318 3.42 68.8118 3.88 69.6118 4.8C70.4118 5.72 70.8118 6.94 70.8118 8.46C70.8118 9.06 70.7318 9.61 70.5718 10.11C70.4118 10.61 70.1818 11.06 69.8818 11.46L71.1818 12.78C71.6018 12.22 71.9118 11.6 72.1118 10.92C72.3118 10.24 72.4118 9.47 72.4118 8.61C72.4118 6.69 71.9318 5.15 70.9718 4C69.9518 2.85 68.5118 2.28 66.6518 2.28C64.5518 2.28 62.8718 2.94 61.6118 4.26C60.3518 5.58 59.7218 7.34 59.7218 9.54C59.7218 11.66 60.3718 13.36 61.6718 14.64C62.9718 15.92 64.6718 16.58 66.7718 16.58C67.3118 16.58 67.8218 16.51 68.3018 16.37C68.7818 16.23 69.2018 16.03 69.5618 15.77V18.14H65.8618V18.26ZM68.6518 8.35C68.6518 7.35 68.4218 6.56 67.9618 5.98C67.5018 5.4 66.8618 5.1 66.0418 5.1C65.2218 5.1 64.5818 5.4 64.1218 5.98C63.6618 6.56 63.4318 7.35 63.4318 8.35C63.4318 9.35 63.6618 10.14 64.1218 10.72C64.5818 11.3 65.2218 11.6 66.0418 11.6C66.8618 11.6 67.5018 11.3 67.9618 10.72C68.4218 10.14 68.6518 9.35 68.6518 8.35ZM74.5278 18.14V7.05H73.0878V5.51H78.8478V7.05H77.4078V18.14H75.9678V11.23H74.5278V18.14ZM84.6298 12.34C84.6298 14.12 85.1898 15.54 86.3098 16.6C87.4298 17.66 88.9098 18.2 90.7498 18.2C92.5898 18.2 94.0698 17.66 95.1898 16.6C96.3098 15.54 96.8698 14.12 96.8698 12.34C96.8698 10.56 96.3098 9.14 95.1898 8.08C94.0698 7.02 92.5898 6.48 90.7498 6.48C88.9098 6.48 87.4298 7.02 86.3098 8.08C85.1898 9.14 84.6298 10.56 84.6298 12.34ZM95.2498 12.34C95.2498 13.78 94.8798 14.92 94.1398 15.76C93.3998 16.6 92.2698 17.02 90.7498 17.02C89.2298 17.02 88.0998 16.6 87.3598 15.76C86.6198 14.92 86.2498 13.78 86.2498 12.34C86.2498 10.9 86.6198 9.76 87.3598 8.92C88.0998 8.08 89.2298 7.66 90.7498 7.66C92.2698 7.66 93.3998 8.08 94.1398 8.92C94.8798 9.76 95.2498 10.9 95.2498 12.34ZM98.1828 18.14V0H99.8028V18.14H98.1828Z" fill="currentColor"></path>
+<path d="M0.380005 18.14V7.05H1.82V5.51H7.58V7.05H6.14V18.14H4.7V11.23H1.82V18.14H0.380005Z" fill="currentColor"></path>
+</svg>
+<button class="text-amber-600 dark:text-primary/80 text-sm font-bold">Skip</button>
+</header>
+<main class="flex-grow flex flex-col justify-center items-center text-center">
+<div class="relative w-full h-72 flex justify-center items-center">
+<div class="absolute w-full h-full bg-contain bg-center bg-no-repeat" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_tMXyPt5kjATEfqXdNF0i9Pxx5oB6zFNA7oDsXVfVd9Qt_Ty-71tHbXbn2BEXLjMttL-rOP4z0tbzUdosZUTG17lzWfZYsjubVoAkQMCeJuU8-J5oPYXTfY8vw84zLbs9BEAEo67PeC61wR_1IE0_lSKc_JA7QKvFmi_VvfQ_omN5NxHih-OasdQ_SQ_UzxVZXYL8-TCrzoR_ZRERFzU61BAxt5vlx_l5dPprR6No2BX6xpifvvUsKOp4wj_WwgykC65GJy2dKDHg');"></div>
+<div class="absolute w-full h-full flex justify-center items-center">
+<div class="relative">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-amber-900 dark:bg-primary/90 p-2 rounded-full shadow-lg">
+<svg class="feather feather-truck" fill="none" height="24" stroke="#fffbeb" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><rect height="13" width="15" x="1" y="3"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
+</div>
+<div class="absolute top-1/2 -translate-y-1/2 -right-12 bg-green-500 p-1.5 rounded-full shadow-lg">
+<svg class="feather feather-check" fill="none" height="20" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><polyline points="20 6 9 17 4 12"></polyline></svg>
+</div>
+<div class="w-4 h-4 bg-amber-600 dark:bg-primary rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+<div class="w-4 h-4 bg-amber-600 dark:bg-primary rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pulsing-dot"></div>
+</div>
+</div>
+</div>
+<div class="flex justify-center items-center gap-2 mt-8 mb-6">
+<div class="w-2 h-2 rounded-full bg-primary/30 dark:bg-primary/20"></div>
+<div class="w-2 h-2 rounded-full bg-primary dark:bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-primary/30 dark:bg-primary/20"></div>
+</div>
+<h1 class="text-3xl font-bold text-amber-900 dark:text-white">Track Every Step</h1>
+<p class="text-base text-amber-700 dark:text-primary/90 mt-2 max-w-sm">
+                Watch your return journey in real-time. GPS tracking, driver updates, and instant notifications keep you informed from pickup to delivery confirmation.
+            </p>
+<div class="mt-8 space-y-4 text-left self-stretch mx-auto max-w-sm">
+<div class="flex items-center text-sm text-amber-700 dark:text-primary/90">
+<span class="mr-3">📍</span> Live GPS driver tracking
+                </div>
+<div class="flex items-center text-sm text-amber-700 dark:text-primary/90">
+<span class="mr-3">🔔</span> Real-time status updates
+                </div>
+<div class="flex items-center text-sm text-amber-700 dark:text-primary/90">
+<span class="mr-3">✉️</span> Delivery confirmation
+                </div>
+</div>
+</main>
+<footer class="flex justify-end items-center pt-8">
+<button class="bg-amber-600 dark:bg-primary w-14 h-14 rounded-full flex items-center justify-center text-white shadow-lg">
+<svg class="feather feather-chevron-right" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<polyline points="9 18 15 12 9 6"></polyline>
+</svg>
+</button>
+</footer>
+</div>
+
+</body></html>

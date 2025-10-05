@@ -103,21 +103,21 @@ export default function DriverPayments() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <AdminNavigation />
       {/* Navigation Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-40">
+      <div className="bg-white shadow-sm border-b border-border sticky top-0 z-40">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Link href="/driver-portal">
-                <Button variant="ghost" size="sm" className="text-amber-700 hover:bg-amber-50" data-testid="button-back">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-back">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Portal
                 </Button>
               </Link>
-              <div className="h-6 w-px bg-amber-200"></div>
-              <h1 className="text-xl font-bold text-amber-900" data-testid="heading-payments">
+              <div className="h-6 w-px bg-accent"></div>
+              <h1 className="text-xl font-bold text-foreground" data-testid="heading-payments">
                 Payments & Earnings
               </h1>
             </div>
@@ -125,7 +125,7 @@ export default function DriverPayments() {
               variant="ghost" 
               size="sm" 
               onClick={() => setShowSidebar(!showSidebar)}
-              className="text-amber-700 hover:bg-amber-50"
+              className="text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
               data-testid="button-menu"
             >
               <Menu className="h-4 w-4" />
@@ -138,34 +138,34 @@ export default function DriverPayments() {
       {showSidebar && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowSidebar(false)}>
           <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-lg font-bold text-amber-900 mb-6">Driver Navigation</h2>
+            <h2 className="text-lg font-bold text-foreground mb-6">Driver Navigation</h2>
             <div className="space-y-3">
               <Link href="/driver-portal">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-portal">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="nav-portal">
                   <Home className="h-4 w-4 mr-3" />
                   Driver Portal
                 </Button>
               </Link>
               <Link href="/driver-payments">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-50" data-testid="nav-payments">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="nav-payments">
                   <CreditCard className="h-4 w-4 mr-3" />
                   Payments & Earnings
                 </Button>
               </Link>
               <Link href="/order-status">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-orders">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="nav-orders">
                   <Package className="h-4 w-4 mr-3" />
                   My Orders
                 </Button>
               </Link>
               <Link href="/admin-dashboard">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-admin">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="nav-admin">
                   <Users className="h-4 w-4 mr-3" />
                   Admin Dashboard
                 </Button>
               </Link>
               <Link href="/welcome">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50" data-testid="nav-home">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="nav-home">
                   <Home className="h-4 w-4 mr-3" />
                   Home
                 </Button>
@@ -177,20 +177,20 @@ export default function DriverPayments() {
 
       <div className="container mx-auto max-w-6xl p-6">
         <div className="mb-8">
-          <p className="text-amber-700" data-testid="text-subtitle">
+          <p className="text-muted-foreground" data-testid="text-subtitle">
             Manage your earnings, payouts, and incentives
           </p>
         </div>
 
         {/* Earnings Overview */}
         <div className="grid md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white border-amber-200" data-testid="card-pending-earnings">
+          <Card className="bg-white border-border" data-testid="card-pending-earnings">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <Clock className="w-8 h-8 text-amber-600" />
+                <Clock className="w-8 h-8 text-primary" />
                 <div>
-                  <p className="text-sm text-amber-600">Pending Earnings</p>
-                  <p className="text-2xl font-bold text-amber-900" data-testid="amount-pending">
+                  <p className="text-sm text-primary">Pending Earnings</p>
+                  <p className="text-2xl font-bold text-foreground" data-testid="amount-pending">
                     ${pendingEarnings.toFixed(2)}
                   </p>
                 </div>
@@ -198,13 +198,13 @@ export default function DriverPayments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-amber-200" data-testid="card-total-earnings">
+          <Card className="bg-white border-border" data-testid="card-total-earnings">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <DollarSign className="w-8 h-8 text-green-600" />
                 <div>
-                  <p className="text-sm text-amber-600">Total Earnings</p>
-                  <p className="text-2xl font-bold text-amber-900" data-testid="amount-total">
+                  <p className="text-sm text-primary">Total Earnings</p>
+                  <p className="text-2xl font-bold text-foreground" data-testid="amount-total">
                     ${totalEarnings.toFixed(2)}
                   </p>
                 </div>
@@ -212,13 +212,13 @@ export default function DriverPayments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-amber-200" data-testid="card-completed-orders">
+          <Card className="bg-white border-border" data-testid="card-completed-orders">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <TrendingUp className="w-8 h-8 text-blue-600" />
                 <div>
-                  <p className="text-sm text-amber-600">Completed Orders</p>
-                  <p className="text-2xl font-bold text-amber-900" data-testid="count-completed">
+                  <p className="text-sm text-primary">Completed Orders</p>
+                  <p className="text-2xl font-bold text-foreground" data-testid="count-completed">
                     {completedOrders.length}
                   </p>
                 </div>
@@ -226,13 +226,13 @@ export default function DriverPayments() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-amber-200" data-testid="card-bonuses">
+          <Card className="bg-white border-border" data-testid="card-bonuses">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <Gift className="w-8 h-8 text-purple-600" />
                 <div>
-                  <p className="text-sm text-amber-600">Total Bonuses</p>
-                  <p className="text-2xl font-bold text-amber-900" data-testid="amount-bonuses">
+                  <p className="text-sm text-primary">Total Bonuses</p>
+                  <p className="text-2xl font-bold text-foreground" data-testid="amount-bonuses">
                     ${completedOrders.reduce((sum: number, order: any) => 
                       sum + (order.sizeBonusAmount || 0) + (order.peakSeasonBonus || 0) + (order.multiStopBonus || 0), 0
                     ).toFixed(2)}
@@ -244,31 +244,31 @@ export default function DriverPayments() {
         </div>
 
         <Tabs defaultValue="instant-pay" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-amber-100 p-1 h-12 rounded-lg border border-amber-200">
+          <TabsList className="grid w-full grid-cols-4 bg-accent p-1 h-12 rounded-lg border border-border">
             <TabsTrigger 
               value="instant-pay" 
-              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              className="text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium transition-all"
               data-testid="tab-instant-pay"
             >
               Instant Pay
             </TabsTrigger>
             <TabsTrigger 
               value="earnings" 
-              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              className="text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium transition-all"
               data-testid="tab-earnings"
             >
               Earnings
             </TabsTrigger>
             <TabsTrigger 
               value="incentives" 
-              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              className="text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium transition-all"
               data-testid="tab-incentives"
             >
               Incentives
             </TabsTrigger>
             <TabsTrigger 
               value="tax-info" 
-              className="text-amber-800 data-[state=active]:bg-white data-[state=active]:text-amber-900 data-[state=active]:shadow-sm font-medium transition-all"
+              className="text-foreground data-[state=active]:bg-white data-[state=active]:text-foreground data-[state=active]:shadow-sm font-medium transition-all"
               data-testid="tab-tax"
             >
               Tax Info
@@ -276,7 +276,7 @@ export default function DriverPayments() {
           </TabsList>
 
           <TabsContent value="instant-pay">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2" data-testid="heading-instant-pay">
                   <Zap className="w-5 h-5 text-yellow-500" />
@@ -288,11 +288,11 @@ export default function DriverPayments() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                    <h3 className="font-semibold text-amber-900 mb-2" data-testid="heading-available-earnings">
+                  <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+                    <h3 className="font-semibold text-foreground mb-2" data-testid="heading-available-earnings">
                       Available for Instant Payout: ${pendingEarnings.toFixed(2)}
                     </h3>
-                    <p className="text-sm text-amber-700 mb-3">
+                    <p className="text-sm text-muted-foreground mb-3">
                       Select completed orders to cash out instantly:
                     </p>
                     
@@ -320,8 +320,8 @@ export default function DriverPayments() {
                                 data-testid={`checkbox-order-${order.id}`}
                               />
                               <div>
-                                <p className="font-medium text-amber-900">{order.retailer}</p>
-                                <p className="text-sm text-amber-600">{order.pickupAddress}</p>
+                                <p className="font-medium text-foreground">{order.retailer}</p>
+                                <p className="text-sm text-primary">{order.pickupAddress}</p>
                               </div>
                             </div>
                             <div className="text-right">
@@ -368,7 +368,7 @@ export default function DriverPayments() {
                   <Button 
                     onClick={handleInstantPayout}
                     disabled={selectedOrders.length === 0 || instantPayoutMutation.isPending}
-                    className="w-full bg-amber-600 hover:bg-amber-700"
+                    className="w-full bg-primary hover:bg-primary/90"
                     data-testid="button-instant-payout"
                   >
                     {instantPayoutMutation.isPending ? (
@@ -383,7 +383,7 @@ export default function DriverPayments() {
           </TabsContent>
 
           <TabsContent value="earnings">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardHeader>
                 <CardTitle data-testid="heading-earnings-history">Earnings History</CardTitle>
                 <CardDescription>Your completed deliveries and earnings breakdown</CardDescription>
@@ -393,15 +393,15 @@ export default function DriverPayments() {
                   {completedOrders.map((order: any) => (
                     <div 
                       key={order.id} 
-                      className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200"
+                      className="flex items-center justify-between p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border"
                       data-testid={`earnings-item-${order.id}`}
                     >
                       <div className="flex items-center gap-4">
                         <CheckCircle className="w-5 h-5 text-green-500" />
                         <div>
-                          <p className="font-medium text-amber-900">{order.retailer}</p>
-                          <p className="text-sm text-amber-600">{order.pickupAddress}</p>
-                          <p className="text-xs text-amber-500">
+                          <p className="font-medium text-foreground">{order.retailer}</p>
+                          <p className="text-sm text-primary">{order.pickupAddress}</p>
+                          <p className="text-xs text-primary">
                             Completed: {new Date(order.actualDeliveryTime || order.updatedAt).toLocaleDateString()}
                           </p>
                         </div>
@@ -439,7 +439,7 @@ export default function DriverPayments() {
           </TabsContent>
 
           <TabsContent value="incentives">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2" data-testid="heading-incentives">
                   <Star className="w-5 h-5 text-yellow-500" />
@@ -450,7 +450,7 @@ export default function DriverPayments() {
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-amber-900" data-testid="heading-active-incentives">Active Incentives</h3>
+                    <h3 className="font-semibold text-foreground" data-testid="heading-active-incentives">Active Incentives</h3>
                     
                     <div className="p-4 bg-green-50 border border-green-200 rounded-lg" data-testid="incentive-size-bonus">
                       <div className="flex items-center gap-2 mb-2">
@@ -483,29 +483,29 @@ export default function DriverPayments() {
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-amber-900" data-testid="heading-earned-bonuses">Your Earned Bonuses</h3>
+                    <h3 className="font-semibold text-foreground" data-testid="heading-earned-bonuses">Your Earned Bonuses</h3>
                     
                     {incentives && incentives.length > 0 ? (
                       incentives.map((incentive: any) => (
                         <div 
                           key={incentive.id} 
-                          className="p-3 bg-amber-50 border border-amber-200 rounded-lg"
+                          className="p-3 bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg"
                           data-testid={`earned-incentive-${incentive.id}`}
                         >
                           <div className="flex justify-between items-start">
                             <div>
-                              <p className="font-medium text-amber-900">{incentive.description}</p>
-                              <p className="text-sm text-amber-600">{incentive.incentiveType}</p>
+                              <p className="font-medium text-foreground">{incentive.description}</p>
+                              <p className="text-sm text-primary">{incentive.incentiveType}</p>
                             </div>
                             <p className="font-semibold text-green-600">+${incentive.amount.toFixed(2)}</p>
                           </div>
                         </div>
                       ))
                     ) : (
-                      <div className="text-center p-6 bg-amber-50 border border-amber-200 rounded-lg" data-testid="no-bonuses">
-                        <Gift className="w-8 h-8 mx-auto text-amber-400 mb-2" />
-                        <p className="text-amber-600">No bonuses earned yet</p>
-                        <p className="text-sm text-amber-500">Complete deliveries to start earning bonuses!</p>
+                      <div className="text-center p-6 bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg" data-testid="no-bonuses">
+                        <Gift className="w-8 h-8 mx-auto text-primary mb-2" />
+                        <p className="text-primary">No bonuses earned yet</p>
+                        <p className="text-sm text-primary">Complete deliveries to start earning bonuses!</p>
                       </div>
                     )}
                   </div>
@@ -515,7 +515,7 @@ export default function DriverPayments() {
           </TabsContent>
 
           <TabsContent value="tax-info">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2" data-testid="heading-tax-info">
                   <Receipt className="w-5 h-5 text-blue-500" />

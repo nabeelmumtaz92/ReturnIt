@@ -298,47 +298,47 @@ export default function EmployeeOnboarding() {
         return (
           <div className="text-center space-y-6 py-8">
             <div className="mb-6">
-              <h2 className="text-3xl font-bold text-amber-900 mb-2">Welcome to ReturnIt!</h2>
-              <p className="text-lg text-amber-700 mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-2">Welcome to ReturnIt!</h2>
+              <p className="text-lg text-muted-foreground mb-6">
                 We're excited to have you join our team. This onboarding wizard will help you get set up and ready to make an impact.
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-amber-50 rounded-lg border border-amber-200">
-                <Users className="h-8 w-8 text-amber-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-amber-900 mb-2">Join Our Team</h3>
-                <p className="text-sm text-amber-700">Connect with amazing colleagues and be part of something special</p>
+              <div className="text-center p-6 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+                <Users className="h-8 w-8 text-primary mx-auto mb-3" />
+                <h3 className="font-semibold text-foreground mb-2">Join Our Team</h3>
+                <p className="text-sm text-muted-foreground">Connect with amazing colleagues and be part of something special</p>
               </div>
-              <div className="text-center p-6 bg-amber-50 rounded-lg border border-amber-200">
-                <Zap className="h-8 w-8 text-amber-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-amber-900 mb-2">Make an Impact</h3>
-                <p className="text-sm text-amber-700">Your skills and ideas will help transform how people handle returns</p>
+              <div className="text-center p-6 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+                <Zap className="h-8 w-8 text-primary mx-auto mb-3" />
+                <h3 className="font-semibold text-foreground mb-2">Make an Impact</h3>
+                <p className="text-sm text-muted-foreground">Your skills and ideas will help transform how people handle returns</p>
               </div>
-              <div className="text-center p-6 bg-amber-50 rounded-lg border border-amber-200">
-                <Gift className="h-8 w-8 text-amber-600 mx-auto mb-3" />
-                <h3 className="font-semibold text-amber-900 mb-2">Grow & Learn</h3>
-                <p className="text-sm text-amber-700">Access continuous learning opportunities and career development</p>
+              <div className="text-center p-6 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+                <Gift className="h-8 w-8 text-primary mx-auto mb-3" />
+                <h3 className="font-semibold text-foreground mb-2">Grow & Learn</h3>
+                <p className="text-sm text-muted-foreground">Access continuous learning opportunities and career development</p>
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-900 mb-3">What to Expect:</h4>
-              <ul className="text-left text-amber-800 space-y-2">
+            <div className="mt-8 p-6 bg-gradient-to-r from-transparent to-transparent rounded-lg border border-border">
+              <h4 className="font-semibold text-foreground mb-3">What to Expect:</h4>
+              <ul className="text-left text-foreground space-y-2">
                 <li className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <span>Complete your personal and professional information</span>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <span>Set up your system access and security preferences</span>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <span>Choose your training path and communication preferences</span>
                 </li>
                 <li className="flex items-center space-x-2">
-                  <CheckCircle className="h-4 w-4 text-amber-600" />
+                  <CheckCircle className="h-4 w-4 text-primary" />
                   <span>Review important company policies and agreements</span>
                 </li>
               </ul>
@@ -350,104 +350,104 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Personal Information</h3>
-              <p className="text-amber-700 mb-6">Please provide your basic personal and contact information.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Personal Information</h3>
+              <p className="text-muted-foreground mb-6">Please provide your basic personal and contact information.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="text-amber-800 font-medium">First Name*</Label>
+                <Label htmlFor="firstName" className="text-foreground font-medium">First Name*</Label>
                 <Input
                   id="firstName"
                   data-testid="input-first-name"
                   value={employeeData.firstName}
                   onChange={(e) => setEmployeeData(prev => ({...prev, firstName: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Enter your first name"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="lastName" className="text-amber-800 font-medium">Last Name*</Label>
+                <Label htmlFor="lastName" className="text-foreground font-medium">Last Name*</Label>
                 <Input
                   id="lastName"
                   data-testid="input-last-name"
                   value={employeeData.lastName}
                   onChange={(e) => setEmployeeData(prev => ({...prev, lastName: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Enter your last name"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-amber-800 font-medium">Email Address*</Label>
+                <Label htmlFor="email" className="text-foreground font-medium">Email Address*</Label>
                 <Input
                   id="email"
                   data-testid="input-email"
                   type="email"
                   value={employeeData.email}
                   onChange={(e) => setEmployeeData(prev => ({...prev, email: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Enter your email address"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-amber-800 font-medium">Phone Number*</Label>
+                <Label htmlFor="phone" className="text-foreground font-medium">Phone Number*</Label>
                 <Input
                   id="phone"
                   data-testid="input-phone"
                   value={employeeData.phone}
                   onChange={(e) => setEmployeeData(prev => ({...prev, phone: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="(555) 123-4567"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="dateOfBirth" className="text-amber-800 font-medium">Date of Birth</Label>
+                <Label htmlFor="dateOfBirth" className="text-foreground font-medium">Date of Birth</Label>
                 <Input
                   id="dateOfBirth"
                   data-testid="input-date-of-birth"
                   type="date"
                   value={employeeData.dateOfBirth}
                   onChange={(e) => setEmployeeData(prev => ({...prev, dateOfBirth: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                 />
               </div>
             </div>
 
             <div className="mt-8">
-              <h4 className="text-lg font-semibold text-amber-900 mb-4">Address Information</h4>
+              <h4 className="text-lg font-semibold text-foreground mb-4">Address Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="address" className="text-amber-800 font-medium">Street Address</Label>
+                  <Label htmlFor="address" className="text-foreground font-medium">Street Address</Label>
                   <Input
                     id="address"
                     data-testid="input-address"
                     value={employeeData.address}
                     onChange={(e) => setEmployeeData(prev => ({...prev, address: e.target.value}))}
-                    className="border-amber-300 focus:border-amber-500"
+                    className="border-border focus:border-border"
                     placeholder="123 Main Street"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="city" className="text-amber-800 font-medium">City</Label>
+                  <Label htmlFor="city" className="text-foreground font-medium">City</Label>
                   <Input
                     id="city"
                     data-testid="input-city"
                     value={employeeData.city}
                     onChange={(e) => setEmployeeData(prev => ({...prev, city: e.target.value}))}
-                    className="border-amber-300 focus:border-amber-500"
+                    className="border-border focus:border-border"
                     placeholder="St. Louis"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="state" className="text-amber-800 font-medium">State</Label>
+                  <Label htmlFor="state" className="text-foreground font-medium">State</Label>
                   <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, state: value}))}>
-                    <SelectTrigger data-testid="select-state" className="border-amber-300 focus:border-amber-500">
+                    <SelectTrigger data-testid="select-state" className="border-border focus:border-border">
                       <SelectValue placeholder="Select state" />
                     </SelectTrigger>
                     <SelectContent>
@@ -461,13 +461,13 @@ export default function EmployeeOnboarding() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="zipCode" className="text-amber-800 font-medium">ZIP Code</Label>
+                  <Label htmlFor="zipCode" className="text-foreground font-medium">ZIP Code</Label>
                   <Input
                     id="zipCode"
                     data-testid="input-zip"
                     value={employeeData.zipCode}
                     onChange={(e) => setEmployeeData(prev => ({...prev, zipCode: e.target.value}))}
-                    className="border-amber-300 focus:border-amber-500"
+                    className="border-border focus:border-border"
                     placeholder="63101"
                   />
                 </div>
@@ -475,28 +475,28 @@ export default function EmployeeOnboarding() {
             </div>
 
             <div className="mt-8">
-              <h4 className="text-lg font-semibold text-amber-900 mb-4">Emergency Contact</h4>
+              <h4 className="text-lg font-semibold text-foreground mb-4">Emergency Contact</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="emergencyContactName" className="text-amber-800 font-medium">Emergency Contact Name</Label>
+                  <Label htmlFor="emergencyContactName" className="text-foreground font-medium">Emergency Contact Name</Label>
                   <Input
                     id="emergencyContactName"
                     data-testid="input-emergency-name"
                     value={employeeData.emergencyContactName}
                     onChange={(e) => setEmployeeData(prev => ({...prev, emergencyContactName: e.target.value}))}
-                    className="border-amber-300 focus:border-amber-500"
+                    className="border-border focus:border-border"
                     placeholder="John Doe"
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="emergencyContactPhone" className="text-amber-800 font-medium">Emergency Contact Phone</Label>
+                  <Label htmlFor="emergencyContactPhone" className="text-foreground font-medium">Emergency Contact Phone</Label>
                   <Input
                     id="emergencyContactPhone"
                     data-testid="input-emergency-phone"
                     value={employeeData.emergencyContactPhone}
                     onChange={(e) => setEmployeeData(prev => ({...prev, emergencyContactPhone: e.target.value}))}
-                    className="border-amber-300 focus:border-amber-500"
+                    className="border-border focus:border-border"
                     placeholder="(555) 987-6543"
                   />
                 </div>
@@ -505,17 +505,17 @@ export default function EmployeeOnboarding() {
 
             {/* Demographic Information (EEO Compliance) */}
             <div className="mt-8">
-              <h4 className="text-lg font-semibold text-amber-900 mb-2">Equal Employment Opportunity Information</h4>
-              <p className="text-amber-600 text-sm mb-4">
+              <h4 className="text-lg font-semibold text-foreground mb-2">Equal Employment Opportunity Information</h4>
+              <p className="text-primary text-sm mb-4">
                 The following questions are asked for statistical purposes only and are used to comply with federal reporting requirements. 
                 Your responses are voluntary and will not affect your employment or advancement opportunities.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="gender" className="text-amber-800 font-medium">Gender (Optional)</Label>
+                  <Label htmlFor="gender" className="text-foreground font-medium">Gender (Optional)</Label>
                   <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, gender: value}))}>
-                    <SelectTrigger data-testid="select-gender" className="border-amber-300 focus:border-amber-500">
+                    <SelectTrigger data-testid="select-gender" className="border-border focus:border-border">
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
@@ -528,9 +528,9 @@ export default function EmployeeOnboarding() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="ethnicityRace" className="text-amber-800 font-medium">Race/Ethnicity (Optional)</Label>
+                  <Label htmlFor="ethnicityRace" className="text-foreground font-medium">Race/Ethnicity (Optional)</Label>
                   <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, ethnicityRace: value}))}>
-                    <SelectTrigger data-testid="select-ethnicity" className="border-amber-300 focus:border-amber-500">
+                    <SelectTrigger data-testid="select-ethnicity" className="border-border focus:border-border">
                       <SelectValue placeholder="Select race/ethnicity" />
                     </SelectTrigger>
                     <SelectContent>
@@ -547,9 +547,9 @@ export default function EmployeeOnboarding() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="isVeteran" className="text-amber-800 font-medium">Veteran Status (Optional)</Label>
+                  <Label htmlFor="isVeteran" className="text-foreground font-medium">Veteran Status (Optional)</Label>
                   <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, isVeteran: value === 'yes'}))}>
-                    <SelectTrigger data-testid="select-veteran" className="border-amber-300 focus:border-amber-500">
+                    <SelectTrigger data-testid="select-veteran" className="border-border focus:border-border">
                       <SelectValue placeholder="Select veteran status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -561,9 +561,9 @@ export default function EmployeeOnboarding() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hasDisability" className="text-amber-800 font-medium">Disability Status (Optional)</Label>
+                  <Label htmlFor="hasDisability" className="text-foreground font-medium">Disability Status (Optional)</Label>
                   <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, hasDisability: value === 'yes'}))}>
-                    <SelectTrigger data-testid="select-disability" className="border-amber-300 focus:border-amber-500">
+                    <SelectTrigger data-testid="select-disability" className="border-border focus:border-border">
                       <SelectValue placeholder="Select disability status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -575,8 +575,8 @@ export default function EmployeeOnboarding() {
                 </div>
               </div>
 
-              <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <p className="text-xs text-amber-700">
+              <div className="mt-4 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+                <p className="text-xs text-muted-foreground">
                   <strong>Privacy Notice:</strong> This information is kept confidential and separate from your employment records. 
                   It is used solely for compliance with Equal Employment Opportunity reporting requirements and to track our efforts 
                   to provide equal employment opportunities to all individuals.
@@ -590,15 +590,15 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Professional Information</h3>
-              <p className="text-amber-700 mb-6">Tell us about your role and position within ReturnIt.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Professional Information</h3>
+              <p className="text-muted-foreground mb-6">Tell us about your role and position within ReturnIt.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="position" className="text-amber-800 font-medium">Position/Job Title*</Label>
+                <Label htmlFor="position" className="text-foreground font-medium">Position/Job Title*</Label>
                 <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, position: value}))}>
-                  <SelectTrigger data-testid="select-position" className="border-amber-300 focus:border-amber-500">
+                  <SelectTrigger data-testid="select-position" className="border-border focus:border-border">
                     <SelectValue placeholder="Select your position" />
                   </SelectTrigger>
                   <SelectContent>
@@ -615,9 +615,9 @@ export default function EmployeeOnboarding() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="department" className="text-amber-800 font-medium">Department*</Label>
+                <Label htmlFor="department" className="text-foreground font-medium">Department*</Label>
                 <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, department: value}))}>
-                  <SelectTrigger data-testid="select-department" className="border-amber-300 focus:border-amber-500">
+                  <SelectTrigger data-testid="select-department" className="border-border focus:border-border">
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent>
@@ -633,34 +633,34 @@ export default function EmployeeOnboarding() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="startDate" className="text-amber-800 font-medium">Start Date*</Label>
+                <Label htmlFor="startDate" className="text-foreground font-medium">Start Date*</Label>
                 <Input
                   id="startDate"
                   data-testid="input-start-date"
                   type="date"
                   value={employeeData.startDate}
                   onChange={(e) => setEmployeeData(prev => ({...prev, startDate: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="employeeId" className="text-amber-800 font-medium">Employee ID</Label>
+                <Label htmlFor="employeeId" className="text-foreground font-medium">Employee ID</Label>
                 <Input
                   id="employeeId"
                   data-testid="input-employee-id"
                   value={employeeData.employeeId}
                   onChange={(e) => setEmployeeData(prev => ({...prev, employeeId: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Auto-generated or provided by HR"
                   disabled
                 />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="supervisor" className="text-amber-800 font-medium">Direct Supervisor</Label>
+                <Label htmlFor="supervisor" className="text-foreground font-medium">Direct Supervisor</Label>
                 <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, supervisor: value}))}>
-                  <SelectTrigger data-testid="select-supervisor" className="border-amber-300 focus:border-amber-500">
+                  <SelectTrigger data-testid="select-supervisor" className="border-border focus:border-border">
                     <SelectValue placeholder="Select your supervisor" />
                   </SelectTrigger>
                   <SelectContent>
@@ -674,9 +674,9 @@ export default function EmployeeOnboarding() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="workLocation" className="text-amber-800 font-medium">Work Location</Label>
+                <Label htmlFor="workLocation" className="text-foreground font-medium">Work Location</Label>
                 <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, workLocation: value}))}>
-                  <SelectTrigger data-testid="select-work-location" className="border-amber-300 focus:border-amber-500">
+                  <SelectTrigger data-testid="select-work-location" className="border-border focus:border-border">
                     <SelectValue placeholder="Select work location" />
                   </SelectTrigger>
                   <SelectContent>
@@ -689,13 +689,13 @@ export default function EmployeeOnboarding() {
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-amber-50 rounded-lg border border-amber-200">
-              <h4 className="text-lg font-semibold text-amber-900 mb-3 flex items-center">
+            <div className="mt-8 p-6 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+              <h4 className="text-lg font-semibold text-foreground mb-3 flex items-center">
                 <Building2 className="h-5 w-5 mr-2" />
                 Department Overview
               </h4>
               {employeeData.department && (
-                <div className="text-amber-800">
+                <div className="text-foreground">
                   {employeeData.department === 'customer-support' && (
                     <p>As part of Customer Support, you'll help our customers with inquiries, resolve issues, and ensure excellent service delivery. You'll work with our ticketing system and collaborate closely with operations teams.</p>
                   )}
@@ -721,13 +721,13 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">System Access Setup</h3>
-              <p className="text-amber-700 mb-6">Create your account credentials and set up your profile.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">System Access Setup</h3>
+              <p className="text-muted-foreground mb-6">Create your account credentials and set up your profile.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-amber-800 font-medium">Password*</Label>
+                <Label htmlFor="password" className="text-foreground font-medium">Password*</Label>
                 <Input
                   id="password"
                   data-testid="input-password"
@@ -735,16 +735,16 @@ export default function EmployeeOnboarding() {
                   autoComplete="new-password"
                   value={employeeData.password}
                   onChange={(e) => setEmployeeData(prev => ({...prev, password: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Create a strong password"
                 />
-                <div className="text-sm text-amber-600">
+                <div className="text-sm text-primary">
                   Password must be at least 8 characters with uppercase, lowercase, and numbers
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-amber-800 font-medium">Confirm Password*</Label>
+                <Label htmlFor="confirmPassword" className="text-foreground font-medium">Confirm Password*</Label>
                 <Input
                   id="confirmPassword"
                   data-testid="input-confirm-password"
@@ -752,7 +752,7 @@ export default function EmployeeOnboarding() {
                   autoComplete="new-password"
                   value={employeeData.confirmPassword}
                   onChange={(e) => setEmployeeData(prev => ({...prev, confirmPassword: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500"
+                  className="border-border focus:border-border"
                   placeholder="Confirm your password"
                 />
                 {employeeData.password && employeeData.confirmPassword && employeeData.password !== employeeData.confirmPassword && (
@@ -762,14 +762,14 @@ export default function EmployeeOnboarding() {
             </div>
 
             <div className="mt-8">
-              <h4 className="text-lg font-semibold text-amber-900 mb-4">Profile Photo</h4>
+              <h4 className="text-lg font-semibold text-foreground mb-4">Profile Photo</h4>
               <div className="flex items-start space-x-6">
                 <div className="flex-shrink-0">
-                  <div className="h-24 w-24 rounded-full bg-amber-100 border-2 border-amber-300 flex items-center justify-center">
+                  <div className="h-24 w-24 rounded-full bg-accent border-2 border-border flex items-center justify-center">
                     {employeeData.profilePhoto ? (
                       <img src={employeeData.profilePhoto} alt="Profile" className="h-full w-full rounded-full object-cover" />
                     ) : (
-                      <User className="h-12 w-12 text-amber-400" />
+                      <User className="h-12 w-12 text-primary" />
                     )}
                   </div>
                 </div>
@@ -777,7 +777,7 @@ export default function EmployeeOnboarding() {
                   <Button
                     type="button"
                     variant="outline"
-                    className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                     onClick={() => {
                       toast({
                         title: "Photo Upload",
@@ -788,7 +788,7 @@ export default function EmployeeOnboarding() {
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Photo
                   </Button>
-                  <p className="text-sm text-amber-600 mt-2">
+                  <p className="text-sm text-primary mt-2">
                     Recommended: 200x200px, JPG or PNG format, max 2MB
                   </p>
                 </div>
@@ -828,13 +828,13 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Training & Preferences</h3>
-              <p className="text-amber-700 mb-6">Customize your learning experience and communication preferences.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Training & Preferences</h3>
+              <p className="text-muted-foreground mb-6">Customize your learning experience and communication preferences.</p>
             </div>
 
             <div className="space-y-8">
               <div>
-                <h4 className="text-lg font-semibold text-amber-900 mb-4">Training Preferences</h4>
+                <h4 className="text-lg font-semibold text-foreground mb-4">Training Preferences</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     { id: 'video-tutorials', label: 'Video Tutorials', icon: '🎥' },
@@ -844,7 +844,7 @@ export default function EmployeeOnboarding() {
                     { id: 'group-workshops', label: 'Group Workshops', icon: '👨‍🏫' },
                     { id: 'self-paced-learning', label: 'Self-Paced Learning', icon: '⏰' }
                   ].map((preference) => (
-                    <div key={preference.id} className="flex items-center space-x-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div key={preference.id} className="flex items-center space-x-3 p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                       <Checkbox
                         id={preference.id}
                         data-testid={`checkbox-${preference.id}`}
@@ -865,7 +865,7 @@ export default function EmployeeOnboarding() {
                       />
                       <div className="flex items-center space-x-2">
                         <span className="text-lg">{preference.icon}</span>
-                        <Label htmlFor={preference.id} className="text-amber-800">{preference.label}</Label>
+                        <Label htmlFor={preference.id} className="text-foreground">{preference.label}</Label>
                       </div>
                     </div>
                   ))}
@@ -873,7 +873,7 @@ export default function EmployeeOnboarding() {
               </div>
 
               <div>
-                <h4 className="text-lg font-semibold text-amber-900 mb-4">Communication Preferences</h4>
+                <h4 className="text-lg font-semibold text-foreground mb-4">Communication Preferences</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
                     { id: 'email-updates', label: 'Email Updates', icon: <Mail className="h-4 w-4" /> },
@@ -881,7 +881,7 @@ export default function EmployeeOnboarding() {
                     { id: 'desktop-notifications', label: 'Desktop Notifications', icon: <Settings className="h-4 w-4" /> },
                     { id: 'weekly-digest', label: 'Weekly Digest', icon: <Calendar className="h-4 w-4" /> }
                   ].map((preference) => (
-                    <div key={preference.id} className="flex items-center space-x-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <div key={preference.id} className="flex items-center space-x-3 p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                       <Checkbox
                         id={preference.id}
                         data-testid={`checkbox-${preference.id}`}
@@ -902,7 +902,7 @@ export default function EmployeeOnboarding() {
                       />
                       <div className="flex items-center space-x-2">
                         {preference.icon}
-                        <Label htmlFor={preference.id} className="text-amber-800">{preference.label}</Label>
+                        <Label htmlFor={preference.id} className="text-foreground">{preference.label}</Label>
                       </div>
                     </div>
                   ))}
@@ -910,9 +910,9 @@ export default function EmployeeOnboarding() {
               </div>
 
               <div>
-                <h4 className="text-lg font-semibold text-amber-900 mb-4">Work Schedule Preference</h4>
+                <h4 className="text-lg font-semibold text-foreground mb-4">Work Schedule Preference</h4>
                 <Select onValueChange={(value) => setEmployeeData(prev => ({...prev, workSchedulePreference: value}))}>
-                  <SelectTrigger data-testid="select-schedule" className="border-amber-300 focus:border-amber-500">
+                  <SelectTrigger data-testid="select-schedule" className="border-border focus:border-border">
                     <SelectValue placeholder="Select your preferred work schedule" />
                   </SelectTrigger>
                   <SelectContent>
@@ -932,27 +932,27 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Compliance & Agreements</h3>
-              <p className="text-amber-700 mb-6">Please review and acknowledge the following company policies and agreements.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Compliance & Agreements</h3>
+              <p className="text-muted-foreground mb-6">Please review and acknowledge the following company policies and agreements.</p>
             </div>
 
             <div className="space-y-6">
-              <Card className="border-amber-200">
+              <Card className="border-border">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-amber-900 flex items-center">
+                  <CardTitle className="text-lg text-foreground flex items-center">
                     <BookOpen className="h-5 w-5 mr-2" />
                     Employee Handbook
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-amber-700 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     The employee handbook contains important information about company policies, procedures, benefits, and expectations. Please review the complete handbook.
                   </p>
                   <div className="flex items-center justify-between">
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                      className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                       onClick={() => {
                         // Open handbook in new tab
                         window.open('/employee-guide', '_blank');
@@ -970,7 +970,7 @@ export default function EmployeeOnboarding() {
                           setEmployeeData(prev => ({...prev, handbookAcknowledged: !!checked}))
                         }
                       />
-                      <Label htmlFor="handbook-acknowledged" className="text-amber-800 font-medium">
+                      <Label htmlFor="handbook-acknowledged" className="text-foreground font-medium">
                         I have read and understood the employee handbook*
                       </Label>
                     </div>
@@ -978,22 +978,22 @@ export default function EmployeeOnboarding() {
                 </CardContent>
               </Card>
 
-              <Card className="border-amber-200">
+              <Card className="border-border">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-amber-900 flex items-center">
+                  <CardTitle className="text-lg text-foreground flex items-center">
                     <Shield className="h-5 w-5 mr-2" />
                     Privacy Policy & Data Protection
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-amber-700 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Our privacy policy outlines how we collect, use, and protect personal information. As an employee, you'll have access to customer data and must follow our data protection guidelines.
                   </p>
                   <div className="flex items-center justify-between">
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                      className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                       onClick={() => {
                         window.open('/privacy-policy', '_blank');
                       }}
@@ -1010,7 +1010,7 @@ export default function EmployeeOnboarding() {
                           setEmployeeData(prev => ({...prev, privacyPolicyAgreed: !!checked}))
                         }
                       />
-                      <Label htmlFor="privacy-agreed" className="text-amber-800 font-medium">
+                      <Label htmlFor="privacy-agreed" className="text-foreground font-medium">
                         I agree to the privacy policy and data protection guidelines*
                       </Label>
                     </div>
@@ -1018,22 +1018,22 @@ export default function EmployeeOnboarding() {
                 </CardContent>
               </Card>
 
-              <Card className="border-amber-200">
+              <Card className="border-border">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg text-amber-900 flex items-center">
+                  <CardTitle className="text-lg text-foreground flex items-center">
                     <Users className="h-5 w-5 mr-2" />
                     Code of Conduct
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-amber-700 mb-4">
+                  <p className="text-muted-foreground mb-4">
                     Our code of conduct establishes the ethical standards and behavioral expectations for all ReturnIt employees. This includes guidelines for professional conduct, customer interactions, and workplace behavior.
                   </p>
                   <div className="flex items-center justify-between">
                     <Button
                       type="button"
                       variant="outline"
-                      className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                      className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                       onClick={() => {
                         toast({
                           title: "Code of Conduct",
@@ -1053,7 +1053,7 @@ export default function EmployeeOnboarding() {
                           setEmployeeData(prev => ({...prev, codeOfConductAgreed: !!checked}))
                         }
                       />
-                      <Label htmlFor="conduct-agreed" className="text-amber-800 font-medium">
+                      <Label htmlFor="conduct-agreed" className="text-foreground font-medium">
                         I agree to follow the code of conduct*
                       </Label>
                     </div>
@@ -1106,8 +1106,8 @@ export default function EmployeeOnboarding() {
               </Card>
             </div>
 
-            <div className="mt-6 p-4 bg-amber-50 rounded-lg border border-amber-200">
-              <p className="text-sm text-amber-800">
+            <div className="mt-6 p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
+              <p className="text-sm text-foreground">
                 <strong>Note:</strong> All required agreements must be acknowledged before completing your onboarding. You can always access these documents later through the employee portal.
               </p>
             </div>
@@ -1118,26 +1118,26 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Skills & Experience</h3>
-              <p className="text-amber-700 mb-6">Tell us about your background, skills, and experience to help us better support your role.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Skills & Experience</h3>
+              <p className="text-muted-foreground mb-6">Tell us about your background, skills, and experience to help us better support your role.</p>
             </div>
 
             <div className="space-y-6">
               <div>
-                <Label htmlFor="previousExperience" className="text-amber-800 font-medium">Previous Experience</Label>
+                <Label htmlFor="previousExperience" className="text-foreground font-medium">Previous Experience</Label>
                 <Textarea
                   id="previousExperience"
                   data-testid="textarea-experience"
                   value={employeeData.previousExperience}
                   onChange={(e) => setEmployeeData(prev => ({...prev, previousExperience: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500 mt-2"
+                  className="border-border focus:border-border mt-2"
                   rows={4}
                   placeholder="Tell us about your relevant work experience, previous roles, and any experience in customer service, logistics, or related fields..."
                 />
               </div>
 
               <div>
-                <Label className="text-amber-800 font-medium">Technical Skills</Label>
+                <Label className="text-foreground font-medium">Technical Skills</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2">
                   {[
                     'Microsoft Office', 'Google Workspace', 'Customer Service Software',
@@ -1166,7 +1166,7 @@ export default function EmployeeOnboarding() {
                       />
                       <Label 
                         htmlFor={`skill-${skill.toLowerCase().replace(/\s+/g, '-')}`} 
-                        className="text-sm text-amber-800"
+                        className="text-sm text-foreground"
                       >
                         {skill}
                       </Label>
@@ -1176,20 +1176,20 @@ export default function EmployeeOnboarding() {
               </div>
 
               <div>
-                <Label htmlFor="certifications" className="text-amber-800 font-medium">Certifications & Qualifications</Label>
+                <Label htmlFor="certifications" className="text-foreground font-medium">Certifications & Qualifications</Label>
                 <Textarea
                   id="certifications"
                   data-testid="textarea-certifications"
                   value={employeeData.certifications.join(', ')}
                   onChange={(e) => setEmployeeData(prev => ({...prev, certifications: e.target.value.split(', ').filter(c => c.trim())}))}
-                  className="border-amber-300 focus:border-amber-500 mt-2"
+                  className="border-border focus:border-border mt-2"
                   rows={3}
                   placeholder="List any relevant certifications, licenses, or qualifications (separate with commas)..."
                 />
               </div>
 
               <div>
-                <Label className="text-amber-800 font-medium">Languages</Label>
+                <Label className="text-foreground font-medium">Languages</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2">
                   {[
                     'English', 'Spanish', 'French', 'German', 'Mandarin', 'Arabic', 'Portuguese', 'Other'
@@ -1215,7 +1215,7 @@ export default function EmployeeOnboarding() {
                       />
                       <Label 
                         htmlFor={`language-${language.toLowerCase()}`} 
-                        className="text-sm text-amber-800"
+                        className="text-sm text-foreground"
                       >
                         {language}
                       </Label>
@@ -1259,26 +1259,26 @@ export default function EmployeeOnboarding() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">Goals & Expectations</h3>
-              <p className="text-amber-700 mb-6">Help us understand your career aspirations and what you hope to achieve at ReturnIt.</p>
+              <h3 className="text-xl font-semibold text-foreground mb-2">Goals & Expectations</h3>
+              <p className="text-muted-foreground mb-6">Help us understand your career aspirations and what you hope to achieve at ReturnIt.</p>
             </div>
 
             <div className="space-y-6">
               <div>
-                <Label htmlFor="careerGoals" className="text-amber-800 font-medium">Career Goals & Aspirations</Label>
+                <Label htmlFor="careerGoals" className="text-foreground font-medium">Career Goals & Aspirations</Label>
                 <Textarea
                   id="careerGoals"
                   data-testid="textarea-career-goals"
                   value={employeeData.careerGoals}
                   onChange={(e) => setEmployeeData(prev => ({...prev, careerGoals: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500 mt-2"
+                  className="border-border focus:border-border mt-2"
                   rows={4}
                   placeholder="What are your long-term career goals? How do you see yourself growing at ReturnIt? What skills would you like to develop?"
                 />
               </div>
 
               <div>
-                <Label className="text-amber-800 font-medium">Learning Objectives (Select all that apply)</Label>
+                <Label className="text-foreground font-medium">Learning Objectives (Select all that apply)</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                   {[
                     'Master customer service excellence',
@@ -1290,7 +1290,7 @@ export default function EmployeeOnboarding() {
                     'Develop technical expertise',
                     'Build team collaboration skills'
                   ].map((objective) => (
-                    <div key={objective} className="flex items-center space-x-2 p-2 bg-amber-50 rounded border border-amber-200">
+                    <div key={objective} className="flex items-center space-x-2 p-2 bg-[#f8f7f5] dark:bg-[#231b0f] rounded border border-border">
                       <Checkbox
                         id={`objective-${objective.toLowerCase().replace(/\s+/g, '-')}`}
                         data-testid={`checkbox-objective-${objective.toLowerCase().replace(/\s+/g, '-')}`}
@@ -1311,7 +1311,7 @@ export default function EmployeeOnboarding() {
                       />
                       <Label 
                         htmlFor={`objective-${objective.toLowerCase().replace(/\s+/g, '-')}`} 
-                        className="text-sm text-amber-800"
+                        className="text-sm text-foreground"
                       >
                         {objective}
                       </Label>
@@ -1321,13 +1321,13 @@ export default function EmployeeOnboarding() {
               </div>
 
               <div>
-                <Label htmlFor="firstMonthGoals" className="text-amber-800 font-medium">First Month Goals</Label>
+                <Label htmlFor="firstMonthGoals" className="text-foreground font-medium">First Month Goals</Label>
                 <Textarea
                   id="firstMonthGoals"
                   data-testid="textarea-first-month-goals"
                   value={employeeData.firstMonthGoals}
                   onChange={(e) => setEmployeeData(prev => ({...prev, firstMonthGoals: e.target.value}))}
-                  className="border-amber-300 focus:border-amber-500 mt-2"
+                  className="border-border focus:border-border mt-2"
                   rows={3}
                   placeholder="What would you like to accomplish in your first month? What specific goals or milestones would make you feel successful?"
                 />
@@ -1399,8 +1399,8 @@ export default function EmployeeOnboarding() {
               <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="h-12 w-12 text-green-600" />
               </div>
-              <h2 className="text-3xl font-bold text-amber-900 mb-4">Congratulations!</h2>
-              <p className="text-lg text-amber-700 mb-6">
+              <h2 className="text-3xl font-bold text-foreground mb-4">Congratulations!</h2>
+              <p className="text-lg text-muted-foreground mb-6">
                 You've successfully completed your onboarding. Welcome to the ReturnIt family!
               </p>
             </div>
@@ -1422,65 +1422,65 @@ export default function EmployeeOnboarding() {
                 </CardContent>
               </Card>
               
-              <Card className="border-amber-200 bg-amber-50">
+              <Card className="border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
                 <CardContent className="text-center p-6">
-                  <Star className="h-8 w-8 text-amber-600 mx-auto mb-3" />
-                  <h3 className="font-semibold text-amber-900 mb-2">Ready to Excel</h3>
-                  <p className="text-sm text-amber-700">You have all the tools and resources needed to succeed</p>
+                  <Star className="h-8 w-8 text-primary mx-auto mb-3" />
+                  <h3 className="font-semibold text-foreground mb-2">Ready to Excel</h3>
+                  <p className="text-sm text-muted-foreground">You have all the tools and resources needed to succeed</p>
                 </CardContent>
               </Card>
             </div>
 
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-amber-900">Next Steps:</h3>
+              <h3 className="text-xl font-semibold text-foreground">Next Steps:</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
                 <div className="flex items-start space-x-3">
-                  <div className="h-6 w-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                  <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
                   <div>
-                    <h4 className="font-medium text-amber-900">Access Your Dashboard</h4>
-                    <p className="text-sm text-amber-700">Log in to your employee dashboard to see your personalized workspace</p>
+                    <h4 className="font-medium text-foreground">Access Your Dashboard</h4>
+                    <p className="text-sm text-muted-foreground">Log in to your employee dashboard to see your personalized workspace</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-6 w-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                  <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
                   <div>
-                    <h4 className="font-medium text-amber-900">Meet Your Team</h4>
-                    <p className="text-sm text-amber-700">Connect with your colleagues and supervisor for introductions</p>
+                    <h4 className="font-medium text-foreground">Meet Your Team</h4>
+                    <p className="text-sm text-muted-foreground">Connect with your colleagues and supervisor for introductions</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-6 w-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                  <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
                   <div>
-                    <h4 className="font-medium text-amber-900">Start Training</h4>
-                    <p className="text-sm text-amber-700">Begin your role-specific training modules at your own pace</p>
+                    <h4 className="font-medium text-foreground">Start Training</h4>
+                    <p className="text-sm text-muted-foreground">Begin your role-specific training modules at your own pace</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-3">
-                  <div className="h-6 w-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                  <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">4</div>
                   <div>
-                    <h4 className="font-medium text-amber-900">Get Support</h4>
-                    <p className="text-sm text-amber-700">Reach out to HR or your supervisor with any questions</p>
+                    <h4 className="font-medium text-foreground">Get Support</h4>
+                    <p className="text-sm text-muted-foreground">Reach out to HR or your supervisor with any questions</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 p-6 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-900 mb-3">Important Resources</h4>
+            <div className="mt-8 p-6 bg-gradient-to-r from-transparent to-transparent rounded-lg border border-border">
+              <h4 className="font-semibold text-foreground mb-3">Important Resources</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <FileText className="h-4 w-4 mr-1" />
                   Employee Guide
                 </Button>
-                <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Users className="h-4 w-4 mr-1" />
                   Team Directory
                 </Button>
-                <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Headphones className="h-4 w-4 mr-1" />
                   Support Center
                 </Button>
-                <Button variant="outline" size="sm" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                <Button variant="outline" size="sm" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Settings className="h-4 w-4 mr-1" />
                   Account Settings
                 </Button>
@@ -1495,39 +1495,39 @@ export default function EmployeeOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-4">
-              <div className="h-10 w-10 bg-amber-600 rounded-lg flex items-center justify-center text-white font-bold text-xl">R</div>
+              <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">R</div>
               <div>
-                <h1 className="text-3xl font-bold text-amber-900">Employee Onboarding</h1>
-                <p className="text-amber-700">Complete your setup and join the team</p>
+                <h1 className="text-3xl font-bold text-foreground">Employee Onboarding</h1>
+                <p className="text-muted-foreground">Complete your setup and join the team</p>
               </div>
             </div>
-            <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
+            <Badge className="bg-accent text-foreground px-3 py-1">
               Step {currentStep + 1} of {totalSteps}
             </Badge>
           </div>
           
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className="flex justify-between text-sm text-amber-600">
+            <div className="flex justify-between text-sm text-primary">
               <span>Progress</span>
               <span>{Math.round(progressPercentage)}% Complete</span>
             </div>
-            <Progress value={progressPercentage} className="h-2 bg-amber-100" />
+            <Progress value={progressPercentage} className="h-2 bg-accent" />
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Step Navigation */}
           <div className="lg:col-span-1">
-            <Card className="bg-white border-amber-200 sticky top-6">
+            <Card className="bg-white border-border sticky top-6">
               <CardHeader>
-                <CardTitle className="text-amber-900">Onboarding Steps</CardTitle>
+                <CardTitle className="text-foreground">Onboarding Steps</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
@@ -1537,10 +1537,10 @@ export default function EmployeeOnboarding() {
                       onClick={() => goToStep(index)}
                       className={`w-full text-left p-3 rounded-lg transition-colors ${
                         index === currentStep
-                          ? 'bg-amber-100 border-2 border-amber-300'
+                          ? 'bg-accent border-2 border-border'
                           : step.completed
                           ? 'bg-green-50 border border-green-200'
-                          : 'bg-gray-50 border border-gray-200 hover:bg-amber-50'
+                          : 'bg-gray-50 border border-gray-200 hover:bg-[#f8f7f5] dark:bg-[#231b0f]'
                       }`}
                       data-testid={`step-${step.id}`}
                     >
@@ -1561,7 +1561,7 @@ export default function EmployeeOnboarding() {
                         <div className="flex-1 min-w-0">
                           <div className={`font-medium text-sm ${
                             index === currentStep
-                              ? 'text-amber-900'
+                              ? 'text-foreground'
                               : step.completed
                               ? 'text-green-900'
                               : 'text-gray-700'
@@ -1591,9 +1591,9 @@ export default function EmployeeOnboarding() {
 
           {/* Main Content */}
           <div className="lg:col-span-3">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 flex items-center space-x-2">
+                <CardTitle className="text-foreground flex items-center space-x-2">
                   {onboardingSteps[currentStep].icon}
                   <span>{onboardingSteps[currentStep].title}</span>
                 </CardTitle>
@@ -1608,7 +1608,7 @@ export default function EmployeeOnboarding() {
                   variant="outline"
                   onClick={goToPreviousStep}
                   disabled={currentStep === 0}
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                  className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                   data-testid="button-previous"
                 >
                   <ChevronLeft className="h-4 w-4 mr-2" />
@@ -1629,7 +1629,7 @@ export default function EmployeeOnboarding() {
                     <Button
                       onClick={goToNextStep}
                       disabled={!validateCurrentStep()}
-                      className="bg-amber-600 hover:bg-amber-700 text-white"
+                      className="bg-primary hover:bg-primary/90 text-white"
                       data-testid="button-next"
                     >
                       Next

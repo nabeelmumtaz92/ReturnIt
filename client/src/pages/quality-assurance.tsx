@@ -128,11 +128,11 @@ export default function QualityAssurance() {
   // Loading state
   if (eventsLoading || verificationsLoading || statsLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-transparent">
         <AdminNavigation />
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-center h-64">
-            <div className="flex items-center gap-2 text-amber-800">
+            <div className="flex items-center gap-2 text-foreground">
               <Loader2 className="h-6 w-6 animate-spin" />
               <span>Loading quality assurance data...</span>
             </div>
@@ -145,7 +145,7 @@ export default function QualityAssurance() {
   // Error state
   if (eventsError || verificationsError || statsError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+      <div className="min-h-screen bg-gradient-to-br from-stone-50 to-transparent">
         <AdminNavigation />
         <div className="p-6 space-y-6">
           <div className="flex items-center justify-center h-64">
@@ -199,22 +199,22 @@ export default function QualityAssurance() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent py-8">
       <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Quality Assurance</h1>
-            <p className="text-amber-700">Photo verification and damage claim management</p>
+            <h1 className="text-3xl font-bold text-foreground">Quality Assurance</h1>
+            <p className="text-muted-foreground">Photo verification and damage claim management</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button className="bg-amber-600 hover:bg-amber-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <Upload className="h-4 w-4 mr-2" />
               Manual Review
             </Button>
             <Link href="/admin-dashboard">
-              <Button variant="outline" className="border-amber-300 text-amber-700">
+              <Button variant="outline" className="border-border text-muted-foreground">
                 Back to Dashboard
               </Button>
             </Link>
@@ -266,7 +266,7 @@ export default function QualityAssurance() {
                   <p className="text-sm font-medium text-gray-600">Success Rate</p>
                   <p className="text-2xl font-bold text-gray-900">{qualityStats.qualityScore || 100}%</p>
                 </div>
-                <Star className="h-8 w-8 text-amber-600" />
+                <Star className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
@@ -319,7 +319,7 @@ export default function QualityAssurance() {
             {/* Events List */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Shield className="h-5 w-5" />
                   Quality Events ({qualityEvents.length})
                 </CardTitle>
@@ -426,7 +426,7 @@ export default function QualityAssurance() {
           <TabsContent value="photos" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Camera className="h-5 w-5" />
                   Photo Verification Log
                 </CardTitle>
@@ -500,7 +500,7 @@ export default function QualityAssurance() {
           <TabsContent value="claims" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Shield className="h-5 w-5" />
                   Insurance Claims Processing
                 </CardTitle>
@@ -546,7 +546,7 @@ export default function QualityAssurance() {
             <div className="grid lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Photo Requirements</CardTitle>
+                  <CardTitle className="text-foreground">Photo Requirements</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -601,7 +601,7 @@ export default function QualityAssurance() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Claim Processing</CardTitle>
+                  <CardTitle className="text-foreground">Claim Processing</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>

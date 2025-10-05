@@ -33,17 +33,17 @@ export default function DriverTutorial() {
         <div className="space-y-4">
           <div className="text-center">
             <div 
-              className="text-amber-900 font-bold text-4xl mx-auto mb-4"
+              className="text-foreground font-bold text-4xl mx-auto mb-4"
             >
               ReturnIt
             </div>
-            <h3 className="text-2xl font-bold text-amber-900">Welcome to the ReturnIt Driver Team!</h3>
-            <p className="text-amber-700 mt-2">Congratulations on joining St. Louis's premier return logistics service</p>
+            <h3 className="text-2xl font-bold text-foreground">Welcome to the ReturnIt Driver Team!</h3>
+            <p className="text-muted-foreground mt-2">Congratulations on joining St. Louis's premier return logistics service</p>
           </div>
           
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <h4 className="font-semibold text-amber-900 mb-2">What You'll Learn:</h4>
-            <ul className="space-y-2 text-sm text-amber-800">
+          <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+            <h4 className="font-semibold text-foreground mb-2">What You'll Learn:</h4>
+            <ul className="space-y-2 text-sm text-foreground">
               <li className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 How to use the driver app and accept orders
@@ -76,7 +76,7 @@ export default function DriverTutorial() {
       icon: <DollarSign className="h-6 w-6" />,
       content: (
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-amber-900">Your Earning Structure</h3>
+          <h3 className="text-xl font-bold text-foreground">Your Earning Structure</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="bg-green-50 border-green-200">
@@ -131,8 +131,8 @@ export default function DriverTutorial() {
             </div>
           </div>
           
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <p className="text-sm text-amber-800">
+          <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+            <p className="text-sm text-foreground">
               <strong>Tips are 100% yours!</strong> Customers can add tips which you keep entirely.
             </p>
           </div>
@@ -146,7 +146,7 @@ export default function DriverTutorial() {
       icon: <Truck className="h-6 w-6" />,
       content: (
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-amber-900">Driver App Basics</h3>
+          <h3 className="text-xl font-bold text-foreground">Driver App Basics</h3>
           
           <div className="space-y-4">
             <Card className="bg-white">
@@ -210,11 +210,11 @@ export default function DriverTutorial() {
       icon: <Package className="h-6 w-6" />,
       content: (
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-amber-900">Professional Pickup Process</h3>
+          <h3 className="text-xl font-bold text-foreground">Professional Pickup Process</h3>
           
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
+              <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">1</div>
               <div>
                 <h4 className="font-semibold text-gray-900">Arrive at Location</h4>
                 <p className="text-sm text-gray-600">Park safely and approach the designated pickup area</p>
@@ -222,7 +222,7 @@ export default function DriverTutorial() {
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
+              <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">2</div>
               <div>
                 <h4 className="font-semibold text-gray-900">Contact Customer</h4>
                 <p className="text-sm text-gray-600">Call or text to announce your arrival</p>
@@ -233,7 +233,7 @@ export default function DriverTutorial() {
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
+              <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">3</div>
               <div>
                 <h4 className="font-semibold text-gray-900">Inspect Packages</h4>
                 <p className="text-sm text-gray-600">Check condition and count matches the order</p>
@@ -241,7 +241,7 @@ export default function DriverTutorial() {
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</div>
+              <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">4</div>
               <div>
                 <h4 className="font-semibold text-gray-900">Take Photos</h4>
                 <p className="text-sm text-gray-600">Document packages for proof of pickup</p>
@@ -249,7 +249,7 @@ export default function DriverTutorial() {
             </div>
             
             <div className="flex items-start gap-3">
-              <div className="bg-amber-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">5</div>
+              <div className="bg-primary text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">5</div>
               <div>
                 <h4 className="font-semibold text-gray-900">Update Status</h4>
                 <p className="text-sm text-gray-600">Mark as "Picked Up" in the app</p>
@@ -285,7 +285,7 @@ export default function DriverTutorial() {
             </p>
           </div>
           
-          <h3 className="text-xl font-bold text-amber-900">Drop-off Best Practices</h3>
+          <h3 className="text-xl font-bold text-foreground">Drop-off Best Practices</h3>
           
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -349,7 +349,7 @@ export default function DriverTutorial() {
       icon: <Star className="h-6 w-6" />,
       content: (
         <div className="space-y-4">
-          <h3 className="text-xl font-bold text-amber-900">Safety First</h3>
+          <h3 className="text-xl font-bold text-foreground">Safety First</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="bg-white">
@@ -426,8 +426,8 @@ export default function DriverTutorial() {
         <div className="space-y-4">
           <div className="text-center">
             <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-amber-900">Congratulations!</h3>
-            <p className="text-amber-700 mt-2">You've completed the ReturnIt driver training</p>
+            <h3 className="text-2xl font-bold text-foreground">Congratulations!</h3>
+            <p className="text-muted-foreground mt-2">You've completed the ReturnIt driver training</p>
           </div>
           
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -460,19 +460,19 @@ export default function DriverTutorial() {
             </div>
           </div>
           
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-            <h4 className="font-semibold text-amber-900 mb-2">Next Steps:</h4>
-            <ul className="space-y-2 text-sm text-amber-800">
+          <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+            <h4 className="font-semibold text-foreground mb-2">Next Steps:</h4>
+            <ul className="space-y-2 text-sm text-foreground">
               <li className="flex items-start gap-2">
-                <div className="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">1</div>
+                <div className="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">1</div>
                 <div>Go to the driver portal and toggle online to start receiving orders</div>
               </li>
               <li className="flex items-start gap-2">
-                <div className="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">2</div>
+                <div className="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">2</div>
                 <div>Set up your payment preferences for instant or weekly payouts</div>
               </li>
               <li className="flex items-start gap-2">
-                <div className="bg-amber-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">3</div>
+                <div className="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold mt-0.5">3</div>
                 <div>Complete your first pickup to start earning!</div>
               </li>
             </ul>
@@ -482,7 +482,7 @@ export default function DriverTutorial() {
             <p className="text-sm text-gray-600 mb-4">Welcome to the Return It family! 🎉</p>
             <Link href="/driver-portal">
               <Button 
-                className="bg-amber-600 hover:bg-amber-700 text-white" 
+                className="bg-primary hover:bg-primary/90 text-white" 
                 data-testid="button-start-driving"
                 disabled={completeTutorialMutation.isPending}
               >
@@ -531,12 +531,12 @@ export default function DriverTutorial() {
   const currentTutorialStep = tutorialSteps[currentStep];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-amber-900 mb-2">Driver Training</h1>
-          <p className="text-amber-700">Complete this tutorial to start your journey as a Return It driver</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">Driver Training</h1>
+          <p className="text-muted-foreground">Complete this tutorial to start your journey as a Return It driver</p>
           
           {/* Progress Bar */}
           <div className="max-w-md mx-auto mt-6">
@@ -557,7 +557,7 @@ export default function DriverTutorial() {
                 onClick={() => handleStepClick(index)}
                 className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   index === currentStep
-                    ? 'bg-amber-600 text-white'
+                    ? 'bg-primary text-white'
                     : completedSteps.has(index)
                     ? 'bg-green-100 text-green-700 hover:bg-green-200'
                     : index < currentStep
@@ -582,12 +582,12 @@ export default function DriverTutorial() {
 
         {/* Main Content */}
         <Card className="bg-white shadow-lg mb-8">
-          <CardHeader className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+          <CardHeader className="bg-gradient-to-r from-primary to-primary text-white">
             <div className="flex items-center gap-3">
               {currentTutorialStep.icon}
               <div>
                 <CardTitle className="text-xl">{currentTutorialStep.title}</CardTitle>
-                <CardDescription className="text-amber-100">{currentTutorialStep.description}</CardDescription>
+                <CardDescription className="text-primary-foreground">{currentTutorialStep.description}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -618,7 +618,7 @@ export default function DriverTutorial() {
           {currentStep < tutorialSteps.length - 1 ? (
             <Button
               onClick={handleNext}
-              className="bg-amber-600 hover:bg-amber-700 text-white flex items-center gap-2"
+              className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
               data-testid="button-next"
             >
               Next

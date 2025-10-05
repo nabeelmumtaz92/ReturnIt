@@ -942,23 +942,23 @@ h2 { color: #92400e; margin-top: 30px; }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-amber-900">Employee Training Documents</h1>
-              <p className="text-amber-700">Download printable guides and manuals for your team</p>
+              <h1 className="text-3xl font-bold text-foreground">Employee Training Documents</h1>
+              <p className="text-muted-foreground">Download printable guides and manuals for your team</p>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge className="bg-amber-100 text-amber-800 px-3 py-1">
+              <Badge className="bg-accent text-foreground px-3 py-1">
                 <FileText className="h-4 w-4 mr-1" />
                 Word Documents
               </Badge>
               <Button
                 onClick={downloadAllDocuments}
-                className="bg-amber-600 hover:bg-amber-700"
+                className="bg-primary hover:bg-primary/90"
               >
                 <Archive className="h-4 w-4 mr-2" />
                 Download All
@@ -970,16 +970,16 @@ h2 { color: #92400e; margin-top: 30px; }
         {/* Documents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {documents.map((doc) => (
-            <Card key={doc.id} className="bg-white border-amber-200 hover:shadow-lg transition-shadow">
+            <Card key={doc.id} className="bg-white border-border hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
+                    <div className="p-2 bg-accent rounded-lg text-primary">
                       {doc.icon}
                     </div>
                     <div className="flex-1">
-                      <CardTitle className="text-lg text-amber-900">{doc.title}</CardTitle>
-                      <Badge variant="outline" className="mt-1 text-xs border-amber-300">
+                      <CardTitle className="text-lg text-foreground">{doc.title}</CardTitle>
+                      <Badge variant="outline" className="mt-1 text-xs border-border">
                         {doc.category}
                       </Badge>
                     </div>
@@ -987,20 +987,20 @@ h2 { color: #92400e; margin-top: 30px; }
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-amber-700 text-sm mb-4">{doc.description}</p>
+                <p className="text-muted-foreground text-sm mb-4">{doc.description}</p>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs text-amber-600 flex items-center">
+                  <span className="text-xs text-primary flex items-center">
                     <FileText className="h-3 w-3 mr-1" />
                     {doc.pages}
                   </span>
-                  <span className="text-xs text-amber-600 flex items-center">
+                  <span className="text-xs text-primary flex items-center">
                     <Printer className="h-3 w-3 mr-1" />
                     Print Ready
                   </span>
                 </div>
                 <Button
                   onClick={() => generateWordDocument(doc.id, doc)}
-                  className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-amber-300"
+                  className="w-full bg-primary hover:bg-primary/90 disabled:bg-accent"
                   disabled={downloadStatus[doc.id] === 'generating'}
                 >
                   {getStatusIcon(downloadStatus[doc.id])}
@@ -1012,9 +1012,9 @@ h2 { color: #92400e; margin-top: 30px; }
         </div>
 
         {/* Instructions */}
-        <Card className="bg-amber-50 border-amber-300 mt-8">
+        <Card className="bg-[#f8f7f5] dark:bg-[#231b0f] border-border mt-8">
           <CardHeader>
-            <CardTitle className="text-amber-900 flex items-center">
+            <CardTitle className="text-foreground flex items-center">
               <FileDown className="h-5 w-5 mr-2" />
               How to Use These Documents
             </CardTitle>
@@ -1022,8 +1022,8 @@ h2 { color: #92400e; margin-top: 30px; }
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <h3 className="font-semibold text-amber-900 mb-3">📥 Downloading</h3>
-                <ul className="space-y-2 text-sm text-amber-800">
+                <h3 className="font-semibold text-foreground mb-3">📥 Downloading</h3>
+                <ul className="space-y-2 text-sm text-foreground">
                   <li>• Click "Download" to save each document as a .doc file</li>
                   <li>• Documents will open in Microsoft Word or similar programs</li>
                   <li>• Use "Download All" to get the complete training package</li>
@@ -1031,8 +1031,8 @@ h2 { color: #92400e; margin-top: 30px; }
                 </ul>
               </div>
               <div>
-                <h3 className="font-semibold text-amber-900 mb-3">🖨️ Printing Tips</h3>
-                <ul className="space-y-2 text-sm text-amber-800">
+                <h3 className="font-semibold text-foreground mb-3">🖨️ Printing Tips</h3>
+                <ul className="space-y-2 text-sm text-foreground">
                   <li>• Print in color for best visual impact</li>
                   <li>• Use "Fit to Page" if content appears too large</li>
                   <li>• Consider double-sided printing to save paper</li>
@@ -1040,9 +1040,9 @@ h2 { color: #92400e; margin-top: 30px; }
                 </ul>
               </div>
             </div>
-            <div className="mt-4 p-4 bg-white rounded-lg border border-amber-200">
-              <h4 className="font-medium text-amber-900 mb-2">💡 Implementation Suggestions</h4>
-              <p className="text-sm text-amber-700">
+            <div className="mt-4 p-4 bg-white rounded-lg border border-border">
+              <h4 className="font-medium text-foreground mb-2">💡 Implementation Suggestions</h4>
+              <p className="text-sm text-muted-foreground">
                 Print the Employee Guide for all new hires, provide role-specific manuals during training, 
                 and post the Quick Reference Guide in common areas. Consider laminating frequently-used 
                 reference materials for durability.

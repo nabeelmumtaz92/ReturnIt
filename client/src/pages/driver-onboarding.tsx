@@ -70,7 +70,7 @@ const DocumentUploadCard = ({
 
   const getStatusIcon = () => {
     if (verified) return <CheckCircle className="h-5 w-5 text-green-600" />;
-    if (uploaded) return <Clock className="h-5 w-5 text-amber-600" />;
+    if (uploaded) return <Clock className="h-5 w-5 text-primary" />;
     return <AlertCircle className="h-5 w-5 text-gray-400" />;
   };
 
@@ -82,17 +82,17 @@ const DocumentUploadCard = ({
 
   const getStatusColor = () => {
     if (verified) return "bg-green-100 text-green-800 border-green-200";
-    if (uploaded) return "bg-amber-100 text-amber-800 border-amber-200";
+    if (uploaded) return "bg-accent text-foreground border-border";
     return required ? "bg-red-50 text-red-800 border-red-200" : "bg-gray-50 text-gray-600 border-gray-200";
   };
 
   return (
-    <Card className="border-amber-200">
+    <Card className="border-border">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2">
-            {documentType === 'selfie' ? <Camera className="h-5 w-5 text-amber-600" /> : <FileText className="h-5 w-5 text-amber-600" />}
-            <h3 className="font-medium text-amber-900">{title}</h3>
+            {documentType === 'selfie' ? <Camera className="h-5 w-5 text-primary" /> : <FileText className="h-5 w-5 text-primary" />}
+            <h3 className="font-medium text-foreground">{title}</h3>
           </div>
           <div className="flex items-center space-x-2">
             {getStatusIcon()}
@@ -115,7 +115,7 @@ const DocumentUploadCard = ({
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
           disabled={verified}
-          className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
+          className="w-full border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
         >
           <Upload className="h-4 w-4 mr-2" />
           {uploaded ? 'Replace Document' : 'Upload Document'}
@@ -314,8 +314,8 @@ export default function DriverOnboarding() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-transparent flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-border border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -331,19 +331,19 @@ export default function DriverOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-amber-50">
+    <div className="min-h-screen bg-gradient-to-br from-white via-stone-50 to-transparent">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b border-amber-200">
+      <div className="bg-white shadow-sm border-b border-border">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/">
-              <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
+              <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
                 ReturnIt
               </div>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-amber-900">Driver Application</h1>
-              <p className="text-amber-700">Join the Returnly driver network</p>
+              <h1 className="text-2xl font-bold text-foreground">Driver Application</h1>
+              <p className="text-muted-foreground">Join the Returnly driver network</p>
             </div>
           </div>
         </div>
@@ -353,11 +353,11 @@ export default function DriverOnboarding() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-amber-800 font-medium">Application Progress</span>
-            <span className="text-sm text-amber-600">{getProgress()}% Complete</span>
+            <span className="text-sm text-foreground font-medium">Application Progress</span>
+            <span className="text-sm text-primary">{getProgress()}% Complete</span>
           </div>
-          <Progress value={getProgress()} className="h-2 bg-amber-100" />
-          <div className="flex justify-between mt-2 text-xs text-amber-600">
+          <Progress value={getProgress()} className="h-2 bg-accent" />
+          <div className="flex justify-between mt-2 text-xs text-primary">
             <span>Personal Info</span>
             <span>Vehicle Info</span>
             <span>Documents</span>
@@ -368,9 +368,9 @@ export default function DriverOnboarding() {
 
         {/* Step 1: Personal Information */}
         {currentStep === 1 && (
-          <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center space-x-2 text-amber-900">
+          <Card className="border-border">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center space-x-2 text-foreground">
                 <User className="h-5 w-5" />
                 <span>Personal Information</span>
               </CardTitle>
@@ -379,11 +379,11 @@ export default function DriverOnboarding() {
               <form onSubmit={personalForm.handleSubmit(handlePersonalSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="firstName" className="text-amber-800 font-medium">First Name *</Label>
+                    <Label htmlFor="firstName" className="text-foreground font-medium">First Name *</Label>
                     <Input
                       id="firstName"
                       {...personalForm.register('firstName')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-first-name"
                     />
                     {personalForm.formState.errors.firstName && (
@@ -391,11 +391,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="lastName" className="text-amber-800 font-medium">Last Name *</Label>
+                    <Label htmlFor="lastName" className="text-foreground font-medium">Last Name *</Label>
                     <Input
                       id="lastName"
                       {...personalForm.register('lastName')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-last-name"
                     />
                     {personalForm.formState.errors.lastName && (
@@ -406,13 +406,13 @@ export default function DriverOnboarding() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="email" className="text-amber-800 font-medium">Email Address *</Label>
+                    <Label htmlFor="email" className="text-foreground font-medium">Email Address *</Label>
                     <Input
                       id="email"
                       type="email"
                       autoComplete="off"
                       {...personalForm.register('email')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-email"
                     />
                     {personalForm.formState.errors.email && (
@@ -420,11 +420,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-amber-800 font-medium">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-foreground font-medium">Phone Number *</Label>
                     <Input
                       id="phone"
                       {...personalForm.register('phone')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="(555) 123-4567"
                       data-testid="input-phone"
                     />
@@ -435,12 +435,12 @@ export default function DriverOnboarding() {
                 </div>
 
                 <div>
-                  <Label htmlFor="dateOfBirth" className="text-amber-800 font-medium">Date of Birth *</Label>
+                  <Label htmlFor="dateOfBirth" className="text-foreground font-medium">Date of Birth *</Label>
                   <Input
                     id="dateOfBirth"
                     type="date"
                     {...personalForm.register('dateOfBirth')}
-                    className="mt-1 border-amber-300 focus:border-amber-500"
+                    className="mt-1 border-border focus:border-border"
                     data-testid="input-date-of-birth"
                   />
                   {personalForm.formState.errors.dateOfBirth && (
@@ -449,11 +449,11 @@ export default function DriverOnboarding() {
                 </div>
 
                 <div>
-                  <Label htmlFor="address" className="text-amber-800 font-medium">Street Address *</Label>
+                  <Label htmlFor="address" className="text-foreground font-medium">Street Address *</Label>
                   <Input
                     id="address"
                     {...personalForm.register('address')}
-                    className="mt-1 border-amber-300 focus:border-amber-500"
+                    className="mt-1 border-border focus:border-border"
                     placeholder="123 Main Street, Apt 4B"
                     data-testid="input-address"
                   />
@@ -464,11 +464,11 @@ export default function DriverOnboarding() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city" className="text-amber-800 font-medium">City *</Label>
+                    <Label htmlFor="city" className="text-foreground font-medium">City *</Label>
                     <Input
                       id="city"
                       {...personalForm.register('city')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-city"
                     />
                     {personalForm.formState.errors.city && (
@@ -476,11 +476,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="state" className="text-amber-800 font-medium">State *</Label>
+                    <Label htmlFor="state" className="text-foreground font-medium">State *</Label>
                     <Input
                       id="state"
                       {...personalForm.register('state')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="MO"
                       data-testid="input-state"
                     />
@@ -489,11 +489,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="zipCode" className="text-amber-800 font-medium">ZIP Code *</Label>
+                    <Label htmlFor="zipCode" className="text-foreground font-medium">ZIP Code *</Label>
                     <Input
                       id="zipCode"
                       {...personalForm.register('zipCode')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="63101"
                       data-testid="input-zip-code"
                     />
@@ -506,7 +506,7 @@ export default function DriverOnboarding() {
                 <div className="flex justify-end">
                   <Button
                     type="submit"
-                    className="bg-amber-700 hover:bg-amber-800 text-white px-8"
+                    className="bg-primary hover:bg-primary/90 text-white px-8"
                     disabled={savePersonalInfo.isPending}
                     data-testid="button-continue-personal"
                   >
@@ -520,9 +520,9 @@ export default function DriverOnboarding() {
 
         {/* Step 2: Vehicle Information */}
         {currentStep === 2 && (
-          <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center space-x-2 text-amber-900">
+          <Card className="border-border">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center space-x-2 text-foreground">
                 <Car className="h-5 w-5" />
                 <span>Vehicle Information</span>
               </CardTitle>
@@ -531,11 +531,11 @@ export default function DriverOnboarding() {
               <form onSubmit={vehicleForm.handleSubmit(handleVehicleSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="vehicleMake" className="text-amber-800 font-medium">Vehicle Make *</Label>
+                    <Label htmlFor="vehicleMake" className="text-foreground font-medium">Vehicle Make *</Label>
                     <Input
                       id="vehicleMake"
                       {...vehicleForm.register('vehicleMake')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="Toyota, Honda, Ford, etc."
                       data-testid="input-vehicle-make"
                     />
@@ -544,11 +544,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="vehicleModel" className="text-amber-800 font-medium">Vehicle Model *</Label>
+                    <Label htmlFor="vehicleModel" className="text-foreground font-medium">Vehicle Model *</Label>
                     <Input
                       id="vehicleModel"
                       {...vehicleForm.register('vehicleModel')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="Camry, Civic, F-150, etc."
                       data-testid="input-vehicle-model"
                     />
@@ -560,11 +560,11 @@ export default function DriverOnboarding() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="vehicleYear" className="text-amber-800 font-medium">Vehicle Year *</Label>
+                    <Label htmlFor="vehicleYear" className="text-foreground font-medium">Vehicle Year *</Label>
                     <Input
                       id="vehicleYear"
                       {...vehicleForm.register('vehicleYear')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="2020"
                       data-testid="input-vehicle-year"
                     />
@@ -573,11 +573,11 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="vehicleColor" className="text-amber-800 font-medium">Vehicle Color *</Label>
+                    <Label htmlFor="vehicleColor" className="text-foreground font-medium">Vehicle Color *</Label>
                     <Input
                       id="vehicleColor"
                       {...vehicleForm.register('vehicleColor')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="White, Black, Silver, etc."
                       data-testid="input-vehicle-color"
                     />
@@ -589,11 +589,11 @@ export default function DriverOnboarding() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="licensePlate" className="text-amber-800 font-medium">License Plate *</Label>
+                    <Label htmlFor="licensePlate" className="text-foreground font-medium">License Plate *</Label>
                     <Input
                       id="licensePlate"
                       {...vehicleForm.register('licensePlate')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="ABC-1234"
                       data-testid="input-license-plate"
                     />
@@ -602,13 +602,13 @@ export default function DriverOnboarding() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="vehicleType" className="text-amber-800 font-medium">Vehicle Type *</Label>
+                    <Label htmlFor="vehicleType" className="text-foreground font-medium">Vehicle Type *</Label>
                     <Controller
                       name="vehicleType"
                       control={vehicleForm.control}
                       render={({ field }) => (
                         <Select onValueChange={field.onChange} value={field.value}>
-                          <SelectTrigger className="border-amber-300 focus:border-amber-500" data-testid="select-vehicle-type">
+                          <SelectTrigger className="border-border focus:border-border" data-testid="select-vehicle-type">
                             <SelectValue placeholder="Select vehicle type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -633,14 +633,14 @@ export default function DriverOnboarding() {
                     type="button"
                     variant="outline"
                     onClick={() => setCurrentStep(1)}
-                    className="border-amber-300 text-amber-700"
+                    className="border-border text-muted-foreground"
                     data-testid="button-back-to-personal"
                   >
                     Back to Personal Info
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-amber-700 hover:bg-amber-800 text-white px-8"
+                    className="bg-primary hover:bg-primary/90 text-white px-8"
                     disabled={saveVehicleInfo.isPending}
                     data-testid="button-continue-vehicle"
                   >
@@ -654,9 +654,9 @@ export default function DriverOnboarding() {
 
         {/* Step 3: Document Upload */}
         {currentStep === 3 && (
-          <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center space-x-2 text-amber-900">
+          <Card className="border-border">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center space-x-2 text-foreground">
                 <FileText className="h-5 w-5" />
                 <span>Required Documents</span>
               </CardTitle>
@@ -700,9 +700,9 @@ export default function DriverOnboarding() {
                 />
               </div>
 
-              <Alert className="mt-6 border-amber-200 bg-amber-50">
+              <Alert className="mt-6 border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
                 <Shield className="h-4 w-4" />
-                <AlertDescription className="text-amber-800">
+                <AlertDescription className="text-foreground">
                   All documents will be securely stored and reviewed by our verification team. 
                   A background check will be initiated once all documents are uploaded.
                 </AlertDescription>
@@ -713,14 +713,14 @@ export default function DriverOnboarding() {
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep(2)}
-                  className="border-amber-300 text-amber-700"
+                  className="border-border text-muted-foreground"
                   data-testid="button-back-to-vehicle"
                 >
                   Back to Vehicle Info
                 </Button>
                 <Button
                   onClick={() => setCurrentStep(4)}
-                  className="bg-amber-700 hover:bg-amber-800 text-white px-8"
+                  className="bg-primary hover:bg-primary/90 text-white px-8"
                   data-testid="button-continue-to-training"
                 >
                   Continue to Training
@@ -732,9 +732,9 @@ export default function DriverOnboarding() {
 
         {/* Step 4: Driver Training */}
         {currentStep === 4 && (
-          <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center space-x-2 text-amber-900">
+          <Card className="border-border">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center space-x-2 text-foreground">
                 <GraduationCap className="h-5 w-5" />
                 <span>Driver Training</span>
               </CardTitle>
@@ -756,7 +756,7 @@ export default function DriverOnboarding() {
                       <span className="font-medium">Training Completed Successfully!</span>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-center gap-2 text-amber-700">
+                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
                       <Clock className="h-5 w-5" />
                       <span className="font-medium">Training Required (10 minutes)</span>
                     </div>
@@ -794,7 +794,7 @@ export default function DriverOnboarding() {
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep(3)}
-                  className="border-amber-300 text-amber-700"
+                  className="border-border text-muted-foreground"
                   data-testid="button-back-to-documents-training"
                 >
                   Back to Documents
@@ -802,7 +802,7 @@ export default function DriverOnboarding() {
                 <Button
                   onClick={() => setCurrentStep(5)}
                   disabled={!tutorialCompleted}
-                  className="bg-amber-700 hover:bg-amber-800 text-white px-8 disabled:opacity-50"
+                  className="bg-primary hover:bg-primary/90 text-white px-8 disabled:opacity-50"
                   data-testid="button-continue-to-terms"
                 >
                   Continue to Terms
@@ -814,20 +814,20 @@ export default function DriverOnboarding() {
 
         {/* Step 5: Terms and Conditions */}
         {currentStep === 5 && (
-          <Card className="border-amber-200">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center space-x-2 text-amber-900">
+          <Card className="border-border">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center space-x-2 text-foreground">
                 <Shield className="h-5 w-5" />
                 <span>Terms of Service</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
-              <div className="max-h-96 overflow-y-auto border border-amber-200 rounded-lg p-4 bg-white">
-                <h3 className="font-semibold text-amber-900 mb-4">Returnly Driver Terms of Service</h3>
+              <div className="max-h-96 overflow-y-auto border border-border rounded-lg p-4 bg-white">
+                <h3 className="font-semibold text-foreground mb-4">Returnly Driver Terms of Service</h3>
                 
                 <div className="space-y-4 text-sm text-gray-700">
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">1. Driver Requirements</h4>
+                    <h4 className="font-medium text-foreground mb-2">1. Driver Requirements</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Must be at least 21 years old</li>
                       <li>Valid driver's license with clean driving record</li>
@@ -839,7 +839,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">2. Vehicle Requirements</h4>
+                    <h4 className="font-medium text-foreground mb-2">2. Vehicle Requirements</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>2010 or newer model year</li>
                       <li>4-door vehicle in good condition</li>
@@ -850,7 +850,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">3. Driver Responsibilities</h4>
+                    <h4 className="font-medium text-foreground mb-2">3. Driver Responsibilities</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Provide professional, courteous service</li>
                       <li>Handle packages with care</li>
@@ -862,7 +862,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">4. Payment Terms</h4>
+                    <h4 className="font-medium text-foreground mb-2">4. Payment Terms</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Earn 70% of delivery fees</li>
                       <li>Base pay: $3.00 per delivery minimum</li>
@@ -876,7 +876,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">5. Background Check Policy</h4>
+                    <h4 className="font-medium text-foreground mb-2">5. Background Check Policy</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Comprehensive criminal background check required</li>
                       <li>Motor vehicle record review</li>
@@ -887,7 +887,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">6. Independent Contractor Status</h4>
+                    <h4 className="font-medium text-foreground mb-2">6. Independent Contractor Status</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Drivers are independent contractors</li>
                       <li>Set your own schedule and work hours</li>
@@ -898,7 +898,7 @@ export default function DriverOnboarding() {
                   </section>
 
                   <section>
-                    <h4 className="font-medium text-amber-800 mb-2">7. Termination</h4>
+                    <h4 className="font-medium text-foreground mb-2">7. Termination</h4>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Either party may terminate at any time</li>
                       <li>Violation of terms may result in immediate deactivation</li>
@@ -911,7 +911,7 @@ export default function DriverOnboarding() {
               <div className="mt-6">
                 <div className="flex items-start space-x-3">
                   <Checkbox id="terms-agreement" className="mt-1" data-testid="checkbox-terms" />
-                  <Label htmlFor="terms-agreement" className="text-sm text-amber-800 leading-relaxed">
+                  <Label htmlFor="terms-agreement" className="text-sm text-foreground leading-relaxed">
                     I have read, understood, and agree to the ReturnIt Driver Terms of Service. 
                     I understand that I am applying to be an independent contractor and that my 
                     application will be subject to a background check and document verification.
@@ -924,14 +924,14 @@ export default function DriverOnboarding() {
                   type="button"
                   variant="outline"
                   onClick={() => setCurrentStep(4)}
-                  className="border-amber-300 text-amber-700"
+                  className="border-border text-muted-foreground"
                   data-testid="button-back-to-training"
                 >
                   Back to Training
                 </Button>
                 <Button
                   onClick={handleFinalSubmit}
-                  className="bg-amber-700 hover:bg-amber-800 text-white px-8"
+                  className="bg-primary hover:bg-primary/90 text-white px-8"
                   disabled={submitApplication.isPending}
                   data-testid="button-submit-application"
                 >

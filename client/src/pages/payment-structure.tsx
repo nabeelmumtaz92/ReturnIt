@@ -51,15 +51,15 @@ export default function PaymentStructure() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent p-6">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
-        <Card className="border-amber-200">
+        <Card className="border-border">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-amber-900">
+            <CardTitle className="text-3xl text-foreground">
               Returnly Payment Structure Demo
             </CardTitle>
-            <p className="text-amber-700 text-lg mt-2">
+            <p className="text-muted-foreground text-lg mt-2">
               Transparent pricing based on item value with detailed financial breakdowns
             </p>
           </CardHeader>
@@ -115,17 +115,17 @@ export default function PaymentStructure() {
 
           {examples.map((example, index) => (
             <TabsContent key={index} value={example.name.toLowerCase()}>
-              <Card className="border-amber-200">
+              <Card className="border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <span className="text-xl text-amber-900">
+                    <span className="text-xl text-foreground">
                       {example.name} Return (${example.value})
                     </span>
                     <Badge className={getSizeBadgeColor(example.value)}>
                       {getSizeLabel(example.value)} Item
                     </Badge>
                   </CardTitle>
-                  <p className="text-amber-700">{example.description}</p>
+                  <p className="text-muted-foreground">{example.description}</p>
                 </CardHeader>
                 <CardContent>
                   <PaymentBreakdown
@@ -141,9 +141,9 @@ export default function PaymentStructure() {
         </Tabs>
 
         {/* Key Insights */}
-        <Card className="border-amber-200">
+        <Card className="border-border">
           <CardHeader>
-            <CardTitle className="text-xl text-amber-900">Key Financial Insights</CardTitle>
+            <CardTitle className="text-xl text-foreground">Key Financial Insights</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid md:grid-cols-3 gap-4">
@@ -167,9 +167,9 @@ export default function PaymentStructure() {
                 </ul>
               </div>
               
-              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                <h4 className="font-semibold text-amber-800 mb-2">Company Revenue</h4>
-                <ul className="text-sm text-amber-700 space-y-1">
+              <div className="bg-accent p-4 rounded-lg border border-border">
+                <h4 className="font-semibold text-foreground mb-2">Company Revenue</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• 15% service fee</li>
                   <li>• Base fee share</li>
                   <li>• Distance/time margins</li>

@@ -364,13 +364,13 @@ export default function CostMonitoring() {
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <div className="p-3 rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f] border border-border">
                     <div className="flex items-start space-x-2">
-                      <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5" />
+                      <AlertTriangle className="h-4 w-4 text-primary mt-0.5" />
                       <div>
-                        <p className="font-medium text-amber-900">Usage Monitoring</p>
-                        <p className="text-sm text-amber-700">Real-time cost tracking and alerting</p>
-                        <p className="text-xs text-amber-600 mt-1">Prevents unexpected cost spikes</p>
+                        <p className="font-medium text-foreground">Usage Monitoring</p>
+                        <p className="text-sm text-muted-foreground">Real-time cost tracking and alerting</p>
+                        <p className="text-xs text-primary mt-1">Prevents unexpected cost spikes</p>
                       </div>
                     </div>
                   </div>

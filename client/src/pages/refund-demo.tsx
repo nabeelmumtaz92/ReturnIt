@@ -36,7 +36,7 @@ export default function RefundDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">ReturnIt Refund System Demo</h1>

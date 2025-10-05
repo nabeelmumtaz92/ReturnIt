@@ -318,22 +318,22 @@ export default function HelpCenter() {
   return (
     <div className="min-h-screen relative">
       {/* Navigation Header */}
-      <header className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50">
+      <header className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" asChild className="text-amber-800 hover:text-amber-900">
+              <Button variant="ghost" size="sm" asChild className="text-foreground hover:text-foreground">
                 <Link href="/">
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back
                 </Link>
               </Button>
               <Link href="/">
-                <div className="text-xl font-bold text-amber-900 cursor-pointer hover:opacity-80 transition-opacity">
+                <div className="text-xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
                   ReturnIt
                 </div>
               </Link>
-              <h1 className="text-2xl font-bold text-amber-900">Help Center</h1>
+              <h1 className="text-2xl font-bold text-foreground">Help Center</h1>
             </div>
           </div>
         </div>
@@ -355,8 +355,8 @@ export default function HelpCenter() {
         
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-amber-900 mb-4">Help Center</h1>
-          <p className="text-xl text-amber-700 max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold text-foreground mb-4">Help Center</h1>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Find answers to your questions about Returnly's return pickup service
           </p>
         </div>
@@ -364,17 +364,17 @@ export default function HelpCenter() {
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto mb-12">
           <div className="relative">
-            <Search className="absolute left-3 top-3 h-5 w-5 text-amber-500" />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-primary" />
             <Input
               placeholder="Search help articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 py-3 text-lg border-amber-200 focus:border-amber-400"
+              className="pl-10 py-3 text-lg border-border focus:border-border"
               data-testid="input-help-search"
             />
           </div>
           {searchQuery && (
-            <p className="text-sm text-amber-600 mt-2">
+            <p className="text-sm text-muted-foreground mt-2">
               {sortedArticles.length} result{sortedArticles.length !== 1 ? 's' : ''} found for "{searchQuery}"
             </p>
           )}
@@ -382,7 +382,7 @@ export default function HelpCenter() {
 
         {/* Categories */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-amber-900 mb-6">Browse by Category</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Browse by Category</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category) => {
               const Icon = category.icon;
@@ -391,7 +391,7 @@ export default function HelpCenter() {
                 <Card 
                   key={category.id}
                   className={`cursor-pointer transition-all hover:shadow-lg ${
-                    isSelected ? 'ring-2 ring-amber-400 bg-amber-50' : 'hover:bg-amber-50'
+                    isSelected ? 'ring-2 ring-amber-400 bg-[#f8f7f5] dark:bg-[#231b0f]' : 'hover:bg-[#f8f7f5] dark:bg-[#231b0f]'
                   }`}
                   onClick={() => setSelectedCategory(isSelected ? null : category.id)}
                   data-testid={`category-${category.id}`}
@@ -402,10 +402,10 @@ export default function HelpCenter() {
                         <Icon className="h-6 w-6 text-white" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-amber-900 mb-1">{category.name}</h3>
-                        <p className="text-sm text-amber-600">{category.count} articles</p>
+                        <h3 className="font-semibold text-foreground mb-1">{category.name}</h3>
+                        <p className="text-sm text-muted-foreground">{category.count} articles</p>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-amber-400" />
+                      <ChevronRight className="h-5 w-5 text-primary" />
                     </div>
                   </CardContent>
                 </Card>
@@ -417,7 +417,7 @@ export default function HelpCenter() {
               <Button
                 variant="outline"
                 onClick={() => setSelectedCategory(null)}
-                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                 data-testid="button-clear-category"
               >
                 Clear Category Filter
@@ -429,13 +429,13 @@ export default function HelpCenter() {
         {/* Popular Articles */}
         {!searchQuery && !selectedCategory && (
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-amber-900 mb-6">Most Popular Articles</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Most Popular Articles</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {popularArticles.map((article, index) => (
                 <Card key={article.id} className="hover:shadow-lg transition-shadow bg-white">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
-                      <Badge variant="secondary" className="bg-amber-100 text-amber-800 mb-2">
+                      <Badge variant="secondary" className="bg-accent text-foreground mb-2">
                         {article.category}
                       </Badge>
                       <div className="flex items-center gap-1">
@@ -443,17 +443,17 @@ export default function HelpCenter() {
                         <span className="text-sm text-gray-600">#{index + 1}</span>
                       </div>
                     </div>
-                    <CardTitle className="text-amber-900 leading-tight">{article.title}</CardTitle>
+                    <CardTitle className="text-foreground leading-tight">{article.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="pt-0">
                     <p className="text-gray-600 mb-4 line-clamp-2">{article.content}</p>
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-amber-600">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-4 w-4" />
                         <span>{article.readTime}</span>
                       </div>
                       <Link href={`/help-article/${article.id}`}>
-                        <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid={`button-read-${article.id}`}>
+                        <Button size="sm" className="bg-primary hover:bg-primary/90 text-white" data-testid={`button-read-${article.id}`}>
                           Read Article
                         </Button>
                       </Link>
@@ -467,16 +467,16 @@ export default function HelpCenter() {
 
         {/* All Articles / Search Results */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-amber-900 mb-6">
+          <h2 className="text-2xl font-bold text-foreground mb-6">
             {searchQuery ? 'Search Results' : selectedCategory ? `${categories.find(c => c.id === selectedCategory)?.name} Articles` : 'All Help Articles'}
           </h2>
           
           {sortedArticles.length === 0 ? (
             <Card className="bg-white">
               <CardContent className="text-center py-12">
-                <AlertCircle className="h-12 w-12 text-amber-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-amber-900 mb-2">No articles found</h3>
-                <p className="text-amber-600 mb-4">
+                <AlertCircle className="h-12 w-12 text-primary mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No articles found</h3>
+                <p className="text-muted-foreground mb-4">
                   {searchQuery ? `No articles match "${searchQuery}"` : 'No articles in this category'}
                 </p>
                 <Button
@@ -484,7 +484,7 @@ export default function HelpCenter() {
                     setSearchQuery('');
                     setSelectedCategory(null);
                   }}
-                  className="bg-amber-600 hover:bg-amber-700 text-white"
+                  className="bg-primary hover:bg-primary/90 text-white"
                   data-testid="button-clear-search"
                 >
                   Clear Search
@@ -511,7 +511,7 @@ export default function HelpCenter() {
                             {article.popularity}% helpful
                           </div>
                         </div>
-                        <h3 className="text-lg font-semibold text-amber-900 mb-2">{article.title}</h3>
+                        <h3 className="text-lg font-semibold text-foreground mb-2">{article.title}</h3>
                         <p className="text-gray-600 mb-3">{article.content}</p>
                         <div className="flex flex-wrap gap-1">
                           {article.tags.slice(0, 4).map((tag) => (
@@ -526,7 +526,7 @@ export default function HelpCenter() {
                       </div>
                       <div className="flex flex-col gap-2">
                         <Link href={`/help-article/${article.id}`}>
-                          <Button className="w-full md:w-auto bg-amber-600 hover:bg-amber-700 text-white" data-testid={`button-view-${article.id}`}>
+                          <Button className="w-full md:w-auto bg-primary hover:bg-primary/90 text-white" data-testid={`button-view-${article.id}`}>
                             <BookOpen className="h-4 w-4 mr-2" />
                             Read Article
                           </Button>
@@ -541,19 +541,19 @@ export default function HelpCenter() {
         </div>
 
         {/* Contact Support Section */}
-        <Card className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+        <Card className="bg-gradient-to-r from-primary to-primary text-white">
           <CardContent className="p-8">
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold mb-2">Still Need Help?</h2>
-              <p className="text-amber-100">Our support team is available 24/7 to assist you</p>
+              <p className="text-primary-foreground">Our support team is available 24/7 to assist you</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Card className="bg-white/10 backdrop-blur border-0">
                 <CardContent className="p-4 text-center">
                   <MessageCircle className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Live Chat</h3>
-                  <p className="text-sm text-amber-100 mb-3">Instant support available</p>
-                  <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-live-chat-support">
+                  <p className="text-sm text-primary-foreground mb-3">Instant support available</p>
+                  <Button className="w-full bg-white text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-live-chat-support">
                     Start Chat
                   </Button>
                 </CardContent>
@@ -562,9 +562,9 @@ export default function HelpCenter() {
                 <CardContent className="p-4 text-center">
                   <Phone className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Phone Support</h3>
-                  <p className="text-sm text-amber-100 mb-3">(636) 254-4821</p>
+                  <p className="text-sm text-primary-foreground mb-3">(636) 254-4821</p>
                   <a href="tel:6362544821">
-                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-call-support">
+                    <Button className="w-full bg-white text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-call-support">
                       Call Specialist
                     </Button>
                   </a>
@@ -574,9 +574,9 @@ export default function HelpCenter() {
                 <CardContent className="p-4 text-center">
                   <Mail className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Email Support</h3>
-                  <p className="text-sm text-amber-100 mb-3">support@returnit.online</p>
+                  <p className="text-sm text-primary-foreground mb-3">support@returnit.online</p>
                   <a href="mailto:support@returnit.online">
-                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-email-support">
+                    <Button className="w-full bg-white text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-email-support">
                       Send Email
                     </Button>
                   </a>
@@ -586,9 +586,9 @@ export default function HelpCenter() {
                 <CardContent className="p-4 text-center">
                   <MessageCircle className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Message Specialist</h3>
-                  <p className="text-sm text-amber-100 mb-3">Text message support</p>
+                  <p className="text-sm text-primary-foreground mb-3">Text message support</p>
                   <a href="sms:6362544821?body=Hi, I need help with ReturnIt:">
-                    <Button className="w-full bg-white text-amber-600 hover:bg-amber-50" data-testid="button-sms-support">
+                    <Button className="w-full bg-white text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-sms-support">
                       Send Message
                     </Button>
                   </a>
@@ -601,7 +601,7 @@ export default function HelpCenter() {
         {/* Back to Home */}
         <div className="text-center mt-8">
           <Link href="/">
-            <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50" data-testid="button-back-home">
+            <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-back-home">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
             </Button>

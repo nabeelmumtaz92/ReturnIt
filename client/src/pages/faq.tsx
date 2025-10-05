@@ -286,7 +286,7 @@ export default function FAQ() {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="mr-4 text-amber-800 hover:text-amber-900"
+                  className="mr-4 text-foreground hover:text-foreground"
                   data-testid="button-back-home"
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
@@ -294,8 +294,8 @@ export default function FAQ() {
                 </Button>
               </Link>
             </div>
-            <h1 className="text-4xl font-bold text-amber-900 mb-4">Frequently Asked Questions</h1>
-            <p className="text-xl text-amber-700 max-w-3xl mx-auto">
+            <h1 className="text-4xl font-bold text-foreground mb-4">Frequently Asked Questions</h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Find answers to common questions about ReturnIt's return pickup service. Can't find what you're looking for? Contact our support team.
             </p>
           </div>
@@ -303,17 +303,17 @@ export default function FAQ() {
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-3 h-5 w-5 text-amber-500" />
+              <Search className="absolute left-3 top-3 h-5 w-5 text-primary" />
               <Input
                 placeholder="Search frequently asked questions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 py-3 text-lg border-amber-200 focus:border-amber-400"
+                className="pl-10 py-3 text-lg border-border focus:border-primary"
                 data-testid="input-faq-search"
               />
             </div>
             {searchQuery && (
-              <p className="text-sm text-amber-600 mt-2">
+              <p className="text-sm text-primary mt-2">
                 {filteredFAQs.length} result{filteredFAQs.length !== 1 ? 's' : ''} found for "{searchQuery}"
               </p>
             )}
@@ -321,7 +321,7 @@ export default function FAQ() {
 
           {/* Categories */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-amber-900 mb-6">Browse by Category</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-6">Browse by Category</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((category) => {
                 const Icon = category.icon;
@@ -331,7 +331,7 @@ export default function FAQ() {
                   <Card 
                     key={category.id}
                     className={`cursor-pointer transition-all hover:shadow-lg ${
-                      isSelected ? 'ring-2 ring-amber-400 bg-amber-50' : 'hover:bg-amber-50'
+                      isSelected ? 'ring-2 ring-amber-400 bg-accent' : 'hover:bg-accent/50'
                     }`}
                     onClick={() => setSelectedCategory(isSelected ? null : category.id)}
                     data-testid={`category-${category.id}`}
@@ -342,8 +342,8 @@ export default function FAQ() {
                           <Icon className="h-6 w-6 text-white" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-amber-900 mb-1">{category.name}</h3>
-                          <p className="text-sm text-amber-600">{count} questions</p>
+                          <h3 className="font-semibold text-foreground mb-1">{category.name}</h3>
+                          <p className="text-sm text-primary">{count} questions</p>
                         </div>
                       </div>
                     </CardContent>
@@ -356,7 +356,7 @@ export default function FAQ() {
           {/* Popular FAQs */}
           {!searchQuery && !selectedCategory && (
             <div className="mb-12">
-              <h2 className="text-2xl font-bold text-amber-900 mb-6">Most Popular Questions</h2>
+              <h2 className="text-2xl font-bold text-foreground mb-6">Most Popular Questions</h2>
               <div className="space-y-4">
                 {popularFAQs.map((faq) => (
                   <Card key={faq.id} className="bg-white">
@@ -365,16 +365,16 @@ export default function FAQ() {
                       onOpenChange={() => toggleItem(faq.id)}
                     >
                       <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-amber-50 transition-colors">
+                        <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
                           <div className="flex items-center justify-between">
                             <div className="flex items-start gap-3">
-                              <Badge className="bg-amber-100 text-amber-800 mt-1">Popular</Badge>
+                              <Badge className="bg-accent text-foreground mt-1">Popular</Badge>
                               <div className="flex-1">
-                                <CardTitle className="text-amber-900 text-left">{faq.question}</CardTitle>
+                                <CardTitle className="text-foreground text-left">{faq.question}</CardTitle>
                               </div>
                             </div>
                             <ChevronDown 
-                              className={`h-5 w-5 text-amber-600 transition-transform ${
+                              className={`h-5 w-5 text-primary transition-transform ${
                                 openItems.has(faq.id) ? 'rotate-180' : ''
                               }`} 
                             />
@@ -402,16 +402,16 @@ export default function FAQ() {
 
           {/* All FAQs / Search Results */}
           <div className="mb-12">
-            <h2 className="text-2xl font-bold text-amber-900 mb-6">
+            <h2 className="text-2xl font-bold text-foreground mb-6">
               {searchQuery ? 'Search Results' : selectedCategory ? `${categories.find(c => c.id === selectedCategory)?.name} Questions` : 'All Questions'}
             </h2>
             
             {filteredFAQs.length === 0 ? (
               <Card className="bg-white">
                 <CardContent className="text-center py-12">
-                  <AlertTriangle className="h-12 w-12 text-amber-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">No questions found</h3>
-                  <p className="text-amber-600 mb-4">
+                  <AlertTriangle className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">No questions found</h3>
+                  <p className="text-primary mb-4">
                     {searchQuery ? `No questions match "${searchQuery}"` : 'No questions in this category'}
                   </p>
                   <Button
@@ -419,7 +419,7 @@ export default function FAQ() {
                       setSearchQuery('');
                       setSelectedCategory(null);
                     }}
-                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                    className="bg-primary hover:bg-primary/90 text-white"
                     data-testid="button-clear-search"
                   >
                     Clear Search
@@ -435,21 +435,21 @@ export default function FAQ() {
                       onOpenChange={() => toggleItem(faq.id)}
                     >
                       <CollapsibleTrigger asChild>
-                        <CardHeader className="cursor-pointer hover:bg-amber-50 transition-colors">
+                        <CardHeader className="cursor-pointer hover:bg-accent/50 transition-colors">
                           <div className="flex items-center justify-between">
                             <div className="flex items-start gap-3">
                               {faq.isPopular && (
-                                <Badge className="bg-amber-100 text-amber-800 mt-1">Popular</Badge>
+                                <Badge className="bg-accent text-foreground mt-1">Popular</Badge>
                               )}
                               <div className="flex-1">
-                                <CardTitle className="text-amber-900 text-left">{faq.question}</CardTitle>
+                                <CardTitle className="text-foreground text-left">{faq.question}</CardTitle>
                                 <Badge variant="secondary" className="mt-2">
                                   {categories.find(c => c.id === faq.category)?.name}
                                 </Badge>
                               </div>
                             </div>
                             <ChevronDown 
-                              className={`h-5 w-5 text-amber-600 transition-transform ${
+                              className={`h-5 w-5 text-primary transition-transform ${
                                 openItems.has(faq.id) ? 'rotate-180' : ''
                               }`} 
                             />
@@ -476,20 +476,20 @@ export default function FAQ() {
           </div>
 
           {/* Contact Support Section */}
-          <Card className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+          <Card className="bg-gradient-to-r from-primary to-primary text-white">
             <CardContent className="p-8">
               <div className="text-center mb-6">
                 <h2 className="text-2xl font-bold mb-2">Still Have Questions?</h2>
-                <p className="text-amber-100">Our support team is available 24/7 to help you</p>
+                <p className="text-primary-foreground">Our support team is available 24/7 to help you</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="bg-white/10 backdrop-blur border-0">
                   <CardContent className="p-4 text-center">
                     <MessageCircle className="h-8 w-8 mx-auto mb-2" />
                     <h3 className="font-semibold mb-1">Live Chat</h3>
-                    <p className="text-sm text-amber-100 mb-3">Get instant support</p>
+                    <p className="text-sm text-primary-foreground mb-3">Get instant support</p>
                     <Button 
-                      className="w-full bg-white text-amber-600 hover:bg-amber-50" 
+                      className="w-full bg-white text-primary hover:bg-accent/50" 
                       onClick={() => setLocation('/help-center')}
                       data-testid="button-live-chat"
                     >
@@ -501,9 +501,9 @@ export default function FAQ() {
                   <CardContent className="p-4 text-center">
                     <Phone className="h-8 w-8 mx-auto mb-2" />
                     <h3 className="font-semibold mb-1">Phone Support</h3>
-                    <p className="text-sm text-amber-100 mb-3">(636) 254-4821</p>
+                    <p className="text-sm text-primary-foreground mb-3">(636) 254-4821</p>
                     <Button 
-                      className="w-full bg-white text-amber-600 hover:bg-amber-50"
+                      className="w-full bg-white text-primary hover:bg-accent/50"
                       data-testid="button-call-support"
                     >
                       Call Now
@@ -514,9 +514,9 @@ export default function FAQ() {
                   <CardContent className="p-4 text-center">
                     <Mail className="h-8 w-8 mx-auto mb-2" />
                     <h3 className="font-semibold mb-1">Email Support</h3>
-                    <p className="text-sm text-amber-100 mb-3">support@returnit.online</p>
+                    <p className="text-sm text-primary-foreground mb-3">support@returnit.online</p>
                     <Button 
-                      className="w-full bg-white text-amber-600 hover:bg-amber-50"
+                      className="w-full bg-white text-primary hover:bg-accent/50"
                       data-testid="button-email-support"
                     >
                       Send Email

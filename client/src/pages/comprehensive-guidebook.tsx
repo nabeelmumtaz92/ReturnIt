@@ -319,9 +319,9 @@ Visit returnit.online for more information
 
         {/* Master Admin Special Access Notice */}
         {selectedGuide === 'masterAdmin' && (
-          <Alert className="mt-6 border-amber-200 bg-amber-50">
-            <Shield className="h-4 w-4 text-amber-600" />
-            <AlertDescription className="text-amber-800">
+          <Alert className="mt-6 border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
+            <Shield className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-foreground">
               <strong>Master Admin Access:</strong> nabeelmumtaz92@gmail.com and durremumtaz@gmail.com have exclusive access to all administrative functions, including employee admin dashboards, financial controls, and system configuration. Both accounts can access the employee admin dashboard at /employee-dashboard in addition to the master admin dashboard.
             </AlertDescription>
           </Alert>

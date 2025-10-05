@@ -525,10 +525,10 @@ Thank you for using ReturnIt!
         </DialogHeader>
         <div className="space-y-3">
           {paymentMethods.map((method) => (
-            <Card key={method.id} className="border-amber-200">
+            <Card key={method.id} className="border-border">
               <CardContent className="p-4 flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <CreditCard className="h-5 w-5 text-amber-600" />
+                  <CreditCard className="h-5 w-5 text-primary" />
                   <div>
                     <p className="font-medium">
                       {method.type === 'card' ? `Card ending in ${method.last4}` : 
@@ -577,7 +577,7 @@ Thank you for using ReturnIt!
         </DialogHeader>
         <div className="space-y-3">
           {savedAddresses.map((addr) => (
-            <Card key={addr.id} className="border-amber-200">
+            <Card key={addr.id} className="border-border">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -682,13 +682,13 @@ Thank you for using ReturnIt!
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">Live Tracking</h1>
+        <h1 className="text-xl font-bold text-foreground">Live Tracking</h1>
       </div>
 
-      <Card className="border-amber-200">
+      <Card className="border-border">
         <CardContent className="p-0">
-          <div className="aspect-video bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center relative">
-            <MapPin className="h-16 w-16 text-amber-600" />
+          <div className="aspect-video bg-gradient-to-br from-accent to-accent flex items-center justify-center relative">
+            <MapPin className="h-16 w-16 text-primary" />
             
             {/* WebSocket Connection Status */}
             <div className="absolute top-4 right-4">
@@ -727,12 +727,12 @@ Thank you for using ReturnIt!
       </Card>
 
       {selectedOrderData?.driverName && (
-        <Card className="border-amber-200">
+        <Card className="border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                  <User className="h-6 w-6 text-amber-600" />
+                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                  <User className="h-6 w-6 text-primary" />
                 </div>
                 <div>
                   <p className="font-medium">{selectedOrderData.driverName}</p>
@@ -778,13 +778,13 @@ Thank you for using ReturnIt!
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">Chat with Driver</h1>
+        <h1 className="text-xl font-bold text-foreground">Chat with Driver</h1>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4 border rounded-lg p-4 bg-amber-50/50">
+      <div className="flex-1 overflow-y-auto space-y-3 mb-4 border rounded-lg p-4 bg-[#f8f7f5] dark:bg-[#231b0f]/50">
         {orderMessages.length === 0 ? (
           <div className="text-center text-muted-foreground py-8">
-            <MessageCircle className="h-12 w-12 mx-auto mb-2 text-amber-400" />
+            <MessageCircle className="h-12 w-12 mx-auto mb-2 text-primary" />
             <p>No messages yet</p>
             <p className="text-sm">Send a message to your driver</p>
           </div>
@@ -797,7 +797,7 @@ Thank you for using ReturnIt!
                   isFromCustomer ? 'bg-amber-600 text-white' : 'bg-white border'
                 }`}>
                   <p className="text-sm">{msg.message}</p>
-                  <p className={`text-xs mt-1 ${isFromCustomer ? 'text-amber-100' : 'text-muted-foreground'}`}>
+                  <p className={`text-xs mt-1 ${isFromCustomer ? 'text-primary-foreground' : 'text-muted-foreground'}`}>
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
                 </div>
@@ -835,10 +835,10 @@ Thank you for using ReturnIt!
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">Package Photo</h1>
+        <h1 className="text-xl font-bold text-foreground">Package Photo</h1>
       </div>
 
-      <Card className="border-amber-200">
+      <Card className="border-border">
         <CardContent className="p-0">
           <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
             {selectedOrderData?.packagePhoto ? (
@@ -857,7 +857,7 @@ Thank you for using ReturnIt!
         </CardContent>
       </Card>
 
-      <Card className="border-amber-200">
+      <Card className="border-border">
         <CardContent className="p-4">
           <p className="text-sm text-muted-foreground">
             This photo was taken by your driver as proof of pickup. All photos are encrypted and stored securely.
@@ -885,15 +885,15 @@ Thank you for using ReturnIt!
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold text-amber-900">Order Details</h1>
+          <h1 className="text-xl font-bold text-foreground">Order Details</h1>
         </div>
 
-        <Card className="border-amber-200">
+        <Card className="border-border">
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>
-                <CardTitle className="text-amber-900">{selectedOrderData.retailer}</CardTitle>
-                <p className="text-amber-600">#{selectedOrderData.trackingNumber}</p>
+                <CardTitle className="text-foreground">{selectedOrderData.retailer}</CardTitle>
+                <p className="text-primary">#{selectedOrderData.trackingNumber}</p>
               </div>
               <Badge 
                 variant={selectedOrderData.status === 'completed' ? 'default' : 
@@ -906,35 +906,35 @@ Thank you for using ReturnIt!
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label className="text-amber-800 font-medium">Pickup Address</Label>
-              <p className="text-amber-700">{selectedOrderData.pickupAddress}</p>
+              <Label className="text-foreground font-medium">Pickup Address</Label>
+              <p className="text-muted-foreground">{selectedOrderData.pickupAddress}</p>
             </div>
             
             <div>
-              <Label className="text-amber-800 font-medium">Drop-off Location</Label>
-              <p className="text-amber-700">{selectedOrderData.dropoffLocation}</p>
+              <Label className="text-foreground font-medium">Drop-off Location</Label>
+              <p className="text-muted-foreground">{selectedOrderData.dropoffLocation}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-amber-800 font-medium">Amount</Label>
-                <p className="text-amber-700">${selectedOrderData.amount.toFixed(2)}</p>
+                <Label className="text-foreground font-medium">Amount</Label>
+                <p className="text-muted-foreground">${selectedOrderData.amount.toFixed(2)}</p>
               </div>
               <div>
-                <Label className="text-amber-800 font-medium">Date</Label>
-                <p className="text-amber-700">{new Date(selectedOrderData.createdAt).toLocaleDateString()}</p>
+                <Label className="text-foreground font-medium">Date</Label>
+                <p className="text-muted-foreground">{new Date(selectedOrderData.createdAt).toLocaleDateString()}</p>
               </div>
             </div>
 
             {selectedOrderData.driverName && (
               <div>
-                <Label className="text-amber-800 font-medium">Driver</Label>
+                <Label className="text-foreground font-medium">Driver</Label>
                 <div className="flex items-center justify-between mt-1">
                   <div>
-                    <p className="text-amber-700">{selectedOrderData.driverName}</p>
+                    <p className="text-muted-foreground">{selectedOrderData.driverName}</p>
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm text-amber-600">{selectedOrderData.driverRating || 4.9}</span>
+                      <span className="text-sm text-primary">{selectedOrderData.driverRating || 4.9}</span>
                     </div>
                   </div>
                 </div>
@@ -947,7 +947,7 @@ Thank you for using ReturnIt!
           {['assigned', 'picked_up'].includes(selectedOrderData.status) && (
             <Button
               onClick={() => setCurrentView('track-live')}
-              className="bg-amber-600 hover:bg-amber-700"
+              className="bg-primary hover:bg-primary/90"
               data-testid="button-track-live"
             >
               <Navigation className="h-4 w-4 mr-2" />
@@ -959,7 +959,7 @@ Thank you for using ReturnIt!
             <Button
               variant="outline"
               onClick={() => setCurrentView('photo-view')}
-              className="border-amber-300"
+              className="border-border"
               data-testid="button-view-photo"
             >
               <Camera className="h-4 w-4 mr-2" />
@@ -972,7 +972,7 @@ Thank you for using ReturnIt!
               <Button
                 variant="outline"
                 onClick={() => downloadReceipt(selectedOrderData)}
-                className="border-amber-300"
+                className="border-border"
                 data-testid="button-download-receipt"
               >
                 <Download className="h-4 w-4 mr-2" />
@@ -984,7 +984,7 @@ Thank you for using ReturnIt!
                   setOrderToRate(selectedOrderData.id);
                   setShowRatingDialog(true);
                 }}
-                className="border-amber-300"
+                className="border-border"
                 data-testid="button-rate-driver"
               >
                 <Star className="h-4 w-4 mr-2" />
@@ -1032,7 +1032,7 @@ Thank you for using ReturnIt!
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">Book Pickup</h1>
+        <h1 className="text-xl font-bold text-foreground">Book Pickup</h1>
       </div>
 
       {bookingStep === 'details' && (
@@ -1065,7 +1065,7 @@ Thank you for using ReturnIt!
           <Button 
             onClick={() => setBookingStep('schedule')}
             disabled={!bookingData.retailer || !bookingData.pickupAddress}
-            className="w-full bg-amber-600"
+            className="w-full bg-primary"
           >
             Continue
           </Button>
@@ -1107,7 +1107,7 @@ Thank you for using ReturnIt!
           <Button 
             onClick={() => setBookingStep('payment')}
             disabled={!bookingData.pickupDate || !bookingData.pickupTime}
-            className="w-full bg-amber-600"
+            className="w-full bg-primary"
           >
             Continue to Payment
           </Button>
@@ -1116,7 +1116,7 @@ Thank you for using ReturnIt!
 
       {bookingStep === 'payment' && (
         <div className="space-y-4">
-          <Card className="border-amber-200 bg-amber-50">
+          <Card className="border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
             <CardContent className="p-4">
               <h3 className="font-semibold mb-3">Order Summary</h3>
               <div className="space-y-2 text-sm">
@@ -1176,7 +1176,7 @@ Thank you for using ReturnIt!
           <Button 
             onClick={handleBookingSubmit}
             disabled={bookPickupMutation.isPending}
-            className="w-full bg-amber-600"
+            className="w-full bg-primary"
             data-testid="button-book-confirm"
           >
             {bookPickupMutation.isPending ? 'Booking...' : `Book - $${calculateTotal().total.toFixed(2)}`}
@@ -1191,18 +1191,18 @@ Thank you for using ReturnIt!
     <div className="space-y-6">
       <div className="text-center">
         <div className="flex items-center justify-center mb-4">
-          <ReturnItIcon size={48} className="text-amber-600" />
+          <ReturnItIcon size={48} className="text-primary" />
         </div>
-        <h1 className="text-2xl font-bold text-amber-900 mb-2">
+        <h1 className="text-2xl font-bold text-foreground mb-2">
           Hello, {user?.firstName || 'Customer'}!
         </h1>
-        <p className="text-amber-700">Ready to return something?</p>
+        <p className="text-muted-foreground">Ready to return something?</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <Button 
           onClick={() => setCurrentView('book')}
-          className="h-20 bg-amber-600 hover:bg-amber-700 flex flex-col gap-2"
+          className="h-20 bg-primary hover:bg-primary/90 flex flex-col gap-2"
           data-testid="button-book-pickup"
         >
           <Plus className="h-6 w-6" />
@@ -1211,7 +1211,7 @@ Thank you for using ReturnIt!
         <Button 
           onClick={() => setCurrentView('orders')}
           variant="outline"
-          className="h-20 border-amber-300 flex flex-col gap-2"
+          className="h-20 border-border flex flex-col gap-2"
           data-testid="button-my-orders"
         >
           <Package className="h-6 w-6" />
@@ -1221,7 +1221,7 @@ Thank you for using ReturnIt!
 
       {activeOrders.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-amber-900 mb-3">Active Orders</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-3">Active Orders</h2>
           {activeOrders.map(order => (
             <Card 
               key={order.id} 
@@ -1254,11 +1254,11 @@ Thank you for using ReturnIt!
         <Button variant="ghost" size="sm" onClick={() => setCurrentView('home')} className="p-2">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">My Orders</h1>
+        <h1 className="text-xl font-bold text-foreground">My Orders</h1>
       </div>
       {orders.length === 0 ? (
         <div className="text-center py-12">
-          <Package className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+          <Package className="h-12 w-12 mx-auto mb-4 text-primary" />
           <p className="text-muted-foreground">No orders yet</p>
         </div>
       ) : (
@@ -1296,14 +1296,14 @@ Thank you for using ReturnIt!
         <Button variant="ghost" size="sm" onClick={() => setCurrentView('home')} className="p-2">
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-xl font-bold text-amber-900">Profile</h1>
+        <h1 className="text-xl font-bold text-foreground">Profile</h1>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center">
-              <User className="h-8 w-8 text-amber-600" />
+            <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
+              <User className="h-8 w-8 text-primary" />
             </div>
             <div>
               <h2 className="text-lg font-semibold">{user?.firstName} {user?.lastName}</h2>
@@ -1312,11 +1312,11 @@ Thank you for using ReturnIt!
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-center">
-            <div className="bg-amber-50 rounded-lg p-4">
+            <div className="bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg p-4">
               <p className="text-2xl font-bold">{orders.length}</p>
               <p className="text-sm text-muted-foreground">Total Orders</p>
             </div>
-            <div className="bg-amber-50 rounded-lg p-4">
+            <div className="bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg p-4">
               <p className="text-2xl font-bold">
                 ${orders.reduce((sum, order) => sum + order.amount, 0).toFixed(0)}
               </p>
@@ -1408,7 +1408,7 @@ Thank you for using ReturnIt!
           <Button
             variant="ghost"
             onClick={() => setCurrentView('home')}
-            className={`flex flex-col gap-1 rounded-none ${currentView === 'home' ? 'bg-amber-50 text-amber-700' : ''}`}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'home' ? 'bg-[#f8f7f5] dark:bg-[#231b0f] text-muted-foreground' : ''}`}
             data-testid="nav-home"
           >
             <Home className="h-5 w-5" />
@@ -1417,7 +1417,7 @@ Thank you for using ReturnIt!
           <Button
             variant="ghost"
             onClick={() => setCurrentView('orders')}
-            className={`flex flex-col gap-1 rounded-none ${currentView === 'orders' ? 'bg-amber-50 text-amber-700' : ''}`}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'orders' ? 'bg-[#f8f7f5] dark:bg-[#231b0f] text-muted-foreground' : ''}`}
             data-testid="nav-orders"
           >
             <Package className="h-5 w-5" />
@@ -1426,7 +1426,7 @@ Thank you for using ReturnIt!
           <Button
             variant="ghost"
             onClick={() => setCurrentView('profile')}
-            className={`flex flex-col gap-1 rounded-none ${currentView === 'profile' ? 'bg-amber-50 text-amber-700' : ''}`}
+            className={`flex flex-col gap-1 rounded-none ${currentView === 'profile' ? 'bg-[#f8f7f5] dark:bg-[#231b0f] text-muted-foreground' : ''}`}
             data-testid="nav-profile"
           >
             <User className="h-5 w-5" />

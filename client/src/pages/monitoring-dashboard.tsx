@@ -155,24 +155,24 @@ export default function MonitoringDashboard() {
 
   if (healthLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Activity className="h-8 w-8 text-amber-600 mx-auto animate-pulse" />
-          <p className="text-amber-800 font-medium">Loading monitoring dashboard...</p>
+          <Activity className="h-8 w-8 text-primary mx-auto animate-pulse" />
+          <p className="text-foreground font-medium">Loading monitoring dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-6">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Infrastructure Monitoring</h1>
-            <p className="text-amber-700 mt-1">Real-time system health and performance</p>
+            <h1 className="text-3xl font-bold text-foreground">Infrastructure Monitoring</h1>
+            <p className="text-muted-foreground mt-1">Real-time system health and performance</p>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={health?.status === 'healthy' ? 'default' : 'destructive'} className="text-lg px-3 py-1">
@@ -217,7 +217,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">System Status</CardTitle>
-              <Server className="h-4 w-4 text-amber-600" />
+              <Server className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
@@ -233,7 +233,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Database</CardTitle>
-              <Database className="h-4 w-4 text-amber-600" />
+              <Database className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
@@ -249,7 +249,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Memory Usage</CardTitle>
-              <MemoryStick className="h-4 w-4 text-amber-600" />
+              <MemoryStick className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -265,7 +265,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Avg Response</CardTitle>
-              <Zap className="h-4 w-4 text-amber-600" />
+              <Zap className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -285,7 +285,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-amber-600" />
+                <TrendingUp className="h-5 w-5 text-primary" />
                 Response Time Trends
               </CardTitle>
             </CardHeader>
@@ -308,7 +308,7 @@ export default function MonitoringDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <MemoryStick className="h-5 w-5 text-amber-600" />
+                <MemoryStick className="h-5 w-5 text-primary" />
                 Memory Usage Over Time
               </CardTitle>
             </CardHeader>

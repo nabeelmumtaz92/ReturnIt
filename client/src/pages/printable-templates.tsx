@@ -944,16 +944,16 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 </html>`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               
               <div>
-                <h1 className="text-3xl font-bold text-amber-900">Printable Templates</h1>
-                <p className="text-amber-700">Ready-to-print forms and documents for operations</p>
+                <h1 className="text-3xl font-bold text-foreground">Printable Templates</h1>
+                <p className="text-muted-foreground">Ready-to-print forms and documents for operations</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -961,7 +961,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
                 <Printer className="h-4 w-4 mr-1" />
                 Print Ready
               </Badge>
-              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+              <Button variant="outline" className="border-border text-muted-foreground hover:bg-accent/50">
                 <Archive className="h-4 w-4 mr-2" />
                 Download All
               </Button>
@@ -972,16 +972,16 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.map((template) => (
-            <Card key={template.id} className="bg-white border-amber-200 hover:shadow-lg transition-shadow">
+            <Card key={template.id} className="bg-white border-border hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="p-2 bg-amber-100 rounded-lg text-amber-600">
+                    <div className="p-2 bg-accent rounded-lg text-primary">
                       {template.icon}
                     </div>
                     <div className="flex-1">
-                      <CardTitle className="text-lg text-amber-900">{template.name}</CardTitle>
-                      <Badge variant="outline" className="mt-1 text-xs border-amber-300">
+                      <CardTitle className="text-lg text-foreground">{template.name}</CardTitle>
+                      <Badge variant="outline" className="mt-1 text-xs border-border">
                         {template.category}
                       </Badge>
                     </div>
@@ -989,7 +989,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-amber-700 text-sm mb-4">{template.description}</p>
+                <p className="text-muted-foreground text-sm mb-4">{template.description}</p>
                 
                 <div className="flex flex-wrap gap-1 mb-4">
                   {template.usedBy.map((user) => (
@@ -1002,7 +1002,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
                 <div className="flex items-center space-x-2">
                   <Button
                     onClick={() => generateTemplate(template.id)}
-                    className="flex-1 bg-amber-600 hover:bg-amber-700 text-white"
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white"
                     size="sm"
                   >
                     <Download className="h-4 w-4 mr-2" />
@@ -1011,7 +1011,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
                   <Button
                     variant="outline"
                     size="sm"
-                    className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                    className="border-border text-muted-foreground hover:bg-accent/50"
                     onClick={() => setSelectedTemplate(template.id)}
                   >
                     <Info className="h-4 w-4" />

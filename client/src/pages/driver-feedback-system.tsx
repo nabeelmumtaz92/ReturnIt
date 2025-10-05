@@ -190,21 +190,21 @@ export default function DriverFeedbackSystem() {
 
   // Customer Feedback Form
   const CustomerFeedbackForm = () => (
-    <Card className="bg-white border-amber-200">
+    <Card className="bg-white border-border">
       <CardHeader>
-        <CardTitle className="text-amber-900">Rate Your Driver Experience</CardTitle>
+        <CardTitle className="text-foreground">Rate Your Driver Experience</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         <div>
-          <Label className="text-amber-800 font-medium">Order ID</Label>
+          <Label className="text-foreground font-medium">Order ID</Label>
           <Input 
             placeholder="ORD-2024-001" 
-            className="border-amber-300 focus:border-amber-500"
+            className="border-border focus:border-border"
           />
         </div>
         
         <div>
-          <Label className="text-amber-800 font-medium">Overall Rating</Label>
+          <Label className="text-foreground font-medium">Overall Rating</Label>
           <div className="flex items-center space-x-2 mt-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -219,9 +219,9 @@ export default function DriverFeedbackSystem() {
         </div>
 
         <div>
-          <Label className="text-amber-800 font-medium">Feedback Category</Label>
+          <Label className="text-foreground font-medium">Feedback Category</Label>
           <Select>
-            <SelectTrigger className="border-amber-300 focus:border-amber-500">
+            <SelectTrigger className="border-border focus:border-border">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -235,15 +235,15 @@ export default function DriverFeedbackSystem() {
         </div>
 
         <div>
-          <Label className="text-amber-800 font-medium">Your Feedback</Label>
+          <Label className="text-foreground font-medium">Your Feedback</Label>
           <Textarea
             placeholder="Tell us about your experience with the driver..."
-            className="border-amber-300 focus:border-amber-500"
+            className="border-border focus:border-border"
             rows={4}
           />
         </div>
 
-        <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+        <Button className="w-full bg-primary hover:bg-primary/90 text-white">
           Submit Feedback
         </Button>
       </CardContent>
@@ -279,14 +279,14 @@ export default function DriverFeedbackSystem() {
           </CardContent>
         </Card>
         
-        <Card className="border-amber-200 bg-amber-50">
+        <Card className="border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600">Positive Rate</p>
-                <p className="text-2xl font-bold text-amber-900">91%</p>
+                <p className="text-sm font-medium text-primary">Positive Rate</p>
+                <p className="text-2xl font-bold text-foreground">91%</p>
               </div>
-              <ThumbsUp className="h-8 w-8 text-amber-600" />
+              <ThumbsUp className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -305,23 +305,23 @@ export default function DriverFeedbackSystem() {
       </div>
 
       {/* Individual Driver Performance */}
-      <Card className="bg-white border-amber-200">
+      <Card className="bg-white border-border">
         <CardHeader>
-          <CardTitle className="text-amber-900">Driver Performance Rankings</CardTitle>
+          <CardTitle className="text-foreground">Driver Performance Rankings</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {driverMetrics.map((driver, index) => (
-              <div key={driver.driverId} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+              <div key={driver.driverId} className="flex items-center justify-between p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                 <div className="flex items-center space-x-4">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                    index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-amber-600'
+                    index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-gray-400' : 'bg-primary'
                   }`}>
                     {index + 1}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-amber-900">{driver.driverName}</h4>
-                    <div className="flex items-center space-x-4 text-sm text-amber-700">
+                    <h4 className="font-semibold text-foreground">{driver.driverName}</h4>
+                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                       <span>{driver.completedOrders} orders</span>
                       <span>{driver.totalFeedback} reviews</span>
                     </div>
@@ -332,19 +332,19 @@ export default function DriverFeedbackSystem() {
                   <div className="text-center">
                     <div className="flex items-center space-x-1">
                       {renderStars(Math.round(driver.averageRating))}
-                      <span className="text-sm font-medium text-amber-900">{driver.averageRating}</span>
+                      <span className="text-sm font-medium text-foreground">{driver.averageRating}</span>
                     </div>
                   </div>
                   
                   <div className="text-center">
-                    <p className="text-sm text-amber-600">Positive</p>
+                    <p className="text-sm text-primary">Positive</p>
                     <p className="font-bold text-green-600">{driver.positivePercentage}%</p>
                   </div>
                   
                   <Button
                     size="sm"
                     variant="outline"
-                    className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                    className="border-border text-muted-foreground hover:bg-accent"
                     onClick={() => setSelectedDriver(driver.driverId)}
                   >
                     View Details
@@ -362,7 +362,7 @@ export default function DriverFeedbackSystem() {
   const AdminFeedbackManagement = () => (
     <div className="space-y-6">
       {/* Filters and Search */}
-      <Card className="bg-white border-amber-200">
+      <Card className="bg-white border-border">
         <CardContent className="p-4">
           <div className="flex items-center space-x-4">
             <div className="flex-1">
@@ -372,13 +372,13 @@ export default function DriverFeedbackSystem() {
                   placeholder="Search feedback, driver names, or order IDs..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-amber-300 focus:border-amber-500"
+                  className="pl-10 border-border focus:border-border"
                 />
               </div>
             </div>
             
             <Select value={feedbackFilter} onValueChange={setFeedbackFilter}>
-              <SelectTrigger className="w-40 border-amber-300 focus:border-amber-500">
+              <SelectTrigger className="w-40 border-border focus:border-border">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -390,7 +390,7 @@ export default function DriverFeedbackSystem() {
               </SelectContent>
             </Select>
             
-            <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+            <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
               <Filter className="h-4 w-4 mr-2" />
               More Filters
             </Button>
@@ -401,18 +401,18 @@ export default function DriverFeedbackSystem() {
       {/* Feedback List */}
       <div className="space-y-4">
         {feedbackData.map((feedback) => (
-          <Card key={feedback.id} className="bg-white border-amber-200">
+          <Card key={feedback.id} className="bg-white border-border">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     {renderStars(feedback.rating, 'sm')}
-                    <span className="font-medium text-amber-900">{feedback.rating}/5</span>
+                    <span className="font-medium text-foreground">{feedback.rating}/5</span>
                   </div>
                   
                   <Badge variant="outline" className={
                     feedback.status === 'new' ? 'border-blue-300 text-blue-700' :
-                    feedback.status === 'reviewed' ? 'border-amber-300 text-amber-700' :
+                    feedback.status === 'reviewed' ? 'border-border text-muted-foreground' :
                     'border-green-300 text-green-700'
                   }>
                     {feedback.status}
@@ -434,7 +434,7 @@ export default function DriverFeedbackSystem() {
                   <User className="h-4 w-4 text-gray-600" />
                   <span className="font-medium text-gray-900">{feedback.customerName}</span>
                   <span className="text-gray-500">about</span>
-                  <span className="font-medium text-amber-900">{feedback.driverName}</span>
+                  <span className="font-medium text-foreground">{feedback.driverName}</span>
                 </div>
                 
                 <p className="text-gray-800">{feedback.feedback}</p>
@@ -449,7 +449,7 @@ export default function DriverFeedbackSystem() {
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Button size="sm" variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                  <Button size="sm" variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                     View Order Details
                   </Button>
                   <Button size="sm" variant="outline" className="border-blue-300 text-blue-700 hover:bg-blue-50">
@@ -458,7 +458,7 @@ export default function DriverFeedbackSystem() {
                 </div>
                 
                 {!feedback.response && (
-                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
                     Add Response
                   </Button>
                 )}
@@ -471,16 +471,16 @@ export default function DriverFeedbackSystem() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg border border-amber-200 p-6 mb-8">
+        <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               
               <div>
-                <h1 className="text-3xl font-bold text-amber-900">Driver Feedback System</h1>
-                <p className="text-amber-700">Monitor performance and customer satisfaction</p>
+                <h1 className="text-3xl font-bold text-foreground">Driver Feedback System</h1>
+                <p className="text-muted-foreground">Monitor performance and customer satisfaction</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
@@ -488,7 +488,7 @@ export default function DriverFeedbackSystem() {
                 <TrendingUp className="h-4 w-4 mr-1" />
                 91% Positive
               </Badge>
-              <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+              <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                 <Download className="h-4 w-4 mr-2" />
                 Export Report
               </Button>
@@ -497,7 +497,7 @@ export default function DriverFeedbackSystem() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-lg border border-amber-200 mb-6">
+        <div className="bg-white rounded-lg border border-border mb-6">
           <div className="flex">
             {[
               { id: 'overview', label: 'Performance Overview', icon: <BarChart3 className="h-4 w-4" /> },
@@ -509,7 +509,7 @@ export default function DriverFeedbackSystem() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex-1 p-4 text-center border-b-2 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-amber-500 bg-amber-50 text-amber-900'
+                    ? 'border-border bg-[#f8f7f5] dark:bg-[#231b0f] text-foreground'
                     : 'border-transparent text-gray-600 hover:bg-gray-50'
                 }`}
               >

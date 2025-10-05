@@ -304,7 +304,7 @@ export default function DriverAnalytics() {
                 {stats.achievements.map((achievement) => (
                   <div
                     key={achievement.id}
-                    className="border rounded-lg p-4 bg-gradient-to-br from-yellow-50 to-orange-50"
+                    className="border rounded-lg p-4 bg-gradient-to-br from-yellow-50 to-transparent"
                   >
                     <div className="flex items-start gap-3">
                       <div className="text-2xl">{achievement.icon}</div>

@@ -75,10 +75,10 @@ export default function DriverSafetyCenter() {
     return (
       <Screen className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <Shield className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-amber-900 mb-4">Driver Safety Center</h1>
-          <p className="text-amber-700 mb-4">This section is for verified drivers only</p>
-          <Button className="bg-amber-800 hover:bg-amber-900">Sign In as Driver</Button>
+          <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-4">Driver Safety Center</h1>
+          <p className="text-muted-foreground mb-4">This section is for verified drivers only</p>
+          <Button className="bg-primary hover:bg-primary/90">Sign In as Driver</Button>
         </div>
       </Screen>
     );
@@ -218,27 +218,27 @@ export default function DriverSafetyCenter() {
                 </Card>
               </div>
 
-              <Card className="mt-6 border-amber-200">
+              <Card className="mt-6 border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Safety Tips for Today</CardTitle>
+                  <CardTitle className="text-foreground">Safety Tips for Today</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                      <p className="text-amber-800">Always verify customer identity before package handoff</p>
+                      <p className="text-foreground">Always verify customer identity before package handoff</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                      <p className="text-amber-800">Park in well-lit, visible areas when possible</p>
+                      <p className="text-foreground">Park in well-lit, visible areas when possible</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                      <p className="text-amber-800">Trust your instincts - if something feels wrong, contact dispatch</p>
+                      <p className="text-foreground">Trust your instincts - if something feels wrong, contact dispatch</p>
                     </div>
                     <div className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
-                      <p className="text-amber-800">Keep vehicle doors locked when not actively loading/unloading</p>
+                      <p className="text-foreground">Keep vehicle doors locked when not actively loading/unloading</p>
                     </div>
                   </div>
                 </CardContent>
@@ -283,7 +283,7 @@ export default function DriverSafetyCenter() {
                     </div>
                   </div>
 
-                  <Button className="w-full mt-6 bg-amber-700 hover:bg-amber-800">
+                  <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
                     <Users className="h-4 w-4 mr-2" />
                     Manage Emergency Contacts
                   </Button>
@@ -333,9 +333,9 @@ export default function DriverSafetyCenter() {
             </TabsContent>
 
             <TabsContent value="history" className="mt-6">
-              <Card className="border-amber-200">
+              <Card className="border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900 flex items-center">
+                  <CardTitle className="text-foreground flex items-center">
                     <Clock className="h-6 w-6 mr-2" />
                     Safety Event History
                   </CardTitle>
@@ -343,7 +343,7 @@ export default function DriverSafetyCenter() {
                 <CardContent>
                   <div className="space-y-4">
                     {safetyHistory?.slice(0, 10).map((event: any, index: number) => (
-                      <div key={index} className="flex items-center justify-between py-3 border-b border-amber-100 last:border-0">
+                      <div key={index} className="flex items-center justify-between py-3 border-b border-border last:border-0">
                         <div className="flex items-center space-x-3">
                           <div className={`p-2 rounded-full ${
                             event.eventType === 'panic_button' ? 'bg-red-100' :
@@ -356,10 +356,10 @@ export default function DriverSafetyCenter() {
                             {event.eventType === 'check_out' && <Clock className="h-4 w-4 text-blue-600" />}
                           </div>
                           <div>
-                            <div className="font-medium text-amber-900 capitalize">
+                            <div className="font-medium text-foreground capitalize">
                               {event.eventType.replace('_', ' ')}
                             </div>
-                            <div className="text-sm text-amber-600">
+                            <div className="text-sm text-primary">
                               {new Date(event.timestamp).toLocaleString()}
                             </div>
                           </div>
@@ -373,7 +373,7 @@ export default function DriverSafetyCenter() {
                         </Badge>
                       </div>
                     )) || (
-                      <div className="text-center py-8 text-amber-600">
+                      <div className="text-center py-8 text-primary">
                         <Heart className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p>No safety events recorded - keep up the great work!</p>
                       </div>

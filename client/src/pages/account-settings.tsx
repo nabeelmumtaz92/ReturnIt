@@ -121,13 +121,13 @@ export default function AccountSettings() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
-        <Card className="border-amber-200">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center">
+        <Card className="border-border">
           <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold text-amber-900 mb-4">Authentication Required</h2>
-            <p className="text-amber-700 mb-6">Please log in to access account settings.</p>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Authentication Required</h2>
+            <p className="text-muted-foreground mb-6">Please log in to access account settings.</p>
             <Link href="/login">
-              <Button className="bg-amber-700 hover:bg-amber-800">
+              <Button className="bg-primary hover:bg-primary/90">
                 Sign In
               </Button>
             </Link>
@@ -138,15 +138,15 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       {/* Header */}
-      <div className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+      <div className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="text-2xl font-bold text-amber-900">ReturnIt</div>
+              <div className="text-2xl font-bold text-foreground">ReturnIt</div>
             </Link>
-            <div className="text-sm text-amber-700">
+            <div className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName} • {user.email}
             </div>
           </div>
@@ -155,13 +155,13 @@ export default function AccountSettings() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <h1 className="text-3xl font-bold text-amber-900 mb-8">Account Settings</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-8">Account Settings</h1>
 
         <div className="grid gap-8">
           {/* Data & Privacy Section */}
-          <Card className="border-amber-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="flex items-center gap-2 text-amber-900">
+          <Card className="border-border bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="flex items-center gap-2 text-foreground">
                 <Shield className="h-5 w-5" />
                 Data & Privacy
               </CardTitle>
@@ -169,15 +169,15 @@ export default function AccountSettings() {
             <CardContent className="p-6 space-y-6">
               {/* Data Export */}
               <div>
-                <h3 className="text-lg font-semibold text-amber-900 mb-2">Export Your Data</h3>
-                <p className="text-amber-700 mb-4">
+                <h3 className="text-lg font-semibold text-foreground mb-2">Export Your Data</h3>
+                <p className="text-muted-foreground mb-4">
                   Download a copy of all your personal data, orders, and account information.
                 </p>
                 <Button 
                   onClick={() => exportData.mutate()}
                   disabled={exportData.isPending}
                   variant="outline"
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                  className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                   data-testid="button-export-data"
                 >
                   <Download className="h-4 w-4 mr-2" />
@@ -185,18 +185,18 @@ export default function AccountSettings() {
                 </Button>
               </div>
 
-              <Separator className="bg-amber-200" />
+              <Separator className="bg-accent" />
 
               {/* Privacy Links */}
               <div>
-                <h3 className="text-lg font-semibold text-amber-900 mb-2">Privacy Information</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-2">Privacy Information</h3>
                 <div className="space-y-2">
-                  <Link href="/privacy-policy" className="flex items-center gap-2 text-amber-700 hover:text-amber-900">
+                  <Link href="/privacy-policy" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                     <FileText className="h-4 w-4" />
                     Privacy Policy
                     <ExternalLink className="h-3 w-3" />
                   </Link>
-                  <Link href="/terms-of-service" className="flex items-center gap-2 text-amber-700 hover:text-amber-900">
+                  <Link href="/terms-of-service" className="flex items-center gap-2 text-muted-foreground hover:text-foreground">
                     <FileText className="h-4 w-4" />
                     Terms of Service
                     <ExternalLink className="h-3 w-3" />

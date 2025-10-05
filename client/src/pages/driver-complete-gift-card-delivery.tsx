@@ -140,10 +140,10 @@ export default function DriverCompleteGiftCardDelivery() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-transparent to-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-800 mx-auto"></div>
-          <p className="mt-4 text-amber-800">Loading order details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-foreground">Loading order details...</p>
         </div>
       </div>
     );
@@ -151,7 +151,7 @@ export default function DriverCompleteGiftCardDelivery() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-transparent to-white flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle className="text-red-600">Order Not Found</CardTitle>
@@ -168,7 +168,7 @@ export default function DriverCompleteGiftCardDelivery() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-transparent to-white">
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         {/* Header */}
         <div className="mb-6">
@@ -178,7 +178,7 @@ export default function DriverCompleteGiftCardDelivery() {
               Back to Dashboard
             </Button>
           </Link>
-          <h1 className="text-3xl font-bold text-amber-900 flex items-center gap-2">
+          <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
             <Gift className="w-8 h-8" />
             Complete Gift Card Delivery
           </h1>
@@ -190,7 +190,7 @@ export default function DriverCompleteGiftCardDelivery() {
         {/* Order Details Card */}
         <Card className="mb-6">
           <CardHeader>
-            <CardTitle className="text-amber-900">Order Details</CardTitle>
+            <CardTitle className="text-foreground">Order Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
@@ -217,25 +217,25 @@ export default function DriverCompleteGiftCardDelivery() {
         {/* Delivery Completion Form */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-amber-900">Delivery Confirmation</CardTitle>
+            <CardTitle className="text-foreground">Delivery Confirmation</CardTitle>
             <CardDescription>
               Complete the security requirements to finish the delivery
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Photo Upload Section */}
-            <div className="border-2 border-dashed border-amber-200 rounded-lg p-6 bg-amber-50">
+            <div className="border-2 border-dashed border-border rounded-lg p-6 bg-accent">
               <div className="flex items-start gap-3 mb-4">
-                <Camera className="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" />
+                <Camera className="w-5 h-5 text-muted-foreground mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <Label className="text-base font-semibold text-amber-900">
+                  <Label className="text-base font-semibold text-foreground">
                     Delivery Photos Required * (Minimum 2)
                   </Label>
                   <p className="text-sm text-gray-600 mt-1">
                     Take photos showing proof of delivery
                   </p>
                   <div className="mt-2">
-                    <p className="text-xs text-amber-800 font-medium mb-1">
+                    <p className="text-xs text-foreground font-medium mb-1">
                       📸 Required photos:
                     </p>
                     <ul className="text-xs text-gray-600 space-y-1 ml-4">
@@ -263,7 +263,7 @@ export default function DriverCompleteGiftCardDelivery() {
                   type="button"
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full border-amber-300 hover:bg-amber-100"
+                  className="w-full border-border hover:bg-accent"
                   disabled={photoFiles.length >= 5}
                   data-testid="button-upload-photo"
                 >
@@ -280,7 +280,7 @@ export default function DriverCompleteGiftCardDelivery() {
                       <img
                         src={url}
                         alt={`Delivery proof ${index + 1}`}
-                        className="w-full h-32 object-cover rounded border border-amber-200"
+                        className="w-full h-32 object-cover rounded border border-border"
                       />
                       <Button
                         type="button"
@@ -310,7 +310,7 @@ export default function DriverCompleteGiftCardDelivery() {
                     </span>
                   </div>
                   {photoFiles.length < 2 && (
-                    <span className="text-xs text-amber-700">
+                    <span className="text-xs text-muted-foreground">
                       Upload at least {2 - photoFiles.length} more
                     </span>
                   )}
@@ -366,7 +366,7 @@ export default function DriverCompleteGiftCardDelivery() {
             <Button
               onClick={handleComplete}
               disabled={photoFiles.length < 2 || completeMutation.isPending}
-              className="w-full bg-amber-800 hover:bg-amber-900 text-white disabled:opacity-50"
+              className="w-full bg-primary hover:bg-primary/90 text-white disabled:opacity-50"
               size="lg"
               data-testid="button-complete-delivery"
             >

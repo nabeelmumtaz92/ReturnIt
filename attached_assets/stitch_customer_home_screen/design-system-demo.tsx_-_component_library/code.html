@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It Components</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    .font-display {
+      font-family: 'Work Sans', sans-serif;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="p-8">
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center justify-center size-10 bg-background-light dark:bg-primary/20 rounded-full">
+<svg class="text-gray-700 dark:text-white" fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path></svg>
+</div>
+<h1 class="text-xl font-bold text-gray-900 dark:text-white text-center flex-1">Return It Components</h1>
+<div class="size-10"></div>
+</div>
+<div class="space-y-12">
+<div>
+<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Buttons</h2>
+<div class="space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<button class="w-full h-12 rounded-lg bg-primary text-background-dark font-bold text-base">Primary</button>
+<button class="w-full h-12 rounded-lg bg-primary/20 dark:bg-primary/20 text-primary font-bold text-base">Secondary</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<button class="w-full h-12 rounded-lg bg-transparent text-primary font-bold text-base">Tertiary</button>
+<button class="w-full h-12 rounded-lg bg-primary/10 text-primary/50 font-bold text-base" disabled="">Disabled</button>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Inputs</h2>
+<div class="space-y-6">
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-lg bg-background-light dark:bg-primary/10 border border-primary/20 dark:border-primary/30 focus:ring-primary focus:border-primary placeholder-gray-500 dark:placeholder-primary/50 text-gray-900 dark:text-white" placeholder="Email" type="email"/>
+</div>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-lg bg-background-light dark:bg-primary/10 border border-primary/20 dark:border-primary/30 focus:ring-primary focus:border-primary placeholder-gray-500 dark:placeholder-primary/50 text-gray-900 dark:text-white" type="email" value="hello@returnit.com"/>
+</div>
+<div class="relative">
+<input class="w-full h-14 px-4 rounded-lg bg-background-light dark:bg-primary/10 border-2 border-primary/40 focus:ring-primary focus:border-primary placeholder-gray-500 dark:placeholder-primary/50 text-gray-900 dark:text-white" placeholder="Password" type="password"/>
+<p class="text-sm text-primary mt-2">Error message here</p>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Cards</h2>
+<div class="bg-background-light dark:bg-primary/10 rounded-xl p-4 flex items-center gap-4 shadow-sm">
+<div class="w-24 h-24 rounded-lg bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAVLrFJ_OIhLBdNgFVoTgpC7eW8Z3WRjF1jqKg3BY0BwvXVEFHPk7L6K5FJpe12_MOd0Yo4X43wf8sPLA-V9NrbxydUXGGTvnYYuwNEi6fdr6stOr3fcztcSif2I_-P3atncR_jvbe26vtH12DgOjvhdhjnnu5AyOuMPT3ugAoy0vwIHR82wMTqqssF5fCqChGIPIecIVRt8_1FzWA8jRpFDdFc41w7_LsSQz2rDCKfX0N8FmfFRC18wrrh2mQ3bqSy7sLKU_i4NMds");'></div>
+<div class="flex-grow">
+<h3 class="text-lg font-bold text-gray-900 dark:text-white">Return It Card</h3>
+<p class="text-sm text-gray-600 dark:text-primary/70">This is a sample card component for the Return It design system.</p>
+</div>
+</div>
+</div>
+<div>
+<h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Navigation</h2>
+<div class="bg-background-light dark:bg-primary/10 rounded-full p-2 flex justify-around items-center">
+<a class="flex flex-col items-center justify-center gap-1 text-primary w-20 h-14 rounded-full bg-primary/20 dark:bg-primary/30" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M218.83,103.77l-80-75.48a16,16,0,0,0-21.66,0l-80,75.48A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V168a8,8,0,0,1,8-8h24a8,8,0,0,1,8,8v40a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H176V168a24,24,0,0,0-24-24H104a24,24,0,0,0-24,24v40H48V115.55l80-75.48,80,75.48Z"></path></svg>
+<span class="text-xs font-bold">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-gray-500 dark:text-primary/70 w-20 h-14" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44L128,120,47.66,76,128,32Zm-8,103.82,32,17.51V208L72,164.22ZM136,208V153.33l32-17.51V152a8,8,0,0,0,16,0V119.45l24,13.12v53.21l-80,43.79Zm80-118-29.77-16.3,29.77-16.3L216,90Z"></path></svg>
+<span class="text-xs font-medium">Returns</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 text-gray-500 dark:text-primary/70 w-20 h-14" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

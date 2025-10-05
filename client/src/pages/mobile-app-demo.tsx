@@ -296,7 +296,7 @@ export default function MobileAppDemo() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 relative">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-transparent relative">
       {/* Back to Design System */}
       <div className="fixed top-4 left-4 z-50">
         <Button 

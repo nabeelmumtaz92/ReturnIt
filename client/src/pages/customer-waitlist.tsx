@@ -107,18 +107,18 @@ export default function CustomerWaitlist() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
         {/* Header */}
-        <div className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+        <div className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-10">
           <div className="container mx-auto px-4 py-6">
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center space-x-3">
-                <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
+                <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
                   ReturnIt
                 </div>
               </Link>
               <div>
-                <Link href="/driver-signup" className="text-amber-700 hover:text-amber-900 font-medium">
+                <Link href="/driver-signup" className="text-muted-foreground hover:text-foreground font-medium">
                   Become a Driver
                 </Link>
               </div>
@@ -163,9 +163,9 @@ export default function CustomerWaitlist() {
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mb-6">
-                <h3 className="font-semibold text-amber-900 mb-2">What happens next?</h3>
-                <ul className="text-sm text-amber-800 space-y-1 text-left">
+              <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-6 mb-6">
+                <h3 className="font-semibold text-foreground mb-2">What happens next?</h3>
+                <ul className="text-sm text-foreground space-y-1 text-left">
                   <li>• You'll receive an email confirmation shortly</li>
                   <li>• We'll notify you as we approach your launch date</li>
                   <li>• Priority access when ReturnIt goes live in your area</li>
@@ -175,12 +175,12 @@ export default function CustomerWaitlist() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href="/">
-                  <Button variant="outline" className="border-amber-300 text-amber-700">
+                  <Button variant="outline" className="border-border text-muted-foreground">
                     Return to Home
                   </Button>
                 </Link>
                 <Link href="/driver-signup">
-                  <Button className="bg-amber-700 hover:bg-amber-800">
+                  <Button className="bg-primary hover:bg-primary/90">
                     Interested in Driving?
                   </Button>
                 </Link>
@@ -193,18 +193,18 @@ export default function CustomerWaitlist() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       {/* Header */}
-      <div className="bg-white/90 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+      <div className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="text-2xl font-bold text-amber-900 cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
+              <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
                 ReturnIt
               </div>
             </Link>
             <div className="flex items-center space-x-6">
-              <Link href="/driver-signup" className="text-amber-700 hover:text-amber-900 font-medium">
+              <Link href="/driver-signup" className="text-muted-foreground hover:text-foreground font-medium">
                 Become a Driver
               </Link>
             </div>
@@ -215,10 +215,10 @@ export default function CustomerWaitlist() {
       {/* Hero Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Join the ReturnIt Waitlist
           </h1>
-          <p className="text-xl text-amber-700 mb-8 max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Be the first to experience hassle-free returns when we launch in your area. 
             Get priority access and exclusive early adopter benefits.
           </p>
@@ -226,35 +226,35 @@ export default function CustomerWaitlist() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
             <div className="text-center">
               <div className="bg-white/60 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <Users className="h-8 w-8 text-amber-600" />
+                <Users className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-amber-900 mb-2">Priority Access</h3>
-              <p className="text-sm text-amber-700">First to know when we launch</p>
+              <h3 className="font-semibold text-foreground mb-2">Priority Access</h3>
+              <p className="text-sm text-muted-foreground">First to know when we launch</p>
             </div>
             
             <div className="text-center">
               <div className="bg-white/60 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <MapPin className="h-8 w-8 text-amber-600" />
+                <MapPin className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-amber-900 mb-2">Local Launch</h3>
-              <p className="text-sm text-amber-700">Customized timeline for your area</p>
+              <h3 className="font-semibold text-foreground mb-2">Local Launch</h3>
+              <p className="text-sm text-muted-foreground">Customized timeline for your area</p>
             </div>
             
             <div className="text-center">
               <div className="bg-white/60 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-                <CheckCircle className="h-8 w-8 text-amber-600" />
+                <CheckCircle className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="font-semibold text-amber-900 mb-2">Exclusive Benefits</h3>
-              <p className="text-sm text-amber-700">Early adopter perks and discounts</p>
+              <h3 className="font-semibold text-foreground mb-2">Exclusive Benefits</h3>
+              <p className="text-sm text-muted-foreground">Early adopter perks and discounts</p>
             </div>
           </div>
         </div>
 
         {/* Waitlist Form */}
         <div className="max-w-2xl mx-auto">
-          <Card className="border-amber-200 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-amber-50/50 border-b border-amber-200">
-              <CardTitle className="text-center text-amber-900">
+          <Card className="border-border bg-white/80 backdrop-blur-sm">
+            <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
+              <CardTitle className="text-center text-foreground">
                 Reserve Your Spot
               </CardTitle>
             </CardHeader>
@@ -262,11 +262,11 @@ export default function CustomerWaitlist() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="firstName" className="text-amber-800 font-medium">First Name *</Label>
+                    <Label htmlFor="firstName" className="text-foreground font-medium">First Name *</Label>
                     <Input
                       id="firstName"
                       {...form.register('firstName')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-first-name"
                     />
                     {form.formState.errors.firstName && (
@@ -274,11 +274,11 @@ export default function CustomerWaitlist() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="lastName" className="text-amber-800 font-medium">Last Name *</Label>
+                    <Label htmlFor="lastName" className="text-foreground font-medium">Last Name *</Label>
                     <Input
                       id="lastName"
                       {...form.register('lastName')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-last-name"
                     />
                     {form.formState.errors.lastName && (
@@ -289,13 +289,13 @@ export default function CustomerWaitlist() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="email" className="text-amber-800 font-medium">Email Address *</Label>
+                    <Label htmlFor="email" className="text-foreground font-medium">Email Address *</Label>
                     <Input
                       id="email"
                       type="email"
                       autoComplete="off"
                       {...form.register('email')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-email"
                     />
                     {form.formState.errors.email && (
@@ -303,11 +303,11 @@ export default function CustomerWaitlist() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-amber-800 font-medium">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-foreground font-medium">Phone Number *</Label>
                     <Input
                       id="phone"
                       {...form.register('phone')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="(555) 123-4567"
                       data-testid="input-phone"
                     />
@@ -318,11 +318,11 @@ export default function CustomerWaitlist() {
                 </div>
 
                 <div>
-                  <Label htmlFor="streetAddress" className="text-amber-800 font-medium">Street Address *</Label>
+                  <Label htmlFor="streetAddress" className="text-foreground font-medium">Street Address *</Label>
                   <Input
                     id="streetAddress"
                     {...form.register('streetAddress')}
-                    className="mt-1 border-amber-300 focus:border-amber-500"
+                    className="mt-1 border-border focus:border-border"
                     placeholder="123 Main Street, Apt 4B"
                     data-testid="input-address"
                   />
@@ -333,11 +333,11 @@ export default function CustomerWaitlist() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="city" className="text-amber-800 font-medium">City *</Label>
+                    <Label htmlFor="city" className="text-foreground font-medium">City *</Label>
                     <Input
                       id="city"
                       {...form.register('city')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       data-testid="input-city"
                     />
                     {form.formState.errors.city && (
@@ -345,11 +345,11 @@ export default function CustomerWaitlist() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="state" className="text-amber-800 font-medium">State *</Label>
+                    <Label htmlFor="state" className="text-foreground font-medium">State *</Label>
                     <Input
                       id="state"
                       {...form.register('state')}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="MO"
                       data-testid="input-state"
                     />
@@ -358,12 +358,12 @@ export default function CustomerWaitlist() {
                     )}
                   </div>
                   <div>
-                    <Label htmlFor="zipCode" className="text-amber-800 font-medium">ZIP Code *</Label>
+                    <Label htmlFor="zipCode" className="text-foreground font-medium">ZIP Code *</Label>
                     <Input
                       id="zipCode"
                       {...form.register('zipCode')}
                       onChange={handleZipCodeChange}
-                      className="mt-1 border-amber-300 focus:border-amber-500"
+                      className="mt-1 border-border focus:border-border"
                       placeholder="63101"
                       data-testid="input-zip-code"
                     />
@@ -375,8 +375,8 @@ export default function CustomerWaitlist() {
 
                 {/* ZIP Code Analysis */}
                 {zipCodeData && (
-                  <Alert className="border-amber-200 bg-amber-50">
-                    <MapPin className="h-4 w-4 text-amber-600" />
+                  <Alert className="border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
+                    <MapPin className="h-4 w-4 text-primary" />
                     <AlertDescription>
                       <div className="flex items-center justify-between">
                         <div>
@@ -388,7 +388,7 @@ export default function CustomerWaitlist() {
                             Demand: {zipCodeData.marketDemand}
                           </span>
                         </div>
-                        <Badge variant="outline" className="bg-amber-100 text-amber-800 border-amber-300">
+                        <Badge variant="outline" className="bg-accent text-foreground border-border">
                           {zipCodeData.status === 'hiring' ? 'Coming Soon' : 
                            zipCodeData.status === 'waitlist' ? 'Waitlist Open' : 'Planning Phase'}
                         </Badge>
@@ -398,11 +398,11 @@ export default function CustomerWaitlist() {
                 )}
 
                 <div>
-                  <Label htmlFor="referralCode" className="text-amber-800 font-medium">Referral Code (Optional)</Label>
+                  <Label htmlFor="referralCode" className="text-foreground font-medium">Referral Code (Optional)</Label>
                   <Input
                     id="referralCode"
                     {...form.register('referralCode')}
-                    className="mt-1 border-amber-300 focus:border-amber-500"
+                    className="mt-1 border-border focus:border-border"
                     placeholder="Enter referral code if you have one"
                     data-testid="input-referral-code"
                   />
@@ -415,14 +415,14 @@ export default function CustomerWaitlist() {
                     onCheckedChange={(checked) => form.setValue('marketingOptIn', checked as boolean)}
                     data-testid="checkbox-marketing"
                   />
-                  <Label htmlFor="marketingOptIn" className="text-sm text-amber-800">
+                  <Label htmlFor="marketingOptIn" className="text-sm text-foreground">
                     I'd like to receive updates about ReturnIt and early access offers
                   </Label>
                 </div>
 
                 <Button
                   type="submit"
-                  className="w-full bg-amber-700 hover:bg-amber-800 text-white py-3"
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-3"
                   disabled={submitWaitlist.isPending}
                   data-testid="button-join-waitlist"
                 >

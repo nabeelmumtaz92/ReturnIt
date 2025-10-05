@@ -210,15 +210,15 @@ export default function DriverPortal() {
 
   if (!isAuthenticated || !hasDriverAccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center">
         <Card className="w-96">
           <CardHeader>
-            <CardTitle className="text-amber-900">Access Denied</CardTitle>
+            <CardTitle className="text-foreground">Access Denied</CardTitle>
             <CardDescription>You need driver or admin access to view this page.</CardDescription>
           </CardHeader>
           <CardContent className="pt-4">
             <div className="text-center">
-              <Link href="/login" className="text-amber-600 hover:text-amber-800 underline">
+              <Link href="/login" className="text-primary hover:text-foreground underline">
                 Sign in to continue
               </Link>
             </div>
@@ -237,7 +237,7 @@ export default function DriverPortal() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       {/* Admin Viewing Indicator */}
       {user?.isAdmin && !user?.isDriver && (
         <div className="bg-blue-100 border-b border-blue-300 px-4 py-2">
@@ -261,25 +261,25 @@ export default function DriverPortal() {
       )}
 
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-10">
+      <div className="bg-white/80 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Link href="/welcome">
-                <Button variant="ghost" size="sm" className="text-amber-800">
+                <Button variant="ghost" size="sm" className="text-foreground">
                   <ArrowLeft className="h-4 w-4 mr-1" />
                   Home
                 </Button>
               </Link>
               <div>
-                <h1 className="text-2xl font-bold text-amber-900">
+                <h1 className="text-2xl font-bold text-foreground">
                   Driver Portal
                   {user?.isAdmin && !user?.isDriver && (
                     <span className="ml-2 text-sm text-blue-600">(Admin View)</span>
                   )}
                 </h1>
                 <div className="flex items-center space-x-2 text-sm">
-                  <span className="text-amber-700">
+                  <span className="text-muted-foreground">
                     Welcome back, {user?.firstName || user?.username || 'Driver'}!
                     {user?.isAdmin && !user?.isDriver && (
                       <span className="ml-1 text-blue-600">(Administrator)</span>
@@ -360,15 +360,15 @@ export default function DriverPortal() {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1 text-amber-700">
-                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+              <div className="flex items-center space-x-1 text-muted-foreground">
+                <Star className="h-4 w-4 fill-primary text-primary" />
                 <span className="font-semibold">{user.driverRating?.toFixed(1) || '5.0'}</span>
               </div>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => setShowSidebar(!showSidebar)}
-                className="text-amber-800"
+                className="text-foreground"
               >
                 <Menu className="h-4 w-4" />
               </Button>
@@ -382,38 +382,38 @@ export default function DriverPortal() {
         <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowSidebar(false)}>
           <div className="fixed right-0 top-0 h-full w-80 bg-white/95 backdrop-blur-sm shadow-xl p-6" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-bold text-amber-900">Navigation</h2>
+              <h2 className="text-lg font-bold text-foreground">Navigation</h2>
               <Button variant="ghost" size="sm" onClick={() => setShowSidebar(false)}>
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             </div>
             <div className="space-y-2">
               <Link href="/driver-portal">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50 bg-amber-100">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] bg-accent">
                   <Truck className="h-4 w-4 mr-3" />
                   Driver Portal
                 </Button>
               </Link>
               <Link href="/driver-payments">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <CreditCard className="h-4 w-4 mr-3" />
                   Payments & Earnings
                 </Button>
               </Link>
               <Link href="/order-status">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Package className="h-4 w-4 mr-3" />
                   My Orders
                 </Button>
               </Link>
               <Link href="/admin-dashboard">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Users className="h-4 w-4 mr-3" />
                   Admin Dashboard
                 </Button>
               </Link>
               <Link href="/welcome">
-                <Button variant="ghost" className="w-full justify-start text-amber-700 hover:bg-amber-50">
+                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Home className="h-4 w-4 mr-3" />
                   Home
                 </Button>
@@ -425,16 +425,16 @@ export default function DriverPortal() {
 
       <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
         {/* Stats Dashboard */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-amber-900 flex items-center space-x-2">
+            <CardTitle className="text-foreground flex items-center space-x-2">
               <DollarSign className="h-5 w-5" />
               <span>Today's Performance</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {/* GPS Tracking Status */}
-            <div className="mb-4 p-3 rounded-lg border-2 border-dashed border-amber-200 bg-amber-50/50">
+            <div className="mb-4 p-3 rounded-lg border-2 border-dashed border-border bg-[#f8f7f5] dark:bg-[#231b0f]/50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-3 h-3 rounded-full ${
@@ -445,7 +445,7 @@ export default function DriverPortal() {
                         : 'bg-yellow-500'
                   }`}></div>
                   <div>
-                    <p className="text-sm font-medium text-amber-900">
+                    <p className="text-sm font-medium text-foreground">
                       GPS Tracking Status: {
                         locationPermission === 'granted' && currentLocation 
                           ? 'Active' 
@@ -455,7 +455,7 @@ export default function DriverPortal() {
                       }
                     </p>
                     {currentLocation && (
-                      <p className="text-xs text-amber-700">
+                      <p className="text-xs text-muted-foreground">
                         Last update: {new Date(currentLocation.timestamp || Date.now()).toLocaleTimeString()}
                         {currentLocation.accuracy && ` • Accuracy: ${Math.round(currentLocation.accuracy)}m`}
                       </p>
@@ -490,16 +490,16 @@ export default function DriverPortal() {
                 <div className="text-sm text-emerald-600 font-medium">Total Earnings</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">${pendingEarnings.toFixed(2)}</div>
-                <div className="text-sm text-amber-600">Pending</div>
+                <div className="text-lg font-bold text-foreground">${pendingEarnings.toFixed(2)}</div>
+                <div className="text-sm text-primary">Pending</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{activeOrders.length}</div>
-                <div className="text-sm text-amber-600">Active Jobs</div>
+                <div className="text-lg font-bold text-foreground">{activeOrders.length}</div>
+                <div className="text-sm text-primary">Active Jobs</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-800">{completedToday}</div>
-                <div className="text-sm text-amber-600">Completed Today</div>
+                <div className="text-lg font-bold text-foreground">{completedToday}</div>
+                <div className="text-sm text-primary">Completed Today</div>
               </div>
             </div>
             
@@ -517,27 +517,27 @@ export default function DriverPortal() {
         {/* Orders Management */}
         <Tabs defaultValue="map" className="space-y-4">
           <TabsList className="grid w-full grid-cols-5 bg-white/80 backdrop-blur-sm">
-            <TabsTrigger value="map" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+            <TabsTrigger value="map" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">
               Live Map
             </TabsTrigger>
-            <TabsTrigger value="available" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+            <TabsTrigger value="available" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">
               Available ({availableOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="active" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+            <TabsTrigger value="active" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">
               Active ({myOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="schedule" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+            <TabsTrigger value="schedule" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">
               Schedule
             </TabsTrigger>
-            <TabsTrigger value="earnings" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+            <TabsTrigger value="earnings" className="data-[state=active]:bg-accent data-[state=active]:text-foreground">
               Earnings
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="map" className="space-y-4">
-            <Card className="bg-white shadow-lg border-amber-200">
+            <Card className="bg-white shadow-lg border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 flex items-center gap-2">
+                <CardTitle className="text-foreground flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
                   Live Order Map
                 </CardTitle>
@@ -560,24 +560,24 @@ export default function DriverPortal() {
             <div className="grid gap-4">
               {loadingAvailable ? (
                 <div className="flex justify-center py-8">
-                  <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full" />
+                  <div className="animate-spin w-8 h-8 border-4 border-border border-t-transparent rounded-full" />
                 </div>
               ) : availableOrders.length === 0 ? (
                 <Card className="bg-white shadow-lg">
                   <CardContent className="p-8 text-center">
-                    <Package className="h-12 w-12 text-amber-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-amber-900 mb-2">No Available Orders</h3>
-                    <p className="text-amber-600">Check back soon for new pickup opportunities!</p>
+                    <Package className="h-12 w-12 text-primary mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">No Available Orders</h3>
+                    <p className="text-primary">Check back soon for new pickup opportunities!</p>
                   </CardContent>
                 </Card>
               ) : (
                 availableOrders.map((order) => (
-                  <Card key={order.id} className="bg-white shadow-lg border-amber-200 hover:shadow-xl transition-shadow">
+                  <Card key={order.id} className="bg-white shadow-lg border-border hover:shadow-xl transition-shadow">
                     <CardContent className="p-6">
                       <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h3 className="text-lg font-semibold text-amber-900">Order #{order.id}</h3>
-                          <p className="text-amber-700">{order.retailer}</p>
+                          <h3 className="text-lg font-semibold text-foreground">Order #{order.id}</h3>
+                          <p className="text-muted-foreground">{order.retailer}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-bold text-green-600">${((order.basePrice || 0) + (order.tip || 0)).toFixed(2)}</p>
@@ -587,31 +587,31 @@ export default function DriverPortal() {
                       
                       <div className="space-y-3 mb-4">
                         <div className="flex items-start space-x-2">
-                          <MapPin className="h-5 w-5 text-amber-500 mt-0.5" />
+                          <MapPin className="h-5 w-5 text-primary mt-0.5" />
                           <div>
-                            <p className="font-medium text-amber-900">Pickup Address</p>
-                            <p className="text-amber-700">{order.pickupStreetAddress}, {order.pickupCity}</p>
+                            <p className="font-medium text-foreground">Pickup Address</p>
+                            <p className="text-muted-foreground">{order.pickupStreetAddress}, {order.pickupCity}</p>
                             {order.pickupInstructions && (
-                              <p className="text-sm text-amber-600 mt-1">{order.pickupInstructions}</p>
+                              <p className="text-sm text-primary mt-1">{order.pickupInstructions}</p>
                             )}
                           </div>
                         </div>
                         
                         <div className="flex items-start space-x-2">
-                          <Package className="h-5 w-5 text-amber-500 mt-0.5" />
+                          <Package className="h-5 w-5 text-primary mt-0.5" />
                           <div>
-                            <p className="font-medium text-amber-900">Item</p>
-                            <p className="text-amber-700">{order.itemDescription}</p>
+                            <p className="font-medium text-foreground">Item</p>
+                            <p className="text-muted-foreground">{order.itemDescription}</p>
                             {order.returnReason && (
-                              <p className="text-sm text-amber-600 mt-1">Reason: {order.returnReason}</p>
+                              <p className="text-sm text-primary mt-1">Reason: {order.returnReason}</p>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-amber-100">
+                      <div className="flex items-center justify-between pt-4 border-t border-border">
                         <div className="flex items-center space-x-4">
-                          <Badge variant="outline" className="border-amber-300 text-amber-700">
+                          <Badge variant="outline" className="border-border text-muted-foreground">
                             {order.priority}
                           </Badge>
                           {order.isFragile && (
@@ -627,7 +627,7 @@ export default function DriverPortal() {
                             <Button 
                               variant="outline" 
                               size="sm"
-                              className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                              className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                             >
                               View Details
                             </Button>
@@ -635,7 +635,7 @@ export default function DriverPortal() {
                           <Button 
                             onClick={() => acceptOrderMutation.mutate(order.id)}
                             disabled={acceptOrderMutation.isPending}
-                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                            className="bg-primary hover:bg-primary/90 text-white"
                             data-testid={`button-accept-${order.id}`}
                           >
                             {acceptOrderMutation.isPending ? "Accepting..." : "Accept Order"}
@@ -653,25 +653,25 @@ export default function DriverPortal() {
             <div className="grid gap-4">
               {loadingMy ? (
                 <div className="flex justify-center py-8">
-                  <div className="animate-spin w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full" />
+                  <div className="animate-spin w-8 h-8 border-4 border-border border-t-transparent rounded-full" />
                 </div>
               ) : myOrders.length === 0 ? (
                 <Card className="bg-white shadow-lg">
                   <CardContent className="p-8 text-center">
-                    <Truck className="h-12 w-12 text-amber-300 mx-auto mb-4" />
-                    <h3 className="text-xl font-semibold text-amber-900 mb-2">No Active Orders</h3>
-                    <p className="text-amber-600">Accept orders from the Available tab to get started!</p>
+                    <Truck className="h-12 w-12 text-primary mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">No Active Orders</h3>
+                    <p className="text-primary">Accept orders from the Available tab to get started!</p>
                   </CardContent>
                 </Card>
               ) : (
                 myOrders.map((order) => (
                   <div key={order.id} className="space-y-4">
-                    <Card className="bg-white shadow-lg border-amber-200">
+                    <Card className="bg-white shadow-lg border-border">
                       <CardContent className="p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-lg font-semibold text-amber-900">Order #{order.id}</h3>
-                            <p className="text-amber-700">{order.retailer}</p>
+                            <h3 className="text-lg font-semibold text-foreground">Order #{order.id}</h3>
+                            <p className="text-muted-foreground">{order.retailer}</p>
                             <Badge className="mt-2" variant={
                               order.status === 'completed' ? 'default' :
                               order.status === 'in_transit' ? 'secondary' :
@@ -688,22 +688,22 @@ export default function DriverPortal() {
                         <div className="grid md:grid-cols-2 gap-4 mb-4">
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-amber-500" />
-                              <span className="text-sm font-medium text-amber-900">Pickup</span>
+                              <MapPin className="h-4 w-4 text-primary" />
+                              <span className="text-sm font-medium text-foreground">Pickup</span>
                             </div>
-                            <p className="text-sm text-amber-700 ml-6">{order.pickupStreetAddress}, {order.pickupCity}</p>
+                            <p className="text-sm text-muted-foreground ml-6">{order.pickupStreetAddress}, {order.pickupCity}</p>
                           </div>
                           
                           <div className="space-y-2">
                             <div className="flex items-center space-x-2">
-                              <Navigation className="h-4 w-4 text-amber-500" />
-                              <span className="text-sm font-medium text-amber-900">Return To</span>
+                              <Navigation className="h-4 w-4 text-primary" />
+                              <span className="text-sm font-medium text-foreground">Return To</span>
                             </div>
-                            <p className="text-sm text-amber-700 ml-6">{order.returnAddress || `${order.retailer} Store`}</p>
+                            <p className="text-sm text-muted-foreground ml-6">{order.returnAddress || `${order.retailer} Store`}</p>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-4 border-t border-amber-100">
+                        <div className="flex items-center justify-between pt-4 border-t border-border">
                           <div className="flex space-x-2">
                             {order.status === 'assigned' && (
                               <Button 
@@ -745,7 +745,7 @@ export default function DriverPortal() {
                               <Button 
                                 variant="outline" 
                                 size="sm"
-                                className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                                className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                               >
                                 View Details
                               </Button>
@@ -805,7 +805,7 @@ export default function DriverPortal() {
             {/* Earnings Overview */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-amber-900">Earnings Dashboard</CardTitle>
+                <CardTitle className="text-foreground">Earnings Dashboard</CardTitle>
                 <CardDescription>Comprehensive tracking of your delivery performance and earnings</CardDescription>
               </CardHeader>
               <CardContent>
@@ -838,7 +838,7 @@ export default function DriverPortal() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-white shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-amber-900 flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <Clock className="h-5 w-5" />
                     Performance Metrics
                   </CardTitle>
@@ -865,7 +865,7 @@ export default function DriverPortal() {
 
               <Card className="bg-white shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-amber-900 flex items-center gap-2">
+                  <CardTitle className="text-foreground flex items-center gap-2">
                     <DollarSign className="h-5 w-5" />
                     Earnings Breakdown
                   </CardTitle>
@@ -897,7 +897,7 @@ export default function DriverPortal() {
             {/* Weekly Earnings Chart */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-amber-900">Weekly Earnings Trend</CardTitle>
+                <CardTitle className="text-foreground">Weekly Earnings Trend</CardTitle>
                 <CardDescription>Your earnings over the past 7 days</CardDescription>
               </CardHeader>
               <CardContent>
@@ -910,7 +910,7 @@ export default function DriverPortal() {
                       <div key={day} className="text-center">
                         <div className="mb-2 h-32 flex items-end justify-center">
                           <div 
-                            className="w-8 bg-amber-500 rounded-t-sm flex items-end justify-center text-xs text-white font-semibold"
+                            className="w-8 bg-[#f8f7f5] dark:bg-[#231b0f]0 rounded-t-sm flex items-end justify-center text-xs text-white font-semibold"
                             style={{ height: `${height}%` }}
                           >
                             ${earnings}
@@ -927,27 +927,27 @@ export default function DriverPortal() {
             {/* Recent Earnings */}
             <Card className="bg-white shadow-lg">
               <CardHeader>
-                <CardTitle className="text-amber-900">Recent Earnings</CardTitle>
+                <CardTitle className="text-foreground">Recent Earnings</CardTitle>
                 <CardDescription>Your latest completed deliveries</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {earnings.length === 0 ? (
                     <div className="text-center py-8">
-                      <DollarSign className="h-12 w-12 text-amber-300 mx-auto mb-4" />
-                      <p className="text-amber-600">No earnings data available</p>
+                      <DollarSign className="h-12 w-12 text-primary mx-auto mb-4" />
+                      <p className="text-primary">No earnings data available</p>
                       <p className="text-sm text-gray-500 mt-2">Complete your first delivery to see earnings here</p>
                     </div>
                   ) : (
                     earnings.slice(0, 10).map((earning: any) => (
-                      <div key={earning.id} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+                      <div key={earning.id} className="flex items-center justify-between p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                         <div className="flex items-center space-x-4">
-                          <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center">
-                            <Package className="h-5 w-5 text-amber-700" />
+                          <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                            <Package className="h-5 w-5 text-muted-foreground" />
                           </div>
                           <div>
-                            <p className="font-medium text-amber-900">Order #{earning.orderId}</p>
-                            <p className="text-sm text-amber-600">
+                            <p className="font-medium text-foreground">Order #{earning.orderId}</p>
+                            <p className="text-sm text-primary">
                               {new Date(earning.createdAt).toLocaleDateString()} • 2.3 miles
                             </p>
                           </div>
@@ -971,7 +971,7 @@ export default function DriverPortal() {
 
                 {earnings.length > 10 && (
                   <div className="text-center mt-6">
-                    <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50">
+                    <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                       View All Earnings
                     </Button>
                   </div>

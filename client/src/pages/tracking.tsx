@@ -127,13 +127,13 @@ const DriverLocationCard = ({ trackingInfo }: { trackingInfo: TrackingInfo }) =>
   const lastUpdate = new Date(currentLocation.timestamp);
 
   return (
-    <Card className="w-full border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+    <Card className="w-full border-border bg-gradient-to-r from-transparent to-transparent">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-amber-900">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           <Navigation className="h-5 w-5" />
           Driver Location
         </CardTitle>
-        <CardDescription className="text-amber-700">
+        <CardDescription className="text-muted-foreground">
           Live GPS tracking
         </CardDescription>
       </CardHeader>
@@ -141,26 +141,26 @@ const DriverLocationCard = ({ trackingInfo }: { trackingInfo: TrackingInfo }) =>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
-              <MapPin className="h-4 w-4 text-amber-600" />
-              <span className="font-medium text-amber-900">Coordinates:</span>
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-foreground">Coordinates:</span>
             </div>
-            <div className="text-sm text-amber-800 font-mono bg-white/50 rounded px-2 py-1">
+            <div className="text-sm text-foreground font-mono bg-white/50 rounded px-2 py-1">
               {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
             </div>
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sm">
-              <Clock className="h-4 w-4 text-amber-600" />
-              <span className="font-medium text-amber-900">Last Update:</span>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium text-foreground">Last Update:</span>
             </div>
-            <div className="text-sm text-amber-800">
+            <div className="text-sm text-foreground">
               {format(lastUpdate, 'MMM d, h:mm a')}
             </div>
           </div>
         </div>
         
         {currentLocation.accuracy && (
-          <div className="flex items-center gap-2 text-sm text-amber-700 bg-white/30 rounded px-2 py-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/30 rounded px-2 py-1">
             <span className="font-medium">Accuracy:</span>
             <span>±{currentLocation.accuracy}m</span>
           </div>
@@ -170,7 +170,7 @@ const DriverLocationCard = ({ trackingInfo }: { trackingInfo: TrackingInfo }) =>
           <Button
             variant="outline"
             size="sm"
-            className="border-amber-300 text-amber-700 hover:bg-amber-100"
+            className="border-border text-muted-foreground hover:bg-accent"
             onClick={() => {
               const googleMapsUrl = `https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`;
               window.open(googleMapsUrl, '_blank');
@@ -191,7 +191,7 @@ const EventTimeline = ({ events }: { events: TrackingEvent[] }) => {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-amber-900">
+          <CardTitle className="flex items-center gap-2 text-foreground">
             <Timer className="h-5 w-5" />
             Tracking Timeline
           </CardTitle>
@@ -228,7 +228,7 @@ const EventTimeline = ({ events }: { events: TrackingEvent[] }) => {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-amber-900">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           <Timer className="h-5 w-5" />
           Tracking Timeline
         </CardTitle>
@@ -241,11 +241,11 @@ const EventTimeline = ({ events }: { events: TrackingEvent[] }) => {
           {sortedEvents.map((event, index) => (
             <div key={event.id || index} className="flex gap-3 pb-4">
               <div className="flex flex-col items-center">
-                <div className="w-8 h-8 rounded-full bg-amber-100 border-2 border-amber-300 flex items-center justify-center text-amber-700">
+                <div className="w-8 h-8 rounded-full bg-accent border-2 border-border flex items-center justify-center text-muted-foreground">
                   {getEventIcon(event.eventType)}
                 </div>
                 {index < sortedEvents.length - 1 && (
-                  <div className="w-px h-4 bg-amber-200 mt-2" />
+                  <div className="w-px h-4 bg-accent mt-2" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -301,7 +301,7 @@ const ConnectionStatus = ({
 
   if (isConnecting) {
     return (
-      <div className="flex items-center gap-2 text-amber-600 text-sm">
+      <div className="flex items-center gap-2 text-muted-foreground text-sm">
         <RefreshCw className="h-4 w-4 animate-spin" />
         <span>Connecting to real-time updates...</span>
       </div>
@@ -419,15 +419,15 @@ export default function TrackingPage() {
   const hasError = trackingError || eventsError;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       {/* Header */}
-      <div className="bg-white/95 border-b border-amber-100 py-6">
+      <div className="bg-white/95 border-b border-border py-6">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-amber-900 mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">
               Track Your Return
             </h1>
-            <p className="text-amber-700 text-lg">
+            <p className="text-muted-foreground text-lg">
               Enter your tracking number to see real-time updates
             </p>
           </div>
@@ -436,13 +436,13 @@ export default function TrackingPage() {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Tracking Form */}
-        <Card className="w-full mb-8 border-amber-200 shadow-lg">
+        <Card className="w-full mb-8 border-border shadow-lg">
           <CardHeader className="text-center">
-            <CardTitle className="flex items-center justify-center gap-2 text-2xl text-amber-900">
+            <CardTitle className="flex items-center justify-center gap-2 text-2xl text-foreground">
               <Package className="h-6 w-6" />
               Enter Tracking Number
             </CardTitle>
-            <CardDescription className="text-amber-700">
+            <CardDescription className="text-muted-foreground">
               Format: RTN-XXXXXXXX (e.g., RTN-ABC12345)
             </CardDescription>
           </CardHeader>
@@ -454,11 +454,11 @@ export default function TrackingPage() {
                   name="trackingNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-amber-900 font-medium">Tracking Number</FormLabel>
+                      <FormLabel className="text-foreground font-medium">Tracking Number</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="RTN-ABC12345"
-                          className="text-center text-lg font-mono border-amber-200 focus:border-amber-400"
+                          className="text-center text-lg font-mono border-border focus:border-border"
                           data-testid="input-tracking-number"
                           {...field}
                         />
@@ -469,7 +469,7 @@ export default function TrackingPage() {
                 />
                 <Button 
                   type="submit" 
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 text-lg"
+                  className="w-full bg-primary hover:bg-primary/90 text-white py-3 text-lg"
                   disabled={isLoading}
                   data-testid="button-track-order"
                 >
@@ -521,28 +521,28 @@ export default function TrackingPage() {
         {trackingInfo && !hasError && (
           <div className="space-y-6" data-testid="tracking-results">
             {/* Connection Status */}
-            <div className="flex justify-between items-center bg-white/50 rounded-lg px-4 py-2 border border-amber-100">
+            <div className="flex justify-between items-center bg-white/50 rounded-lg px-4 py-2 border border-border">
               <ConnectionStatus 
                 isConnected={wsConnected}
                 isConnecting={wsConnecting}
                 error={wsError}
                 onManualRefresh={handleManualRefresh}
               />
-              <div className="text-xs text-amber-600">
+              <div className="text-xs text-muted-foreground">
                 {wsConnected ? 'Live updates' : 'Every 30 seconds'}
               </div>
             </div>
 
             {/* Order Status Card */}
-            <Card className="w-full border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+            <Card className="w-full border-border bg-gradient-to-r from-transparent to-transparent">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <CardTitle className="flex items-center gap-2 text-amber-900">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
                       <Package className="h-5 w-5" />
                       Order {trackingInfo.orderId}
                     </CardTitle>
-                    <CardDescription className="text-amber-700 font-medium">
+                    <CardDescription className="text-muted-foreground font-medium">
                       {trackingInfo.trackingNumber}
                     </CardDescription>
                   </div>
@@ -560,13 +560,13 @@ export default function TrackingPage() {
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium text-amber-900 flex items-center gap-2">
+                    <h4 className="font-medium text-foreground flex items-center gap-2">
                       <MapPin className="h-4 w-4" />
                       Pickup Address
                     </h4>
-                    <p className="text-sm text-amber-800">{trackingInfo.pickup.address}</p>
+                    <p className="text-sm text-foreground">{trackingInfo.pickup.address}</p>
                     {trackingInfo.pickup.scheduledTime && (
-                      <p className="text-xs text-amber-700">
+                      <p className="text-xs text-muted-foreground">
                         Scheduled: {format(new Date(trackingInfo.pickup.scheduledTime), 'MMM d, h:mm a')}
                       </p>
                     )}
@@ -578,15 +578,15 @@ export default function TrackingPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="font-medium text-amber-900 flex items-center gap-2">
+                    <h4 className="font-medium text-foreground flex items-center gap-2">
                       <Truck className="h-4 w-4" />
                       Delivery To
                     </h4>
-                    <p className="text-sm text-amber-800">
+                    <p className="text-sm text-foreground">
                       {trackingInfo.delivery.address || trackingInfo.retailer}
                     </p>
                     {trackingInfo.estimatedArrival && (
-                      <p className="text-xs text-amber-700">
+                      <p className="text-xs text-muted-foreground">
                         ETA: {format(new Date(trackingInfo.estimatedArrival), 'MMM d, h:mm a')}
                       </p>
                     )}
@@ -598,9 +598,9 @@ export default function TrackingPage() {
                   </div>
                 </div>
 
-                <Separator className="bg-amber-200" />
+                <Separator className="bg-accent" />
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-amber-700">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-muted-foreground">
                   <span>Last Updated: {format(new Date(trackingInfo.lastUpdate), 'MMM d, h:mm a')}</span>
                   {trackingInfo.driver.assigned && (
                     <div className="flex items-center gap-1 text-green-700">
@@ -631,7 +631,7 @@ export default function TrackingPage() {
                     description: "Tracking information has been updated",
                   });
                 }}
-                className="border-amber-300 text-amber-700 hover:bg-amber-100"
+                className="border-border text-muted-foreground hover:bg-accent"
                 data-testid="button-refresh"
               >
                 <Clock className="h-4 w-4 mr-2" />

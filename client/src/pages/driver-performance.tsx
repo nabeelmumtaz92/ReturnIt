@@ -31,10 +31,10 @@ export default function DriverPerformance() {
     return (
       <Screen className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <BarChart3 className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-amber-900 mb-4">Driver Performance Dashboard</h1>
-          <p className="text-amber-700 mb-4">This section is for verified drivers only</p>
-          <Button className="bg-amber-800 hover:bg-amber-900">Sign In as Driver</Button>
+          <BarChart3 className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-4">Driver Performance Dashboard</h1>
+          <p className="text-muted-foreground mb-4">This section is for verified drivers only</p>
+          <Button className="bg-primary hover:bg-primary/90">Sign In as Driver</Button>
         </div>
       </Screen>
     );
@@ -127,32 +127,32 @@ export default function DriverPerformance() {
 
             <TabsContent value="overview" className="mt-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-amber-200">
+                <Card className="border-border">
                   <CardHeader>
-                    <CardTitle className="text-amber-900">Performance Metrics</CardTitle>
+                    <CardTitle className="text-foreground">Performance Metrics</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-6">
                       <div>
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-amber-700">Customer Satisfaction</span>
-                          <span className="text-sm text-amber-600">{currentStats.customerSatisfaction}%</span>
+                          <span className="text-sm font-medium text-muted-foreground">Customer Satisfaction</span>
+                          <span className="text-sm text-primary">{currentStats.customerSatisfaction}%</span>
                         </div>
                         <Progress value={currentStats.customerSatisfaction} className="h-3" />
                       </div>
 
                       <div>
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-amber-700">Route Efficiency</span>
-                          <span className="text-sm text-amber-600">{currentStats.efficiency}%</span>
+                          <span className="text-sm font-medium text-muted-foreground">Route Efficiency</span>
+                          <span className="text-sm text-primary">{currentStats.efficiency}%</span>
                         </div>
                         <Progress value={currentStats.efficiency} className="h-3" />
                       </div>
 
                       <div>
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-amber-700">On-Time Delivery</span>
-                          <span className="text-sm text-amber-600">{currentStats.onTimeRate}%</span>
+                          <span className="text-sm font-medium text-muted-foreground">On-Time Delivery</span>
+                          <span className="text-sm text-primary">{currentStats.onTimeRate}%</span>
                         </div>
                         <Progress value={currentStats.onTimeRate} className="h-3" />
                       </div>
@@ -269,9 +269,9 @@ export default function DriverPerformance() {
                         </p>
                       </div>
 
-                      <div className="p-3 bg-amber-50 rounded-lg">
-                        <h4 className="font-semibold text-amber-900 mb-2">Improve Efficiency</h4>
-                        <p className="text-sm text-amber-700">
+                      <div className="p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
+                        <h4 className="font-semibold text-foreground mb-2">Improve Efficiency</h4>
+                        <p className="text-sm text-muted-foreground">
                           Use route optimization to reduce travel time by 15 minutes per delivery
                         </p>
                       </div>
@@ -312,21 +312,21 @@ export default function DriverPerformance() {
                         key={driver.rank}
                         className={`flex items-center justify-between p-3 rounded-lg ${
                           driver.isCurrentUser 
-                            ? 'bg-amber-100 border-2 border-amber-300' 
+                            ? 'bg-accent border-2 border-border' 
                             : 'bg-gray-50 hover:bg-gray-100'
                         }`}
                       >
                         <div className="flex items-center space-x-3">
                           <span className="text-2xl">{driver.badge || `#${driver.rank}`}</span>
                           <div>
-                            <p className={`font-semibold ${driver.isCurrentUser ? 'text-amber-900' : 'text-gray-900'}`}>
+                            <p className={`font-semibold ${driver.isCurrentUser ? 'text-foreground' : 'text-gray-900'}`}>
                               {driver.name}
                             </p>
                             <p className="text-sm text-gray-600">${driver.earnings} this month</p>
                           </div>
                         </div>
                         {driver.isCurrentUser && (
-                          <Badge className="bg-amber-200 text-amber-800">You</Badge>
+                          <Badge className="bg-accent text-foreground">You</Badge>
                         )}
                       </div>
                     ))}

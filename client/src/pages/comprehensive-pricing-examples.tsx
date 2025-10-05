@@ -156,7 +156,7 @@ export default function ComprehensivePricingExamples() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Comprehensive Pricing Examples</h1>
@@ -226,7 +226,7 @@ export default function ComprehensivePricingExamples() {
             const pricing = calculatePricing(scenario.orderValue, scenario.distance, scenario.size);
             
             return (
-              <Card key={index} className="border-l-4 border-l-amber-500">
+              <Card key={index} className="border-l-4 border-l-primary">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <Badge variant="outline" className="mb-2">{pricing.tier}</Badge>
@@ -299,10 +299,10 @@ export default function ComprehensivePricingExamples() {
                   </div>
                   
                   {/* ReturnIt Net */}
-                  <div className="bg-amber-50 p-2 rounded">
+                  <div className="bg-[#f8f7f5] dark:bg-[#231b0f] p-2 rounded">
                     <div className="flex justify-between text-sm">
                       <span className="font-medium">ReturnIt Net:</span>
-                      <span className="font-semibold text-amber-700">
+                      <span className="font-semibold text-muted-foreground">
                         ${pricing.returnItNet.toFixed(2)}
                       </span>
                     </div>
@@ -331,10 +331,10 @@ export default function ComprehensivePricingExamples() {
                 <p className="text-2xl font-bold text-green-800">$3.70 - $39.00</p>
                 <p className="text-sm text-green-600">Driver earnings range across scenarios</p>
               </div>
-              <div className="text-center p-4 bg-amber-50 rounded-lg">
-                <h4 className="font-semibold text-amber-600">ReturnIt Range</h4>
-                <p className="text-2xl font-bold text-amber-800">$0.89 - $187.74</p>
-                <p className="text-sm text-amber-600">Company net revenue range</p>
+              <div className="text-center p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
+                <h4 className="font-semibold text-primary">ReturnIt Range</h4>
+                <p className="text-2xl font-bold text-foreground">$0.89 - $187.74</p>
+                <p className="text-sm text-primary">Company net revenue range</p>
               </div>
               <div className="text-center p-4 bg-purple-50 rounded-lg">
                 <h4 className="font-semibold text-purple-600">Base Fee Impact</h4>

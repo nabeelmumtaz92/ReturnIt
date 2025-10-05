@@ -69,7 +69,7 @@ export default function PricingAnalysis() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -214,8 +214,8 @@ export default function PricingAnalysis() {
                   </div>
 
                   {/* Example Scenarios */}
-                  <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-                    <h4 className="font-semibold text-amber-800 mb-3">Real-World Examples</h4>
+                  <div className="bg-[#f8f7f5] dark:bg-[#231b0f] p-4 rounded-lg border border-border">
+                    <h4 className="font-semibold text-foreground mb-3">Real-World Examples</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div className="bg-white p-3 rounded border">
                         <p className="font-medium">Zara Dress Return ($85)</p>

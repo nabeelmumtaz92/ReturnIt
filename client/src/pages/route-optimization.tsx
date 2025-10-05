@@ -81,10 +81,10 @@ export default function RouteOptimization() {
     return (
       <Screen>
         <div className="text-center">
-          <Navigation className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-amber-900 mb-4">Route Optimization</h1>
-          <p className="text-amber-700 mb-4">This section is for verified drivers only</p>
-          <Button className="bg-amber-800 hover:bg-amber-900">Sign In as Driver</Button>
+          <Navigation className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-4">Route Optimization</h1>
+          <p className="text-muted-foreground mb-4">This section is for verified drivers only</p>
+          <Button className="bg-primary hover:bg-primary/90">Sign In as Driver</Button>
         </div>
       </Screen>
     );

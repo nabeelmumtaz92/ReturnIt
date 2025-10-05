@@ -349,15 +349,15 @@ export default function AdminPaymentTracking() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border-amber-200">
+          <Card className="bg-white border-border">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-amber-600">Transactions</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Transactions</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-700">
+              <div className="text-2xl font-bold text-muted-foreground">
                 {paymentSummary?.totalTransactions || 0}
               </div>
-              <p className="text-xs text-amber-600 mt-1">This month</p>
+              <p className="text-xs text-primary mt-1">This month</p>
             </CardContent>
           </Card>
         </div>
@@ -619,7 +619,7 @@ export default function AdminPaymentTracking() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="text-center">
-                      <div className="text-3xl font-bold text-amber-700">2024</div>
+                      <div className="text-3xl font-bold text-muted-foreground">2024</div>
                       <div className="text-sm text-gray-600">Current Tax Year</div>
                     </div>
                     

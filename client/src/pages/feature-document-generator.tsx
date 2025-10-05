@@ -1061,23 +1061,23 @@ Below are the 4 QR codes for accessing different parts of the ReturnIt platform:
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent p-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-amber-900 mb-4">
+          <h1 className="text-4xl font-bold text-foreground mb-4">
             <Package className="inline-block mr-3 mb-1" />
             ReturnIt Complete Feature Documentation
           </h1>
-          <p className="text-lg text-amber-700 mb-6">
+          <p className="text-lg text-muted-foreground mb-6">
             Download comprehensive documentation with all 200+ features and 4 QR codes for personal review and testing
           </p>
         </div>
 
         {/* Main Card */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-8">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl text-amber-900 flex items-center gap-3">
+            <CardTitle className="text-2xl text-foreground flex items-center gap-3">
               <FileText className="h-6 w-6" />
               Complete Feature Documentation Package
               <Badge variant="outline" className="ml-auto">
@@ -1087,11 +1087,11 @@ Below are the 4 QR codes for accessing different parts of the ReturnIt platform:
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Document Preview */}
-            <div className="bg-amber-50 p-6 rounded-lg border border-amber-200">
-              <h3 className="text-lg font-semibold text-amber-900 mb-4">
+            <div className="bg-accent p-6 rounded-lg border border-border">
+              <h3 className="text-lg font-semibold text-foreground mb-4">
                 📋 Document Contents Preview
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-800">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-foreground">
                 <div>
                   <h4 className="font-semibold mb-2">🔐 Authentication & User Management</h4>
                   <ul className="space-y-1 text-xs">
@@ -1179,7 +1179,7 @@ Below are the 4 QR codes for accessing different parts of the ReturnIt platform:
                 onClick={downloadComprehensiveDocument}
                 disabled={generating || completed}
                 size="lg"
-                className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg"
+                className="bg-primary hover:bg-primary/90 text-white px-8 py-4 text-lg"
                 data-testid="button-download-complete-documentation"
               >
                 {generating ? (
@@ -1197,7 +1197,7 @@ Below are the 4 QR codes for accessing different parts of the ReturnIt platform:
                 )}
               </Button>
               
-              <p className="text-sm text-amber-600">
+              <p className="text-sm text-primary">
                 Single comprehensive markdown file with all features, testing instructions, and QR codes
               </p>
             </div>
@@ -1230,15 +1230,15 @@ Below are the 4 QR codes for accessing different parts of the ReturnIt platform:
         </Card>
 
         {/* Footer */}
-        <div className="text-center p-6 bg-white/80 rounded-lg border border-amber-200">
-          <h3 className="text-lg font-semibold text-amber-900 mb-2">
+        <div className="text-center p-6 bg-white/80 rounded-lg border border-border">
+          <h3 className="text-lg font-semibold text-foreground mb-2">
             Ready for Personal Review & Testing
           </h3>
-          <p className="text-sm text-amber-700 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             This comprehensive document includes detailed testing instructions for every feature, 
             complete technical specifications, and all 4 QR codes for immediate platform access.
           </p>
-          <div className="flex justify-center gap-4 text-xs text-amber-600">
+          <div className="flex justify-center gap-4 text-xs text-primary">
             <span>✓ Complete Feature List</span>
             <span>✓ Testing Instructions</span>
             <span>✓ Technical Specifications</span>

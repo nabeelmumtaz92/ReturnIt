@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Stitch Design</title>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .gradient-text {
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200">
+<div class="flex flex-col min-h-screen">
+<header class="flex items-center justify-between p-6">
+<h1 class="text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 gradient-text">Return It</h1>
+<button class="text-sm font-medium text-amber-600 dark:text-amber-500">Skip</button>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center px-6 sm:px-12 text-center">
+<div class="w-full max-w-sm">
+<img alt="Secure payments illustration" class="h-72 w-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZr78aRHxXTr6hAYfgQIMrLGW7v7FAIDw-3VFw8e3dzN887FK0l8NTiK3-wZZG1YrIIrQ1xWQeSaVrfyNlDarBTCr8lfDCqdecYfVZ9r-s5G2ik6BAjECun-TLpUDdh95IivM9jkMO5DeybWUx3a2683na-t4ZuukqPl9ldTkvsxwCMfU7Rf0gz0yYe-S-hZRtM27Iig_VeM18cXauPBw_vKILF8CIz5Soke886xmiThPkQphcXa1Yabv_Tu28JhfV0iRzJ2fmFAQ2"/>
+</div>
+<div class="flex justify-center space-x-2 my-8">
+<div class="h-2 w-2 rounded-full bg-primary/30"></div>
+<div class="h-2 w-2 rounded-full bg-primary/30"></div>
+<div class="h-2 w-2 rounded-full bg-primary"></div>
+</div>
+<h2 class="text-3xl font-bold text-amber-900 dark:text-amber-100">Safe &amp; Transparent Pricing</h2>
+<p class="mt-4 text-base text-amber-700 dark:text-amber-300">
+                Secure payment processing with upfront pricing. No hidden fees. Pay with credit card, PayPal, or Apple Pay. PCI-compliant and encrypted.
+            </p>
+<div class="mt-8 space-y-4 text-left self-stretch">
+<div class="flex items-center space-x-3 text-sm text-amber-700 dark:text-amber-300">
+<span>💳</span>
+<p>Multiple payment methods</p>
+</div>
+<div class="flex items-center space-x-3 text-sm text-amber-700 dark:text-amber-300">
+<span>🔒</span>
+<p>Bank-grade encryption</p>
+</div>
+<div class="flex items-center space-x-3 text-sm text-amber-700 dark:text-amber-300">
+<span>💵</span>
+<p>Clear, flat-rate pricing</p>
+</div>
+</div>
+</main>
+<footer class="p-6 pb-12">
+<button class="w-full h-14 bg-gradient-to-r from-orange-600 to-amber-600 text-white text-lg font-bold rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                Get Started
+            </button>
+</footer>
+</div>
+
+</body></html>

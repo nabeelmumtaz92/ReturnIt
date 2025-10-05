@@ -417,15 +417,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       case 'driver-locations':
         return (
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Driver Locations</CardTitle>
+                <CardTitle className="text-foreground text-xl">Driver Locations</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="p-8 text-center">
-                  <MapPin className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">Coming Soon</h3>
-                  <p className="text-amber-600">Real-time driver GPS tracking and location analytics will be available in a future update.</p>
+                  <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Coming Soon</h3>
+                  <p className="text-primary">Real-time driver GPS tracking and location analytics will be available in a future update.</p>
                 </div>
               </CardContent>
             </Card>
@@ -434,15 +434,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       case 'zone-management':
         return (
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Zone Management</CardTitle>
+                <CardTitle className="text-foreground text-xl">Zone Management</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="p-8 text-center">
-                  <Target className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">Coming Soon</h3>
-                  <p className="text-amber-600">Advanced zone management and territory assignment tools will be available in a future update.</p>
+                  <Target className="h-12 w-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Coming Soon</h3>
+                  <p className="text-primary">Advanced zone management and territory assignment tools will be available in a future update.</p>
                 </div>
               </CardContent>
             </Card>
@@ -476,26 +476,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const AllAdminFunctions = () => (
     <div className="space-y-6">
       {/* Business Operations */}
-      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-amber-900 mb-4">📋 Business Operations</h2>
+      <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">📋 Business Operations</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
-          <Button onClick={() => changeSection('orders')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-manage-orders">
+          <Button onClick={() => changeSection('orders')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-manage-orders">
             <Package className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Order Management</span>
           </Button>
-          <Button onClick={() => changeSection('drivers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-view-drivers">
+          <Button onClick={() => changeSection('drivers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-view-drivers">
             <Truck className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Management</span>
           </Button>
-          <Button onClick={() => changeSection('driver-applications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-applications">
+          <Button onClick={() => changeSection('driver-applications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-applications">
             <UserCheck className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Applications</span>
           </Button>
-          <Button onClick={() => changeSection('customers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customers">
+          <Button onClick={() => changeSection('customers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customers">
             <Users className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Customer Management</span>
           </Button>
-          <Button onClick={() => changeSection('driver-locations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-locations">
+          <Button onClick={() => changeSection('driver-locations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-locations">
             <Activity className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Real-time Tracking</span>
           </Button>
@@ -503,18 +503,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Analytics */}
-      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-amber-900 mb-4">📊 Analytics & Intelligence</h2>
+      <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">📊 Analytics & Intelligence</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
-          <Button onClick={() => changeSection('business-intelligence')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-business-intelligence">
+          <Button onClick={() => changeSection('business-intelligence')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-business-intelligence">
             <PieChart className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Business Intelligence</span>
           </Button>
-          <Button onClick={() => changeSection('analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-analytics">
+          <Button onClick={() => changeSection('analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-analytics">
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Performance Analytics</span>
           </Button>
-          <Button onClick={() => changeSection('support-analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-analytics">
+          <Button onClick={() => changeSection('support-analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-analytics">
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Support Analytics</span>
           </Button>
@@ -522,38 +522,38 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Financial Operations */}
-      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-amber-900 mb-4">💰 Financial Operations</h2>
+      <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">💰 Financial Operations</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
-          <Button onClick={() => changeSection('financial-operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-financial-operations">
+          <Button onClick={() => changeSection('financial-operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-financial-operations">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Financial Operations</span>
           </Button>
-          <Button onClick={() => changeSection('transaction-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-transaction-management">
+          <Button onClick={() => changeSection('transaction-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-transaction-management">
             <CreditCard className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Transaction Management</span>
           </Button>
-          <Button onClick={() => changeSection('enhanced-driver-payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-driver-payouts">
+          <Button onClick={() => changeSection('enhanced-driver-payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-driver-payouts">
             <Zap className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Enhanced Payouts</span>
           </Button>
-          <Button onClick={() => changeSection('enhanced-tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-tax-reports">
+          <Button onClick={() => changeSection('enhanced-tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-enhanced-tax-reports">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Enhanced Tax Reports</span>
           </Button>
-          <Button onClick={() => changeSection('payment-tracking')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-payment-tracking">
+          <Button onClick={() => changeSection('payment-tracking')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-payment-tracking">
             <Clock className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Payment Tracking</span>
           </Button>
-          <Button onClick={() => changeSection('payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-payouts">
+          <Button onClick={() => changeSection('payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-driver-payouts">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Payouts</span>
           </Button>
-          <Button onClick={() => changeSection('tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-tax-reports">
+          <Button onClick={() => changeSection('tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-tax-reports">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
           </Button>
-          <Button onClick={() => changeSection('pricing-settings')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-pricing-settings">
+          <Button onClick={() => changeSection('pricing-settings')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-pricing-settings">
             <Settings className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Pricing Settings</span>
           </Button>
@@ -561,18 +561,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Support & Customer Service */}
-      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-amber-900 mb-4">🎧 Support & Customer Service</h2>
+      <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">🎧 Support & Customer Service</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
-          <Button onClick={() => changeSection('support-center')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-center">
+          <Button onClick={() => changeSection('support-center')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-center">
             <HeadphonesIcon className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Support Center</span>
           </Button>
-          <Button onClick={() => changeSection('customer-feedback')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customer-feedback">
+          <Button onClick={() => changeSection('customer-feedback')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-customer-feedback">
             <Star className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Customer Feedback</span>
           </Button>
-          <Button onClick={() => changeSection('chat')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-chat">
+          <Button onClick={() => changeSection('chat')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-chat">
             <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Live Support Chat</span>
           </Button>
@@ -580,26 +580,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Operations & Management */}
-      <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg p-4 sm:p-6">
-        <h2 className="text-lg font-semibold text-amber-900 mb-4">⚙️ Operations & Management</h2>
+      <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
+        <h2 className="text-lg font-semibold text-foreground mb-4">⚙️ Operations & Management</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
-          <Button onClick={() => changeSection('notifications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-notifications">
+          <Button onClick={() => changeSection('notifications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-notifications">
             <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Notifications</span>
           </Button>
-          <Button onClick={() => changeSection('employees')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-employees">
+          <Button onClick={() => changeSection('employees')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-employees">
             <Users2 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Employees</span>
           </Button>
-          <Button onClick={() => changeSection('operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-operations">
+          <Button onClick={() => changeSection('operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-operations">
             <Building2 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Operations</span>
           </Button>
-          <Button onClick={() => changeSection('system-metrics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-system-metrics">
+          <Button onClick={() => changeSection('system-metrics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-system-metrics">
             <Monitor className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">System Metrics</span>
           </Button>
-          <Button onClick={() => changeSection('zone-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-amber-200 text-amber-900 hover:bg-amber-50 hover:border-amber-300 flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-zone-management">
+          <Button onClick={() => changeSection('zone-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-zone-management">
             <Target className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Zone Management</span>
           </Button>
@@ -620,7 +620,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Button 
             onClick={updateDashboardStats}
             disabled={isUpdating}
-            className="bg-amber-600 hover:bg-amber-700 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
+            className="bg-primary hover:bg-primary/90 text-white w-full sm:w-auto min-h-[44px] touch-manipulation"
             data-testid="button-update-stats"
           >
             {isUpdating ? (
@@ -641,69 +641,69 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Button>
         </div>
         
-        <div className="text-sm text-amber-600 text-center sm:text-right">
+        <div className="text-sm text-primary text-center sm:text-right">
           Last updated: {dashboardStats.lastUpdated.toLocaleTimeString()}
         </div>
       </div>
 
       {/* Overview dashboard content */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <Card className={`bg-white/90 backdrop-blur-sm border-amber-200 transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600">Active Orders</p>
-                <p className="text-2xl font-bold text-amber-900">{dashboardStats.activeOrders}</p>
+                <p className="text-sm font-medium text-primary">Active Orders</p>
+                <p className="text-2xl font-bold text-foreground">{dashboardStats.activeOrders}</p>
                 <Badge variant="outline" className="text-xs text-green-600 border-green-200 mt-1">
                   Live
                 </Badge>
               </div>
-              <Package className="h-8 w-8 text-amber-400" />
+              <Package className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-amber-200 transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600">Active Drivers</p>
-                <p className="text-2xl font-bold text-amber-900">{dashboardStats.activeDrivers}</p>
+                <p className="text-sm font-medium text-primary">Active Drivers</p>
+                <p className="text-2xl font-bold text-foreground">{dashboardStats.activeDrivers}</p>
                 <Badge variant="outline" className="text-xs text-blue-600 border-blue-200 mt-1">
                   Online
                 </Badge>
               </div>
-              <Truck className="h-8 w-8 text-amber-400" />
+              <Truck className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-amber-200 transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600">Today's Revenue</p>
-                <p className="text-2xl font-bold text-amber-900">${dashboardStats.todayRevenue}</p>
+                <p className="text-sm font-medium text-primary">Today's Revenue</p>
+                <p className="text-2xl font-bold text-foreground">${dashboardStats.todayRevenue}</p>
                 <Badge variant="outline" className="text-xs text-purple-600 border-purple-200 mt-1">
                   Real-time
                 </Badge>
               </div>
-              <DollarSign className="h-8 w-8 text-amber-400" />
+              <DollarSign className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-amber-200 transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-amber-600">Completion Rate</p>
-                <p className="text-2xl font-bold text-amber-900">{dashboardStats.completionRate}%</p>
+                <p className="text-sm font-medium text-primary">Completion Rate</p>
+                <p className="text-2xl font-bold text-foreground">{dashboardStats.completionRate}%</p>
                 <Badge variant="outline" className="text-xs text-orange-600 border-orange-200 mt-1">
                   Updated
                 </Badge>
               </div>
-              <TrendingUp className="h-8 w-8 text-amber-400" />
+              <TrendingUp className="h-8 w-8 text-primary" />
             </div>
           </CardContent>
         </Card>
@@ -740,13 +740,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Header with Refresh Button */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-amber-900">System Metrics & Performance</h1>
-            <p className="text-amber-700">Real-time monitoring of server performance, visitor analytics, and system health</p>
+            <h1 className="text-2xl font-bold text-foreground">System Metrics & Performance</h1>
+            <p className="text-muted-foreground">Real-time monitoring of server performance, visitor analytics, and system health</p>
           </div>
           <Button 
             onClick={refetch}
             disabled={isLoading}
-            className="bg-amber-600 hover:bg-amber-700 text-white"
+            className="bg-primary hover:bg-primary/90 text-white"
             data-testid="button-refresh-metrics"
           >
             {isLoading ? (
@@ -760,12 +760,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* System Health Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-amber-600">System Uptime</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm font-medium text-primary">System Uptime</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {health ? formatUptime(health.uptime) : '...'}
                   </p>
                   <Badge variant="outline" className="text-xs text-green-600 border-green-200 mt-1">
@@ -777,15 +777,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-amber-600">Memory Usage</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm font-medium text-primary">Memory Usage</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {health ? formatBytes(health.memory.used) : '...'}
                   </p>
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-muted-foreground">
                     of {health ? formatBytes(health.memory.total) : '...'}
                   </p>
                 </div>
@@ -794,15 +794,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-amber-600">Cache Status</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm font-medium text-primary">Cache Status</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {health ? health.cache.mainCache : 0}
                   </p>
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-muted-foreground">
                     {health ? health.cache.queryCache : 0} DB cache
                   </p>
                 </div>
@@ -811,15 +811,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-amber-600">API Response</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm font-medium text-primary">API Response</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {performance?.request_time ? formatMs(performance.request_time.average) : '...'}
                   </p>
-                  <p className="text-xs text-amber-700">
+                  <p className="text-xs text-muted-foreground">
                     {performance?.request_time ? performance.request_time.count : 0} requests
                   </p>
                 </div>
@@ -830,9 +830,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Performance Metrics */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-8">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-8">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl flex items-center">
+            <CardTitle className="text-foreground text-xl flex items-center">
               <BarChart3 className="h-5 w-5 mr-2" />
               Performance Metrics
             </CardTitle>
@@ -841,23 +841,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* API Response Times */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-900">API Response Times</h3>
+                <h3 className="font-semibold text-foreground">API Response Times</h3>
                 {performance?.request_time && (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Average:</span>
+                      <span className="text-sm text-primary">Average:</span>
                       <span className="text-sm font-medium">{formatMs(performance.request_time.average)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Min:</span>
+                      <span className="text-sm text-primary">Min:</span>
                       <span className="text-sm font-medium">{formatMs(performance.request_time.min)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Max:</span>
+                      <span className="text-sm text-primary">Max:</span>
                       <span className="text-sm font-medium">{formatMs(performance.request_time.max)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Total Requests:</span>
+                      <span className="text-sm text-primary">Total Requests:</span>
                       <span className="text-sm font-medium">{performance.request_time.count.toLocaleString()}</span>
                     </div>
                   </div>
@@ -866,15 +866,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
               {/* Database Performance */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-900">Database Performance</h3>
+                <h3 className="font-semibold text-foreground">Database Performance</h3>
                 {performance?.db_query_time && (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Query Time:</span>
+                      <span className="text-sm text-primary">Query Time:</span>
                       <span className="text-sm font-medium">{formatMs(performance.db_query_time.average)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Total Queries:</span>
+                      <span className="text-sm text-primary">Total Queries:</span>
                       <span className="text-sm font-medium">{performance.db_query_time.count.toLocaleString()}</span>
                     </div>
                   </div>
@@ -882,7 +882,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 {performance?.db_health_check && (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Health Check:</span>
+                      <span className="text-sm text-primary">Health Check:</span>
                       <span className="text-sm font-medium">{formatMs(performance.db_health_check.average)}</span>
                     </div>
                   </div>
@@ -891,23 +891,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
               {/* System Resources */}
               <div className="space-y-4">
-                <h3 className="font-semibold text-amber-900">System Resources</h3>
+                <h3 className="font-semibold text-foreground">System Resources</h3>
                 {health && (
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Heap Used:</span>
+                      <span className="text-sm text-primary">Heap Used:</span>
                       <span className="text-sm font-medium">{formatBytes(health.memory.used)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Heap Total:</span>
+                      <span className="text-sm text-primary">Heap Total:</span>
                       <span className="text-sm font-medium">{formatBytes(health.memory.total)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">External:</span>
+                      <span className="text-sm text-primary">External:</span>
                       <span className="text-sm font-medium">{formatBytes(health.memory.external)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-sm text-amber-600">Cache Items:</span>
+                      <span className="text-sm text-primary">Cache Items:</span>
                       <span className="text-sm font-medium">{health.cache.mainCache + health.cache.queryCache}</span>
                     </div>
                   </div>
@@ -918,9 +918,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Visitor Analytics */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-8">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-8">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl flex items-center">
+            <CardTitle className="text-foreground text-xl flex items-center">
               <Users2 className="h-5 w-5 mr-2" />
               Website Visitor Analytics
             </CardTitle>
@@ -928,10 +928,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <div className="bg-amber-50 rounded-lg p-4">
-                  <Clock className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-amber-900">Real-time</p>
-                  <p className="text-sm text-amber-600">Monitoring Active</p>
+                <div className="bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg p-4">
+                  <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-foreground">Real-time</p>
+                  <p className="text-sm text-primary">Monitoring Active</p>
                 </div>
               </div>
               <div className="text-center">
@@ -959,9 +959,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             </div>
 
-            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h4 className="font-semibold text-amber-900 mb-2">Visitor Activity Summary</h4>
-              <div className="text-sm text-amber-800 space-y-1">
+            <div className="mt-6 bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+              <h4 className="font-semibold text-foreground mb-2">Visitor Activity Summary</h4>
+              <div className="text-sm text-foreground space-y-1">
                 <p>• <strong>Active monitoring:</strong> Real-time visitor tracking through service worker and API calls</p>
                 <p>• <strong>User behavior:</strong> Authentication checks, environment configuration loads, and page navigation</p>
                 <p>• <strong>Mobile traffic:</strong> Android 15 Chrome users accessing the welcome page</p>
@@ -973,15 +973,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Quick Actions */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">System Monitoring Actions</CardTitle>
+            <CardTitle className="text-foreground text-xl">System Monitoring Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Button 
                 onClick={refetch}
-                className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2"
+                className="h-auto p-6 bg-primary hover:bg-primary/90 text-white flex flex-col items-center space-y-2"
                 data-testid="button-refresh-all-metrics"
               >
                 <RefreshCw className="h-8 w-8" />
@@ -1033,35 +1033,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-amber-900">Mobile App Analytics</h1>
-          <p className="text-amber-700">Monitor usage and performance across customer and driver mobile interfaces</p>
+          <h1 className="text-2xl font-bold text-foreground">Mobile App Analytics</h1>
+          <p className="text-muted-foreground">Monitor usage and performance across customer and driver mobile interfaces</p>
         </div>
 
         {/* Quick Access Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Smartphone className="h-5 w-5 text-amber-600" />
+                <Smartphone className="h-5 w-5 text-primary" />
                 Customer Mobile App
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Daily Active Users:</span>
+                  <span className="text-sm text-primary">Daily Active Users:</span>
                   <span className="text-sm font-medium">245</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Session Duration:</span>
+                  <span className="text-sm text-primary">Session Duration:</span>
                   <span className="text-sm font-medium">4.2 min</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Booking Conversion:</span>
+                  <span className="text-sm text-primary">Booking Conversion:</span>
                   <span className="text-sm font-medium">68%</span>
                 </div>
                 <Link href="/customer-app">
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                     <Eye className="h-4 w-4 mr-2" />
                     View Customer App
                   </Button>
@@ -1070,7 +1070,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Truck className="h-5 w-5 text-orange-600" />
@@ -1080,15 +1080,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Active Drivers:</span>
+                  <span className="text-sm text-primary">Active Drivers:</span>
                   <span className="text-sm font-medium">42</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Average Response Time:</span>
+                  <span className="text-sm text-primary">Average Response Time:</span>
                   <span className="text-sm font-medium">2.1 min</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-amber-600">Job Acceptance Rate:</span>
+                  <span className="text-sm text-primary">Job Acceptance Rate:</span>
                   <span className="text-sm font-medium">89%</span>
                 </div>
                 <Link href="/driver-app">
@@ -1103,7 +1103,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Performance Metrics */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5" />
@@ -1114,15 +1114,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">98.5%</div>
-                <div className="text-sm text-amber-600">App Uptime</div>
+                <div className="text-sm text-primary">App Uptime</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">1.2s</div>
-                <div className="text-sm text-amber-600">Average Load Time</div>
+                <div className="text-sm text-primary">Average Load Time</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-amber-600">4.7/5</div>
-                <div className="text-sm text-amber-600">User Rating</div>
+                <div className="text-2xl font-bold text-primary">4.7/5</div>
+                <div className="text-sm text-primary">User Rating</div>
               </div>
             </div>
           </CardContent>
@@ -1142,12 +1142,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-amber-900">Interface Preview & Testing</h1>
-          <p className="text-amber-700">Preview and test different mobile app interfaces for quality assurance</p>
+          <h1 className="text-2xl font-bold text-foreground">Interface Preview & Testing</h1>
+          <p className="text-muted-foreground">Preview and test different mobile app interfaces for quality assurance</p>
         </div>
 
         {/* Control Panel */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-4">
@@ -1180,7 +1180,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
               <div className="flex gap-2">
                 <Link href={previewMode === 'customer' ? '/customer-app' : '/driver-app'} target="_blank">
-                  <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button className="bg-primary hover:bg-primary/90 text-white">
                     <Eye className="h-4 w-4 mr-2" />
                     Open in New Tab
                   </Button>
@@ -1203,7 +1203,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Preview Display */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Monitor className="h-5 w-5" />
@@ -1224,7 +1224,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     Preview of {previewMode} interface in {deviceView} mode
                   </p>
                   <Link href={previewMode === 'customer' ? '/customer-app' : '/driver-app'} target="_blank">
-                    <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                    <Button className="bg-primary hover:bg-primary/90 text-white">
                       Open Live Interface
                     </Button>
                   </Link>
@@ -1236,29 +1236,29 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
-              <Smartphone className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-              <h3 className="font-medium text-amber-900">Mobile Testing</h3>
-              <p className="text-xs text-amber-600 mb-3">Test mobile responsiveness</p>
+              <Smartphone className="h-8 w-8 text-primary mx-auto mb-2" />
+              <h3 className="font-medium text-foreground">Mobile Testing</h3>
+              <p className="text-xs text-primary mb-3">Test mobile responsiveness</p>
               <Button size="sm" variant="outline" className="w-full">Test Mobile</Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
               <Users className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-              <h3 className="font-medium text-amber-900">User Experience</h3>
-              <p className="text-xs text-amber-600 mb-3">Review UX flows</p>
+              <h3 className="font-medium text-foreground">User Experience</h3>
+              <p className="text-xs text-primary mb-3">Review UX flows</p>
               <Button size="sm" variant="outline" className="w-full">Review UX</Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-4 text-center">
               <Activity className="h-8 w-8 text-green-600 mx-auto mb-2" />
-              <h3 className="font-medium text-amber-900">Performance</h3>
-              <p className="text-xs text-amber-600 mb-3">Check load times</p>
+              <h3 className="font-medium text-foreground">Performance</h3>
+              <p className="text-xs text-primary mb-3">Check load times</p>
               <Button size="sm" variant="outline" className="w-full">Check Performance</Button>
             </CardContent>
           </Card>
@@ -1400,53 +1400,53 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <div className="space-y-6">
           {/* Order Pipeline Statistics */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-gray-700">{orders.filter(o => o.status === 'requested').length}</p>
-                  <p className="text-sm text-amber-600">Requested</p>
+                  <p className="text-sm text-primary">Requested</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-yellow-700">{orders.filter(o => o.status === 'pending_assignment').length}</p>
-                  <p className="text-sm text-amber-600">Assigned</p>
+                  <p className="text-sm text-primary">Assigned</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-700">{orders.filter(o => o.status === 'in_progress').length}</p>
-                  <p className="text-sm text-amber-600">In Progress</p>
+                  <p className="text-sm text-primary">In Progress</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{completedOrders.length}</p>
-                  <p className="text-sm text-amber-600">Completed</p>
+                  <p className="text-sm text-primary">Completed</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-700">{orders.filter(o => o.priority === 'urgent').length}</p>
-                  <p className="text-sm text-amber-600">Urgent</p>
+                  <p className="text-sm text-primary">Urgent</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Order Management */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-                <CardTitle className="text-amber-900 text-lg sm:text-xl">Order Pipeline: Requested → Assigned → In Progress → Completed</CardTitle>
+                <CardTitle className="text-foreground text-lg sm:text-xl">Order Pipeline: Requested → Assigned → In Progress → Completed</CardTitle>
                 <div className="flex flex-col sm:flex-row gap-2">
                   <Button
                     onClick={() => setShowBulkUpload(!showBulkUpload)}
@@ -1502,7 +1502,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               {/* Search and Filters */}
               <div className="space-y-3">
                 <div>
-                  <Label className="text-xs text-amber-700">Search Orders</Label>
+                  <Label className="text-xs text-muted-foreground">Search Orders</Label>
                   <Input
                     placeholder="Search by Order ID, Tracking Number, or Customer..."
                     value={searchTerm}
@@ -1511,9 +1511,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     data-testid="input-search-orders"
                   />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-amber-50/50 rounded-lg border border-amber-200">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 p-4 bg-[#f8f7f5] dark:bg-[#231b0f]/50 rounded-lg border border-border">
                   <div>
-                    <Label className="text-xs text-amber-700">Start Date</Label>
+                    <Label className="text-xs text-muted-foreground">Start Date</Label>
                     <Input
                       type="date"
                       value={exportFilters.startDate}
@@ -1523,7 +1523,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-amber-700">End Date</Label>
+                    <Label className="text-xs text-muted-foreground">End Date</Label>
                     <Input
                       type="date"
                       value={exportFilters.endDate}
@@ -1533,7 +1533,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-amber-700">Status</Label>
+                    <Label className="text-xs text-muted-foreground">Status</Label>
                     <Select value={exportFilters.status} onValueChange={(value) => setExportFilters({ ...exportFilters, status: value })}>
                       <SelectTrigger className="mt-1" data-testid="select-export-status">
                         <SelectValue placeholder="All Statuses" />
@@ -1549,7 +1549,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs text-amber-700">Retailer</Label>
+                    <Label className="text-xs text-muted-foreground">Retailer</Label>
                     <Input
                       placeholder="Filter by retailer"
                       value={exportFilters.retailer}
@@ -1563,14 +1563,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardHeader>
             <CardContent>
               {showBulkUpload && (
-                <div className="mb-6 p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <h4 className="font-medium text-amber-900 mb-2">Bulk Upload for Enterprise Clients</h4>
-                  <p className="text-sm text-amber-600 mb-3">Upload CSV with columns: customer_name, pickup_address, dropoff_address, priority, type</p>
+                <div className="mb-6 p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                  <h4 className="font-medium text-foreground mb-2">Bulk Upload for Enterprise Clients</h4>
+                  <p className="text-sm text-primary mb-3">Upload CSV with columns: customer_name, pickup_address, dropoff_address, priority, type</p>
                   <div className="flex gap-2">
                     <input 
                       type="file" 
                       accept=".csv"
-                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-amber-100"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-accent"
                     />
                     <Button className="bg-green-600 hover:bg-green-700 text-white min-h-[44px] touch-manipulation" data-testid="button-upload-orders">
                       Process Upload
@@ -1581,14 +1581,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
               <div className="space-y-4">
                 {(selectedTab === 'active' ? activeOrders : completedOrders).map(order => (
-                  <div key={order.id} className="p-3 sm:p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={order.id} className="p-3 sm:p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex flex-col space-y-3">
                       {/* Header section */}
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                         <div className="flex-1">
                           <div className="flex flex-wrap items-center gap-2 mb-2">
-                            <p className="font-medium text-amber-900 text-sm sm:text-base">#{order.id} - {order.customer}</p>
-                            <span className="text-xs sm:text-sm text-amber-600">{order.time}</span>
+                            <p className="font-medium text-foreground text-sm sm:text-base">#{order.id} - {order.customer}</p>
+                            <span className="text-xs sm:text-sm text-primary">{order.time}</span>
                           </div>
                           <div className="flex flex-wrap gap-2 mb-2">
                             <Badge className={
@@ -1612,23 +1612,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       {/* Order details - mobile-friendly layout */}
                       <div className="grid grid-cols-1 gap-3 text-sm">
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                          <div className="p-2 bg-white/50 rounded border border-amber-100">
-                            <p className="text-amber-600 text-xs font-medium">Pickup</p>
-                            <p className="font-medium text-amber-900 break-words">{order.pickup}</p>
+                          <div className="p-2 bg-white/50 rounded border border-border">
+                            <p className="text-primary text-xs font-medium">Pickup</p>
+                            <p className="font-medium text-foreground break-words">{order.pickup}</p>
                           </div>
-                          <div className="p-2 bg-white/50 rounded border border-amber-100">
-                            <p className="text-amber-600 text-xs font-medium">Drop-off</p>
-                            <p className="font-medium text-amber-900 break-words">{order.dropoff}</p>
+                          <div className="p-2 bg-white/50 rounded border border-border">
+                            <p className="text-primary text-xs font-medium">Drop-off</p>
+                            <p className="font-medium text-foreground break-words">{order.dropoff}</p>
                           </div>
-                          <div className="p-2 bg-white/50 rounded border border-amber-100">
-                            <p className="text-amber-600 text-xs font-medium">Driver</p>
-                            <p className="font-medium text-amber-900">{order.driver || 'Unassigned'}</p>
+                          <div className="p-2 bg-white/50 rounded border border-border">
+                            <p className="text-primary text-xs font-medium">Driver</p>
+                            <p className="font-medium text-foreground">{order.driver || 'Unassigned'}</p>
                           </div>
                         </div>
                       </div>
                       
                       {/* Action buttons - mobile-friendly */}
-                      <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-amber-200">
+                      <div className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
                         {/* Status Update Actions - Mobile-friendly buttons */}
                         <div className="flex flex-col sm:flex-row gap-2">
                           {order.status === 'requested' || order.status === 'pending' ? (
@@ -1693,7 +1693,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           onClick={() => setSelectedOrderForDetails(order.id)}
                           variant="outline" 
                           size="sm" 
-                          className="w-full sm:w-auto min-h-[44px] touch-manipulation cursor-pointer hover:bg-amber-100"
+                          className="w-full sm:w-auto min-h-[44px] touch-manipulation cursor-pointer hover:bg-accent"
                           data-testid={`button-view-order-${order.id}`}
                         >
                           📋 View Details
@@ -1718,7 +1718,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Dialog open={selectedOrderForDetails !== null} onOpenChange={(open) => !open && closeOrderDetails()}>
             <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle className="text-2xl text-amber-900">
+                <DialogTitle className="text-2xl text-foreground">
                   Order Details {orderDetails?.trackingNumber ? `- #${orderDetails.trackingNumber}` : ''}
                 </DialogTitle>
                 <DialogDescription>
@@ -1732,7 +1732,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm text-amber-700">Order Status</CardTitle>
+                        <CardTitle className="text-sm text-muted-foreground">Order Status</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <Badge className={
@@ -1747,15 +1747,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </Card>
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm text-amber-700">Total Price</CardTitle>
+                        <CardTitle className="text-sm text-muted-foreground">Total Price</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p className="text-2xl font-bold text-amber-900">${orderDetails.totalPrice?.toFixed(2)}</p>
+                        <p className="text-2xl font-bold text-foreground">${orderDetails.totalPrice?.toFixed(2)}</p>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardHeader className="pb-3">
-                        <CardTitle className="text-sm text-amber-700">Created</CardTitle>
+                        <CardTitle className="text-sm text-muted-foreground">Created</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm">{orderDetails.createdAt ? new Date(orderDetails.createdAt).toLocaleString() : 'N/A'}</p>
@@ -1767,41 +1767,41 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-amber-900">Customer Information</CardTitle>
+                        <CardTitle className="text-foreground">Customer Information</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         <div>
-                          <Label className="text-xs text-amber-600">Name</Label>
+                          <Label className="text-xs text-primary">Name</Label>
                           <p className="font-medium">{orderDetails.customerName || 'N/A'}</p>
                         </div>
                         <div>
-                          <Label className="text-xs text-amber-600">Email</Label>
+                          <Label className="text-xs text-primary">Email</Label>
                           <p className="font-medium">{orderDetails.customerEmail || 'N/A'}</p>
                         </div>
                         <div>
-                          <Label className="text-xs text-amber-600">Phone</Label>
+                          <Label className="text-xs text-primary">Phone</Label>
                           <p className="font-medium">{orderDetails.customerPhone || 'N/A'}</p>
                         </div>
                       </CardContent>
                     </Card>
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-amber-900">Driver Information</CardTitle>
+                        <CardTitle className="text-foreground">Driver Information</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-2">
                         {orderDetails.driverId ? (
                           <>
                             <div>
-                              <Label className="text-xs text-amber-600">Driver ID</Label>
+                              <Label className="text-xs text-primary">Driver ID</Label>
                               <p className="font-medium">#{orderDetails.driverId}</p>
                             </div>
                             <div>
-                              <Label className="text-xs text-amber-600">Assigned At</Label>
+                              <Label className="text-xs text-primary">Assigned At</Label>
                               <p className="font-medium">{orderDetails.assignedAt ? new Date(orderDetails.assignedAt).toLocaleString() : 'N/A'}</p>
                             </div>
                           </>
                         ) : (
-                          <p className="text-amber-600">No driver assigned yet</p>
+                          <p className="text-primary">No driver assigned yet</p>
                         )}
                       </CardContent>
                     </Card>
@@ -1810,28 +1810,28 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   {/* Pickup & Dropoff Details */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-amber-900">Pickup & Dropoff Details</CardTitle>
+                      <CardTitle className="text-foreground">Pickup & Dropoff Details</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <Label className="text-xs text-amber-600">Pickup Address</Label>
+                          <Label className="text-xs text-primary">Pickup Address</Label>
                           <p className="font-medium">{orderDetails.pickupAddress || 'N/A'}</p>
                           {orderDetails.pickupInstructions && (
-                            <p className="text-sm text-amber-600 mt-1">Instructions: {orderDetails.pickupInstructions}</p>
+                            <p className="text-sm text-primary mt-1">Instructions: {orderDetails.pickupInstructions}</p>
                           )}
                         </div>
                         <div>
-                          <Label className="text-xs text-amber-600">Dropoff Address</Label>
+                          <Label className="text-xs text-primary">Dropoff Address</Label>
                           <p className="font-medium">{orderDetails.dropoffAddress || 'N/A'}</p>
                           {orderDetails.dropoffInstructions && (
-                            <p className="text-sm text-amber-600 mt-1">Instructions: {orderDetails.dropoffInstructions}</p>
+                            <p className="text-sm text-primary mt-1">Instructions: {orderDetails.dropoffInstructions}</p>
                           )}
                         </div>
                       </div>
                       {orderDetails.itemDescription && (
                         <div>
-                          <Label className="text-xs text-amber-600">Item Description</Label>
+                          <Label className="text-xs text-primary">Item Description</Label>
                           <p className="font-medium">{orderDetails.itemDescription}</p>
                         </div>
                       )}
@@ -1842,35 +1842,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   {(orderDetails.pickupPhotos?.length > 0 || orderDetails.dropoffPhotos?.length > 0 || orderDetails.refundPhotos?.length > 0) && (
                     <Card>
                       <CardHeader>
-                        <CardTitle className="text-amber-900">Photo Gallery</CardTitle>
+                        <CardTitle className="text-foreground">Photo Gallery</CardTitle>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         {orderDetails.pickupPhotos?.length > 0 && (
                           <div>
-                            <Label className="text-sm text-amber-700 mb-2 block">Pickup Photos</Label>
+                            <Label className="text-sm text-muted-foreground mb-2 block">Pickup Photos</Label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                               {orderDetails.pickupPhotos.map((photo: string, idx: number) => (
-                                <img key={idx} src={photo} alt={`Pickup ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-pickup-photo-${idx}`} />
+                                <img key={idx} src={photo} alt={`Pickup ${idx + 1}`} className="rounded-lg border border-border w-full h-32 object-cover" data-testid={`img-pickup-photo-${idx}`} />
                               ))}
                             </div>
                           </div>
                         )}
                         {orderDetails.dropoffPhotos?.length > 0 && (
                           <div>
-                            <Label className="text-sm text-amber-700 mb-2 block">Dropoff Photos</Label>
+                            <Label className="text-sm text-muted-foreground mb-2 block">Dropoff Photos</Label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                               {orderDetails.dropoffPhotos.map((photo: string, idx: number) => (
-                                <img key={idx} src={photo} alt={`Dropoff ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-dropoff-photo-${idx}`} />
+                                <img key={idx} src={photo} alt={`Dropoff ${idx + 1}`} className="rounded-lg border border-border w-full h-32 object-cover" data-testid={`img-dropoff-photo-${idx}`} />
                               ))}
                             </div>
                           </div>
                         )}
                         {orderDetails.refundPhotos?.length > 0 && (
                           <div>
-                            <Label className="text-sm text-amber-700 mb-2 block">Refund Photos</Label>
+                            <Label className="text-sm text-muted-foreground mb-2 block">Refund Photos</Label>
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                               {orderDetails.refundPhotos.map((photo: string, idx: number) => (
-                                <img key={idx} src={photo} alt={`Refund ${idx + 1}`} className="rounded-lg border border-amber-200 w-full h-32 object-cover" data-testid={`img-refund-photo-${idx}`} />
+                                <img key={idx} src={photo} alt={`Refund ${idx + 1}`} className="rounded-lg border border-border w-full h-32 object-cover" data-testid={`img-refund-photo-${idx}`} />
                               ))}
                             </div>
                           </div>
@@ -1882,25 +1882,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   {/* Payment & Refund Breakdown */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-amber-900">Payment & Refund Details</CardTitle>
+                      <CardTitle className="text-foreground">Payment & Refund Details</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-2">
                       <div className="flex justify-between">
-                        <span className="text-amber-600">Subtotal</span>
+                        <span className="text-primary">Subtotal</span>
                         <span className="font-medium">${orderDetails.subtotal?.toFixed(2) || '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-amber-600">Service Fee</span>
+                        <span className="text-primary">Service Fee</span>
                         <span className="font-medium">${orderDetails.serviceFee?.toFixed(2) || '0.00'}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-amber-600">Delivery Fee</span>
+                        <span className="text-primary">Delivery Fee</span>
                         <span className="font-medium">${orderDetails.deliveryFee?.toFixed(2) || '0.00'}</span>
                       </div>
                       <Separator />
                       <div className="flex justify-between font-bold text-lg">
                         <span>Total</span>
-                        <span className="text-amber-900">${orderDetails.totalPrice?.toFixed(2) || '0.00'}</span>
+                        <span className="text-foreground">${orderDetails.totalPrice?.toFixed(2) || '0.00'}</span>
                       </div>
                       {orderDetails.refundAmount && (
                         <>
@@ -1917,7 +1917,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   {/* Audit Trail Timeline */}
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-amber-900">Audit Trail</CardTitle>
+                      <CardTitle className="text-foreground">Audit Trail</CardTitle>
                       <CardDescription>Complete history of order changes</CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -1925,16 +1925,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         {orderAuditLogs.length > 0 ? (
                           <div className="space-y-3">
                             {orderAuditLogs.map((log: any, idx: number) => (
-                              <div key={idx} className="flex gap-3 p-3 border border-amber-100 rounded-lg bg-amber-50/30" data-testid={`audit-log-${idx}`}>
+                              <div key={idx} className="flex gap-3 p-3 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30" data-testid={`audit-log-${idx}`}>
                                 <div className="flex-shrink-0">
-                                  <div className="w-2 h-2 mt-2 rounded-full bg-amber-500"></div>
+                                  <div className="w-2 h-2 mt-2 rounded-full bg-[#f8f7f5] dark:bg-[#231b0f]0"></div>
                                 </div>
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
                                     <Badge variant="outline" className="text-xs">{log.action?.replace(/_/g, ' ')}</Badge>
                                     <Badge variant="outline" className="text-xs">{log.performedByRole}</Badge>
                                   </div>
-                                  <p className="text-sm text-amber-900 mb-1">
+                                  <p className="text-sm text-foreground mb-1">
                                     {log.action === 'status_changed' && `Status changed from ${log.oldValue} to ${log.newValue}`}
                                     {log.action === 'driver_assigned' && `Driver assigned: ${log.newValue}`}
                                     {log.action === 'photo_uploaded' && `Photo uploaded: ${log.metadata?.photoType}`}
@@ -1942,7 +1942,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                                     {log.action === 'refund_issued' && `Refund issued: $${log.newValue}`}
                                     {!['status_changed', 'driver_assigned', 'photo_uploaded', 'payment_processed', 'refund_issued'].includes(log.action) && `${log.action}: ${log.newValue || 'N/A'}`}
                                   </p>
-                                  <p className="text-xs text-amber-600">
+                                  <p className="text-xs text-primary">
                                     {new Date(log.timestamp).toLocaleString()} • {log.ipAddress || 'Unknown IP'}
                                   </p>
                                 </div>
@@ -1950,7 +1950,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                             ))}
                           </div>
                         ) : (
-                          <p className="text-amber-600 text-center py-8">No audit logs available</p>
+                          <p className="text-primary text-center py-8">No audit logs available</p>
                         )}
                       </ScrollArea>
                     </CardContent>
@@ -1958,7 +1958,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               ) : (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
               )}
 
@@ -1972,25 +1972,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Assignment System */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Manual & Automated Assignment</CardTitle>
+                <CardTitle className="text-foreground text-xl">Manual & Automated Assignment</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-3 border border-amber-200 rounded-lg bg-amber-50/30">
-                    <h4 className="font-medium text-amber-900 mb-2">Auto-Assignment Rules</h4>
+                  <div className="p-3 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                    <h4 className="font-medium text-foreground mb-2">Auto-Assignment Rules</h4>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between items-center">
-                        <span className="text-amber-600">Distance-based routing</span>
+                        <span className="text-primary">Distance-based routing</span>
                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-amber-600">Load balancing</span>
+                        <span className="text-primary">Load balancing</span>
                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-amber-600">Priority queue</span>
+                        <span className="text-primary">Priority queue</span>
                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                       </div>
                     </div>
@@ -2002,23 +2002,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Live Dashboard with Map</CardTitle>
+                <CardTitle className="text-foreground text-xl">Live Dashboard with Map</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="p-6 border border-amber-200 rounded-lg bg-amber-50/30 text-center">
-                  <div className="h-32 bg-amber-100 rounded-lg mb-4 flex items-center justify-center">
-                    <p className="text-amber-600 text-sm">Interactive Map View</p>
+                <div className="p-6 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30 text-center">
+                  <div className="h-32 bg-accent rounded-lg mb-4 flex items-center justify-center">
+                    <p className="text-primary text-sm">Interactive Map View</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div className="text-center">
                       <p className="font-bold text-blue-700">{orders.filter((o: any) => o.status === 'in_progress').length}</p>
-                      <p className="text-amber-600">Live Tracking</p>
+                      <p className="text-primary">Live Tracking</p>
                     </div>
                     <div className="text-center">
                       <p className="font-bold text-green-700">94%</p>
-                      <p className="text-amber-600">On-Time Rate</p>
+                      <p className="text-primary">On-Time Rate</p>
                     </div>
                   </div>
                 </div>
@@ -2242,45 +2242,45 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <div className="space-y-6">
           {/* Driver Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{activeDrivers.filter(d => d.availability === 'online').length}</p>
-                  <p className="text-sm text-amber-600">Online Now</p>
+                  <p className="text-sm text-primary">Online Now</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-700">{activeDrivers.filter(d => d.currentDelivery).length}</p>
-                  <p className="text-sm text-amber-600">On Delivery</p>
+                  <p className="text-sm text-primary">On Delivery</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-700">{activeDrivers.length}</p>
-                  <p className="text-sm text-amber-600">Total Active</p>
+                  <p className="text-2xl font-bold text-muted-foreground">{activeDrivers.length}</p>
+                  <p className="text-sm text-primary">Total Active</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-700">{pendingDrivers.length}</p>
-                  <p className="text-sm text-amber-600">Pending Approval</p>
+                  <p className="text-sm text-primary">Pending Approval</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Driver Management Tabs */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <CardTitle className="text-amber-900 text-xl">Driver Directory</CardTitle>
+                <CardTitle className="text-foreground text-xl">Driver Directory</CardTitle>
                 <div className="flex gap-2">
                   <Button
                     onClick={() => setSelectedTab('active')}
@@ -2330,12 +2330,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   selectedTab === 'onboarding' ? onboardingDrivers :
                   selectedTab === 'oversight' ? oversightNeededDrivers :
                   pendingDrivers).map(driver => (
-                  <div key={driver.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={driver.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">{driver.name}</p>
-                          <span className="text-sm text-amber-600">({driver.email})</span>
+                          <p className="font-medium text-foreground">{driver.name}</p>
+                          <span className="text-sm text-primary">({driver.email})</span>
                           <Badge className={
                             driver.availability === 'online' ? 'bg-green-100 text-green-800' : 
                             'bg-gray-100 text-gray-800'
@@ -2352,27 +2352,27 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         {driver.status === 'active' ? (
                           <div>
                             <div className="mb-2">
-                              <p className="text-sm text-amber-600">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
+                              <p className="text-sm text-primary">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
                             </div>
                             <div className="grid grid-cols-3 gap-4 text-sm">
                               <div>
-                                <p className="text-amber-600">Completed Orders</p>
-                                <p className="font-bold text-amber-900">{driver.completedOrders}</p>
+                                <p className="text-primary">Completed Orders</p>
+                                <p className="font-bold text-foreground">{driver.completedOrders}</p>
                               </div>
                               <div>
-                                <p className="text-amber-600">Rating</p>
-                                <p className="font-bold text-amber-900">{driver.rating}/5.0</p>
+                                <p className="text-primary">Rating</p>
+                                <p className="font-bold text-foreground">{driver.rating}/5.0</p>
                               </div>
                               <div>
-                                <p className="text-amber-600">Punctuality</p>
-                                <p className="font-bold text-amber-900">{driver.punctuality}%</p>
+                                <p className="text-primary">Punctuality</p>
+                                <p className="font-bold text-foreground">{driver.punctuality}%</p>
                               </div>
                             </div>
                           </div>
                         ) : (
                           <div className="space-y-2">
-                            <p className="text-sm text-amber-600">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
-                            <p className="text-sm text-amber-600">Onboarding Status: {driver.onboardingStatus.replace('_', ' ')}</p>
+                            <p className="text-sm text-primary">Contact: {driver.email} {driver.phone ? `• ${driver.phone}` : ''}</p>
+                            <p className="text-sm text-primary">Onboarding Status: {driver.onboardingStatus.replace('_', ' ')}</p>
                             <div className="flex gap-2">
                               <Badge variant={driver.documents.license === 'verified' ? 'default' : 'secondary'}>
                                 License: {driver.documents.license}
@@ -2487,23 +2487,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Card>
 
           {/* Driver Performance Overview */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Performance Overview</CardTitle>
+              <CardTitle className="text-foreground text-xl">Performance Overview</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-green-700">{activeDrivers.length > 0 ? (activeDrivers.reduce((sum, d) => sum + d.rating, 0) / activeDrivers.length).toFixed(1) : '0.0'}</p>
-                  <p className="text-sm text-amber-600">Average Rating</p>
+                  <p className="text-sm text-primary">Average Rating</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-blue-700">{activeDrivers.length > 0 ? Math.round(activeDrivers.reduce((sum, d) => sum + d.punctuality, 0) / activeDrivers.length) : 0}%</p>
-                  <p className="text-sm text-amber-600">Average Punctuality</p>
+                  <p className="text-sm text-primary">Average Punctuality</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <p className="text-2xl font-bold text-amber-700">{activeDrivers.reduce((sum, d) => sum + d.completedOrders, 0)}</p>
-                  <p className="text-sm text-amber-600">Total Completions</p>
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                  <p className="text-2xl font-bold text-muted-foreground">{activeDrivers.reduce((sum, d) => sum + d.completedOrders, 0)}</p>
+                  <p className="text-sm text-primary">Total Completions</p>
                 </div>
               </div>
             </CardContent>
@@ -2648,23 +2648,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Applications</p>
-                  <p className="text-2xl font-bold text-amber-900">{stats.total}</p>
+                  <p className="text-sm text-primary">Total Applications</p>
+                  <p className="text-2xl font-bold text-foreground">{stats.total}</p>
                 </div>
-                <UserPlus className="h-8 w-8 text-amber-600" />
+                <UserPlus className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Pending Review</p>
+                  <p className="text-sm text-primary">Pending Review</p>
                   <p className="text-2xl font-bold text-orange-700">{stats.pending}</p>
                 </div>
                 <Clock className="h-8 w-8 text-orange-600" />
@@ -2672,11 +2672,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">On Waitlist</p>
+                  <p className="text-sm text-primary">On Waitlist</p>
                   <p className="text-2xl font-bold text-blue-700">{stats.waitlist}</p>
                 </div>
                 <Users2 className="h-8 w-8 text-blue-600" />
@@ -2684,11 +2684,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Selected</p>
+                  <p className="text-sm text-primary">Selected</p>
                   <p className="text-2xl font-bold text-green-700">{selectedApplications.size}</p>
                 </div>
                 <CheckCircle2 className="h-8 w-8 text-green-600" />
@@ -2698,7 +2698,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Actions and Filters */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-6">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
               <div className="flex gap-2 flex-wrap">
@@ -2735,7 +2735,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="border border-amber-200 rounded-md px-3 py-1.5 text-sm"
+                  className="border border-border rounded-md px-3 py-1.5 text-sm"
                   data-testid="select-filter-status"
                 >
                   <option value="all">All Status</option>
@@ -2747,7 +2747,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="border border-amber-200 rounded-md px-3 py-1.5 text-sm"
+                  className="border border-border rounded-md px-3 py-1.5 text-sm"
                   data-testid="select-sort-by"
                 >
                   <option value="date">Sort by Date</option>
@@ -2759,7 +2759,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   placeholder="Search name, email, city, ZIP..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 border-amber-200"
+                  className="w-64 border-border"
                   data-testid="input-search-drivers"
                 />
               </div>
@@ -2768,17 +2768,17 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Applications List */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">
+            <CardTitle className="text-foreground text-xl">
               Driver Applications ({filteredApplications.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
-              <div className="text-center py-8 text-amber-600">Loading applications...</div>
+              <div className="text-center py-8 text-primary">Loading applications...</div>
             ) : filteredApplications.length === 0 ? (
-              <div className="text-center py-8 text-amber-600">No applications found</div>
+              <div className="text-center py-8 text-primary">No applications found</div>
             ) : (
               <div className="space-y-4">
                 {filteredApplications.map(app => {
@@ -2794,7 +2794,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                       className={`p-4 border rounded-lg cursor-pointer transition-all ${
                         isSelected
                           ? 'border-green-400 bg-green-50/50 shadow-md'
-                          : 'border-amber-200 bg-amber-50/30 hover:border-amber-400'
+                          : 'border-border bg-[#f8f7f5] dark:bg-[#231b0f]/30 hover:border-border'
                       }`}
                       data-testid={`card-driver-${app.id}`}
                     >
@@ -2810,7 +2810,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
                             <div>
-                              <p className="font-semibold text-lg text-amber-900">
+                              <p className="font-semibold text-lg text-foreground">
                                 {app.firstName} {app.lastName}
                               </p>
                               <div className="flex items-center gap-2 mt-1">
@@ -2821,34 +2821,34 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                                 }>
                                   {app.applicationStatus}
                                 </Badge>
-                                <Badge variant="outline" className="text-amber-700">
+                                <Badge variant="outline" className="text-muted-foreground">
                                   {app.backgroundCheckStatus || 'pending'}
                                 </Badge>
                               </div>
                             </div>
-                            <p className="text-sm text-amber-600">
+                            <p className="text-sm text-primary">
                               Applied: {new Date(app.createdAt).toLocaleDateString()}
                             </p>
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                             <div>
-                              <p className="text-amber-600 font-medium mb-1">Contact</p>
-                              <p className="text-amber-900">{app.email}</p>
-                              <p className="text-amber-900">{app.phone}</p>
+                              <p className="text-primary font-medium mb-1">Contact</p>
+                              <p className="text-foreground">{app.email}</p>
+                              <p className="text-foreground">{app.phone}</p>
                             </div>
                             <div>
-                              <p className="text-amber-600 font-medium mb-1">Location</p>
-                              <p className="text-amber-900">{app.city}, {app.state}</p>
-                              <p className="text-amber-900">ZIP: {app.zipCode}</p>
+                              <p className="text-primary font-medium mb-1">Location</p>
+                              <p className="text-foreground">{app.city}, {app.state}</p>
+                              <p className="text-foreground">ZIP: {app.zipCode}</p>
                             </div>
                             {vehicleInfo && (
                               <div>
-                                <p className="text-amber-600 font-medium mb-1">Vehicle</p>
-                                <p className="text-amber-900">
+                                <p className="text-primary font-medium mb-1">Vehicle</p>
+                                <p className="text-foreground">
                                   {vehicleInfo.year} {vehicleInfo.make} {vehicleInfo.model}
                                 </p>
-                                <p className="text-amber-900 text-xs">{vehicleInfo.licensePlate}</p>
+                                <p className="text-foreground text-xs">{vehicleInfo.licensePlate}</p>
                               </div>
                             )}
                           </div>
@@ -2909,23 +2909,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* Customer Management Header */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Customers</p>
-                  <p className="text-2xl font-bold text-amber-900">{customers.length}</p>
+                  <p className="text-sm text-primary">Total Customers</p>
+                  <p className="text-2xl font-bold text-foreground">{customers.length}</p>
                 </div>
-                <Users2 className="h-8 w-8 text-amber-600" />
+                <Users2 className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Active Customers</p>
+                  <p className="text-sm text-primary">Active Customers</p>
                   <p className="text-2xl font-bold text-green-700">{customers.filter(c => c.status === 'active').length}</p>
                 </div>
                 <UserCheck className="h-8 w-8 text-green-600" />
@@ -2933,11 +2933,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">New This Month</p>
+                  <p className="text-sm text-primary">New This Month</p>
                   <p className="text-2xl font-bold text-blue-700">
                     {customers.filter(c => {
                       const joinDate = new Date(c.joinDate);
@@ -2951,13 +2951,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Revenue</p>
+                  <p className="text-sm text-primary">Total Revenue</p>
                   <p className="text-2xl font-bold text-purple-700">$0</p>
-                  <p className="text-xs text-amber-700">From customer orders</p>
+                  <p className="text-xs text-muted-foreground">From customer orders</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-purple-600" />
               </div>
@@ -2966,17 +2966,17 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Customer List */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-amber-900 text-xl">Customer Directory</CardTitle>
-              <p className="text-sm text-amber-600">Manage customer accounts and support</p>
+              <CardTitle className="text-foreground text-xl">Customer Directory</CardTitle>
+              <p className="text-sm text-primary">Manage customer accounts and support</p>
             </div>
             <Button 
               onClick={fetchCustomers}
               disabled={isLoadingCustomers}
               size="sm"
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
               data-testid="button-refresh-customers"
             >
               {isLoadingCustomers ? (
@@ -2990,26 +2990,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <CardContent>
             {isLoadingCustomers ? (
               <div className="flex items-center justify-center p-8">
-                <Loader2 className="h-6 w-6 animate-spin text-amber-600" />
-                <span className="ml-2 text-amber-600">Loading customers...</span>
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <span className="ml-2 text-primary">Loading customers...</span>
               </div>
             ) : customers.length === 0 ? (
               <div className="text-center py-8">
-                <Users2 className="h-12 w-12 text-amber-300 mx-auto mb-4" />
-                <p className="text-amber-600">No customers found</p>
-                <p className="text-sm text-amber-500">Customer accounts will appear here once users register</p>
+                <Users2 className="h-12 w-12 text-primary mx-auto mb-4" />
+                <p className="text-primary">No customers found</p>
+                <p className="text-sm text-primary">Customer accounts will appear here once users register</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {customers.map(customer => (
-                  <div key={customer.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={customer.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900" data-testid={`text-customer-name-${customer.id}`}>
+                          <p className="font-medium text-foreground" data-testid={`text-customer-name-${customer.id}`}>
                             {customer.name}
                           </p>
-                          <span className="text-sm text-amber-600">({customer.email})</span>
+                          <span className="text-sm text-primary">({customer.email})</span>
                           <Badge className={
                             customer.status === 'active' ? 'bg-green-100 text-green-800' : 
                             'bg-gray-100 text-gray-800'
@@ -3019,23 +3019,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         </div>
                         
                         <div className="mb-2">
-                          <p className="text-sm text-amber-600">
+                          <p className="text-sm text-primary">
                             Phone: {customer.phone} • Joined: {customer.joinDate}
                           </p>
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
-                            <p className="text-amber-600">Total Orders</p>
-                            <p className="font-bold text-amber-900">{customer.totalOrders}</p>
+                            <p className="text-primary">Total Orders</p>
+                            <p className="font-bold text-foreground">{customer.totalOrders}</p>
                           </div>
                           <div>
-                            <p className="text-amber-600">Total Spent</p>
-                            <p className="font-bold text-amber-900">${customer.totalSpent.toFixed(2)}</p>
+                            <p className="text-primary">Total Spent</p>
+                            <p className="font-bold text-foreground">${customer.totalSpent.toFixed(2)}</p>
                           </div>
                           <div>
-                            <p className="text-amber-600">Last Order</p>
-                            <p className="font-bold text-amber-900 text-xs">{customer.lastOrder}</p>
+                            <p className="text-primary">Last Order</p>
+                            <p className="font-bold text-foreground text-xs">{customer.lastOrder}</p>
                           </div>
                         </div>
                       </div>
@@ -3065,29 +3065,29 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Customer Analytics */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mt-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mt-6">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">Customer Insights</CardTitle>
+            <CardTitle className="text-foreground text-xl">Customer Insights</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+              <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                 <p className="text-2xl font-bold text-green-700">
                   {customers.length > 0 ? ((customers.filter(c => c.status === 'active').length / customers.length) * 100).toFixed(1) : '0'}%
                 </p>
-                <p className="text-sm text-amber-600">Active Rate</p>
+                <p className="text-sm text-primary">Active Rate</p>
               </div>
-              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+              <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                 <p className="text-2xl font-bold text-blue-700">
                   ${customers.reduce((sum, c) => sum + c.totalSpent, 0).toFixed(2)}
                 </p>
-                <p className="text-sm text-amber-600">Total Customer Value</p>
+                <p className="text-sm text-primary">Total Customer Value</p>
               </div>
-              <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                <p className="text-2xl font-bold text-amber-700">
+              <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                <p className="text-2xl font-bold text-muted-foreground">
                   {customers.reduce((sum, c) => sum + c.totalOrders, 0)}
                 </p>
-                <p className="text-sm text-amber-600">Total Customer Orders</p>
+                <p className="text-sm text-primary">Total Customer Orders</p>
               </div>
             </div>
           </CardContent>
@@ -3100,15 +3100,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
 
 
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+      <Card className="bg-white/90 backdrop-blur-sm border-border">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-amber-900 text-xl">Payment Tracking</CardTitle>
+          <CardTitle className="text-foreground text-xl">Payment Tracking</CardTitle>
           <div className="flex items-center gap-2">
             <Button 
               onClick={updateDashboardStats}
               disabled={isUpdating}
               size="sm"
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               {isUpdating ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -3123,9 +3123,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-amber-700 mb-4">Monitor payments, payouts, and financial metrics with real-time updates.</p>
+          <p className="text-muted-foreground mb-4">Monitor payments, payouts, and financial metrics with real-time updates.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">${dashboardStats.todayRevenue}</p>
@@ -3133,7 +3133,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-purple-700">
@@ -3143,21 +3143,21 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               </CardContent>
             </Card>
-            <Card className="border-amber-200">
+            <Card className="border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-2xl font-bold text-foreground">
                     ${dashboardStats.todayPlatformRevenue}
                   </p>
-                  <p className="text-sm text-amber-600">Platform Revenue</p>
+                  <p className="text-sm text-primary">Platform Revenue</p>
                 </div>
               </CardContent>
             </Card>
           </div>
           <div className="text-center py-8">
-            <CreditCard className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-            <p className="text-lg font-medium text-amber-900">Payment System</p>
-            <p className="text-sm text-amber-600">Track payments and manage driver payouts with live financial data</p>
+            <CreditCard className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <p className="text-lg font-medium text-foreground">Payment System</p>
+            <p className="text-sm text-primary">Track payments and manage driver payouts with live financial data</p>
           </div>
         </CardContent>
       </Card>
@@ -3168,14 +3168,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
 
 
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+      <Card className="bg-white/90 backdrop-blur-sm border-border">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-amber-900 text-xl">Business Intelligence</CardTitle>
+          <CardTitle className="text-foreground text-xl">Business Intelligence</CardTitle>
           <Button 
             onClick={updateDashboardStats}
             disabled={isUpdating}
             size="sm"
-            className="bg-amber-600 hover:bg-amber-700 text-white"
+            className="bg-primary hover:bg-primary/90 text-white"
           >
             {isUpdating ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -3186,7 +3186,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Button>
         </CardHeader>
         <CardContent>
-          <p className="text-amber-700 mb-4">Advanced business analytics and insights with real-time data.</p>
+          <p className="text-muted-foreground mb-4">Advanced business analytics and insights with real-time data.</p>
           <AnalyticsDashboard />
         </CardContent>
       </Card>
@@ -3197,15 +3197,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
 
 
-      <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+      <Card className="bg-white/90 backdrop-blur-sm border-border">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-amber-900 text-xl">Enhanced Analytics</CardTitle>
+          <CardTitle className="text-foreground text-xl">Enhanced Analytics</CardTitle>
           <div className="flex items-center gap-2">
             <Button 
               onClick={updateDashboardStats}
               disabled={isUpdating}
               size="sm"
-              className="bg-amber-600 hover:bg-amber-700 text-white"
+              className="bg-primary hover:bg-primary/90 text-white"
             >
               {isUpdating ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -3220,7 +3220,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-amber-700 mb-4">Real-time performance metrics and comprehensive analytics with live updates.</p>
+          <p className="text-muted-foreground mb-4">Real-time performance metrics and comprehensive analytics with live updates.</p>
           <CompletedOrdersAnalytics completedOrders={[]} />
         </CardContent>
       </Card>
@@ -3312,9 +3312,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
 
 
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-amber-900 text-xl">Route Optimization</CardTitle>
+            <CardTitle className="text-foreground text-xl">Route Optimization</CardTitle>
             <Button 
               onClick={optimizeRoutes}
               disabled={isUpdating}
@@ -3328,10 +3328,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <CardContent>
             <div className="space-y-4">
               {routes.map(route => (
-                <div key={route.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg">
+                <div key={route.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                   <div className="flex-1">
-                    <p className="font-medium text-amber-900">{route.driver}</p>
-                    <p className="text-sm text-amber-600">{route.stops} stops • {route.distance} • ETA: {route.eta}</p>
+                    <p className="font-medium text-foreground">{route.driver}</p>
+                    <p className="text-sm text-primary">{route.stops} stops • {route.distance} • ETA: {route.eta}</p>
                   </div>
                   <Badge className={
                     route.status === 'active' ? 'bg-green-100 text-green-800' :
@@ -3426,48 +3426,48 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Quality Assurance Dashboard</CardTitle>
+              <CardTitle className="text-foreground text-xl">Quality Assurance Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-green-700">{qualityMetrics.averageRating}</p>
-                  <p className="text-sm text-amber-600">Avg Rating</p>
+                  <p className="text-sm text-primary">Avg Rating</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-blue-700">{qualityMetrics.completedDeliveries}</p>
-                  <p className="text-sm text-amber-600">Completed</p>
+                  <p className="text-sm text-primary">Completed</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <p className="text-2xl font-bold text-amber-700">{qualityMetrics.onTimeRate}%</p>
-                  <p className="text-sm text-amber-600">On Time</p>
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                  <p className="text-2xl font-bold text-muted-foreground">{qualityMetrics.onTimeRate}%</p>
+                  <p className="text-sm text-primary">On Time</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-green-700">{qualityMetrics.customerSatisfaction}%</p>
-                  <p className="text-sm text-amber-600">Satisfaction</p>
+                  <p className="text-sm text-primary">Satisfaction</p>
                 </div>
-                <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                   <p className="text-2xl font-bold text-red-700">{qualityMetrics.issueReports}</p>
-                  <p className="text-sm text-amber-600">Issues</p>
+                  <p className="text-sm text-primary">Issues</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Recent Quality Issues</CardTitle>
+              <CardTitle className="text-foreground text-xl">Recent Quality Issues</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {recentIssues.map(issue => (
-                  <div key={issue.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg">
+                  <div key={issue.id} className="flex items-center justify-between p-4 border border-border rounded-lg">
                     <div className="flex-1">
-                      <p className="font-medium text-amber-900">{issue.type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}</p>
-                      <p className="text-sm text-amber-600">Driver: {issue.driver} • Customer: {issue.customer}</p>
-                      <p className="text-xs text-amber-500">{issue.time}</p>
+                      <p className="font-medium text-foreground">{issue.type.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}</p>
+                      <p className="text-sm text-primary">Driver: {issue.driver} • Customer: {issue.customer}</p>
+                      <p className="text-xs text-primary">{issue.time}</p>
                     </div>
                     <Badge className={
                       issue.status === 'resolved' ? 'bg-green-100 text-green-800' :
@@ -3505,9 +3505,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-amber-900 text-xl">Driver Incentive Programs</CardTitle>
+              <CardTitle className="text-foreground text-xl">Driver Incentive Programs</CardTitle>
               <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-add-incentive">
                 <Trophy className="h-4 w-4 mr-2" />
                 Add New Incentive
@@ -3516,13 +3516,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardContent>
               <div className="space-y-4">
                 {incentives.map(incentive => (
-                  <div key={incentive.id} className="flex items-center justify-between p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={incentive.id} className="flex items-center justify-between p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium text-amber-900">{incentive.name}</p>
+                        <p className="font-medium text-foreground">{incentive.name}</p>
                         <Trophy className="h-4 w-4 text-yellow-600" />
                       </div>
-                      <p className="text-sm text-amber-600 mb-2">{incentive.description}</p>
+                      <p className="text-sm text-primary mb-2">{incentive.description}</p>
                       <p className="text-lg font-bold text-green-700">{incentive.amount} per delivery</p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -3547,23 +3547,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Incentive Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-amber-600">Active Incentives</p>
-                    <p className="text-2xl font-bold text-amber-900">{incentives.filter(i => i.active).length}</p>
+                    <p className="text-sm text-primary">Active Incentives</p>
+                    <p className="text-2xl font-bold text-foreground">{incentives.filter(i => i.active).length}</p>
                   </div>
                   <Trophy className="h-8 w-8 text-yellow-600" />
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-amber-600">Monthly Bonus Paid</p>
+                    <p className="text-sm text-primary">Monthly Bonus Paid</p>
                     <p className="text-2xl font-bold text-green-700">${(Math.random() * 2000 + 1500).toFixed(0)}</p>
                   </div>
                   <DollarSign className="h-8 w-8 text-green-600" />
@@ -3571,11 +3571,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-amber-600">Drivers Earning Bonuses</p>
+                    <p className="text-sm text-primary">Drivers Earning Bonuses</p>
                     <p className="text-2xl font-bold text-blue-700">{Math.floor(Math.random() * 15 + 8)}</p>
                   </div>
                   <Users className="h-8 w-8 text-blue-600" />
@@ -3711,28 +3711,28 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         )}
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Report Generation Center</CardTitle>
+              <CardTitle className="text-foreground text-xl">Report Generation Center</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {reports.map((report, index) => {
                   const IconComponent = report.icon;
                   return (
-                    <div key={index} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                    <div key={index} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
-                          <IconComponent className="h-5 w-5 text-amber-600" />
-                          <p className="font-medium text-amber-900">{report.name}</p>
+                          <IconComponent className="h-5 w-5 text-primary" />
+                          <p className="font-medium text-foreground">{report.name}</p>
                         </div>
                       </div>
-                      <p className="text-sm text-amber-600 mb-3">{report.description}</p>
+                      <p className="text-sm text-primary mb-3">{report.description}</p>
                       <Button 
                         onClick={() => generateReport(report.name)}
                         disabled={isGenerating}
                         size="sm"
-                        className="bg-amber-600 hover:bg-amber-700 text-white"
+                        className="bg-primary hover:bg-primary/90 text-white"
                         data-testid={`button-generate-${report.name.toLowerCase().replace(' ', '-')}`}
                       >
                         {isGenerating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <PieChart className="h-4 w-4 mr-2" />}
@@ -3745,23 +3745,23 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Recent Reports</CardTitle>
+              <CardTitle className="text-foreground text-xl">Recent Reports</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border border-amber-200 rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium text-amber-900">Daily Operations Report - Jan 22</p>
-                    <p className="text-sm text-amber-600">Generated 2 hours ago • 847 KB</p>
+                    <p className="font-medium text-foreground">Daily Operations Report - Jan 22</p>
+                    <p className="text-sm text-primary">Generated 2 hours ago • 847 KB</p>
                   </div>
                   <Button variant="outline" size="sm">Download</Button>
                 </div>
-                <div className="flex items-center justify-between p-3 border border-amber-200 rounded-lg">
+                <div className="flex items-center justify-between p-3 border border-border rounded-lg">
                   <div>
-                    <p className="font-medium text-amber-900">Weekly Financial Summary</p>
-                    <p className="text-sm text-amber-600">Generated yesterday • 1.2 MB</p>
+                    <p className="font-medium text-foreground">Weekly Financial Summary</p>
+                    <p className="text-sm text-primary">Generated yesterday • 1.2 MB</p>
                   </div>
                   <Button variant="outline" size="sm">Download</Button>
                 </div>
@@ -3798,9 +3798,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-amber-900 text-xl">Support Ticket Management</CardTitle>
+              <CardTitle className="text-foreground text-xl">Support Ticket Management</CardTitle>
               <div className="flex gap-2">
                 <Button
                   onClick={() => setFilterStatus('all')}
@@ -3828,11 +3828,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardContent>
               <div className="space-y-3">
                 {filteredTickets.map(ticket => (
-                  <div key={ticket.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={ticket.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium text-amber-900">#{ticket.id} - {ticket.customer}</p>
+                          <p className="font-medium text-foreground">#{ticket.id} - {ticket.customer}</p>
                           <Badge className={
                             ticket.priority === 'high' ? 'bg-red-100 text-red-800' :
                             ticket.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
@@ -3841,8 +3841,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                             {ticket.priority}
                           </Badge>
                         </div>
-                        <p className="text-sm text-amber-700 mb-1">{ticket.issue}</p>
-                        <div className="flex items-center gap-4 text-xs text-amber-600">
+                        <p className="text-sm text-muted-foreground mb-1">{ticket.issue}</p>
+                        <div className="flex items-center gap-4 text-xs text-primary">
                           <span>{ticket.time}</span>
                           <span>Assigned: {ticket.assigned}</span>
                         </div>
@@ -3877,35 +3877,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Ticket Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-700">{tickets.filter(t => t.status === 'open').length}</p>
-                  <p className="text-sm text-amber-600">Open Tickets</p>
+                  <p className="text-sm text-primary">Open Tickets</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-yellow-700">{tickets.filter(t => t.status === 'in_progress').length}</p>
-                  <p className="text-sm text-amber-600">In Progress</p>
+                  <p className="text-sm text-primary">In Progress</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{tickets.filter(t => t.status === 'resolved').length}</p>
-                  <p className="text-sm text-amber-600">Resolved</p>
+                  <p className="text-sm text-primary">Resolved</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-700">{Math.round((tickets.filter(t => t.status === 'resolved').length / tickets.length) * 100)}%</p>
-                  <p className="text-sm text-amber-600">Resolution Rate</p>
+                  <p className="text-2xl font-bold text-muted-foreground">{Math.round((tickets.filter(t => t.status === 'resolved').length / tickets.length) * 100)}%</p>
+                  <p className="text-sm text-primary">Resolution Rate</p>
                 </div>
               </CardContent>
             </Card>
@@ -3929,9 +3929,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-amber-900 text-xl">Live Chat Center</CardTitle>
+              <CardTitle className="text-foreground text-xl">Live Chat Center</CardTitle>
               <Badge variant="outline" className="text-green-700">
                 {activeChats.filter(chat => chat.status === 'active').length} Active
               </Badge>
@@ -3940,25 +3940,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Chat List */}
                 <div className="space-y-3">
-                  <h3 className="font-medium text-amber-900 mb-3">Active Conversations</h3>
+                  <h3 className="font-medium text-foreground mb-3">Active Conversations</h3>
                   {activeChats.map(chat => (
                     <div 
                       key={chat.id} 
-                      className="p-4 border border-amber-200 rounded-lg bg-amber-50/30 cursor-pointer hover:bg-amber-50/50"
+                      className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30 cursor-pointer hover:bg-[#f8f7f5] dark:bg-[#231b0f]/50"
                       onClick={() => setSelectedChat(chat)}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
-                            <p className="font-medium text-amber-900">{chat.customer}</p>
+                            <p className="font-medium text-foreground">{chat.customer}</p>
                             {chat.unread > 0 && (
                               <Badge className="bg-red-100 text-red-800 text-xs">
                                 {chat.unread} new
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-amber-700 mb-1">{chat.lastMessage}</p>
-                          <p className="text-xs text-amber-500">{chat.time}</p>
+                          <p className="text-sm text-muted-foreground mb-1">{chat.lastMessage}</p>
+                          <p className="text-xs text-primary">{chat.time}</p>
                         </div>
                         <Badge className={
                           chat.status === 'active' ? 'bg-green-100 text-green-800' :
@@ -3973,12 +3973,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
 
                 {/* Chat Window */}
-                <div className="border border-amber-200 rounded-lg bg-amber-50/30 p-4 h-96">
+                <div className="border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30 p-4 h-96">
                   {selectedChat ? (
                     <div className="flex flex-col h-full">
-                      <div className="border-b border-amber-200 pb-2 mb-4">
-                        <h4 className="font-medium text-amber-900">{selectedChat.customer}</h4>
-                        <p className="text-sm text-amber-600">Status: {selectedChat.status}</p>
+                      <div className="border-b border-border pb-2 mb-4">
+                        <h4 className="font-medium text-foreground">{selectedChat.customer}</h4>
+                        <p className="text-sm text-primary">Status: {selectedChat.status}</p>
                       </div>
                       
                       <div className="flex-1 overflow-y-auto space-y-3 mb-4">
@@ -3986,13 +3986,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           <div className="inline-block bg-blue-100 text-blue-800 p-2 rounded-lg text-sm max-w-xs">
                             How can I help you today?
                           </div>
-                          <p className="text-xs text-amber-500 mt-1">Support Agent</p>
+                          <p className="text-xs text-primary mt-1">Support Agent</p>
                         </div>
                         <div className="text-left">
-                          <div className="inline-block bg-amber-100 text-amber-800 p-2 rounded-lg text-sm max-w-xs">
+                          <div className="inline-block bg-accent text-foreground p-2 rounded-lg text-sm max-w-xs">
                             {selectedChat.lastMessage}
                           </div>
-                          <p className="text-xs text-amber-500 mt-1">{selectedChat.customer}</p>
+                          <p className="text-xs text-primary mt-1">{selectedChat.customer}</p>
                         </div>
                       </div>
                       
@@ -4000,9 +4000,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         <input 
                           type="text" 
                           placeholder="Type your response..." 
-                          className="flex-1 px-3 py-2 border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          className="flex-1 px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                         />
-                        <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+                        <Button className="bg-primary hover:bg-primary/90 text-white">
                           <MessageCircle className="h-4 w-4" />
                         </Button>
                       </div>
@@ -4010,8 +4010,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   ) : (
                     <div className="flex items-center justify-center h-full">
                       <div className="text-center">
-                        <MessageCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
-                        <p className="text-amber-700">Select a conversation to start chatting</p>
+                        <MessageCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
+                        <p className="text-muted-foreground">Select a conversation to start chatting</p>
                       </div>
                     </div>
                   )}
@@ -4022,35 +4022,35 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Chat Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{activeChats.filter(c => c.status === 'active').length}</p>
-                  <p className="text-sm text-amber-600">Active Chats</p>
+                  <p className="text-sm text-primary">Active Chats</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-yellow-700">{activeChats.filter(c => c.status === 'waiting').length}</p>
-                  <p className="text-sm text-amber-600">Waiting</p>
+                  <p className="text-sm text-primary">Waiting</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-700">{activeChats.reduce((total, chat) => total + chat.unread, 0)}</p>
-                  <p className="text-sm text-amber-600">Unread Messages</p>
+                  <p className="text-sm text-primary">Unread Messages</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-700">2.3 min</p>
-                  <p className="text-sm text-amber-600">Avg Response</p>
+                  <p className="text-2xl font-bold text-muted-foreground">2.3 min</p>
+                  <p className="text-sm text-primary">Avg Response</p>
                 </div>
               </CardContent>
             </Card>
@@ -4094,17 +4094,17 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <div className="space-y-6">
           {/* Rating Overview */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Rating Overview</CardTitle>
+                <CardTitle className="text-foreground text-xl">Rating Overview</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center mb-6">
-                  <p className="text-4xl font-bold text-amber-900 mb-2">{ratingStats.averageRating}</p>
+                  <p className="text-4xl font-bold text-foreground mb-2">{ratingStats.averageRating}</p>
                   <div className="flex justify-center mb-2">
                     {renderStars(Math.round(ratingStats.averageRating))}
                   </div>
-                  <p className="text-amber-600">Based on {ratingStats.totalReviews} reviews</p>
+                  <p className="text-primary">Based on {ratingStats.totalReviews} reviews</p>
                 </div>
                 
                 <div className="space-y-3">
@@ -4115,14 +4115,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     
                     return (
                       <div key={stars} className="flex items-center gap-2">
-                        <span className="text-sm text-amber-700 w-8">{stars}★</span>
-                        <div className="flex-1 bg-amber-100 rounded-full h-2">
+                        <span className="text-sm text-muted-foreground w-8">{stars}★</span>
+                        <div className="flex-1 bg-accent rounded-full h-2">
                           <div 
                             className="bg-yellow-400 h-2 rounded-full" 
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm text-amber-600 w-12">{count}</span>
+                        <span className="text-sm text-primary w-12">{count}</span>
                       </div>
                     );
                   })}
@@ -4130,27 +4130,27 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Rating Statistics</CardTitle>
+                <CardTitle className="text-foreground text-xl">Rating Statistics</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <p className="text-2xl font-bold text-green-700">{Math.round((ratingStats.fiveStars / ratingStats.totalReviews) * 100)}%</p>
-                    <p className="text-sm text-amber-600">5-Star Ratings</p>
+                    <p className="text-sm text-primary">5-Star Ratings</p>
                   </div>
-                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <p className="text-2xl font-bold text-blue-700">{Math.round(((ratingStats.fiveStars + ratingStats.fourStars) / ratingStats.totalReviews) * 100)}%</p>
-                    <p className="text-sm text-amber-600">4+ Star Ratings</p>
+                    <p className="text-sm text-primary">4+ Star Ratings</p>
                   </div>
-                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                    <p className="text-2xl font-bold text-amber-700">{Math.round(((ratingStats.oneStars + ratingStats.twoStars) / ratingStats.totalReviews) * 100)}%</p>
-                    <p className="text-sm text-amber-600">Low Ratings</p>
+                  <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                    <p className="text-2xl font-bold text-muted-foreground">{Math.round(((ratingStats.oneStars + ratingStats.twoStars) / ratingStats.totalReviews) * 100)}%</p>
+                    <p className="text-sm text-primary">Low Ratings</p>
                   </div>
-                  <div className="text-center p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div className="text-center p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <p className="text-2xl font-bold text-purple-700">4.2</p>
-                    <p className="text-sm text-amber-600">Driver Avg</p>
+                    <p className="text-sm text-primary">Driver Avg</p>
                   </div>
                 </div>
               </CardContent>
@@ -4158,24 +4158,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </div>
 
           {/* Recent Ratings */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Recent Customer Reviews</CardTitle>
+              <CardTitle className="text-foreground text-xl">Recent Customer Reviews</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentRatings.map(rating => (
-                  <div key={rating.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={rating.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">{rating.customer}</p>
+                          <p className="font-medium text-foreground">{rating.customer}</p>
                           <div className="flex">
                             {renderStars(rating.rating)}
                           </div>
                         </div>
-                        <p className="text-sm text-amber-700 mb-1">"{rating.comment}"</p>
-                        <div className="flex items-center gap-4 text-xs text-amber-600">
+                        <p className="text-sm text-muted-foreground mb-1">"{rating.comment}"</p>
+                        <div className="flex items-center gap-4 text-xs text-primary">
                           <span>Driver: {rating.driver}</span>
                           <span>{rating.time}</span>
                         </div>
@@ -4218,9 +4218,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-amber-900 text-xl">System Notifications</CardTitle>
+              <CardTitle className="text-foreground text-xl">System Notifications</CardTitle>
               <div className="flex gap-2">
                 <Button 
                   onClick={markAllAsRead}
@@ -4230,7 +4230,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 >
                   Mark All Read
                 </Button>
-                <Badge variant="outline" className="text-amber-700">
+                <Badge variant="outline" className="text-muted-foreground">
                   {notifications.filter(n => !n.read).length} unread
                 </Badge>
               </div>
@@ -4243,7 +4243,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     className={`p-4 border rounded-lg transition-all ${
                       notification.read 
                         ? 'border-gray-200 bg-gray-50/50' 
-                        : 'border-amber-200 bg-amber-50/50'
+                        : 'border-border bg-[#f8f7f5] dark:bg-[#231b0f]/50'
                     }`}
                   >
                     <div className="flex items-start justify-between">
@@ -4254,10 +4254,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                             notification.priority === 'medium' ? 'text-yellow-600' :
                             'text-blue-600'
                           }`} />
-                          <p className="font-medium text-amber-900">{notification.title}</p>
+                          <p className="font-medium text-foreground">{notification.title}</p>
                           {!notification.read && <div className="w-2 h-2 bg-blue-600 rounded-full"></div>}
                         </div>
-                        <p className="text-sm text-amber-700 mb-2">{notification.message}</p>
+                        <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
                         <div className="flex items-center gap-2">
                           <Badge className={
                             notification.priority === 'high' ? 'bg-red-100 text-red-800' :
@@ -4266,7 +4266,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           }>
                             {notification.priority}
                           </Badge>
-                          <span className="text-xs text-amber-600">{notification.time}</span>
+                          <span className="text-xs text-primary">{notification.time}</span>
                         </div>
                       </div>
                       <div className="flex gap-1">
@@ -4298,30 +4298,30 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Card>
 
           {/* Notification Settings */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Notification Preferences</CardTitle>
+              <CardTitle className="text-foreground text-xl">Notification Preferences</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">System Alerts</p>
-                    <p className="text-sm text-amber-600">Get notified about system issues</p>
+                    <p className="font-medium text-foreground">System Alerts</p>
+                    <p className="text-sm text-primary">Get notified about system issues</p>
                   </div>
                   <Button variant="outline" size="sm">Enabled</Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">Order Notifications</p>
-                    <p className="text-sm text-amber-600">New orders and status updates</p>
+                    <p className="font-medium text-foreground">Order Notifications</p>
+                    <p className="text-sm text-primary">New orders and status updates</p>
                   </div>
                   <Button variant="outline" size="sm">Enabled</Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">Driver Applications</p>
-                    <p className="text-sm text-amber-600">New driver registrations</p>
+                    <p className="font-medium text-foreground">Driver Applications</p>
+                    <p className="text-sm text-primary">New driver registrations</p>
                   </div>
                   <Button variant="outline" size="sm">Enabled</Button>
                 </div>
@@ -4366,53 +4366,53 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <div className="space-y-6">
           {/* Operations Overview */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{serviceAreas.filter(a => a.status === 'active').length}</p>
-                  <p className="text-sm text-amber-600">Active Areas</p>
+                  <p className="text-sm text-primary">Active Areas</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-700">{serviceAreas.reduce((sum, a) => sum + a.drivers, 0)}</p>
-                  <p className="text-sm text-amber-600">Total Coverage</p>
+                  <p className="text-sm text-primary">Total Coverage</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-700">{shifts.reduce((sum, s) => sum + s.driversNeeded, 0)}</p>
-                  <p className="text-sm text-amber-600">Drivers Needed</p>
+                  <p className="text-2xl font-bold text-muted-foreground">{shifts.reduce((sum, s) => sum + s.driversNeeded, 0)}</p>
+                  <p className="text-sm text-primary">Drivers Needed</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-red-700">{shifts.filter(s => s.status === 'understaffed').length}</p>
-                  <p className="text-sm text-amber-600">Understaffed Shifts</p>
+                  <p className="text-sm text-primary">Understaffed Shifts</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Service Areas Management */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Service Area Management</CardTitle>
+              <CardTitle className="text-foreground text-xl">Service Area Management</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {serviceAreas.map(area => (
-                  <div key={area.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={area.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">{area.name}</p>
+                          <p className="font-medium text-foreground">{area.name}</p>
                           <Badge className={
                             area.status === 'active' ? 'bg-green-100 text-green-800' :
                             area.status === 'limited' ? 'bg-yellow-100 text-yellow-800' :
@@ -4423,16 +4423,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                         </div>
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
-                            <p className="text-amber-600">Active Drivers</p>
-                            <p className="font-bold text-amber-900">{area.drivers}</p>
+                            <p className="text-primary">Active Drivers</p>
+                            <p className="font-bold text-foreground">{area.drivers}</p>
                           </div>
                           <div>
-                            <p className="text-amber-600">Coverage</p>
-                            <p className="font-bold text-amber-900">{area.coverage}</p>
+                            <p className="text-primary">Coverage</p>
+                            <p className="font-bold text-foreground">{area.coverage}</p>
                           </div>
                           <div>
-                            <p className="text-amber-600">Avg Delivery Time</p>
-                            <p className="font-bold text-amber-900">{area.avgDeliveryTime}</p>
+                            <p className="text-primary">Avg Delivery Time</p>
+                            <p className="font-bold text-foreground">{area.avgDeliveryTime}</p>
                           </div>
                         </div>
                       </div>
@@ -4457,18 +4457,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Card>
 
           {/* Capacity Planning */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Capacity Planning - Driver Shifts</CardTitle>
+              <CardTitle className="text-foreground text-xl">Capacity Planning - Driver Shifts</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {shifts.map(shift => (
-                  <div key={shift.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={shift.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">{shift.name}</p>
+                          <p className="font-medium text-foreground">{shift.name}</p>
                           <Badge className={
                             shift.status === 'fully_staffed' ? 'bg-green-100 text-green-800' :
                             shift.status === 'understaffed' ? 'bg-red-100 text-red-800' :
@@ -4476,14 +4476,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           }>
                             {shift.status.replace('_', ' ')}
                           </Badge>
-                          <span className="text-sm text-amber-600">{shift.time}</span>
+                          <span className="text-sm text-primary">{shift.time}</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
                           <div>
-                            <p className="text-amber-600">Needed: {shift.driversNeeded}</p>
+                            <p className="text-primary">Needed: {shift.driversNeeded}</p>
                           </div>
                           <div>
-                            <p className="text-amber-600">Assigned: {shift.driversAssigned}</p>
+                            <p className="text-primary">Assigned: {shift.driversAssigned}</p>
                           </div>
                           <div>
                             <p className={`font-medium ${
@@ -4513,34 +4513,34 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </Card>
 
           {/* Real-time Communication Hub */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Real-Time Communication Hub</CardTitle>
+              <CardTitle className="text-foreground text-xl">Real-Time Communication Hub</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <h4 className="font-medium text-amber-900 mb-2">Driver Broadcasts</h4>
-                  <p className="text-sm text-amber-600 mb-3">Send messages to all active drivers</p>
+                <div className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                  <h4 className="font-medium text-foreground mb-2">Driver Broadcasts</h4>
+                  <p className="text-sm text-primary mb-3">Send messages to all active drivers</p>
                   <div className="flex gap-2">
                     <input 
                       type="text" 
                       placeholder="Broadcast message..." 
-                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm"
                     />
                     <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                       Send
                     </Button>
                   </div>
                 </div>
-                <div className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
-                  <h4 className="font-medium text-amber-900 mb-2">Customer Updates</h4>
-                  <p className="text-sm text-amber-600 mb-3">Send service notifications</p>
+                <div className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                  <h4 className="font-medium text-foreground mb-2">Customer Updates</h4>
+                  <p className="text-sm text-primary mb-3">Send service notifications</p>
                   <div className="flex gap-2">
                     <input 
                       type="text" 
                       placeholder="Customer notification..." 
-                      className="flex-1 px-3 py-2 border border-amber-200 rounded-lg text-sm"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg text-sm"
                     />
                     <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
                       Notify
@@ -4576,9 +4576,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
 
         <div className="space-y-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="text-amber-900 text-xl">Employee Management</CardTitle>
+              <CardTitle className="text-foreground text-xl">Employee Management</CardTitle>
               <Button className="bg-green-600 hover:bg-green-700 text-white" data-testid="button-add-employee">
                 <UserCheck className="h-4 w-4 mr-2" />
                 Add Employee
@@ -4587,19 +4587,19 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <CardContent>
               <div className="space-y-4">
                 {employees.map(employee => (
-                  <div key={employee.id} className="p-4 border border-amber-200 rounded-lg bg-amber-50/30">
+                  <div key={employee.id} className="p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <p className="font-medium text-amber-900">{employee.name}</p>
+                          <p className="font-medium text-foreground">{employee.name}</p>
                           <Badge className={employee.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
                             {employee.status}
                           </Badge>
                         </div>
-                        <p className="text-sm text-amber-700 mb-1">{employee.role}</p>
-                        <p className="text-xs text-amber-600">Last login: {employee.lastLogin}</p>
+                        <p className="text-sm text-muted-foreground mb-1">{employee.role}</p>
+                        <p className="text-xs text-primary">Last login: {employee.lastLogin}</p>
                         <div className="mt-2">
-                          <p className="text-xs text-amber-500 mb-1">Permissions:</p>
+                          <p className="text-xs text-primary mb-1">Permissions:</p>
                           <div className="flex flex-wrap gap-1">
                             {employee.permissions.map((permission, index) => (
                               <Badge key={index} variant="outline" className="text-xs">
@@ -4632,65 +4632,65 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
           {/* Employee Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-green-700">{employees.filter(e => e.status === 'active').length}</p>
-                  <p className="text-sm text-amber-600">Active Employees</p>
+                  <p className="text-sm text-primary">Active Employees</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-gray-700">{employees.filter(e => e.status === 'offline').length}</p>
-                  <p className="text-sm text-amber-600">Offline</p>
+                  <p className="text-sm text-primary">Offline</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
                   <p className="text-2xl font-bold text-blue-700">{employees.length}</p>
-                  <p className="text-sm text-amber-600">Total Staff</p>
+                  <p className="text-sm text-primary">Total Staff</p>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardContent className="p-4">
                 <div className="text-center">
-                  <p className="text-2xl font-bold text-amber-700">4</p>
-                  <p className="text-sm text-amber-600">Departments</p>
+                  <p className="text-2xl font-bold text-muted-foreground">4</p>
+                  <p className="text-sm text-primary">Departments</p>
                 </div>
               </CardContent>
             </Card>
           </div>
 
           {/* Access Control */}
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900 text-xl">Access Control Settings</CardTitle>
+              <CardTitle className="text-foreground text-xl">Access Control Settings</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">Customer Support Access</p>
-                    <p className="text-sm text-amber-600">View tickets, chat, and customer data</p>
+                    <p className="font-medium text-foreground">Customer Support Access</p>
+                    <p className="text-sm text-primary">View tickets, chat, and customer data</p>
                   </div>
                   <Button variant="outline" size="sm">Manage</Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">Financial Data Access</p>
-                    <p className="text-sm text-amber-600">View payouts, reports, and analytics</p>
+                    <p className="font-medium text-foreground">Financial Data Access</p>
+                    <p className="text-sm text-primary">View payouts, reports, and analytics</p>
                   </div>
                   <Button variant="outline" size="sm">Manage</Button>
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-amber-900">Driver Management Access</p>
-                    <p className="text-sm text-amber-600">Manage drivers, routes, and operations</p>
+                    <p className="font-medium text-foreground">Driver Management Access</p>
+                    <p className="text-sm text-primary">Manage drivers, routes, and operations</p>
                   </div>
                   <Button variant="outline" size="sm">Manage</Button>
                 </div>
@@ -4913,12 +4913,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       <div className="space-y-6">
         {/* Payout Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Payouts Today</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm text-primary">Total Payouts Today</p>
+                  <p className="text-2xl font-bold text-foreground">
                     ${payoutData
                       .filter(d => d.status === 'Completed')
                       .reduce((sum, d) => sum + d.netPayoutAmount, 0)
@@ -4930,26 +4930,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Pending Payouts</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm text-primary">Pending Payouts</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {payoutData.filter(d => d.status === 'Pending' || d.status === 'Scheduled').length}
                   </p>
                 </div>
-                <Users className="h-8 w-8 text-amber-600" />
+                <Users className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Instant Fees Collected</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm text-primary">Instant Fees Collected</p>
+                  <p className="text-2xl font-bold text-foreground">
                     ${(payoutData
                       .filter(d => d.paymentMethod === 'Stripe Connect' && d.status === 'Completed')
                       .length * 0.50
@@ -4961,12 +4961,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Weekly Payouts</p>
-                  <p className="text-2xl font-bold text-amber-900">
+                  <p className="text-sm text-primary">Weekly Payouts</p>
+                  <p className="text-2xl font-bold text-foreground">
                     {payoutData.filter(d => d.paymentMethod === 'Bank Transfer' && d.status === 'Completed').length}
                   </p>
                   <p className="text-xs text-green-600">No fees</p>
@@ -4978,12 +4978,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </div>
 
         {/* Payout Management */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-amber-900 text-xl">Driver Payout Management</CardTitle>
+            <CardTitle className="text-foreground text-xl">Driver Payout Management</CardTitle>
             <div className="flex gap-2">
               <Button 
-                className="bg-amber-600 hover:bg-amber-700 text-white"
+                className="bg-primary hover:bg-primary/90 text-white"
                 onClick={regeneratePayoutData}
                 data-testid="button-regenerate-payout-data"
               >
@@ -5003,49 +5003,49 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <h3 className="font-semibold text-amber-900 mb-2">Fee Structure</h3>
+              <div className="bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+                <h3 className="font-semibold text-foreground mb-2">Fee Structure</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <strong>Instant Payouts:</strong> $0.50 transaction fee
                     <br />
-                    <span className="text-amber-700">Processed immediately via Stripe</span>
+                    <span className="text-muted-foreground">Processed immediately via Stripe</span>
                   </div>
                   <div>
                     <strong>Weekly Payouts:</strong> No fees
                     <br />
-                    <span className="text-amber-700">Processed every Sunday at midnight</span>
+                    <span className="text-muted-foreground">Processed every Sunday at midnight</span>
                   </div>
                 </div>
               </div>
 
               {/* Driver Payout Table */}
               <div className="mt-6">
-                <h4 className="font-medium text-amber-900 mb-4">Driver Payout Overview</h4>
+                <h4 className="font-medium text-foreground mb-4">Driver Payout Overview</h4>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b border-amber-200">
-                        <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">ID</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Earnings</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Fees</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Net Payout</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Method</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Status</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Instant Pay</th>
-                        <th className="text-left p-3 text-amber-900 font-medium">Actions</th>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-3 text-foreground font-medium">Driver</th>
+                        <th className="text-left p-3 text-foreground font-medium">ID</th>
+                        <th className="text-left p-3 text-foreground font-medium">Earnings</th>
+                        <th className="text-left p-3 text-foreground font-medium">Fees</th>
+                        <th className="text-left p-3 text-foreground font-medium">Net Payout</th>
+                        <th className="text-left p-3 text-foreground font-medium">Method</th>
+                        <th className="text-left p-3 text-foreground font-medium">Status</th>
+                        <th className="text-left p-3 text-foreground font-medium">Instant Pay</th>
+                        <th className="text-left p-3 text-foreground font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {payoutData.slice(0, 12).map((driver) => (
-                        <tr key={driver.id} className="border-b border-amber-100 hover:bg-amber-50/30">
-                          <td className="p-3 text-amber-900 font-medium">{driver.driverName}</td>
-                          <td className="p-3 text-amber-600 font-mono text-xs">{driver.driverId}</td>
-                          <td className="p-3 text-amber-900">${driver.totalEarnings.toLocaleString()}</td>
-                          <td className="p-3 text-amber-600">${driver.platformFees}</td>
-                          <td className="p-3 text-amber-900 font-bold">${driver.netPayoutAmount.toLocaleString()}</td>
-                          <td className="p-3 text-amber-600 text-xs">{driver.paymentMethod}</td>
+                        <tr key={driver.id} className="border-b border-border hover:bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                          <td className="p-3 text-foreground font-medium">{driver.driverName}</td>
+                          <td className="p-3 text-primary font-mono text-xs">{driver.driverId}</td>
+                          <td className="p-3 text-foreground">${driver.totalEarnings.toLocaleString()}</td>
+                          <td className="p-3 text-primary">${driver.platformFees}</td>
+                          <td className="p-3 text-foreground font-bold">${driver.netPayoutAmount.toLocaleString()}</td>
+                          <td className="p-3 text-primary text-xs">{driver.paymentMethod}</td>
                           <td className="p-3">
                             <Badge className={
                               driver.status === 'Completed' ? 'bg-green-100 text-green-800' :
@@ -5124,7 +5124,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </tbody>
                   </table>
                   <div className="mt-4 text-center">
-                    <p className="text-sm text-amber-600">
+                    <p className="text-sm text-primary">
                       Showing {Math.min(12, payoutData.length)} of {payoutData.length} drivers
                       • {payoutData.filter(d => d.instantPayAvailable).length} eligible for instant pay
                       • ${payoutData.reduce((sum, d) => sum + d.netPayoutAmount, 0).toLocaleString()} total pending
@@ -5285,13 +5285,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-amber-900 mb-2">Payment Tracking & Tax Management</h1>
-          <p className="text-amber-600">Dashboard • 9/14/2025</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Payment Tracking & Tax Management</h1>
+          <p className="text-primary">Dashboard • 9/14/2025</p>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex flex-col">
                 <h3 className="text-sm font-medium text-green-600 mb-2">Total Driver Earnings</h3>
@@ -5300,7 +5300,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex flex-col">
                 <h3 className="text-sm font-medium text-blue-600 mb-2">Company Revenue</h3>
@@ -5309,7 +5309,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex flex-col">
                 <h3 className="text-sm font-medium text-purple-600 mb-2">Customer Payments</h3>
@@ -5318,12 +5318,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex flex-col">
-                <h3 className="text-sm font-medium text-amber-600 mb-2">Transactions</h3>
-                <p className="text-2xl font-bold text-amber-900">{taxReportData?.length || 0}</p>
-                <p className="text-xs text-amber-500 mt-1">This month</p>
+                <h3 className="text-sm font-medium text-primary mb-2">Transactions</h3>
+                <p className="text-2xl font-bold text-foreground">{taxReportData?.length || 0}</p>
+                <p className="text-xs text-primary mt-1">This month</p>
               </div>
             </CardContent>
           </Card>
@@ -5336,8 +5336,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               onClick={() => setActiveTab('payment-records')}
               className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
                 activeTab === 'payment-records'
-                  ? 'bg-white text-amber-900 shadow-sm'
-                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+                  ? 'bg-white text-foreground shadow-sm'
+                  : 'text-gray-600 hover:text-foreground hover:bg-white/50'
               }`}
               data-testid="tab-payment-records"
             >
@@ -5347,8 +5347,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               onClick={() => setActiveTab('tax-analytics')}
               className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
                 activeTab === 'tax-analytics'
-                  ? 'bg-gray-300 text-amber-900 shadow-sm'
-                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+                  ? 'bg-gray-300 text-foreground shadow-sm'
+                  : 'text-gray-600 hover:text-foreground hover:bg-white/50'
               }`}
               data-testid="tab-tax-analytics"
             >
@@ -5358,8 +5358,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               onClick={() => setActiveTab('reports-exports')}
               className={`px-4 py-2 text-sm font-medium rounded-md flex-1 transition-colors ${
                 activeTab === 'reports-exports'
-                  ? 'bg-gray-300 text-amber-900 shadow-sm'
-                  : 'text-gray-600 hover:text-amber-900 hover:bg-white/50'
+                  ? 'bg-gray-300 text-foreground shadow-sm'
+                  : 'text-gray-600 hover:text-foreground hover:bg-white/50'
               }`}
               data-testid="tab-reports-exports"
             >
@@ -5378,13 +5378,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Tab Content */}
         {activeTab === 'payment-records' && (
           <div className="bg-white rounded-lg p-6 mb-6">
-            <div className="flex items-center justify-center bg-gray-50 border border-amber-200 rounded-lg p-8 min-h-[400px]">
+            <div className="flex items-center justify-center bg-gray-50 border border-border rounded-lg p-8 min-h-[400px]">
               <div className="text-center">
                 <div className="flex items-center justify-center space-x-4 mb-4">
                   <span className="text-2xl">🔍</span>
-                  <h2 className="text-lg font-semibold text-amber-900">Filters & Search</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Filters & Search</h2>
                 </div>
-                <p className="text-amber-600 mb-4">Search Orders/Drivers, Date Range, Payment Status</p>
+                <p className="text-primary mb-4">Search Orders/Drivers, Date Range, Payment Status</p>
                 <p className="text-sm text-gray-500">Payment records filtering and search functionality</p>
               </div>
             </div>
@@ -5394,16 +5394,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {activeTab === 'tax-analytics' && (
           <div className="space-y-6">
         {/* Tax Year Selection */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">Tax Reports & 1099 Forms</CardTitle>
+            <CardTitle className="text-foreground text-xl">Tax Reports & 1099 Forms</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="text-sm font-medium text-amber-900">Tax Year</label>
+                <label className="text-sm font-medium text-foreground">Tax Year</label>
                 <select 
-                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  className="w-full mt-1 p-2 border border-border rounded-md"
                   value={taxYear}
                   onChange={(e) => setTaxYear(e.target.value)}
                 >
@@ -5413,9 +5413,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-amber-900">Quarter (Optional)</label>
+                <label className="text-sm font-medium text-foreground">Quarter (Optional)</label>
                 <select 
-                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  className="w-full mt-1 p-2 border border-border rounded-md"
                   value={quarter}
                   onChange={(e) => setQuarter(e.target.value)}
                 >
@@ -5427,9 +5427,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-medium text-amber-900">Export Format</label>
+                <label className="text-sm font-medium text-foreground">Export Format</label>
                 <select 
-                  className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                  className="w-full mt-1 p-2 border border-border rounded-md"
                   value={format}
                   onChange={(e) => setFormat(e.target.value)}
                 >
@@ -5444,34 +5444,34 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
         {/* Tax Summary */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Drivers Requiring 1099</p>
+                  <p className="text-sm text-primary">Drivers Requiring 1099</p>
                   {summaryLoading ? (
-                    <div className="h-8 w-16 bg-amber-200 animate-pulse rounded"></div>
+                    <div className="h-8 w-16 bg-accent animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {taxReportData.filter((d: any) => d.netTaxableIncome >= 600).length}
                     </p>
                   )}
-                  <p className="text-xs text-amber-700">$600+ earnings</p>
+                  <p className="text-xs text-muted-foreground">$600+ earnings</p>
                 </div>
-                <Users className="h-8 w-8 text-amber-600" />
+                <Users className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Total Contractor Payments</p>
+                  <p className="text-sm text-primary">Total Contractor Payments</p>
                   {summaryLoading ? (
-                    <div className="h-8 w-24 bg-amber-200 animate-pulse rounded"></div>
+                    <div className="h-8 w-24 bg-accent animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-2xl font-bold text-foreground">
                       ${((paymentSummary as PaymentSummary)?.todayDriverEarnings || 0).toLocaleString()}
                     </p>
                   )}
@@ -5481,15 +5481,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Forms Generated</p>
+                  <p className="text-sm text-primary">Forms Generated</p>
                   {summaryLoading ? (
-                    <div className="h-8 w-12 bg-amber-200 animate-pulse rounded"></div>
+                    <div className="h-8 w-12 bg-accent animate-pulse rounded"></div>
                   ) : (
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-2xl font-bold text-foreground">
                       {taxReportData.filter((d: any) => d.form1099Generated).length}
                     </p>
                   )}
@@ -5499,24 +5499,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-amber-600">Tax Year</p>
-                  <p className="text-2xl font-bold text-amber-900">{taxYear}</p>
-                  <p className="text-xs text-amber-700">Selected</p>
+                  <p className="text-sm text-primary">Tax Year</p>
+                  <p className="text-2xl font-bold text-foreground">{taxYear}</p>
+                  <p className="text-xs text-muted-foreground">Selected</p>
                 </div>
-                <Badge className="bg-amber-100 text-amber-800">Active</Badge>
+                <Badge className="bg-accent text-foreground">Active</Badge>
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Actions */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">Tax Report Actions</CardTitle>
+            <CardTitle className="text-foreground text-xl">Tax Report Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -5551,7 +5551,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </Button>
               
               <Button 
-                className="h-auto p-6 bg-amber-600 hover:bg-amber-700 text-white flex flex-col items-center space-y-2"
+                className="h-auto p-6 bg-primary hover:bg-primary/90 text-white flex flex-col items-center space-y-2"
                 onClick={refreshTaxData}
                 data-testid="button-refresh-tax-data"
               >
@@ -5561,9 +5561,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </Button>
             </div>
 
-            <div className="mt-6 bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h4 className="font-semibold text-amber-900 mb-2">IRS Requirements</h4>
-              <ul className="text-sm text-amber-800 space-y-1">
+            <div className="mt-6 bg-[#f8f7f5] dark:bg-[#231b0f] border border-border rounded-lg p-4">
+              <h4 className="font-semibold text-foreground mb-2">IRS Requirements</h4>
+              <ul className="text-sm text-foreground space-y-1">
                 <li>• 1099-NEC forms required for contractors earning $600+ per year</li>
                 <li>• Forms must be sent to contractors by January 31st</li>
                 <li>• Filed with IRS by February 28th (March 31st if filing electronically)</li>
@@ -5574,24 +5574,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         </Card>
 
         {/* Driver Tax Summary Table */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900 text-xl">Driver Tax Summary</CardTitle>
-            <p className="text-sm text-amber-600">Comprehensive tax information for all drivers</p>
+            <CardTitle className="text-foreground text-xl">Driver Tax Summary</CardTitle>
+            <p className="text-sm text-primary">Comprehensive tax information for all drivers</p>
           </CardHeader>
           <CardContent>
             {taxDataLoading ? (
               <div className="space-y-4">
-                <div className="h-10 bg-amber-200 animate-pulse rounded"></div>
+                <div className="h-10 bg-accent animate-pulse rounded"></div>
                 <div className="space-y-2">
                   {[...Array(5)].map((_, i) => (
-                    <div key={i} className="h-8 bg-amber-100 animate-pulse rounded"></div>
+                    <div key={i} className="h-8 bg-accent animate-pulse rounded"></div>
                   ))}
                 </div>
               </div>
             ) : taxReportData.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-amber-600">Tax reports will be generated when drivers earn income</p>
+                <p className="text-primary">Tax reports will be generated when drivers earn income</p>
                 <Button 
                   onClick={refreshTaxData} 
                   className="mt-4"
@@ -5605,33 +5605,33 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-amber-200">
-                      <th className="text-left p-3 text-amber-900 font-medium">Driver</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">ID</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">Gross Earnings</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">Platform Fees</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">Net Taxable</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">1099 Required</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">Status</th>
-                      <th className="text-left p-3 text-amber-900 font-medium">Payment Method</th>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-foreground font-medium">Driver</th>
+                      <th className="text-left p-3 text-foreground font-medium">ID</th>
+                      <th className="text-left p-3 text-foreground font-medium">Gross Earnings</th>
+                      <th className="text-left p-3 text-foreground font-medium">Platform Fees</th>
+                      <th className="text-left p-3 text-foreground font-medium">Net Taxable</th>
+                      <th className="text-left p-3 text-foreground font-medium">1099 Required</th>
+                      <th className="text-left p-3 text-foreground font-medium">Status</th>
+                      <th className="text-left p-3 text-foreground font-medium">Payment Method</th>
                     </tr>
                   </thead>
                   <tbody>
                     {taxReportData.slice(0, 10).map((driver: any, index: number) => (
-                      <tr key={driver.id || index} className="border-b border-amber-100 hover:bg-amber-50/30">
-                        <td className="p-3 text-amber-900 font-medium">
+                      <tr key={driver.id || index} className="border-b border-border hover:bg-[#f8f7f5] dark:bg-[#231b0f]/30">
+                        <td className="p-3 text-foreground font-medium">
                           {driver.driverName || driver.driver_name || `Driver ${index + 1}`}
                         </td>
-                        <td className="p-3 text-amber-600 font-mono text-xs">
+                        <td className="p-3 text-primary font-mono text-xs">
                           {driver.driverId || driver.driver_id || `DRV${(index + 1).toString().padStart(3, '0')}`}
                         </td>
-                        <td className="p-3 text-amber-900">
+                        <td className="p-3 text-foreground">
                           ${(driver.grossEarnings || driver.gross_earnings || 0).toLocaleString()}
                         </td>
-                        <td className="p-3 text-amber-600">
+                        <td className="p-3 text-primary">
                           ${(driver.platformFees || driver.platform_fees || 0).toLocaleString()}
                         </td>
-                        <td className="p-3 text-amber-900 font-medium">
+                        <td className="p-3 text-foreground font-medium">
                           ${(driver.netTaxableIncome || driver.net_taxable_income || 0).toLocaleString()}
                         </td>
                         <td className="p-3">
@@ -5649,7 +5649,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                             {driver.status || (driver.form1099Generated ? 'Filed' : 'Pending')}
                           </Badge>
                         </td>
-                        <td className="p-3 text-amber-600 text-xs">
+                        <td className="p-3 text-primary text-xs">
                           {driver.paymentMethod || driver.payment_method || 'Bank Transfer'}
                         </td>
                       </tr>
@@ -5657,7 +5657,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   </tbody>
                 </table>
                 <div className="mt-4 text-center">
-                  <p className="text-sm text-amber-600">
+                  <p className="text-sm text-primary">
                     Showing {Math.min(10, taxReportData.length)} of {taxReportData.length} drivers
                     • {taxReportData.filter((d: any) => (d.netTaxableIncome || d.net_taxable_income || 0) >= 600).length} require 1099-NEC forms
                   </p>
@@ -5672,16 +5672,16 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {activeTab === 'reports-exports' && (
           <div className="space-y-6">
             {/* Export Controls */}
-            <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+            <Card className="bg-white/90 backdrop-blur-sm border-border">
               <CardHeader>
-                <CardTitle className="text-amber-900 text-xl">Tax Reports & 1099 Forms</CardTitle>
+                <CardTitle className="text-foreground text-xl">Tax Reports & 1099 Forms</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="text-sm font-medium text-amber-900">Tax Year</label>
+                    <label className="text-sm font-medium text-foreground">Tax Year</label>
                     <select 
-                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      className="w-full mt-1 p-2 border border-border rounded-md"
                       value={taxYear}
                       onChange={(e) => setTaxYear(e.target.value)}
                     >
@@ -5691,9 +5691,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-amber-900">Quarter (Optional)</label>
+                    <label className="text-sm font-medium text-foreground">Quarter (Optional)</label>
                     <select 
-                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      className="w-full mt-1 p-2 border border-border rounded-md"
                       value={quarter}
                       onChange={(e) => setQuarter(e.target.value)}
                     >
@@ -5705,9 +5705,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </select>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-amber-900">Export Format</label>
+                    <label className="text-sm font-medium text-foreground">Export Format</label>
                     <select 
-                      className="w-full mt-1 p-2 border border-amber-200 rounded-md"
+                      className="w-full mt-1 p-2 border border-border rounded-md"
                       value={format}
                       onChange={(e) => setFormat(e.target.value)}
                     >
@@ -5722,7 +5722,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   <Button 
                     onClick={handleGenerateTaxReport}
                     disabled={generateTaxReportMutation.isPending}
-                    className="bg-amber-600 hover:bg-amber-700 text-white"
+                    className="bg-primary hover:bg-primary/90 text-white"
                   >
                     {generateTaxReportMutation.isPending ? 'Generating...' : 'Generate Tax Report'}
                   </Button>
@@ -5736,7 +5736,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   <Button 
                     onClick={refreshTaxData}
                     variant="outline"
-                    className="border-amber-200 hover:bg-amber-50"
+                    className="border-border hover:bg-[#f8f7f5] dark:bg-[#231b0f]"
                   >
                     Refresh Data
                   </Button>
@@ -5808,7 +5808,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-amber-600" />
+              <Shield className="h-5 w-5 text-primary" />
               Company Return Policy Management
             </CardTitle>
             <CardDescription>
@@ -5821,10 +5821,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 <h3 className="text-lg font-semibold">Select a Company</h3>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {(companiesData as any[]).map((company: any) => (
-                    <Card key={company.id} className="cursor-pointer hover:bg-amber-50 transition-colors" onClick={() => handleEditPolicy(company)}>
+                    <Card key={company.id} className="cursor-pointer hover:bg-[#f8f7f5] dark:bg-[#231b0f] transition-colors" onClick={() => handleEditPolicy(company)}>
                       <CardContent className="p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <Building2 className="h-4 w-4 text-amber-600" />
+                          <Building2 className="h-4 w-4 text-primary" />
                           <h4 className="font-semibold">{company.name}</h4>
                         </div>
                         <p className="text-sm text-gray-600">{company.stLouisLocations?.length || 0} locations</p>
@@ -5990,25 +5990,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-amber-200">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-amber-900 hover:text-amber-700 transition-colors cursor-pointer">
+              <h1 className="text-2xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
                 Return It
               </h1>
             </Link>
-            <span className="text-amber-600">|</span>
+            <span className="text-primary">|</span>
             <h2 
-              className="text-xl font-semibold text-amber-800 hover:text-amber-600 transition-colors cursor-pointer" 
+              className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer" 
               onClick={() => changeSection('overview')}
               data-testid="button-admin-home"
             >
               Admin Dashboard
             </h2>
-            <Badge className="bg-amber-100 text-amber-800 border-amber-200">Master Admin</Badge>
+            <Badge className="bg-accent text-foreground border-border">Master Admin</Badge>
           </div>
           <div className="flex items-center gap-4">
             <NotificationBell />
@@ -6023,7 +6023,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               Sign Out
             </Button>
             <Link href="/">
-              <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700">
+              <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
                 Back to Site
               </Button>
             </Link>
@@ -6034,12 +6034,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Main Content */}
       <div className="relative z-10">
         {/* Section Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-amber-200 p-4">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-border p-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between">
               <div>
                 <Link href="/admin-dashboard">
-                  <h1 className="text-2xl font-bold text-amber-900 capitalize cursor-pointer hover:text-amber-700 transition-colors">
+                  <h1 className="text-2xl font-bold text-foreground capitalize cursor-pointer hover:text-primary transition-colors">
                     {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
                   </h1>
                 </Link>
@@ -6052,14 +6052,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 {/* Admin Login Button - Shows when authentication needed */}
                 <button
                   onClick={handleAdminLogin}
-                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
                   data-testid="button-admin-login"
                 >
                 🔑 Admin Login
               </button>
             </div>
           </div>
-          <p className="text-amber-700 text-sm mt-1">
+          <p className="text-muted-foreground text-sm mt-1">
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
               {currentSection === 'orders' && 'Manage live orders and delivery tracking'}
               {currentSection === 'drivers' && 'Monitor driver performance and status'}
@@ -6113,7 +6113,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {!showUnifiedAI && (
           <Button
             onClick={() => setShowUnifiedAI(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-amber-500 hover:from-blue-600 hover:via-purple-600 hover:to-amber-600 text-white shadow-xl z-40 transition-all duration-300 hover:scale-110"
+            className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-transparent0 hover:from-blue-600 hover:via-purple-600 hover:to-primary text-white shadow-xl z-40 transition-all duration-300 hover:scale-110"
             data-testid="button-unified-ai-toggle"
           >
             <Bot className="w-6 h-6" />
@@ -6130,110 +6130,110 @@ export function BusinessIntelligenceContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Business Intelligence</h2>
-          <p className="text-amber-600">Executive reporting & self-serve analytics across merchants, markets, and couriers.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Business Intelligence</h2>
+          <p className="text-primary">Executive reporting & self-serve analytics across merchants, markets, and couriers.</p>
         </div>
 
         {/* Overview Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Order Volume</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Order Volume</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">1,247</div>
-              <p className="text-xs text-amber-500">+12.5% from last month</p>
+              <div className="text-2xl font-bold text-foreground">1,247</div>
+              <p className="text-xs text-primary">+12.5% from last month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Revenue</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Revenue</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">$24,891</div>
-              <p className="text-xs text-amber-500">+8.2% from last month</p>
+              <div className="text-2xl font-bold text-foreground">$24,891</div>
+              <p className="text-xs text-primary">+8.2% from last month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">SLA Compliance</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">SLA Compliance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">94.8%</div>
-              <p className="text-xs text-amber-500">+2.1% from last month</p>
+              <div className="text-2xl font-bold text-foreground">94.8%</div>
+              <p className="text-xs text-primary">+2.1% from last month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">NPS Score</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">NPS Score</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">8.7</div>
-              <p className="text-xs text-amber-500">+0.3 from last month</p>
+              <div className="text-2xl font-bold text-foreground">8.7</div>
+              <p className="text-xs text-primary">+0.3 from last month</p>
             </CardContent>
           </Card>
         </div>
 
         {/* BI Tabs */}
-        <div className="bg-white/90 backdrop-blur-sm border border-amber-200 rounded-lg">
-          <div className="border-b border-amber-200">
+        <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg">
+          <div className="border-b border-border">
             <div className="flex space-x-8 px-6 py-4">
-              <Button variant="ghost" className="text-amber-700 border-b-2 border-amber-600">Overview</Button>
-              <Button variant="ghost" className="text-amber-600">Operations</Button>
-              <Button variant="ghost" className="text-amber-600">Finance</Button>
-              <Button variant="ghost" className="text-amber-600">Growth</Button>
-              <Button variant="ghost" className="text-amber-600">Risk</Button>
+              <Button variant="ghost" className="text-muted-foreground border-b-2 border-border">Overview</Button>
+              <Button variant="ghost" className="text-primary">Operations</Button>
+              <Button variant="ghost" className="text-primary">Finance</Button>
+              <Button variant="ghost" className="text-primary">Growth</Button>
+              <Button variant="ghost" className="text-primary">Risk</Button>
             </div>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-amber-50 border-amber-200">
+              <Card className="bg-[#f8f7f5] dark:bg-[#231b0f] border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Unit Economics</CardTitle>
+                  <CardTitle className="text-foreground">Unit Economics</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Average Order Value</span>
-                      <span className="font-semibold text-amber-900">$19.96</span>
+                      <span className="text-muted-foreground">Average Order Value</span>
+                      <span className="font-semibold text-foreground">$19.96</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Cost Per Order</span>
-                      <span className="font-semibold text-amber-900">$8.45</span>
+                      <span className="text-muted-foreground">Cost Per Order</span>
+                      <span className="font-semibold text-foreground">$8.45</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Cost Per Mile</span>
-                      <span className="font-semibold text-amber-900">$1.23</span>
+                      <span className="text-muted-foreground">Cost Per Mile</span>
+                      <span className="font-semibold text-foreground">$1.23</span>
                     </div>
-                    <div className="flex justify-between border-t border-amber-300 pt-2">
-                      <span className="text-amber-700 font-medium">Gross Margin</span>
-                      <span className="font-bold text-amber-900">57.7%</span>
+                    <div className="flex justify-between border-t border-border pt-2">
+                      <span className="text-muted-foreground font-medium">Gross Margin</span>
+                      <span className="font-bold text-foreground">57.7%</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
               
-              <Card className="bg-amber-50 border-amber-200">
+              <Card className="bg-[#f8f7f5] dark:bg-[#231b0f] border-border">
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Performance Metrics</CardTitle>
+                  <CardTitle className="text-foreground">Performance Metrics</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-amber-700">On-time Pickup</span>
-                      <span className="font-semibold text-amber-900">92.3%</span>
+                      <span className="text-muted-foreground">On-time Pickup</span>
+                      <span className="font-semibold text-foreground">92.3%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-amber-700">On-time Delivery</span>
-                      <span className="font-semibold text-amber-900">89.1%</span>
+                      <span className="text-muted-foreground">On-time Delivery</span>
+                      <span className="font-semibold text-foreground">89.1%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Exception Rate</span>
-                      <span className="font-semibold text-amber-900">3.2%</span>
+                      <span className="text-muted-foreground">Exception Rate</span>
+                      <span className="font-semibold text-foreground">3.2%</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-amber-700">Route Utilization</span>
-                      <span className="font-semibold text-amber-900">78.5%</span>
+                      <span className="text-muted-foreground">Route Utilization</span>
+                      <span className="font-semibold text-foreground">78.5%</span>
                     </div>
                   </div>
                 </CardContent>
@@ -6250,39 +6250,39 @@ function FinancialOperationsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Financial Operations</h2>
-          <p className="text-amber-600">One-stop hub for finance workflows bridging Payments, Payouts, Invoices, and Collections.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Financial Operations</h2>
+          <p className="text-primary">One-stop hub for finance workflows bridging Payments, Payouts, Invoices, and Collections.</p>
         </div>
 
         {/* Cash Position */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Available Balance</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Available Balance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">$127,450</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Pending Settlements</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Pending Settlements</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">$34,290</div>
+              <div className="text-2xl font-bold text-foreground">$34,290</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Reserve Hold</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Reserve Hold</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">$12,750</div>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Next 7 Days Payouts</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Next 7 Days Payouts</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">$45,890</div>
@@ -6292,44 +6292,44 @@ function FinancialOperationsContent() {
 
         {/* Financial Sections */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Accounts Receivable</CardTitle>
+              <CardTitle className="text-foreground">Accounts Receivable</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Current (0-30 days)</span>
+                  <span className="text-muted-foreground">Current (0-30 days)</span>
                   <span className="font-semibold text-green-600">$8,450</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Past Due (31-60 days)</span>
+                  <span className="text-muted-foreground">Past Due (31-60 days)</span>
                   <span className="font-semibold text-orange-600">$2,130</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Overdue (60+ days)</span>
+                  <span className="text-muted-foreground">Overdue (60+ days)</span>
                   <span className="font-semibold text-red-600">$890</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Accounts Payable</CardTitle>
+              <CardTitle className="text-foreground">Accounts Payable</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Upcoming Payouts</span>
-                  <span className="font-semibold text-amber-900">$45,890</span>
+                  <span className="text-muted-foreground">Upcoming Payouts</span>
+                  <span className="font-semibold text-foreground">$45,890</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Negative Balance Alerts</span>
+                  <span className="text-muted-foreground">Negative Balance Alerts</span>
                   <span className="font-semibold text-red-600">3</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Adjustment Queue</span>
+                  <span className="text-muted-foreground">Adjustment Queue</span>
                   <span className="font-semibold text-blue-600">7</span>
                 </div>
               </div>
@@ -6345,12 +6345,12 @@ function TransactionManagementContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Transaction Management</h2>
-          <p className="text-amber-600">Manage customer charges, refunds, and risk assessment.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Transaction Management</h2>
+          <p className="text-primary">Manage customer charges, refunds, and risk assessment.</p>
         </div>
 
         {/* Transaction Filters */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-6">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <Select>
@@ -6393,9 +6393,9 @@ function TransactionManagementContent() {
         </Card>
 
         {/* Transaction Table */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
-            <CardTitle className="text-amber-900">Recent Transactions</CardTitle>
+            <CardTitle className="text-foreground">Recent Transactions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -6405,14 +6405,14 @@ function TransactionManagementContent() {
                 { id: 'txn_1234567892', amount: '$31.25', status: 'refunded', method: 'card', risk: 'medium', date: '2024-03-15 10:20:00' },
                 { id: 'txn_1234567893', amount: '$15.75', status: 'failed', method: 'google_pay', risk: 'high', date: '2024-03-15 10:15:00' }
               ].map((txn) => (
-                <div key={txn.id} className="flex items-center justify-between p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div key={txn.id} className="flex items-center justify-between p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                   <div className="flex-1">
-                    <div className="font-medium text-amber-900">{txn.id}</div>
-                    <div className="text-sm text-amber-600">{txn.date}</div>
+                    <div className="font-medium text-foreground">{txn.id}</div>
+                    <div className="text-sm text-primary">{txn.date}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold text-amber-900">{txn.amount}</div>
-                    <div className="text-sm text-amber-600">{txn.method}</div>
+                    <div className="font-semibold text-foreground">{txn.amount}</div>
+                    <div className="text-sm text-primary">{txn.method}</div>
                   </div>
                   <div className="ml-4">
                     <Badge className={`${txn.status === 'captured' ? 'bg-green-100 text-green-800' : 
@@ -6443,55 +6443,55 @@ function EnhancedDriverPayoutsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Enhanced Driver Payouts</h2>
-          <p className="text-amber-600">Advanced payout management with instant pay capabilities and earnings optimization.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Enhanced Driver Payouts</h2>
+          <p className="text-primary">Advanced payout management with instant pay capabilities and earnings optimization.</p>
         </div>
 
         {/* Payout Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Total Pending Payouts</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Total Pending Payouts</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">$45,890</div>
-              <p className="text-xs text-amber-500">127 drivers</p>
+              <div className="text-2xl font-bold text-foreground">$45,890</div>
+              <p className="text-xs text-primary">127 drivers</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Instant Pay Requests</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Instant Pay Requests</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">$8,450</div>
-              <p className="text-xs text-amber-500">23 requests</p>
+              <p className="text-xs text-primary">23 requests</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Weekly Payouts</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Weekly Payouts</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">$37,440</div>
-              <p className="text-xs text-amber-500">104 drivers</p>
+              <p className="text-xs text-primary">104 drivers</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Avg. Processing Time</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Avg. Processing Time</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">2.3</div>
-              <p className="text-xs text-amber-500">minutes</p>
+              <div className="text-2xl font-bold text-foreground">2.3</div>
+              <p className="text-xs text-primary">minutes</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Payout Management */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Instant Pay Queue</CardTitle>
+              <CardTitle className="text-foreground">Instant Pay Queue</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -6500,13 +6500,13 @@ function EnhancedDriverPayoutsContent() {
                   { driver: 'Sarah Johnson', amount: '$189.25', fee: '$1.50', status: 'processing' },
                   { driver: 'Mike Davis', amount: '$320.75', fee: '$1.50', status: 'completed' }
                 ].map((payout, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                  <div key={idx} className="flex items-center justify-between p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
                     <div>
-                      <div className="font-medium text-amber-900">{payout.driver}</div>
-                      <div className="text-sm text-amber-600">Fee: {payout.fee}</div>
+                      <div className="font-medium text-foreground">{payout.driver}</div>
+                      <div className="text-sm text-primary">Fee: {payout.fee}</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold text-amber-900">{payout.amount}</div>
+                      <div className="font-semibold text-foreground">{payout.amount}</div>
                       <Badge className={payout.status === 'completed' ? 'bg-green-100 text-green-800' : 
                         payout.status === 'processing' ? 'bg-blue-100 text-blue-800' :
                         'bg-orange-100 text-orange-800'}>
@@ -6519,31 +6519,31 @@ function EnhancedDriverPayoutsContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Driver Earnings Summary</CardTitle>
+              <CardTitle className="text-foreground">Driver Earnings Summary</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Base Pay</span>
-                  <span className="font-semibold text-amber-900">$28,450</span>
+                  <span className="text-muted-foreground">Base Pay</span>
+                  <span className="font-semibold text-foreground">$28,450</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Distance Pay</span>
-                  <span className="font-semibold text-amber-900">$12,340</span>
+                  <span className="text-muted-foreground">Distance Pay</span>
+                  <span className="font-semibold text-foreground">$12,340</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Tips</span>
-                  <span className="font-semibold text-amber-900">$3,890</span>
+                  <span className="text-muted-foreground">Tips</span>
+                  <span className="font-semibold text-foreground">$3,890</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Bonuses</span>
-                  <span className="font-semibold text-amber-900">$1,210</span>
+                  <span className="text-muted-foreground">Bonuses</span>
+                  <span className="font-semibold text-foreground">$1,210</span>
                 </div>
-                <div className="flex justify-between border-t border-amber-300 pt-2">
-                  <span className="text-amber-700 font-medium">Total Earnings</span>
-                  <span className="font-bold text-amber-900">$45,890</span>
+                <div className="flex justify-between border-t border-border pt-2">
+                  <span className="text-muted-foreground font-medium">Total Earnings</span>
+                  <span className="font-bold text-foreground">$45,890</span>
                 </div>
               </div>
             </CardContent>
@@ -6558,81 +6558,81 @@ function EnhancedTaxReportsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Enhanced Tax Reports</h2>
-          <p className="text-amber-600">Comprehensive tax compliance including 1099-NEC generation, VAT/GST support, and automated filing.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Enhanced Tax Reports</h2>
+          <p className="text-primary">Comprehensive tax compliance including 1099-NEC generation, VAT/GST support, and automated filing.</p>
         </div>
 
         {/* Tax Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">1099-NEC Eligible</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">1099-NEC Eligible</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">87</div>
-              <p className="text-xs text-amber-500">drivers &gt;$600</p>
+              <div className="text-2xl font-bold text-foreground">87</div>
+              <p className="text-xs text-primary">drivers &gt;$600</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">W-9 Forms</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">W-9 Forms</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">92%</div>
-              <p className="text-xs text-amber-500">collected</p>
+              <p className="text-xs text-primary">collected</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Generated Forms</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Generated Forms</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">45</div>
-              <p className="text-xs text-amber-500">ready to file</p>
+              <p className="text-xs text-primary">ready to file</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Total Earnings</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Total Earnings</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">$1.2M</div>
-              <p className="text-xs text-amber-500">subject to 1099</p>
+              <div className="text-2xl font-bold text-foreground">$1.2M</div>
+              <p className="text-xs text-primary">subject to 1099</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Tax Management Actions */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">1099-NEC Status</CardTitle>
+              <CardTitle className="text-foreground">1099-NEC Status</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Forms Generated</span>
+                  <span className="text-muted-foreground">Forms Generated</span>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-green-600">45</span>
-                    <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                    <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
                       Download All
                     </Button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">Missing W-9 Forms</span>
+                  <span className="text-muted-foreground">Missing W-9 Forms</span>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-red-600">7</span>
-                    <Button size="sm" variant="outline" className="border-amber-300 text-amber-700">
+                    <Button size="sm" variant="outline" className="border-border text-muted-foreground">
                       Send Reminders
                     </Button>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-amber-700">TIN Verification</span>
+                  <span className="text-muted-foreground">TIN Verification</span>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-blue-600">42</span>
-                    <Button size="sm" variant="outline" className="border-amber-300 text-amber-700">
+                    <Button size="sm" variant="outline" className="border-border text-muted-foreground">
                       Verify All
                     </Button>
                   </div>
@@ -6641,26 +6641,26 @@ function EnhancedTaxReportsContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Tax Compliance</CardTitle>
+              <CardTitle className="text-foreground">Tax Compliance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Backup Withholding</span>
-                  <span className="font-semibold text-amber-900">$2,450</span>
+                  <span className="text-muted-foreground">Backup Withholding</span>
+                  <span className="font-semibold text-foreground">$2,450</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Electronic Delivery</span>
+                  <span className="text-muted-foreground">Electronic Delivery</span>
                   <span className="font-semibold text-green-600">78%</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Corrections Filed</span>
-                  <span className="font-semibold text-amber-900">3</span>
+                  <span className="text-muted-foreground">Corrections Filed</span>
+                  <span className="font-semibold text-foreground">3</span>
                 </div>
                 <div className="mt-4">
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                     Generate Year-End Reports
                   </Button>
                 </div>
@@ -6677,37 +6677,37 @@ function PaymentTrackingContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Payment Tracking</h2>
-          <p className="text-amber-600">End-to-end visibility from quote to settlement with comprehensive reconciliation.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Payment Tracking</h2>
+          <p className="text-primary">End-to-end visibility from quote to settlement with comprehensive reconciliation.</p>
         </div>
 
         {/* Payment Timeline */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200 mb-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-border mb-6">
           <CardHeader>
-            <CardTitle className="text-amber-900">Payment Timeline Example</CardTitle>
+            <CardTitle className="text-foreground">Payment Timeline Example</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between relative">
-              <div className="absolute top-4 left-8 right-8 h-0.5 bg-amber-200"></div>
+              <div className="absolute top-4 left-8 right-8 h-0.5 bg-accent"></div>
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">1</div>
-                <span className="text-xs text-amber-700 mt-2">Quote</span>
+                <span className="text-xs text-muted-foreground mt-2">Quote</span>
               </div>
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">2</div>
-                <span className="text-xs text-amber-700 mt-2">Auth</span>
+                <span className="text-xs text-muted-foreground mt-2">Auth</span>
               </div>
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-bold">3</div>
-                <span className="text-xs text-amber-700 mt-2">Capture</span>
+                <span className="text-xs text-muted-foreground mt-2">Capture</span>
               </div>
               <div className="relative z-10 flex flex-col items-center">
                 <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-bold">4</div>
-                <span className="text-xs text-amber-700 mt-2">Settlement</span>
+                <span className="text-xs text-muted-foreground mt-2">Settlement</span>
               </div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
-                <span className="text-xs text-amber-700 mt-2">Payout</span>
+                <div className="w-8 h-8 bg-[#f8f7f5] dark:bg-[#231b0f]0 rounded-full flex items-center justify-center text-white text-sm font-bold">5</div>
+                <span className="text-xs text-muted-foreground mt-2">Payout</span>
               </div>
             </div>
           </CardContent>
@@ -6715,52 +6715,52 @@ function PaymentTrackingContent() {
 
         {/* Reconciliation */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Settlement Reconciliation</CardTitle>
+              <CardTitle className="text-foreground">Settlement Reconciliation</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Settled Amount</span>
+                  <span className="text-muted-foreground">Settled Amount</span>
                   <span className="font-semibold text-green-600">$24,567.89</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Internal Ledger</span>
-                  <span className="font-semibold text-amber-900">$24,567.89</span>
+                  <span className="text-muted-foreground">Internal Ledger</span>
+                  <span className="font-semibold text-foreground">$24,567.89</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Variance</span>
+                  <span className="text-muted-foreground">Variance</span>
                   <span className="font-semibold text-green-600">$0.00</span>
                 </div>
-                <div className="flex justify-between border-t border-amber-300 pt-2">
-                  <span className="text-amber-700">Status</span>
+                <div className="flex justify-between border-t border-border pt-2">
+                  <span className="text-muted-foreground">Status</span>
                   <Badge className="bg-green-100 text-green-800">Matched</Badge>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Aging Report</CardTitle>
+              <CardTitle className="text-foreground">Aging Report</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Unsettled &gt; T+2</span>
+                  <span className="text-muted-foreground">Unsettled &gt; T+2</span>
                   <span className="font-semibold text-orange-600">$1,245</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Pending Refunds</span>
+                  <span className="text-muted-foreground">Pending Refunds</span>
                   <span className="font-semibold text-blue-600">$890</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-amber-700">Active Chargebacks</span>
+                  <span className="text-muted-foreground">Active Chargebacks</span>
                   <span className="font-semibold text-red-600">$325</span>
                 </div>
                 <div className="mt-4">
-                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                  <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                     Generate Reconciliation Report
                   </Button>
                 </div>
@@ -6777,55 +6777,55 @@ function SupportCenterContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Customer Support Center</h2>
-          <p className="text-amber-600">Real-time assistance hub for customers, merchants, and couriers with live chat capabilities.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Customer Support Center</h2>
+          <p className="text-primary">Real-time assistance hub for customers, merchants, and couriers with live chat capabilities.</p>
         </div>
 
         {/* Support Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Active Chats</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Active Chats</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">7</div>
-              <p className="text-xs text-amber-500">3 agents online</p>
+              <p className="text-xs text-primary">3 agents online</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Avg Response Time</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Avg Response Time</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">2m 15s</div>
-              <p className="text-xs text-amber-500">-30s from yesterday</p>
+              <p className="text-xs text-primary">-30s from yesterday</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Resolution Rate</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Resolution Rate</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">89.2%</div>
-              <p className="text-xs text-amber-500">first contact</p>
+              <div className="text-2xl font-bold text-foreground">89.2%</div>
+              <p className="text-xs text-primary">first contact</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">CSAT Score</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">CSAT Score</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">4.6/5</div>
-              <p className="text-xs text-amber-500">based on 234 ratings</p>
+              <div className="text-2xl font-bold text-foreground">4.6/5</div>
+              <p className="text-xs text-primary">based on 234 ratings</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Live Chat Interface */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="lg:col-span-2 bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Active Conversations</CardTitle>
+              <CardTitle className="text-foreground">Active Conversations</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -6834,22 +6834,22 @@ function SupportCenterContent() {
                   { customer: 'Lisa Johnson', issue: 'Refund processing question', priority: 'high', time: '12m ago', agent: 'Mike' },
                   { customer: 'David Lee', issue: 'Driver contact request', priority: 'low', time: '18m ago', agent: 'Emma' }
                 ].map((chat, idx) => (
-                  <div key={idx} className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div key={idx} className="p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium text-amber-900">{chat.customer}</span>
+                      <span className="font-medium text-foreground">{chat.customer}</span>
                       <div className="flex items-center gap-2">
                         <Badge className={chat.priority === 'high' ? 'bg-red-100 text-red-800' : 
                           chat.priority === 'medium' ? 'bg-orange-100 text-orange-800' :
                           'bg-green-100 text-green-800'}>
                           {chat.priority}
                         </Badge>
-                        <span className="text-xs text-amber-600">{chat.time}</span>
+                        <span className="text-xs text-primary">{chat.time}</span>
                       </div>
                     </div>
-                    <div className="text-sm text-amber-700 mb-2">{chat.issue}</div>
+                    <div className="text-sm text-muted-foreground mb-2">{chat.issue}</div>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-amber-600">Agent: {chat.agent}</span>
-                      <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">
+                      <span className="text-xs text-primary">Agent: {chat.agent}</span>
+                      <Button size="sm" className="bg-primary hover:bg-primary/90 text-white">
                         Join Chat
                       </Button>
                     </div>
@@ -6859,25 +6859,25 @@ function SupportCenterContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Quick Actions</CardTitle>
+              <CardTitle className="text-foreground">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white">
                   <MessageCircle className="h-4 w-4 mr-2" />
                   New Chat Session
                 </Button>
-                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                <Button variant="outline" className="w-full border-border text-muted-foreground">
                   <FileText className="h-4 w-4 mr-2" />
                   Canned Responses
                 </Button>
-                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                <Button variant="outline" className="w-full border-border text-muted-foreground">
                   <Users className="h-4 w-4 mr-2" />
                   Transfer Queue
                 </Button>
-                <Button variant="outline" className="w-full border-amber-300 text-amber-700">
+                <Button variant="outline" className="w-full border-border text-muted-foreground">
                   <AlertTriangle className="h-4 w-4 mr-2" />
                   Escalate Issue
                 </Button>
@@ -6894,55 +6894,55 @@ function SupportAnalyticsContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Support Analytics</h2>
-          <p className="text-amber-600">Comprehensive support performance metrics and quality analysis.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Support Analytics</h2>
+          <p className="text-primary">Comprehensive support performance metrics and quality analysis.</p>
         </div>
 
         {/* Performance KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">First Response Time</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">First Response Time</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">2m 15s</div>
-              <p className="text-xs text-amber-500">Target: &lt;3m</p>
+              <p className="text-xs text-primary">Target: &lt;3m</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Average Handle Time</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Average Handle Time</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">8m 42s</div>
-              <p className="text-xs text-amber-500">-1m 23s vs last week</p>
+              <div className="text-2xl font-bold text-foreground">8m 42s</div>
+              <p className="text-xs text-primary">-1m 23s vs last week</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Resolution Rate</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Resolution Rate</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">94.2%</div>
-              <p className="text-xs text-amber-500">+2.1% from last month</p>
+              <p className="text-xs text-primary">+2.1% from last month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Agent Occupancy</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Agent Occupancy</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">78.5%</div>
-              <p className="text-xs text-amber-500">Optimal range: 70-85%</p>
+              <div className="text-2xl font-bold text-foreground">78.5%</div>
+              <p className="text-xs text-primary">Optimal range: 70-85%</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Analytics Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Issue Categories</CardTitle>
+              <CardTitle className="text-foreground">Issue Categories</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -6955,12 +6955,12 @@ function SupportAnalyticsContent() {
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
-                      <span className="text-amber-700">{item.category}</span>
+                      <div className="w-4 h-4 bg-[#f8f7f5] dark:bg-[#231b0f]0 rounded-full"></div>
+                      <span className="text-muted-foreground">{item.category}</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-semibold text-amber-900">{item.count}</span>
-                      <span className="text-xs text-amber-600 ml-2">({item.percentage}%)</span>
+                      <span className="font-semibold text-foreground">{item.count}</span>
+                      <span className="text-xs text-primary ml-2">({item.percentage}%)</span>
                     </div>
                   </div>
                 ))}
@@ -6968,9 +6968,9 @@ function SupportAnalyticsContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Agent Performance</CardTitle>
+              <CardTitle className="text-foreground">Agent Performance</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -6979,20 +6979,20 @@ function SupportAnalyticsContent() {
                   { agent: 'Mike Davis', resolved: 19, csat: 4.6, aht: '8m 42s' },
                   { agent: 'Emma Wilson', resolved: 21, csat: 4.9, aht: '6m 58s' }
                 ].map((agent, idx) => (
-                  <div key={idx} className="p-3 bg-amber-50 rounded-lg">
-                    <div className="font-medium text-amber-900 mb-2">{agent.agent}</div>
+                  <div key={idx} className="p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
+                    <div className="font-medium text-foreground mb-2">{agent.agent}</div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-amber-600">Resolved: </span>
-                        <span className="font-semibold text-amber-900">{agent.resolved}</span>
+                        <span className="text-primary">Resolved: </span>
+                        <span className="font-semibold text-foreground">{agent.resolved}</span>
                       </div>
                       <div>
-                        <span className="text-amber-600">CSAT: </span>
-                        <span className="font-semibold text-amber-900">{agent.csat}</span>
+                        <span className="text-primary">CSAT: </span>
+                        <span className="font-semibold text-foreground">{agent.csat}</span>
                       </div>
                       <div>
-                        <span className="text-amber-600">AHT: </span>
-                        <span className="font-semibold text-amber-900">{agent.aht}</span>
+                        <span className="text-primary">AHT: </span>
+                        <span className="font-semibold text-foreground">{agent.aht}</span>
                       </div>
                     </div>
                   </div>
@@ -7251,52 +7251,52 @@ function DriverApplicationsContent() {
 
 
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Manual Driver Approval System</h2>
-          <p className="text-amber-600">Review and approve driver applications manually. No background check fees required!</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Manual Driver Approval System</h2>
+          <p className="text-primary">Review and approve driver applications manually. No background check fees required!</p>
         </div>
 
         {/* Summary Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Pending Applications</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Pending Applications</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-orange-600">{pendingApplications.length}</div>
-              <p className="text-xs text-amber-500">Awaiting your review</p>
+              <p className="text-xs text-primary">Awaiting your review</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Cost Savings</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Cost Savings</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">$0</div>
-              <p className="text-xs text-amber-500">Background check fees avoided</p>
+              <p className="text-xs text-primary">Background check fees avoided</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Review Mode</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Review Mode</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">Manual</div>
-              <p className="text-xs text-amber-500">No automated services</p>
+              <div className="text-2xl font-bold text-foreground">Manual</div>
+              <p className="text-xs text-primary">No automated services</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Applications List */}
-        <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+        <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle className="text-amber-900">Pending Driver Applications</CardTitle>
+              <CardTitle className="text-foreground">Pending Driver Applications</CardTitle>
               <Button 
                 onClick={fetchPendingApplications}
                 variant="outline"
                 size="sm"
                 disabled={loading}
-                className="border-amber-300 text-amber-700"
+                className="border-border text-muted-foreground"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Refresh
@@ -7306,29 +7306,29 @@ function DriverApplicationsContent() {
           <CardContent>
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
-                <span className="ml-2 text-amber-600">Loading applications...</span>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <span className="ml-2 text-primary">Loading applications...</span>
               </div>
             ) : pendingApplications.length === 0 ? (
               <div className="text-center py-8">
                 <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-amber-900 mb-2">All Caught Up!</h3>
-                <p className="text-amber-600">No pending driver applications to review.</p>
+                <h3 className="text-lg font-medium text-foreground mb-2">All Caught Up!</h3>
+                <p className="text-primary">No pending driver applications to review.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {pendingApplications.map((application) => (
-                  <div key={application.id} className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div key={application.id} className="p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg border border-border">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-medium text-amber-900">
+                          <h3 className="font-medium text-foreground">
                             {application.firstName} {application.lastName}
                           </h3>
                           {getStatusBadge(application.applicationStatus)}
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-700">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
                           <div>
                             <p><strong>Email:</strong> {application.email}</p>
                             <p><strong>Phone:</strong> {application.phone}</p>
@@ -7345,7 +7345,7 @@ function DriverApplicationsContent() {
                           </div>
                         </div>
                         
-                        <div className="mt-3 text-xs text-amber-600">
+                        <div className="mt-3 text-xs text-primary">
                           <p>Applied: {formatDate(application.createdAt)}</p>
                           <p>Background Check Consent: {application.backgroundCheckConsent ? '✅ Yes' : '❌ No'}</p>
                         </div>
@@ -7359,7 +7359,7 @@ function DriverApplicationsContent() {
                           }}
                           size="sm"
                           variant="outline"
-                          className="border-amber-300 text-amber-700"
+                          className="border-border text-muted-foreground"
                           disabled={documentLoading}
                         >
                           <FileText className="h-4 w-4 mr-1" />
@@ -7510,7 +7510,7 @@ function DriverApplicationsContent() {
             <Card className="w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
               <CardHeader>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-amber-900">
+                  <CardTitle className="text-foreground">
                     Document Verification - {selectedApplication.firstName} {selectedApplication.lastName}
                   </CardTitle>
                   <Button
@@ -7529,15 +7529,15 @@ function DriverApplicationsContent() {
               <CardContent className="overflow-y-auto max-h-[calc(90vh-200px)]">
                 <div className="space-y-4">
                   {selectedDriverDocuments.map((document) => (
-                    <div key={document.id} className="border border-amber-200 rounded-lg p-4">
+                    <div key={document.id} className="border border-border rounded-lg p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-medium text-amber-900">{document.documentTitle}</h3>
+                            <h3 className="font-medium text-foreground">{document.documentTitle}</h3>
                             {getDocumentStatusBadge(document.status)}
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-amber-700">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-muted-foreground">
                             <div>
                               <p><strong>Category:</strong> {document.documentCategory}</p>
                               <p><strong>File:</strong> {document.fileName}</p>
@@ -7598,9 +7598,9 @@ function DriverApplicationsContent() {
                   ))}
                 </div>
                 
-                <div className="mt-6 pt-4 border-t border-amber-200">
+                <div className="mt-6 pt-4 border-t border-border">
                   <div className="flex justify-between items-center">
-                    <div className="text-sm text-amber-600">
+                    <div className="text-sm text-primary">
                       {selectedDriverDocuments.filter(d => d.status === 'approved').length} of {selectedDriverDocuments.length} documents approved
                     </div>
                     <div className="flex gap-2">
@@ -7683,76 +7683,76 @@ function CustomerFeedbackContent() {
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">Customer Feedback & VOC System</h2>
-          <p className="text-amber-600">Capture and act on feedback across the customer journey with sentiment analysis.</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Customer Feedback & VOC System</h2>
+          <p className="text-primary">Capture and act on feedback across the customer journey with sentiment analysis.</p>
         </div>
 
         {/* Feedback Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Total Feedback</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Total Feedback</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">1,247</div>
-              <p className="text-xs text-amber-500">this month</p>
+              <div className="text-2xl font-bold text-foreground">1,247</div>
+              <p className="text-xs text-primary">this month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Average Rating</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Average Rating</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">4.6/5</div>
-              <p className="text-xs text-amber-500">+0.2 from last month</p>
+              <p className="text-xs text-primary">+0.2 from last month</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">NPS Score</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">NPS Score</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">72</div>
-              <p className="text-xs text-amber-500">Excellent (&gt;70)</p>
+              <p className="text-xs text-primary">Excellent (&gt;70)</p>
             </CardContent>
           </Card>
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-amber-600">Response Rate</CardTitle>
+              <CardTitle className="text-sm font-medium text-primary">Response Rate</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-amber-900">87.3%</div>
-              <p className="text-xs text-amber-500">feedback participation</p>
+              <div className="text-2xl font-bold text-foreground">87.3%</div>
+              <p className="text-xs text-primary">feedback participation</p>
             </CardContent>
           </Card>
         </div>
 
         {/* Feedback Analysis */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Sentiment Analysis</CardTitle>
+              <CardTitle className="text-foreground">Sentiment Analysis</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-                    <span className="text-amber-700">Positive</span>
+                    <span className="text-muted-foreground">Positive</span>
                   </div>
                   <span className="font-semibold text-green-600">72.5%</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-4 h-4 bg-amber-500 rounded-full"></div>
-                    <span className="text-amber-700">Neutral</span>
+                    <div className="w-4 h-4 bg-[#f8f7f5] dark:bg-[#231b0f]0 rounded-full"></div>
+                    <span className="text-muted-foreground">Neutral</span>
                   </div>
-                  <span className="font-semibold text-amber-600">18.3%</span>
+                  <span className="font-semibold text-primary">18.3%</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-                    <span className="text-amber-700">Negative</span>
+                    <span className="text-muted-foreground">Negative</span>
                   </div>
                   <span className="font-semibold text-red-600">9.2%</span>
                 </div>
@@ -7760,9 +7760,9 @@ function CustomerFeedbackContent() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white/90 backdrop-blur-sm border-amber-200">
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
-              <CardTitle className="text-amber-900">Top Themes</CardTitle>
+              <CardTitle className="text-foreground">Top Themes</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -7773,10 +7773,10 @@ function CustomerFeedbackContent() {
                   { theme: 'Pickup delays', mentions: 23, sentiment: 'negative' },
                   { theme: 'Communication issues', mentions: 18, sentiment: 'negative' }
                 ].map((theme, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg">
+                  <div key={idx} className="flex items-center justify-between p-3 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
                     <div>
-                      <div className="font-medium text-amber-900">{theme.theme}</div>
-                      <div className="text-sm text-amber-600">{theme.mentions} mentions</div>
+                      <div className="font-medium text-foreground">{theme.theme}</div>
+                      <div className="text-sm text-primary">{theme.mentions} mentions</div>
                     </div>
                     <Badge className={theme.sentiment === 'positive' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
                       {theme.sentiment}

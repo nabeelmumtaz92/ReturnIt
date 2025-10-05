@@ -174,22 +174,22 @@ export default function NotificationCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent py-8">
       <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Notification Center</h1>
-            <p className="text-amber-700">Automated customer communications</p>
+            <h1 className="text-3xl font-bold text-foreground">Notification Center</h1>
+            <p className="text-muted-foreground">Automated customer communications</p>
           </div>
           <div className="flex items-center gap-4">
-            <Button className="bg-amber-600 hover:bg-amber-700">
+            <Button className="bg-primary hover:bg-primary/90">
               <Send className="h-4 w-4 mr-2" />
               Send Manual Message
             </Button>
             <Link href="/admin-dashboard">
-              <Button variant="outline" className="border-amber-300 text-amber-700">
+              <Button variant="outline" className="border-border text-muted-foreground">
                 Back to Dashboard
               </Button>
             </Link>
@@ -296,7 +296,7 @@ export default function NotificationCenter() {
             {/* Notification List */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Bell className="h-5 w-5" />
                   Recent Notifications ({filteredNotifications.length})
                 </CardTitle>
@@ -354,7 +354,7 @@ export default function NotificationCenter() {
           <TabsContent value="templates" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Settings className="h-5 w-5" />
                   Message Templates
                 </CardTitle>
@@ -400,7 +400,7 @@ export default function NotificationCenter() {
           <TabsContent value="compose" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Send className="h-5 w-5" />
                   Compose Message
                 </CardTitle>
@@ -440,7 +440,7 @@ export default function NotificationCenter() {
                 </div>
                 
                 <div className="flex items-center gap-4">
-                  <Button className="bg-amber-600 hover:bg-amber-700">
+                  <Button className="bg-primary hover:bg-primary/90">
                     <Send className="h-4 w-4 mr-2" />
                     Send Message
                   </Button>
@@ -456,7 +456,7 @@ export default function NotificationCenter() {
             <div className="grid lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Notification Preferences</CardTitle>
+                  <CardTitle className="text-foreground">Notification Preferences</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -492,7 +492,7 @@ export default function NotificationCenter() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Delivery Settings</CardTitle>
+                  <CardTitle className="text-foreground">Delivery Settings</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>

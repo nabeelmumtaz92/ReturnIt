@@ -1863,13 +1863,13 @@ Current promotional codes, how to apply discounts, and ways to save money on you
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardContent className="p-8 text-center">
-            <h2 className="text-2xl font-bold text-amber-900 mb-2">Article Not Found</h2>
-            <p className="text-amber-700 mb-4">The help article you're looking for doesn't exist.</p>
+            <h2 className="text-2xl font-bold text-foreground mb-2">Article Not Found</h2>
+            <p className="text-muted-foreground mb-4">The help article you're looking for doesn't exist.</p>
             <Link href="/help-center">
-              <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+              <Button className="bg-primary hover:bg-primary/90 text-white">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Help Center
               </Button>
@@ -1886,7 +1886,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-accent">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Navigation */}
@@ -1907,7 +1907,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
                 <Badge variant="outline" className="mb-3">
                   {article.category}
                 </Badge>
-                <h1 className="text-3xl font-bold text-amber-900 mb-3 leading-tight">
+                <h1 className="text-3xl font-bold text-foreground mb-3 leading-tight">
                   {article.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -1935,7 +1935,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
                   variant="outline"
                   size="sm"
                   onClick={() => setBookmarked(!bookmarked)}
-                  className={bookmarked ? 'bg-amber-50 border-amber-300 text-amber-700' : ''}
+                  className={bookmarked ? 'bg-accent border-border text-muted-foreground' : ''}
                   data-testid="button-bookmark-article"
                 >
                   <Bookmark className={`h-4 w-4 ${bookmarked ? 'fill-current' : ''}`} />
@@ -1958,11 +1958,11 @@ Current promotional codes, how to apply discounts, and ways to save money on you
                     .split('\n')
                     .map((line: string) => {
                       if (line.startsWith('# ')) {
-                        return `<h1 class="text-2xl font-bold text-amber-900 mt-8 mb-4">${line.substring(2)}</h1>`;
+                        return `<h1 class="text-2xl font-bold text-foreground mt-8 mb-4">${line.substring(2)}</h1>`;
                       } else if (line.startsWith('## ')) {
-                        return `<h2 class="text-xl font-semibold text-amber-800 mt-6 mb-3">${line.substring(3)}</h2>`;
+                        return `<h2 class="text-xl font-semibold text-foreground mt-6 mb-3">${line.substring(3)}</h2>`;
                       } else if (line.startsWith('### ')) {
-                        return `<h3 class="text-lg font-medium text-amber-700 mt-4 mb-2">${line.substring(4)}</h3>`;
+                        return `<h3 class="text-lg font-medium text-muted-foreground mt-4 mb-2">${line.substring(4)}</h3>`;
                       } else if (line.startsWith('- ')) {
                         return `<li class="text-gray-700 ml-4">${line.substring(2)}</li>`;
                       } else if (line.trim() === '') {
@@ -1982,7 +1982,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
         <Card className="mb-8 bg-white shadow-sm">
           <CardContent className="p-6">
             <div className="text-center">
-              <h3 className="text-lg font-semibold text-amber-900 mb-4">Was this article helpful?</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-4">Was this article helpful?</h3>
               
               {!hasVoted ? (
                 <div className="flex justify-center gap-4">
@@ -2026,7 +2026,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
         {article.relatedArticles && article.relatedArticles.length > 0 && (
           <Card className="mb-8 bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-amber-900">Related Articles</CardTitle>
+              <CardTitle className="text-foreground">Related Articles</CardTitle>
               <CardDescription>Other articles that might help you</CardDescription>
             </CardHeader>
             <CardContent>
@@ -2042,7 +2042,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
                           <Badge variant="secondary" className="mb-2 text-xs">
                             {related.category}
                           </Badge>
-                          <h4 className="font-semibold text-amber-900 mb-2">{related.title}</h4>
+                          <h4 className="font-semibold text-foreground mb-2">{related.title}</h4>
                           <div className="flex items-center gap-2 text-xs text-gray-500">
                             <Clock className="h-3 w-3" />
                             <span>{related.readTime}</span>
@@ -2061,21 +2061,21 @@ Current promotional codes, how to apply discounts, and ways to save money on you
         )}
 
         {/* Contact Support */}
-        <Card className="bg-gradient-to-r from-amber-600 to-orange-600 text-white">
+        <Card className="bg-gradient-to-r from-primary to-primary text-white">
           <CardContent className="p-6">
             <div className="text-center">
               <h3 className="text-xl font-bold mb-2">Still need help?</h3>
-              <p className="text-amber-100 mb-4">Our support team is ready to assist you 24/7</p>
+              <p className="text-primary-foreground mb-4">Our support team is ready to assist you 24/7</p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button className="bg-white text-amber-600 hover:bg-amber-50" data-testid="button-article-live-chat">
+                <Button className="bg-white text-primary hover:bg-accent/50" data-testid="button-article-live-chat">
                   <MessageCircle className="h-4 w-4 mr-2" />
                   Live Chat
                 </Button>
-                <Button className="bg-white text-amber-600 hover:bg-amber-50" data-testid="button-article-call">
+                <Button className="bg-white text-primary hover:bg-accent/50" data-testid="button-article-call">
                   <Phone className="h-4 w-4 mr-2" />
                   Call (636) 254-4821
                 </Button>
-                <Button className="bg-white text-amber-600 hover:bg-amber-50" data-testid="button-article-email">
+                <Button className="bg-white text-primary hover:bg-accent/50" data-testid="button-article-email">
                   <Mail className="h-4 w-4 mr-2" />
                   Email Support
                 </Button>

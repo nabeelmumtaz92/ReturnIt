@@ -179,7 +179,7 @@ export default function DriverIncentives() {
 
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'bronze': return 'text-amber-700 bg-amber-100';
+      case 'bronze': return 'text-muted-foreground bg-accent';
       case 'silver': return 'text-gray-700 bg-gray-100';
       case 'gold': return 'text-yellow-700 bg-yellow-100';
       case 'platinum': return 'text-purple-700 bg-purple-100';
@@ -195,25 +195,25 @@ export default function DriverIncentives() {
   const totalParticipants = new Set(incentives.flatMap(inc => Array(inc.participants).fill(0).map((_, i) => i))).size;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent py-8">
       <AdminNavigation />
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Driver Incentives</h1>
-            <p className="text-amber-700">Performance-based rewards and challenges</p>
+            <h1 className="text-3xl font-bold text-foreground">Driver Incentives</h1>
+            <p className="text-muted-foreground">Performance-based rewards and challenges</p>
           </div>
           <div className="flex items-center gap-4">
             <Button 
-              className="bg-amber-600 hover:bg-amber-700"
+              className="bg-primary hover:bg-primary/90"
               onClick={() => setShowCreateModal(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
               Create Incentive
             </Button>
             <Link href="/admin-dashboard">
-              <Button variant="outline" className="border-amber-300 text-amber-700">
+              <Button variant="outline" className="border-border text-muted-foreground">
                 Back to Dashboard
               </Button>
             </Link>
@@ -285,7 +285,7 @@ export default function DriverIncentives() {
           <TabsContent value="active" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Trophy className="h-5 w-5" />
                   Active Incentive Programs ({activeIncentives.length})
                 </CardTitle>
@@ -362,7 +362,7 @@ export default function DriverIncentives() {
           <TabsContent value="scheduled" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Calendar className="h-5 w-5" />
                   Scheduled Incentives ({scheduledIncentives.length})
                 </CardTitle>
@@ -418,7 +418,7 @@ export default function DriverIncentives() {
           <TabsContent value="drivers" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Users className="h-5 w-5" />
                   Driver Performance & Incentives
                 </CardTitle>
@@ -429,8 +429,8 @@ export default function DriverIncentives() {
                     <div key={driver.id} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-amber-200 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-bold text-amber-800">
+                          <div className="w-10 h-10 bg-accent rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold text-foreground">
                               {driver.name.split(' ').map(n => n[0]).join('')}
                             </span>
                           </div>
@@ -491,7 +491,7 @@ export default function DriverIncentives() {
             <div className="grid lg:grid-cols-2 gap-6">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">Incentive Performance</CardTitle>
+                  <CardTitle className="text-foreground">Incentive Performance</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -515,7 +515,7 @@ export default function DriverIncentives() {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-amber-900">ROI Analysis</CardTitle>
+                  <CardTitle className="text-foreground">ROI Analysis</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">

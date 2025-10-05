@@ -30,7 +30,7 @@ export default function MobileSimulator() {
   );
 
   const CustomerApp = () => (
-    <div className="h-full bg-amber-50 w-full overflow-x-hidden">
+    <div className="h-full bg-[#f8f7f5] dark:bg-[#231b0f] w-full overflow-x-hidden">
       {/* Header */}
       <div className="bg-[#A47C48] text-white p-4 text-center w-full">
         <div className="flex items-center justify-center mb-2">
@@ -45,23 +45,23 @@ export default function MobileSimulator() {
           <>
             <Card>
               <CardHeader>
-                <CardTitle className="text-amber-900">Book a Return Pickup</CardTitle>
+                <CardTitle className="text-foreground">Book a Return Pickup</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-amber-800 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Pickup Address
                   </label>
                   <Input
                     placeholder="Enter your address"
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    className="border-amber-200"
+                    className="border-border"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-amber-800 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Number of Packages
                   </label>
                   <div className="flex items-center justify-center space-x-3">
@@ -69,16 +69,16 @@ export default function MobileSimulator() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPackages(Math.max(1, packages - 1))}
-                      className="w-8 h-8 p-0 border-amber-300 flex-shrink-0"
+                      className="w-8 h-8 p-0 border-border flex-shrink-0"
                     >
                       -
                     </Button>
-                    <span className="text-lg font-bold text-amber-900 min-w-[2rem] text-center">{packages}</span>
+                    <span className="text-lg font-bold text-foreground min-w-[2rem] text-center">{packages}</span>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setPackages(packages + 1)}
-                      className="w-8 h-8 p-0 border-amber-300 flex-shrink-0"
+                      className="w-8 h-8 p-0 border-border flex-shrink-0"
                     >
                       +
                     </Button>
@@ -86,7 +86,7 @@ export default function MobileSimulator() {
                 </div>
 
                 <Button
-                  className="w-full bg-amber-600 hover:bg-amber-700"
+                  className="w-full bg-primary hover:bg-primary/90"
                   onClick={() => setCurrentScreen('tracking')}
                 >
                   <Package className="w-4 h-4 mr-2" />
@@ -98,7 +98,7 @@ export default function MobileSimulator() {
             <div className="grid grid-cols-2 gap-2 w-full">
               <Button
                 variant="outline"
-                className="border-amber-300 text-amber-700 text-xs sm:text-sm px-2"
+                className="border-border text-muted-foreground text-xs sm:text-sm px-2"
                 onClick={() => setCurrentScreen('history')}
               >
                 Order History
@@ -146,7 +146,7 @@ export default function MobileSimulator() {
                 <CardContent className="p-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-semibold text-amber-900">Today</p>
+                      <p className="font-semibold text-foreground">Today</p>
                       <p className="text-sm text-green-600">In Progress</p>
                       <p className="text-xs text-gray-600">{packages} packages - $3.99</p>
                     </div>
@@ -161,7 +161,7 @@ export default function MobileSimulator() {
                 <CardContent className="p-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-semibold text-amber-900">Yesterday</p>
+                      <p className="font-semibold text-foreground">Yesterday</p>
                       <p className="text-sm text-gray-600">Completed</p>
                       <p className="text-xs text-gray-600">1 package - $3.99</p>
                     </div>
@@ -271,20 +271,20 @@ export default function MobileSimulator() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent py-8">
       {/* Header */}
       <div className="max-w-4xl mx-auto px-4 mb-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Link href="/">
-              <Button variant="ghost" className="text-amber-800 hover:text-amber-900">
+              <Button variant="ghost" className="text-foreground hover:text-foreground">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Platform
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-amber-900">Mobile App Demo</h1>
-              <p className="text-amber-700">Test both customer and driver apps</p>
+              <h1 className="text-3xl font-bold text-foreground">Mobile App Demo</h1>
+              <p className="text-muted-foreground">Test both customer and driver apps</p>
             </div>
           </div>
         </div>
@@ -304,11 +304,11 @@ export default function MobileSimulator() {
           <div className="space-y-6 flex-1 min-w-0">
             <Card>
               <CardHeader>
-                <CardTitle className="text-amber-900">App Controls</CardTitle>
+                <CardTitle className="text-foreground">App Controls</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-amber-800 mb-2">Current App:</p>
+                  <p className="text-sm font-medium text-foreground mb-2">Current App:</p>
                   <div className="flex space-x-2">
                     <Button
                       variant={currentApp === 'customer' ? 'default' : 'outline'}
@@ -316,7 +316,7 @@ export default function MobileSimulator() {
                         setCurrentApp('customer');
                         setCurrentScreen('home');
                       }}
-                      className={currentApp === 'customer' ? 'bg-amber-600 hover:bg-amber-700' : 'border-amber-300 text-amber-700'}
+                      className={currentApp === 'customer' ? 'bg-primary hover:bg-primary/90' : 'border-border text-muted-foreground'}
                     >
                       Customer App
                     </Button>
@@ -335,11 +335,11 @@ export default function MobileSimulator() {
 
                 {currentApp === 'customer' && (
                   <div>
-                    <p className="text-sm font-medium text-amber-800 mb-2">Customer Screens:</p>
+                    <p className="text-sm font-medium text-foreground mb-2">Customer Screens:</p>
                     <div className="space-y-2">
                       <Button
                         variant="outline"
-                        className="w-full justify-start border-amber-300 text-amber-700"
+                        className="w-full justify-start border-border text-muted-foreground"
                         onClick={() => setCurrentScreen('home')}
                       >
                         <Package className="w-4 h-4 mr-2" />
@@ -347,7 +347,7 @@ export default function MobileSimulator() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full justify-start border-amber-300 text-amber-700"
+                        className="w-full justify-start border-border text-muted-foreground"
                         onClick={() => setCurrentScreen('tracking')}
                       >
                         <Car className="w-4 h-4 mr-2" />
@@ -355,7 +355,7 @@ export default function MobileSimulator() {
                       </Button>
                       <Button
                         variant="outline"
-                        className="w-full justify-start border-amber-300 text-amber-700"
+                        className="w-full justify-start border-border text-muted-foreground"
                         onClick={() => setCurrentScreen('history')}
                       >
                         <Clock className="w-4 h-4 mr-2" />
@@ -369,24 +369,24 @@ export default function MobileSimulator() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-amber-900">App Features</CardTitle>
+                <CardTitle className="text-foreground">App Features</CardTitle>
               </CardHeader>
               <CardContent>
                 {currentApp === 'customer' ? (
                   <div className="space-y-2 text-sm">
-                    <p className="flex items-center text-amber-700">
+                    <p className="flex items-center text-muted-foreground">
                       <Package className="w-4 h-4 mr-2" />
                       Book return pickups
                     </p>
-                    <p className="flex items-center text-amber-700">
+                    <p className="flex items-center text-muted-foreground">
                       <MapPin className="w-4 h-4 mr-2" />
                       Real-time tracking
                     </p>
-                    <p className="flex items-center text-amber-700">
+                    <p className="flex items-center text-muted-foreground">
                       <DollarSign className="w-4 h-4 mr-2" />
                       Secure payments
                     </p>
-                    <p className="flex items-center text-amber-700">
+                    <p className="flex items-center text-muted-foreground">
                       <Clock className="w-4 h-4 mr-2" />
                       Order history
                     </p>

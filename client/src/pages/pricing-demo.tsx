@@ -201,7 +201,7 @@ export default function PricingDemo() {
   const selectedPricing = pricingModel === "current" ? currentPricing : tieredPricing;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -541,8 +541,8 @@ export default function PricingDemo() {
                   <div className="font-medium text-rose-600 text-xs">Ultra Premium+ ($15K-$25K)</div>
                   <p className="text-xs">$3.99 base +$100, +$30 driver, 30%</p>
                 </div>
-                <div className="p-2 border rounded bg-amber-50">
-                  <div className="font-medium text-amber-600 text-xs">Elite Luxury ($25K+)</div>
+                <div className="p-2 border rounded bg-accent">
+                  <div className="font-medium text-primary text-xs">Elite Luxury ($25K+)</div>
                   <p className="text-xs">$3.99 base +$150, +$45 driver, 35%</p>
                 </div>
               </div>
@@ -576,9 +576,9 @@ export default function PricingDemo() {
               </div>
             </div>
 
-            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-800 mb-2">Pricing Structure</h4>
-              <ul className="text-sm text-amber-700 space-y-1">
+            <div className="bg-accent p-4 rounded-lg border border-border">
+              <h4 className="font-semibold text-foreground mb-2">Pricing Structure</h4>
+              <ul className="text-sm text-muted-foreground space-y-1">
                 <li>• <strong>$3.99 base fee</strong> applies to every order regardless of value</li>
                 <li>• Value tier fees add to base fee based on total order value</li>
                 <li>• Distance fees ($0.50/mile) and size upcharges apply</li>

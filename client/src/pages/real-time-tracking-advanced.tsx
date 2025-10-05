@@ -136,16 +136,16 @@ export default function RealTimeTrackingAdvanced() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-transparent to-transparent py-8">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-amber-900">Live Tracking</h1>
-            <p className="text-amber-700">Order #{trackingData.orderId}</p>
+            <h1 className="text-3xl font-bold text-foreground">Live Tracking</h1>
+            <p className="text-muted-foreground">Order #{trackingData.orderId}</p>
           </div>
           <Link href="/">
-            <Button variant="outline" className="border-amber-300 text-amber-700">
+            <Button variant="outline" className="border-border text-muted-foreground">
               Back to Home
             </Button>
           </Link>
@@ -157,7 +157,7 @@ export default function RealTimeTrackingAdvanced() {
             {/* Live Map Placeholder */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <MapPin className="h-5 w-5" />
                   Live Location
                 </CardTitle>
@@ -188,7 +188,7 @@ export default function RealTimeTrackingAdvanced() {
             {/* Route Details */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Navigation className="h-5 w-5" />
                   Route Details
                 </CardTitle>
@@ -197,7 +197,7 @@ export default function RealTimeTrackingAdvanced() {
                 <div className="space-y-3">
                   {trackingData.route.steps.map((step, index) => (
                     <div key={index} className="flex items-center gap-3 p-2 rounded-lg bg-gray-50">
-                      <div className="w-6 h-6 bg-amber-600 text-white rounded-full flex items-center justify-center text-sm font-bold">
+                      <div className="w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-sm font-bold">
                         {index + 1}
                       </div>
                       <div className="flex-1">
@@ -218,15 +218,15 @@ export default function RealTimeTrackingAdvanced() {
             {/* Driver Info */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Truck className="h-5 w-5" />
                   Your Driver
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-amber-200 rounded-full flex items-center justify-center">
-                    <span className="text-lg font-bold text-amber-800">
+                  <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center">
+                    <span className="text-lg font-bold text-foreground">
                       {trackingData.driver.name.split(' ').map(n => n[0]).join('')}
                     </span>
                   </div>
@@ -259,7 +259,7 @@ export default function RealTimeTrackingAdvanced() {
             {/* Status Updates */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-amber-900">
+                <CardTitle className="flex items-center gap-2 text-foreground">
                   <Clock className="h-5 w-5" />
                   Status Updates
                 </CardTitle>

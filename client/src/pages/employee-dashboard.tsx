@@ -137,74 +137,74 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
 
           {/* Key Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-amber-600 text-sm font-medium">Open Tickets</p>
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-primary text-sm font-medium">Open Tickets</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {tickets.filter(t => t.status === 'open').length}
                     </p>
                   </div>
                   <AlertTriangle className="h-8 w-8 text-red-600" />
                 </div>
-                <p className="text-xs text-amber-700 mt-2">Requires immediate attention</p>
+                <p className="text-xs text-muted-foreground mt-2">Requires immediate attention</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-amber-600 text-sm font-medium">In Progress</p>
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-primary text-sm font-medium">In Progress</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {tickets.filter(t => t.status === 'in-progress').length}
                     </p>
                   </div>
                   <Clock className="h-8 w-8 text-yellow-600" />
                 </div>
-                <p className="text-xs text-amber-700 mt-2">Currently working on</p>
+                <p className="text-xs text-muted-foreground mt-2">Currently working on</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-amber-600 text-sm font-medium">Resolved Today</p>
-                    <p className="text-2xl font-bold text-amber-900">
+                    <p className="text-primary text-sm font-medium">Resolved Today</p>
+                    <p className="text-2xl font-bold text-foreground">
                       {tickets.filter(t => t.status === 'resolved').length}
                     </p>
                   </div>
                   <CheckCircle className="h-8 w-8 text-green-600" />
                 </div>
-                <p className="text-xs text-amber-700 mt-2">Great job!</p>
+                <p className="text-xs text-muted-foreground mt-2">Great job!</p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white border-amber-200">
+            <Card className="bg-white border-border">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-amber-600 text-sm font-medium">Avg Response</p>
-                    <p className="text-2xl font-bold text-amber-900">12min</p>
+                    <p className="text-primary text-sm font-medium">Avg Response</p>
+                    <p className="text-2xl font-bold text-foreground">12min</p>
                   </div>
                   <TrendingUp className="h-8 w-8 text-blue-600" />
                 </div>
-                <p className="text-xs text-amber-700 mt-2">Below 15min target</p>
+                <p className="text-xs text-muted-foreground mt-2">Below 15min target</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Support Tickets Management */}
-          <Card className="bg-white border-amber-200">
+          <Card className="bg-white border-border">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-amber-900 flex items-center">
+                <CardTitle className="text-foreground flex items-center">
                   <MessageCircle className="h-5 w-5 mr-2" />
                   Support Tickets
                 </CardTitle>
-                <Button className="bg-amber-600 hover:bg-amber-700">
+                <Button className="bg-primary hover:bg-primary/90">
                   <MessageCircle className="h-4 w-4 mr-2" />
                   New Ticket
                 </Button>
@@ -214,12 +214,12 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
               {/* Filters and Search */}
               <div className="flex flex-col sm:flex-row gap-4 mb-6">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-600 h-4 w-4" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-primary h-4 w-4" />
                   <Input
                     placeholder="Search tickets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 border-amber-300 focus:border-amber-500"
+                    className="pl-10 border-border focus:border-border"
                   />
                 </div>
                 <div className="flex gap-2">
@@ -227,7 +227,7 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
                     variant={filterStatus === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilterStatus('all')}
-                    className={filterStatus === 'all' ? 'bg-amber-600' : 'border-amber-300'}
+                    className={filterStatus === 'all' ? 'bg-primary' : 'border-border'}
                   >
                     All
                   </Button>
@@ -235,7 +235,7 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
                     variant={filterStatus === 'open' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilterStatus('open')}
-                    className={filterStatus === 'open' ? 'bg-amber-600' : 'border-amber-300'}
+                    className={filterStatus === 'open' ? 'bg-primary' : 'border-border'}
                   >
                     Open
                   </Button>
@@ -243,7 +243,7 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
                     variant={filterStatus === 'in-progress' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilterStatus('in-progress')}
-                    className={filterStatus === 'in-progress' ? 'bg-amber-600' : 'border-amber-300'}
+                    className={filterStatus === 'in-progress' ? 'bg-primary' : 'border-border'}
                   >
                     In Progress
                   </Button>
@@ -251,7 +251,7 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
                     variant={filterStatus === 'resolved' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setFilterStatus('resolved')}
-                    className={filterStatus === 'resolved' ? 'bg-amber-600' : 'border-amber-300'}
+                    className={filterStatus === 'resolved' ? 'bg-primary' : 'border-border'}
                   >
                     Resolved
                   </Button>
@@ -262,25 +262,25 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-amber-200">
-                      <TableHead className="font-semibold text-amber-900">Ticket ID</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Customer</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Subject</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Priority</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Status</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Category</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Created</TableHead>
-                      <TableHead className="font-semibold text-amber-900">Actions</TableHead>
+                    <TableRow className="border-border">
+                      <TableHead className="font-semibold text-foreground">Ticket ID</TableHead>
+                      <TableHead className="font-semibold text-foreground">Customer</TableHead>
+                      <TableHead className="font-semibold text-foreground">Subject</TableHead>
+                      <TableHead className="font-semibold text-foreground">Priority</TableHead>
+                      <TableHead className="font-semibold text-foreground">Status</TableHead>
+                      <TableHead className="font-semibold text-foreground">Category</TableHead>
+                      <TableHead className="font-semibold text-foreground">Created</TableHead>
+                      <TableHead className="font-semibold text-foreground">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredTickets.map((ticket) => (
-                      <TableRow key={ticket.id} className="hover:bg-amber-50/50 border-amber-100">
+                      <TableRow key={ticket.id} className="hover:bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-border">
                         <TableCell className="font-medium">{ticket.id}</TableCell>
                         <TableCell>
                           <div>
                             <div className="font-medium">{ticket.customer}</div>
-                            <div className="text-sm text-amber-600">{ticket.email}</div>
+                            <div className="text-sm text-primary">{ticket.email}</div>
                           </div>
                         </TableCell>
                         <TableCell className="max-w-xs truncate">{ticket.subject}</TableCell>
@@ -298,7 +298,7 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
                         <TableCell className="text-sm">{ticket.createdAt}</TableCell>
                         <TableCell>
                           <div className="flex space-x-1">
-                            <Button size="sm" variant="outline" className="h-7 border-amber-300">
+                            <Button size="sm" variant="outline" className="h-7 border-border">
                               View
                             </Button>
                             <Button size="sm" variant="outline" className="h-7 border-green-300 text-green-700">
@@ -313,8 +313,8 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
               </div>
 
               {filteredTickets.length === 0 && (
-                <div className="text-center py-8 text-amber-600">
-                  <MessageCircle className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+                <div className="text-center py-8 text-primary">
+                  <MessageCircle className="h-12 w-12 mx-auto mb-4 text-primary" />
                   <p className="text-lg font-medium">No tickets found</p>
                   <p className="text-sm">Try adjusting your search or filter criteria</p>
                 </div>
@@ -328,15 +328,15 @@ export default function EmployeeDashboard({ role = 'support' }: EmployeeDashboar
 
   // Default employee dashboard (can be extended for other roles)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       <div className="container mx-auto p-6">
-        <Card className="bg-white border-amber-200">
+        <Card className="bg-white border-border">
           <CardContent className="p-8 text-center">
-            <User className="h-12 w-12 mx-auto mb-4 text-amber-600" />
-            <h2 className="text-xl font-semibold text-amber-900 mb-2">Employee Dashboard</h2>
-            <p className="text-amber-700">Dashboard configuration for role: {role}</p>
+            <User className="h-12 w-12 mx-auto mb-4 text-primary" />
+            <h2 className="text-xl font-semibold text-foreground mb-2">Employee Dashboard</h2>
+            <p className="text-muted-foreground">Dashboard configuration for role: {role}</p>
             <Button 
-              className="mt-4 bg-amber-600 hover:bg-amber-700"
+              className="mt-4 bg-primary hover:bg-primary/90"
               onClick={() => setLocation('/employee-guide')}
             >
               View Employee Guide

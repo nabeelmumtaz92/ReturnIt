@@ -49,10 +49,10 @@ export default function ChatCenter() {
     return (
       <Screen className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <MessageCircle className="h-16 w-16 text-amber-600 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-amber-900 mb-4">Communication Center</h1>
-          <p className="text-amber-700 mb-4">Sign in to access your messages</p>
-          <Button className="bg-amber-800 hover:bg-amber-900">Sign In</Button>
+          <MessageCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-foreground mb-4">Communication Center</h1>
+          <p className="text-muted-foreground mb-4">Sign in to access your messages</p>
+          <Button className="bg-primary hover:bg-primary/90">Sign In</Button>
         </div>
       </Screen>
     );
@@ -317,23 +317,23 @@ export default function ChatCenter() {
 
           {/* Quick Actions */}
           <div className="mt-8">
-            <Card className="border-amber-200 bg-amber-50">
+            <Card className="border-border bg-[#f8f7f5] dark:bg-[#231b0f]">
               <CardHeader>
-                <CardTitle className="text-amber-900">Quick Actions</CardTitle>
+                <CardTitle className="text-foreground">Quick Actions</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Button className="bg-amber-700 hover:bg-amber-800 h-20 flex-col">
+                  <Button className="bg-primary hover:bg-primary/90 h-20 flex-col">
                     <User className="h-6 w-6 mb-2" />
                     <span>Contact Support</span>
                   </Button>
                   
-                  <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50 h-20 flex-col">
+                  <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] h-20 flex-col">
                     <Phone className="h-6 w-6 mb-2" />
                     <span>Emergency Hotline</span>
                   </Button>
                   
-                  <Button variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-50 h-20 flex-col">
+                  <Button variant="outline" className="border-border text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] h-20 flex-col">
                     <MapPin className="h-6 w-6 mb-2" />
                     <span>Share Location</span>
                   </Button>

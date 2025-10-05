@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Profile</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen">
+<header class="flex items-center p-6 border-b border-primary/20 dark:border-primary/30">
+<button class="text-background-dark dark:text-background-light">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+</button>
+<h1 class="flex-1 text-xl font-bold text-center text-background-dark dark:text-background-light pr-6">Profile</h1>
+</header>
+<main class="flex-grow p-6">
+<div class="flex flex-col items-center space-y-4">
+<div class="relative">
+<div class="w-32 h-32 bg-center bg-no-repeat bg-cover rounded-full" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBXHtCUW1uVnMcS0fSAbDWOZpglTugVQFSEtE3Rwv1jex9uIz8Ab-bUwQavRVlHMu92vHAl88Tw3H8RAbtGb1LtKM64StJCLX19y45ZBkJVuJA8XteG98eJcJHhtQwzMNPgQychbr8d_BOCd-TVfpmD8PAuwhL5amVKrDACWQAHvzuQ0yssZRowMOl3pTC8VbbFwioHGgwVgWChr1F3mlQTk_pDVzCm5E4gxg1cQx5vr9ezBageD4H76OugcW8hPSXD3QiqqgEZ3A5e");'></div>
+<a class="absolute bottom-0 right-0 grid w-8 h-8 rounded-full place-items-center bg-primary text-white" href="#">
+<svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM192,108.63,147.31,64l16-16L208,92.63ZM92.69,208H48V163.31l88-88L180.69,120Z"></path></svg>
+</a>
+</div>
+<div class="text-center">
+<p class="text-2xl font-bold text-background-dark dark:text-background-light">Ethan Carter</p>
+<p class="text-background-dark/60 dark:text-background-light/60">ethan.carter@returnit.com</p>
+<p class="mt-1 text-sm font-medium text-primary">Return It Member</p>
+</div>
+</div>
+<div class="mt-8 space-y-4">
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light">Account Details</h2>
+<div class="p-4 space-y-4 bg-white rounded-lg dark:bg-background-dark/50">
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Name</p>
+<p class="font-medium text-background-dark dark:text-background-light">Ethan Carter</p>
+</div>
+</div>
+<div class="border-t border-primary/10 dark:border-primary/20"></div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Email</p>
+<p class="font-medium text-background-dark dark:text-background-light">ethan.carter@returnit.com</p>
+</div>
+</div>
+<div class="border-t border-primary/10 dark:border-primary/20"></div>
+<div class="flex items-center justify-between">
+<div>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">Membership</p>
+<p class="font-medium text-background-dark dark:text-background-light">Return It Member</p>
+</div>
+</div>
+</div>
+<a class="flex items-center justify-center w-full gap-2 px-4 py-3 font-bold text-white rounded-lg bg-primary" href="#">
+<span>Edit Profile</span>
+<svg fill="currentColor" height="16" viewBox="0 0 256 256" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path></svg>
+</a>
+</div>
+</main>
+<footer class="sticky bottom-0 border-t bg-background-light dark:bg-background-dark border-primary/20 dark:border-primary/30">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M218.83,103.77l-80-75.48a1.14,1.14,0,0,1-.11-.11,16,16,0,0,0-21.53,0l-.11.11L37.17,103.77A16,16,0,0,0,32,115.55V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V160h32v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V115.55A16,16,0,0,0,218.83,103.77ZM208,208H160V160a16,16,0,0,0-16-16H112a16,16,0,0,0-16,16v48H48V115.55l.11-.1L128,40l79.9,75.43.11.1Z"></path></svg>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path></svg>
+<span class="text-xs font-medium">Returns</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-primary" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M230.93,220a8,8,0,0,1-6.93,4H32a8,8,0,0,1-6.92-12c15.23-26.33,38.7-45.21,66.09-54.16a72,72,0,1,1,73.66,0c27.39,8.95,50.86,27.83,66.09,54.16A8,8,0,0,1,230.93,220Z"></path></svg>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>
