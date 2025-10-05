@@ -7,6 +7,7 @@ import 'react-native-gesture-handler';
 // Import screens
 import LoginScreen from './screens/LoginScreen';
 import SocialLoginScreen from './screens/SocialLoginScreen';
+import WelcomeOnboardingScreen from './screens/WelcomeOnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import BookReturnScreen from './screens/BookReturnScreen';
 import PaymentCheckoutScreen from './screens/PaymentCheckoutScreen';
@@ -14,6 +15,7 @@ import PayPalCheckoutScreen from './screens/PayPalCheckoutScreen';
 import TrackPackageScreen from './screens/TrackPackageScreen';
 import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import NotificationsScreen from './screens/NotificationsScreen';
 import SupportScreen from './screens/SupportScreen';
 
 // Import auth and API services
@@ -81,6 +83,7 @@ export default function App() {
     return (
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="WelcomeOnboarding" component={WelcomeOnboardingScreen} />
           <Stack.Screen name="Login">
             {(props) => (
               <LoginScreen 
@@ -113,6 +116,7 @@ export default function App() {
         <Stack.Screen name="TrackPackage" component={TrackPackageScreen} />
         <Stack.Screen name="OrderHistory" component={OrderHistoryScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
       </Stack.Navigator>
     </NavigationContainer>

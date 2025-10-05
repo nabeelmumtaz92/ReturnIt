@@ -94,6 +94,7 @@ export interface IStorage {
   getNotifications(userId: number): Promise<Notification[]>;
   createNotification(notification: InsertNotification): Promise<Notification>;
   markNotificationRead(id: number): Promise<void>;
+  markNotificationUnread(id: number): Promise<void>;
   markNotificationAsRead(id: number): Promise<boolean>;
   
   // Driver Documents operations
@@ -1270,6 +1271,14 @@ export class MemStorage implements IStorage {
     const notification = this.notifications.get(id);
     if (notification) {
       notification.isRead = true;
+      this.notifications.set(id, notification);
+    }
+  }
+
+  async markNotificationUnread(id: number): Promise<void> {
+    const notification = this.notifications.get(id);
+    if (notification) {
+      notification.isRead = false;
       this.notifications.set(id, notification);
     }
   }

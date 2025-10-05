@@ -6,6 +6,7 @@ import 'react-native-gesture-handler';
 
 // Import screens
 import LoginScreen from './screens/LoginScreen';
+import WelcomeOnboardingScreen from './screens/WelcomeOnboardingScreen';
 import DriverDashboardScreen from './screens/DriverDashboardScreen';
 import LiveOrderMapScreen from './screens/LiveOrderMapScreen';
 import JobManagementScreen from './screens/JobManagementScreen';
@@ -13,6 +14,7 @@ import EarningsScreen from './screens/EarningsScreen';
 import PayoutManagementScreen from './screens/PayoutManagementScreen';
 import RouteOptimizationScreen from './screens/RouteOptimizationScreen';
 import DriverProfileScreen from './screens/DriverProfileScreen';
+import RatingsAndFeedbackScreen from './screens/RatingsAndFeedbackScreen';
 import DriverSupportScreen from './screens/DriverSupportScreen';
 import PackageVerificationScreen from './screens/PackageVerificationScreen';
 
@@ -85,6 +87,7 @@ export default function App() {
     return (
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="WelcomeOnboarding" component={WelcomeOnboardingScreen} />
           <Stack.Screen name="Login">
             {(props) => (
               <LoginScreen 
@@ -116,6 +119,7 @@ export default function App() {
         <Stack.Screen name="PayoutManagement" component={PayoutManagementScreen} />
         <Stack.Screen name="RouteOptimization" component={RouteOptimizationScreen} />
         <Stack.Screen name="DriverProfile" component={DriverProfileScreen} />
+        <Stack.Screen name="RatingsAndFeedback" component={RatingsAndFeedbackScreen} />
         <Stack.Screen name="DriverSupport" component={DriverSupportScreen} />
         <Stack.Screen name="PackageVerification" component={PackageVerificationScreen} />
       </Stack.Navigator>

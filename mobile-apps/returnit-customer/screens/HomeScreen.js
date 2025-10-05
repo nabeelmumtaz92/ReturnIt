@@ -56,6 +56,14 @@ export default function HomeScreen({ navigation }) {
 
           <TouchableOpacity 
             style={styles.quickAccessButton}
+            onPress={() => navigation.navigate('Notifications')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.quickAccessText}>🔔 Notifications</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.quickAccessButton}
             onPress={() => navigation.navigate('Profile')}
             activeOpacity={0.7}
           >

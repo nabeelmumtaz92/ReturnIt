@@ -3680,6 +3680,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/notifications/:id/unread", isAuthenticated, async (req, res) => {
+    try {
+      await storage.markNotificationUnread(parseInt(req.params.id));
+      res.json({ message: "Notification marked as unread" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to mark notification as unread" });
+    }
+  });
+
   // =============================================================================
   // NEW: Enhanced Driver GPS and Order Management System
   // Comprehensive order assignment, acceptance, tracking, and cancellation system

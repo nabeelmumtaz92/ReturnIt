@@ -243,6 +243,16 @@ export default function DriverDashboardScreen({ navigation }) {
             
             <TouchableOpacity 
               style={styles.actionButton}
+              onPress={() => navigation.navigate('RatingsAndFeedback')}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.actionButtonText}>⭐ Ratings</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.actionRow}>
+            <TouchableOpacity 
+              style={styles.actionButton}
               onPress={() => navigation.navigate('DriverSupport')}
               activeOpacity={0.7}
             >
