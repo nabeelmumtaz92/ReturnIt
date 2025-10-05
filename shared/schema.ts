@@ -686,6 +686,33 @@ export const orders = pgTable("orders", {
   createdViaApi: boolean("created_via_api").default(false), // Programmatic vs manual creation
   apiKeyId: integer("api_key_id").references(() => retailerApiKeys.id), // Which API key created this
   
+  // Driver Completion Checklist (Like Spark) - Track ACTUAL outcomes
+  driverCompletionConfirmed: boolean("driver_completion_confirmed").default(false), // Driver completed checklist
+  driverCompletionTimestamp: timestamp("driver_completion_timestamp"), // When driver confirmed completion
+  
+  // Actual Return Outcome (What REALLY happened)
+  actualReturnOutcome: text("actual_return_outcome"), // "refund_processed", "store_credit_issued", "exchange_completed", "donation_accepted", "return_refused"
+  retailerAcceptedReturn: boolean("retailer_accepted_return"), // Did retailer accept the return?
+  retailerIssuedRefund: boolean("retailer_issued_refund"), // Did retailer confirm they'll refund customer?
+  retailerRefundMethod: text("retailer_refund_method"), // How retailer will refund: "original_payment", "store_credit", "gift_card", "exchange"
+  retailerRefundAmount: real("retailer_refund_amount"), // Amount retailer confirmed they'll refund
+  retailerRefundTimeline: text("retailer_refund_timeline"), // "3-5 business days", "7-10 business days", "immediate"
+  
+  // Donation confirmation
+  donationConfirmed: boolean("donation_confirmed").default(false), // Charity accepted donation
+  donationReceiptProvided: boolean("donation_receipt_provided").default(false), // Did charity give receipt for taxes?
+  donationReceiptPhotos: jsonb("donation_receipt_photos").default([]), // Photos of donation receipt
+  donationOrganization: text("donation_organization"), // Which charity/organization
+  
+  // Store credit / Gift card tracking
+  storeCreditIssued: boolean("store_credit_issued").default(false), // Did retailer issue store credit?
+  storeCreditAmount: real("store_credit_amount"), // Store credit dollar amount
+  storeCreditCardNumber: text("store_credit_card_number"), // Last 4 digits of gift card
+  
+  // Driver completion notes
+  driverCompletionNotes: text("driver_completion_notes"), // What driver observed at completion
+  driverCompletionPhotos: jsonb("driver_completion_photos").default([]), // Evidence photos at completion
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
