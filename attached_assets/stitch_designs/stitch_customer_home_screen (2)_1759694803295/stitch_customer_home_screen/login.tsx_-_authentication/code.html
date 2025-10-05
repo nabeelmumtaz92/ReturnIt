@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+        .form-input {
+            border-color: #eab308;border-radius: 8px;}
+        .form-input:focus {
+            --tw-ring-color: #f99806;border-color: #f99806;}
+        .btn-elevated {
+             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-black dark:text-white">
+<div class="flex flex-col items-center justify-center min-h-screen p-6">
+<div class="w-full max-w-sm">
+<div class="text-center mb-8">
+<h1 class="text-3xl font-bold text-black dark:text-white">Return It</h1>
+</div>
+<div class="bg-background-light dark:bg-background-dark p-8 rounded-xl">
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-black dark:text-white" for="email">Email/Phone</label>
+<div class="mt-1">
+<input autocomplete="email" class="form-input block w-full bg-background-light dark:bg-background-dark placeholder-primary/50 dark:placeholder-primary/40 text-black dark:text-white px-4 py-3" id="email" name="email" required="" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-black dark:text-white" for="password">Password</label>
+<div class="mt-1">
+<input autocomplete="current-password" class="form-input block w-full bg-background-light dark:bg-background-dark placeholder-primary/50 dark:placeholder-primary/40 text-black dark:text-white px-4 py-3" id="password" name="password" required="" type="password"/>
+</div>
+</div>
+<div class="text-right">
+<a class="text-sm font-medium text-primary hover:text-primary/80" href="#">
+                            Forgot Password?
+                        </a>
+</div>
+<div>
+<button class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg btn-elevated text-sm font-semibold text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" type="submit">
+                            Login
+                        </button>
+</div>
+</form>
+</div>
+<div class="mt-6 text-center">
+<p class="text-sm text-black dark:text-white">
+                    Don't have an account?
+                    <a class="font-medium text-primary hover:text-primary/80" href="#">
+                        Sign Up
+                    </a>
+</p>
+</div>
+</div>
+</div>
+
+</body></html>

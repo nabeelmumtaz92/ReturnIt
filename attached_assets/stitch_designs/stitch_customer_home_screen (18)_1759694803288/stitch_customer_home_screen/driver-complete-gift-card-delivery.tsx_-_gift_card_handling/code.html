@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Gift Card Delivery</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-zinc-900 dark:text-zinc-100">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="px-6 py-4 flex items-center justify-between">
+<button class="p-2 -ml-2">
+<span class="material-symbols-outlined text-zinc-900 dark:text-zinc-100">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Gift Card Delivery</h1>
+<div class="w-8"></div>
+</div>
+</header>
+<main class="flex-grow px-6 py-8">
+<div class="space-y-8">
+<div>
+<h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Verify Gift Card Details</h2>
+<p class="mt-2 text-zinc-600 dark:text-zinc-400">Please follow the instructions below to ensure accurate gift card delivery and activation for Return It.</p>
+</div>
+<div class="p-6 rounded-xl bg-background-light dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800">
+<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Instructions</h3>
+<ul class="mt-4 space-y-4 text-zinc-700 dark:text-zinc-300">
+<li class="flex items-start">
+<span class="material-symbols-outlined text-primary mr-3 mt-0.5">qr_code_scanner</span>
+<span>Scan the barcode on the gift card.</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-primary mr-3 mt-0.5">fact_check</span>
+<span>Verify the gift card number matches the order details.</span>
+</li>
+<li class="flex items-start">
+<span class="material-symbols-outlined text-primary mr-3 mt-0.5">check_circle</span>
+<span>Confirm activation of the gift card.</span>
+</li>
+</ul>
+</div>
+<div class="space-y-6">
+<h3 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Gift Card Verification</h3>
+<form class="space-y-4">
+<div>
+<label class="sr-only" for="gift-card-number">Gift Card Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">credit_card</span>
+<input class="w-full pl-12 pr-4 py-3 bg-background-light dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-primary focus:border-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-500" id="gift-card-number" placeholder="Gift Card Number" type="text"/>
+</div>
+</div>
+<div>
+<label class="sr-only" for="order-number">Order Number</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">receipt_long</span>
+<input class="w-full pl-12 pr-4 py-3 bg-background-light dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-primary focus:border-primary placeholder:text-zinc-400 dark:placeholder:text-zinc-500" id="order-number" placeholder="Order Number" type="text"/>
+</div>
+</div>
+<button class="w-full bg-primary text-zinc-900 font-bold py-4 rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background-light dark:focus:ring-offset-background-dark focus:ring-primary transition-colors" type="submit">
+                            Confirm Activation
+                        </button>
+</form>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-zinc-200 dark:border-zinc-800">
+<nav class="flex justify-around px-2 py-2">
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-primary dark:text-primary bg-primary/10 dark:bg-primary/20" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-xs font-bold">Deliveries</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

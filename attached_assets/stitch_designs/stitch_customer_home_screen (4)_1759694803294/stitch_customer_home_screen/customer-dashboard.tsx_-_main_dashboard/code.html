@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It Dashboard</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2d2416",
+                        "text-light": "#1c160d",
+                        "text-dark": "#fcfaf8",
+                        "subtle-light": "#9e7b47",
+                        "subtle-dark": "#a18a6a"
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.75rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        'md': '1.5rem',
+                        'lg': '2rem',
+                        'xl': '2.5rem'
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-light dark:text-text-dark">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center justify-between p-4 border-b border-primary/20 dark:border-primary/30">
+<div class="w-8"></div>
+<h1 class="text-lg font-bold text-center text-text-light dark:text-text-dark">Return It</h1>
+<button class="w-8 h-8 flex items-center justify-center text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined">
+                        menu
+                        </span>
+</button>
+</div>
+</header>
+<main class="flex-grow p-md">
+<h2 class="text-2xl font-bold mb-md">Dashboard</h2>
+<div class="grid grid-cols-2 gap-md">
+<div class="col-span-1 p-md rounded-lg bg-card-light dark:bg-card-dark shadow-card">
+<p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">Returns in Progress</p>
+<p class="text-3xl font-bold mt-1">3</p>
+</div>
+<div class="col-span-1 p-md rounded-lg bg-card-light dark:bg-card-dark shadow-card">
+<p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">Completed Returns</p>
+<p class="text-3xl font-bold mt-1">15</p>
+</div>
+</div>
+<div class="mt-lg">
+<div class="flex justify-between items-center mb-md">
+<h3 class="text-xl font-bold">Active Orders</h3>
+<a class="text-sm font-bold text-primary" href="#">View All</a>
+</div>
+<div class="space-y-md">
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-card overflow-hidden">
+<div class="flex items-center gap-md p-md">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAUI2YoWXeDsjn_RMO5B8TgOTY1yrff-zn94ThkJ1NiQbFy-wdP5webrwStdUQLFnzH5vTqWsxrf2suTxz-KFxIQEbF44YwzjFJDRbOAhzQCxDmwnbPH8OZMrslE6SFL8yw8sZoFwo_vxZ6EHDnM6I3IRmBUFkFLzHTGIqnrklusqQiCgP53c377YN5N0Xx7TXVTYjddh7g2bpy6Lffcr9JVzZwzpd7R5Xa9qV29etaRQC1uVYNHCXOdAi9AlwmwmQhNAJXkXkSLrNu");'></div>
+<div class="flex-1">
+<p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">Order #12345</p>
+<p class="font-bold">Cardboard Box - Large</p>
+<p class="text-sm text-subtle-light dark:text-subtle-dark">Status: In Transit</p>
+</div>
+</div>
+</div>
+<div class="bg-card-light dark:bg-card-dark rounded-xl shadow-card overflow-hidden">
+<div class="flex items-center gap-md p-md">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBuyIcbaFRM-BvpR4hC4-3D84ILo3yrXr72NWTvrU6Olh1oKJtv6AUkdaEPzY6Ml7OXzZ-e_JmqJrLt0TrXnsffJescVXOYbotfr_3Sb5weFSgaeGUDiOyKRvaomsyq5XfKwmD7klg3xtrUOqlK9JagnxlSb7qdEdRZF5HvDsx-Zs80slWN04aRBo38-ndK8P2wlNm5h7rmBIyn92WKdnWUWLizWnGksQDErJr9PZ0dlgzAE-1ezM-cuIhaa9V7R5uTBAeVJPaQ4_ja");'></div>
+<div class="flex-1">
+<p class="text-sm font-medium text-subtle-light dark:text-subtle-dark">Order #67890</p>
+<p class="font-bold">Packing Peanuts</p>
+<p class="text-sm text-subtle-light dark:text-subtle-dark">Status: Processing</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-lg">
+<h3 class="text-xl font-bold mb-md">Quick Actions</h3>
+<div class="grid grid-cols-2 gap-md">
+<button class="col-span-2 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-white font-bold shadow-lg">
+<span class="material-symbols-outlined">
+                            add_box
+                            </span>
+                         Book New Pickup
+                     </button>
+<button class="col-span-2 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary/20 dark:bg-primary/30 text-text-light dark:text-text-dark font-bold">
+<span class="material-symbols-outlined">
+                            route
+                            </span>
+                         Track Order
+                     </button>
+</div>
+</div>
+</main>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-t border-primary/20 dark:border-primary/30">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center justify-center w-1/3 text-primary" href="#">
+<span class="material-symbols-outlined">
+                        dashboard
+                        </span>
+<span class="text-xs font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center w-1/3 text-subtle-light dark:text-subtle-dark" href="#">
+<span class="material-symbols-outlined">
+                        inventory_2
+                        </span>
+<span class="text-xs font-medium">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center w-1/3 text-subtle-light dark:text-subtle-dark" href="#">
+<span class="material-symbols-outlined">
+                        person
+                        </span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+<div class="pb-safe-area"></div>
+</footer>
+</div>
+
+</body></html>

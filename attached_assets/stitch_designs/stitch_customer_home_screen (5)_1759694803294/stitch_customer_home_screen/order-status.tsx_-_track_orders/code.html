@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Order Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style type="text/tailwindcss">
+    @layer utilities {
+      .step-active .step-icon {
+        @apply bg-primary text-white;
+      }
+      .step-active .step-line {
+        @apply bg-primary;
+      }
+      .step-active .step-text-title {
+        @apply text-background-dark dark:text-background-light;
+      }
+      .step-inactive .step-icon {
+        @apply bg-primary/20 text-primary;
+      }
+      .step-inactive .step-line {
+        @apply bg-primary/20;
+      }
+      .step-inactive .step-text-title {
+        @apply text-background-dark/50 dark:text-background-light/50;
+      }
+      .step-inactive .step-text-subtitle {
+        @apply text-background-dark/50 dark:text-background-light/50;
+      }
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col h-screen justify-between">
+<div class="flex-grow overflow-y-auto px-6 py-8">
+<header class="flex items-center justify-between mb-8">
+<button class="p-2 -ml-2 text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold text-background-dark dark:text-background-light">Order Tracking</h1>
+<div class="w-8"></div>
+</header>
+<main>
+<div class="bg-white dark:bg-background-dark/50 p-4 rounded-xl shadow-md mb-8">
+<div class="flex items-start gap-4">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBgLPSF30rdCxrBE-AmSBQ518ZYudZ7lCBlzZcbLs362dZb754VlDMAD3v8F56Um6X4XJAMzuSLIAGC7DG2FsuTRPk5L-fXkeGGNP7Rbt2s16zQP43Q8kMPiWTjkCdAfnBEkbFezYWuNYVXyrqW7sKi89e2hf_0CyNNbajb3vOxnYWvkO-LvKlJpyg4geL5q118uXZBhs38mb6ZaaBzMe6_wcuu0Ayrj0XDMuxvU-X2Lb7LZSDwxgBLNFucXipaOSgAv0pHdeqSbJsQ");'></div>
+<div class="flex-1">
+<p class="text-sm font-medium text-primary">Order ID: 1234567890</p>
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light mt-1">Return It Package</h2>
+<p class="text-sm text-background-dark/70 dark:text-background-light/70 mt-1">Scheduled: Today, 2 PM - 4 PM</p>
+</div>
+</div>
+</div>
+<div class="mb-8">
+<h3 class="text-lg font-bold text-background-dark dark:text-background-light mb-4">Order Progress</h3>
+<div class="space-y-0">
+<div class="flex step-active">
+<div class="flex flex-col items-center mr-4">
+<div class="step-icon w-10 h-10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">local_shipping</span>
+</div>
+<div class="step-line w-0.5 h-16"></div>
+</div>
+<div class="pb-8 pt-1.5">
+<p class="step-text-title font-bold">Picked Up</p>
+<p class="text-sm text-primary">Today, 2:30 PM</p>
+</div>
+</div>
+<div class="flex step-active">
+<div class="flex flex-col items-center mr-4">
+<div class="step-icon w-10 h-10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">all_inbox</span>
+</div>
+<div class="step-line w-0.5 h-16"></div>
+</div>
+<div class="pb-8 pt-1.5">
+<p class="step-text-title font-bold">In Transit</p>
+<p class="text-sm text-primary">Estimated: Today, 3:30 PM</p>
+</div>
+</div>
+<div class="flex step-inactive">
+<div class="flex flex-col items-center mr-4">
+<div class="step-icon w-10 h-10 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">task_alt</span>
+</div>
+</div>
+<div class="pt-1.5">
+<p class="step-text-title font-bold">Delivered</p>
+<p class="step-text-subtitle text-sm">Not yet delivered</p>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full h-48 bg-primary/10 dark:bg-primary/20 rounded-xl">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover rounded-xl" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQlEGO3lVJcxUcygZw487hSC-jGoR8oe2fIYUbwgM8dZSBemBPWnZfpM7eJxDYSkayB3pQ-VMzmKWNRBr-gNGljchprOiE2ijgDdg1P8aY2jYvJnDfuS8fGOd6TI0p0SGSpX9Pg58xbaB4VLL98GLTkMKrf3vXdlQb-pH-xsuZ6xr0f1v0QeieHtm-ZEjbpRoKaEON4Dyske-DnPv8D9LKIN-6nDWDmlT0GlswPImBLV6_e95-7wPGi_8a3m_TFuzduTs2oCYSzSF7');"></div>
+</div>
+</main>
+</div>
+<nav class="bg-white dark:bg-background-dark/50 border-t border-background-light/50 dark:border-background-dark/80 px-4 pt-2 pb-4 shadow-t">
+<div class="flex justify-around">
+<a class="flex flex-col items-center justify-center gap-1 w-20 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-20 text-primary" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-xs font-bold">Track</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1 w-20 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>

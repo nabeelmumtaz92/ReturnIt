@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - New Return Order</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#f98006",
+              "background-light": "#f8f7f5",
+              "background-dark": "#23190f",
+              "foreground-light": "#1c140d",
+              "foreground-dark": "#f8f7f5",
+              "input-light": "#f8f7f5",
+              "input-dark": "#2d2015",
+              "border-light": "#e9dbce",
+              "border-dark": "#4a3b2c",
+              "placeholder-light": "#9e7347",
+              "placeholder-dark": "#a8998a",
+            },
+            fontFamily: {
+              display: ["Work Sans", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.5rem",
+              lg: "1rem",
+              xl: "1.5rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+<style>
+      .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239e7347' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 0.5rem center;
+        background-repeat: no-repeat;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .dark .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a8998a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm p-4">
+<div class="flex items-center">
+<button class="p-2 -ml-2">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+</svg>
+</button>
+<h1 class="text-lg font-bold text-center flex-1 pr-8">New Return Order</h1>
+</div>
+</header>
+<main class="flex-grow px-4 pb-8 space-y-8">
+<section>
+<h2 class="text-2xl font-bold mb-4">Package Details</h2>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-2" for="tracking-number">Tracking Number</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="tracking-number" placeholder="Enter tracking number" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="item-description">Item Description</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="item-description" placeholder="Describe the item(s) being returned" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="return-reason">Return Reason</label>
+<select class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary form-select appearance-none" id="return-reason">
+<option>Select reason</option>
+<option>Wrong item</option>
+<option>Damaged</option>
+<option>Changed mind</option>
+</select>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold mb-4">Pickup Address</h2>
+<div class="space-y-4">
+<div>
+<label class="block text-sm font-medium mb-2" for="address1">Address Line 1</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="address1" placeholder="Street address, P.O. box" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="address2">Address Line 2 (Optional)</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="address2" placeholder="Apartment, suite, etc." type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium mb-2" for="city">City</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="city" placeholder="City" type="text"/>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="state">State</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="state" placeholder="State" type="text"/>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2" for="zip">Zip Code</label>
+<input class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary placeholder-placeholder-light dark:placeholder-placeholder-dark" id="zip" placeholder="Enter zip code" type="text"/>
+</div>
+<div class="aspect-video w-full rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIpd6goO7Sq4NMtJbUnFyMk3tzWYT-iNoAGoMcJNz6lhCNi2KDAfLuuV1FT2w-Cxd4L_mIBwM8DDln7be3V4mYIWk1heX1nQqweK2WI4UCq6arPWSB_8kfOlO4XE9cwW99ezESqJ6D5tS62eU8sR9lEnLooHfDeC5Z1tAC-4JToOrp1mQPjBns7IBVX8ybxEn37eW-cI_0fHKKGJzp7Cj6WlQ4g0pwkDKVl2dVK2ci_T9jI691adWgSEyvPraIuQUyAMIuDki-JEY5");'></div>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold mb-4">Desired Action</h2>
+<div class="flex gap-3">
+<label class="flex-1 cursor-pointer">
+<input checked="" class="sr-only" name="action" type="radio"/>
+<div class="text-center py-3 px-4 rounded-DEFAULT border-2 border-border-light dark:border-border-dark font-medium ring-2 ring-transparent peer-checked:border-primary peer-checked:ring-primary/30">Return</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="action" type="radio"/>
+<div class="text-center py-3 px-4 rounded-DEFAULT border-2 border-border-light dark:border-border-dark font-medium ring-2 ring-transparent peer-checked:border-primary peer-checked:ring-primary/30">Exchange</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="sr-only" name="action" type="radio"/>
+<div class="text-center py-3 px-4 rounded-DEFAULT border-2 border-border-light dark:border-border-dark font-medium ring-2 ring-transparent peer-checked:border-primary peer-checked:ring-primary/30">Donation</div>
+</label>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold mb-4">Payment</h2>
+<div>
+<label class="block text-sm font-medium mb-2" for="payment-method">Payment Method</label>
+<select class="w-full h-12 px-4 bg-input-light dark:bg-input-dark border border-border-light dark:border-border-dark rounded-DEFAULT focus:ring-primary focus:border-primary form-select appearance-none" id="payment-method">
+<option>Select payment method</option>
+<option>Credit Card</option>
+<option>PayPal</option>
+</select>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold mb-4">Order Summary</h2>
+<div class="bg-input-light dark:bg-input-dark rounded-lg p-4 space-y-3 divide-y divide-border-light dark:divide-border-dark">
+<div class="flex justify-between items-center pt-3 first:pt-0">
+<p class="text-sm text-placeholder-light dark:text-placeholder-dark">Items</p>
+<p class="text-sm font-medium">Running shoes</p>
+</div>
+<div class="flex justify-between items-start pt-3 first:pt-0">
+<p class="text-sm text-placeholder-light dark:text-placeholder-dark">Pickup Address</p>
+<p class="text-sm font-medium text-right">123 Main St, San Francisco, CA</p>
+</div>
+<div class="flex justify-between items-center pt-3 first:pt-0">
+<p class="text-sm text-placeholder-light dark:text-placeholder-dark">Action</p>
+<p class="text-sm font-medium">Return</p>
+</div>
+<div class="flex justify-between items-center pt-3 first:pt-0">
+<p class="text-sm text-placeholder-light dark:text-placeholder-dark">Payment</p>
+<p class="text-sm font-medium">Credit Card</p>
+</div>
+</div>
+</section>
+</main>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm p-4">
+<button class="w-full h-12 bg-primary text-white font-bold rounded-DEFAULT flex items-center justify-center">
+          Submit Order
+        </button>
+</footer>
+</div>
+
+</body></html>
