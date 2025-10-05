@@ -1349,46 +1349,47 @@ export default function BookPickup() {
         </div>
       </div>
 
-      {/* Header */}
-      <header className="w-full bg-white/80 backdrop-blur-sm border-b border-amber-200 sticky top-0 z-50 relative">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/')} className="text-amber-800 hover:text-amber-900" data-testid="button-back-home">
-              <ArrowLeft className="h-4 w-4 mr-2" /> Back
+      {/* Sticky Header - Stitch Pattern */}
+      <header className="bg-[#f8f7f5]/80 dark:bg-[#231b0f]/80 backdrop-blur-sm sticky top-0 z-50 border-b border-primary/10">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center h-16">
+            <Button variant="ghost" size="sm" onClick={() => setLocation('/')} className="p-2 -ml-2" data-testid="button-back-home">
+              <ArrowLeft className="h-5 w-5" />
             </Button>
-            <Link href="/"><div className="text-xl font-bold text-amber-900 cursor-pointer hover:text-amber-700 transition-colors">Return It</div></Link>
-            <span className="text-xl font-bold text-amber-900">Book Pickup</span>
-          </div>
-          <div className="text-amber-800 text-sm">
-            Welcome, {user?.firstName || user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email?.split('@')[0] || 'User'}
+            <h1 className="text-lg font-bold text-center flex-1 pr-8">New Return Order</h1>
           </div>
         </div>
       </header>
 
-      {/* Card */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card className="bg-white/90 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="flex items-center text-amber-900">
-              <Package className="h-5 w-5 mr-2" /> Schedule Return Pickup
-            </CardTitle>
-            <CardDescription>
-              {currentStep === 'step1' && "Let's start with your contact information and pickup address"}
-              {currentStep === 'step2' && "Tell us about the items you're returning"}
-              {currentStep === 'step3' && "Set your pickup preferences and return authorization"}
-              {currentStep === 'step4' && "Review your order and complete payment"}
-            </CardDescription>
+      {/* Main Form Card - Stitch Shadow Pattern */}
+      <div className="container mx-auto px-4 py-6 max-w-3xl">
+        <div className="bg-card rounded-xl shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border border-border">
+          <div className="p-6 border-b border-border">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold mb-2">
+                {currentStep === 'step1' && "Contact Information"}
+                {currentStep === 'step2' && "Return Details"}
+                {currentStep === 'step3' && "Pickup Preferences"}
+                {currentStep === 'step4' && "Payment & Review"}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {currentStep === 'step1' && "Let's start with your contact information and pickup address"}
+                {currentStep === 'step2' && "Tell us about the items you're returning"}
+                {currentStep === 'step3' && "Set your pickup preferences and return authorization"}
+                {currentStep === 'step4' && "Review your order and complete payment"}
+              </p>
+            </div>
 
-            {/* Progress */}
-            <div className="flex items-center justify-between mt-4 px-2">
+            {/* Progress Indicator - Stitch Style */}
+            <div className="flex items-center justify-between px-1">
               {(['step1','step2','step3','step4'] as const).map((s, i) => (
-                <div key={s} className="flex items-center space-x-2">
-                  <div className={`h-2 w-8 rounded-full ${currentStep === s ? 'bg-amber-600' : 'bg-amber-200'}`}></div>
-                  <span className={`text-xs ${currentStep === s ? 'text-amber-900 font-semibold' : 'text-amber-600'}`}>{i+1}/4</span>
+                <div key={s} className="flex items-center gap-2 flex-1">
+                  <div className={`h-1 flex-1 rounded-full transition-colors ${currentStep === s || (['step2','step3','step4'].includes(currentStep) && i < (['step1','step2','step3','step4'] as const).indexOf(currentStep)) ? 'bg-primary' : 'bg-muted'}`}></div>
+                  {i < 3 && <div className="w-2"></div>}
                 </div>
               ))}
             </div>
-          </CardHeader>
+          </div>
 
           <form
             onSubmit={
@@ -1398,14 +1399,14 @@ export default function BookPickup() {
               handleStep4Submit
             }
           >
-            <CardContent className="space-y-6">
+            <div className="p-6 space-y-6">
               {currentStep === 'step1' && <Step1 />}
               {currentStep === 'step2' && <Step2 />}
               {currentStep === 'step3' && <Step3 />}
               {currentStep === 'step4' && <Step4 />}
-            </CardContent>
+            </div>
           </form>
-        </Card>
+        </div>
       </div>
 
       <Footer />
