@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Advanced Reporting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23f99806' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-background-dark dark:text-background-light">
+<div class="p-8">
+<header class="flex items-center justify-between pb-8">
+<button class="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 text-primary">
+<span class="material-symbols-outlined">
+                    arrow_back
+                </span>
+</button>
+<h1 class="text-xl font-bold">Reports</h1>
+<div class="w-10"></div>
+</header>
+<main>
+<section class="mb-8">
+<h2 class="text-2xl font-bold mb-4">Report Generation</h2>
+<div class="space-y-4">
+<div>
+<label class="sr-only" for="report-type">Report Type</label>
+<select class="form-select w-full px-4 py-3 bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-lg focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-primary/60 dark:placeholder-primary/80" id="report-type">
+<option>Select Report Type</option>
+<option>Summary of Returns</option>
+<option>Regional Analysis</option>
+<option>Service Type Breakdown</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="sr-only" for="start-date">Start Date</label>
+<input class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-lg focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-primary/60 dark:placeholder-primary/80" id="start-date" placeholder="Start Date" type="text"/>
+</div>
+<div>
+<label class="sr-only" for="end-date">End Date</label>
+<input class="w-full px-4 py-3 bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-lg focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-primary/60 dark:placeholder-primary/80" id="end-date" placeholder="End Date" type="text"/>
+</div>
+</div>
+<div>
+<label class="sr-only" for="region">Region</label>
+<select class="form-select w-full px-4 py-3 bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-lg focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-primary/60 dark:placeholder-primary/80" id="region">
+<option>Select Region</option>
+<option>North America</option>
+<option>Europe</option>
+<option>Asia-Pacific</option>
+</select>
+</div>
+<div>
+<label class="sr-only" for="service-type">Service Type</label>
+<select class="form-select w-full px-4 py-3 bg-background-light dark:bg-background-dark border border-primary/20 dark:border-primary/40 rounded-lg focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-primary/60 dark:placeholder-primary/80" id="service-type">
+<option>Select Service Type</option>
+<option>Standard Delivery</option>
+<option>Express Delivery</option>
+<option>Reverse Logistics</option>
+</select>
+</div>
+<button class="w-full py-3 font-bold text-white bg-primary rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+                        Generate Report
+                    </button>
+</div>
+</section>
+<section>
+<h2 class="text-2xl font-bold mb-4">Report Output</h2>
+<div class="space-y-4">
+<div class="bg-background-light dark:bg-background-dark border border-primary/10 dark:border-primary/20 p-4 rounded-lg flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAOsm-UJy0ECbYVgn6l1nbPNxto-LeCxwyUec45tSR4aSdgfMOAMEGMO29xcgIgneiQrDJaHKZB2FXSzl7KUVHzh38ebmmgXr5asKlXkulgeL0VKMDk9LK7myxhX0N_6Leg_SRGCoCvvYoOIDagtOZsbcPjiaYQLthg7LnZSG6C_fCOIkcVrwaz8qRypZPhqRQnQuPqJFEyFHPpQewe3X-RJW3WERt6OXtqPuwMECEmdwNvoRSP3pbsU0RiOCE3EN6kDlKnBvyyg_NT");'></div>
+<div class="flex-grow">
+<p class="text-sm text-primary/80 dark:text-primary/70">Return It Report</p>
+<h3 class="font-bold text-base">Summary of Returns</h3>
+<p class="text-sm text-primary/80 dark:text-primary/70">Generated on 2024-01-15</p>
+</div>
+<button class="text-primary">
+<span class="material-symbols-outlined">
+                                more_vert
+                            </span>
+</button>
+</div>
+<div class="bg-background-light dark:bg-background-dark border border-primary/10 dark:border-primary/20 p-4 rounded-lg flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAiRqVdP1_S2sSgj39flMY1dKboWS1GfeGflHZxG2icaqsdg5vk8reUafquzwi561smcOkqsCrSl0Xpub3gSXWDb5hAvDG_NnHAX8NijKvpjm8B-MXb0XUUQS61enceeCx-GeJnRrYeQdgvI1xSCoBoWMP88QUF5XxPCtShqpyW-mBp2Beh8hXbUhNmcNQcxCzx9VT3hcLJNZn_8udAl4N6t5GXg2rPXLciJ4Yw01FfZ4Wy_29bBGp08Xin9UlPjDN9cNOQdSEGirK1");'></div>
+<div class="flex-grow">
+<p class="text-sm text-primary/80 dark:text-primary/70">Return It Report</p>
+<h3 class="font-bold text-base">Regional Analysis</h3>
+<p class="text-sm text-primary/80 dark:text-primary/70">Generated on 2024-01-10</p>
+</div>
+<button class="text-primary">
+<span class="material-symbols-outlined">
+                                more_vert
+                            </span>
+</button>
+</div>
+<div class="bg-background-light dark:bg-background-dark border border-primary/10 dark:border-primary/20 p-4 rounded-lg flex items-center gap-4">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center flex-shrink-0" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB3gXgeNVLeRlG-qsJ12FnFHwcTahFyF3JnZaLSxmuMjgo-Ycq1bS9MsF65mRcX4uGNaodwhfPKnB5pniqiXjZH_naIfxn6AZjxo0UKlKIQ5MpPSN0zd42KZ0nrnYEtCOUy_-S6acKRC9AauTmaM6q_AdfXjJk-X08BGC9oXdjjc-BRHJ3yWOSJH_ZZL_OOAWmUGBpmr9mOO1zpaQL4YR1oXBp_Fn6Hssm6kSzql7J1dbWF-N762jW8_FrUTRbsrwVPMob28xjV9vBc");'></div>
+<div class="flex-grow">
+<p class="text-sm text-primary/80 dark:text-primary/70">Return It Report</p>
+<h3 class="font-bold text-base">Service Type Breakdown</h3>
+<p class="text-sm text-primary/80 dark:text-primary/70">Generated on 2023-12-20</p>
+</div>
+<button class="text-primary">
+<span class="material-symbols-outlined">
+                                more_vert
+                            </span>
+</button>
+</div>
+</div>
+</section>
+</main>
+</div>
+
+</body></html>

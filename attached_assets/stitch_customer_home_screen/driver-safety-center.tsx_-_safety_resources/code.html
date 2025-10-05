@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Safety Resources</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Work Sans', sans-serif;
+        }
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+        details[open] summary .arrow-down {
+            transform: rotate(180deg);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<button class="text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="flex-1 text-lg font-bold text-center text-background-dark dark:text-background-light pr-8">Safety Resources</h1>
+</div>
+</header>
+<main class="flex-grow p-6 space-y-6">
+<details class="group bg-primary/10 dark:bg-primary/20 rounded-lg">
+<summary class="flex items-center justify-between p-4 cursor-pointer">
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light">Safe Driving Practices</h2>
+<span class="material-symbols-outlined arrow-down text-background-dark dark:text-background-light transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 pb-4 text-background-dark/80 dark:text-background-light/80">
+<ul class="space-y-2 list-disc list-inside">
+<li>Always wear your seatbelt.</li>
+<li>Maintain a safe following distance.</li>
+<li>Avoid distractions like phone use.</li>
+<li>Obey all traffic laws and speed limits.</li>
+<li>Be aware of your surroundings and potential hazards.</li>
+</ul>
+</div>
+</details>
+<details class="group bg-primary/10 dark:bg-primary/20 rounded-lg">
+<summary class="flex items-center justify-between p-4 cursor-pointer">
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light">Emergency Procedures</h2>
+<span class="material-symbols-outlined arrow-down text-background-dark dark:text-background-light transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 pb-4 text-background-dark/80 dark:text-background-light/80">
+<ul class="space-y-2 list-disc list-inside">
+<li>Ensure your safety and the safety of others first.</li>
+<li>Call emergency services immediately.</li>
+<li>Exchange information with other parties involved.</li>
+<li>Contact Return It support to report the incident.</li>
+</ul>
+</div>
+</details>
+<details class="group bg-primary/10 dark:bg-primary/20 rounded-lg">
+<summary class="flex items-center justify-between p-4 cursor-pointer">
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light">Package Handling</h2>
+<span class="material-symbols-outlined arrow-down text-background-dark dark:text-background-light transition-transform duration-300">expand_more</span>
+</summary>
+<div class="px-4 pb-4 text-background-dark/80 dark:text-background-light/80">
+<ul class="space-y-2 list-disc list-inside">
+<li>Secure packages properly to prevent shifting.</li>
+<li>Use appropriate lifting techniques to avoid injury.</li>
+<li>Be cautious when delivering to ensure safety.</li>
+<li>Follow Return It's guidelines for damaged packages.</li>
+</ul>
+</div>
+</details>
+<div class="p-4 bg-primary/10 dark:bg-primary/20 rounded-lg">
+<h2 class="text-lg font-bold text-background-dark dark:text-background-light mb-2">Roadside &amp; Support</h2>
+<p class="text-background-dark/80 dark:text-background-light/80 mb-4">For immediate assistance, contact Return It support. Our team is available 24/7.</p>
+<a class="flex items-center justify-center w-full gap-2 px-4 py-3 font-bold text-white bg-primary rounded-lg shadow-md hover:bg-primary/90" href="tel:1-800-RETURN-IT">
+<span class="material-symbols-outlined">call</span>
+                    Call 1-800-RETURN-IT
+                </a>
+</div>
+</main>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-t border-primary/20 dark:border-primary/30">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+<span class="text-xs font-medium">Deliveries</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-primary" href="#">
+<div class="bg-primary/20 dark:bg-primary/30 p-2 rounded-full">
+<span class="material-symbols-outlined text-primary">shield</span>
+</div>
+<span class="text-xs font-bold">Safety</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-background-dark/60 dark:text-background-light/60" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+
+</body></html>

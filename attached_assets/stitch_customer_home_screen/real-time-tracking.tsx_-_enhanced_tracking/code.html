@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Order Tracking</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+            "text-light": "#1c160d",
+            "text-dark": "#f8f7f5",
+            "text-subtle-light": "#6b5e4a",
+            "text-subtle-dark": "#a89984",
+            "border-light": "#e9dece",
+            "border-dark": "#3c3224"
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="p-8">
+<header class="flex items-center justify-between mb-8">
+<button class="text-text-light dark:text-text-dark">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold text-text-light dark:text-text-dark">Return It Tracking</h1>
+<div class="w-8"></div>
+</header>
+<main>
+<div class="mb-6">
+<h2 class="text-2xl font-bold text-text-light dark:text-text-dark">Order #1234567890</h2>
+<p class="text-primary font-medium">In Transit</p>
+</div>
+<div class="aspect-video w-full rounded-xl bg-cover bg-center mb-6" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDqFpGzy0x4GCCSnqh5s0GQIBzwinvwlzH33qjkx47Z301z68ExRSgIcovu2TXYW6bYN3_n188s6-Ch2xiPh1NTW_iRGFubjJqTMLFBzhghPjv88ZOqsWzytPOR5xKQW5GCm83ijXrNMePT9Y5CYGB9Yo1tsNJ5HIh6W3f-QjszEn67cBKOOG-dCW8E6bQ7j-fICKy7Ky2dfxy-Go4e99lcbeh0Q5Xfq-6Ya6QnH2O1LsTdpeJxZaZ4jEfB_SZBX-FhVWiNluBbh8C1");'></div>
+<div class="bg-primary/10 dark:bg-primary/20 p-4 rounded-lg mb-8">
+<p class="font-bold text-primary">Estimated Delivery: Today, 3:00 PM - 5:00 PM</p>
+</div>
+<div class="space-y-6">
+<div>
+<h3 class="text-lg font-bold text-text-light dark:text-text-dark mb-4">Delivery Details</h3>
+<div class="space-y-4">
+<div class="p-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg">
+<p class="font-semibold text-text-light dark:text-text-dark">Delivery Address</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark">123 Main Street, San Francisco, CA 94105</p>
+</div>
+<div class="flex justify-between items-center p-4 bg-background-light dark:bg-background-dark border border-border-light dark:border-border-dark rounded-lg">
+<div>
+<p class="font-semibold text-text-light dark:text-text-dark">Driver</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark">John D.</p>
+</div>
+<button class="bg-primary p-3 rounded-full text-white">
+<span class="material-symbols-outlined">call</span>
+</button>
+</div>
+</div>
+</div>
+<div>
+<h3 class="text-lg font-bold text-text-light dark:text-text-dark mb-4">Tracking History</h3>
+<div class="relative pl-8">
+<div class="absolute left-4 top-0 bottom-0 w-0.5 bg-border-light dark:bg-border-dark"></div>
+<div class="relative mb-8">
+<div class="absolute -left-5 top-1.5 w-3 h-3 bg-primary rounded-full"></div>
+<p class="font-semibold text-text-light dark:text-text-dark">Package scanned at depot</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm">Today, 10:00 AM</p>
+</div>
+<div class="relative mb-8">
+<div class="absolute -left-5 top-1.5 w-3 h-3 bg-primary rounded-full"></div>
+<p class="font-semibold text-text-light dark:text-text-dark">Package picked up</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm">Today, 9:00 AM</p>
+</div>
+<div class="relative">
+<div class="absolute -left-5 top-1.5 w-3 h-3 bg-primary rounded-full"></div>
+<p class="font-semibold text-text-light dark:text-text-dark">Order placed</p>
+<p class="text-text-subtle-light dark:text-text-subtle-dark text-sm">Yesterday, 5:00 PM</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

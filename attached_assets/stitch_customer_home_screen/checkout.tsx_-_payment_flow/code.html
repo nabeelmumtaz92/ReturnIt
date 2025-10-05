@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Payment</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                        "content-light": "#1f1f1f",
+                        "content-dark": "#e0e0e0",
+                        "card-light": "#ffffff",
+                        "card-dark": "#2d2d2d",
+                        "subtle-light": "#f0f0f0",
+                        "subtle-dark": "#383838",
+                        "border-light": "#e5e7eb",
+                        "border-dark": "#4b5563"
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24
+        }
+        input[type="radio"]:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-content-light dark:text-content-dark">
+<div class="container mx-auto max-w-lg">
+<div class="flex flex-col min-h-screen">
+<header class="p-4 flex items-center">
+<button class="p-2 -ml-2">
+<span class="material-symbols-outlined text-content-light dark:text-content-dark">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold text-center flex-1 text-content-light dark:text-content-dark">Return It - Payment</h1>
+<div class="w-8"></div>
+</header>
+<main class="flex-grow p-4 space-y-6">
+<section class="bg-card-light dark:bg-card-dark p-6 rounded-xl shadow-sm">
+<h2 class="text-lg font-semibold mb-4 text-content-light dark:text-content-dark">Order Summary</h2>
+<div class="space-y-3">
+<div class="flex justify-between">
+<span class="text-content-light/80 dark:text-content-dark/80">Subtotal</span>
+<span>$45.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-content-light/80 dark:text-content-dark/80">Shipping</span>
+<span>$5.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-content-light/80 dark:text-content-dark/80">Taxes</span>
+<span>$2.50</span>
+</div>
+<div class="border-t border-border-light dark:border-border-dark my-3"></div>
+<div class="flex justify-between font-bold text-lg">
+<span>Total</span>
+<span>$52.50</span>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-lg font-semibold mb-4 text-content-light dark:text-content-dark">Payment Method</h2>
+<div class="space-y-4">
+<label class="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10 border-border-light dark:border-border-dark dark:has-[:checked]:bg-primary/20">
+<input checked="" class="form-radio h-5 w-5 border-border-light dark:border-border-dark bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" name="payment-method" type="radio"/>
+<span class="font-medium">Credit Card</span>
+<div class="ml-auto flex items-center space-x-2">
+<img alt="Visa" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-eATaKjGed8SfZmSDvpUPFbJlV_vK7VBsUOs_5E_s_o_lrnPIAf5CMA5wLP5VqjJk93U-hxZhF2zadXzGSSGrDVzTvYdju_htKjYRaYhSwB84IVstZ09eXqqho-JLAcC3ChaXR83zNw0xD-NEdXjzo19tZiP40oECPvZLchzI5m7dbpunv9o2cB7Z-PDGLWfx1_xu_-MQlU-8ZqsrGQ1jXLxMwNbX3ZNk8Ij5VLPsQNC8YzlGlZcMRZ1b0MCvzz_XDvu5UAj2RWGT"/>
+<img alt="Mastercard" class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBR1y6eg8Pvqbgqnjopj5UAG3O1xhHUnYMn9nKwEy56vG2Yn9VJlAKFiU7T02SHsSBT3OfHYpo5PfyFmoQ0rstdGQ_mknLao1DwkmsKTGQb247EhzMwqVxTR-HXjCpeLp2CEGTqNWMvbZ3cQsGyAlrKkHEEE-oRjxdAklK7TiZvga3To50gjA-ocCSR_otP8OQsDHFVy4LqVlDj7J-qdVCo9B1Bw_FaZXYIgq2562T2ygLLvDurBazVopFVkp46foY13oPdBSxgeTq"/>
+</div>
+</label>
+<label class="flex items-center gap-4 rounded-lg border p-4 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10 border-border-light dark:border-border-dark dark:has-[:checked]:bg-primary/20">
+<input class="form-radio h-5 w-5 border-border-light dark:border-border-dark bg-transparent text-primary focus:ring-primary focus:ring-offset-0 checked:bg-primary" name="payment-method" type="radio"/>
+<span class="font-medium">PayPal</span>
+<img alt="PayPal" class="h-6 ml-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjz5LHaIzpy8vNLROew7c49Qk1mtpdf7uDZ5EihzjdiLl0n7HTlYKqD8PjX0LBXp8wkfCAKCaCn2UpeHgYEC7mW942FUYGLUvndFgZnu3HFf2hZMV9CwAI9Zh6TbTV-HHvUS_bLhzC4FKLd660lQfD4W6fwEEr3HrgzysQicEmDW8TAq0jzttKm9SUEFZyvI3RktjA8sXnk590TEP5mBEf6XkDvdyC6WWfjnTpdf2w8BfyqpluBmx6qUpdY1S3NLex5l6SftjtL-1i"/>
+</label>
+</div>
+</section>
+<section class="bg-card-light dark:bg-card-dark p-6 rounded-xl shadow-sm space-y-4">
+<h2 class="text-lg font-semibold text-content-light dark:text-content-dark">Card Details</h2>
+<div class="space-y-4">
+<div>
+<label class="text-sm font-medium text-content-light/80 dark:text-content-dark/80" for="card-number">Card Number</label>
+<div class="relative mt-1">
+<input class="form-input w-full rounded-md border-border-light dark:border-border-dark bg-subtle-light dark:bg-subtle-dark placeholder-content-light/50 dark:placeholder-content-dark/50 focus:border-primary focus:ring-primary" id="card-number" placeholder="0000 0000 0000 0000" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-content-light/50 dark:text-content-dark/50">credit_card</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="text-sm font-medium text-content-light/80 dark:text-content-dark/80" for="expiry-date">Expiry Date</label>
+<input class="form-input mt-1 w-full rounded-md border-border-light dark:border-border-dark bg-subtle-light dark:bg-subtle-dark placeholder-content-light/50 dark:placeholder-content-dark/50 focus:border-primary focus:ring-primary" id="expiry-date" placeholder="MM/YY" type="text"/>
+</div>
+<div>
+<label class="text-sm font-medium text-content-light/80 dark:text-content-dark/80" for="cvv">CVV</label>
+<input class="form-input mt-1 w-full rounded-md border-border-light dark:border-border-dark bg-subtle-light dark:bg-subtle-dark placeholder-content-light/50 dark:placeholder-content-dark/50 focus:border-primary focus:ring-primary" id="cvv" placeholder="123" type="text"/>
+</div>
+</div>
+<div>
+<label class="text-sm font-medium text-content-light/80 dark:text-content-dark/80" for="card-name">Name on Card</label>
+<input class="form-input mt-1 w-full rounded-md border-border-light dark:border-border-dark bg-subtle-light dark:bg-subtle-dark placeholder-content-light/50 dark:placeholder-content-dark/50 focus:border-primary focus:ring-primary" id="card-name" placeholder="Enter name" type="text"/>
+</div>
+</div>
+</section>
+</main>
+<footer class="p-4 sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-border-light dark:border-border-dark">
+<button class="w-full bg-primary text-white font-bold py-4 rounded-lg text-lg hover:bg-primary/90 transition-colors">
+                    Confirm Payment - $52.50
+                </button>
+</footer>
+</div>
+</div>
+
+</body></html>

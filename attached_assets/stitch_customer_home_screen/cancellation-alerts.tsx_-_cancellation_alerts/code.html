@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f90606",
+              "background-light": "#f8f5f5",
+              "background-dark": "#230f0f",
+            },
+            fontFamily: {
+              "display": ["Work Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<title>Return It - Order Cancellations</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+<div class="relative flex h-auto min-h-screen w-full flex-col justify-between p-6">
+<div class="flex-grow">
+<header class="flex items-center justify-between pb-4">
+<button class="flex size-10 items-center justify-center rounded-full bg-primary/10 text-gray-800 dark:text-white dark:bg-primary/20">
+<span class="material-symbols-outlined">
+              arrow_back
+            </span>
+</button>
+<h1 class="text-lg font-bold text-center text-gray-900 dark:text-white">Order Cancellations</h1>
+<div class="size-10"></div>
+</header>
+<main class="space-y-4">
+<h2 class="text-2xl font-bold text-gray-900 dark:text-white pt-4">Recent Cancellations</h2>
+<div class="space-y-3">
+<div class="flex items-start gap-4 rounded-lg bg-white dark:bg-background-dark p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">
+                      cancel
+                  </span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-900 dark:text-white">Order #12345</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Customer: Sarah Miller</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Reason: Customer Request</p>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">5 min ago</p>
+</div>
+<div class="flex items-start gap-4 rounded-lg bg-white dark:bg-background-dark p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">
+                        cancel
+                    </span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-900 dark:text-white">Order #67890</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Driver: Alex Johnson</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Reason: Driver Unavailable</p>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">12 min ago</p>
+</div>
+<div class="flex items-start gap-4 rounded-lg bg-white dark:bg-background-dark p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">
+                        cancel
+                    </span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-900 dark:text-white">Order #11223</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Customer: Emily Davis</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Reason: Incorrect Address</p>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">25 min ago</p>
+</div>
+<div class="flex items-start gap-4 rounded-lg bg-white dark:bg-background-dark p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">
+                        cancel
+                    </span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-900 dark:text-white">Order #33445</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Customer: Michael Brown</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Reason: Customer Request</p>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">40 min ago</p>
+</div>
+<div class="flex items-start gap-4 rounded-lg bg-white dark:bg-background-dark p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+<div class="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined text-2xl">
+                        cancel
+                    </span>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-900 dark:text-white">Order #55667</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Driver: David Lee</p>
+<p class="text-sm text-gray-600 dark:text-gray-400">Reason: Driver Unavailable</p>
+</div>
+<p class="text-sm text-gray-500 dark:text-gray-400">1 hr ago</p>
+</div>
+</div>
+</main>
+</div>
+<footer class="sticky bottom-0 bg-background-light dark:bg-background-dark border-t border-gray-200 dark:border-gray-700 py-2">
+<nav class="flex justify-around">
+<a class="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-xs font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-xs font-medium">Orders</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg bg-primary text-white" href="#">
+<span class="material-symbols-outlined">cancel</span>
+<span class="text-xs font-medium">Cancellations</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 text-gray-500 dark:text-gray-400" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

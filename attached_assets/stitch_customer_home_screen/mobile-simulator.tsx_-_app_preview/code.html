@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Mobile App Preview</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .font-display {
+      font-family: 'Work Sans', sans-serif;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-black dark:text-white">
+<div class="flex flex-col h-screen p-8">
+<header class="flex items-center justify-between pb-4">
+<div class="flex-1"></div>
+<h1 class="text-xl font-bold text-center flex-1">Return It</h1>
+<div class="flex-1 flex justify-end">
+<button class="p-2 rounded-full hover:bg-primary/20">
+<svg class="w-6 h-6" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+<line x1="4" x2="20" y1="12" y2="12"></line>
+<line x1="4" x2="20" y1="6" y2="6"></line>
+<line x1="4" x2="20" y1="18" y2="18"></line>
+</svg>
+</button>
+</div>
+</header>
+<main class="flex-grow flex flex-col">
+<div class="text-center mb-8">
+<h2 class="text-3xl font-bold tracking-tight">Mobile App Preview</h2>
+<p class="text-black/60 dark:text-white/60 max-w-2xl mx-auto mt-2">
+          Click on the mobile app preview below to navigate through the simulated screens. This interactive representation allows you to experience the Return It driver mobile app as if you were using it on your phone.
+        </p>
+</div>
+<div class="flex-grow flex justify-center items-center">
+<div class="relative mx-auto border-black dark:border-background-light/50 bg-black border-[14px] rounded-xl h-[600px] w-[300px] shadow-xl">
+<div class="w-[148px] h-[18px] bg-black top-0 rounded-b-lg left-1/2 -translate-x-1/2 absolute"></div>
+<div class="h-[46px] w-[3px] bg-black absolute -start-[17px] top-[124px] rounded-s-lg"></div>
+<div class="h-[46px] w-[3px] bg-black absolute -start-[17px] top-[178px] rounded-s-lg"></div>
+<div class="h-[64px] w-[3px] bg-black absolute -end-[17px] top-[142px] rounded-e-lg"></div>
+<div class="rounded-lg overflow-hidden w-full h-full bg-white">
+<div class="flex flex-col h-full bg-background-light dark:bg-background-dark">
+<div class="flex-grow p-4 flex flex-col justify-center items-center text-center cursor-pointer">
+<div class="w-full bg-center bg-no-repeat aspect-[9/16] bg-cover rounded-lg" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDHZgX1fru6tonnjaVQHWSarYoYOescr2qUKbRHvcac6D1Np_XIiL_29DjZU8uktyNAXGi-OutieiigyfTT5j-lbTQN8sN-8UyuWvYoP_M0uugnAICNQ6qkwqDUhGx7Eh69y50xfOLbDCvaB9CqwKQI__m-k7ou8s5abY_l89LqYPoByHvpg4v_-OBRMqg756gIYP45j2q2wR7Crg_wPJLtoXBI90hxfjSdBvIMloJhZySvdoMjLfoPC_Gv-fPaWNhq8G2ojCtVRdvq");'></div>
+<div class="mt-4">
+<h3 class="font-bold text-lg">Return It Driver App</h3>
+<p class="text-sm text-black/60 dark:text-white/60">Dashboard</p>
+<span class="inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full bg-primary/20 text-primary">Click to interact</span>
+</div>
+</div>
+<nav class="flex justify-around items-center p-2 border-t border-black/10 dark:border-white/10">
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-primary" href="#">
+<svg class="bi bi-house-door-fill" fill="currentColor" height="24" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5z"></path>
+</svg>
+<span class="text-xs font-medium">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-black/60 dark:text-white/60 hover:text-primary" href="#">
+<svg class="bi bi-briefcase" fill="currentColor" height="24" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3h6V2.5A1.5 1.5 0 0 0 9.5 1h-3zM8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+<path d="M4 1.5A1.5 1.5 0 0 0 2.5 3V4h-1A1.5 1.5 0 0 0 0 5.5v8A1.5 1.5 0 0 0 1.5 15h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 4h-1V3A1.5 1.5 0 0 0 11.5 1.5h-7zM2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5V5h-11V4z"></path>
+</svg>
+<span class="text-xs font-medium">Jobs</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-black/60 dark:text-white/60 hover:text-primary" href="#">
+<svg class="bi bi-geo-alt" fill="currentColor" height="24" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94zM8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10z"></path>
+<path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+</svg>
+<span class="text-xs font-medium">Map</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-black/60 dark:text-white/60 hover:text-primary" href="#">
+<svg class="bi bi-person" fill="currentColor" height="24" viewBox="0 0 16 16" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"></path>
+</svg>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>

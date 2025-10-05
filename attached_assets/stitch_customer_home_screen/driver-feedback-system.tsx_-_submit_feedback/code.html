@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Submit Feedback</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23f99806' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col h-screen justify-between p-6">
+<div class="flex flex-col space-y-8">
+<header class="flex items-center justify-between">
+<button class="text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">
+                        arrow_back
+                    </span>
+</button>
+<h1 class="text-xl font-bold text-background-dark dark:text-background-light">Return It</h1>
+<div class="w-6"></div> 
+</header>
+<div class="text-center">
+<h2 class="text-2xl font-bold text-background-dark dark:text-background-light">Submit Feedback</h2>
+<p class="text-primary/80 mt-2">Your feedback helps us improve.</p>
+</div>
+<form class="space-y-6">
+<div>
+<label class="block text-sm font-medium text-background-dark dark:text-background-light mb-2" for="feedback-category">Category</label>
+<div class="relative">
+<select class="form-select w-full appearance-none bg-background-light dark:bg-background-dark border border-primary/30 dark:border-primary/50 text-background-dark dark:text-background-light rounded-lg focus:ring-primary focus:border-primary block p-4" id="feedback-category" name="feedback-category">
+<option>App Issue</option>
+<option>Customer Experience</option>
+<option>Payment Question</option>
+<option>Other</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-sm font-medium text-background-dark dark:text-background-light mb-2" for="feedback-details">Details</label>
+<textarea class="w-full bg-background-light dark:bg-background-dark border border-primary/30 dark:border-primary/50 text-background-dark dark:text-background-light rounded-lg focus:ring-primary focus:border-primary block p-4 placeholder:text-primary/50" id="feedback-details" name="feedback-details" placeholder="Tell us more..." rows="5"></textarea>
+</div>
+<div>
+<label class="flex items-center justify-between w-full p-4 border-2 border-dashed border-primary/30 rounded-lg cursor-pointer bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30" for="file-upload">
+<span class="text-background-dark dark:text-background-light font-medium">Attach files</span>
+<span class="material-symbols-outlined text-primary">
+                            attach_file
+                        </span>
+</label>
+<input class="hidden" id="file-upload" multiple="" type="file"/>
+</div>
+</form>
+</div>
+<div class="pb-4">
+<button class="w-full bg-primary text-background-dark text-lg font-bold py-4 rounded-xl shadow-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary focus:ring-offset-background-light dark:focus:ring-offset-background-dark transition-colors">
+                Submit Feedback
+            </button>
+</div>
+</div>
+
+</body></html>

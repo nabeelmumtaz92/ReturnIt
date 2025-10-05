@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Rate Your Driver</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .star-rating input[type="radio"] {
+            display: none;
+        }
+        .star-rating .star {
+            cursor: pointer;
+            transition: color 200ms;
+        }
+        .star-rating input[type="radio"]:checked~.star {
+            color: #f99806;
+        }
+        .star-rating .star:hover,
+        .star-rating .star:hover~.star {
+            color: #f99806;
+        }
+        .star-rating input[type="radio"]:checked + .star:hover,
+        .star-rating input[type="radio"]:checked + .star:hover ~ .star,
+        .star-rating input[type="radio"]:checked ~ .star:hover,
+        .star-rating input[type="radio"]:checked ~ .star:hover ~ .star,
+        .star-rating .star:hover ~ input[type="radio"]:checked ~ .star {
+            color: #f99806;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="container mx-auto p-4 flex flex-col min-h-screen">
+<header class="flex items-center justify-between py-2">
+<button class="text-background-dark dark:text-background-light">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+</svg>
+</button>
+<h1 class="text-lg font-bold text-background-dark dark:text-background-light text-center flex-1">Rate Your Return It Driver</h1>
+<div class="w-6"></div>
+</header>
+<main class="flex-grow py-8 px-2 space-y-8">
+<section class="text-center space-y-4">
+<h2 class="text-2xl font-bold text-background-dark dark:text-background-light">How was your experience?</h2>
+<p class="text-background-dark/70 dark:text-background-light/70">Give your Return It driver a rating.</p>
+<div class="star-rating flex justify-center items-center flex-row-reverse text-4xl text-background-dark/30 dark:text-background-light/30">
+<input class="hidden" id="star5" name="rating" type="radio" value="5"/><label class="star" for="star5">★</label>
+<input class="hidden" id="star4" name="rating" type="radio" value="4"/><label class="star" for="star4">★</label>
+<input class="hidden" id="star3" name="rating" type="radio" value="3"/><label class="star" for="star3">★</label>
+<input class="hidden" id="star2" name="rating" type="radio" value="2"/><label class="star" for="star2">★</label>
+<input class="hidden" id="star1" name="rating" type="radio" value="1"/><label class="star" for="star1">★</label>
+</div>
+</section>
+<section>
+<label class="block text-sm font-medium text-background-dark dark:text-background-light mb-2" for="feedback">Add a comment (optional)</label>
+<textarea class="w-full rounded-lg border-primary/30 bg-background-light dark:bg-background-dark focus:ring-primary focus:border-primary text-background-dark dark:text-background-light placeholder-background-dark/50 dark:placeholder-background-light/50" id="feedback" name="feedback" placeholder="Share more details about your experience..." rows="4"></textarea>
+</section>
+<section>
+<h3 class="text-sm font-medium text-background-dark dark:text-background-light mb-3">What went well? (optional)</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Professional</button>
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">On Time</button>
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Friendly</button>
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Handled with Care</button>
+</div>
+</section>
+<section>
+<h3 class="text-sm font-medium text-background-dark dark:text-background-light mb-3">What could be improved? (optional)</h3>
+<div class="flex flex-wrap gap-2">
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Late Arrival</button>
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Unprofessional</button>
+<button class="px-4 py-2 rounded-full text-sm font-medium bg-primary/20 text-background-dark dark:bg-primary/30 dark:text-background-light focus:bg-primary focus:text-white">Item Damaged</button>
+</div>
+</section>
+</main>
+<footer class="mt-auto">
+<button class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-primary/90 transition-colors">Submit Rating</button>
+</footer>
+</div>
+
+</body></html>

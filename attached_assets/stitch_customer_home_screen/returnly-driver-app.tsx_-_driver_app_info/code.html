@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It Driver App</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#1c160d] dark:text-background-light">
+<div class="p-8">
+<header class="flex items-center justify-center mb-8">
+<h1 class="text-2xl font-bold">Return It</h1>
+</header>
+<main class="space-y-8">
+<section class="text-center">
+<h2 class="text-4xl font-black mb-4">Return It Driver App</h2>
+<p class="text-lg text-black/70 dark:text-white/70 max-w-2xl mx-auto">
+          Empower your drivers with the Return It Driver App, designed for seamless returns and deliveries. Real-time navigation, instant alerts, and offline capabilities ensure efficiency on every route.
+        </p>
+</section>
+<div class="relative w-full max-w-sm mx-auto aspect-[10/16] rounded-xl overflow-hidden shadow-2xl">
+<div class="absolute inset-0 bg-center bg-no-repeat bg-cover" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCXgklMartmJU4H6Z5PwzgyTOhxSm-IY-BGe0oAlQVyOGOb8ZGW389QOsjsOXsVHWjlTeevxJOt-5vYDnNmL8qqPtn0a11SnLDSSyTOqVfnRe4O6ATWMhnJC3cacbYg_PjLJIM94iH1aarje7gqijmaMUYZYVa81qtj5ejU9yOKYIa64hmeezjscSqu-IcN6kLiPCuDHPOl7z1mVO4hRU1OqfOMpcg846eAu_nF2TJpmcJ5iFVZHlIBHAdmNu1t1JN-vy5eNZC8LQLV");'></div>
+</div>
+<section>
+<h3 class="text-2xl font-bold text-center mb-6">Key Features</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+<div class="flex items-center gap-4 p-4 bg-primary/10 dark:bg-primary/20 rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">navigation</span>
+<h4 class="font-bold text-base">Real-Time Navigation</h4>
+</div>
+<div class="flex items-center gap-4 p-4 bg-primary/10 dark:bg-primary/20 rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">notifications_active</span>
+<h4 class="font-bold text-base">Instant Alerts</h4>
+</div>
+<div class="flex items-center gap-4 p-4 bg-primary/10 dark:bg-primary/20 rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl">wifi_off</span>
+<h4 class="font-bold text-base">Offline Capabilities</h4>
+</div>
+</div>
+</section>
+<section class="pt-4">
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<button class="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-primary text-black font-bold rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+<svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M16.5823 8.58315C16.5823 6.94015 15.2638 5.62165 13.6208 5.62165C13.2503 5.62165 12.8798 5.69865 12.5648 5.82015C11.6443 4.98165 10.4578 4.41615 9.13933 4.41615C7.03933 4.41615 5.27583 5.92665 4.96083 7.96215C4.94283 7.96215 4.92483 7.96215 4.90683 7.96215C3.30833 7.96215 2.01283 9.25765 2.01283 10.8562C2.01283 12.4547 3.30833 13.7502 4.90683 13.7502H9.08383C8.96233 13.4172 8.90683 13.0662 8.90683 12.6957C8.90683 10.4432 10.7498 8.58315 12.9843 8.58315C13.3373 8.58315 13.6723 8.63865 13.9873 8.73265C14.5178 8.16715 15.2018 7.78165 15.9628 7.64365C16.3333 8.24415 16.5823 8.58315 16.5823 8.58315ZM19.9868 9.92115C19.9868 9.92115 18.2588 12.3837 18.2588 15.0212C18.2588 17.6587 20.3018 19.5837 20.3018 19.5837C20.3018 19.5837 22.3448 17.6407 22.3448 15.0212C22.3448 12.3837 19.9868 9.92115 19.9868 9.92115Z"></path></svg>
+<span>Download on App Store</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-background-light dark:bg-white/10 border border-primary/20 dark:border-primary/40 text-black dark:text-white font-bold rounded-lg shadow-md hover:bg-primary/10 dark:hover:bg-primary/20 transition-colors">
+<svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M4.68593 2.18181L16.4883 8.96695L4.85193 15.5393L4.68593 2.18181ZM18.4111 10.3204L5.32172 1.34863C4.90839 1.11181 4.41739 1.25881 4.18056 1.67214L4.17822 1.67664L4.01522 16.9205C3.99906 17.3821 4.34156 17.7716 4.80322 17.7878C4.85572 17.7894 4.90806 17.7853 4.95939 17.7753L18.4239 12.0151C18.8427 11.8318 19.0664 11.3853 18.9406 10.9478C18.8406 10.5969 18.5583 10.3546 18.2127 10.3223L18.4111 10.3204Z"></path></svg>
+<span>Get it on Google Play</span>
+</button>
+</div>
+</section>
+</main>
+</div>
+
+</body></html>

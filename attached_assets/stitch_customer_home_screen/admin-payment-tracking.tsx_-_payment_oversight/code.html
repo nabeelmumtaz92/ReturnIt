@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Payments</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#f99806",
+              "background-light": "#fcfaf8",
+              "background-dark": "#1c160d",
+              "foreground-light": "#1c160d",
+              "foreground-dark": "#fcfaf8",
+              "surface-light": "#f4efe6",
+              "surface-dark": "#2a2217",
+              "border-light": "#e9dece",
+              "border-dark": "#382d1e",
+              "muted-foreground-light": "#9e7b47",
+              "muted-foreground-dark": "#9e7b47",
+            },
+            fontFamily: {
+              "display": ["Work Sans", "sans-serif"]
+            },
+            borderRadius: {
+              "DEFAULT": "0.5rem",
+              "lg": "1rem",
+              "xl": "1.5rem",
+              "full": "9999px"
+            },
+            spacing: {
+                "2xl": "1.5rem"
+            }
+          },
+        },
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-foreground-light dark:text-foreground-dark">
+<div class="flex flex-col min-h-screen">
+<header class="sticky top-0 z-10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex items-center p-4">
+<button class="p-2">
+<span class="material-symbols-outlined text-foreground-light dark:text-foreground-dark">arrow_back</span>
+</button>
+<h1 class="flex-1 text-lg font-bold text-center">Payments</h1>
+<div class="w-10"></div>
+</div>
+</header>
+<main class="flex-1 p-2xl">
+<section class="mb-8">
+<h2 class="text-xl font-bold mb-4">Summary</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-lg">
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Total Payouts</p>
+<p class="text-2xl font-bold">$12,500</p>
+</div>
+<div class="bg-surface-light dark:bg-surface-dark p-4 rounded-lg">
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Pending Payouts</p>
+<p class="text-2xl font-bold">$2,500</p>
+</div>
+<div class="col-span-1 sm:col-span-2 bg-surface-light dark:bg-surface-dark p-4 rounded-lg">
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Completed Payouts</p>
+<p class="text-2xl font-bold">$10,000</p>
+</div>
+</div>
+</section>
+<section>
+<h2 class="text-xl font-bold mb-4">Transactions</h2>
+<div class="mb-4 flex items-center gap-4">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground-light dark:text-muted-foreground-dark">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-light dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-lg focus:ring-primary focus:border-primary" placeholder="Search transactions..." type="text"/>
+</div>
+<button class="p-3 bg-primary text-white rounded-lg">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="border-b border-border-light dark:border-border-dark">
+<tr class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">
+<th class="py-3 px-4 font-medium">Transaction</th>
+<th class="py-3 px-4 font-medium">Amount</th>
+<th class="py-3 px-4 font-medium">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-border-light dark:border-border-dark even:bg-surface-light dark:even:bg-surface-dark">
+<td class="py-4 px-4">
+<p class="font-medium">#1234567890</p>
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Jul 26, 2024</p>
+</td>
+<td class="py-4 px-4 font-medium">$100.00</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Completed</span>
+</td>
+</tr>
+<tr class="border-b border-border-light dark:border-border-dark even:bg-surface-light dark:even:bg-surface-dark">
+<td class="py-4 px-4">
+<p class="font-medium">#9876543210</p>
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Jul 25, 2024</p>
+</td>
+<td class="py-4 px-4 font-medium">$200.00</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+</td>
+</tr>
+<tr class="border-b border-border-light dark:border-border-dark even:bg-surface-light dark:even:bg-surface-dark">
+<td class="py-4 px-4">
+<p class="font-medium">#5432167890</p>
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Jul 24, 2024</p>
+</td>
+<td class="py-4 px-4 font-medium">$150.00</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Completed</span>
+</td>
+</tr>
+<tr class="border-b border-border-light dark:border-border-dark even:bg-surface-light dark:even:bg-surface-dark">
+<td class="py-4 px-4">
+<p class="font-medium">#8765432109</p>
+<p class="text-sm text-muted-foreground-light dark:text-muted-foreground-dark">Jul 23, 2024</p>
+</td>
+<td class="py-4 px-4 font-medium">$250.00</td>
+<td class="py-4 px-4">
+<span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</main>
+<footer class="sticky bottom-0 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm border-t border-border-light dark:border-border-dark">
+<nav class="flex justify-around p-2">
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-muted-foreground-light dark:text-muted-foreground-dark" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-muted-foreground-light dark:text-muted-foreground-dark" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-xs font-medium">Orders</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined">payment</span>
+<span class="text-xs font-medium">Payments</span>
+</a>
+<a class="flex flex-col items-center gap-1 p-2 rounded-lg text-muted-foreground-light dark:text-muted-foreground-dark" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-xs font-medium">Settings</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

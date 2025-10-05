@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Return It - Customer Portal</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#f99806",
+                        "background-light": "#f8f7f5",
+                        "background-dark": "#231b0f",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="flex flex-col min-h-screen">
+<header class="bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm sticky top-0 z-10">
+<div class="container mx-auto px-4">
+<div class="flex items-center justify-between h-16">
+<h1 class="text-2xl font-bold text-background-dark dark:text-background-light">Return It</h1>
+<nav class="flex items-center space-x-4">
+<a class="text-sm font-bold text-background-dark dark:text-background-light" href="#">Login</a>
+<a class="text-sm font-bold bg-primary text-white px-4 py-2 rounded-full" href="#">Book Pickup</a>
+</nav>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<div class="p-4 space-y-4">
+<div class="relative rounded-xl overflow-hidden shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)]">
+<img alt="Logistics illustration" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUbQlDfYaVtgS3tWOfIfTlqSGvj16iNxYWPyFnh0xEfkwMW3SZy9m7RaX8gvu2T4DNnImQCZxeC6roQOkVDGBd6SHVmOgqnCpSjc1n-lGKZ6sTuiJUi0daISvbYdzMHWyPdL4uCcXE83qHIXhqSk9iME8YT_jB0V-fKiGmgS4iuL6vpJpFSyrQK_4TTHHGBVqjEaUwzgNnqqMyq7NLYefPSs7isNLDvt_XYQz4R-YgWu63sDtzqBdT01gg135C7TzG1OwsN9jUS9zx"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/10"></div>
+<div class="relative p-8 pt-48 flex flex-col items-start justify-end text-white">
+<h2 class="text-4xl font-black leading-tight tracking-tight">Streamline Your Returns</h2>
+<p class="mt-2 max-w-md text-base font-light">Effortlessly manage and track your returns with Return It's intuitive platform. Experience hassle-free returns and exchanges.</p>
+<button class="mt-6 bg-primary text-white font-bold py-3 px-6 rounded-full text-base">Get Started</button>
+</div>
+</div>
+</div>
+</main>
+<footer class="bg-background-light dark:bg-background-dark border-t border-primary/20 dark:border-primary/10 sticky bottom-0">
+<nav class="container mx-auto px-4 py-2 flex justify-around">
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M224,115.55V208a16,16,0,0,1-16,16H168a16,16,0,0,1-16-16V168a8,8,0,0,0-8-8H112a8,8,0,0,0-8,8v40a16,16,0,0,1-16,16H48a16,16,0,0,1-16-16V115.55a16,16,0,0,1,5.17-11.78l80-75.48.11-.11a16,16,0,0,1,21.53,0,1.14,1.14,0,0,0,.11.11l80,75.48A16,16,0,0,1,224,115.55Z"></path></svg>
+<span class="text-xs font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-background-dark/50 dark:text-background-light/50" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M223.68,66.15,135.68,18a15.88,15.88,0,0,0-15.36,0l-88,48.17a16,16,0,0,0-8.32,14v95.64a16,16,0,0,0,8.32,14l88,48.17a15.88,15.88,0,0,0,15.36,0l88-48.17a16,16,0,0,0,8.32-14V80.18A16,16,0,0,0,223.68,66.15ZM128,32l80.34,44-29.77,16.3-80.35-44ZM128,120,47.66,76l33.9-18.56,80.34,44ZM40,90l80,43.78v85.79L40,175.82Zm176,85.78h0l-80,43.79V133.82l32-17.51V152a8,8,0,0,0,16,0V107.55L216,90v85.77Z"></path></svg>
+<span class="text-xs font-medium">Returns</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-background-dark/50 dark:text-background-light/50" href="#">
+<svg fill="currentColor" height="24" viewBox="0 0 256 256" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg>
+<span class="text-xs font-medium">Profile</span>
+</a>
+</nav>
+</footer>
+</div>
+
+</body></html>

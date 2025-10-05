@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans%3Awght%40400%3B500%3B700%3B900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+      tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "primary": "#f99806",
+          "background-light": "#f8f7f5",
+          "background-dark": "#231b0f",
+        },
+        fontFamily: {
+          "display": ["Work Sans"]
+        },
+        borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+      },
+    },
+  }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<title>Return It - Route Planning</title>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+<header class="flex-shrink-0 bg-background-light dark:bg-background-dark p-4 shadow-md z-20">
+<div class="flex items-center justify-between">
+<button class="text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">
+              menu
+            </span>
+</button>
+<h1 class="text-xl font-bold text-background-dark dark:text-background-light">Return It</h1>
+<div class="w-8"></div>
+</div>
+</header>
+<main class="flex-1 flex flex-col relative">
+<div class="flex-1 bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSRmgEe_xHg3oNn-R331jIqp0a-kDetBSuZDd9AhzaLM4WgDPRbZNyViU8aQJxmxsfJ2McHVOM7Mu2hcQxzj1DqO5LWfImM5bMyAEa0eGXhTwea6z3ALAJK0jyr4ewZhAPi_YSTVYiKvDmYuhF-WPKzt9TQIep9Lt-wUZ2WtdO2YreR1p-ql-vD5AXUTTBCRu-dSENkAzzO19NKjVtPEdUEsSnli_11J5r6MEgZebl326KZWHO_rNemw2H3S6uiu0b6_oREB2v-EYU");'>
+<div class="p-4 flex flex-col justify-between h-full">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-background-dark/50 dark:text-background-light/50">
+                search
+              </span>
+<input class="form-input w-full rounded-full border-none bg-background-light dark:bg-background-dark py-3 pl-10 pr-4 text-background-dark dark:text-background-light placeholder-background-dark/50 dark:placeholder-background-light/50 shadow-lg" placeholder="Search for a location" type="text"/>
+</div>
+<div class="flex flex-col items-end gap-3">
+<div class="flex flex-col rounded-lg bg-background-light dark:bg-background-dark shadow-lg">
+<button class="p-2.5 text-background-dark dark:text-background-light border-b border-background-dark/10 dark:border-background-light/10">
+<span class="material-symbols-outlined">add</span>
+</button>
+<button class="p-2.5 text-background-dark dark:text-background-light">
+<span class="material-symbols-outlined">remove</span>
+</button>
+</div>
+<button class="flex size-12 items-center justify-center rounded-full bg-background-light dark:bg-background-dark text-background-dark dark:text-background-light shadow-lg">
+<span class="material-symbols-outlined">navigation</span>
+</button>
+</div>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 right-0">
+<div class="bg-background-light dark:bg-background-dark rounded-t-xl shadow-[0_-4px_12px_rgba(0,0,0,0.1)] flex flex-col">
+<div class="py-3 flex justify-center">
+<div class="w-10 h-1.5 bg-primary/20 dark:bg-primary/30 rounded-full"></div>
+</div>
+<div class="px-4 pb-4">
+<h3 class="text-lg font-bold text-background-dark dark:text-background-light mb-4">Route Stops</h3>
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-background-dark dark:text-background-light">Return It HQ</p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">123 Main St, Anytown, USA</p>
+</div>
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">
+                      location_on
+                    </span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-background-dark dark:text-background-light">Customer Pickup 1</p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">456 Elm St, Anytown, USA</p>
+</div>
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">
+                      location_on
+                    </span>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">drag_indicator</span>
+</div>
+<div class="flex-1">
+<p class="font-semibold text-background-dark dark:text-background-light">Customer Pickup 2</p>
+<p class="text-sm text-background-dark/60 dark:text-background-light/60">789 Oak Ave, Anytown, USA</p>
+</div>
+<div class="flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12 text-primary">
+<span class="material-symbols-outlined">
+                      location_on
+                    </span>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full bg-primary text-background-dark font-bold py-3 px-4 rounded-lg shadow-md hover:bg-primary/90 transition-colors">
+                Optimize Route
+              </button>
+</div>
+<div class="h-safe-area-bottom bg-background-light dark:bg-background-dark"></div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
