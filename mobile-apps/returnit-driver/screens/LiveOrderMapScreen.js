@@ -9,7 +9,7 @@ import {
   Dimensions 
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import MapView, { Marker, Circle, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Circle, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import * as Location from 'expo-location';
 import apiClient from '../services/api-client';
 import authService from '../services/auth-service';
@@ -31,6 +31,9 @@ export default function LiveOrderMapScreen({ navigation }) {
   const [driverLocation, setDriverLocation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [locationPermission, setLocationPermission] = useState(false);
+  const [clusters, setClusters] = useState([]);
+  const [summary, setSummary] = useState(null);
+  const [showBatchSuggestion, setShowBatchSuggestion] = useState(true);
   const mapRef = useRef(null);
   const wsRef = useRef(null);
 
@@ -142,29 +145,72 @@ export default function LiveOrderMapScreen({ navigation }) {
 
   const fetchAvailableOrders = async () => {
     try {
-      const orders = await apiClient.getAvailableJobs();
+      // Use the new AI-powered nearby orders API with 15-mile radius
+      const response = await apiClient.getNearbyOrders(15, 20);
       
-      const orderLocations = orders.map((order) => ({
-        id: order.id,
-        trackingNumber: order.trackingNumber,
-        latitude: parseFloat(order.pickupLatitude) || 38.6270 + (Math.random() - 0.5) * 0.1,
-        longitude: parseFloat(order.pickupLongitude) || -90.1994 + (Math.random() - 0.5) * 0.1,
-        pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}`,
-        deliveryAddress: order.retailer || order.returnAddress,
-        estimatedPay: order.driverTotalEarning || calculateEstimatedPay(order),
-        distance: driverLocation ? calculateDistance(driverLocation, {
-          latitude: parseFloat(order.pickupLatitude) || 38.6270,
-          longitude: parseFloat(order.pickupLongitude) || -90.1994
-        }) : 'Unknown',
-        packageType: order.packageType || 'Standard',
-        createdAt: order.createdAt,
-        priority: determinePriority(order)
-      }));
+      if (!response || !response.nearbyOrders) {
+        console.log('No nearby orders found');
+        setAvailableOrders([]);
+        return;
+      }
+
+      // Transform nearby orders with proximity data
+      const orderLocations = response.nearbyOrders.map((order) => {
+        const pickupLat = order.location?.pickup?.lat || 38.6270;
+        const pickupLng = order.location?.pickup?.lng || -90.1994;
+
+        return {
+          id: order.id,
+          trackingNumber: order.trackingNumber,
+          latitude: pickupLat,
+          longitude: pickupLng,
+          pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}`,
+          deliveryAddress: order.retailer || order.returnAddress,
+          estimatedPay: order.earnings?.estimated || order.driverTotalEarning || calculateEstimatedPay(order),
+          distance: order.proximity?.distanceFormatted || 'Unknown',
+          isCloseby: order.proximity?.isCloseby || false,
+          closebyIndicator: order.proximity?.closebyIndicator || null,
+          estimatedDuration: order.proximity?.estimatedDuration || null,
+          packageType: order.packageType || 'Standard',
+          createdAt: order.createdAt,
+          priority: determinePriority(order)
+        };
+      });
 
       setAvailableOrders(orderLocations);
+      
+      // Store clusters and summary for batch suggestions
+      setClusters(response.clusters || []);
+      setSummary(response.summary || null);
+
+      // Show batch suggestion if there's a best opportunity
+      if (response.summary?.bestOpportunity && response.clusters?.length > 0) {
+        setShowBatchSuggestion(true);
+      }
+
     } catch (error) {
-      console.error('Error fetching available orders:', error);
-      Alert.alert('Connection Issue', 'Unable to load available orders. Check your connection.');
+      console.error('Error fetching nearby orders:', error);
+      // Fallback to regular available orders if nearby API fails
+      try {
+        const orders = await apiClient.getAvailableJobs();
+        const orderLocations = orders.map((order) => ({
+          id: order.id,
+          trackingNumber: order.trackingNumber,
+          latitude: parseFloat(order.pickupLatitude) || 38.6270 + (Math.random() - 0.5) * 0.1,
+          longitude: parseFloat(order.pickupLongitude) || -90.1994 + (Math.random() - 0.5) * 0.1,
+          pickupAddress: `${order.pickupStreetAddress}, ${order.pickupCity}`,
+          deliveryAddress: order.retailer || order.returnAddress,
+          estimatedPay: order.driverTotalEarning || calculateEstimatedPay(order),
+          distance: 'Unknown',
+          isCloseby: false,
+          packageType: order.packageType || 'Standard',
+          createdAt: order.createdAt,
+          priority: determinePriority(order)
+        }));
+        setAvailableOrders(orderLocations);
+      } catch (fallbackError) {
+        Alert.alert('Connection Issue', 'Unable to load available orders. Check your connection.');
+      }
     }
   };
 
@@ -285,6 +331,67 @@ export default function LiveOrderMapScreen({ navigation }) {
           </Marker>
         )}
 
+        {/* Cluster Visualization: Circles around grouped orders */}
+        {clusters && clusters.length > 0 && clusters.map((cluster, index) => (
+          <Circle
+            key={`cluster-${index}`}
+            center={{
+              latitude: cluster.center.lat,
+              longitude: cluster.center.lng
+            }}
+            radius={3000} // 3km radius circle around cluster center
+            strokeColor={cluster.isBestOpportunity ? '#f99806' : 'rgba(249, 152, 6, 0.5)'}
+            strokeWidth={cluster.isBestOpportunity ? 3 : 2}
+            fillColor={cluster.isBestOpportunity ? 'rgba(249, 152, 6, 0.15)' : 'rgba(249, 152, 6, 0.08)'}
+          />
+        ))}
+
+        {/* Cluster Route Lines: Connect orders within same cluster */}
+        {clusters && clusters.length > 0 && clusters.map((cluster, clusterIndex) => {
+          if (cluster.orderCount < 2) return null;
+          
+          // Get coordinates for orders in this cluster
+          const clusterOrderCoords = cluster.orderIds
+            .map(orderId => availableOrders.find(o => o.id === orderId))
+            .filter(order => order)
+            .map(order => ({
+              latitude: order.latitude,
+              longitude: order.longitude
+            }));
+
+          if (clusterOrderCoords.length < 2) return null;
+
+          return (
+            <Polyline
+              key={`cluster-route-${clusterIndex}`}
+              coordinates={clusterOrderCoords}
+              strokeColor={cluster.isBestOpportunity ? '#f99806' : 'rgba(249, 152, 6, 0.6)'}
+              strokeWidth={cluster.isBestOpportunity ? 4 : 3}
+              lineDashPattern={[10, 5]}
+            />
+          );
+        })}
+
+        {/* Cluster Center Markers: Show cluster info */}
+        {clusters && clusters.length > 0 && clusters.map((cluster, index) => (
+          <Marker
+            key={`cluster-center-${index}`}
+            coordinate={{
+              latitude: cluster.center.lat,
+              longitude: cluster.center.lng
+            }}
+            anchor={{ x: 0.5, y: 0.5 }}
+          >
+            <View style={[
+              styles.clusterMarker,
+              cluster.isBestOpportunity && styles.clusterMarkerBest
+            ]}>
+              <Text style={styles.clusterMarkerCount}>{cluster.orderCount}</Text>
+              <Text style={styles.clusterMarkerEarnings}>{cluster.metrics.totalEarnings}</Text>
+            </View>
+          </Marker>
+        ))}
+
         {/* Available Order Markers */}
         {availableOrders.map((order) => (
           <Marker
@@ -297,10 +404,14 @@ export default function LiveOrderMapScreen({ navigation }) {
           >
             <View style={[
               styles.orderMarker,
-              { borderColor: getPriorityColor(order.priority) }
+              { borderColor: order.isCloseby ? '#f99806' : getPriorityColor(order.priority) },
+              order.isCloseby && { borderWidth: 6 }
             ]}>
-              <Text style={styles.orderMarkerIcon}>📦</Text>
-              <View style={styles.orderMarkerBadge}>
+              <Text style={styles.orderMarkerIcon}>{order.isCloseby ? '🎯' : '📦'}</Text>
+              <View style={[
+                styles.orderMarkerBadge,
+                order.isCloseby && { backgroundColor: '#f99806' }
+              ]}>
                 <Text style={styles.orderMarkerBadgeText}>${order.estimatedPay.toFixed(0)}</Text>
               </View>
             </View>
@@ -312,7 +423,31 @@ export default function LiveOrderMapScreen({ navigation }) {
       <View style={styles.statsContainer}>
         <Text style={styles.statsCount}>{availableOrders.length}</Text>
         <Text style={styles.statsLabel}>Available</Text>
+        {summary && summary.closeby > 0 && (
+          <View style={styles.closebyBadge}>
+            <Text style={styles.closebyBadgeText}>🎯 {summary.closeby} Close by</Text>
+          </View>
+        )}
       </View>
+
+      {/* Smart Batch Suggestion Banner */}
+      {showBatchSuggestion && summary?.bestOpportunity && clusters?.length > 0 && (
+        <View style={styles.batchSuggestionBanner}>
+          <View style={styles.batchSuggestionContent}>
+            <Text style={styles.batchSuggestionIcon}>💡</Text>
+            <View style={styles.batchSuggestionTextContainer}>
+              <Text style={styles.batchSuggestionTitle}>Smart Batch Opportunity!</Text>
+              <Text style={styles.batchSuggestionText}>{summary.bestOpportunity}</Text>
+            </View>
+            <TouchableOpacity 
+              onPress={() => setShowBatchSuggestion(false)}
+              style={styles.batchSuggestionClose}
+            >
+              <Text style={styles.batchSuggestionCloseText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       {/* Center on Driver Button */}
       {driverLocation && (
@@ -348,6 +483,12 @@ export default function LiveOrderMapScreen({ navigation }) {
           </View>
 
           <View style={styles.orderDetailsBody}>
+            {selectedOrder.closebyIndicator && (
+              <View style={styles.closebyIndicatorBanner}>
+                <Text style={styles.closebyIndicatorText}>{selectedOrder.closebyIndicator}</Text>
+              </View>
+            )}
+
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>📍 Pickup</Text>
               <Text style={styles.detailValue}>{selectedOrder.pickupAddress}</Text>
@@ -362,6 +503,13 @@ export default function LiveOrderMapScreen({ navigation }) {
               <Text style={styles.detailLabel}>🚗 Distance</Text>
               <Text style={styles.detailValue}>{selectedOrder.distance}</Text>
             </View>
+
+            {selectedOrder.estimatedDuration && (
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>⏱️ Duration</Text>
+                <Text style={styles.detailValue}>{selectedOrder.estimatedDuration} min</Text>
+              </View>
+            )}
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>💰 Estimated Pay</Text>
@@ -611,5 +759,110 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '700',
+  },
+  closebyBadge: {
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#FFF7ED',
+    borderRadius: 6,
+  },
+  closebyBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#f99806',
+    textAlign: 'center',
+  },
+  batchSuggestionBanner: {
+    position: 'absolute',
+    top: 180,
+    left: 20,
+    right: 20,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f99806',
+  },
+  batchSuggestionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  batchSuggestionIcon: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  batchSuggestionTextContainer: {
+    flex: 1,
+  },
+  batchSuggestionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#f99806',
+    marginBottom: 4,
+  },
+  batchSuggestionText: {
+    fontSize: 12,
+    color: '#333',
+    lineHeight: 16,
+  },
+  batchSuggestionClose: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  batchSuggestionCloseText: {
+    fontSize: 20,
+    color: '#999',
+  },
+  closebyIndicatorBanner: {
+    backgroundColor: '#FFF7ED',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#f99806',
+  },
+  closebyIndicatorText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#f99806',
+    textAlign: 'center',
+  },
+  clusterMarker: {
+    backgroundColor: 'rgba(249, 152, 6, 0.9)',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+  },
+  clusterMarkerBest: {
+    backgroundColor: '#f99806',
+    borderWidth: 3,
+    transform: [{ scale: 1.1 }],
+  },
+  clusterMarkerCount: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  clusterMarkerEarnings: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
 });

@@ -55,6 +55,21 @@ class APIClient {
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   }
+
+  // Driver-specific methods
+  async getAvailableJobs() {
+    const response = await this.get('/api/driver/available-orders');
+    return response.orders || [];
+  }
+
+  async getNearbyOrders(radius = 15, limit = 20) {
+    const response = await this.get(`/api/driver/nearby-orders?radius=${radius}&limit=${limit}`);
+    return response;
+  }
+
+  async acceptOrder(orderId) {
+    return this.post(`/api/driver/orders/${orderId}/accept`, {});
+  }
 }
 
 export default new APIClient();
