@@ -8126,7 +8126,14 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         },
         lastUpdate: trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].timestamp : order.createdAt,
         estimatedArrival: order.estimatedDeliveryTime,
-        retailer: order.retailer
+        retailer: order.retailer,
+        // Delivery verification photos
+        deliveryPhotos: {
+          verification: order.verificationPhotos || [],
+          completion: order.driverCompletionPhotos || [],
+          signature: order.customerSignature || null,
+          notes: order.deliveryNotes || order.driverCompletionNotes || null
+        }
       });
     } catch (error) {
       console.error("Error fetching tracking information:", error);

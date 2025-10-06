@@ -27,7 +27,9 @@ import {
   User,
   Wifi,
   WifiOff,
-  RefreshCw
+  RefreshCw,
+  Camera,
+  FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -74,6 +76,12 @@ interface TrackingInfo {
   lastUpdate: string;
   estimatedArrival?: string;
   retailer: string;
+  deliveryPhotos?: {
+    verification: Array<{ uri?: string; base64?: string; timestamp?: string }>;
+    completion: Array<{ uri?: string; base64?: string; timestamp?: string }>;
+    signature: string | null;
+    notes: string | null;
+  };
 }
 
 interface TrackingEvent {
@@ -190,6 +198,87 @@ const DriverLocationCard = ({ trackingInfo }: { trackingInfo: TrackingInfo }) =>
             View on Google Maps
           </Button>
         </div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const DeliveryPhotosCard = ({ deliveryPhotos }: { deliveryPhotos?: TrackingInfo['deliveryPhotos'] }) => {
+  if (!deliveryPhotos || (deliveryPhotos.verification.length === 0 && deliveryPhotos.completion.length === 0)) {
+    return null;
+  }
+
+  const allPhotos = [...deliveryPhotos.verification, ...deliveryPhotos.completion];
+  const hasSignature = deliveryPhotos.signature && deliveryPhotos.signature !== '';
+  const hasNotes = deliveryPhotos.notes && deliveryPhotos.notes !== '';
+
+  return (
+    <Card className="w-full border-border">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-foreground">
+          <Camera className="h-5 w-5" />
+          Delivery Verification
+        </CardTitle>
+        <CardDescription className="text-muted-foreground">
+          Photos and signature from your driver
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Photos Grid */}
+        {allPhotos.length > 0 && (
+          <div>
+            <p className="text-sm font-medium text-foreground mb-3">Package Photos ({allPhotos.length})</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {allPhotos.map((photo, index) => {
+                const imageUrl = photo.base64 ? `data:image/jpeg;base64,${photo.base64}` : photo.uri;
+                return (
+                  <div 
+                    key={index}
+                    className="aspect-square rounded-lg overflow-hidden border border-border bg-gray-100 cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => imageUrl && window.open(imageUrl, '_blank')}
+                    data-testid={`delivery-photo-${index}`}
+                  >
+                    {imageUrl ? (
+                      <img 
+                        src={imageUrl} 
+                        alt={`Delivery photo ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Camera className="h-8 w-8 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">Click to view full size</p>
+          </div>
+        )}
+
+        {/* Customer Signature */}
+        {hasSignature && (
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2">Customer Signature</p>
+            <div className="bg-accent rounded-lg p-4 border border-border">
+              <p className="text-foreground font-mono">{deliveryPhotos.signature}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Driver Notes */}
+        {hasNotes && (
+          <div>
+            <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Delivery Notes
+            </p>
+            <div className="bg-accent rounded-lg p-4 border border-border">
+              <p className="text-foreground text-sm">{deliveryPhotos.notes}</p>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -656,6 +745,9 @@ export default function TrackingPage() {
 
             {/* Driver Location Card */}
             <DriverLocationCard trackingInfo={trackingInfo} />
+
+            {/* Delivery Photos and Verification */}
+            <DeliveryPhotosCard deliveryPhotos={trackingInfo.deliveryPhotos} />
 
             {/* Event Timeline */}
             {trackingEvents && (
