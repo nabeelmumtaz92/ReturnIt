@@ -32,6 +32,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { useWebSocketTracking } from '@/hooks/useWebSocket';
+import CustomerTrackingMap from '@/components/CustomerTrackingMap';
 
 const formSchema = z.object({
   trackingNumber: trackingNumberSchema,
@@ -44,11 +45,19 @@ interface TrackingInfo {
   statusDisplayName: string;
   pickup: {
     address: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    } | null;
     scheduledTime?: string;
     actualTime?: string;
   };
   delivery: {
     address?: string;
+    coordinates?: {
+      lat: number;
+      lng: number;
+    } | null;
     estimatedTime?: string;
     actualTime?: string;
   };
@@ -611,6 +620,39 @@ export default function TrackingPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Live Tracking Map */}
+            {trackingInfo.driver.assigned && trackingInfo.driver.currentLocation && trackingInfo.pickup.coordinates && (
+              <Card className="w-full border-border overflow-hidden">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-foreground">
+                    <MapPin className="h-5 w-5" />
+                    Live GPS Tracking
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    Real-time driver location updated automatically
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <CustomerTrackingMap
+                    driverLocation={trackingInfo.driver.currentLocation}
+                    pickupLocation={{
+                      lat: trackingInfo.pickup.coordinates.lat,
+                      lng: trackingInfo.pickup.coordinates.lng,
+                      address: trackingInfo.pickup.address
+                    }}
+                    deliveryLocation={
+                      trackingInfo.delivery.coordinates ? {
+                        lat: trackingInfo.delivery.coordinates.lat,
+                        lng: trackingInfo.delivery.coordinates.lng,
+                        address: trackingInfo.delivery.address || ''
+                      } : undefined
+                    }
+                    orderStatus={trackingInfo.status}
+                  />
+                </CardContent>
+              </Card>
+            )}
 
             {/* Driver Location Card */}
             <DriverLocationCard trackingInfo={trackingInfo} />

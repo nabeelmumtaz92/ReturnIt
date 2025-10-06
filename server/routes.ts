@@ -8107,11 +8107,13 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         statusDisplayName: order.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         pickup: {
           address: `${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}`,
+          coordinates: order.pickupCoordinates || null,
           scheduledTime: order.scheduledPickupTime,
           actualTime: order.actualPickupTime
         },
         delivery: {
           address: order.returnAddress,
+          coordinates: order.returnCoordinates || null,
           estimatedTime: order.estimatedDeliveryTime,
           actualTime: order.actualDeliveryTime
         },
