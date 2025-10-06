@@ -77,8 +77,8 @@ interface TrackingInfo {
   estimatedArrival?: string;
   retailer: string;
   deliveryPhotos?: {
-    verification: Array<{ uri?: string; base64?: string; timestamp?: string }>;
-    completion: Array<{ uri?: string; base64?: string; timestamp?: string }>;
+    verification: Array<string | { uri?: string; base64?: string; timestamp?: string }>;
+    completion: Array<string | { uri?: string; base64?: string; timestamp?: string }>;
     signature: string | null;
     notes: string | null;
   };
@@ -230,7 +230,22 @@ const DeliveryPhotosCard = ({ deliveryPhotos }: { deliveryPhotos?: TrackingInfo[
             <p className="text-sm font-medium text-foreground mb-3">Package Photos ({allPhotos.length})</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {allPhotos.map((photo, index) => {
-                const imageUrl = photo.base64 ? `data:image/jpeg;base64,${photo.base64}` : photo.uri;
+                // Handle both string and object formats
+                let imageUrl: string | null = null;
+                if (typeof photo === 'string') {
+                  // Photo is already a full data URL or URI
+                  imageUrl = photo;
+                } else if (photo && typeof photo === 'object') {
+                  // Photo is an object with base64 or uri property
+                  if (photo.base64) {
+                    imageUrl = photo.base64.startsWith('data:') 
+                      ? photo.base64 
+                      : `data:image/jpeg;base64,${photo.base64}`;
+                  } else if (photo.uri) {
+                    imageUrl = photo.uri;
+                  }
+                }
+                
                 return (
                   <div 
                     key={index}

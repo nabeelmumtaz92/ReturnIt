@@ -8127,10 +8127,22 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         lastUpdate: trackingEvents.length > 0 ? trackingEvents[trackingEvents.length - 1].timestamp : order.createdAt,
         estimatedArrival: order.estimatedDeliveryTime,
         retailer: order.retailer,
-        // Delivery verification photos
+        // Delivery verification photos - normalize to data URLs
         deliveryPhotos: {
-          verification: order.verificationPhotos || [],
-          completion: order.driverCompletionPhotos || [],
+          verification: Array.isArray(order.verificationPhotos) 
+            ? order.verificationPhotos.map((photo: any) => 
+                typeof photo === 'string' && !photo.startsWith('data:') 
+                  ? `data:image/jpeg;base64,${photo}`
+                  : photo
+              )
+            : [],
+          completion: Array.isArray(order.driverCompletionPhotos) 
+            ? order.driverCompletionPhotos.map((photo: any) => 
+                typeof photo === 'string' && !photo.startsWith('data:') 
+                  ? `data:image/jpeg;base64,${photo}`
+                  : photo
+              )
+            : [],
           signature: order.customerSignature || null,
           notes: order.deliveryNotes || order.driverCompletionNotes || null
         }
