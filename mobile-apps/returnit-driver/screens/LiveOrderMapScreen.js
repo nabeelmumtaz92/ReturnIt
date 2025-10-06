@@ -331,7 +331,7 @@ export default function LiveOrderMapScreen({ navigation }) {
           </Marker>
         )}
 
-        {/* Cluster Visualization: Circles around grouped orders */}
+        {/* Cluster Visualization: Subtle circles around grouped orders - only when clusters exist */}
         {clusters && clusters.length > 0 && clusters.map((cluster, index) => (
           <Circle
             key={`cluster-${index}`}
@@ -340,9 +340,9 @@ export default function LiveOrderMapScreen({ navigation }) {
               longitude: cluster.center.lng
             }}
             radius={3000} // 3km radius circle around cluster center
-            strokeColor={cluster.isBestOpportunity ? '#f99806' : 'rgba(249, 152, 6, 0.5)'}
-            strokeWidth={cluster.isBestOpportunity ? 3 : 2}
-            fillColor={cluster.isBestOpportunity ? 'rgba(249, 152, 6, 0.15)' : 'rgba(249, 152, 6, 0.08)'}
+            strokeColor={cluster.isBestOpportunity ? 'rgba(249, 152, 6, 0.6)' : 'rgba(249, 152, 6, 0.3)'}
+            strokeWidth={cluster.isBestOpportunity ? 2 : 1}
+            fillColor={cluster.isBestOpportunity ? 'rgba(249, 152, 6, 0.08)' : 'rgba(249, 152, 6, 0.04)'}
           />
         ))}
 
@@ -835,34 +835,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   clusterMarker: {
-    backgroundColor: 'rgba(249, 152, 6, 0.9)',
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    backgroundColor: 'rgba(249, 152, 6, 0.85)',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-    borderWidth: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+    borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
   clusterMarkerBest: {
-    backgroundColor: '#f99806',
-    borderWidth: 3,
-    transform: [{ scale: 1.1 }],
+    backgroundColor: 'rgba(249, 152, 6, 0.95)',
+    borderWidth: 2,
+    transform: [{ scale: 1.05 }],
   },
   clusterMarkerCount: {
-    fontSize: 16,
-    fontWeight: '900',
+    fontSize: 14,
+    fontWeight: '800',
     color: '#FFFFFF',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   clusterMarkerEarnings: {
-    fontSize: 10,
-    fontWeight: '700',
+    fontSize: 9,
+    fontWeight: '600',
     color: '#FFFFFF',
   },
 });
