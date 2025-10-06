@@ -67,6 +67,18 @@ const isAuthenticated = (req: any, res: any, next: any) => {
   }
 };
 
+// Haversine formula for calculating distance between two coordinates
+function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 3959; // Earth's radius in miles
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLng = (lng2 - lng1) * (Math.PI / 180);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 // Comprehensive Order Reassignment Logic
 async function handleOrderReassignment(
   orderId: string, 
@@ -8585,6 +8597,254 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     } catch (error) {
       console.error("Error fetching available orders:", error);
       res.status(500).json({ message: "Failed to fetch available orders" });
+    }
+  });
+
+  // AI-POWERED NEARBY ORDERS DETECTION (Patent #13: AI Route Optimization)
+  // Shows drivers nearby available orders with intelligent clustering and batching suggestions
+  app.get("/api/driver/nearby-orders", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      if (!user?.isDriver && !user?.isAdmin) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Get query parameters for customization
+      const maxRadius = parseFloat(req.query.radius as string) || 15; // Default 15 miles
+      const maxResults = parseInt(req.query.limit as string) || 20;
+      const includeAssigned = req.query.includeAssigned === 'true';
+
+      // Get driver's current location
+      const driver = await storage.getUser(user.id);
+      if (!driver?.currentLocation) {
+        return res.json({
+          nearbyOrders: [],
+          clusters: [],
+          message: "Location unavailable - please enable GPS",
+          driverLocation: null
+        });
+      }
+
+      const driverLocation = driver.currentLocation;
+
+      // Get all potentially available orders
+      const statuses = includeAssigned 
+        ? ['created', 'confirmed', 'finding_driver', 'assigned']
+        : ['created', 'confirmed', 'finding_driver'];
+      
+      let allOrders: any[] = [];
+      for (const status of statuses) {
+        const orders = await storage.getOrdersByStatus(status);
+        allOrders = allOrders.concat(orders);
+      }
+
+      // Filter and calculate distances for nearby orders
+      interface OrderWithDistance {
+        order: any;
+        distance: number;
+        distanceFormatted: string;
+        isCloseby: boolean;
+        estimatedDuration: number;
+        earnings: number;
+        pickupLocation: { lat: number; lng: number };
+        deliveryLocation: { lat: number; lng: number };
+      }
+
+      const nearbyOrdersWithDistance: OrderWithDistance[] = [];
+
+      for (const order of allOrders) {
+        // Parse pickup coordinates
+        let pickupLat = 0, pickupLng = 0;
+        if (order.pickupCoordinates && typeof order.pickupCoordinates === 'object') {
+          const coords = order.pickupCoordinates as any;
+          pickupLat = coords.lat || coords.latitude || 0;
+          pickupLng = coords.lng || coords.longitude || 0;
+        }
+
+        if (pickupLat === 0 && pickupLng === 0) continue;
+
+        // Calculate distance using Haversine formula
+        const distance = calculateDistance(
+          driverLocation.lat, driverLocation.lng,
+          pickupLat, pickupLng
+        );
+
+        // Only include orders within radius
+        if (distance > maxRadius) continue;
+
+        // Parse delivery coordinates
+        let deliveryLat = 0, deliveryLng = 0;
+        if (order.deliveryCoordinates && typeof order.deliveryCoordinates === 'object') {
+          const coords = order.deliveryCoordinates as any;
+          deliveryLat = coords.lat || coords.latitude || 0;
+          deliveryLng = coords.lng || coords.longitude || 0;
+        }
+
+        // Determine if order is "closeby" (within 3 miles)
+        const isCloseby = distance <= 3;
+
+        // Estimate duration (30 mph average + 15 min stops)
+        const estimatedDuration = Math.round((distance / 30) * 60 + 15);
+
+        // Calculate estimated earnings
+        const baseEarnings = parseFloat(order.deliveryFee || order.totalPrice || '10');
+        const earnings = baseEarnings * 0.70; // 70% driver split
+
+        nearbyOrdersWithDistance.push({
+          order,
+          distance,
+          distanceFormatted: distance < 1 
+            ? `${(distance * 5280).toFixed(0)} feet` 
+            : `${distance.toFixed(1)} miles`,
+          isCloseby,
+          estimatedDuration,
+          earnings,
+          pickupLocation: { lat: pickupLat, lng: pickupLng },
+          deliveryLocation: { lat: deliveryLat, lng: deliveryLng }
+        });
+      }
+
+      // Sort by distance (closest first)
+      nearbyOrdersWithDistance.sort((a, b) => a.distance - b.distance);
+
+      // Limit results
+      const limitedOrders = nearbyOrdersWithDistance.slice(0, maxResults);
+
+      // AI CLUSTERING: Find groups of orders that can be batched efficiently
+      interface OrderCluster {
+        orders: OrderWithDistance[];
+        centerLocation: { lat: number; lng: number };
+        totalDistance: number;
+        totalEarnings: number;
+        totalDuration: number;
+        efficiency: number;
+        suggestion: string;
+      }
+
+      const clusters: OrderCluster[] = [];
+      const clusterRadius = 2; // Orders within 2 miles can be clustered
+
+      // Simple clustering algorithm
+      const processedOrders = new Set<string>();
+      
+      for (const primaryOrder of limitedOrders) {
+        if (processedOrders.has(primaryOrder.order.id)) continue;
+
+        const clusterOrders: OrderWithDistance[] = [primaryOrder];
+        processedOrders.add(primaryOrder.order.id);
+
+        // Find nearby orders that could be batched with this one
+        for (const secondaryOrder of limitedOrders) {
+          if (processedOrders.has(secondaryOrder.order.id)) continue;
+
+          const distanceBetween = calculateDistance(
+            primaryOrder.pickupLocation.lat, 
+            primaryOrder.pickupLocation.lng,
+            secondaryOrder.pickupLocation.lat,
+            secondaryOrder.pickupLocation.lng
+          );
+
+          if (distanceBetween <= clusterRadius) {
+            clusterOrders.push(secondaryOrder);
+            processedOrders.add(secondaryOrder.order.id);
+          }
+
+          // Limit cluster size to 3 orders for quality
+          if (clusterOrders.length >= 3) break;
+        }
+
+        // Only create cluster if there are 2+ orders
+        if (clusterOrders.length >= 2) {
+          // Calculate cluster center (average position)
+          const centerLat = clusterOrders.reduce((sum, o) => sum + o.pickupLocation.lat, 0) / clusterOrders.length;
+          const centerLng = clusterOrders.reduce((sum, o) => sum + o.pickupLocation.lng, 0) / clusterOrders.length;
+
+          // Calculate total metrics
+          const totalDistance = clusterOrders.reduce((sum, o) => sum + o.distance, 0);
+          const totalEarnings = clusterOrders.reduce((sum, o) => sum + o.earnings, 0);
+          const totalDuration = Math.round(clusterOrders[0].estimatedDuration * 1.5 * clusterOrders.length);
+
+          // Calculate efficiency score (earnings per hour)
+          const efficiency = (totalEarnings / (totalDuration / 60));
+
+          // Generate smart suggestion
+          const orderNames = clusterOrders.map(o => o.order.retailer).slice(0, 2).join(' & ');
+          const suggestion = clusterOrders.length === 2
+            ? `Batch ${clusterOrders.length} orders - only ${clusterOrders[1].distanceFormatted} apart! Earn $${totalEarnings.toFixed(2)} in ${totalDuration} min`
+            : `Batch ${clusterOrders.length} orders nearby - earn $${totalEarnings.toFixed(2)} in ${totalDuration} min`;
+
+          clusters.push({
+            orders: clusterOrders,
+            centerLocation: { lat: centerLat, lng: centerLng },
+            totalDistance,
+            totalEarnings,
+            totalDuration,
+            efficiency,
+            suggestion
+          });
+        }
+      }
+
+      // Sort clusters by efficiency (best opportunities first)
+      clusters.sort((a, b) => b.efficiency - a.efficiency);
+
+      // Format response with rich metadata
+      const response = {
+        driverLocation: {
+          lat: driverLocation.lat,
+          lng: driverLocation.lng,
+          accuracy: driverLocation.accuracy
+        },
+        nearbyOrders: limitedOrders.map(item => ({
+          ...item.order,
+          proximity: {
+            distance: item.distance,
+            distanceFormatted: item.distanceFormatted,
+            isCloseby: item.isCloseby,
+            estimatedDuration: item.estimatedDuration,
+            closebyIndicator: item.isCloseby ? `🎯 Close by - ${item.distanceFormatted}` : null
+          },
+          location: {
+            pickup: item.pickupLocation,
+            delivery: item.deliveryLocation
+          },
+          earnings: {
+            estimated: item.earnings,
+            formatted: `$${item.earnings.toFixed(2)}`
+          }
+        })),
+        clusters: clusters.map(cluster => ({
+          orderIds: cluster.orders.map(o => o.order.id),
+          orderCount: cluster.orders.length,
+          center: cluster.centerLocation,
+          metrics: {
+            totalDistance: cluster.totalDistance.toFixed(1) + ' miles',
+            totalEarnings: `$${cluster.totalEarnings.toFixed(2)}`,
+            totalDuration: `${cluster.totalDuration} min`,
+            efficiency: `$${cluster.efficiency.toFixed(0)}/hr`
+          },
+          suggestion: cluster.suggestion,
+          isBestOpportunity: cluster.efficiency === clusters[0]?.efficiency
+        })),
+        summary: {
+          totalNearby: nearbyOrdersWithDistance.length,
+          withinRadius: limitedOrders.length,
+          closeby: limitedOrders.filter(o => o.isCloseby).length,
+          batchOpportunities: clusters.length,
+          bestOpportunity: clusters.length > 0 ? clusters[0].suggestion : null
+        },
+        config: {
+          searchRadius: maxRadius,
+          maxResults,
+          closebyThreshold: 3
+        }
+      };
+
+      res.json(response);
+
+    } catch (error) {
+      console.error("Error fetching nearby orders:", error);
+      res.status(500).json({ message: "Failed to fetch nearby orders" });
     }
   });
 
