@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<title>Return It - Refund Status</title>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Work+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#f99806",
+            "background-light": "#f8f7f5",
+            "background-dark": "#231b0f",
+          },
+          fontFamily: {
+            "display": ["Work Sans"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "1rem",
+            "xl": "1.5rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-black dark:text-white p-6">
+<div class="flex flex-col h-full">
+<header class="flex items-center justify-between mb-8">
+<button class="p-2 rounded-full hover:bg-white/10 dark:hover:bg-black/10">
+<span class="material-symbols-outlined text-black dark:text-white">arrow_back</span>
+</button>
+<h1 class="text-xl font-bold text-black dark:text-white">Refunds</h1>
+<div class="w-10"></div>
+</header>
+<main class="flex-grow">
+<div class="flex items-center gap-4 mb-8">
+<div class="w-16 h-16 rounded-lg bg-cover bg-center" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAV71FiUMdNeZzTdT3ILjwho3MIO8xrgxAJfCSu8YKKvZE6OqiBjh-8eNAxNUho6FW11TcMnRPGzgzYqICqKIQOMQMMrAjqklkhPu1vhsxTvpmyFNXqPdkR16NMLGCNedRIOhW6uHphTvul_nfifURUunxdtvCjpPrg7OL4iYs9WPs-LFON3WYOu7VLUwFW1doIzCZtVx6ZFPnuxLBBq3ia6sR93nZpMXHH3YX60igKaVZW3xKErI1GK1NTKm1PQcTqG7pWTz_CiqoE");'></div>
+<div>
+<p class="text-lg font-bold text-black dark:text-white">Return It - Full Refund</p>
+<p class="text-sm text-black/60 dark:text-white/60">Order #1234567890</p>
+</div>
+</div>
+<div class="space-y-4 mb-10">
+<div class="flex justify-between py-4 border-b border-black/10 dark:border-white/10">
+<p class="text-black/60 dark:text-white/60">Refund Amount</p>
+<p class="font-medium text-black dark:text-white">$50.00</p>
+</div>
+<div class="flex justify-between py-4 border-b border-black/10 dark:border-white/10">
+<p class="text-black/60 dark:text-white/60">Refund Method</p>
+<p class="font-medium text-black dark:text-white">Original Payment Method</p>
+</div>
+<div class="flex justify-between py-4 border-b border-black/10 dark:border-white/10">
+<p class="text-black/60 dark:text-white/60">Status</p>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<p class="font-medium text-black dark:text-white">Processing</p>
+</div>
+</div>
+</div>
+<h2 class="text-xl font-bold mb-6 text-black dark:text-white">Refund Timeline</h2>
+<div class="relative pl-8">
+<div class="absolute left-3 top-0 bottom-0 w-0.5 bg-black/10 dark:bg-white/10"></div>
+<div class="mb-8 relative">
+<div class="absolute -left-[22px] top-1.5 w-5 h-5 bg-primary rounded-full border-4 border-background-light dark:border-background-dark"></div>
+<p class="font-bold text-black dark:text-white">Refund Initiated</p>
+<p class="text-sm text-black/60 dark:text-white/60">Today, 10:00 AM</p>
+</div>
+<div class="mb-8 relative">
+<div class="absolute -left-[22px] top-1.5 w-5 h-5 bg-primary rounded-full border-4 border-background-light dark:border-background-dark"></div>
+<p class="font-bold text-black dark:text-white">Refund Processing</p>
+<p class="text-sm text-black/60 dark:text-white/60">Estimated 2-3 business days</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[22px] top-1.5 w-5 h-5 bg-black/20 dark:bg-white/20 rounded-full border-4 border-background-light dark:border-background-dark"></div>
+<p class="font-bold text-black/60 dark:text-white/60">Refund Completed</p>
+<p class="text-sm text-black/60 dark:text-white/60">Estimated 5-7 business days</p>
+</div>
+</div>
+</main>
+<footer class="mt-12">
+<button class="w-full bg-primary text-background-dark font-bold py-4 rounded-xl text-center">
+            View Order Details
+        </button>
+</footer>
+</div>
+
+</body></html>
