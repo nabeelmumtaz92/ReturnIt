@@ -106,11 +106,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     return urlParams.get('section') || section || 'overview';
   });
   
-  // Sync currentSection with URL when location changes
+  // Sync currentSection with URL when location changes (only if different)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    setCurrentSection(params.get('section') || 'overview');
-  }, [location]);
+    const urlSection = params.get('section') || 'overview';
+    // Only update if the URL section is different from current state
+    if (urlSection !== currentSection) {
+      setCurrentSection(urlSection);
+    }
+  }, [location, currentSection]);
   
   // State for various features
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
