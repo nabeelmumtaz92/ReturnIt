@@ -1,5 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
+import helmet from "helmet";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { validateSecurityConfig, logSecurityStatus } from "./security-startup";
 import { setupVite, serveStatic, log } from "./vite";
@@ -18,6 +20,66 @@ const app = express();
 
 // Trust proxy for HTTPS cookies behind Replit proxy
 app.set('trust proxy', 1);
+
+// SECURITY: Configure security headers with helmet
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "https://embed.tawk.to", "https://www.googletagmanager.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "https:", "blob:"],
+      connectSrc: ["'self'", "https://api.stripe.com", "wss:", "https:"],
+      frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: process.env.NODE_ENV === 'production' ? [] : null
+    }
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true
+  },
+  frameguard: { action: 'deny' },
+  noSniff: true,
+  xssFilter: true
+}));
+
+// SECURITY: Configure CORS with explicit origin whitelist
+const allowedOrigins = [
+  'https://returnit.online',
+  'https://www.returnit.online',
+  'https://returnly.tech',
+  'https://www.returnly.tech',
+  process.env.VITE_API_URL,
+  // Explicitly whitelist the current Replit deployment URL (not wildcard)
+  process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null,
+  process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : null
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    // Strict origin checking - exact match only
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else if (process.env.NODE_ENV === 'development') {
+      // In development, log and allow for debugging
+      console.log(`🔓 CORS: Allowing origin in development: ${origin}`);
+      callback(null, true);
+    } else {
+      // Log rejected origins for security monitoring
+      console.warn(`🚫 CORS: Rejected unauthorized origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'stripe-signature']
+}));
 
 // Enable gzip compression for all responses
 app.use(compression({

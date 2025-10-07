@@ -709,17 +709,26 @@ export class AIAssistant {
 
   static async searchOrders(status?: string, limit: number = 10): Promise<any> {
     try {
-      let query = "SELECT id, user_id, status, pickup_address, delivery_address, created_at FROM orders";
-      if (status) {
-        query += ` WHERE status = '${status}'`;
-      }
-      query += ` ORDER BY created_at DESC LIMIT ${limit}`;
+      // SECURITY: Use parameterized queries to prevent SQL injection
+      const { storage } = await import('./storage');
       
-      const result = await db.execute(query as any);
+      // Use the storage layer which has parameterized queries
+      const allOrders = await storage.getOrders();
+      
+      let filteredOrders = allOrders;
+      if (status) {
+        filteredOrders = allOrders.filter(order => order.status === status);
+      }
+      
+      // Sort by created_at and limit
+      const sortedOrders = filteredOrders
+        .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+        .slice(0, limit);
+      
       return {
         success: true,
-        orders: result,
-        message: `Retrieved ${Array.isArray(result) ? result.length : 0} orders${status ? ` with status '${status}'` : ''}`
+        orders: sortedOrders,
+        message: `Retrieved ${sortedOrders.length} orders${status ? ` with status '${status}'` : ''}`
       };
     } catch (error) {
       return { error: `Failed to search orders: ${error}` };
@@ -727,37 +736,46 @@ export class AIAssistant {
   }
 
   static async executeCustomQuery(sql: string): Promise<any> {
-    try {
-      // Basic safety checks for destructive operations
-      const safeSql = sql.toLowerCase().trim();
-      if (safeSql.includes('drop table') || safeSql.includes('truncate') || safeSql.includes('delete from users')) {
-        return { error: "Potentially destructive query blocked for safety. Use specific user deletion commands instead." };
-      }
-      
-      const result = await db.execute(sql as any);
-      return {
-        success: true,
-        result: result,
-        message: `Query executed successfully. Returned ${Array.isArray(result) ? result.length : 1} result(s).`
-      };
-    } catch (error) {
-      return { error: `Query failed: ${error}` };
-    }
+    // SECURITY: Custom SQL execution disabled to prevent SQL injection vulnerabilities
+    // Use specific admin commands or create dedicated API endpoints for database operations
+    return { 
+      error: "Direct SQL execution is disabled for security. Use specific admin commands (list users, update order status, etc.) instead." 
+    };
   }
 
   static async getRecentActivity(limit: number = 20): Promise<any> {
     try {
-      const activities = await db.execute(`
-        SELECT 'order' as type, id, status, created_at, pickup_address as details FROM orders 
-        UNION ALL 
-        SELECT 'user' as type, id, email as status, created_at, first_name as details FROM users 
-        ORDER BY created_at DESC LIMIT ${limit}
-      ` as any);
+      // SECURITY: Use storage layer with parameterized queries instead of raw SQL
+      const { storage } = await import('./storage');
+      
+      // Get recent orders and users separately
+      const orders = await storage.getOrders();
+      const users = await storage.getUsers();
+      
+      // Combine and format activities
+      const activities = [
+        ...orders.slice(0, Math.floor(limit / 2)).map(o => ({
+          type: 'order',
+          id: o.id,
+          status: o.status,
+          created_at: o.createdAt,
+          details: o.pickupAddress
+        })),
+        ...users.slice(0, Math.floor(limit / 2)).map(u => ({
+          type: 'user',
+          id: u.id,
+          status: u.email,
+          created_at: u.createdAt,
+          details: u.firstName
+        }))
+      ]
+      .sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime())
+      .slice(0, limit);
       
       return {
         success: true,
         activities: activities,
-        message: `Retrieved ${Array.isArray(activities) ? activities.length : 0} recent activities`
+        message: `Retrieved ${activities.length} recent activities`
       };
     } catch (error) {
       return { error: `Failed to get recent activity: ${error}` };
