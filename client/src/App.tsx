@@ -77,6 +77,7 @@ const EmployeeGuide = lazy(() => import("@/pages/employee-guide"));
 const EmployeeDashboard = lazy(() => import("@/pages/employee-dashboard"));
 const EmployeeDocuments = lazy(() => import("@/pages/employee-documents"));
 const DriverFeedbackSystem = lazy(() => import("@/pages/driver-feedback-system"));
+const DriverReviewOrder = lazy(() => import("@/pages/driver-review-order"));
 const PrintableTemplates = lazy(() => import("@/pages/printable-templates"));
 const CancellationAlerts = lazy(() => import("@/pages/cancellation-alerts"));
 const RefundDemo = lazy(() => import("@/pages/refund-demo"));
@@ -196,6 +197,7 @@ function Router() {
       <Route path="/driver-portal/job/:id" component={DriverJob} />
       <Route path="/driver/complete/:orderId" component={DriverCompleteDelivery} />
       <Route path="/driver/complete-gift-card/:orderId" component={DriverCompleteGiftCardDelivery} />
+      <Route path="/driver-review-order" component={DriverReviewOrder} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
