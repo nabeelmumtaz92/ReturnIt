@@ -10684,6 +10684,103 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === REVIEW SYSTEM ROUTES ===
+  
+  // Submit customer review (customer reviews driver after order completion)
+  app.post("/api/reviews", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session!.user!.id;
+      const reviewData = {
+        ...req.body,
+        customerId: userId,
+      };
+      
+      const review = await storage.createReview(reviewData);
+      
+      // Update driver's average rating
+      if (reviewData.driverId) {
+        await storage.updateDriverRating(reviewData.driverId);
+      }
+      
+      res.json({ review });
+    } catch (error) {
+      console.error("Error submitting customer review:", error);
+      res.status(500).json({ message: "Failed to submit review" });
+    }
+  });
+  
+  // Submit driver review (driver reviews customer/order after delivery)
+  app.post("/api/driver-reviews", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session!.user!.id;
+      const reviewData = {
+        ...req.body,
+        driverId: userId,
+      };
+      
+      const review = await storage.createDriverReview(reviewData);
+      res.json({ review });
+    } catch (error) {
+      console.error("Error submitting driver review:", error);
+      res.status(500).json({ message: "Failed to submit driver review" });
+    }
+  });
+  
+  // Submit app review (customers review the ReturnIt app)
+  app.post("/api/app-reviews", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session!.user!.id;
+      const reviewData = {
+        ...req.body,
+        userId,
+      };
+      
+      const review = await storage.createAppReview(reviewData);
+      res.json({ review });
+    } catch (error) {
+      console.error("Error submitting app review:", error);
+      res.status(500).json({ message: "Failed to submit app review" });
+    }
+  });
+  
+  // Get reviews for a specific driver
+  app.get("/api/drivers/:driverId/reviews", async (req, res) => {
+    try {
+      const { driverId } = req.params;
+      const reviews = await storage.getDriverReviews(parseInt(driverId));
+      const avgRating = await storage.getDriverAverageRating(parseInt(driverId));
+      res.json({ reviews, averageRating: avgRating });
+    } catch (error) {
+      console.error("Error fetching driver reviews:", error);
+      res.status(500).json({ message: "Failed to fetch driver reviews" });
+    }
+  });
+  
+  // Get reviews for a specific company/store
+  app.get("/api/companies/:companyId/reviews", async (req, res) => {
+    try {
+      const { companyId } = req.params;
+      const rating = await storage.getCompanyRating(parseInt(companyId));
+      res.json({ rating });
+    } catch (error) {
+      console.error("Error fetching company reviews:", error);
+      res.status(500).json({ message: "Failed to fetch company reviews" });
+    }
+  });
+  
+  // Get reviews for a specific order
+  app.get("/api/orders/:orderId/reviews", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const customerReview = await storage.getReviewByOrderId(orderId);
+      const driverReview = await storage.getDriverReviewByOrderId(orderId);
+      res.json({ customerReview, driverReview });
+    } catch (error) {
+      console.error("Error fetching order reviews:", error);
+      res.status(500).json({ message: "Failed to fetch order reviews" });
+    }
+  });
+
   // === SEO ROUTES ===
   
   // Sitemap.xml - Dynamic sitemap generation for search engines

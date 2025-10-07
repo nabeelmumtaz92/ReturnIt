@@ -31,6 +31,10 @@ import {
   type RetailerUsageMetric, type InsertRetailerUsageMetric,
   type RetailerWebhook, type InsertRetailerWebhook,
   type RetailerWebhookDelivery, type InsertRetailerWebhookDelivery,
+  type Review, type InsertReview,
+  type DriverReview, type InsertDriverReview,
+  type AppReview, type InsertAppReview,
+  type CompanyRating,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -44,7 +48,8 @@ import {
   merchantPolicies, supportTicketsEnhanced, supportMessages,
   companies, returnPolicies, companyLocations, orderAuditLogs,
   retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics,
-  retailerWebhooks, retailerWebhookDeliveries
+  retailerWebhooks, retailerWebhookDeliveries,
+  reviews, driverReviews, appReviews, companyRatings
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
