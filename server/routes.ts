@@ -1883,7 +1883,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Full URL:', req.protocol + '://' + req.get('host') + req.originalUrl);
     
     passport.authenticate('google', { 
-      scope: ['profile', 'email'] 
+      scope: ['profile', 'email'],
+      prompt: 'select_account' // Force Google to show account selection screen
     })(req, res, next);
   });
 

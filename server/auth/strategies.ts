@@ -26,7 +26,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: callbackURL
+    callbackURL: callbackURL,
+    scope: ['profile', 'email']
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     console.log('Google OAuth strategy callback triggered');
     console.log('Profile data:', {
