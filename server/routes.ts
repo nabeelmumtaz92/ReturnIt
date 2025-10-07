@@ -1486,10 +1486,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Replaced with secure authentication via /api/auth/login or Google OAuth only
 
   app.post("/api/auth/logout", (req, res) => {
-    // SECURITY: Regenerate session ID on logout to ensure complete cleanup
-    req.session?.regenerate(() => {
-      res.json({ message: "Logged out successfully" });
-    });
+    // SECURITY: Destroy session completely on logout
+    if (req.session) {
+      req.session.destroy((err) => {
+        if (err) {
+          console.error('Logout error:', err);
+          return res.status(500).json({ message: "Logout failed" });
+        }
+        
+        // Clear the session cookie with matching attributes
+        res.clearCookie('connect.sid', { 
+          path: '/',
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+        });
+        res.json({ message: "Logged out successfully" });
+      });
+    } else {
+      res.json({ message: "Already logged out" });
+    }
   });
 
   // GDPR/CCPA Compliance: Request user data export
