@@ -53,7 +53,7 @@ export function validateSecurityConfig(): void {
  */
 export function logSecurityStatus(): void {
   console.log('🛡️  Security Configuration Status:');
-  console.log(`  📧 Master Admin: ${process.env.MASTER_ADMIN_EMAIL || 'nabeelmumtaz92@gmail.com'}`);
+  console.log(`  📧 Master Admin: ${process.env.MASTER_ADMIN_EMAIL ? 'SET' : 'NOT SET'}`);
   console.log(`  🔐 Session Secret: ${process.env.SESSION_SECRET ? 'SET' : 'NOT SET'}`);
   console.log(`  💳 Stripe Secret: ${process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET'}`);
   console.log(`  🗄️  Database URL: ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}`);

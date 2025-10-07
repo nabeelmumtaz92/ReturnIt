@@ -1364,8 +1364,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.getUserByEmail(email);
-      console.log('Debug - User lookup for email:', email);
-      console.log('Debug - User found:', user ? { id: user.id, email: user.email, hasPassword: !!user.password } : 'null');
       
       // First check: User must exist (have signed up)
       if (!user) {
@@ -1391,7 +1389,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Third check: Verify password
       const passwordValid = await AuthService.verifyPassword(password, user.password);
-      console.log('Debug - Password verification result:', passwordValid);
       
       if (!passwordValid) {
         // Record failed attempt for wrong password
