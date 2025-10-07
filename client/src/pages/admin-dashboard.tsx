@@ -110,11 +110,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlSection = params.get('section') || 'overview';
-    // Only update if the URL section is different from current state
-    if (urlSection !== currentSection) {
-      setCurrentSection(urlSection);
-    }
-  }, [location, currentSection]);
+    // Only update state if URL changed to a different section
+    setCurrentSection(prev => {
+      if (urlSection !== prev) {
+        console.log('URL changed - updating section from', prev, 'to', urlSection);
+        return urlSection;
+      }
+      return prev;
+    });
+  }, [location]);
   
   // State for various features
   const [showAdminSupportModal, setShowAdminSupportModal] = useState(false);
@@ -2241,7 +2245,19 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-
+        {/* Back Button */}
+        {navigationHistory.length > 0 && (
+          <Button
+            onClick={goBack}
+            variant="ghost"
+            size="sm"
+            className="mb-4 -ml-2 text-muted-foreground hover:text-foreground"
+            data-testid="button-back"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+        )}
 
         <div className="space-y-6">
           {/* Driver Statistics */}

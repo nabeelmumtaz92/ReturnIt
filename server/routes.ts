@@ -16,7 +16,7 @@ import { z } from "zod";
 import { 
   insertOrderSchema, insertUserSchema, insertPromoCodeSchema, 
   insertNotificationSchema, insertDriverApplicationSchema, OrderStatus,
-  LocationSchema
+  LocationSchema, indeedApplications, insertIndeedApplicationSchema
 } from "@shared/schema";
 import { AuthService } from "./auth";
 import { registrationSchema, loginSchema, trackingNumberSchema } from "@shared/validation";
@@ -10877,6 +10877,148 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     } catch (error) {
       console.error("Error fetching order reviews:", error);
       res.status(500).json({ message: "Failed to fetch order reviews" });
+    }
+  });
+
+  // === INDEED INTEGRATION ===
+  
+  // Indeed Apply Webhook - Receives job applications from Indeed
+  app.post("/api/indeed/applications", async (req, res) => {
+    try {
+      // SECURITY: Verify webhook signature/shared secret
+      const indeedSecret = process.env.INDEED_WEBHOOK_SECRET || 'returnit_indeed_webhook_2024';
+      const providedSecret = req.headers['x-indeed-webhook-secret'] as string;
+      
+      if (!providedSecret || providedSecret !== indeedSecret) {
+        console.error('❌ Invalid Indeed webhook secret');
+        return res.status(401).json({ 
+          status: 'error', 
+          message: 'Unauthorized: Invalid webhook secret' 
+        });
+      }
+      
+      console.log('📋 Indeed webhook received (authenticated):', JSON.stringify(req.body, null, 2));
+      
+      const applicationData = req.body;
+      
+      // Extract and validate data from Indeed payload
+      const indeedApplicationData = {
+        indeedApplyId: applicationData.indeedApplyId || applicationData.id,
+        jobId: applicationData.jobId || 'driver-position',
+        jobTitle: applicationData.jobTitle || 'Return It Driver',
+        candidateName: applicationData.name || `${applicationData.firstName || ''} ${applicationData.lastName || ''}`.trim(),
+        candidateEmail: applicationData.email,
+        candidatePhone: applicationData.phoneNumber || applicationData.phone || null,
+        resume: applicationData.resume || applicationData.resumeUrl || null,
+        coverLetter: applicationData.coverLetter || null,
+        screeningAnswers: applicationData.questions || applicationData.screeningAnswers || [],
+        status: 'new',
+        rawData: applicationData
+      };
+      
+      // Validate with Zod schema
+      const validationResult = insertIndeedApplicationSchema.safeParse(indeedApplicationData);
+      
+      if (!validationResult.success) {
+        console.error('❌ Invalid Indeed payload:', validationResult.error);
+        return res.status(400).json({ 
+          status: 'error', 
+          message: 'Invalid payload format',
+          errors: validationResult.error.errors
+        });
+      }
+      
+      const indeedApplication = validationResult.data;
+      
+      // Check for duplicates (idempotency)
+      const existing = await db
+        .select()
+        .from(indeedApplications)
+        .where(sql`${indeedApplications.indeedApplyId} = ${indeedApplication.indeedApplyId}`)
+        .limit(1);
+      
+      if (existing.length > 0) {
+        console.log(`⚠️ Duplicate Indeed application ignored: ${indeedApplication.indeedApplyId}`);
+        return res.status(200).json({ 
+          status: 'success', 
+          message: 'Application already exists',
+          applicationId: indeedApplication.indeedApplyId
+        });
+      }
+      
+      // Save to database
+      await db.insert(indeedApplications).values(indeedApplication);
+      
+      console.log(`✅ Indeed application saved: ${indeedApplication.candidateName} (${indeedApplication.candidateEmail})`);
+      
+      // Create admin notification
+      await storage.createNotification({
+        userId: null, // Admin notification
+        type: 'indeed_application',
+        title: 'New Indeed Application',
+        message: `${indeedApplication.candidateName} applied for ${indeedApplication.jobTitle} position via Indeed`,
+        data: { 
+          applicationId: indeedApplication.indeedApplyId,
+          email: indeedApplication.candidateEmail,
+          source: 'indeed'
+        },
+        createdAt: new Date()
+      });
+      
+      // Send success response to Indeed
+      res.status(200).json({ 
+        status: 'success', 
+        message: 'Application received successfully',
+        applicationId: indeedApplication.indeedApplyId
+      });
+      
+    } catch (error) {
+      console.error('❌ Error processing Indeed application:', error);
+      res.status(500).json({ 
+        status: 'error', 
+        message: 'Failed to process application' 
+      });
+    }
+  });
+  
+  // Get all Indeed applications (admin only)
+  app.get("/api/admin/indeed-applications", requireSecureAdmin, async (req, res) => {
+    try {
+      const applications = await db
+        .select()
+        .from(indeedApplications)
+        .orderBy(sql`${indeedApplications.createdAt} DESC`);
+      
+      res.json(applications);
+    } catch (error) {
+      console.error('Error fetching Indeed applications:', error);
+      res.status(500).json({ message: 'Failed to fetch applications' });
+    }
+  });
+  
+  // Update Indeed application status (admin only)
+  app.patch("/api/admin/indeed-applications/:id", requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status, reviewNotes, disposition } = req.body;
+      
+      const updated = await db
+        .update(indeedApplications)
+        .set({
+          status,
+          reviewNotes,
+          disposition,
+          reviewedBy: req.session?.user?.id,
+          reviewedAt: new Date(),
+          updatedAt: new Date()
+        })
+        .where(sql`${indeedApplications.id} = ${id}`)
+        .returning();
+      
+      res.json(updated[0]);
+    } catch (error) {
+      console.error('Error updating Indeed application:', error);
+      res.status(500).json({ message: 'Failed to update application' });
     }
   });
 

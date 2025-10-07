@@ -2331,6 +2331,43 @@ export const otpVerification = pgTable("otp_verification", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// Indeed Job Applications - Applications received from Indeed webhook
+export const indeedApplications = pgTable("indeed_applications", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  indeedApplyId: text("indeed_apply_id").notNull().unique(), // Indeed's unique ID for this application
+  jobId: text("job_id").notNull(), // Your internal job posting ID
+  jobTitle: text("job_title").notNull(),
+  
+  // Candidate Information
+  candidateName: text("candidate_name").notNull(),
+  candidateEmail: text("candidate_email").notNull(),
+  candidatePhone: text("candidate_phone"),
+  
+  // Application Content
+  resume: text("resume"), // Resume text/URL
+  coverLetter: text("cover_letter"),
+  
+  // Screening Questions & Answers
+  screeningAnswers: jsonb("screening_answers").default([]), // Array of {questionId, question, answer}
+  
+  // Application Status
+  status: text("status").default("new"), // new, reviewed, interviewed, rejected, hired
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewNotes: text("review_notes"),
+  reviewedAt: timestamp("reviewed_at"),
+  
+  // Disposition (to sync back to Indeed)
+  disposition: text("disposition"), // RECEIVED, REVIEWED, INTERVIEWED, OFFERED, HIRED, REJECTED
+  dispositionSyncedAt: timestamp("disposition_synced_at"),
+  
+  // Raw Data
+  rawData: jsonb("raw_data"), // Full Indeed webhook payload for debugging
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 // Insert schemas for new tables
 export const insertCustomerWaitlistSchema = createInsertSchema(customerWaitlist).omit({
   id: true,
@@ -2349,6 +2386,12 @@ export const insertOtpVerificationSchema = createInsertSchema(otpVerification).o
   createdAt: true,
 });
 
+export const insertIndeedApplicationSchema = createInsertSchema(indeedApplications).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types for new tables
 export type CustomerWaitlist = typeof customerWaitlist.$inferSelect;
 export type InsertCustomerWaitlist = z.infer<typeof insertCustomerWaitlistSchema>;
@@ -2356,6 +2399,8 @@ export type ZipCodeManagement = typeof zipCodeManagement.$inferSelect;
 export type InsertZipCodeManagement = z.infer<typeof insertZipCodeManagementSchema>;
 export type OtpVerification = typeof otpVerification.$inferSelect;
 export type InsertOtpVerification = z.infer<typeof insertOtpVerificationSchema>;
+export type IndeedApplication = typeof indeedApplications.$inferSelect;
+export type InsertIndeedApplication = z.infer<typeof insertIndeedApplicationSchema>;
 
 // === RETAILER SELF-SERVICE PORTAL TABLES ===
 
