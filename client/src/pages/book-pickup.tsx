@@ -237,7 +237,6 @@ export default function BookPickup() {
       'preferredTimeSlot',
       'pickupLocation',
       'purchaseType',
-      'hasOriginalTags',
       'authorizationSigned'
     ];
 
@@ -261,6 +260,18 @@ export default function BookPickup() {
       toast({
         title: "Missing Required Information",
         description: "Please complete all required fields before proceeding",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check for at least ONE return requirement (tags, packaging, or receipt)
+    const hasAtLeastOneRequirement = formData.hasOriginalTags || formData.hasOriginalPackaging || formData.receiptImage;
+    
+    if (!hasAtLeastOneRequirement) {
+      toast({
+        title: "Return Requirements Not Met",
+        description: "You must have at least ONE of the following: original tags, original packaging, or receipt. The store may refuse your return without these items.",
         variant: "destructive",
       });
       return;
@@ -318,6 +329,7 @@ export default function BookPickup() {
       purchaseType: formData.purchaseType,
       purchaseDate: formData.purchaseDate,
       hasOriginalTags: formData.hasOriginalTags,
+      hasOriginalPackaging: formData.hasOriginalPackaging,
       
       // Authorization
       authorizationSigned: formData.authorizationSigned,
@@ -517,10 +529,10 @@ export default function BookPickup() {
               itemDescription: formData.itemDescription || formData.orderName || 'Item return',
               itemValue: parseFloat(formData.itemValue) || 0,
               numberOfItems: formData.numberOfItems || 1,
-              originalPackaging: formData.hasOriginalPackaging, // Use REAL packaging status
+              originalPackaging: formData.hasOriginalPackaging || false, // Use REAL packaging status
               purchaseDate: formData.purchaseDate, // MUST be real customer input - no fallback
               receiptUploaded: formData.receiptImage !== null,
-              tagsAttached: formData.hasOriginalTags,
+              tagsAttached: formData.hasOriginalTags || false,
               purchaseLocation: formData.purchaseType === 'in_store' ? 'in_store' : 'online'
             };
 
@@ -562,7 +574,7 @@ export default function BookPickup() {
     };
 
     validateMerchantPolicy();
-  }, [formData.retailer, formData.itemCategories, formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems]);
+  }, [formData.retailer, formData.itemCategories, formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
 
   // Fetch available retailers on component mount
   useEffect(() => {
@@ -1073,26 +1085,61 @@ export default function BookPickup() {
 
         {formData.purchaseType && (
           <div className="space-y-4 p-4 bg-white/60 rounded-lg border border-border">
-            <div className="flex items-center space-x-2">
-              <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
-                onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked === true)}
-                className="border-primary text-primary"
-                data-testid="checkbox-original-tags" />
-              <Label htmlFor="hasOriginalTags" className="text-foreground font-medium">
-                Original tags are still attached *
-              </Label>
+            {/* Return Requirements Warning */}
+            {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptImage && (
+              <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-300 rounded-lg">
+                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-amber-900">Return Requirements Warning</h4>
+                  <p className="text-sm text-amber-700 mt-1">
+                    Most stores require at least ONE of the following for returns: original tags, original packaging, or receipt. 
+                    Without these items, the store may refuse your return.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <Label className="text-foreground font-semibold">Return Requirements (At least 1 required) *</Label>
+              <p className="text-sm text-muted-foreground">Select all that apply to increase return acceptance:</p>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
+                  onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked === true)}
+                  className="border-primary text-primary"
+                  data-testid="checkbox-original-tags" />
+                <Label htmlFor="hasOriginalTags" className="text-foreground font-medium">
+                  Original tags are still attached
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox id="hasOriginalPackaging" checked={!!formData.hasOriginalPackaging}
+                  onCheckedChange={(checked) => handleInputChange('hasOriginalPackaging', checked === true)}
+                  className="border-primary text-primary"
+                  data-testid="checkbox-original-packaging" />
+                <Label htmlFor="hasOriginalPackaging" className="text-foreground font-medium">
+                  Item has original packaging (box, bag, etc.)
+                </Label>
+              </div>
             </div>
 
             {/* Receipt upload */}
             <div className="space-y-2">
               <Label className="text-foreground font-medium">
-                {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation *' : 'Upload Store Receipt *'}
+                {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation' : 'Upload Store Receipt'}
               </Label>
               <input
                 type="file" accept="image/*,application/pdf" onChange={handleReceiptUpload}
                 className="block w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent file:text-foreground hover:file:bg-accent"
                 data-testid="input-receipt-upload"
               />
+              {formData.receiptImage && (
+                <div className="flex items-center space-x-2 text-sm text-green-600">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Receipt uploaded: {formData.receiptImage.name}</span>
+                </div>
+              )}
             </div>
 
             {/* Optional return label for online */}
