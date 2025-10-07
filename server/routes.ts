@@ -31,6 +31,7 @@ import { webhookService } from "./webhook-service";
 import { autoAssignmentService } from "./auto-assignment-service";
 import { getErrorHealthStatus } from "./middleware/errorHandler";
 import { circuitBreakers } from "./middleware/circuitBreaker";
+import { getUncachableResendClient } from "./resend-client";
 import { 
   authRateLimit, 
   registrationRateLimit, 
