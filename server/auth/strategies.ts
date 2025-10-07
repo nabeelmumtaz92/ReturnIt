@@ -79,12 +79,20 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 
 // Facebook OAuth Strategy
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  const facebookCallbackURL = process.env.NODE_ENV === 'production'
+    ? 'https://returnit.online/api/auth/facebook/callback'
+    : `https://${process.env.REPLIT_DEV_DOMAIN || 'returnly.tech'}/api/auth/facebook/callback`;
+  
+  console.log('Facebook OAuth Configuration:', {
+    hasAppId: !!process.env.FACEBOOK_APP_ID,
+    hasAppSecret: !!process.env.FACEBOOK_APP_SECRET,
+    callbackURL: facebookCallbackURL
+  });
+  
   passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: process.env.NODE_ENV === 'production'
-      ? 'https://returnit.online/api/auth/facebook/callback'
-      : 'https://returnly.tech/api/auth/facebook/callback',
+    callbackURL: facebookCallbackURL,
     profileFields: ['id', 'emails', 'name', 'picture']
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
