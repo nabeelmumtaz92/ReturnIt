@@ -4380,6 +4380,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         createdAt: new Date()
       });
       
+      // Send approval email
+      try {
+        const { client: resend, fromEmail } = await getUncachableResendClient();
+        await resend.emails.send({
+          from: fromEmail,
+          to: updatedDriver.email,
+          subject: '🎉 Your Return It Driver Application Has Been Approved!',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #d97706;">Congratulations, ${updatedDriver.firstName}!</h1>
+              <p>Great news! Your driver application has been approved and you can now start accepting delivery orders.</p>
+              
+              <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <h2 style="color: #92400e; margin-top: 0;">Next Steps:</h2>
+                <ol style="color: #78350f;">
+                  <li>Log in to your driver portal at <a href="${process.env.REPLIT_DEV_DOMAIN || 'https://returnit.online'}/driver-portal">returnit.online/driver-portal</a></li>
+                  <li>Complete your profile setup</li>
+                  <li>Start accepting delivery orders!</li>
+                </ol>
+              </div>
+              
+              ${approvalNotes ? `<p><strong>Admin Notes:</strong> ${approvalNotes}</p>` : ''}
+              
+              <p>Welcome to the Return It driver team! We're excited to have you on board.</p>
+              
+              <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                If you have any questions, please reply to this email or contact support.
+              </p>
+            </div>
+          `
+        });
+        console.log(`📧 Approval email sent to ${updatedDriver.email}`);
+      } catch (emailError) {
+        console.error('Failed to send approval email:', emailError);
+        // Don't fail the request if email fails
+      }
+      
       console.log(`✅ Driver ${driverId} manually approved by admin`);
       
       res.json({ 
@@ -4428,6 +4465,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         createdAt: new Date()
       });
+      
+      // Send rejection email
+      try {
+        const { client: resend, fromEmail } = await getUncachableResendClient();
+        await resend.emails.send({
+          from: fromEmail,
+          to: updatedDriver.email,
+          subject: 'Return It Driver Application Update',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h1 style="color: #d97706;">Application Status Update</h1>
+              <p>Dear ${updatedDriver.firstName},</p>
+              <p>Thank you for your interest in becoming a Return It driver.</p>
+              
+              <div style="background-color: #fef3c7; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <p>After careful review, we are unable to approve your application at this time.</p>
+                <p><strong>Reason:</strong> ${rejectionReason}</p>
+                ${rejectionNotes ? `<p><strong>Additional Notes:</strong> ${rejectionNotes}</p>` : ''}
+              </div>
+              
+              <p>We appreciate the time you took to apply and wish you the best in your future endeavors.</p>
+              
+              <p style="color: #6b7280; font-size: 14px; margin-top: 30px;">
+                If you have questions about this decision, please reply to this email.
+              </p>
+            </div>
+          `
+        });
+        console.log(`📧 Rejection email sent to ${updatedDriver.email}`);
+      } catch (emailError) {
+        console.error('Failed to send rejection email:', emailError);
+        // Don't fail the request if email fails
+      }
       
       console.log(`❌ Driver ${driverId} manually rejected by admin: ${rejectionReason}`);
       
