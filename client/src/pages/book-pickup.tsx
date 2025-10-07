@@ -490,13 +490,12 @@ export default function BookPickup() {
     // Create dropoff location with approximate coordinates (will be geocoded later)
     setDropoffLocation({
       lat: 0, // Will be geocoded by the system
-      lng: 0,
-      address: fullAddress,
-      formattedAddress: fullAddress
+      lng: 0
     });
 
     // Set as selected store for display
     setSelectedStore({
+      placeId: `store-${store.id}`, // Add required placeId
       name: store.displayName,
       address: fullAddress,
       location: { lat: 0, lng: 0 },

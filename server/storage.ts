@@ -265,6 +265,7 @@ export interface IStorage {
   getWebhookDeliveries(filters?: { webhookEndpointId?: number; eventType?: string; isSuccessful?: boolean }): Promise<WebhookDelivery[]>;
   
   // Merchant Policy operations
+  getMerchantPolicies(): Promise<SelectMerchantPolicy[]>;
   getMerchantPolicyByStoreName(storeName: string): Promise<SelectMerchantPolicy | undefined>;
   createMerchantPolicy(policy: InsertMerchantPolicy): Promise<SelectMerchantPolicy>;
   updateMerchantPolicy(id: number, policy: Partial<InsertMerchantPolicy>): Promise<SelectMerchantPolicy | undefined>;
@@ -3397,6 +3398,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Merchant Policy operations
+  async getMerchantPolicies(): Promise<SelectMerchantPolicy[]> {
+    return await db.select().from(merchantPolicies);
+  }
+
   async getMerchantPolicyByStoreName(storeName: string): Promise<SelectMerchantPolicy | undefined> {
     const [policy] = await db
       .select()
