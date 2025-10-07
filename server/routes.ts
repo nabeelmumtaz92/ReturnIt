@@ -2427,6 +2427,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all orders (admin only)
+  app.get("/api/admin/orders", requireSecureAdmin, async (req, res) => {
+    try {
+      const orders = await storage.getAllOrders();
+      res.json(orders);
+    } catch (error) {
+      console.error('Error fetching admin orders:', error);
+      res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
   // Get specific order (protected)
   app.get("/api/orders/:id", isAuthenticated, async (req, res) => {
     try {
