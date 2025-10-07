@@ -292,7 +292,7 @@ export default function ReturnItDriverApp() {
               <div className="flex items-center space-x-3">
                 <ReturnItIcon size={32} className="text-[#A47C48]" />
                 <div>
-                  <h1 className="text-lg font-bold text-[#A47C48]">ReturnIt Driver</h1>
+                  <h1 className="text-lg font-bold text-[#A47C48]">Return It Driver</h1>
                   <p className="text-xs text-[#7B5E3B]">Drive. Return. Earn.</p>
                 </div>
               </div>

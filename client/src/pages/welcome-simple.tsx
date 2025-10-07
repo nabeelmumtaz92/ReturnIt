@@ -11,11 +11,11 @@ export default function WelcomeSimple() {
         <div 
           className="text-foreground font-bold text-5xl mx-auto mb-8"
         >
-          ReturnIt
+          Return It
         </div>
         
         <h1 className="text-6xl font-bold text-foreground mb-6">
-          ReturnIt
+          Return It
         </h1>
         
         <p className="text-2xl text-foreground mb-12">

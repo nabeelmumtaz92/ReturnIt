@@ -83,7 +83,7 @@ export default function BackgroundColors() {
               {/* Preview background with cardboard logo */}
               <div className={`bg-gradient-to-r ${option.gradient} h-48 flex items-center justify-center relative`}>
                 <div className="text-3xl font-bold text-white drop-shadow-lg">
-                  ReturnIt
+                  Return It
                 </div>
                 <div className="absolute top-2 left-2">
                   <span className="text-white/80 text-xs bg-black/20 px-2 py-1 rounded">

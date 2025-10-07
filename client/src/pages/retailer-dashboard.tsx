@@ -41,7 +41,7 @@ export default function RetailerDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader>
-            <CardTitle>Welcome to ReturnIt for Retailers</CardTitle>
+            <CardTitle>Welcome to Return It for Retailers</CardTitle>
             <CardDescription>
               You don't have any retailer accounts yet. Register your company to get started.
             </CardDescription>

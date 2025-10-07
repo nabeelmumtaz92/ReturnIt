@@ -153,7 +153,7 @@ export default function AdminPaymentTracking() {
           federal_tax_withheld: '0.00', // Independent contractors
           state_tax_withheld: '0.00',
           backup_withholding: '0.00',
-          payer_name: 'ReturnIt Logistics LLC',
+          payer_name: 'Return It Logistics LLC',
           payer_tin: '12-3456789',
           payer_address: '123 Business Ave, City, State 12345',
           recipient_address: 'Driver Address (To be filled)',
@@ -202,7 +202,7 @@ export default function AdminPaymentTracking() {
               quarters: { q1: 0, q2: 0, q3: 0, q4: 0 },
               form_type: '1099-NEC',
               payer_info: {
-                name: 'ReturnIt Logistics LLC',
+                name: 'Return It Logistics LLC',
                 tin: '12-3456789',
                 address: '123 Business Ave, City, State 12345',
                 phone: '(555) 123-4567'

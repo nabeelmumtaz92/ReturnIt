@@ -128,7 +128,7 @@ export default function RetailerAPIKeys() {
             API Keys
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Manage your API keys for programmatic access to ReturnIt
+            Manage your API keys for programmatic access to Return It
           </p>
         </div>
 
@@ -190,7 +190,7 @@ export default function RetailerAPIKeys() {
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Key className="h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-gray-600 dark:text-gray-400 text-center mb-4">
-                  No API keys yet. Create one to start integrating with ReturnIt.
+                  No API keys yet. Create one to start integrating with Return It.
                 </p>
                 <Button onClick={() => setShowCreateDialog(true)} data-testid="button-create-first-key">
                   <Plus className="mr-2 h-4 w-4" />
@@ -287,7 +287,7 @@ export default function RetailerAPIKeys() {
             <DialogHeader>
               <DialogTitle>Create API Key</DialogTitle>
               <DialogDescription>
-                Generate a new API key for programmatic access to ReturnIt
+                Generate a new API key for programmatic access to Return It
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">

@@ -378,7 +378,7 @@ export default function DriverReviewOrder() {
             <Package className="h-8 w-8 mx-auto text-primary" />
             <p className="font-medium">Your feedback matters</p>
             <p className="text-sm text-muted-foreground">
-              Every review helps us improve the ReturnIt experience for drivers and customers alike.
+              Every review helps us improve the Return It experience for drivers and customers alike.
             </p>
           </div>
         </CardContent>

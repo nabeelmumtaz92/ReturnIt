@@ -144,7 +144,7 @@ export default function AccountSettings() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3">
-              <div className="text-2xl font-bold text-foreground">ReturnIt</div>
+              <div className="text-2xl font-bold text-foreground">Return It</div>
             </Link>
             <div className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName} • {user.email}

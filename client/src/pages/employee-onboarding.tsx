@@ -129,7 +129,7 @@ export default function EmployeeOnboarding() {
   const steps: OnboardingStep[] = [
     {
       id: 'welcome',
-      title: 'Welcome to ReturnIt',
+      title: 'Welcome to Return It',
       description: 'Get started with your employee journey',
       icon: <Heart className="h-5 w-5" />,
       completed: false,
@@ -271,7 +271,7 @@ export default function EmployeeOnboarding() {
       markStepCompleted(currentStep);
       
       toast({
-        title: "Welcome to ReturnIt!",
+        title: "Welcome to Return It!",
         description: "Your onboarding is complete. You can now access the employee dashboard.",
       });
 
@@ -298,7 +298,7 @@ export default function EmployeeOnboarding() {
         return (
           <div className="text-center space-y-6 py-8">
             <div className="mb-6">
-              <h2 className="text-3xl font-bold text-foreground mb-2">Welcome to ReturnIt!</h2>
+              <h2 className="text-3xl font-bold text-foreground mb-2">Welcome to Return It!</h2>
               <p className="text-lg text-muted-foreground mb-6">
                 We're excited to have you join our team. This onboarding wizard will help you get set up and ready to make an impact.
               </p>
@@ -591,7 +591,7 @@ export default function EmployeeOnboarding() {
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Professional Information</h3>
-              <p className="text-muted-foreground mb-6">Tell us about your role and position within ReturnIt.</p>
+              <p className="text-muted-foreground mb-6">Tell us about your role and position within Return It.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1027,7 +1027,7 @@ export default function EmployeeOnboarding() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-4">
-                    Our code of conduct establishes the ethical standards and behavioral expectations for all ReturnIt employees. This includes guidelines for professional conduct, customer interactions, and workplace behavior.
+                    Our code of conduct establishes the ethical standards and behavioral expectations for all Return It employees. This includes guidelines for professional conduct, customer interactions, and workplace behavior.
                   </p>
                   <div className="flex items-center justify-between">
                     <Button
@@ -1260,7 +1260,7 @@ export default function EmployeeOnboarding() {
           <div className="space-y-6">
             <div>
               <h3 className="text-xl font-semibold text-foreground mb-2">Goals & Expectations</h3>
-              <p className="text-muted-foreground mb-6">Help us understand your career aspirations and what you hope to achieve at ReturnIt.</p>
+              <p className="text-muted-foreground mb-6">Help us understand your career aspirations and what you hope to achieve at Return It.</p>
             </div>
 
             <div className="space-y-6">
@@ -1273,7 +1273,7 @@ export default function EmployeeOnboarding() {
                   onChange={(e) => setEmployeeData(prev => ({...prev, careerGoals: e.target.value}))}
                   className="border-border focus:border-border mt-2"
                   rows={4}
-                  placeholder="What are your long-term career goals? How do you see yourself growing at ReturnIt? What skills would you like to develop?"
+                  placeholder="What are your long-term career goals? How do you see yourself growing at Return It? What skills would you like to develop?"
                 />
               </div>
 
@@ -1401,7 +1401,7 @@ export default function EmployeeOnboarding() {
               </div>
               <h2 className="text-3xl font-bold text-foreground mb-4">Congratulations!</h2>
               <p className="text-lg text-muted-foreground mb-6">
-                You've successfully completed your onboarding. Welcome to the ReturnIt family!
+                You've successfully completed your onboarding. Welcome to the Return It family!
               </p>
             </div>
 

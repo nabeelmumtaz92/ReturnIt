@@ -267,9 +267,9 @@ export default function FailedReturnDemo() {
                 </div>
               </div>
 
-              {/* ReturnIt Costs */}
+              {/* Return It Costs */}
               <div className="space-y-3">
-                <h4 className="font-semibold">ReturnIt Costs</h4>
+                <h4 className="font-semibold">Return It Costs</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Driver Original Trip:</span>
@@ -285,7 +285,7 @@ export default function FailedReturnDemo() {
                   </div>
                   <hr />
                   <div className="flex justify-between font-semibold">
-                    <span>ReturnIt Net Revenue:</span>
+                    <span>Return It Net Revenue:</span>
                     <span className="text-green-600">${(order.serviceFee + order.taxAmount - totalDriverPay).toFixed(2)}</span>
                   </div>
                 </div>
@@ -295,7 +295,7 @@ export default function FailedReturnDemo() {
               <Alert className="border-blue-200 bg-blue-50">
                 <AlertTriangle className="h-4 w-4 text-blue-600" />
                 <AlertDescription className="text-blue-800">
-                  <strong>ReturnIt Policy:</strong> Service fees and taxes are retained when stores refuse returns. 
+                  <strong>Return It Policy:</strong> Service fees and taxes are retained when stores refuse returns. 
                   We provided the pickup and delivery attempt service as contracted.
                 </AlertDescription>
               </Alert>
@@ -318,14 +318,14 @@ export default function FailedReturnDemo() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle>Failed Return Business Logic</CardTitle>
-            <CardDescription>How ReturnIt handles store refusals while protecting all parties</CardDescription>
+            <CardDescription>How Return It handles store refusals while protecting all parties</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="p-4 border rounded-lg">
                 <h4 className="font-semibold text-green-600 mb-2">Service Completed</h4>
                 <ul className="text-sm space-y-1">
-                  <li>• ReturnIt fulfilled pickup service</li>
+                  <li>• Return It fulfilled pickup service</li>
                   <li>• Driver attempted store delivery</li>
                   <li>• Items safely returned to customer</li>
                   <li>• Full service cycle completed</li>
@@ -354,8 +354,8 @@ export default function FailedReturnDemo() {
             <div className="mt-6 p-4 bg-accent border border-border rounded-lg">
               <h4 className="font-semibold text-foreground mb-2">Why Service Fees Aren't Refunded:</h4>
               <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• ReturnIt provided the complete pickup and delivery attempt service</li>
-                <li>• Store refusal is outside ReturnIt's control (store policy, timing, condition)</li>
+                <li>• Return It provided the complete pickup and delivery attempt service</li>
+                <li>• Store refusal is outside Return It's control (store policy, timing, condition)</li>
                 <li>• Driver compensation must be covered for both trips</li>
                 <li>• Customer received exactly the service contracted (attempt to return)</li>
                 <li>• Service fees cover operational costs regardless of store acceptance</li>

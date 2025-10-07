@@ -82,7 +82,7 @@ export default function ComprehensivePricingExamples() {
     const distancePay = distance * 0.35;
     const totalDriverPay = basePay + distancePay + driverBonus;
     
-    // ReturnIt calculation
+    // Return It calculation
     const returnItRevenue = serviceFee + valueTierFee;
     const returnItNet = returnItRevenue - totalDriverPay;
     
@@ -168,7 +168,7 @@ export default function ComprehensivePricingExamples() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calculator className="w-5 h-5" />
-              ReturnIt Pricing Formula
+              Return It Pricing Formula
             </CardTitle>
             <CardDescription>How every price is calculated with the $3.99 base fee</CardDescription>
           </CardHeader>
@@ -298,10 +298,10 @@ export default function ComprehensivePricingExamples() {
                     </div>
                   </div>
                   
-                  {/* ReturnIt Net */}
+                  {/* Return It Net */}
                   <div className="bg-[#f8f7f5] dark:bg-[#231b0f] p-2 rounded">
                     <div className="flex justify-between text-sm">
-                      <span className="font-medium">ReturnIt Net:</span>
+                      <span className="font-medium">Return It Net:</span>
                       <span className="font-semibold text-muted-foreground">
                         ${pricing.returnItNet.toFixed(2)}
                       </span>
@@ -332,7 +332,7 @@ export default function ComprehensivePricingExamples() {
                 <p className="text-sm text-green-600">Driver earnings range across scenarios</p>
               </div>
               <div className="text-center p-4 bg-[#f8f7f5] dark:bg-[#231b0f] rounded-lg">
-                <h4 className="font-semibold text-primary">ReturnIt Range</h4>
+                <h4 className="font-semibold text-primary">Return It Range</h4>
                 <p className="text-2xl font-bold text-foreground">$0.89 - $187.74</p>
                 <p className="text-sm text-primary">Company net revenue range</p>
               </div>

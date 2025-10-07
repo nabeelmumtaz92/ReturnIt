@@ -209,7 +209,7 @@ export default function About() {
               <div className="text-center">
                 <div className="text-4xl font-bold text-foreground mb-2">30-45</div>
                 <p className="text-muted-foreground font-medium">Minutes per return trip</p>
-                <p className="text-sm text-primary">Time you save with ReturnIt</p>
+                <p className="text-sm text-primary">Time you save with Return It</p>
               </div>
             </div>
             <div className="grid md:grid-cols-2 gap-6 mt-8 pt-8 border-t border-border">
@@ -345,7 +345,7 @@ export default function About() {
               <span>{businessInfo?.instagramHandle || "@ReturnItApp"}</span>
             </a>
             <a 
-              href={`https://${businessInfo?.facebookUrl || 'facebook.com/ReturnIt'}`}
+              href={`https://${businessInfo?.facebookUrl || 'facebook.com/Return It'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -355,14 +355,14 @@ export default function About() {
               <span>Facebook</span>
             </a>
             <a 
-              href={`https://twitter.com/${businessInfo?.twitterHandle?.replace('@', '') || 'ReturnIt'}`}
+              href={`https://twitter.com/${businessInfo?.twitterHandle?.replace('@', '') || 'Return It'}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               data-testid="link-twitter"
             >
               <Twitter className="w-8 h-8" />
-              <span>{businessInfo?.twitterHandle || "@ReturnIt"}</span>
+              <span>{businessInfo?.twitterHandle || "@Return It"}</span>
             </a>
           </div>
         </div>

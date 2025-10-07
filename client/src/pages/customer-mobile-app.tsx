@@ -477,7 +477,7 @@ ${order.promoCode ? `Promo: ${order.promoCode} (-$${order.discount?.toFixed(2) |
 Status: ${order.status}
 Driver: ${order.driverName || 'TBD'}
 
-Thank you for using ReturnIt!
+Thank you for using Return It!
 ================
     `.trim();
 

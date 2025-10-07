@@ -330,7 +330,7 @@ export default function HelpCenter() {
               </Button>
               <Link href="/">
                 <div className="text-xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <h1 className="text-2xl font-bold text-foreground">Help Center</h1>
@@ -587,7 +587,7 @@ export default function HelpCenter() {
                   <MessageCircle className="h-8 w-8 mx-auto mb-2" />
                   <h3 className="font-semibold mb-1">Message Specialist</h3>
                   <p className="text-sm text-primary-foreground mb-3">Text message support</p>
-                  <a href="sms:6362544821?body=Hi, I need help with ReturnIt:">
+                  <a href="sms:6362544821?body=Hi, I need help with Return It:">
                     <Button className="w-full bg-white text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]" data-testid="button-sms-support">
                       Send Message
                     </Button>

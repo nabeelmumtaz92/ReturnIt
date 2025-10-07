@@ -16,7 +16,7 @@ export default function PricingAnalysis() {
 
   const competitorAnalysis = [
     {
-      service: "ReturnIt (Current)",
+      service: "Return It (Current)",
       model: "Flat Rate",
       basePrice: 7.24,
       phoneReturn: 7.24,
@@ -24,7 +24,7 @@ export default function PricingAnalysis() {
       marketPosition: "Budget-friendly"
     },
     {
-      service: "ReturnIt (Optimized)",
+      service: "Return It (Optimized)",
       model: "Tiered",
       basePrice: 7.24,
       phoneReturn: 14.74,
@@ -75,7 +75,7 @@ export default function PricingAnalysis() {
         <div className="text-center space-y-4">
           <h1 className="text-3xl font-bold text-gray-900">Pricing Strategy Analysis</h1>
           <p className="text-lg text-gray-600">
-            Data-driven insights for optimizing ReturnIt's tiered pricing model
+            Data-driven insights for optimizing Return It's tiered pricing model
           </p>
         </div>
 
@@ -248,7 +248,7 @@ export default function PricingAnalysis() {
                   Competitive Positioning
                 </CardTitle>
                 <CardDescription>
-                  How ReturnIt's tiered pricing compares to existing solutions
+                  How Return It's tiered pricing compares to existing solutions
                 </CardDescription>
               </CardHeader>
               <CardContent>

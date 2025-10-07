@@ -315,7 +315,7 @@ export default function DriverDocuments() {
             <div className="flex items-center space-x-4">
               <Link href="/driver-portal">
                 <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <div>

@@ -125,13 +125,13 @@ export default function Welcome() {
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-2 sm:mb-3">
-                ReturnIt
+                Return It
               </h1>
               <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-amber-800 mb-4 sm:mb-6">
                 The Leader in Reverse Logistics, Delivery, and Returns.
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-amber-700 mb-4 sm:mb-6 leading-relaxed">
-                ReturnIt is the first platform purpose-built for reverse logistics — offering on-demand returns, exchanges, refunds, and donations as seamless as delivery itself. We're not just an app; we are the infrastructure powering the return economy.
+                Return It is the first platform purpose-built for reverse logistics — offering on-demand returns, exchanges, refunds, and donations as seamless as delivery itself. We're not just an app; we are the infrastructure powering the return economy.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
                 <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
@@ -170,11 +170,11 @@ export default function Welcome() {
       {/* Main Content - Mobile Optimized */}
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6">
         
-        {/* ReturnIt Logo - Centered */}
+        {/* Return It Logo - Centered */}
         <div className="text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black filter drop-shadow-lg">
-              ReturnIt
+              Return It
             </div>
           </div>
         </div>
@@ -234,7 +234,7 @@ export default function Welcome() {
                   </div>
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold">
-                  Drive with ReturnIt
+                  Drive with Return It
                 </h3>
                 <p className="text-white/90 text-sm sm:text-base leading-relaxed">
                   Join St. Louis's premier reverse logistics network. Earn competitive pay helping customers with returns, exchanges, and donations. Flexible schedules, instant payouts, and full support.

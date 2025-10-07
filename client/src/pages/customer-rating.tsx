@@ -243,16 +243,16 @@ export default function CustomerRating() {
 
             <Separator className="my-8" />
 
-            {/* ReturnIt App Review */}
+            {/* Return It App Review */}
             <div className="space-y-6">
               <div className="flex items-center gap-3">
                 <div className="bg-primary/10 p-3 rounded-lg">
                   <Smartphone className="h-6 w-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold">Rate the ReturnIt App</h3>
+                  <h3 className="text-lg font-semibold">Rate the Return It App</h3>
                   <p className="text-sm text-muted-foreground">
-                    How would you rate your overall experience with the ReturnIt platform?
+                    How would you rate your overall experience with the Return It platform?
                   </p>
                 </div>
               </div>
@@ -292,7 +292,7 @@ export default function CustomerRating() {
                 <Label htmlFor="appReview">Share your thoughts about the app (optional)</Label>
                 <Textarea
                   id="appReview"
-                  placeholder="What did you like? What could be improved? Your feedback helps us make ReturnIt better..."
+                  placeholder="What did you like? What could be improved? Your feedback helps us make Return It better..."
                   value={formData.appReviewText}
                   onChange={(e) => setFormData(prev => ({ ...prev, appReviewText: e.target.value }))}
                   rows={3}

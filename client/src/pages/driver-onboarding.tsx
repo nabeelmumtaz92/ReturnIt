@@ -338,7 +338,7 @@ export default function DriverOnboarding() {
           <div className="flex items-center justify-between">
             <Link href="/">
               <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
-                ReturnIt
+                Return It
               </div>
             </Link>
             <div>
@@ -912,7 +912,7 @@ export default function DriverOnboarding() {
                 <div className="flex items-start space-x-3">
                   <Checkbox id="terms-agreement" className="mt-1" data-testid="checkbox-terms" />
                   <Label htmlFor="terms-agreement" className="text-sm text-foreground leading-relaxed">
-                    I have read, understood, and agree to the ReturnIt Driver Terms of Service. 
+                    I have read, understood, and agree to the Return It Driver Terms of Service. 
                     I understand that I am applying to be an independent contractor and that my 
                     application will be subject to a background check and document verification.
                   </Label>

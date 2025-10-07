@@ -205,7 +205,7 @@ export default function PricingDemo() {
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900">ReturnIt Pricing Analysis</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Return It Pricing Analysis</h1>
           <p className="text-lg text-gray-600">
             Compare current flat-rate pricing vs. value-based pricing models
           </p>

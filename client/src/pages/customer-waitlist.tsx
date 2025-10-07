@@ -76,7 +76,7 @@ export default function CustomerWaitlist() {
       setSubmitted(true);
       toast({
         title: "Welcome to the Waitlist!",
-        description: "You'll be notified when ReturnIt launches in your area.",
+        description: "You'll be notified when Return It launches in your area.",
       });
     },
     onError: (error: any) => {
@@ -114,7 +114,7 @@ export default function CustomerWaitlist() {
             <div className="flex items-center justify-between">
               <Link href="/" className="flex items-center space-x-3">
                 <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <div>
@@ -136,7 +136,7 @@ export default function CustomerWaitlist() {
                   You're on the List!
                 </h1>
                 <p className="text-green-700 text-lg">
-                  Thank you for joining the ReturnIt waitlist
+                  Thank you for joining the Return It waitlist
                 </p>
               </div>
 
@@ -168,7 +168,7 @@ export default function CustomerWaitlist() {
                 <ul className="text-sm text-foreground space-y-1 text-left">
                   <li>• You'll receive an email confirmation shortly</li>
                   <li>• We'll notify you as we approach your launch date</li>
-                  <li>• Priority access when ReturnIt goes live in your area</li>
+                  <li>• Priority access when Return It goes live in your area</li>
                   <li>• Early adopter benefits and exclusive offers</li>
                 </ul>
               </div>
@@ -200,7 +200,7 @@ export default function CustomerWaitlist() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3">
               <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-90 transition-all duration-300 hover:scale-105">
-                ReturnIt
+                Return It
               </div>
             </Link>
             <div className="flex items-center space-x-6">
@@ -216,7 +216,7 @@ export default function CustomerWaitlist() {
       <div className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Join the ReturnIt Waitlist
+            Join the Return It Waitlist
           </h1>
           <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto">
             Be the first to experience hassle-free returns when we launch in your area. 
@@ -416,7 +416,7 @@ export default function CustomerWaitlist() {
                     data-testid="checkbox-marketing"
                   />
                   <Label htmlFor="marketingOptIn" className="text-sm text-foreground">
-                    I'd like to receive updates about ReturnIt and early access offers
+                    I'd like to receive updates about Return It and early access offers
                   </Label>
                 </div>
 

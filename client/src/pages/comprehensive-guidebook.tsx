@@ -29,9 +29,9 @@ export default function ComprehensiveGuidebook() {
   const guides = [
     {
       key: "website",
-      title: "ReturnIt Website Guide", 
+      title: "Return It Website Guide", 
       icon: <Globe className="w-5 h-5" />,
-      description: "Complete guide for customers using the ReturnIt website",
+      description: "Complete guide for customers using the Return It website",
       sections: [
         {
           title: "Getting Started",
@@ -106,7 +106,7 @@ export default function ComprehensiveGuidebook() {
           title: "Getting Started",
           items: [
             "Complete background check and onboarding",
-            "Download ReturnIt Driver app from app store",
+            "Download Return It Driver app from app store",
             "Login with provided driver credentials",
             "Complete driver tutorial and safety training",
             "Verify vehicle and insurance documentation",
@@ -212,7 +212,7 @@ ${section.items.map((item: string) => `- ${item}`).join('\n')}
 `).join('\n')}
 
 ---
-Generated from ReturnIt Comprehensive Guidebook
+Generated from Return It Comprehensive Guidebook
 Visit returnit.online for more information
     `.trim();
 
@@ -233,7 +233,7 @@ Visit returnit.online for more information
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-6 max-w-7xl">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">ReturnIt Comprehensive Guidebooks</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Return It Comprehensive Guidebooks</h1>
           <p className="text-xl text-gray-600">Complete documentation for all platform users and administrators</p>
         </div>
 

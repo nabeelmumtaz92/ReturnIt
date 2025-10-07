@@ -36,7 +36,7 @@ export default function MobileAppDemo() {
         {/* Hero Text */}
         <FlexStack gap="sm" align="center" className="text-center">
           <h1 className="text-[28px] leading-[34px] font-extrabold text-[#1A1A1A]">
-            ReturnIt
+            Return It
           </h1>
           <p className="text-[16px] leading-[24px] text-[#7B5E3B] max-w-xs">
             Hassle-free returns with professional pickup service

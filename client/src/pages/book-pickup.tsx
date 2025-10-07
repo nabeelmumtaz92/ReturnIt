@@ -754,7 +754,7 @@ export default function BookPickup() {
               <Label className="text-blue-800 font-medium text-sm">Return Policy Status</Label>
             </div>
             
-            {/* General ReturnIt Policies */}
+            {/* General Return It Policies */}
             {policyValidation && (
               <div className={`p-3 rounded-lg border ${
                 policyValidation.isValid 
@@ -771,7 +771,7 @@ export default function BookPickup() {
                     <p className={`text-sm font-medium ${
                       policyValidation.isValid ? 'text-green-800' : 'text-red-800'
                     }`}>
-                      ReturnIt Safety Check
+                      Return It Safety Check
                     </p>
                     <p className={`text-xs mt-1 ${
                       policyValidation.isValid ? 'text-green-600' : 'text-red-600'
@@ -1019,7 +1019,7 @@ export default function BookPickup() {
                 <div className="text-sm text-orange-800 space-y-2">
                   <ul className="list-disc pl-5 space-y-1">
                     <li>Items will be left unattended outside your residence</li>
-                    <li>ReturnIt and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
+                    <li>Return It and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
                     <li>Weather, theft, or other external factors may affect your items</li>
                     <li>You assume full risk and responsibility for items left outside</li>
                     <li>Photo documentation will be provided as proof of pickup attempt</li>
@@ -1114,7 +1114,7 @@ export default function BookPickup() {
                   onCheckedChange={(checked) => handleInputChange('authorizationSigned', checked === true)}
                   className="border-primary text-primary" data-testid="checkbox-authorization" />
                 <Label htmlFor="authorizationSigned" className="text-foreground font-medium">
-                  I authorize ReturnIt to process this return on my behalf *
+                  I authorize Return It to process this return on my behalf *
                 </Label>
               </div>
               <p className="text-muted-foreground text-xs ml-6">

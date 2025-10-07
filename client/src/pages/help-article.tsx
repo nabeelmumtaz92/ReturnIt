@@ -35,15 +35,15 @@ export default function HelpArticle() {
       category: "Getting Started",
       readTime: "3 min",
       lastUpdated: "2024-01-15",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 98,
       content: `
 # How to Book a Return Pickup
 
-Booking a return pickup with ReturnIt is quick and easy! Follow this step-by-step guide to schedule your first pickup.
+Booking a return pickup with Return It is quick and easy! Follow this step-by-step guide to schedule your first pickup.
 
 ## Prerequisites
-- A ReturnIt account (sign up at returnit.com)
+- A Return It account (sign up at returnit.com)
 - Items ready for return with original packaging when possible
 - Return receipt or order information from the retailer
 
@@ -103,7 +103,7 @@ If you run into any issues during booking:
 - **Email**: support@returnit.online
 
 ## Related Articles
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
 - [Track Your Return Order](/help-article/tracking-order)
 - [Service Areas & Availability](/help-article/service-areas)
       `,
@@ -111,14 +111,14 @@ If you run into any issues during booking:
       tags: ['booking', 'pickup', 'getting-started', 'tutorial', 'first-time']
     },
     'pricing-guide': {
-      title: "Understanding ReturnIt Pricing",
+      title: "Understanding Return It Pricing",
       category: "Pricing & Payment",
       readTime: "4 min",
       lastUpdated: "2024-01-10",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 94,
       content: `
-# Understanding ReturnIt Pricing
+# Understanding Return It Pricing
 
 Our transparent pricing model is designed to be fair and predictable. Here's exactly how we calculate your pickup costs.
 
@@ -250,7 +250,7 @@ Our support team can help clarify any charges:
       category: "Order Management",
       readTime: "2 min",
       lastUpdated: "2024-01-12",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 95,
       content: `
 # Track Your Return Order
@@ -265,7 +265,7 @@ Stay informed about your return pickup with real-time tracking updates from book
 3. **Click on your order** to view detailed tracking
 
 ### Mobile App
-1. **Open the ReturnIt app** on your phone
+1. **Open the Return It app** on your phone
 2. **Tap "Orders"** at the bottom
 3. **Select your order** for live tracking
 
@@ -394,12 +394,12 @@ Available 24/7 for urgent tracking issues:
       category: "Getting Started",
       readTime: "2 min",
       lastUpdated: "2024-01-08",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 85,
       content: `
 # Service Areas & Availability
 
-ReturnIt currently serves the greater St. Louis metropolitan area with plans for expansion across Missouri and beyond.
+Return It currently serves the greater St. Louis metropolitan area with plans for expansion across Missouri and beyond.
 
 ## Current Service Areas
 
@@ -566,7 +566,7 @@ We deliver to major retailers throughout our service area:
 
 ## Related Articles
 - [How to Book a Return Pickup](/help-article/how-to-book-return)
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
 - [Contact Customer Support](/help-article/contact-support)
       `,
       relatedArticles: ['how-to-book-return', 'pricing-guide', 'contact-support'],
@@ -577,12 +577,12 @@ We deliver to major retailers throughout our service area:
       category: "For Drivers",
       readTime: "6 min",
       lastUpdated: "2024-01-15",
-      author: "ReturnIt Driver Support Team",
+      author: "Return It Driver Support Team",
       popularity: 89,
       content: `
 # Driver FAQ - Frequently Asked Questions
 
-Everything drivers need to know about working with ReturnIt, from getting started to maximizing earnings.
+Everything drivers need to know about working with Return It, from getting started to maximizing earnings.
 
 ## Getting Started
 
@@ -742,7 +742,7 @@ Everything drivers need to know about working with ReturnIt, from getting starte
 
 ### What about insurance while driving?
 - **Your insurance**: Primary coverage required
-- **ReturnIt coverage**: Supplemental protection provided
+- **Return It coverage**: Supplemental protection provided
 - **Accident protocol**: Specific reporting procedures
 - **Damage claims**: Support team assists with process
 - **Coverage limits**: Details in driver agreement
@@ -783,7 +783,7 @@ Everything drivers need to know about working with ReturnIt, from getting starte
       category: "Support",
       readTime: "2 min",
       lastUpdated: "2024-01-10",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 96,
       content: `
 # Contact Customer Support
@@ -976,7 +976,7 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
       category: "Order Management",
       readTime: "4 min",
       lastUpdated: "2024-01-12",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 72,
       content: `
 # Delivery Problems & Solutions
@@ -1191,7 +1191,7 @@ Available 24/7 for urgent issues requiring immediate attention.
 ## Related Articles
 - [Track Your Return Order](/help-article/tracking-order)
 - [Contact Customer Support](/help-article/contact-support)
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
       `,
       relatedArticles: ['tracking-order', 'contact-support', 'pricing-guide'],
       tags: ['problems', 'issues', 'delayed', 'damaged', 'lost', 'solutions']
@@ -1201,7 +1201,7 @@ Available 24/7 for urgent issues requiring immediate attention.
       category: "Pricing & Payment",
       readTime: "2 min",
       lastUpdated: "2024-01-05",
-      author: "ReturnIt Support Team",
+      author: "Return It Support Team",
       popularity: 79,
       content: `
 # Accepted Payment Methods
@@ -1389,7 +1389,7 @@ Multiple secure payment options to make your return pickup convenient and safe.
 - **Tax reporting**: Included in driver 1099
 
 ## Related Articles
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
 - [Promo Codes & Discounts](/help-article/promo-codes)
 - [Refunds & Billing Questions](/help-article/refunds-billing)
       `,
@@ -1613,7 +1613,7 @@ Complete guide to our return policies including accepted items, size restriction
 - **Driver safety**: Priority response
 
 ## Related Articles
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
 - [Service Areas & Availability](/help-article/service-areas)
 - [Contact Customer Support](/help-article/contact-support)
       `,
@@ -1849,7 +1849,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
 - **Exclusive offers**: App-only promotions
 
 ## Related Articles
-- [Understanding ReturnIt Pricing](/help-article/pricing-guide)
+- [Understanding Return It Pricing](/help-article/pricing-guide)
 - [Accepted Payment Methods](/help-article/payment-methods)
 - [How to Book a Return Pickup](/help-article/how-to-book-return)
       `,

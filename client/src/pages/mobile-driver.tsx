@@ -48,7 +48,7 @@ export default function MobileDriver() {
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <h1 className="text-xl font-bold text-foreground mb-4">Driver Access Required</h1>
-            <p className="text-muted-foreground mb-6">This app is for ReturnIt drivers only.</p>
+            <p className="text-muted-foreground mb-6">This app is for Return It drivers only.</p>
             <div className="space-y-3">
               <Link href="/login" className="block">
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white">
@@ -210,7 +210,7 @@ export default function MobileDriver() {
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">ReturnIt Driver</h1>
+            <h1 className="text-xl font-bold text-foreground">Return It Driver</h1>
             <p className="text-sm text-primary">Hello, {user?.firstName || 'Driver'}!</p>
             {user?.isAdmin && (
               <Badge variant="outline" className="mt-1 text-xs border-blue-300 text-blue-700">

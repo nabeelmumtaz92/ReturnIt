@@ -19,7 +19,7 @@ export default function RefundDemo() {
     customerName: "Sarah Johnson",
     totalPrice: 24.99, // Full amount paid by customer
     itemCost: 18.50, // Refundable amount (what customer gets back)
-    serviceFee: 4.99, // Not refunded (ReturnIt keeps this)
+    serviceFee: 4.99, // Not refunded (Return It keeps this)
     taxAmount: 1.50, // Not refunded (paid to government)
     retailer: "Target",
     items: "2 × M Clothing Items",
@@ -39,7 +39,7 @@ export default function RefundDemo() {
     <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">ReturnIt Refund System Demo</h1>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Return It Refund System Demo</h1>
           <p className="text-xl text-gray-600">See how customers automatically get their money back when returns are completed</p>
         </div>
 
@@ -197,7 +197,7 @@ export default function RefundDemo() {
                       Customer refund of ${order.itemCost} has been {refundProcessed ? 'processed' : 'initiated'}
                     </p>
                     <p className="text-xs text-gray-600 mt-1">
-                      Service fee and tax are retained by ReturnIt
+                      Service fee and tax are retained by Return It
                     </p>
                   </div>
                   
@@ -287,7 +287,7 @@ export default function RefundDemo() {
                 <div className="bg-green-50 p-4 rounded-lg border border-green-200">
                   <h4 className="font-semibold text-green-800">Store Credit Balance</h4>
                   <p className="text-2xl font-bold text-green-600">${order.itemCost}</p>
-                  <p className="text-sm text-green-700">Available for your next ReturnIt service</p>
+                  <p className="text-sm text-green-700">Available for your next Return It service</p>
                   <p className="text-xs text-gray-600 mt-2">
                     Service fee and tax from original order are non-refundable
                   </p>
@@ -334,7 +334,7 @@ export default function RefundDemo() {
                   <Gift className="w-6 h-6" />
                 </div>
                 <h3 className="font-semibold mb-2">Store Credit</h3>
-                <p className="text-sm text-gray-600">Instant credit added to customer's ReturnIt account. Available immediately for future services.</p>
+                <p className="text-sm text-gray-600">Instant credit added to customer's Return It account. Available immediately for future services.</p>
               </div>
               
               <div className="text-center">

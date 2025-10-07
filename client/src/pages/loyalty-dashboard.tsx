@@ -71,7 +71,7 @@ export default function LoyaltyDashboard() {
             <div className="flex items-center space-x-4">
               <Link href="/">
                 <div className="text-2xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
-                  ReturnIt
+                  Return It
                 </div>
               </Link>
               <h1 className="text-3xl font-bold text-foreground">Returnly Rewards</h1>

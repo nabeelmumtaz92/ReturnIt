@@ -84,7 +84,7 @@ export default function Login() {
       
       toast({
         title: "Welcome to the demo!",
-        description: "You're now exploring ReturnIt with demo access.",
+        description: "You're now exploring Return It with demo access.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
@@ -303,7 +303,7 @@ export default function Login() {
         <div className="text-center mb-8">
           <Link href="/">
             <div className="text-3xl font-bold mb-2 cursor-pointer hover:opacity-80 transition-opacity">
-              ReturnIt
+              Return It
             </div>
           </Link>
           <p className="text-muted-foreground">Professional return service</p>

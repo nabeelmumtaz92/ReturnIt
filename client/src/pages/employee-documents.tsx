@@ -66,7 +66,7 @@ export default function EmployeeDocuments() {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Employee Guide</title>
+<title>Return It Employee Guide</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
 h1 { color: #92400e; border-bottom: 3px solid #f59e0b; padding-bottom: 10px; }
@@ -83,15 +83,15 @@ h3 { color: #d97706; }
 </head>
 <body>
 <div class="header">
-<h1>ReturnIt Employee Guide</h1>
+<h1>Return It Employee Guide</h1>
 <p><strong>Comprehensive Training Manual</strong></p>
 <p>Version 1.0 - January 2025</p>
 </div>
 
 <div class="section">
 <h2>🚀 Getting Started</h2>
-<h3>Welcome to ReturnIt</h3>
-<p>Welcome to the ReturnIt team! This comprehensive guide will help you master our platform and deliver exceptional service to our customers.</p>
+<h3>Welcome to Return It</h3>
+<p>Welcome to the Return It team! This comprehensive guide will help you master our platform and deliver exceptional service to our customers.</p>
 
 <h3>First Day Setup</h3>
 <ol class="steps">
@@ -119,7 +119,7 @@ h3 { color: #d97706; }
 
 <h3>Handling Customer Inquiries</h3>
 <ol class="steps">
-<li><strong>Greet Warmly:</strong> "Hello! Thank you for contacting ReturnIt. I'm [Name] and I'm here to help you today."</li>
+<li><strong>Greet Warmly:</strong> "Hello! Thank you for contacting Return It. I'm [Name] and I'm here to help you today."</li>
 <li><strong>Listen Actively:</strong> Let the customer explain their situation completely</li>
 <li><strong>Acknowledge:</strong> "I understand this is frustrating, and I'm going to help resolve this for you."</li>
 <li><strong>Investigate:</strong> Use our tracking system to gather all relevant information</li>
@@ -394,8 +394,8 @@ h3 { color: #d97706; }
 
 <div class="script">
 <h3>Opening Greeting</h3>
-<p><strong>Phone:</strong> "Hello, thank you for calling ReturnIt! This is [Your Name]. How can I help make your day better?"</p>
-<p><strong>Chat/Email:</strong> "Hi [Customer Name]! Thanks for reaching out to ReturnIt. I'm [Your Name] and I'm here to help. What can I assist you with today?"</p>
+<p><strong>Phone:</strong> "Hello, thank you for calling Return It! This is [Your Name]. How can I help make your day better?"</p>
+<p><strong>Chat/Email:</strong> "Hi [Customer Name]! Thanks for reaching out to Return It. I'm [Your Name] and I'm here to help. What can I assist you with today?"</p>
 </div>
 
 <div class="script">
@@ -410,7 +410,7 @@ h3 { color: #d97706; }
 
 <div class="script">
 <h3>Closing Conversations</h3>
-<p>"Is there anything else I can help you with today? I want to make sure you're completely satisfied before we end our conversation. Thank you for choosing ReturnIt!"</p>
+<p>"Is there anything else I can help you with today? I want to make sure you're completely satisfied before we end our conversation. Thank you for choosing Return It!"</p>
 </div>
 </div>
 
@@ -556,7 +556,7 @@ h3 { color: #d97706; }
 </head>
 <body>
 <div class="header">
-<h1>ReturnIt Operations Manual</h1>
+<h1>Return It Operations Manual</h1>
 <p><strong>Driver Management & Operations Excellence</strong></p>
 </div>
 
@@ -622,7 +622,7 @@ h3 { color: #d97706; }
 </head>
 <body>
 <div class="header">
-<h1>ReturnIt Manager Handbook</h1>
+<h1>Return It Manager Handbook</h1>
 <p><strong>Leadership & Team Management Guide</strong></p>
 </div>
 
@@ -676,7 +676,7 @@ h3 { color: #d97706; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Quick Reference</title>
+<title>Return It Quick Reference</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
 h1 { color: #92400e; border-bottom: 3px solid #f59e0b; padding-bottom: 10px; }
@@ -688,7 +688,7 @@ h2 { color: #92400e; margin-top: 30px; }
 </head>
 <body>
 <div class="header">
-<h1>ReturnIt Quick Reference Guide</h1>
+<h1>Return It Quick Reference Guide</h1>
 <p><strong>Essential Information at Your Fingertips</strong></p>
 </div>
 
@@ -781,7 +781,7 @@ h2 { color: #92400e; margin-top: 30px; }
 </head>
 <body>
 <div class="header">
-<h1>ReturnIt Employee Training Checklist</h1>
+<h1>Return It Employee Training Checklist</h1>
 <p><strong>Complete Training Program Tracking</strong></p>
 </div>
 

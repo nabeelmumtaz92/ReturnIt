@@ -21,8 +21,8 @@ export default function EmployeeGuide() {
       icon: <BookOpen className="h-5 w-5" />,
       content: [
         {
-          title: 'Welcome to ReturnIt',
-          description: 'Your comprehensive guide to using the ReturnIt platform effectively',
+          title: 'Welcome to Return It',
+          description: 'Your comprehensive guide to using the Return It platform effectively',
           steps: [
             'Log in with your company email and password',
             'Complete your profile setup in Account Settings',
@@ -227,7 +227,7 @@ export default function EmployeeGuide() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground">Employee Guide</h1>
-              <p className="text-muted-foreground">Complete guide to using the ReturnIt platform</p>
+              <p className="text-muted-foreground">Complete guide to using the Return It platform</p>
             </div>
             <Badge className="bg-accent text-foreground px-3 py-1">
               <BookOpen className="h-4 w-4 mr-1" />

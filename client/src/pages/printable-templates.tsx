@@ -148,7 +148,7 @@ export default function PrintableTemplates() {
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Pickup Receipt</title>
+<title>Return It Pickup Receipt</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
 .receipt { max-width: 400px; margin: 0 auto; border: 2px solid #92400e; padding: 20px; }
@@ -165,7 +165,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
 <body>
 <div class="receipt">
   <div class="header">
-    <div class="logo">📦 ReturnIt</div>
+    <div class="logo">📦 Return It</div>
     <div>PICKUP RECEIPT</div>
   </div>
   
@@ -201,7 +201,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
   <div class="footer">
     <div><strong>Track your return at returnit.online</strong></div>
     <div>Customer Service: (555) 123-4567</div>
-    <div>Thank you for choosing ReturnIt!</div>
+    <div>Thank you for choosing Return It!</div>
   </div>
 </div>
 </body>
@@ -212,7 +212,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Delivery Label</title>
+<title>Return It Delivery Label</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 .label { width: 4in; height: 6in; border: 2px solid #000; padding: 10px; margin: 0 auto; box-sizing: border-box; }
@@ -228,7 +228,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 <body>
 <div class="label">
   <div class="header">
-    <div class="logo">📦 ReturnIt Express</div>
+    <div class="logo">📦 Return It Express</div>
     <div style="font-size: 12px;">DELIVERY LABEL</div>
   </div>
   
@@ -267,7 +267,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Daily Driver Checklist</title>
+<title>Return It Daily Driver Checklist</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 .header { text-align: center; border-bottom: 2px solid #92400e; padding-bottom: 15px; margin-bottom: 20px; }
@@ -280,7 +280,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 </head>
 <body>
 <div class="header">
-  <h1 style="color: #92400e; margin-bottom: 5px;">📦 ReturnIt</h1>
+  <h1 style="color: #92400e; margin-bottom: 5px;">📦 Return It</h1>
   <h2>Daily Driver Checklist</h2>
   <p>Date: _________________ Driver: _________________</p>
 </div>
@@ -376,7 +376,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Customer Feedback Form</title>
+<title>Return It Customer Feedback Form</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.5; }
 .header { text-align: center; border-bottom: 2px solid #92400e; padding-bottom: 15px; margin-bottom: 20px; }
@@ -391,7 +391,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.5; }
 </head>
 <body>
 <div class="header">
-  <h1 style="color: #92400e;">📦 ReturnIt</h1>
+  <h1 style="color: #92400e;">📦 Return It</h1>
   <h2>Customer Feedback Form</h2>
   <p>We value your opinion! Please rate your experience.</p>
 </div>
@@ -446,7 +446,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.5; }
 </div>
 
 <div class="section">
-  <h3 style="color: #92400e;">Would you recommend ReturnIt to others?</h3>
+  <h3 style="color: #92400e;">Would you recommend Return It to others?</h3>
   <p>☐ Definitely ☐ Probably ☐ Maybe ☐ Probably Not ☐ Definitely Not</p>
 </div>
 
@@ -463,7 +463,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.5; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Incident Report Form</title>
+<title>Return It Incident Report Form</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 .header { text-align: center; border-bottom: 2px solid #dc2626; padding-bottom: 15px; margin-bottom: 20px; }
@@ -479,7 +479,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 <body>
 <div class="header">
   <h1 style="color: #dc2626;">⚠️ INCIDENT REPORT</h1>
-  <h2>ReturnIt Delivery Services</h2>
+  <h2>Return It Delivery Services</h2>
   <p><strong>CONFIDENTIAL - Complete immediately after incident</strong></p>
 </div>
 
@@ -580,7 +580,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Route Manifest</title>
+<title>Return It Route Manifest</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 15px; font-size: 12px; }
 .header { border-bottom: 2px solid #92400e; padding-bottom: 10px; margin-bottom: 15px; }
@@ -598,7 +598,7 @@ th { background-color: #f3f4f6; font-weight: bold; }
 </head>
 <body>
 <div class="header">
-  <h1 style="color: #92400e; margin: 0;">📦 ReturnIt Route Manifest</h1>
+  <h1 style="color: #92400e; margin: 0;">📦 Return It Route Manifest</h1>
   <div class="route-info">
     <div>
       <strong>Date:</strong> _________________ 
@@ -751,7 +751,7 @@ th { background-color: #f3f4f6; font-weight: bold; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Quality Assurance Checklist</title>
+<title>Return It Quality Assurance Checklist</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 .header { text-align: center; border-bottom: 2px solid #059669; padding-bottom: 15px; margin-bottom: 20px; }
@@ -768,7 +768,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 </head>
 <body>
 <div class="header">
-  <h1 style="color: #059669; margin-bottom: 5px;">✅ ReturnIt</h1>
+  <h1 style="color: #059669; margin-bottom: 5px;">✅ Return It</h1>
   <h2>Quality Assurance Checklist</h2>
   <p>Date: _________________ Reviewer: _________________ Driver: _________________</p>
 </div>
@@ -894,7 +894,7 @@ body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ReturnIt Emergency Contact Card</title>
+<title>Return It Emergency Contact Card</title>
 <style>
 body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 .card { width: 3.5in; height: 2in; border: 2px solid #dc2626; border-radius: 8px; padding: 10px; box-sizing: border-box; margin: 0 auto; background-color: #fef2f2; }
@@ -910,7 +910,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 <div class="card">
   <div class="header">
     🚨 EMERGENCY CONTACT
-    <div style="font-size: 12px; color: #dc2626;">ReturnIt Delivery Services</div>
+    <div style="font-size: 12px; color: #dc2626;">Return It Delivery Services</div>
   </div>
   
   <div class="contact-info">

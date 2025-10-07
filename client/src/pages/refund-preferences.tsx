@@ -142,7 +142,7 @@ export default function RefundPreferences() {
                       <div>
                         <h3 className="font-semibold text-gray-900">Store Credit</h3>
                         <p className="text-sm text-gray-600 mt-1">
-                          Instant credit added to your ReturnIt account for future orders
+                          Instant credit added to your Return It account for future orders
                         </p>
                         <div className="mt-2 flex items-center gap-1 text-xs text-green-600 font-medium">
                           <CheckCircle className="w-3 h-3" />
@@ -218,7 +218,7 @@ export default function RefundPreferences() {
               
               <div className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-600" />
-                <span className="text-sm">Use for any future ReturnIt service</span>
+                <span className="text-sm">Use for any future Return It service</span>
               </div>
               
               <div className="flex items-center gap-2">

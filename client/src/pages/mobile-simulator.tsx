@@ -35,7 +35,7 @@ export default function MobileSimulator() {
       <div className="bg-[#A47C48] text-white p-4 text-center w-full">
         <div className="flex items-center justify-center mb-2">
           <ReturnItIcon size={24} className="text-white mr-2" />
-          <h1 className="text-xl font-bold">ReturnIt</h1>
+          <h1 className="text-xl font-bold">Return It</h1>
         </div>
         <p className="text-sm opacity-90">Customer App</p>
       </div>
@@ -193,7 +193,7 @@ export default function MobileSimulator() {
       <div className="bg-[#A47C48] text-white p-4 text-center w-full">
         <div className="flex items-center justify-center mb-2">
           <ReturnItIcon size={24} className="text-white mr-2" />
-          <h1 className="text-xl font-bold">ReturnIt Driver</h1>
+          <h1 className="text-xl font-bold">Return It Driver</h1>
         </div>
         <p className="text-sm opacity-90">Driver App</p>
       </div>

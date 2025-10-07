@@ -131,7 +131,7 @@ export default function PrivacyPolicy() {
                 </p>
                 <div className="space-y-1">
                   <p className="text-gray-700">Email: <a href="mailto:support@returnit.online" className="text-primary hover:text-primary">support@returnit.online</a></p>
-                  <p className="text-gray-700">ReturnIt, LLC – 1214 Devonworth Drive, St. Louis, MO, 63017</p>
+                  <p className="text-gray-700">Return It, LLC – 1214 Devonworth Drive, St. Louis, MO, 63017</p>
                 </div>
               </div>
             </div>

@@ -377,7 +377,7 @@ export default function BusinessIntelligence() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                       <div>
-                        <p className="font-medium text-gray-900">ReturnIt (Us)</p>
+                        <p className="font-medium text-gray-900">Return It (Us)</p>
                         <p className="text-sm text-gray-600">Premium service</p>
                       </div>
                       <div className="text-right">
@@ -421,7 +421,7 @@ export default function BusinessIntelligence() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">ReturnIt</span>
+                      <span className="text-sm font-medium">Return It</span>
                       <span className="text-sm font-bold text-green-600">34%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
