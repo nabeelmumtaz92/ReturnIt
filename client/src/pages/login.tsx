@@ -438,12 +438,6 @@ export default function Login() {
                     color="bg-red-50"
                   />
                   <SocialButton 
-                    provider="Apple" 
-                    icon={SiApple} 
-                    onClick={handleAppleAuth}
-                    color="bg-gray-50"
-                  />
-                  <SocialButton 
                     provider="Facebook" 
                     icon={SiFacebook} 
                     onClick={handleFacebookAuth}
@@ -617,12 +611,6 @@ export default function Login() {
                     icon={SiGoogle} 
                     onClick={handleGoogleAuth}
                     color="bg-red-50"
-                  />
-                  <SocialButton 
-                    provider="Apple" 
-                    icon={SiApple} 
-                    onClick={handleAppleAuth}
-                    color="bg-gray-50"
                   />
                   <SocialButton 
                     provider="Facebook" 
