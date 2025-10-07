@@ -228,7 +228,7 @@ export type KpiData = z.infer<typeof KpiDataSchema>;
 export type DemandForecastItem = z.infer<typeof DemandForecastItemSchema>;
 export type PricingOptimizationItem = z.infer<typeof PricingOptimizationItemSchema>;
 export type MarketExpansionItem = z.infer<typeof MarketExpansionItemSchema>;
-export type RouteStop = z.infer<typeof RouteStopSchema>;
+export type RouteStopZod = z.infer<typeof RouteStopSchema>;
 export type CurrentRoute = z.infer<typeof CurrentRouteSchema>;
 export type OptimizedWaypoint = z.infer<typeof OptimizedWaypointSchema>;
 export type RouteOptimization = z.infer<typeof RouteOptimizationSchema>;
@@ -797,6 +797,56 @@ export const notifications = pgTable("notifications", {
   typeIdx: index("notifications_type_idx").on(table.type),
   createdAtIdx: index("notifications_created_at_idx").on(table.createdAt),
   userIdIsReadIdx: index("notifications_user_id_is_read_idx").on(table.userId, table.isRead),
+}));
+
+// Multi-Stop Routes for Batched Deliveries
+export const routes = pgTable("routes", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  status: text("status").notNull().default("pending"), // pending, active, completed, cancelled
+  
+  // Route summary
+  totalStops: integer("total_stops").notNull(),
+  totalDistance: real("total_distance").notNull(), // miles
+  totalDuration: integer("total_duration").notNull(), // minutes
+  totalEarnings: real("total_earnings").notNull(),
+  
+  // Route optimization
+  optimizedSequence: jsonb("optimized_sequence").notNull().default([]), // Array of order IDs in optimal sequence
+  routeCoordinates: jsonb("route_coordinates").default([]), // Polyline coordinates for map
+  
+  // Tracking
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  currentStopIndex: integer("current_stop_index").default(0),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  driverIdIdx: index("routes_driver_id_idx").on(table.driverId),
+  statusIdx: index("routes_status_idx").on(table.status),
+  driverIdStatusIdx: index("routes_driver_id_status_idx").on(table.driverId, table.status),
+}));
+
+// Route Stops - Individual orders within a multi-stop route
+export const routeStops = pgTable("route_stops", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  routeId: integer("route_id").references(() => routes.id).notNull(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  stopSequence: integer("stop_sequence").notNull(), // Order in the route (1, 2, 3...)
+  status: text("status").notNull().default("pending"), // pending, completed, skipped
+  
+  // Stop details
+  address: text("address").notNull(),
+  coordinates: jsonb("coordinates"),
+  estimatedArrival: timestamp("estimated_arrival"),
+  actualArrival: timestamp("actual_arrival"),
+  completedAt: timestamp("completed_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  routeIdIdx: index("route_stops_route_id_idx").on(table.routeId),
+  orderIdIdx: index("route_stops_order_id_idx").on(table.orderId),
 }));
 
 // Analytics and metrics
@@ -2672,6 +2722,52 @@ export const insertRetailerInvoiceSchema = createInsertSchema(retailerInvoices).
   createdAt: true,
   updatedAt: true,
 });
+
+// Multi-Stop Route Types
+export type Route = typeof routes.$inferSelect;
+export type InsertRoute = typeof routes.$inferInsert;
+export const insertRouteSchema = createInsertSchema(routes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RouteStop = typeof routeStops.$inferSelect;
+export type InsertRouteStop = typeof routeStops.$inferInsert;
+export const insertRouteStopSchema = createInsertSchema(routeStops).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Multi-Stop Route Response Schemas
+export const MultiStopRouteSchema = z.object({
+  id: z.number(),
+  driverId: z.number(),
+  status: z.string(),
+  totalStops: z.number(),
+  totalDistance: z.number(),
+  totalDuration: z.number(),
+  totalEarnings: z.number(),
+  optimizedSequence: z.array(z.string()),
+  stops: z.array(z.object({
+    id: z.number(),
+    orderId: z.string(),
+    stopSequence: z.number(),
+    status: z.string(),
+    address: z.string(),
+    coordinates: z.any().optional(),
+    estimatedArrival: z.string().optional(),
+    pickupTime: z.string().optional(),
+    itemDescription: z.string().optional(),
+    earnings: z.number(),
+  })),
+  startedAt: z.string().optional(),
+  completedAt: z.string().optional(),
+  currentStopIndex: z.number(),
+  createdAt: z.string(),
+});
+
+export type MultiStopRoute = z.infer<typeof MultiStopRouteSchema>;
 
 export type RetailerUsageMetric = typeof retailerUsageMetrics.$inferSelect;
 export type InsertRetailerUsageMetric = typeof retailerUsageMetrics.$inferInsert;
