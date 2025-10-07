@@ -12,7 +12,7 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: #f99806;
+  --primary: #d97706;
   --primary-foreground: #ffffff;
   --secondary: #FAF8F4;
   --secondary-foreground: #B8956A;
@@ -49,7 +49,7 @@
   --brand-cardboard-dark: hsl(30, 40%, 25%);
   --brand-barcode-black: hsl(210, 7%, 10%);
   --brand-tape-brown: hsl(30, 32%, 39%);
-  --brand-accent-orange: #f99806;
+  --brand-accent-orange: #d97706;
   --brand-accent-green: hsl(123, 43%, 32%);
   
   /* Mapped brand variables */
@@ -86,7 +86,7 @@
   --border: hsl(30, 40%, 35%);
   --input: hsl(30, 32%, 18%);
   --ring: hsl(45, 42%, 96%);
-  --primary: hsl(20, 100%, 63%);
+  --primary: #d97706;
   --primary-foreground: hsl(0, 0%, 100%);
   --secondary: hsl(30, 32%, 39%);
   --secondary-foreground: hsl(45, 42%, 96%);
