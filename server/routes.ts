@@ -18,6 +18,7 @@ import {
   insertNotificationSchema, insertDriverApplicationSchema, OrderStatus,
   LocationSchema, indeedApplications, insertIndeedApplicationSchema
 } from "@shared/schema";
+import { PolicyValidator } from "@shared/policy.rules";
 import { AuthService } from "./auth";
 import { registrationSchema, loginSchema, trackingNumberSchema } from "@shared/validation";
 import { PerformanceService, performanceMiddleware } from "./performance";
@@ -1601,6 +1602,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+
+  // Merchant Policy API endpoints
+  app.get("/api/merchant-policies/:retailerName", async (req, res) => {
+    try {
+      console.log('[MERCHANT POLICY] GET request for retailer:', req.params.retailerName);
+      const { retailerName } = req.params;
+      const policy = await storage.getMerchantPolicyByStoreName(retailerName);
+      
+      console.log('[MERCHANT POLICY] Policy found:', !!policy);
+      
+      if (!policy) {
+        console.log('[MERCHANT POLICY] Returning 404 - no policy found');
+        return res.status(404).json({ 
+          message: `No return policy found for ${retailerName}` 
+        });
+      }
+
+      console.log('[MERCHANT POLICY] Returning policy data');
+      res.json(policy);
+    } catch (error) {
+      console.error('[MERCHANT POLICY] Error fetching merchant policy:', error);
+      res.status(500).json({ message: "Failed to fetch merchant policy" });
+    }
+  });
+
+  app.post("/api/merchant-policies/validate", async (req, res) => {
+    try {
+      const {
+        retailerName,
+        purchaseDate,
+        itemCategories = [],
+        hasTags = false,
+        hasOriginalPackaging = false,
+        hasReceipt = false
+      } = req.body;
+
+      // Validate required fields
+      if (!retailerName || !purchaseDate) {
+        return res.status(400).json({ 
+          message: "Missing required fields: retailerName and purchaseDate are required" 
+        });
+      }
+
+      // Fetch merchant policy
+      const merchantPolicy = await storage.getMerchantPolicyByStoreName(retailerName);
+
+      // If no policy exists for this retailer, allow the return (permissive default)
+      // This allows St. Louis stores to work even without configured policies
+      if (!merchantPolicy || !merchantPolicy.isActive) {
+        return res.json({
+          isValid: true,
+          violations: [],
+          message: `No policy restrictions for ${retailerName} - return accepted`
+        });
+      }
+
+      // Build validation results for each category
+      const violations: Array<{ field: string; message: string }> = [];
+      
+      for (const category of itemCategories) {
+        const bookingAttempt = {
+          itemDescription: category,
+          itemCategory: category,
+          retailer: retailerName,
+          purchaseDate,
+          receiptUploaded: hasReceipt,
+          tagsAttached: hasTags,
+          originalPackaging: hasOriginalPackaging,
+          numberOfItems: 1
+        };
+
+        const result = PolicyValidator.validateBookingAttempt(bookingAttempt, merchantPolicy);
+        
+        if (!result.isValid) {
+          violations.push(...result.violations.map(v => ({
+            field: v.type,
+            message: v.message
+          })));
+        }
+      }
+
+      // If no categories provided, validate generic return
+      if (itemCategories.length === 0) {
+        const bookingAttempt = {
+          itemDescription: "General Return",
+          itemCategory: "General",
+          retailer: retailerName,
+          purchaseDate,
+          receiptUploaded: hasReceipt,
+          tagsAttached: hasTags,
+          originalPackaging: hasOriginalPackaging,
+          numberOfItems: 1
+        };
+
+        const result = PolicyValidator.validateBookingAttempt(bookingAttempt, merchantPolicy);
+        
+        if (!result.isValid) {
+          violations.push(...result.violations.map(v => ({
+            field: v.type,
+            message: v.message
+          })));
+        }
+      }
+
+      res.json({
+        isValid: violations.length === 0,
+        violations
+      });
+    } catch (error) {
+      console.error('Error validating merchant policy:', error);
+      res.status(500).json({ message: "Failed to validate return policy" });
+    }
   });
 
   app.get("/api/auth/me", async (req, res) => {
