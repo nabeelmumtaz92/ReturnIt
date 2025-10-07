@@ -5050,6 +5050,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Search store locations by name (for autocomplete dropdown)
+  app.get("/api/stores/search", async (req, res) => {
+    try {
+      const { q: query } = req.query;
+      
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ message: 'Search query is required' });
+      }
+
+      // Cache store search results for 15 minutes
+      const cacheKey = `stores_search_${query.toLowerCase()}`;
+      
+      const storeLocations = await PerformanceService.withCache(
+        cacheKey,
+        async () => {
+          // Search merchant_policies table by store name
+          const allPolicies = await storage.getMerchantPolicies();
+          
+          // Filter by search query (case-insensitive) and only return stores with addresses
+          const matchingStores = allPolicies
+            .filter(policy => 
+              policy.isActive && 
+              policy.streetAddress && // Must have address data
+              policy.storeName.toLowerCase().includes(query.toLowerCase())
+            )
+            .map(policy => ({
+              id: policy.id,
+              merchantId: policy.merchantId,
+              storeName: policy.storeName,
+              displayName: `${policy.storeName}${policy.city ? ` - ${policy.city}` : ''}`,
+              streetAddress: policy.streetAddress,
+              city: policy.city,
+              state: policy.state,
+              zipCode: policy.zipCode,
+              phone: policy.phone,
+              website: policy.website
+            }));
+
+          // Sort by store name
+          matchingStores.sort((a, b) => a.storeName.localeCompare(b.storeName));
+          
+          return matchingStores;
+        },
+        1000 * 60 * 15 // 15 minutes TTL
+      );
+
+      res.json(storeLocations);
+    } catch (error) {
+      console.error('Error searching store locations:', error);
+      res.status(500).json({ message: 'Failed to search store locations' });
+    }
+  });
+
   // Admin endpoint to populate St. Louis companies data
   app.post("/api/admin/populate-companies", requireSecureAdmin, async (req, res) => {
     try {
