@@ -120,6 +120,7 @@ export default function BookPickup() {
   const [pricingBreakdown, setPricingBreakdown] = useState<ReturnType<typeof calculatePaymentWithValue> | null>(null);
   const [policyValidation, setPolicyValidation] = useState<{ isValid: boolean; message: string; warnings: string[] } | null>(null);
   const [merchantPolicyValidation, setMerchantPolicyValidation] = useState<{ isValid: boolean; message: string; violations: string[] } | null>(null);
+  const [isValidatingPolicy, setIsValidatingPolicy] = useState(false);
 
   // Item categories for multiple selection
   const itemCategories = [
@@ -237,6 +238,7 @@ export default function BookPickup() {
       'preferredTimeSlot',
       'pickupLocation',
       'purchaseType',
+      'purchaseDate',
       'authorizationSigned'
     ];
 
@@ -277,8 +279,17 @@ export default function BookPickup() {
       return;
     }
 
-    // Block booking if merchant policy is violated
-    if (merchantPolicyValidation && !merchantPolicyValidation.isValid) {
+    // Block booking if merchant policy validation is pending or violated
+    if (isValidatingPolicy || !merchantPolicyValidation) {
+      toast({
+        title: "Policy Validation Pending",
+        description: "Please wait while we validate your return against the store's policy...",
+        variant: "default",
+      });
+      return;
+    }
+
+    if (!merchantPolicyValidation.isValid) {
       toast({
         title: "Return Policy Violation",
         description: merchantPolicyValidation.message || "This return does not meet the store's return policy requirements. Please review the policy details above.",
@@ -374,12 +385,27 @@ export default function BookPickup() {
   };
 
   // Generic input handler
+  // Synchronously invalidate merchant policy validation when relevant fields change
+  const invalidateMerchantPolicy = () => {
+    setMerchantPolicyValidation(null);
+    setIsValidatingPolicy(true);
+  };
+
   const handleInputChange = (field: string, value: any) => {
+    // CRITICAL: Invalidate policy SYNCHRONOUSLY for policy-relevant fields
+    const policyRelevantFields = ['retailer', 'itemCategories', 'purchaseDate', 'hasOriginalTags', 'hasOriginalPackaging', 'receiptImage', 'purchaseType'];
+    if (policyRelevantFields.includes(field)) {
+      invalidateMerchantPolicy();
+    }
+    
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   // Category toggle handler for multi-select
   const handleCategoryToggle = (category: string) => {
+    // CRITICAL: Invalidate policy SYNCHRONOUSLY when categories change
+    invalidateMerchantPolicy();
+    
     setFormData(prev => ({
       ...prev,
       itemCategories: prev.itemCategories.includes(category)
@@ -392,6 +418,9 @@ export default function BookPickup() {
   const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // CRITICAL: Invalidate policy SYNCHRONOUSLY when receipt changes
+      invalidateMerchantPolicy();
+      
       setFormData(prev => ({ ...prev, receiptImage: file }));
       toast({
         title: "Receipt uploaded",
@@ -518,17 +547,28 @@ export default function BookPickup() {
 
   // Validate merchant-specific return policies
   useEffect(() => {
+    const abortController = new AbortController();
+    let isCurrentRequest = true;
+    
     const validateMerchantPolicy = async () => {
       // Require real customer data - no policy validation with fake dates
       if (formData.retailer && formData.itemCategories.length > 0 && formData.purchaseDate) {
+        // CRITICAL: Set to null immediately to invalidate stale results and disable button
+        setMerchantPolicyValidation(null);
+        
         try {
           // First, fetch merchant policy for the selected retailer
-          const response = await fetch(`/api/merchants/policies/${encodeURIComponent(formData.retailer)}`);
+          const response = await fetch(`/api/merchants/policies/${encodeURIComponent(formData.retailer)}`, {
+            signal: abortController.signal
+          });
           let merchantPolicy = null;
           
           if (response.ok) {
             merchantPolicy = await response.json();
           }
+
+          // CRITICAL: Ignore results from stale requests
+          if (!isCurrentRequest) return;
 
           // Validate ALL selected categories (not just first one)
           const categoryValidationResults = [];
@@ -551,6 +591,9 @@ export default function BookPickup() {
             categoryValidationResults.push({ category, result: categoryResult });
           }
 
+          // CRITICAL: Double-check we're still the current request
+          if (!isCurrentRequest) return;
+
           // Combine results - if ANY category fails, the entire validation fails
           const validationResult = {
             isValid: categoryValidationResults.every(r => r.result.isValid),
@@ -563,20 +606,29 @@ export default function BookPickup() {
               message: `✅ Return accepted under ${formData.retailer}'s policy`,
               violations: []
             });
+            setIsValidatingPolicy(false);
           } else {
             setMerchantPolicyValidation({
               isValid: false,
               message: `❌ Return not allowed: ${validationResult.violations[0]?.message || 'Policy violation'}`,
               violations: validationResult.violations.map(v => v.message)
             });
+            setIsValidatingPolicy(false);
           }
         } catch (error) {
+          // Ignore aborted requests
+          if (error instanceof Error && error.name === 'AbortError') return;
+          
+          // Only handle errors from current request
+          if (!isCurrentRequest) return;
+          
           console.error('Merchant policy validation error:', error);
           setMerchantPolicyValidation({
             isValid: true, // Default to allow if validation fails
             message: `⚠️ Unable to validate ${formData.retailer} policy - proceeding with caution`,
             violations: []
           });
+          setIsValidatingPolicy(false);
         }
       } else {
         setMerchantPolicyValidation(null);
@@ -584,6 +636,12 @@ export default function BookPickup() {
     };
 
     validateMerchantPolicy();
+    
+    // Cleanup: abort request and mark as stale when dependencies change
+    return () => {
+      abortController.abort();
+      isCurrentRequest = false;
+    };
   }, [formData.retailer, formData.itemCategories, formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
 
   // Fetch available retailers on component mount
@@ -1095,6 +1153,24 @@ export default function BookPickup() {
 
         {formData.purchaseType && (
           <div className="space-y-4 p-4 bg-white/60 rounded-lg border border-border">
+            {/* Purchase Date - REQUIRED for policy validation */}
+            <div className="space-y-2">
+              <Label htmlFor="purchaseDate" className="text-foreground font-medium">When did you purchase this item? *</Label>
+              <Input 
+                id="purchaseDate" 
+                type="date" 
+                value={formData.purchaseDate}
+                onChange={(e) => handleInputChange('purchaseDate', e.target.value)}
+                max={new Date().toISOString().split('T')[0]}
+                className="bg-white/80 border-border focus:border-primary"
+                required 
+                data-testid="input-purchase-date" 
+              />
+              <p className="text-xs text-muted-foreground">
+                This is required to validate the return against {formData.retailer}'s return window policy
+              </p>
+            </div>
+
             {/* Return Requirements Warning */}
             {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptImage && (
               <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-300 rounded-lg">
@@ -1211,8 +1287,20 @@ export default function BookPickup() {
           className="border-border text-foreground hover:bg-accent/50">
           Back
         </Button>
-        <Button type="submit" className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2">
-          Next Step
+        <Button 
+          type="submit" 
+          className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2"
+          disabled={isValidatingPolicy || !merchantPolicyValidation}
+          data-testid="button-step3-next"
+        >
+          {(isValidatingPolicy || !merchantPolicyValidation) ? (
+            <span className="flex items-center space-x-2">
+              <span className="animate-spin">⏳</span>
+              <span>Validating Policy...</span>
+            </span>
+          ) : (
+            'Next Step'
+          )}
         </Button>
       </div>
     </div>
