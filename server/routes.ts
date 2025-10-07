@@ -3136,6 +3136,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Driver status toggle - allows flexible on/off at any time (no restrictions)
   app.patch("/api/driver/status", isAuthenticated, async (req, res) => {
     try {
       const user = (req.session as any).user;
@@ -3143,9 +3144,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Driver access required" });
       }
       
-      const { isOnline } = req.body;
-      await storage.updateDriverStatus(user.id, isOnline);
-      res.json({ success: true, isOnline });
+      const { isOnline, currentLocation } = req.body;
+      
+      // Build updates object
+      const updates: any = {};
+      if (typeof isOnline === 'boolean') {
+        updates.isOnline = isOnline;
+      }
+      if (currentLocation) {
+        updates.currentLocation = currentLocation;
+      }
+      
+      // Update driver status - no time restrictions, fully flexible
+      const updatedUser = await storage.updateUser(user.id, updates);
+      
+      res.json({ 
+        success: true, 
+        isOnline: updatedUser?.isOnline,
+        currentLocation: updatedUser?.currentLocation 
+      });
     } catch (error) {
       console.error("Error updating driver status:", error);
       res.status(500).json({ message: "Failed to update driver status" });
@@ -3826,27 +3843,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(earnings);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch earnings" });
-    }
-  });
-
-  app.patch("/api/driver/status", isAuthenticated, async (req, res) => {
-    try {
-      const driverId = (req.session as any).user.id;
-      const isDriver = (req.session as any).user.isDriver;
-      const { isOnline, currentLocation } = req.body;
-      
-      if (!isDriver) {
-        return res.status(403).json({ message: "Driver access required" });
-      }
-      
-      const updates: any = {};
-      if (typeof isOnline === 'boolean') updates.isOnline = isOnline;
-      if (currentLocation) updates.currentLocation = currentLocation;
-      
-      const user = await storage.updateUser(driverId, updates);
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update driver status" });
     }
   });
 
@@ -5732,22 +5728,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(earnings);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch earnings" });
-    }
-  });
-
-  app.patch("/api/driver/status", async (req, res) => {
-    try {
-      const userId = (req.session as any).user?.id;
-      const { isOnline, currentLocation } = req.body;
-      
-      const user = await storage.updateUser(userId, { 
-        isOnline,
-        currentLocation: currentLocation || null
-      });
-      
-      res.json(user);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to update driver status" });
     }
   });
 

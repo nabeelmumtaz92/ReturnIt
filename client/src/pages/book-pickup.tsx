@@ -92,7 +92,9 @@ export default function BookPickup() {
     receiptImage: null as File | null,
     returnLabelImage: null as File | null,
     authorizationSigned: false,
-    acceptsLiabilityTerms: false
+    acceptsLiabilityTerms: false,
+    // Tip for driver (100% goes to driver)
+    tip: 0
   });
 
   // Step management
@@ -370,6 +372,7 @@ export default function BookPickup() {
       // Payment
       paymentMethod: selectedPaymentMethod,
       paymentStatus: 'pending',
+      tip: formData.tip || 0, // Tip amount (100% goes to driver)
       
       // Status
       status: 'created',
@@ -1474,9 +1477,23 @@ export default function BookPickup() {
             </div>
 
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <div className="flex justify-between items-center">
-                <span className="text-green-900 font-bold text-lg">Total:</span>
-                <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">${pricingBreakdown.totalPrice.toFixed(2)}</span>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-green-700">Service Total:</span>
+                  <span className="font-semibold">${pricingBreakdown.totalPrice.toFixed(2)}</span>
+                </div>
+                {formData.tip > 0 && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-green-700">Driver Tip:</span>
+                    <span className="font-semibold">${formData.tip.toFixed(2)}</span>
+                  </div>
+                )}
+                <div className="flex justify-between items-center pt-2 border-t border-green-300">
+                  <span className="text-green-900 font-bold text-lg">Grand Total:</span>
+                  <span className="text-green-900 font-bold text-2xl" data-testid="text-final-total">
+                    ${(pricingBreakdown.totalPrice + (formData.tip || 0)).toFixed(2)}
+                  </span>
+                </div>
               </div>
             </div>
           </>
@@ -1529,6 +1546,79 @@ export default function BookPickup() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Tip for Driver (Optional) */}
+      <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+        <h4 className="text-amber-900 font-semibold mb-2">Tip Your Driver (Optional)</h4>
+        <p className="text-sm text-amber-700 mb-3">100% of your tip goes directly to the driver</p>
+        
+        {/* Quick Tip Buttons */}
+        <div className="grid grid-cols-4 gap-2 mb-3">
+          <Button
+            type="button"
+            variant={formData.tip === 5 ? 'default' : 'outline'}
+            onClick={() => handleInputChange('tip', 5)}
+            className="h-10"
+            data-testid="button-tip-5"
+          >
+            $5
+          </Button>
+          <Button
+            type="button"
+            variant={formData.tip === 10 ? 'default' : 'outline'}
+            onClick={() => handleInputChange('tip', 10)}
+            className="h-10"
+            data-testid="button-tip-10"
+          >
+            $10
+          </Button>
+          <Button
+            type="button"
+            variant={formData.tip === 15 ? 'default' : 'outline'}
+            onClick={() => handleInputChange('tip', 15)}
+            className="h-10"
+            data-testid="button-tip-15"
+          >
+            $15
+          </Button>
+          <Button
+            type="button"
+            variant={formData.tip === 20 ? 'default' : 'outline'}
+            onClick={() => handleInputChange('tip', 20)}
+            className="h-10"
+            data-testid="button-tip-20"
+          >
+            $20
+          </Button>
+        </div>
+
+        {/* Custom Tip Input */}
+        <div>
+          <Label htmlFor="customTip" className="text-amber-800">Custom Amount</Label>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-amber-900 font-semibold">$</span>
+            <Input
+              id="customTip"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Enter custom amount"
+              value={formData.tip || ''}
+              onChange={(e) => handleInputChange('tip', parseFloat(e.target.value) || 0)}
+              className="bg-white border-amber-300"
+              data-testid="input-custom-tip"
+            />
+          </div>
+        </div>
+
+        {formData.tip > 0 && (
+          <div className="mt-3 p-2 bg-amber-100 rounded text-center">
+            <p className="text-sm text-amber-800">
+              Thank you! Driver will receive <strong>${formData.tip.toFixed(2)}</strong>
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Submit */}
