@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, TrendingUp, Users, Package, DollarSign, Clock } from "lucide-react";
 
 export default function AnalyticsDashboard() {
-  // Fetch real analytics data
+  // Fetch real analytics data from admin endpoints
   const { data: ordersData } = useQuery({ 
-    queryKey: ['/api/orders'],
+    queryKey: ['/api/admin/orders'],
     refetchInterval: 30000 // Refresh every 30 seconds
   });
   
@@ -19,11 +19,14 @@ export default function AnalyticsDashboard() {
   const users = Array.isArray(usersData) ? usersData : [];
   
   const totalOrders = orders.length || 0;
-  const completedOrders = orders.filter((o: any) => o.status === 'completed').length || 0;
-  const pendingOrders = orders.filter((o: any) => o.status === 'pending').length || 0;
+  const completedOrders = orders.filter((o: any) => o.status === 'completed' || o.status === 'dropped_off').length || 0;
+  // Pending orders are: created, assigned, picked_up (not yet completed/dropped_off)
+  const pendingOrders = orders.filter((o: any) => 
+    o.status === 'created' || o.status === 'assigned' || o.status === 'picked_up' || o.status === 'pending'
+  ).length || 0;
   const totalDrivers = users.filter((u: any) => u.isDriver).length || 0;
   const totalCustomers = users.filter((u: any) => !u.isDriver).length || 0;
-  const totalRevenue = orders.reduce((sum: number, o: any) => sum + (parseFloat(o.price) || 0), 0);
+  const totalRevenue = orders.reduce((sum: number, o: any) => sum + (parseFloat(o.totalPrice) || 0), 0);
   const completionRate = totalOrders > 0 ? Math.round((completedOrders / totalOrders) * 100) : 0;
   
   // Format currency
