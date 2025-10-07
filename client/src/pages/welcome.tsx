@@ -128,7 +128,7 @@ export default function Welcome() {
                 ReturnIt
               </h1>
               <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-amber-800 mb-4 sm:mb-6">
-                The Category Leader in Reverse Logistics, Delivery, and Returns.
+                The Leader in Reverse Logistics, Delivery, and Returns.
               </h2>
               <p className="text-sm sm:text-base md:text-lg text-amber-700 mb-4 sm:mb-6 leading-relaxed">
                 ReturnIt is the first platform purpose-built for reverse logistics — offering on-demand returns, exchanges, refunds, and donations as seamless as delivery itself. We're not just an app; we are the infrastructure powering the return economy.
@@ -182,7 +182,7 @@ export default function Welcome() {
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-medium px-2">
-            The Category Leader in Reverse Logistics, Delivery, and Returns
+            The Leader in Reverse Logistics, Delivery, and Returns
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
             <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
