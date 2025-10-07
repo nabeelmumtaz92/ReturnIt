@@ -16,6 +16,7 @@ import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navi
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
+import StoreAutocomplete from "@/components/StoreAutocomplete";
 import RoutePreview from "@/components/RoutePreview";
 import { PaymentBreakdown } from "@/components/PaymentBreakdown";
 import CompanySelector from "@/components/CompanySelector";
@@ -472,6 +473,43 @@ export default function BookPickup() {
     }
   };
 
+  // Store autocomplete selection handler - auto-fills dropoff address
+  const handleStoreAutocompleteSelect = (store: any) => {
+    console.log('🏪 Store selected from autocomplete:', store);
+    
+    // Set the retailer name
+    setFormData(prev => ({
+      ...prev,
+      retailer: store.storeName,
+      selectedCompany: { name: store.storeName }, // For compatibility
+    }));
+
+    // Auto-fill dropoff address from selected store
+    const fullAddress = `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`;
+    
+    // Create dropoff location with approximate coordinates (will be geocoded later)
+    setDropoffLocation({
+      lat: 0, // Will be geocoded by the system
+      lng: 0,
+      address: fullAddress,
+      formattedAddress: fullAddress
+    });
+
+    // Set as selected store for display
+    setSelectedStore({
+      name: store.displayName,
+      address: fullAddress,
+      location: { lat: 0, lng: 0 },
+      distance: 'TBD',
+      isOpen: true
+    });
+
+    toast({
+      title: "Store selected",
+      description: `${store.displayName} - Address auto-filled`,
+    });
+  };
+
   // Pickup location selection handler
   const handlePickupLocationSelect = (location: Location) => {
     setPickupLocation(location);
@@ -775,6 +813,23 @@ export default function BookPickup() {
         <div className="flex items-center space-x-2 mb-3">
           <MapPin className="h-5 w-5 text-primary" />
           <Label className="text-foreground font-semibold text-lg">Retailer Information</Label>
+        </div>
+        
+        {/* Store Location Autocomplete - Type store name, see all locations */}
+        <StoreAutocomplete
+          label="Store Name & Location"
+          placeholder="Type store name (e.g., Target, Walmart)..."
+          value={formData.retailer}
+          onChange={(value) => handleInputChange('retailer', value)}
+          onStoreSelect={handleStoreAutocompleteSelect}
+          required
+          className="mb-4"
+          data-testid="input-store-autocomplete"
+        />
+
+        {/* Optional: Keep CompanySelector for backwards compatibility - can be removed later */}
+        <div className="text-sm text-muted-foreground mb-2">
+          Or browse by company:
         </div>
         <CompanySelector
           selectedCompany={formData.selectedCompany}
