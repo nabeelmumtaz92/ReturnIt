@@ -607,7 +607,7 @@ export default function BookPickup() {
         warnings: result.warnings
       });
     }
-  }, [formData.itemDescription, formData.itemCategories, formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
+  }, [formData.itemDescription, formData.itemCategories.join(','), formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
 
   // Validate merchant-specific return policies
   useEffect(() => {
@@ -706,7 +706,7 @@ export default function BookPickup() {
       abortController.abort();
       isCurrentRequest = false;
     };
-  }, [formData.retailer, formData.itemCategories, formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
+  }, [formData.retailer, formData.itemCategories.join(','), formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
 
   // Fetch available retailers on component mount
   useEffect(() => {
