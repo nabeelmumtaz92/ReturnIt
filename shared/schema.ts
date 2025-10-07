@@ -1432,7 +1432,7 @@ export const trackingEvents = pgTable("tracking_events", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
-// Customer Reviews and Ratings
+// Customer Reviews and Ratings (Customers review Drivers)
 export const reviews = pgTable("reviews", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   orderId: text("order_id").references(() => orders.id).notNull(),
@@ -1447,6 +1447,53 @@ export const reviews = pgTable("reviews", {
   isPublic: boolean("is_public").default(true),
   flaggedInappropriate: boolean("flagged_inappropriate").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Driver Reviews (Drivers review Orders and Customer Experience)
+export const driverReviews = pgTable("driver_reviews", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  driverId: integer("driver_id").references(() => users.id).notNull(),
+  customerId: integer("customer_id").references(() => users.id),
+  overallRating: integer("overall_rating").notNull(), // 1-5 stars
+  customerRating: integer("customer_rating"), // How easy was the customer? 1-5
+  packageConditionRating: integer("package_condition_rating"), // Package condition 1-5
+  locationRating: integer("location_rating"), // Location accessibility 1-5
+  reviewText: text("review_text"),
+  hadIssues: boolean("had_issues").default(false),
+  issueDescription: text("issue_description"),
+  wouldAcceptAgain: boolean("would_accept_again"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// App Reviews (Customers review the ReturnIt app itself)
+export const appReviews = pgTable("app_reviews", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id), // Optional, if tied to an order
+  overallRating: integer("overall_rating").notNull(), // 1-5 stars
+  easeOfUseRating: integer("ease_of_use_rating"), // 1-5 stars
+  featureRating: integer("feature_rating"), // 1-5 stars
+  valueRating: integer("value_rating"), // Value for money 1-5
+  reviewText: text("review_text"),
+  wouldRecommend: boolean("would_recommend"),
+  platform: text("platform").default("web"), // web, ios, android
+  appVersion: text("app_version"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Company/Store Ratings Aggregation
+export const companyRatings = pgTable("company_ratings", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  companyId: integer("company_id").references(() => companies.id).notNull(),
+  totalReviews: integer("total_reviews").default(0),
+  averageRating: real("average_rating").default(5.0), // Decimal to tenths (e.g., 4.7)
+  fiveStarCount: integer("five_star_count").default(0),
+  fourStarCount: integer("four_star_count").default(0),
+  threeStarCount: integer("three_star_count").default(0),
+  twoStarCount: integer("two_star_count").default(0),
+  oneStarCount: integer("one_star_count").default(0),
+  lastUpdated: timestamp("last_updated").defaultNow().notNull(),
 });
 
 // Driver Performance Analytics
@@ -1666,6 +1713,16 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
   createdAt: true,
 });
 
+export const insertDriverReviewSchema = createInsertSchema(driverReviews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertAppReviewSchema = createInsertSchema(appReviews).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertDriverPerformanceSchema = createInsertSchema(driverPerformance).omit({
   id: true,
   createdAt: true,
@@ -1722,6 +1779,11 @@ export type TrackingEvent = typeof trackingEvents.$inferSelect;
 export type InsertTrackingEvent = z.infer<typeof insertTrackingEventSchema>;
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
+export type DriverReview = typeof driverReviews.$inferSelect;
+export type InsertDriverReview = z.infer<typeof insertDriverReviewSchema>;
+export type AppReview = typeof appReviews.$inferSelect;
+export type InsertAppReview = z.infer<typeof insertAppReviewSchema>;
+export type CompanyRating = typeof companyRatings.$inferSelect;
 export type DriverPerformance = typeof driverPerformance.$inferSelect;
 export type InsertDriverPerformance = z.infer<typeof insertDriverPerformanceSchema>;
 export type Partnership = typeof partnerships.$inferSelect;
