@@ -1606,8 +1606,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/me", async (req, res) => {
     if (req.session?.user) {
       try {
-        // Get full user data from storage
         const userId = req.session.user.id;
+        
+        // Handle demo user (id 999999) - skip database verification
+        if (userId === 999999) {
+          return res.json({
+            id: req.session.user.id,
+            email: req.session.user.email,
+            firstName: req.session.user.firstName,
+            lastName: req.session.user.lastName,
+            phone: req.session.user.phone,
+            isDriver: req.session.user.isDriver || false,
+            isAdmin: req.session.user.isAdmin || false,
+            tutorialCompleted: false,
+            driverRating: null,
+            totalEarnings: null,
+            completedDeliveries: null,
+            isOnline: false,
+            currentLocation: null
+          });
+        }
+        
+        // Get full user data from storage
         const user = await storage.getUser(userId);
         
         if (user) {

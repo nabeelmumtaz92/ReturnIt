@@ -100,10 +100,18 @@ export class AuthV2 {
       // Create session
       (req.session as any).user = demoUser;
 
-      // Return user data
-      res.json({
-        message: "Demo login successful",
-        user: demoUser
+      // Explicitly save session
+      req.session.save((err) => {
+        if (err) {
+          console.error('Demo login session save error:', err);
+          return res.status(500).json({ message: "Failed to create demo session" });
+        }
+
+        // Return user data
+        res.json({
+          message: "Demo login successful",
+          user: demoUser
+        });
       });
     } catch (error) {
       console.error('AuthV2 demo login error:', error);
@@ -118,6 +126,19 @@ export class AuthV2 {
       
       if (!sessionUser) {
         return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Handle demo user (id 999999) - skip database verification
+      if (sessionUser.id === 999999) {
+        return res.json({
+          id: sessionUser.id,
+          email: sessionUser.email,
+          phone: sessionUser.phone,
+          isDriver: sessionUser.isDriver || false,
+          isAdmin: sessionUser.isAdmin || false,
+          firstName: sessionUser.firstName,
+          lastName: sessionUser.lastName
+        });
       }
 
       // Verify user still exists in database
