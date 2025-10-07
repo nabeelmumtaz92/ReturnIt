@@ -2366,55 +2366,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Apple Pay payment processing
+  // Apple Pay payment processing via Stripe
+  // Accepts either Stripe payment method ID or Stripe token (tok_...)
   app.post('/api/payments/apple-pay/process', isAuthenticated, async (req, res) => {
     try {
-      const { paymentData, amount } = req.body;
+      const { paymentMethodId, stripeToken, amount, orderId } = req.body;
       
-      // Real Apple Pay integration - validate payment token
-      if (!paymentData || !paymentData.token) {
+      if (!paymentMethodId && !stripeToken) {
         return res.status(400).json({ 
-          message: 'Invalid Apple Pay payment data',
-          error: 'missing_payment_token'
+          message: 'Missing Stripe payment method or token',
+          error: 'missing_stripe_token'
         });
       }
 
-      // TODO: Integrate with Apple Pay payment processing
-      // Required: Validate payment token with Apple Pay servers
-      return res.status(501).json({
-        message: 'Apple Pay integration requires payment token validation',
-        requiredAction: 'implement_apple_pay_validation',
-        documentationUrl: 'https://developer.apple.com/documentation/apple_pay_on_the_web'
+      if (!amount || typeof amount !== 'number' || amount <= 0 || isNaN(amount)) {
+        return res.status(400).json({
+          message: 'Invalid amount. Must be a positive number.',
+          error: 'invalid_amount'
+        });
+      }
+
+      let pmId = paymentMethodId;
+      
+      // If only token provided, create payment method from it
+      if (!pmId && stripeToken) {
+        const paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: { token: stripeToken }
+        });
+        pmId = paymentMethod.id;
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        payment_method: pmId,
+        payment_method_types: ['card'],
+        metadata: {
+          orderId: orderId || 'apple_pay_order',
+          paymentType: 'apple_pay',
+          userId: String((req.session as any).user.id)
+        },
+        confirm: true,
+        return_url: `${process.env.VITE_API_URL || 'https://returnit.online'}/order-status`
       });
-    } catch (error) {
-      console.error('Apple Pay processing error:', error);
-      res.status(500).json({ message: 'Failed to process Apple Pay payment' });
+
+      res.json({ 
+        success: true,
+        paymentIntentId: paymentIntent.id,
+        status: paymentIntent.status,
+        clientSecret: paymentIntent.client_secret
+      });
+    } catch (error: any) {
+      console.error('Apple Pay error:', error);
+      res.status(500).json({ message: 'Failed to process Apple Pay payment', error: error.message });
     }
   });
 
-  // Google Pay payment processing
+  // Google Pay payment processing via Stripe
+  // Accepts either Stripe payment method ID or Stripe token (tok_...)
   app.post('/api/payments/google-pay/process', isAuthenticated, async (req, res) => {
     try {
-      const { paymentData, amount } = req.body;
+      const { paymentMethodId, stripeToken, amount, orderId } = req.body;
       
-      // Real Google Pay integration - validate payment token
-      if (!paymentData || !paymentData.paymentMethodData) {
+      if (!paymentMethodId && !stripeToken) {
         return res.status(400).json({ 
-          message: 'Invalid Google Pay payment data',
-          error: 'missing_payment_method'
+          message: 'Missing Stripe payment method or token',
+          error: 'missing_stripe_token'
         });
       }
 
-      // TODO: Integrate with Google Pay payment processing
-      // Required: Process payment token through payment gateway
-      return res.status(501).json({
-        message: 'Google Pay integration requires payment token processing',
-        requiredAction: 'implement_google_pay_processing',
-        documentationUrl: 'https://developers.google.com/pay/api'
+      if (!amount || typeof amount !== 'number' || amount <= 0 || isNaN(amount)) {
+        return res.status(400).json({
+          message: 'Invalid amount. Must be a positive number.',
+          error: 'invalid_amount'
+        });
+      }
+
+      let pmId = paymentMethodId;
+      
+      // If only token provided, create payment method from it
+      if (!pmId && stripeToken) {
+        const paymentMethod = await stripe.paymentMethods.create({
+          type: 'card',
+          card: { token: stripeToken }
+        });
+        pmId = paymentMethod.id;
+      }
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount * 100),
+        currency: 'usd',
+        payment_method: pmId,
+        payment_method_types: ['card'],
+        metadata: {
+          orderId: orderId || 'google_pay_order',
+          paymentType: 'google_pay',
+          userId: String((req.session as any).user.id)
+        },
+        confirm: true,
+        return_url: `${process.env.VITE_API_URL || 'https://returnit.online'}/order-status`
       });
-    } catch (error) {
-      console.error('Google Pay processing error:', error);
-      res.status(500).json({ message: 'Failed to process Google Pay payment' });
+
+      res.json({ 
+        success: true,
+        paymentIntentId: paymentIntent.id,
+        status: paymentIntent.status,
+        clientSecret: paymentIntent.client_secret
+      });
+    } catch (error: any) {
+      console.error('Google Pay error:', error);
+      res.status(500).json({ message: 'Failed to process Google Pay payment', error: error.message });
     }
   });
   // Get user's orders (protected)
@@ -3654,7 +3716,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Navigation routes for GPS functionality
+  // Navigation routes for GPS functionality with Google Maps Directions API
   app.post("/api/navigation/route", isAuthenticated, async (req, res) => {
     try {
       const { origin, destination, mode = 'driving' } = req.body;
@@ -3663,8 +3725,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Origin and destination are required" });
       }
 
-      // Real Google Maps Directions API integration
-      if (!process.env.GOOGLE_MAPS_API_KEY) {
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      
+      if (!apiKey) {
         return res.status(500).json({
           message: 'Navigation service not configured. Please contact support.',
           error: 'missing_maps_api_key',
@@ -3672,13 +3735,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // TODO: Integrate with Google Maps Directions API for real route calculation
-      // Required: Calculate actual routes with traffic conditions and precise directions
-      return res.status(501).json({
-        message: 'Navigation requires Google Maps Directions API integration',
-        requiredAction: 'implement_google_maps_directions',
-        documentationUrl: 'https://developers.google.com/maps/documentation/directions/overview',
-        endpoint: `https://maps.googleapis.com/maps/api/directions/json`
+      // Call Google Maps Directions API
+      const params = new URLSearchParams({
+        origin: typeof origin === 'string' ? origin : `${origin.lat},${origin.lng}`,
+        destination: typeof destination === 'string' ? destination : `${destination.lat},${destination.lng}`,
+        mode: mode,
+        departure_time: 'now', // Get real-time traffic data
+        key: apiKey
+      });
+
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`
+      );
+      
+      const data = await response.json();
+      
+      if (data.status !== 'OK') {
+        return res.status(400).json({
+          message: 'Failed to calculate route',
+          error: data.status,
+          errorMessage: data.error_message
+        });
+      }
+
+      // Extract route information
+      const route = data.routes[0];
+      const leg = route.legs[0];
+      
+      res.json({
+        distance: leg.distance,
+        duration: leg.duration,
+        durationInTraffic: leg.duration_in_traffic,
+        startAddress: leg.start_address,
+        endAddress: leg.end_address,
+        steps: leg.steps.map((step: any) => ({
+          distance: step.distance,
+          duration: step.duration,
+          instruction: step.html_instructions.replace(/<[^>]*>/g, ''), // Strip HTML tags
+          maneuver: step.maneuver,
+          startLocation: step.start_location,
+          endLocation: step.end_location
+        })),
+        polyline: route.overview_polyline.points,
+        bounds: route.bounds
       });
     } catch (error) {
       console.error('Navigation route error:', error);

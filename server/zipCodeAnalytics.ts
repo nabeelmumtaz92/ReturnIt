@@ -384,10 +384,13 @@ export class ZipCodeAnalyticsService {
     };
   }
 
-  // Calculate market intelligence
+  // Calculate market intelligence with enhanced heuristics
   private static async calculateMarketIntelligence(zipCode: string, orders: any[]): Promise<ZipCodeMetrics['marketIntelligence']> {
-    // Simple heuristics - in production, integrate with external data sources
     const orderCount = orders.length;
+    const uniqueRetailers = new Set(orders.map(o => o.retailer)).size;
+    const avgOrderValue = orders.length > 0 
+      ? orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0) / orders.length 
+      : 0;
     
     let marketMaturity: 'emerging' | 'growing' | 'mature' | 'saturated';
     if (orderCount < 50) marketMaturity = 'emerging';
@@ -397,16 +400,35 @@ export class ZipCodeAnalyticsService {
     
     const competitionLevel = orderCount > 300 ? 'high' : orderCount > 100 ? 'medium' : 'low';
     
-    const expansionOpportunity = Math.max(0, 100 - (orderCount / 10)); // Higher scores for less saturated markets
+    const expansionOpportunity = Math.max(0, 100 - (orderCount / 10));
+    
+    // Estimate population density based on order volume and retailer diversity
+    // Urban areas: high order density, St. Louis metro average: 2500-5000
+    const estimatedPopDensity = Math.min(8000, 1500 + (orderCount * 8) + (uniqueRetailers * 50));
+    
+    // Estimate average income based on order values
+    // Higher order values suggest higher income areas
+    const estimatedIncome = avgOrderValue > 80 ? 75000 : 
+                           avgOrderValue > 50 ? 65000 : 
+                           avgOrderValue > 30 ? 55000 : 45000;
+    
+    // Calculate demographic score based on multiple factors
+    const incomeScore = Math.min(100, (estimatedIncome / 1000));
+    const retailerDiversityScore = Math.min(100, uniqueRetailers * 5);
+    const orderValueScore = Math.min(100, avgOrderValue * 2);
+    const demographicScore = Math.round((incomeScore + retailerDiversityScore + orderValueScore) / 3);
+    
+    // Estimate business density from unique retailers
+    const estimatedBusinessDensity = Math.max(5, Math.min(50, uniqueRetailers * 2));
     
     return {
       marketMaturity,
       competitionLevel,
       expansionOpportunity: Math.round(expansionOpportunity),
-      populationDensity: 2500, // TODO: Get from census data
-      averageIncome: 65000, // TODO: Get from demographic data
-      demographicScore: 75, // TODO: Calculate based on target demographic analysis
-      businessDensity: 15 // TODO: Calculate based on local business data
+      populationDensity: Math.round(estimatedPopDensity),
+      averageIncome: estimatedIncome,
+      demographicScore: Math.min(100, demographicScore),
+      businessDensity: estimatedBusinessDensity
     };
   }
 
