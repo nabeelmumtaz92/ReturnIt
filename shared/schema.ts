@@ -1021,6 +1021,14 @@ export const merchantPolicies = pgTable("merchant_policies", {
   merchantId: text("merchant_id").notNull().unique(), // External merchant identifier
   storeName: text("store_name").notNull(), // "Target", "Macy's", "Best Buy"
   
+  // Store Location Information
+  streetAddress: text("street_address"), // Physical store address
+  city: text("city"),
+  state: text("state"),
+  zipCode: text("zip_code"),
+  phone: text("phone"),
+  website: text("website"),
+  
   // Policy Configuration (jsonb for flexibility)
   policy: jsonb("policy").default({
     returnWindowDays: 30,
