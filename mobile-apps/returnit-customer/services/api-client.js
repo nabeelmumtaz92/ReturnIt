@@ -55,6 +55,10 @@ class APIClient {
   async delete(endpoint) {
     return this.request(endpoint, { method: 'DELETE' });
   }
+
+  async getOrders() {
+    return this.get('/api/orders');
+  }
 }
 
 export default new APIClient();

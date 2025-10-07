@@ -263,11 +263,22 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
 
       Alert.alert(
         'Delivery Completed',
-        response.message || 'Delivery completion confirmed successfully!',
+        response.message || 'Delivery completion confirmed successfully! Would you like to rate this delivery?',
         [
           {
-            text: 'OK',
+            text: 'Skip',
+            style: 'cancel',
             onPress: () => navigation.navigate('DriverDashboard')
+          },
+          {
+            text: 'Rate Delivery',
+            onPress: () => navigation.navigate('DriverReviewDelivery', {
+              orderId: orderId,
+              customerId: orderDetails?.userId,
+              customerName: orderDetails?.customerName || 'Customer',
+              pickupAddress: orderDetails?.pickupAddress,
+              dropoffAddress: orderDetails?.dropoffAddress,
+            })
           }
         ]
       );

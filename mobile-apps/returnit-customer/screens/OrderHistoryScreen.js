@@ -34,7 +34,9 @@ export default function OrderHistoryScreen({ navigation }) {
         date: new Date(order.createdAt).toLocaleDateString(),
         status: formatOrderStatus(order.status),
         amount: order.totalPrice ? `$${order.totalPrice.toFixed(2)}` : 'N/A',
-        items: order.itemDescription || 'Package'
+        items: order.itemDescription || 'Package',
+        driverId: order.driverId,
+        driverName: order.driverName
       }));
 
       setOrderHistory(transformedOrders);
@@ -104,27 +106,45 @@ export default function OrderHistoryScreen({ navigation }) {
     }
   };
 
-  const renderOrderItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.orderCard}
-      onPress={() => navigation.navigate('TrackPackage')}
-    >
-      <View style={styles.orderHeader}>
-        <Text style={styles.orderType}>{item.type}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>{item.status}</Text>
-        </View>
+  const renderOrderItem = ({ item }) => {
+    const isCompleted = item.status === 'Delivered' || item.status === 'Completed';
+    
+    return (
+      <View style={styles.orderCard}>
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('TrackPackage')}
+        >
+          <View style={styles.orderHeader}>
+            <Text style={styles.orderType}>{item.type}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
+              <Text style={styles.statusText}>{item.status}</Text>
+            </View>
+          </View>
+          
+          <Text style={styles.orderId}>#{item.id}</Text>
+          <Text style={styles.orderItems}>{item.items}</Text>
+          
+          <View style={styles.orderFooter}>
+            <Text style={styles.orderDate}>{item.date}</Text>
+            <Text style={styles.orderAmount}>{item.amount}</Text>
+          </View>
+        </TouchableOpacity>
+
+        {isCompleted && (
+          <TouchableOpacity
+            style={styles.reviewButton}
+            onPress={() => navigation.navigate('CustomerReview', {
+              orderId: item.id,
+              driverId: item.driverId,
+              driverName: item.driverName || 'Your Driver'
+            })}
+          >
+            <Text style={styles.reviewButtonText}>⭐ Rate Your Experience</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      
-      <Text style={styles.orderId}>#{item.id}</Text>
-      <Text style={styles.orderItems}>{item.items}</Text>
-      
-      <View style={styles.orderFooter}>
-        <Text style={styles.orderDate}>{item.date}</Text>
-        <Text style={styles.orderAmount}>{item.amount}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -301,6 +321,18 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  reviewButton: {
+    backgroundColor: '#10B981',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  reviewButtonText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: 'white',
   },
