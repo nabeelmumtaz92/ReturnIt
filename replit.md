@@ -34,7 +34,9 @@ Preferred communication style: Simple, everyday language.
 
 ### Customer Features
 - Account management, social login.
-- **Store Location Autocomplete**: Type store name (e.g., "Target") to see dropdown of all St. Louis locations with addresses; select location to auto-fill return destination for driver routing and order batching.
+- **Store Location Autocomplete**: Type store name (e.g., "Target") to see dropdown with:
+  - "Any [Store] Location" option - driver delivers to nearest location (e.g., allows returning Target items at any Target store)
+  - Specific store locations with addresses for precise routing
 - Real-time WebSocket GPS tracking.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.

@@ -116,6 +116,7 @@ export default function BookPickup() {
   const [pickupLocation, setPickupLocation] = useState<Location | null>(null);
   const [dropoffLocation, setDropoffLocation] = useState<Location | null>(null);
   const [selectedStore, setSelectedStore] = useState<NearbyStore | null>(null);
+  const [isAnyLocationSelected, setIsAnyLocationSelected] = useState(false); // Track if "any location" option is selected
   const [routeInfo, setRouteInfo] = useState<RouteInfo | null>(null);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [pricingBreakdown, setPricingBreakdown] = useState<ReturnType<typeof calculatePaymentWithValue> | null>(null);
@@ -477,36 +478,59 @@ export default function BookPickup() {
   const handleStoreAutocompleteSelect = (store: any) => {
     console.log('🏪 Store selected from autocomplete:', store);
     
-    // Set the retailer name
-    setFormData(prev => ({
-      ...prev,
-      retailer: store.storeName,
-      selectedCompany: { name: store.storeName }, // For compatibility
-    }));
-
-    // Auto-fill dropoff address from selected store
-    const fullAddress = `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`;
+    // Note: formData.retailer is already set by StoreAutocomplete's onChange
+    // We just need to handle additional state and UI feedback here
     
-    // Create dropoff location with approximate coordinates (will be geocoded later)
-    setDropoffLocation({
-      lat: 0, // Will be geocoded by the system
-      lng: 0
-    });
+    // Check if "Any Location" was selected
+    if (store.isAnyLocation) {
+      // For "any location", just update company info and clear specific location
+      setFormData(prev => ({
+        ...prev,
+        selectedCompany: { name: store.storeName }, // For compatibility
+      }));
 
-    // Set as selected store for display
-    setSelectedStore({
-      placeId: `store-${store.id}`, // Add required placeId
-      name: store.displayName,
-      address: fullAddress,
-      location: { lat: 0, lng: 0 },
-      distance: 'TBD',
-      isOpen: true
-    });
+      // Clear any previously selected specific location
+      setSelectedStore(null);
+      setDropoffLocation(null);
+      setIsAnyLocationSelected(true);
 
-    toast({
-      title: "Store selected",
-      description: `${store.displayName} - Address auto-filled`,
-    });
+      toast({
+        title: "Any location selected",
+        description: `Driver will deliver to the nearest ${store.storeName} location`,
+      });
+    } else {
+      // Specific location selected - set all address details
+      setFormData(prev => ({
+        ...prev,
+        selectedCompany: { name: store.storeName }, // For compatibility
+      }));
+
+      // Auto-fill dropoff address from selected store
+      const fullAddress = `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`;
+      
+      // Create dropoff location with approximate coordinates (will be geocoded later)
+      setDropoffLocation({
+        lat: 0, // Will be geocoded by the system
+        lng: 0
+      });
+
+      // Set as selected store for display
+      setSelectedStore({
+        placeId: `store-${store.id}`, // Add required placeId
+        name: store.displayName,
+        address: fullAddress,
+        location: { lat: 0, lng: 0 },
+        distance: 'TBD',
+        isOpen: true
+      });
+
+      setIsAnyLocationSelected(false);
+
+      toast({
+        title: "Store selected",
+        description: `${store.displayName} - Address auto-filled`,
+      });
+    }
   };
 
   // Pickup location selection handler
@@ -845,37 +869,57 @@ export default function BookPickup() {
             <div className="flex items-center space-x-2 text-sm text-muted-foreground bg-accent/60 p-2 rounded">
               <span>Selected:</span><span className="font-medium">{formData.retailer}</span>
             </div>
-            <StoreLocator
-              retailerName={formData.retailer}
-              onStoreSelect={handleStoreSelect}
-              customerLocation={pickupLocation || undefined}
-            />
-            
-            {/* Display selected store information */}
-            {selectedStore && (
-              <div className="mt-3 p-3 bg-green-50/80 border border-green-200 rounded-lg">
+
+            {/* Show "Any Location" indicator or specific store details */}
+            {isAnyLocationSelected ? (
+              <div className="mt-3 p-3 bg-blue-50/80 border border-blue-200 rounded-lg">
                 <div className="flex items-start space-x-2">
-                  <Store className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                  <Store className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-green-800">
-                      Store Selected: {selectedStore.name}
+                    <p className="text-sm font-medium text-blue-800">
+                      Any {formData.retailer.replace(' (Any Location)', '')} Location
                     </p>
-                    <p className="text-xs text-green-600 mt-1">
-                      {selectedStore.address}
+                    <p className="text-xs text-blue-600 mt-1">
+                      ✓ Driver will deliver to the nearest location based on your pickup address
                     </p>
-                    <div className="flex items-center space-x-3 mt-1">
-                      <span className="text-xs text-green-600">
-                        📍 {selectedStore.distance}
-                      </span>
-                      {selectedStore.isOpen ? (
-                        <span className="text-xs text-green-600">🟢 Open</span>
-                      ) : (
-                        <span className="text-xs text-red-600">🔴 Closed</span>
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>
+            ) : (
+              <>
+                <StoreLocator
+                  retailerName={formData.retailer}
+                  onStoreSelect={handleStoreSelect}
+                  customerLocation={pickupLocation || undefined}
+                />
+                
+                {/* Display selected store information */}
+                {selectedStore && (
+                  <div className="mt-3 p-3 bg-green-50/80 border border-green-200 rounded-lg">
+                    <div className="flex items-start space-x-2">
+                      <Store className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-green-800">
+                          Store Selected: {selectedStore.name}
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          {selectedStore.address}
+                        </p>
+                        <div className="flex items-center space-x-3 mt-1">
+                          <span className="text-xs text-green-600">
+                            📍 {selectedStore.distance}
+                          </span>
+                          {selectedStore.isOpen ? (
+                            <span className="text-xs text-green-600">🟢 Open</span>
+                          ) : (
+                            <span className="text-xs text-red-600">🔴 Closed</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}

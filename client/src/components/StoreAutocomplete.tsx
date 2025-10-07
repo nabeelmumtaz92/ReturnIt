@@ -16,6 +16,7 @@ interface StoreLocation {
   zipCode: string;
   phone?: string;
   website?: string;
+  isAnyLocation?: boolean; // Flag for "any location" option
 }
 
 interface StoreAutocompleteProps {
@@ -68,7 +69,11 @@ export default function StoreAutocomplete({
   };
 
   const handleStoreSelect = (store: StoreLocation) => {
-    onChange(store.storeName);
+    if (store.isAnyLocation) {
+      onChange(store.storeName + ' (Any Location)');
+    } else {
+      onChange(store.storeName);
+    }
     
     if (onStoreSelect) {
       onStoreSelect(store);
@@ -79,13 +84,18 @@ export default function StoreAutocomplete({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (!showSuggestions || storeLocations.length === 0) return;
+    if (!showSuggestions) return;
+    
+    // Calculate total options (any location option + specific locations)
+    const totalOptions = storeLocations.length > 0 ? storeLocations.length + 1 : 0;
+    
+    if (totalOptions === 0) return;
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
         setSelectedIndex(prev => 
-          prev < storeLocations.length - 1 ? prev + 1 : prev
+          prev < totalOptions - 1 ? prev + 1 : prev
         );
         break;
       case 'ArrowUp':
@@ -94,8 +104,13 @@ export default function StoreAutocomplete({
         break;
       case 'Enter':
         e.preventDefault();
-        if (selectedIndex >= 0 && selectedIndex < storeLocations.length) {
-          handleStoreSelect(storeLocations[selectedIndex]);
+        if (selectedIndex >= 0 && selectedIndex < totalOptions) {
+          // First option is "any location"
+          if (selectedIndex === 0 && storeLocations.length > 0) {
+            handleAnyLocationSelect();
+          } else if (selectedIndex > 0 && selectedIndex <= storeLocations.length) {
+            handleStoreSelect(storeLocations[selectedIndex - 1]);
+          }
         }
         break;
       case 'Escape':
@@ -103,6 +118,24 @@ export default function StoreAutocomplete({
         setSelectedIndex(-1);
         break;
     }
+  };
+
+  const handleAnyLocationSelect = () => {
+    if (storeLocations.length === 0) return;
+    
+    const firstStore = storeLocations[0];
+    const anyLocationOption: StoreLocation = {
+      ...firstStore,
+      id: -1,
+      isAnyLocation: true,
+      displayName: `Any ${firstStore.storeName} Location`,
+      streetAddress: 'Driver will deliver to nearest location',
+      city: '',
+      state: '',
+      zipCode: ''
+    };
+    
+    handleStoreSelect(anyLocationOption);
   };
 
   return (
@@ -143,13 +176,36 @@ export default function StoreAutocomplete({
       {showSuggestions && storeLocations.length > 0 && (
         <Card className="absolute z-50 w-full mt-1 max-h-[300px] overflow-y-auto shadow-lg border border-border">
           <div className="py-1">
+            {/* Any Location Option */}
+            <button
+              type="button"
+              onClick={handleAnyLocationSelect}
+              className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors border-b border-border ${
+                selectedIndex === 0 ? 'bg-accent' : ''
+              }`}
+              data-testid="store-suggestion-any-location"
+            >
+              <div className="flex items-start gap-3">
+                <Store className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm text-primary">
+                    Any {storeLocations[0].storeName} Location
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    Driver will deliver to nearest location
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {/* Specific Location Options */}
             {storeLocations.map((store, index) => (
               <button
                 key={store.id}
                 type="button"
                 onClick={() => handleStoreSelect(store)}
                 className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors ${
-                  index === selectedIndex ? 'bg-accent' : ''
+                  index + 1 === selectedIndex ? 'bg-accent' : ''
                 }`}
                 data-testid={`store-suggestion-${index}`}
               >
