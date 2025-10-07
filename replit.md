@@ -1,80 +1,6 @@
 # Overview
 
-ReturnIt is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a white/beige design, a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. ReturnIt is production-ready, deployed at returnit.online, and prepared for scaling, partnerships, and hiring, aiming for significant market penetration and a strong valuation.
-
-## Recent Mobile App Development Progress (October 2024)
-- ✅ Customer App: Stripe Payment Sheet integration with ephemeral keys and automatic payment methods
-- ✅ Customer App: PayPal payment flow with browser-based approval and React Native-safe deep-link handling  
-- ✅ Customer App: Google OAuth social login via expo-auth-session with dedicated mobile endpoint
-- ✅ Customer App: Promo code validation and discount application in booking flow (percentage/fixed/free_delivery)
-- ✅ Driver App: Camera verification system (expo-camera) with up to 5 photos per delivery
-- ✅ Driver App: Digital signature capture (text-based) with delivery notes
-- ✅ Driver App: Mapbox GL v7.1.x Live Order Map with real-time WebSocket updates
-- ✅ Driver App: Stripe Connect payout management with instant payout requests ($0.50 fee, 15-30 min arrival)
-- ✅ Customer App: Real-time GPS tracking visualization with Mapbox GL integration, live driver location updates via WebSocket, animated route lines, and auto-fitting map bounds
-- ✅ **Mobile Review System (October 2024)**: Complete 5-star review implementation for both mobile apps
-  - **Customer App**: CustomerReviewScreen with two-step flow (driver review → app review), auto-triggers on completed orders with "⭐ Rate Your Experience" button
-  - **Driver App**: DriverReviewDeliveryScreen with delivery context, issue tracking, and "would accept again" indicator, auto-triggers after delivery completion
-  - **Review Data**: Driver reviews (overall, service, timeliness, communication), app reviews (rating, category, feedback), delivery reviews (customer, package, location, issues)
-  - **API Integration**: POST /api/reviews, /api/app-reviews, /api/driver-reviews with schema-compliant payloads
-  - **Navigation**: Registered CustomerReview and DriverReviewDelivery screens in React Navigation stack
-- 📝 Documentation: Facebook & Apple OAuth setup guide (credentials pending)
-
-## Performance Optimizations (October 2024)
-- ✅ Database Indexes: Added indexes to 6 critical tables (users, orders, driver_earnings, notifications, driver_payouts, companies) with 25+ total indexes including composite indexes for common query patterns
-- ✅ API Pagination: Implemented pagination for driver and customer order endpoints with page/limit support (default 50, max 100 per page) and metadata
-- ✅ React Component Optimization: Added React.memo to frequently rendered list components (DriverOrderCard, CustomerOrderCard, DriverJobCard) to prevent unnecessary re-renders
-- ✅ Response Caching: Implemented 15-minute LRU cache for static data endpoints (companies, return policies, locations) with unique cache keys per query/filter combination
-- ✅ Lazy Loading: Verified 80+ heavy components already use React.lazy with Suspense fallbacks for optimal code splitting
-- ✅ Database Schema Fixes: Resolved schema drift by adding missing columns to orders table (return_label_url, authorization_signed, authorization_signature, authorization_timestamp)
-
-## Stitch Design System Implementation (October 2024)
-- ✅ **Design System Foundation**: Migrated to Stitch visual patterns while preserving ReturnIt's professional enterprise messaging
-  - Updated primary color to #f99806 (Stitch orange) from previous amber palette
-  - Implemented Work Sans font family across all web components
-  - Applied Stitch border radius system (sm: 0.25rem, md: 0.5rem, lg: 1rem, xl: 1.5rem)
-  - Added Stitch shadow pattern: `shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)]` with dark mode variant
-  - Updated background to #f8f7f5 (Stitch beige) for consistent platform aesthetic
-
-- ✅ **Complete Web Platform Migration (50+ pages)**: Comprehensive Stitch visual patterns applied across entire platform
-  - **Customer Pages (10)**: login, order-status, tracking, account-settings, customer-rating, help-center, customer-mobile-app, customer-waitlist, customer-service-tickets, chat-center
-  - **Driver Pages (14)**: driver-portal, driver-job, driver-payments, driver-onboarding, driver-complete-delivery, driver-documents, driver-feedback-system, driver-incentives, driver-performance, driver-safety-center, driver-tutorial, driver-analytics, driver-signup, returnly-driver-app
-  - **Admin Pages (6)**: admin-dashboard, admin-payment-tracking, business-intelligence, cost-monitoring, monitoring-dashboard, quality-assurance
-  - **Retailer/Enterprise (4)**: retailer-dashboard, retailer-api-keys, retailer-webhooks, enhanced-analytics-dashboard
-  - **Analytics & Reporting (4)**: advanced-reporting, route-optimization, multi-city-management, cancellation-alerts
-  - **Utility & Secondary (13)**: checkout, about, contact, comprehensive-guidebook, comprehensive-pricing-examples, pricing-analysis, mobile-app-demo, mobile-simulator, real-time-tracking, real-time-tracking-advanced, employee-dashboard, employee-onboarding, employee-documents
-  - **Result**: 0 amber className patterns remaining (reduced from 1,178), full theme variable support with automatic dark mode
-  - Preserved 100% of professional copy, validation logic, and business functionality across all pages
-
-- 📝 **Mobile Driver App Documentation**: Comprehensive Stitch design requirements documented for React Native implementation
-  - Created `mobile-apps/returnit-driver/STITCH_DESIGN_REQUIREMENTS.md` with detailed before/after examples
-  - Includes Work Sans font setup, cross-platform shadow implementation (iOS + Android)
-  - Component-specific updates for CompleteDeliveryScreen, DriverDashboard, LiveOrderMap, PackageVerification
-  - 4-phase implementation checklist with 30-40 hour timeline estimate
-  - Ready for mobile development team to achieve cross-platform visual consistency
-
-## Patent #13 - AI-Powered Nearby Order Detection (October 2024)
-- ✅ **Backend API**: Created `/api/driver/nearby-orders` with Haversine distance calculations, AI clustering (2-mile radius, 3-order cap), proximity indicators
-- ✅ **Driver Mobile Map**: Enhanced LiveOrderMapScreen with cluster visualization (Circle overlays, Polyline routes), closeby markers (🎯 emoji), smart batch suggestions
-- ✅ **UI Optimization**: Subtle, non-intrusive design (4-8% opacity circles, dashed routes, dismissible suggestions) preserving core order acceptance flow
-- ✅ **All 4 Tasks Architect-Approved**: Nearby orders API, closeby indicators, batch suggestions, multi-order route visualization complete and production-ready
-
-## Patent Portfolio Expansion (October 2025)
-- ✅ **60-Patent Comprehensive Portfolio Mapped**: Complete strategic IP coverage across all aspects of reverse logistics
-- ✅ **14 Patents Ready to File Immediately**: Core operational patents complete and production-tested
-- ✅ **Patent Categories (60 total)**:
-  - **Core & Foundational (3)**: Customer-originated logistics, decentralized network, universal destination routing
-  - **Operational Intelligence (10)**: Dynamic pricing, chain-of-custody, data mapping, forecasting, escrow, API
-  - **Automation & Operations (5)**: Autonomous vehicles, micro-routing, predictive analytics, consolidation, cold-chain
-  - **FinTech & Blockchain (5)**: Blockchain ledger, loyalty tokens, fraud detection, retail kiosks, QR codes
-  - **AI & Data Science (10)**: Generative routing, synthetic data, reinforcement learning, federated learning, explainable AI
-  - **Ecosystem & Partnerships (10)**: Multi-carrier integration, insurance automation, carbon offsets, circular economy, B2B
-  - **Consumer Experience (5)**: AR visualization, smart-home integration, biometric auth, accessibility, community pooling
-  - **Hardware/IoT/Robotics (12)**: IoT sensors, drones, sidewalk robots, smart lockers, autonomous coordination, swarm algorithms
-- ✅ **Immediate Filing Cost**: $910 (14 patents × $65 micro entity) - 99.8% savings vs attorney route ($280K-420K)
-- ✅ **Complete Portfolio Cost**: $3,900 (60 patents × $65 micro entity) - 99.8% savings vs attorney route ($1.2M-$1.8M)
-- ✅ **Valuation Impact**: Patent portfolio alone worth $15M-$50M, creating completely unassailable competitive moat
-- ✅ **Competitive Position**: Only platform with 60 specialized reverse logistics patents vs competitors' forward-logistics focus
+ReturnIt is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a white/beige design, a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. ReturnIt is production-ready, aiming for significant market penetration and a strong valuation. The platform also has a comprehensive patent portfolio strategy.
 
 # User Preferences
 
@@ -86,32 +12,23 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: React 18 with TypeScript (Vite).
 - **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme).
 - **State Management**: Zustand (global), React Query (server).
-- **Routing**: Wouter.
-- **Form Handling**: React Hook Form with Zod validation.
-- **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens. UI/UX emphasizes a white/beige aesthetic, sophisticated gradients, and professional typography.
+- **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens. UI/UX emphasizes a white/beige aesthetic, sophisticated gradients, and professional typography using the Stitch design system (Stitch orange primary color, Work Sans font, specific border radius and shadow patterns).
 
 ## Backend
 - **Runtime**: Node.js with Express.js (TypeScript, ES modules).
 - **Database ORM**: Drizzle ORM.
 - **API Design**: RESTful.
-- **Authentication**: Email/Password (bcrypt), Google, Apple, Facebook via Passport.js; role-based authorization (driver/customer).
+- **Authentication**: Email/Password (bcrypt), Google, Apple, Facebook via Passport.js; role-based authorization.
 
 ## Data Storage
 - **Database**: PostgreSQL (Neon).
 - **Schema Management**: Drizzle Kit.
-- **Session Storage**: PostgreSQL-based.
 
 ## Core Data Models
 - **Users**: Authentication, roles, Stripe Connect, payment preferences.
 - **Orders**: Full lifecycle management, payment processing, retailer tracking.
 - **Driver Payouts**: Tracking, Stripe transfers, 1099 generation.
-- **Driver Incentives**: Bonus system.
-- **Companies**: St. Louis business directory, return policy preferences.
-- **App Settings**: System-wide configuration.
-- **Retailer Accounts**: Multi-admin access, role management.
-- **Retailer Subscriptions**: Stripe billing.
-- **Retailer API Keys**: Environment-aware, scoped permissions, rate limiting.
-- **Retailer Webhooks**: Event subscription, HMAC verification, retry logic, health monitoring.
+- **Retailer Accounts**: Multi-admin access, role management, API keys, webhooks.
 
 ## Key Features
 
@@ -121,35 +38,34 @@ Preferred communication style: Simple, everyday language.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.
 - Multi-package booking, special handling, donation options.
+- Mobile review system.
 
 ### Driver Features
 - Native mobile app (React Native).
 - Real-time job notifications, GPS navigation, multi-stop batching.
 - Camera package verification, digital signature.
 - Earnings dashboard, instant/weekly payouts, 70/30 split via Stripe Connect.
-- 1099 generation, incentives, in-app support.
+- AI-Powered Nearby Order Detection with cluster visualization and smart batch suggestions.
+- Mobile review system.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
 - Manual order creation, payment processing, bulk payouts.
 - Advanced analytics, Excel export system.
-- System settings, company directory management.
-- Email/SMS notifications, WebSocket tracking.
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
-- **Tier 2 (API & Integration System)**: RESTful API, bearer token authentication, API keys with permission scoping and rate limiting, webhook notification system with retry logic and audit trail.
-- **Tier 3 (Developer Dashboard - In Progress)**: API Key management UI, usage tracking visualization, webhook configuration UI, interactive API documentation.
+- **Tier 2 (API & Integration System)**: RESTful API, API keys with permission scoping and rate limiting, webhook notification system.
 
 ## Security & Compliance
 - Bcrypt password hashing, server-side session storage, CSRF protection, rate limiting.
 - Secure API key storage, PCI-compliant payment processing via Stripe.
-- Stripe Identity driver verification, data encryption at rest and in transit.
+- Stripe Identity driver verification, data encryption.
+- SQL injection prevention, sensitive data protection, security headers (Helmet), CORS protection, robust authentication security, API security, and webhook security.
 
 ## Infrastructure & Deployment
 - Production deployment at returnit.online, Neon PostgreSQL.
 - Multi-environment support, automated workflow with Replit.
-- Database migration system, error logging, scalable architecture.
 
 # External Dependencies
 
@@ -170,3 +86,4 @@ Preferred communication style: Simple, everyday language.
 - **OpenAI**: AI assistant integration (GPT-4o).
 - **Tawk.to**: Live chat widget.
 - **ImprovMX**: Email forwarding.
+- **Mapbox GL**: GPS tracking and mapping.
