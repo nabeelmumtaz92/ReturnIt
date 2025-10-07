@@ -286,23 +286,17 @@ export default function Welcome() {
       {/* Bottom Navigation - Stitch Mobile Pattern */}
       <footer className="bg-[#f8f7f5]/80 dark:bg-[#231b0f]/80 border-t border-primary/20 sticky bottom-0 backdrop-blur-sm md:hidden">
         <nav className="container mx-auto px-4 py-3 flex justify-around">
-          <Link href="/">
-            <a className="flex flex-col items-center gap-1 text-primary" data-testid="nav-home">
-              <Home className="h-5 w-5" />
-              <span className="text-xs font-medium">Home</span>
-            </a>
+          <Link href="/" className="flex flex-col items-center gap-1 text-primary" data-testid="nav-home">
+            <Home className="h-5 w-5" />
+            <span className="text-xs font-medium">Home</span>
           </Link>
-          <Link href="/track">
-            <a className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors" data-testid="nav-track">
-              <Package className="h-5 w-5" />
-              <span className="text-xs font-medium">Track</span>
-            </a>
+          <Link href="/track" className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors" data-testid="nav-track">
+            <Package className="h-5 w-5" />
+            <span className="text-xs font-medium">Track</span>
           </Link>
-          <Link href={isAuthenticated ? "/customer-dashboard" : "/login"}>
-            <a className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors" data-testid="nav-account">
-              <User className="h-5 w-5" />
-              <span className="text-xs font-medium">Account</span>
-            </a>
+          <Link href={isAuthenticated ? "/customer-dashboard" : "/login"} className="flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors" data-testid="nav-account">
+            <User className="h-5 w-5" />
+            <span className="text-xs font-medium">Account</span>
           </Link>
         </nav>
       </footer>

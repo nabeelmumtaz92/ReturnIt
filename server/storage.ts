@@ -403,6 +403,25 @@ export interface IStorage {
   // Order Messages (using existing chatMessages/chatConversations tables)
   getOrderMessages(orderId: string): Promise<any[]>;
   sendOrderMessage(orderId: string, senderId: number, message: string): Promise<any>;
+  
+  // === REVIEW SYSTEM ===
+  
+  // Customer Reviews (customers review drivers after order completion)
+  createReview(review: InsertReview): Promise<Review>;
+  getDriverReviews(driverId: number): Promise<Review[]>;
+  getDriverAverageRating(driverId: number): Promise<number>;
+  getReviewByOrderId(orderId: string): Promise<Review | undefined>;
+  updateDriverRating(driverId: number): Promise<void>;
+  
+  // Driver Reviews (drivers review orders/customers after delivery)
+  createDriverReview(review: InsertDriverReview): Promise<DriverReview>;
+  getDriverReviewByOrderId(orderId: string): Promise<DriverReview | undefined>;
+  
+  // App Reviews (customers review the ReturnIt app)
+  createAppReview(review: InsertAppReview): Promise<AppReview>;
+  
+  // Company Ratings (aggregated from customer reviews)
+  getCompanyRating(companyId: number): Promise<CompanyRating | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -4619,6 +4638,55 @@ export class DatabaseStorage implements IStorage {
       timestamp: new Date().toISOString(),
       success: true
     };
+  }
+  
+  // === REVIEW SYSTEM IMPLEMENTATION ===
+  
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db.insert(reviews).values(review).returning();
+    return newReview;
+  }
+  
+  async getDriverReviews(driverId: number): Promise<Review[]> {
+    return await db.select().from(reviews).where(eq(reviews.driverId, driverId));
+  }
+  
+  async getDriverAverageRating(driverId: number): Promise<number> {
+    const result = await db
+      .select({ avgRating: sql<number>`AVG(${reviews.rating})` })
+      .from(reviews)
+      .where(eq(reviews.driverId, driverId));
+    return result[0]?.avgRating || 0;
+  }
+  
+  async getReviewByOrderId(orderId: string): Promise<Review | undefined> {
+    const result = await db.select().from(reviews).where(eq(reviews.orderId, orderId));
+    return result[0];
+  }
+  
+  async updateDriverRating(driverId: number): Promise<void> {
+    const avgRating = await this.getDriverAverageRating(driverId);
+    await db.update(users).set({ driverRating: avgRating }).where(eq(users.id, driverId));
+  }
+  
+  async createDriverReview(review: InsertDriverReview): Promise<DriverReview> {
+    const [newReview] = await db.insert(driverReviews).values(review).returning();
+    return newReview;
+  }
+  
+  async getDriverReviewByOrderId(orderId: string): Promise<DriverReview | undefined> {
+    const result = await db.select().from(driverReviews).where(eq(driverReviews.orderId, orderId));
+    return result[0];
+  }
+  
+  async createAppReview(review: InsertAppReview): Promise<AppReview> {
+    const [newReview] = await db.insert(appReviews).values(review).returning();
+    return newReview;
+  }
+  
+  async getCompanyRating(companyId: number): Promise<CompanyRating | undefined> {
+    const result = await db.select().from(companyRatings).where(eq(companyRatings.companyId, companyId));
+    return result[0];
   }
 }
 
