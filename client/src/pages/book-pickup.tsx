@@ -277,6 +277,16 @@ export default function BookPickup() {
       return;
     }
 
+    // Block booking if merchant policy is violated
+    if (merchantPolicyValidation && !merchantPolicyValidation.isValid) {
+      toast({
+        title: "Return Policy Violation",
+        description: merchantPolicyValidation.message || "This return does not meet the store's return policy requirements. Please review the policy details above.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setCurrentStep('step4');
   };
 
@@ -320,8 +330,8 @@ export default function BookPickup() {
       retailerLocation: selectedStore ? {
         name: selectedStore.name,
         address: selectedStore.address,
-        lat: selectedStore.lat,
-        lng: selectedStore.lng
+        lat: selectedStore.location.lat,
+        lng: selectedStore.location.lng
       } : null,
       dropoffAddress: selectedStore?.address || formData.retailer,
       
@@ -543,11 +553,11 @@ export default function BookPickup() {
 
           // Combine results - if ANY category fails, the entire validation fails
           const validationResult = {
-            isAllowed: categoryValidationResults.every(r => r.result.isAllowed),
+            isValid: categoryValidationResults.every(r => r.result.isValid),
             violations: categoryValidationResults.flatMap(r => r.result.violations)
           };
 
-          if (validationResult.isAllowed) {
+          if (validationResult.isValid) {
             setMerchantPolicyValidation({
               isValid: true,
               message: `✅ Return accepted under ${formData.retailer}'s policy`,
@@ -556,8 +566,8 @@ export default function BookPickup() {
           } else {
             setMerchantPolicyValidation({
               isValid: false,
-              message: `❌ Return not allowed: ${validationResult.violations[0]?.violationReason || 'Policy violation'}`,
-              violations: validationResult.violations.map(v => v.violationReason)
+              message: `❌ Return not allowed: ${validationResult.violations[0]?.message || 'Policy violation'}`,
+              violations: validationResult.violations.map(v => v.message)
             });
           }
         } catch (error) {
