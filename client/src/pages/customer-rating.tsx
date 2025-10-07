@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { 
   Star,
   Package,
@@ -13,11 +14,13 @@ import {
   CheckCircle,
   Camera,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  Smartphone
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
+import { StarRating, InteractiveStarRating } from '@/components/StarRating';
 
 interface RatingFormData {
   orderId: string;
@@ -27,42 +30,10 @@ interface RatingFormData {
   communicationRating: number;
   reviewText: string;
   wouldRecommend: boolean | null;
+  appRating: number;
+  appReviewText: string;
 }
 
-const StarRating = ({ 
-  rating, 
-  onRatingChange, 
-  label 
-}: { 
-  rating: number; 
-  onRatingChange: (rating: number) => void; 
-  label: string;
-}) => {
-  return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            onClick={() => onRatingChange(star)}
-            className="p-1 hover:scale-110 transition-transform"
-            data-testid={`star-${label.toLowerCase().replace(' ', '-')}-${star}`}
-          >
-            <Star
-              className={`h-6 w-6 ${
-                star <= rating 
-                  ? 'fill-yellow-400 text-yellow-400' 
-                  : 'text-gray-300'
-              }`}
-            />
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default function CustomerRating() {
   const [orderId] = useState(new URLSearchParams(window.location.search).get('order') || '');
@@ -74,6 +45,8 @@ export default function CustomerRating() {
     communicationRating: 0,
     reviewText: '',
     wouldRecommend: null,
+    appRating: 0,
+    appReviewText: '',
   });
 
   const { toast } = useToast();
@@ -81,7 +54,32 @@ export default function CustomerRating() {
 
   const submitRating = useMutation({
     mutationFn: async (data: RatingFormData) => {
-      return await apiRequest('POST', '/api/reviews', data);
+      const reviews = [];
+      
+      if (data.overallRating > 0) {
+        reviews.push(
+          apiRequest('POST', '/api/reviews', {
+            orderId: data.orderId,
+            overallRating: data.overallRating,
+            serviceRating: data.serviceRating,
+            timelinessRating: data.timelinessRating,
+            communicationRating: data.communicationRating,
+            reviewText: data.reviewText,
+            wouldRecommend: data.wouldRecommend,
+          })
+        );
+      }
+      
+      if (data.appRating > 0) {
+        reviews.push(
+          apiRequest('POST', '/api/app-reviews', {
+            rating: data.appRating,
+            comment: data.appReviewText,
+          })
+        );
+      }
+      
+      return await Promise.all(reviews);
     },
     onSuccess: () => {
       toast({
@@ -102,10 +100,10 @@ export default function CustomerRating() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (formData.overallRating === 0) {
+    if (formData.overallRating === 0 && formData.appRating === 0) {
       toast({
         title: "Rating Required",
-        description: "Please provide an overall rating before submitting.",
+        description: "Please provide at least one rating before submitting.",
         variant: "destructive",
       });
       return;
@@ -183,19 +181,19 @@ export default function CustomerRating() {
               <h3 className="text-lg font-semibold">Rate specific aspects:</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StarRating
+                <InteractiveStarRating
                   rating={formData.serviceRating}
                   onRatingChange={(rating) => setFormData(prev => ({ ...prev, serviceRating: rating }))}
                   label="Service Quality"
                 />
                 
-                <StarRating
+                <InteractiveStarRating
                   rating={formData.timelinessRating}
                   onRatingChange={(rating) => setFormData(prev => ({ ...prev, timelinessRating: rating }))}
                   label="Timeliness"
                 />
                 
-                <StarRating
+                <InteractiveStarRating
                   rating={formData.communicationRating}
                   onRatingChange={(rating) => setFormData(prev => ({ ...prev, communicationRating: rating }))}
                   label="Communication"
@@ -243,11 +241,71 @@ export default function CustomerRating() {
               />
             </div>
 
+            <Separator className="my-8" />
+
+            {/* ReturnIt App Review */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="bg-primary/10 p-3 rounded-lg">
+                  <Smartphone className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Rate the ReturnIt App</h3>
+                  <p className="text-sm text-muted-foreground">
+                    How would you rate your overall experience with the ReturnIt platform?
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-center py-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, appRating: star }))}
+                    className="p-2 hover:scale-110 transition-transform"
+                    data-testid={`star-app-${star}`}
+                  >
+                    <Star
+                      className={`h-8 w-8 ${
+                        star <= formData.appRating 
+                          ? 'fill-[#f99806] text-[#f99806]' 
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  </button>
+                ))}
+              </div>
+
+              {formData.appRating > 0 && (
+                <div className="flex justify-center">
+                  <StarRating 
+                    rating={formData.appRating} 
+                    maxRating={5}
+                    showDecimal={false}
+                    size="md"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="appReview">Share your thoughts about the app (optional)</Label>
+                <Textarea
+                  id="appReview"
+                  placeholder="What did you like? What could be improved? Your feedback helps us make ReturnIt better..."
+                  value={formData.appReviewText}
+                  onChange={(e) => setFormData(prev => ({ ...prev, appReviewText: e.target.value }))}
+                  rows={3}
+                  data-testid="textarea-app-review"
+                />
+              </div>
+            </div>
+
             {/* Submit Button */}
             <div className="flex justify-center pt-4">
               <Button
                 type="submit"
-                disabled={formData.overallRating === 0 || submitRating.isPending}
+                disabled={(formData.overallRating === 0 && formData.appRating === 0) || submitRating.isPending}
                 className="min-w-[200px]"
                 data-testid="button-submit-review"
               >
