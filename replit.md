@@ -1,6 +1,6 @@
 # Overview
 
-ReturnIt is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a white/beige design, a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. ReturnIt is production-ready, aiming for significant market penetration and a strong valuation. The platform also has a comprehensive patent portfolio strategy.
+Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a white/beige design, amber color scheme (#d97706), a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. Return It is production-ready, deployed at returnit.online, aiming for significant market penetration and a strong valuation. The platform uses Mapbox GL for map visualization with Google Maps integration for turn-by-turn navigation. The platform also has a comprehensive patent portfolio strategy.
 
 # User Preferences
 

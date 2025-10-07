@@ -6,7 +6,9 @@ import {
   TouchableOpacity, 
   Alert,
   ActivityIndicator,
-  Dimensions 
+  Dimensions,
+  Linking,
+  Platform
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import MapView, { Marker, Circle, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
@@ -517,6 +519,60 @@ export default function LiveOrderMapScreen({ navigation }) {
             </View>
           </View>
 
+          <View style={styles.navigationButtonsRow}>
+            <TouchableOpacity
+              style={styles.navigationButton}
+              onPress={() => {
+                const destination = encodeURIComponent(selectedOrder.pickupAddress);
+                const url = Platform.select({
+                  ios: `maps://app?daddr=${destination}`,
+                  android: `google.navigation:q=${destination}`,
+                  default: `https://www.google.com/maps/dir/?api=1&destination=${destination}`
+                });
+                
+                Linking.canOpenURL(url).then(supported => {
+                  if (supported) {
+                    Linking.openURL(url);
+                  } else {
+                    const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+                    Linking.openURL(webUrl);
+                  }
+                }).catch(err => {
+                  console.error('Navigation error:', err);
+                  Alert.alert('Error', 'Unable to open navigation app');
+                });
+              }}
+            >
+              <Text style={styles.navigationButtonText}>🗺️ To Pickup</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={styles.navigationButton}
+              onPress={() => {
+                const destination = encodeURIComponent(selectedOrder.deliveryAddress);
+                const url = Platform.select({
+                  ios: `maps://app?daddr=${destination}`,
+                  android: `google.navigation:q=${destination}`,
+                  default: `https://www.google.com/maps/dir/?api=1&destination=${destination}`
+                });
+                
+                Linking.canOpenURL(url).then(supported => {
+                  if (supported) {
+                    Linking.openURL(url);
+                  } else {
+                    const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+                    Linking.openURL(webUrl);
+                  }
+                }).catch(err => {
+                  console.error('Navigation error:', err);
+                  Alert.alert('Error', 'Unable to open navigation app');
+                });
+              }}
+            >
+              <Text style={styles.navigationButtonText}>🗺️ To Store</Text>
+            </TouchableOpacity>
+          </View>
+
           <TouchableOpacity
             style={styles.acceptButton}
             onPress={() => handleAcceptOrder(selectedOrder.id)}
@@ -748,6 +804,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#10B981',
+  },
+  navigationButtonsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 12,
+  },
+  navigationButton: {
+    flex: 1,
+    backgroundColor: '#FFF7ED',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#f99806',
+  },
+  navigationButtonText: {
+    color: '#d97706',
+    fontSize: 14,
+    fontWeight: '600',
   },
   acceptButton: {
     backgroundColor: '#10B981',

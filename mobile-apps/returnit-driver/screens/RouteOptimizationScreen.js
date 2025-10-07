@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, Linking, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 export default function RouteOptimizationScreen({ navigation, route }) {
@@ -76,16 +76,35 @@ export default function RouteOptimizationScreen({ navigation, route }) {
   const currentRoute = routes[selectedRoute];
 
   const handleStartNavigation = () => {
+    const firstStop = currentJobs.find(job => job.status === 'next') || currentJobs[0];
+    const destination = encodeURIComponent(firstStop.address);
+    
     Alert.alert(
       'Start Navigation',
-      `Begin navigation to first stop using ${currentRoute.name}?`,
+      `Navigate to ${firstStop.customer} at ${firstStop.address}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: 'Start', 
+          text: 'Open Google Maps', 
           onPress: () => {
-            Alert.alert('Navigation Started', 'External navigation app will open.');
-            // In a real app, this would open Google Maps or similar
+            const url = Platform.select({
+              ios: `maps://app?daddr=${destination}`,
+              android: `google.navigation:q=${destination}`,
+              default: `https://www.google.com/maps/dir/?api=1&destination=${destination}`
+            });
+            
+            Linking.canOpenURL(url).then(supported => {
+              if (supported) {
+                Linking.openURL(url);
+              } else {
+                // Fallback to web-based Google Maps
+                const webUrl = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+                Linking.openURL(webUrl);
+              }
+            }).catch(err => {
+              console.error('Navigation error:', err);
+              Alert.alert('Error', 'Unable to open navigation app');
+            });
           }
         }
       ]

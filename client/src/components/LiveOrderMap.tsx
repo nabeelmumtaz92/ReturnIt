@@ -348,6 +348,41 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
                   </div>
                 </div>
 
+                <div className="flex gap-2 pb-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-50"
+                    size="sm"
+                    data-testid="button-navigate-pickup"
+                  >
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(selectedOrder.pickupAddress)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Navigation className="h-3 w-3 mr-1" />
+                      To Pickup
+                    </a>
+                  </Button>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="flex-1 border-amber-300 text-amber-700 hover:bg-amber-50"
+                    size="sm"
+                    data-testid="button-navigate-store"
+                  >
+                    <a
+                      href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(selectedOrder.deliveryAddress)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <Navigation className="h-3 w-3 mr-1" />
+                      To Store
+                    </a>
+                  </Button>
+                </div>
+
                 <Button
                   onClick={() => handleAcceptOrder(selectedOrder.id)}
                   className="w-full bg-green-600 hover:bg-green-700 text-white"
