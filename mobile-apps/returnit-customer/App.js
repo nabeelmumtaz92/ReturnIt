@@ -17,6 +17,7 @@ import OrderHistoryScreen from './screens/OrderHistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
 import SupportScreen from './screens/SupportScreen';
+import CustomerReviewScreen from './screens/CustomerReviewScreen';
 
 // Import auth and API services
 import authService from './services/auth-service';
@@ -118,6 +119,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Notifications" component={NotificationsScreen} />
         <Stack.Screen name="Support" component={SupportScreen} />
+        <Stack.Screen name="CustomerReview" component={CustomerReviewScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

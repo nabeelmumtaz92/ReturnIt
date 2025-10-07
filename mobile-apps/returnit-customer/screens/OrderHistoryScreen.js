@@ -30,6 +30,7 @@ export default function OrderHistoryScreen({ navigation }) {
       // Transform API data to match UI expectations
       const transformedOrders = orders.map(order => ({
         id: order.trackingNumber || order.id,
+        orderId: order.id, // Preserve real order ID for API calls
         type: `Return to ${order.retailer}`,
         date: new Date(order.createdAt).toLocaleDateString(),
         status: formatOrderStatus(order.status),
@@ -134,7 +135,7 @@ export default function OrderHistoryScreen({ navigation }) {
           <TouchableOpacity
             style={styles.reviewButton}
             onPress={() => navigation.navigate('CustomerReview', {
-              orderId: item.id,
+              orderId: item.orderId, // Use real order ID for API
               driverId: item.driverId,
               driverName: item.driverName || 'Your Driver'
             })}

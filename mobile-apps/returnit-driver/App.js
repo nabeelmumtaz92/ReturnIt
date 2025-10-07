@@ -18,6 +18,7 @@ import RatingsAndFeedbackScreen from './screens/RatingsAndFeedbackScreen';
 import DriverSupportScreen from './screens/DriverSupportScreen';
 import PackageVerificationScreen from './screens/PackageVerificationScreen';
 import CompleteDeliveryScreen from './screens/CompleteDeliveryScreen';
+import DriverReviewDeliveryScreen from './screens/DriverReviewDeliveryScreen';
 
 // Import auth and API services
 import authService from './services/auth-service';
@@ -124,6 +125,7 @@ export default function App() {
         <Stack.Screen name="DriverSupport" component={DriverSupportScreen} />
         <Stack.Screen name="PackageVerification" component={PackageVerificationScreen} />
         <Stack.Screen name="CompleteDelivery" component={CompleteDeliveryScreen} />
+        <Stack.Screen name="DriverReviewDelivery" component={DriverReviewDeliveryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
