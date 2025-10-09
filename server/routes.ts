@@ -435,6 +435,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.setHeader('Content-Type', 'application/manifest+json');
     res.sendFile(path.resolve(process.cwd(), 'public/site.webmanifest'));
   });
+
+  // Serve Digital Asset Links for TWA (Trusted Web Activity)
+  app.get('/.well-known/assetlinks.json', (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.sendFile(path.resolve(process.cwd(), 'public/.well-known/assetlinks.json'));
+  });
   
   app.get('/customer-app.webmanifest', (req, res) => {
     res.setHeader('Content-Type', 'application/manifest+json');
