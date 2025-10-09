@@ -14,9 +14,9 @@ You MUST replace the placeholder fingerprint in the assetlinks.json file. Here's
 ### Option 1: From Google Play Console (Easiest)
 1. Go to Google Play Console
 2. Select your app "Return It"
-3. Go to **Setup** → **App integrity**
-4. Look for **SHA-256 certificate fingerprint** 
-5. Copy the **PRODUCTION** certificate fingerprint
+3. Go to **Test and release** → **App integrity** → **Play app signing**
+4. Scroll down to **"App signing key certificate"** section
+5. Copy the **SHA-256 certificate fingerprint** (NOT the upload certificate)
 6. It will look like: `AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78:90:AB:CD:EF:12:34:56:78`
 
 ### Option 2: From Your Keystore (If you built it manually)
