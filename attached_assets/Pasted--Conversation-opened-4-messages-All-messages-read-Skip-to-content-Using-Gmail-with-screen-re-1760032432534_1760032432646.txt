@@ -1,0 +1,76 @@
+
+Conversation opened. 4 messages. All messages read.
+
+Skip to content
+Using Gmail with screen readers
+
+4 of 17,457
+[2-7093000039719] Appeals Confirmation
+Inbox
+
+googleplay-developer-support@google.com
+Wed, Oct 1, 5:19 PM (8 days ago)
+Dear Google Play Developer, Thanks for contacting Google Play. Your appeal has been submitted successfully and will be reviewed by a specialist. The ticket numb
+
+googleplay-developer-support@google.com
+Wed, Oct 1, 7:26 PM (8 days ago)
+Hi Developer, Thanks for contacting the Google Play team. We’ve reviewed your appeal request and found that your app has repeatedly violated Google Play policy.
+
+Nabeel Mumtaz
+Wed, Oct 1, 9:03 PM (8 days ago)
+Hello Google Play Policy Team, Thank you for your response regarding my app’s suspension. I understand the importance of following Google Play’s Developer Progr
+
+googleplay-developer-support@google.com
+Tue, Oct 7, 11:27 PM (2 days ago)
+to me
+
+Hi developers at Nabeel Mumtaz,
+
+Thanks for contacting the Google Play team.
+
+Status: App Return It (online.returnit.twa) not available on Google Play, pending your action
+
+We’ve accepted your appeal and included details below about what additional steps you’ll need to take to get your app to appear on Google Play.
+
+Action required: Submit your app
+
+Step 1: Check Policy Status in your Play Console
+
+Before republishing your app, please check Policy Status in your Play Console account to view other violations that your app may have and address the violations. Please also make sure that your app complies with all Developer Program policies, as additional enforcement could occur if there are further policy violations.
+
+Step 2: Submit a compliant update to your app
+
+Please allow three hours for our back-end systems to update, then resubmit your app.
+To submit an update to your app’s store listing information:
+
+Sign in to your Play Console account.
+Select the app with the policy issue.
+Select Grow Users > Store presence > Store listings.
+Make changes to bring your app into compliance.
+Click Save.
+To submit an updated app bundle or APK:
+
+Prepare your updates.
+Create a new release using the compliant app bundle or APK. Be sure to create the new release on the same track(s) as the noncompliant app bundle or APK, increment the version number, and set the release to 100% rollout.
+Follow the on-screen instructions to add APKs or app bundles, then review and roll out your release.
+If the Save button is grayed out, you can make a minor change to your store listing to activate the button. For example, add a space after your app title and then delete it. Once the button turns blue, you can submit your update.
+
+Kindly note that your changes aren't sent for review automatically. You must go to the Publishing overview page and click Send for review to submit your changes.
+
+Please note that after you submit an update to an existing app on your Play Console account, it can take some time for your app to be processed for standard publishing on Google Play. To check your submission status, you may follow the steps below:
+
+Sign in to your Play Console account.
+Select your app.
+On the left menu, select Test and release > Releases overview. (Select the track(s) you have released.)
+If you need additional help, you can also visit the Play Console Help Center or the Android Developers website.
+
+If you are located in the EU, you may have additional redress options. Learn more about those potential options in the EU Out-of-Court Dispute Resolution Help Center. Routing ID: ZLFS
+
+Thanks for your continued support of Google Play!
+
+Regards,
+Winter
+The Google Play Team
+Please visit the Google Play Developer Policy Center and Google Play's Academy for App Success to learn more about building policy compliant and high quality apps. You can also visit the Android Developers Blog for the latest Android and Google Play news for app and game developers.
+
+Thank you for your assistance.Thanks for your support.Thank you for your response.
