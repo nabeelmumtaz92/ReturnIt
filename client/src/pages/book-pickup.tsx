@@ -81,6 +81,7 @@ export default function BookPickup() {
     preferredTimeSlot: '',
     // Pickup location preference
     pickupLocation: 'inside', // 'inside' or 'outside'
+    pickupMethod: 'handoff', // 'handoff' or 'door_dropoff'
     pickupInstructions: '', // Special instructions for outside pickup
     // Instructions
     notes: '',
@@ -329,6 +330,8 @@ export default function BookPickup() {
       // Pickup details
       pickupAddress: formData.streetAddress,
       pickupLocation: formData.pickupLocation,
+      pickupMethod: formData.pickupMethod,
+      signatureRequired: formData.pickupMethod === 'handoff',
       pickupInstructions: formData.pickupInstructions || '',
       preferredTimeSlot: formData.preferredTimeSlot,
       
@@ -1174,51 +1177,81 @@ export default function BookPickup() {
             </label>
           </div>
 
-          {formData.pickupLocation === 'outside' && (
+          {/* Pickup Method */}
+          <div className="space-y-3 bg-white/60 p-4 rounded-lg border border-border">
+            <Label className="text-foreground font-semibold flex items-center">
+              <User className="h-4 w-4 mr-2" />
+              Pickup Method *
+            </Label>
+            <div className="space-y-2">
+              <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                <input type="radio" name="pickupMethod" value="handoff"
+                  checked={formData.pickupMethod === 'handoff'}
+                  onChange={(e) => handleInputChange('pickupMethod', e.target.value)}
+                  className="mt-1 text-primary focus:ring-primary" data-testid="radio-pickup-handoff" />
+                <div className="flex-1">
+                  <span className="text-foreground font-medium">Hand to Driver</span>
+                  <p className="text-sm text-muted-foreground mt-1">I will be present to hand items directly to the driver (signature required)</p>
+                </div>
+              </label>
+              <label className="flex items-start space-x-3 cursor-pointer p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+                <input type="radio" name="pickupMethod" value="door_dropoff"
+                  checked={formData.pickupMethod === 'door_dropoff'}
+                  onChange={(e) => handleInputChange('pickupMethod', e.target.value)}
+                  className="mt-1 text-primary focus:ring-primary" data-testid="radio-pickup-door-dropoff" />
+                <div className="flex-1">
+                  <span className="text-foreground font-medium">Leave at Front Door</span>
+                  <p className="text-sm text-muted-foreground mt-1">Items will be left outside for driver pickup (no signature required)</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {formData.pickupMethod === 'door_dropoff' && (
             <div className="space-y-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
               <div className="flex items-start space-x-2">
-                <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5" />
+                <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-orange-900">Outside Pickup Instructions</h4>
+                  <h4 className="font-semibold text-orange-900">Door Drop-off Liability Terms</h4>
                   <p className="text-sm text-orange-700 mt-1">
-                    Please provide specific details about where items will be left for pickup
+                    Important: Please read and acknowledge the following terms for leaving items at your door
                   </p>
                 </div>
               </div>
+
+              <div className="bg-white p-4 rounded border border-orange-200">
+                <div className="text-sm text-orange-800 space-y-2">
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li><strong>No signature required:</strong> Driver will take photos as proof of pickup</li>
+                    <li><strong>Liability:</strong> ReturnIt and our drivers are NOT liable if items are lost, stolen, damaged, or missing before driver arrives</li>
+                    <li><strong>Weather exposure:</strong> Items may be affected by weather conditions while left outside</li>
+                    <li><strong>Theft risk:</strong> Items left unattended may be vulnerable to theft</li>
+                    <li><strong>Your responsibility:</strong> You assume full risk for items left outside before pickup</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-2 bg-white p-3 rounded border border-orange-300">
+                <Checkbox 
+                  id="doorDropoffLiability" 
+                  checked={formData.acceptsLiabilityTerms}
+                  onCheckedChange={(checked) => handleInputChange('acceptsLiabilityTerms', checked === true)}
+                  className="mt-0.5 border-orange-600 text-orange-600"
+                  data-testid="checkbox-door-dropoff-liability"
+                />
+                <Label htmlFor="doorDropoffLiability" className="text-sm text-orange-900 cursor-pointer">
+                  I understand and accept the liability terms. ReturnIt is not responsible if items are stolen, damaged, or lost before the driver picks them up.
+                </Label>
+              </div>
+
               <Textarea
-                placeholder="e.g., 'Left by front door in Amazon box', 'Behind planter on porch', 'In garage by side door'"
+                placeholder="Where will items be left? (e.g., 'By front door in Amazon box', 'Behind planter on porch', 'In garage by side door')"
                 value={formData.pickupInstructions}
                 onChange={(e) => handleInputChange('pickupInstructions', e.target.value)}
                 className="bg-white border-orange-300 focus:border-orange-500"
                 rows={3}
                 data-testid="textarea-pickup-instructions"
               />
-              <div className="bg-white p-4 rounded border border-orange-200">
-                <h5 className="font-semibold text-orange-900 mb-2 flex items-center">
-                  <Shield className="h-4 w-4 mr-2" /> Outside Pickup Liability Terms
-                </h5>
-                <div className="text-sm text-orange-800 space-y-2">
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li>Items will be left unattended outside your residence</li>
-                    <li>Return It and our drivers are NOT liable for lost, stolen, damaged, or missing items</li>
-                    <li>Weather, theft, or other external factors may affect your items</li>
-                    <li>You assume full risk and responsibility for items left outside</li>
-                    <li>Photo documentation will be provided as proof of pickup attempt</li>
-                    <li>No refunds will be provided for items not found at specified location</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="acceptsLiabilityTerms"
-                  checked={!!formData.acceptsLiabilityTerms}
-                  onCheckedChange={(checked) => handleInputChange('acceptsLiabilityTerms', checked === true)}
-                  data-testid="checkbox-liability-terms"
-                />
-                <Label htmlFor="acceptsLiabilityTerms" className="text-sm text-orange-900 font-medium">
-                  I understand and accept the liability terms for outside pickup *
-                </Label>
-              </div>
             </div>
           )}
         </div>

@@ -520,8 +520,10 @@ export const orders = pgTable("orders", {
   pickupZipCode: text("pickup_zip_code").notNull(),
   pickupCoordinates: jsonb("pickup_coordinates"),
   pickupLocation: text("pickup_location").default("inside").notNull(), // 'inside' or 'outside'
+  pickupMethod: text("pickup_method").default("handoff").notNull(), // 'handoff' (requires signature) or 'door_dropoff' (no signature)
   pickupInstructions: text("pickup_instructions"),
-  acceptsLiabilityTerms: boolean("accepts_liability_terms").default(false).notNull(), // Required for outside pickup
+  acceptsLiabilityTerms: boolean("accepts_liability_terms").default(false).notNull(), // Required for door_dropoff
+  signatureRequired: boolean("signature_required").default(true).notNull(), // false only for door_dropoff
   pickupWindow: jsonb("pickup_window"), // start/end times
   scheduledPickupTime: timestamp("scheduled_pickup_time"),
   actualPickupTime: timestamp("actual_pickup_time"),
