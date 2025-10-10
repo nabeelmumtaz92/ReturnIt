@@ -114,10 +114,13 @@ export default function PackageVerificationScreen({ route, navigation }) {
       return;
     }
 
-    if (!customerSignature.trim()) {
+    // Check if signature is required based on pickup method
+    const signatureRequired = orderDetails?.signatureRequired !== false;
+    
+    if (signatureRequired && !customerSignature.trim()) {
       Alert.alert(
         'Signature Required',
-        'Please collect the customer signature before proceeding.',
+        'This order requires a customer signature. Please collect it before proceeding.',
         [{ text: 'OK' }]
       );
       return;
@@ -225,13 +228,19 @@ export default function PackageVerificationScreen({ route, navigation }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Customer Signature *</Text>
+          <Text style={styles.sectionTitle}>
+            Customer Signature {orderDetails?.signatureRequired !== false ? '*' : '(Optional)'}
+          </Text>
           <Text style={styles.sectionDescription}>
-            Ask customer to type their full name
+            {orderDetails?.signatureRequired !== false 
+              ? 'Ask customer to type their full name' 
+              : 'Door drop-off - signature not required'}
           </Text>
           <TextInput
             style={styles.input}
-            placeholder="Customer Full Name"
+            placeholder={orderDetails?.signatureRequired !== false 
+              ? "Customer Full Name" 
+              : "Customer Full Name (Optional)"}
             value={customerSignature}
             onChangeText={setCustomerSignature}
             autoCapitalize="words"
