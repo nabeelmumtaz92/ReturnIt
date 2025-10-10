@@ -66,6 +66,15 @@ Preferred communication style: Simple, everyday language.
 - Stripe Identity driver verification, data encryption.
 - SQL injection prevention, sensitive data protection, security headers (Helmet), CORS protection, robust authentication security, API security, and webhook security.
 
+## Legal Compliance & Operating Model
+- **Agency Model**: ReturnIt operates as customer's agent, not as courier service - no courier license required.
+- **Proof of Purchase**: Required receipt/order confirmation upload in booking flow for all returns.
+- **Photo Verification**: Mandatory drop-off photo documentation by drivers showing completion at store return desk.
+- **Store Interaction**: Drivers use public return desks only, present as customer's agent, never misrepresent authority.
+- **Professional Standards**: Clear conduct guidelines, no store employee impersonation, acceptance of store decisions.
+- **Documentation**: Comprehensive legal compliance guidelines (LEGAL_COMPLIANCE_GUIDELINES.md), driver checklist (mobile-apps/returnit-driver/LEGAL_CHECKLIST.md).
+- **Risk Mitigation**: Photo audit trail, agency disclosure in terms of service, professional driver training requirements.
+
 ## Infrastructure & Deployment
 - Production deployment at returnit.online, Neon PostgreSQL.
 - Multi-environment support, automated workflow with Replit.
