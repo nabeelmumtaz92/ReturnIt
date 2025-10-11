@@ -45,33 +45,6 @@ export default function BookPickup() {
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [pendingBookingData, setPendingBookingData] = useState<any>(null);
 
-  // Save booking data to localStorage for guest users
-  useEffect(() => {
-    if (!isAuthenticated && currentStep !== 'step1') {
-      localStorage.setItem('guestBookingData', JSON.stringify(formData));
-    }
-  }, [formData, isAuthenticated, currentStep]);
-
-  // Restore booking data after authentication
-  useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      const savedData = localStorage.getItem('guestBookingData');
-      if (savedData) {
-        try {
-          const parsedData = JSON.parse(savedData);
-          setFormData(prev => ({ ...prev, ...parsedData }));
-          localStorage.removeItem('guestBookingData');
-          toast({
-            title: "Welcome back!",
-            description: "Your booking information has been restored.",
-          });
-        } catch (error) {
-          console.error('Error restoring booking data:', error);
-        }
-      }
-    }
-  }, [isAuthenticated, isLoading, toast]);
-
   const [formData, setFormData] = useState({
     // Customer info
     fullName: '',
@@ -122,6 +95,33 @@ export default function BookPickup() {
 
   // Step management
   const [currentStep, setCurrentStep] = useState<'step1' | 'step2' | 'step3' | 'step4'>('step1');
+
+  // Save booking data to localStorage for guest users
+  useEffect(() => {
+    if (!isAuthenticated && currentStep !== 'step1') {
+      localStorage.setItem('guestBookingData', JSON.stringify(formData));
+    }
+  }, [formData, isAuthenticated, currentStep]);
+
+  // Restore booking data after authentication
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const savedData = localStorage.getItem('guestBookingData');
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          setFormData(prev => ({ ...prev, ...parsedData }));
+          localStorage.removeItem('guestBookingData');
+          toast({
+            title: "Welcome back!",
+            description: "Your booking information has been restored.",
+          });
+        } catch (error) {
+          console.error('Error restoring booking data:', error);
+        }
+      }
+    }
+  }, [isAuthenticated, isLoading, toast]);
 
   // State for UI interactions  
   const [showRetailerDropdown, setShowRetailerDropdown] = useState(false);

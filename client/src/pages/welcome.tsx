@@ -200,13 +200,7 @@ export default function Welcome() {
             size="default" 
             className="w-full bg-amber-800 hover:bg-amber-900 text-white text-sm font-medium"
             data-testid="button-book-pickup"
-            onClick={() => {
-              if (isAuthenticated) {
-                setLocation('/book-pickup');
-              } else {
-                setLocation('/login');
-              }
-            }}
+            onClick={() => setLocation('/book-pickup')}
           >
             <Package className="h-4 w-4 mr-2" />
             Book Pickup
