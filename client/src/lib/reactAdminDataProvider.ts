@@ -5,8 +5,8 @@ const apiUrl = '/api';
 // Custom data provider for React Admin that works with our existing API
 export const dataProvider: DataProvider = {
   getList: async (resource, params) => {
-    const { page, perPage } = params.pagination;
-    const { field, order } = params.sort;
+    const { page = 1, perPage = 10 } = params.pagination || {};
+    const { field = 'id', order = 'ASC' } = params.sort || {};
     
     let url = `${apiUrl}/${resource}`;
     
@@ -92,7 +92,7 @@ export const dataProvider: DataProvider = {
       body: JSON.stringify(params.data),
       credentials: 'include',
     });
-    return { data: { ...params.data, id: json.id } };
+    return { data: { ...params.data, ...json, id: json.id || json.data?.id } as any };
   },
 
   update: async (resource, params) => {
@@ -123,7 +123,7 @@ export const dataProvider: DataProvider = {
       method: 'DELETE',
       credentials: 'include',
     });
-    return { data: params.previousData };
+    return { data: params.previousData as any };
   },
 
   deleteMany: async (resource, params) => {

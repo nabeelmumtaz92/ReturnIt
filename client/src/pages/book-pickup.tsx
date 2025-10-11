@@ -12,6 +12,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
+import { trackEvent } from "@/lib/posthog";
 import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -739,6 +740,15 @@ export default function BookPickup() {
       return apiRequest('/api/orders', 'POST', orderData);
     },
     onSuccess: (data) => {
+      // Track order creation in PostHog
+      trackEvent('order_created', {
+        orderId: data.id,
+        retailer: formData.retailer,
+        itemValue: formData.itemValue,
+        totalPrice: data.totalPrice,
+        paymentMethod: selectedPaymentMethod?.type,
+      });
+      
       toast({
         title: "Pickup scheduled!",
         description: "Your return pickup has been scheduled successfully.",
@@ -747,6 +757,12 @@ export default function BookPickup() {
       setLocation('/orders');
     },
     onError: (error: any) => {
+      // Track failed order creation
+      trackEvent('order_creation_failed', {
+        error: error.message,
+        retailer: formData.retailer,
+      });
+      
       toast({
         title: "Error scheduling pickup",
         description: error.message || "Something went wrong. Please try again.",
