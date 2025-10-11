@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useLocation, Link } from "wouter";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -40,21 +41,41 @@ export default function BookPickup() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Redirect if not authenticated
+  // State for guest checkout flow
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [pendingBookingData, setPendingBookingData] = useState<any>(null);
+
+  // Save booking data to localStorage for guest users
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Please sign in",
-        description: "You need to sign in to book a pickup",
-        variant: "destructive",
-      });
-      setLocation('/login');
+    if (!isAuthenticated && currentStep !== 'step1') {
+      localStorage.setItem('guestBookingData', JSON.stringify(formData));
     }
-  }, [isAuthenticated, isLoading, setLocation, toast]);
+  }, [formData, isAuthenticated, currentStep]);
+
+  // Restore booking data after authentication
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      const savedData = localStorage.getItem('guestBookingData');
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          setFormData(prev => ({ ...prev, ...parsedData }));
+          localStorage.removeItem('guestBookingData');
+          toast({
+            title: "Welcome back!",
+            description: "Your booking information has been restored.",
+          });
+        } catch (error) {
+          console.error('Error restoring booking data:', error);
+        }
+      }
+    }
+  }, [isAuthenticated, isLoading, toast]);
 
   const [formData, setFormData] = useState({
     // Customer info
     fullName: '',
+    email: '',
     phone: '',
     // Address fields
     streetAddress: '',
@@ -182,7 +203,9 @@ export default function BookPickup() {
   // Step 1: Customer Information & Address
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const required = ['fullName', 'phone', 'streetAddress'];
+    const required = isAuthenticated 
+      ? ['fullName', 'phone', 'streetAddress']
+      : ['fullName', 'phone', 'email', 'streetAddress'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
     if (missing.length > 0) {
@@ -321,12 +344,22 @@ export default function BookPickup() {
       return;
     }
 
+    // Check if user is authenticated before submitting
+    if (!isAuthenticated) {
+      // Save booking data for after authentication
+      setPendingBookingData(formData);
+      localStorage.setItem('guestBookingData', JSON.stringify(formData));
+      localStorage.setItem('pendingPaymentMethod', selectedPaymentMethod);
+      setShowAuthPrompt(true);
+      return;
+    }
+
     // Construct order data from all form data
     const orderData = {
       // Customer info
       customerName: formData.fullName,
       customerPhone: formData.phone,
-      customerEmail: user?.email,
+      customerEmail: user?.email || formData.email || '',
       
       // Pickup details
       pickupAddress: formData.streetAddress,
@@ -795,6 +828,16 @@ export default function BookPickup() {
               className="bg-white/80 border-border focus:border-primary"
               required data-testid="input-phone" />
           </div>
+          {!isAuthenticated && (
+            <div>
+              <Label htmlFor="email" className="text-foreground font-medium">Email Address *</Label>
+              <Input id="email" type="email" placeholder="your@email.com" value={formData.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className="bg-white/80 border-border focus:border-primary"
+                required data-testid="input-email" />
+              <p className="text-xs text-muted-foreground mt-1">We'll create your account with this email</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1700,7 +1743,7 @@ export default function BookPickup() {
       </div>
     );
   }
-  if (!isAuthenticated) return null;
+  // Guest checkout is allowed - no authentication check here
 
   // ---------- UI ----------
   const selectedImage = deliveryHandoffImg;
@@ -1851,6 +1894,51 @@ export default function BookPickup() {
       </div>
 
       <Footer />
+
+      {/* Authentication Prompt Dialog */}
+      <Dialog open={showAuthPrompt} onOpenChange={setShowAuthPrompt}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-foreground">Almost There!</DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground pt-2">
+              Create an account to complete your booking. We've saved all your information.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div className="bg-accent/50 border border-border rounded-lg p-4">
+              <h3 className="font-semibold text-foreground mb-2">Why create an account?</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Track your pickup in real-time</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>View order history and receipts</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Faster checkout next time</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="space-y-3">
+              <Link href={`/login?tab=register&returnTo=/book-pickup`}>
+                <Button className="w-full bg-primary hover:bg-primary/90" data-testid="button-create-account">
+                  <User className="h-4 w-4 mr-2" />
+                  Create Account
+                </Button>
+              </Link>
+              <Link href={`/login?returnTo=/book-pickup`}>
+                <Button variant="outline" className="w-full" data-testid="button-sign-in-auth">
+                  Already have an account? Sign In
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
