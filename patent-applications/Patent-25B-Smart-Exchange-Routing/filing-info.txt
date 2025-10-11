@@ -1,0 +1,12 @@
+PATENT FILING QUICK REFERENCE
+
+Patent Number: #25B
+Title: Smart Exchange Routing with Predictive Store Selection
+Filing Type: Provisional Patent Application
+Cost: $65
+Priority: 🟠 PRIORITY 2 (File Week 1)
+Estimated Value: $100,000 - $200,000
+
+Key Innovation: ML-powered store selection predicting instant exchange probability, optimizing routes to stores most likely to have inventory.
+
+Status: ✅ READY TO FILE
