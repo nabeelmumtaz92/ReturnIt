@@ -8,15 +8,9 @@ export const dataProvider: DataProvider = {
     const { page = 1, perPage = 10 } = params.pagination || {};
     const { field = 'id', order = 'ASC' } = params.sort || {};
     
-    let url = `${apiUrl}/${resource}`;
-    
-    // Add query parameters for pagination and sorting if needed
-    const query: Record<string, string> = {};
-    if (params.filter) {
-      Object.keys(params.filter).forEach(key => {
-        query[key] = params.filter[key];
-      });
-    }
+    // Our backend doesn't support pagination/filtering via query params
+    // Fetch all data and handle client-side
+    const url = `${apiUrl}/${resource}`;
     
     const { json } = await fetchUtils.fetchJson(url, {
       credentials: 'include',
@@ -24,10 +18,26 @@ export const dataProvider: DataProvider = {
     
     const data = Array.isArray(json) ? json : [];
     
-    // Client-side pagination and sorting for now
-    let sortedData = [...data];
+    // Apply filters client-side
+    let filteredData = [...data];
+    if (params.filter && Object.keys(params.filter).length > 0) {
+      filteredData = filteredData.filter((item: any) => {
+        return Object.keys(params.filter).every(key => {
+          const filterValue = params.filter[key];
+          const itemValue = item[key];
+          
+          if (filterValue === null || filterValue === undefined) return true;
+          if (typeof filterValue === 'string') {
+            return itemValue?.toString().toLowerCase().includes(filterValue.toLowerCase());
+          }
+          return itemValue === filterValue;
+        });
+      });
+    }
+    
+    // Apply sorting client-side
     if (field) {
-      sortedData.sort((a: any, b: any) => {
+      filteredData.sort((a: any, b: any) => {
         const aVal = a[field];
         const bVal = b[field];
         if (aVal < bVal) return order === 'ASC' ? -1 : 1;
@@ -36,13 +46,14 @@ export const dataProvider: DataProvider = {
       });
     }
     
+    // Apply pagination client-side
     const start = (page - 1) * perPage;
     const end = start + perPage;
-    const paginatedData = sortedData.slice(start, end);
+    const paginatedData = filteredData.slice(start, end);
     
     return {
       data: paginatedData,
-      total: data.length,
+      total: filteredData.length,
     };
   },
 

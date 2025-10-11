@@ -51,38 +51,59 @@ export const initPostHog = () => {
 
 // Track custom events
 export const trackEvent = (eventName: string, properties?: Record<string, any>) => {
-  if (posthog.__loaded) {
+  try {
+    // PostHog automatically queues events if not loaded yet, so we can just call capture
     posthog.capture(eventName, properties);
+    if (import.meta.env.DEV) {
+      console.log('[PostHog] Event tracked:', eventName, properties);
+    }
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[PostHog] Event tracking failed:', eventName, error);
+    }
   }
 };
 
 // Identify user
 export const identifyUser = (userId: string, traits?: Record<string, any>) => {
-  if (posthog.__loaded) {
+  try {
     posthog.identify(userId, traits);
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[PostHog] User identification failed:', error);
+    }
   }
 };
 
 // Reset user (on logout)
 export const resetUser = () => {
-  if (posthog.__loaded) {
+  try {
     posthog.reset();
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[PostHog] Reset failed:', error);
+    }
   }
 };
 
 // Track page view
 export const trackPageView = (pageName?: string) => {
-  if (posthog.__loaded) {
+  try {
     posthog.capture('$pageview', { page: pageName || window.location.pathname });
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[PostHog] Page view tracking failed:', error);
+    }
   }
 };
 
 // Create feature flags hook
 export const useFeatureFlag = (flagKey: string) => {
-  if (posthog.__loaded) {
-    return posthog.isFeatureEnabled(flagKey);
+  try {
+    return posthog.isFeatureEnabled(flagKey) || false;
+  } catch (error) {
+    return false;
   }
-  return false;
 };
 
 export default posthog;

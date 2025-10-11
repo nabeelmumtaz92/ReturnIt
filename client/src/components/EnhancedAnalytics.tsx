@@ -15,7 +15,7 @@ import {
   Activity
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import posthog from "@/lib/posthog";
+import posthog, { trackEvent } from "@/lib/posthog";
 import { useEffect, useState } from "react";
 
 interface MetricCardProps {
@@ -61,8 +61,14 @@ function MetricCard({ title, value, change, icon, description }: MetricCardProps
 export default function EnhancedAnalytics() {
   const [posthogData, setPosthogData] = useState<any>(null);
 
-  // Fetch PostHog insights (if available)
+  // Fetch PostHog insights (if available) and track page view
   useEffect(() => {
+    // Track admin viewing analytics
+    trackEvent('admin_view_analytics', { 
+      type: 'enhanced',
+      timestamp: new Date().toISOString()
+    });
+
     if (posthog.__loaded) {
       // Get feature flags and session data
       const flags = posthog.getAllFlags();
