@@ -34,6 +34,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Customer Features
 - Account management, social login.
+- **Guest Checkout**: Complete booking flow without account creation. Users can fill all booking steps as guests, with data saved to localStorage. Authentication prompt appears at final step with options to create account or sign in. After authentication, booking data is automatically restored for seamless completion.
 - **Store Location Autocomplete**: Type store name (e.g., "Target") to see dropdown with:
   - "Any [Store] Location" option - driver delivers to nearest location (e.g., allows returning Target items at any Target store)
   - Specific store locations with addresses for precise routing
