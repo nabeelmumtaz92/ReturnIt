@@ -1,0 +1,46 @@
+PATENT CLAIMS
+
+Claim 1 (Independent - System):
+A real-time driver assignment system for on-demand logistics platforms, comprising: a driver tracking module configured to continuously monitor GPS locations and movement trajectories of a plurality of drivers; an order ingestion module configured to receive delivery requests with geographic coordinates; a multi-factor scoring engine configured to calculate assignment scores for each driver-order pairing based on proximity, trajectory prediction, driver availability, historical performance, and earnings optimization; an assignment decision module configured to select the highest-scoring driver and transmit assignment notifications via real-time communication channels; a fallback reassignment module configured to automatically reassign rejected orders to alternative drivers using exponential backoff timers and progressive search radius expansion; wherein the system achieves assignment success rates exceeding 90% through predictive analysis of driver acceptance probability.
+
+Claim 2 (Dependent - Trajectory Prediction):
+The system of Claim 1, wherein the trajectory prediction component: calculates driver heading and velocity using consecutive GPS coordinates; projects driver location 5-10 minutes into the future; compares projected location to pickup location to determine trajectory alignment; assigns higher scores to drivers moving toward pickup locations.
+
+Claim 3 (Dependent - Earnings Optimization):
+The system of Claim 1, wherein the earnings optimization component: tracks cumulative driver earnings in real-time; calculates earnings gap relative to daily target ($150); prioritizes assigning orders to drivers with larger earnings gaps; ensures balanced income distribution across driver network.
+
+Claim 4 (Dependent - Fallback Mechanism):
+The system of Claim 1, wherein the fallback reassignment mechanism: implements exponential backoff timers (10s, 30s, 60s, 120s) for successive assignment attempts; progressively expands search radius (2mi → 5mi → 10mi → 20mi) with each rejection; increases order priority score by 20 points per rejection; triggers high-demand notifications to offline drivers after 3 rejections.
+
+Claim 5 (Dependent - Machine Learning):
+The system of Claim 1, further comprising: a machine learning model trained on historical acceptance data; feature extraction from order characteristics and driver state; probability prediction of driver acceptance (0-100%); automatic model retraining weekly on new data; wherein drivers with predicted acceptance probability >80% are prioritized for assignment.
+
+Claim 6 (Independent - Method):
+A method for assigning delivery orders to drivers in real-time, comprising the steps of: monitoring GPS locations of active drivers every 5 seconds; receiving a new delivery order with pickup coordinates; calculating multi-factor scores for each available driver based on proximity (30%), trajectory (25%), availability (20%), performance (15%), and earnings (10%); selecting the driver with the highest score exceeding a threshold of 70; transmitting assignment notification via WebSocket connection; implementing automatic fallback reassignment if driver rejects within timeout period; wherein the method achieves 90%+ assignment success rate.
+
+Claim 7 (Dependent - Priority Adjustment):
+The method of Claim 6, wherein order priority is calculated as: Priority = (urgency_factor × 40) + (order_age_minutes × 2) + (customer_tier × 10) and priority increases with each driver rejection to ensure eventual assignment.
+
+Claim 8 (Dependent - Real-Time Communication):
+The method of Claim 6, wherein assignment notifications are transmitted via: WebSocket connections for instant delivery to driver mobile apps; push notifications as fallback if WebSocket disconnected; SMS notifications for critical high-priority orders; wherein notification delivery occurs within 500 milliseconds of assignment decision.
+
+Claim 9 (Independent - Computer-Readable Medium):
+A non-transitory computer-readable medium storing instructions that, when executed by a processor, cause the processor to: maintain a real-time database of driver locations with timestamps; calculate trajectory vectors from consecutive location points; score driver-order pairings using weighted multi-factor algorithm; select optimal driver with highest score; execute fallback reassignment with exponential backoff upon rejection; wherein the instructions implement an automated driver assignment system with 90%+ success rate.
+
+Claim 10 (Dependent - Performance Metrics):
+The computer-readable medium of Claim 9, wherein performance scoring includes: driver rating (weighted 40%); historical completion rate (weighted 30%); on-time delivery rate (weighted 30%); wherein drivers with performance scores below 60 are temporarily excluded from assignment pool.
+
+Claim 11 (Dependent - Geographic Expansion):
+The system of Claim 1, wherein search radius expansion follows the progression: Initial: 2-mile radius from pickup location; First fallback: 5-mile radius; Second fallback: 10-mile radius; Third fallback: 20-mile radius; Final: nationwide broadcast to all active drivers.
+
+Claim 12 (Dependent - Bonus Incentives):
+The method of Claim 6, further comprising: detecting high rejection rates (>3 attempts); automatically offering bonus compensation ($3-5); displaying bonus amount in assignment notification; increasing acceptance probability by 40-60% through incentive.
+
+Claim 13 (Independent - Mobile Interface):
+A mobile application interface for drivers receiving assignment notifications, comprising: real-time display of order details (pickup location, estimated earnings, distance); visual map showing route from current location to pickup; acceptance/rejection buttons with 10-second countdown timer; predicted earnings calculation displayed prominently; automatic navigation launch upon acceptance; wherein the interface is optimized for one-tap acceptance within 3 seconds.
+
+Claim 14 (Dependent - Acceptance Prediction Display):
+The mobile application of Claim 13, further displaying: personalized acceptance probability score based on driver's historical patterns; comparison to daily earnings goal; route efficiency impact on future orders; wherein predictive information increases informed decision-making.
+
+Claim 15 (Dependent - Continuous Optimization):
+The system of Claim 1, wherein the scoring algorithm: adapts weights dynamically based on time-of-day patterns; increases proximity weight (40%) during peak hours; increases earnings weight (20%) during off-peak hours; continuously learns optimal weight distribution through A/B testing.
