@@ -1,0 +1,1 @@
+Claim 1: A multi-package system comprising: a package bundling module allowing 2-10 items per order; a bulk discount calculator applying tiered savings (10-25%); a capacity validator ensuring driver vehicle fits all items; a pickup sequencing optimizer coordinating multi-room collection; wherein the system increases order value 60% through consolidated bookings.
