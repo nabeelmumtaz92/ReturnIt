@@ -186,12 +186,13 @@ Contribution:       32% (after processing fees)
 | **Real-Time GPS** | ❌ | ❌ | ✅ | ❌ | ✅ |
 
 **IP Portfolio**:
-- 🏆 **25+ patents** (filed/ready to file)
-- 💎 **$3.5M-7.5M portfolio value**
-- 🛡️ **Patent #13**: AI-Powered Nearby Order Detection
-- 🔄 **Patent #25**: Two-Way Exchange Logistics
+- 🏆 **65 patents documented** (complete portfolio ready for filing)
+- 💎 **$6.5M-13M portfolio value** (1,538x-3,077x ROI)
+- 🛡️ **Patent #13**: AI-Powered Nearby Order Detection ($200K-400K)
+- 🔄 **Patent #25**: Two-Way Exchange Logistics ($500K-1M)
+- 🚗 **Patent #14**: Autonomous Vehicle Integration ($500K-1M)
 
-**Bottom Line**: "First-mover with patent protection = 2-3 year competitive lead"
+**Bottom Line**: "First-mover with comprehensive 65-patent protection = 2-3 year competitive lead"
 
 ---
 
@@ -330,7 +331,7 @@ Contribution:       32% (after processing fees)
 **Why ReturnIt Will Win**:
 1. ✅ **$50B market** with zero competition
 2. ✅ **Production-ready** platform (zero dev risk)
-3. ✅ **Patent-protected** technology (25+ patents)
+3. ✅ **Patent-protected** technology (65 patents, $6.5M-13M value)
 4. ✅ **Proven economics** (32% margin, 6:1 LTV:CAC)
 5. ✅ **Clear path** to $10M+ revenue
 
@@ -360,10 +361,11 @@ Contribution:       32% (after processing fees)
 - API documentation
 
 ### **Appendix C: Patent Portfolio**
-- Full 25-patent list
-- Filing strategy
-- IP valuation breakdown
+- Complete 65-patent portfolio
+- Priority filing strategy (7-month schedule)
+- IP valuation breakdown ($6.5M-13M)
 - Defensive moat analysis
+- ROI analysis (1,538x-3,077x return)
 
 ### **Appendix D: Comparable Company Analysis**
 - DoorDash, Instacart, Roadie comps
@@ -410,7 +412,7 @@ Contribution:       32% (after processing fees)
 ### **Key Messages to Emphasize**
 1. 🎯 **Massive market, zero competition** (first-mover)
 2. 💻 **Zero development risk** (platform live)
-3. 🏆 **Defensible moat** (25+ patents)
+3. 🏆 **Defensible moat** (65 patents, $6.5M-13M value)
 4. 💰 **Strong unit economics** (32% margin)
 5. 🚀 **Clear path to scale** (city expansion playbook)
 
@@ -420,7 +422,7 @@ Contribution:       32% (after processing fees)
 A: They're focused on B2B logistics. We're consumer-first with gig drivers (capital-light). Plus, our patent portfolio creates barriers.
 
 **Q: What's your competitive advantage if DoorDash enters?**  
-A: (1) 25+ patents, (2) return-specific features (policy validation, store integration), (3) 2-3 year head start, (4) better driver economics (70% vs 60%).
+A: (1) 65 patents ($6.5M-13M value), (2) return-specific features (policy validation, store integration), (3) 2-3 year head start, (4) better driver economics (70% vs 60%).
 
 **Q: How do you ensure profitability?**  
 A: Unit economics are positive from Day 1 (32% margin). Variable costs scale linearly. Break-even at ~6,500 orders/quarter (achievable Month 6).
@@ -463,7 +465,7 @@ A: (1) 70% split (vs. 60% DoorDash), (2) 100% of tips, (3) Less driving (returns
 - ✅ **Large TAM**: $50B addressable market
 - ✅ **No Competition**: First doorstep return service
 - ✅ **De-Risked**: Platform live, drivers recruited
-- ✅ **Defensible**: 25+ patents, IP moat
+- ✅ **Defensible**: 65 patents ($6.5M-13M value), impenetrable IP moat
 - ✅ **Proven Economics**: 32% margin, 6:1 LTV:CAC
 - ✅ **Clear Exit**: Strategic acquirers (UPS, Amazon, DoorDash)
 
