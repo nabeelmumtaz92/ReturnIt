@@ -71,6 +71,8 @@ import UnifiedAI from "@/components/UnifiedAI";
 import { RoleSwitcher } from "@/components/RoleSwitcher";
 import OrderDetailsModal from "@/components/OrderDetailsModal";
 import { PricingSettings } from "@/components/PricingSettings";
+import EnhancedAnalytics from "@/components/EnhancedAnalytics";
+import { trackEvent } from "@/lib/posthog";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -518,9 +520,17 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <PieChart className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Business Intelligence</span>
           </Button>
-          <Button onClick={() => changeSection('analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-analytics">
+          <Button 
+            onClick={() => {
+              changeSection('enhanced-analytics');
+              trackEvent('admin_view_analytics', { type: 'enhanced' });
+            }} 
+            className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" 
+            variant="outline" 
+            data-testid="button-analytics"
+          >
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
-            <span className="text-xs sm:text-sm font-medium text-center">Performance Analytics</span>
+            <span className="text-xs sm:text-sm font-medium text-center">Enhanced Analytics</span>
           </Button>
           <Button onClick={() => changeSection('support-analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-analytics">
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
@@ -3215,11 +3225,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   const EnhancedAnalyticsContent = () => (
     <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-
-
-      <Card className="bg-white/90 backdrop-blur-sm border-border">
+      <EnhancedAnalytics />
+      <Card className="bg-white/90 backdrop-blur-sm border-border mt-6">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-foreground text-xl">Enhanced Analytics</CardTitle>
+          <CardTitle className="text-foreground text-xl">Legacy Analytics</CardTitle>
           <div className="flex items-center gap-2">
             <Button 
               onClick={updateDashboardStats}
