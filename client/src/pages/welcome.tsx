@@ -46,7 +46,7 @@ export default function Welcome() {
       {/* Professional Hero Section */}
       <div className="w-full bg-white/95 border-b border-amber-100 relative">
         {/* Sign In/Sign Up buttons in top right */}
-        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
+        <div className="absolute top-4 sm:top-6 md:top-4 right-2 sm:right-4 z-10">
           {!isAuthenticated && (
             <div className="flex gap-2">
               <Link href="/login">
@@ -123,7 +123,7 @@ export default function Welcome() {
         <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
           <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
-            <div className="flex-1 text-center lg:text-left">
+            <div className="flex-1 text-center lg:text-left pt-8 sm:pt-0">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-2 sm:mb-3">
                 Return It
               </h1>
