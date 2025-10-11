@@ -1722,13 +1722,26 @@ export default function BookPickup() {
             <Button variant="ghost" size="sm" onClick={() => setLocation('/')} className="p-2 -ml-2" data-testid="button-back-home">
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <h1 className="text-lg font-bold text-center flex-1 pr-8">New Return Order</h1>
+            <h1 className="text-lg font-bold text-center flex-1 pr-8">New Order</h1>
           </div>
         </div>
       </header>
 
       {/* Main Form Card - Stitch Shadow Pattern */}
       <div className="container mx-auto px-4 py-6 max-w-3xl">
+        <Tabs defaultValue="return" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-6" data-testid="tabs-order-type">
+            <TabsTrigger value="return" data-testid="tab-return">
+              <Package className="h-4 w-4 mr-2" />
+              Book Return
+            </TabsTrigger>
+            <TabsTrigger value="exchange" disabled className="opacity-50" data-testid="tab-exchange">
+              <Truck className="h-4 w-4 mr-2" />
+              Exchange (Coming Soon)
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="return" className="mt-0">
         <div className="bg-card rounded-xl shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border border-border">
           <div className="p-6 border-b border-border">
             <div className="mb-4">
@@ -1773,6 +1786,52 @@ export default function BookPickup() {
             </div>
           </form>
         </div>
+          </TabsContent>
+
+          <TabsContent value="exchange" className="mt-0">
+            <div className="bg-card rounded-xl shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border border-border">
+              <div className="p-12 text-center space-y-6">
+                <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+                  <Package className="h-10 w-10 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-foreground mb-3">Exchanges Coming Soon!</h2>
+                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    We're building a revolutionary exchange feature that will let you swap items seamlessly with same-day pickup and delivery.
+                  </p>
+                </div>
+                <div className="bg-accent/50 border border-border rounded-lg p-6 max-w-xl mx-auto text-left">
+                  <h3 className="font-semibold text-foreground mb-3">What to expect:</h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Swap items at store or get replacement delivered to your door</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Same-day pickup and exchange processing</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Track your exchange in real-time from pickup to delivery</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                      <span>Zero hassle - we handle everything for you</span>
+                    </li>
+                  </ul>
+                </div>
+                <Button 
+                  onClick={() => setLocation('/')} 
+                  variant="outline"
+                  data-testid="button-exchange-back"
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <Footer />

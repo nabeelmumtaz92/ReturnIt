@@ -60,6 +60,43 @@ Preferred communication style: Simple, everyday language.
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
 - **Tier 2 (API & Integration System)**: RESTful API, API keys with permission scoping and rate limiting, webhook notification system.
 
+### Exchange Feature Roadmap (Patent #25)
+ReturnIt is expanding beyond returns to offer comprehensive **two-way exchange logistics**, transforming the platform into a full bidirectional delivery service.
+
+**Current Status**: Planning Phase
+- UI tab placeholder added to booking interface ("Exchange - Coming Soon")
+- Patent documentation complete (Patent #25: Two-Way Exchange Logistics System)
+
+**Exchange Flow Overview**:
+1. **Order Creation**: Customer selects "Exchange" and specifies replacement item details
+2. **Pickup**: Driver collects original item from customer
+3. **Store Interaction**: Driver brings item to store for exchange processing
+4. **Three Scenarios**:
+   - **Immediate Exchange**: Store issues replacement on-the-spot, driver delivers to customer (single trip)
+   - **Delayed Exchange**: Store accepts item but replacement pending, operator holds until ready, new driver delivers
+   - **Exchange Refused**: Store rejects exchange, item returned to customer or operator hold pending resolution
+
+**Technical Implementation Plan**:
+- **Phase 1** (Q1 2026): Core exchange workflow, order type classification, driver app exchange interface
+- **Phase 2** (Q2 2026): Operator warehouse holding system, multi-leg routing optimization, price differential payment processing
+- **Phase 3** (Q3 2026): Enterprise API for merchant integration, white-label exchange platform, ML-powered exchange prediction
+
+**Database Schema Additions**:
+- `order_type`: ENUM('return', 'exchange')
+- `exchange_status`: ENUM('pending', 'replacement_issued', 'replacement_delivered', 'refused')
+- `replacement_tracking`: Tracking info for delayed exchanges
+- `linked_order_id`: References second leg of two-part exchange
+
+**Business Impact**:
+- **2x Revenue**: Exchanges generate both pickup and delivery fees
+- **Higher Merchant Value**: Exchanges reduce refunds, increase customer retention
+- **Market Differentiation**: First doorstep exchange service in reverse logistics industry
+
+**Legal Compliance**:
+- Agency model extends to exchanges: "ReturnIt acts solely to transport items between customer and retailer, not purchasing or reselling merchandise"
+- Store authorization required for all exchanges
+- Photo documentation at both pickup and delivery
+
 ## Security & Compliance
 - Bcrypt password hashing, server-side session storage, CSRF protection, rate limiting.
 - Secure API key storage, PCI-compliant payment processing via Stripe.
