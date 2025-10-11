@@ -280,20 +280,20 @@ Contribution:       32% (after processing fees)
 - ✅ Iterate based on feedback
 
 **Q2 2026** (Month 4-6):
-- ✅ Scale to 1,000 orders/month
-- ✅ Launch city #2 (Kansas City)
+- ✅ Scale to 1,000 orders/month in St. Louis
 - ✅ Reach break-even
+- ✅ Prepare Chicago launch
 
 **Q3 2026** (Month 7-9):
-- ✅ 2,000 orders/month (St. Louis + KC)
+- ✅ Launch city #2 (Chicago)
+- ✅ 2,500 orders/month (St. Louis + Chicago)
 - ✅ Launch enterprise API (3 clients)
-- ✅ Profitability milestone
 
 **Q4 2026** (Month 10-12):
-- ✅ Launch city #3 (Indianapolis)
-- ✅ 5,000 orders/month total
+- ✅ Scale Chicago to 4,000 orders/month
+- ✅ Prepare NYC launch
 - ✅ $500K revenue run rate
-- ✅ Prepare Series A
+- ✅ Profitability milestone
 
 ---
 

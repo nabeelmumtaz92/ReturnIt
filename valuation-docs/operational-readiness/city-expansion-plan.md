@@ -65,41 +65,48 @@
 
 ---
 
-### **Year 2 (2027): Regional Expansion** (Add 2 cities)
+### **Year 2 (2027): Major Metro Expansion** (Add 2 cities)
 
-#### **Kansas City, MO/KS**
+#### **Chicago, IL**
 **Launch**: Q1 2027  
-**Population**: 2.2M metro  
-**Score**: 82/100
+**Population**: 9.5M metro  
+**Score**: 94/100
 
-**Why Kansas City?**
-- ✅ 250 miles from St. Louis (regional synergy)
-- ✅ Similar demographics (test playbook replication)
-- ✅ Lower cost market (validate profitability)
-- ✅ State incentives (Missouri/Kansas business-friendly)
+**Why Chicago?**
+- ✅ 3rd largest U.S. metro (massive market opportunity)
+- ✅ 300 miles from St. Louis (regional logistics synergy)
+- ✅ Extremely high retail density (5,000+ stores)
+- ✅ Strong e-commerce adoption (89% online shoppers)
+- ✅ Large gig economy (10,000+ active drivers available)
+- ✅ Test scalability for major markets
 
 **Target Metrics** (Year 2):
-- Orders: 36,000 (3,000/month)
-- Revenue: $666K
-- Drivers: 60
+- Orders: 54,000 (4,500/month average)
+- Revenue: $1.00M
+- Drivers: 90
+- CAC: $35 (higher than St. Louis but still strong ROI)
 
 ---
 
-#### **Indianapolis, IN**
-**Launch**: Q2 2027  
-**Population**: 2.1M metro  
-**Score**: 80/100
+#### **New York City, NY**
+**Launch**: Q3 2027  
+**Population**: 20.1M metro  
+**Score**: 98/100
 
-**Why Indianapolis?**
-- ✅ Midwest logistics hub (test scalability)
-- ✅ High retail density (600+ stores)
-- ✅ E-commerce adoption 84%
-- ✅ Adjacent market (300 miles from St. Louis)
+**Why NYC?**
+- ✅ Largest U.S. metro (maximum market potential)
+- ✅ Highest e-commerce returns volume in nation
+- ✅ Extreme retail density (15,000+ stores)
+- ✅ E-commerce adoption 92%
+- ✅ Massive gig economy (50,000+ drivers)
+- ✅ Premium pricing opportunity ($25-30 per order)
+- ✅ Prove model works in most competitive market
 
 **Target Metrics** (Year 2):
-- Orders: 45,000 (3,750/month)
-- Revenue: $833K
-- Drivers: 75
+- Orders: 72,000 (6,000/month average, Q3-Q4)
+- Revenue: $1.50M
+- Drivers: 120
+- CAC: $45 (offset by higher order volume and pricing)
 
 **Year 2 Total**: 3 cities, $2.5M revenue, 250 drivers
 
@@ -107,57 +114,57 @@
 
 ### **Year 3 (2028): Multi-Region Expansion** (Add 7 cities)
 
-#### **Midwest Cluster** (Q1-Q2 2028)
+#### **Major Metro Cluster** (Q1-Q2 2028)
 
-**Columbus, OH**
-- Population: 2.1M
-- Score: 83/100
+**Los Angeles, CA**
+- Population: 13.2M
+- Score: 96/100
 - Launch: Q1 2028
-- Target Revenue: $400K (Year 3)
+- Target Revenue: $1.2M (Year 3)
 
-**Milwaukee, WI**
-- Population: 1.6M
-- Score: 78/100
+**San Francisco Bay Area, CA**
+- Population: 7.8M
+- Score: 95/100
 - Launch: Q1 2028
-- Target Revenue: $320K (Year 3)
+- Target Revenue: $900K (Year 3)
 
-**Minneapolis-St. Paul, MN**
-- Population: 3.7M
-- Score: 88/100
+**Boston, MA**
+- Population: 4.9M
+- Score: 91/100
 - Launch: Q2 2028
-- Target Revenue: $600K (Year 3)
+- Target Revenue: $700K (Year 3)
 
 ---
 
-#### **South Cluster** (Q2-Q3 2028)
+#### **Secondary Metro Cluster** (Q2-Q3 2028)
 
-**Nashville, TN**
-- Population: 2.0M
-- Score: 86/100
+**Philadelphia, PA**
+- Population: 6.2M
+- Score: 92/100
 - Launch: Q2 2028
-- Target Revenue: $420K (Year 3)
+- Target Revenue: $850K (Year 3)
 
-**Charlotte, NC**
-- Population: 2.6M
-- Score: 85/100
+**Washington DC, VA/MD**
+- Population: 6.4M
+- Score: 93/100
 - Launch: Q3 2028
-- Target Revenue: $500K (Year 3)
+- Target Revenue: $900K (Year 3)
 
 ---
 
-#### **Southwest Cluster** (Q3-Q4 2028)
+#### **South/West Cluster** (Q3-Q4 2028)
 
-**Oklahoma City, OK**
-- Population: 1.4M
-- Score: 76/100
-- Launch: Q3 2028
-- Target Revenue: $280K (Year 3)
-
-**Austin, TX**
-- Population: 2.3M
+**Miami, FL**
+- Population: 6.1M
 - Score: 90/100
+- Launch: Q3 2028
+- Target Revenue: $800K (Year 3)
+
+**Dallas, TX**
+- Population: 7.6M
+- Score: 91/100
 - Launch: Q4 2028
-- Target Revenue: $520K (Year 3)
+- Target Revenue: $950K (Year 3)
 
 **Year 3 Total**: 10 cities, $10M revenue, 800 drivers
 

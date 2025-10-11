@@ -2,7 +2,7 @@
 
 **Company**: Return It Logistics, Inc.  
 **Investment Type**: Friends & Family Bootstrap Round  
-**Target Cities**: St. Louis → Kansas City → Indianapolis → Columbus (4 cities)  
+**Target Cities**: St. Louis → Chicago → NYC (3 major metros)  
 **Timeline**: 18 months to profitability  
 **Last Updated**: October 2025
 
@@ -14,7 +14,7 @@
 
 This amount provides:
 ✅ **Runway to profitability** (18 months)  
-✅ **3-4 city expansion** capital  
+✅ **3 major metro expansion** capital (Chicago, NYC)  
 ✅ **Marketing budget** for customer acquisition  
 ✅ **Emergency buffer** (6 months)  
 ✅ **Patent protection** (Priority 1-3 filing)
@@ -28,8 +28,8 @@ This amount provides:
 | Category | Amount | % | Purpose |
 |----------|--------|---|---------|
 | **Operating Runway** | $115K | 38% | Cover Year 1 loss + 6-month buffer |
-| **City Expansion** | $120K | 40% | Launch Cities 2-4 ($40K each) |
-| **Marketing & CAC** | $45K | 15% | Customer acquisition across 4 cities |
+| **City Expansion** | $120K | 40% | Launch Chicago ($60K) + NYC ($60K) |
+| **Marketing & CAC** | $45K | 15% | Customer acquisition across 3 major metros |
 | **Patent Filing** | $1,235 | <1% | Priority 1-3 patents (19 total) |
 | **Emergency Reserve** | $18.8K | 6% | Contingency fund |
 | **TOTAL** | **$300K** | **100%** | **Minimum viable bootstrap** |
@@ -43,13 +43,13 @@ This amount provides:
 | Category | Amount | % | Purpose |
 |----------|--------|---|---------|
 | **Operating Runway** | $145K | 41% | Cover Year 1 loss + 8-month buffer |
-| **City Expansion** | $140K | 40% | Launch Cities 2-4 ($35K each × 4) |
-| **Marketing & CAC** | $52K | 15% | Aggressive customer acquisition |
+| **City Expansion** | $140K | 40% | Launch Chicago ($70K) + NYC ($70K) |
+| **Marketing & CAC** | $52K | 15% | Aggressive customer acquisition in major metros |
 | **Patent Filing** | $1,235 | <1% | Priority 1-3 patents (19 core patents) |
 | **Emergency Reserve** | $11.8K | 3% | Contingency fund |
 | **TOTAL** | **$350K** | **100%** | **Optimal bootstrap amount** |
 
-**Outcome**: Reach profitability Q4 2026 (Month 12) with 3-4 cities operational, stronger market position
+**Outcome**: Reach profitability Q4 2026 (Month 12) with 3 major metros operational (St. Louis, Chicago, NYC), dominant market position
 
 ---
 
@@ -58,38 +58,48 @@ This amount provides:
 | Category | Amount | % | Purpose |
 |----------|--------|---|---------|
 | **Operating Runway** | $165K | 41% | Cover Year 1 loss + 10-month buffer |
-| **City Expansion** | $160K | 40% | Launch Cities 2-4 ($40K each × 4) + sales team |
-| **Marketing & CAC** | $60K | 15% | Maximum customer acquisition |
+| **City Expansion** | $160K | 40% | Launch Chicago ($80K) + NYC ($80K) |
+| **Marketing & CAC** | $60K | 15% | Maximum customer acquisition in major metros |
 | **Patent Filing** | $2,275 | <1% | Priority 1-5 patents (33 total) |
 | **Emergency Reserve** | $12.7K | 3% | Contingency fund |
 | **TOTAL** | **$400K** | **100%** | **Maximum bootstrap** |
 
-**Outcome**: Reach profitability Q3 2026 (Month 9) with 4 cities operational, comprehensive IP protection
+**Outcome**: Reach profitability Q3 2026 (Month 9) with 3 major metros operational, comprehensive IP protection
 
 ---
 
 ## 🎯 **City Expansion Cost Breakdown**
 
-### **Per-City Launch Budget: $35K-40K**
+### **Major Metro Launch Budget**
 
+#### **Chicago Launch: $60K-70K**
 | Item | Cost | Details |
 |------|------|---------|
-| **Driver Recruitment** | $8K | Onboarding 25-30 drivers per city |
-| **Local Marketing** | $12K | Facebook/Google Ads, local partnerships |
-| **Store Partnerships** | $5K | Retailer relationship building |
-| **City Manager Salary** | $8K | Part-time (3 months @ $2.5K/mo) |
+| **Driver Recruitment** | $15K | Onboarding 60-80 drivers (competitive market) |
+| **Local Marketing** | $25K | Facebook/Google Ads, influencer partnerships |
+| **Store Partnerships** | $8K | Retailer relationship building (high volume) |
+| **City Manager Salary** | $10K | Full-time (3 months @ $3.3K/mo) |
 | **Miscellaneous** | $2K | Permits, local compliance, swag |
-| **TOTAL PER CITY** | **$35K** | **3-month launch budget** |
+| **TOTAL CHICAGO** | **$60K-70K** | **3-month launch budget** |
 
-### **4-City Expansion Timeline**
+#### **NYC Launch: $60K-80K**
+| Item | Cost | Details |
+|------|------|---------|
+| **Driver Recruitment** | $18K | Onboarding 100-120 drivers (highly competitive) |
+| **Local Marketing** | $30K | Premium digital ads, transit advertising |
+| **Store Partnerships** | $10K | Retailer relationship building (maximum density) |
+| **City Manager Salary** | $12K | Full-time (3 months @ $4K/mo) |
+| **Miscellaneous** | $10K | Permits, NYC compliance, premium swag |
+| **TOTAL NYC** | **$80K** | **3-month launch budget** |
+
+### **3-Metro Expansion Timeline**
 
 | Month | City | Investment | Cumulative |
 |-------|------|-----------|-----------|
 | **Month 1** | St. Louis (live) | $0 | $0 |
-| **Month 4** | Kansas City | $35K | $35K |
-| **Month 7** | Indianapolis | $35K | $70K |
-| **Month 10** | Columbus | $35K | $105K |
-| **Reserve** | Buffer | $35K | $140K |
+| **Month 6** | Chicago | $70K | $70K |
+| **Month 12** | NYC | $80K | $150K |
+| **Reserve** | Marketing buffer | $25K | $175K |
 
 ---
 
@@ -124,9 +134,9 @@ This amount provides:
 - **Profitability**: Q4 2026 (Month 12)
 
 ### **2. Scalable Expansion**
-- **4 cities launched**: St. Louis, Kansas City, Indianapolis, Columbus
-- **250+ drivers recruited**: Sufficient supply for 15K orders/month
-- **Regional dominance**: Midwest market locked in
+- **3 major metros launched**: St. Louis, Chicago, NYC
+- **300+ drivers recruited**: Sufficient supply for 18K orders/month
+- **National presence**: Top 3 markets (St. Louis, Chicago, NYC) operational
 
 ### **3. Customer Acquisition**
 - **CAC**: $25 per customer
@@ -151,52 +161,52 @@ This amount provides:
 ## 🚀 **Milestones & Use of Funds**
 
 ### **Months 1-6: Launch & Stabilize**
-**Capital Used**: $85K
+**Capital Used**: $105K
 
 - ✅ Cover Year 1 EBITDA loss: $38K
-- ✅ Launch City #2 (Kansas City): $35K
-- ✅ Marketing St. Louis + KC: $12K
+- ✅ Launch City #2 (Chicago): $70K
+- ✅ Marketing St. Louis + Chicago: $15K
 
 **Metrics**:
-- 2 cities operational
-- 4,500 orders/month
-- $83K monthly revenue
+- 2 metros operational (St. Louis, Chicago)
+- 5,500 orders/month
+- $102K monthly revenue
 - Cash-positive operations
 
 ---
 
 ### **Months 7-12: Expand & Grow**
-**Capital Used**: $120K
+**Capital Used**: $160K
 
-- ✅ Launch City #3 (Indianapolis): $35K
-- ✅ Launch City #4 (Columbus): $35K
-- ✅ Marketing all 4 cities: $25K
+- ✅ Launch City #3 (NYC): $80K
+- ✅ Marketing all 3 metros: $35K
 - ✅ File Priority 1-3 patents: $1.2K
-- ✅ Hire operations manager: $24K (6 months)
+- ✅ Hire operations manager: $36K (6 months)
+- ✅ Scale Chicago operations: $8K
 
 **Metrics**:
-- 4 cities operational
-- 10,500 orders/month
-- $194K monthly revenue
-- $139K cumulative EBITDA
+- 3 major metros operational (St. Louis, Chicago, NYC)
+- 12,000 orders/month
+- $222K monthly revenue
+- $180K cumulative EBITDA
 - Profitability achieved
 
 ---
 
 ### **Months 13-18: Scale & Prepare Series A**
-**Capital Used**: $145K (self-funded from revenue)
+**Capital Used**: $180K (self-funded from revenue)
 
-- ✅ Scale marketing to 15K orders/month
+- ✅ Scale marketing to 18K orders/month
 - ✅ Hire sales team (2 people) for B2B
 - ✅ Build enterprise partnerships
-- ✅ Expand driver network to 300+
+- ✅ Expand driver network to 350+
 
 **Metrics**:
-- 4 cities optimized
-- 21,000 orders/month
-- $389K monthly revenue
-- $324K cumulative profit
-- Series A ready
+- 3 major metros optimized (St. Louis, Chicago, NYC)
+- 24,000 orders/month
+- $444K monthly revenue
+- $450K cumulative profit
+- Series A ready ($18M-22M valuation)
 
 ---
 
@@ -281,31 +291,31 @@ This amount provides:
 ## 🔄 **Alternative Scenarios**
 
 ### **Scenario A: Lean Bootstrap ($200K)**
-- **Cities**: 2-3 (St. Louis, Kansas City, Indianapolis)
+- **Cities**: 2 metros (St. Louis, Chicago)
 - **Timeline**: 24 months to profitability
-- **Outcome**: $1.5M revenue, $300K EBITDA
-- **Series A**: $1M @ $8M valuation
-- **Risk**: Slower growth, smaller market position
+- **Outcome**: $2.0M revenue, $400K EBITDA
+- **Series A**: $1M @ $10M valuation
+- **Risk**: Slower growth, no NYC presence
 
 ### **Scenario B: Moderate Bootstrap ($300K)**
-- **Cities**: 3 (St. Louis, Kansas City, Indianapolis)
+- **Cities**: 3 metros (St. Louis, Chicago, NYC)
 - **Timeline**: 18 months to profitability
-- **Outcome**: $2.3M revenue, $480K EBITDA
-- **Series A**: $1.5M @ $12M valuation
-- **Risk**: Limited expansion buffer
+- **Outcome**: $3.5M revenue, $850K EBITDA
+- **Series A**: $2M @ $14M valuation
+- **Risk**: Limited marketing budget
 
 ### **Scenario C: Optimal Bootstrap ($350K)** ⭐
-- **Cities**: 4 (St. Louis, Kansas City, Indianapolis, Columbus)
+- **Cities**: 3 major metros (St. Louis, Chicago, NYC)
 - **Timeline**: 12-15 months to profitability
-- **Outcome**: $4.7M revenue run rate, $1.4M EBITDA
-- **Series A**: $2M-3M @ $15M-20M valuation
+- **Outcome**: $5.3M revenue run rate, $1.6M EBITDA
+- **Series A**: $2M-3M @ $18M-22M valuation
 - **Risk**: Minimal, strong execution buffer
 
 ### **Scenario D: Aggressive Bootstrap ($500K)**
-- **Cities**: 5-6 (Midwest + Chicago)
+- **Cities**: 3 metros + LA/SF
 - **Timeline**: 9-12 months to profitability
-- **Outcome**: $8M revenue run rate, $2.4M EBITDA
-- **Series A**: $5M @ $30M+ valuation
+- **Outcome**: $9M revenue run rate, $2.7M EBITDA
+- **Series A**: $5M @ $35M+ valuation
 - **Risk**: Burn rate if growth slower than expected
 
 ---
