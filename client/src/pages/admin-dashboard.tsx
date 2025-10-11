@@ -6022,24 +6022,24 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f]">
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between p-4 gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <Link href="/">
-              <h1 className="text-2xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer">
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground hover:text-primary transition-colors cursor-pointer whitespace-nowrap">
                 Return It
               </h1>
             </Link>
-            <span className="text-primary">|</span>
+            <span className="text-primary hidden sm:inline">|</span>
             <h2 
-              className="text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer" 
+              className="text-base sm:text-xl font-semibold text-foreground hover:text-primary transition-colors cursor-pointer truncate" 
               onClick={() => changeSection('overview')}
               data-testid="button-admin-home"
             >
               Admin Dashboard
             </h2>
-            <Badge className="bg-accent text-foreground border-border">Master Admin</Badge>
+            <Badge className="bg-accent text-foreground border-border hidden md:inline-flex">Master Admin</Badge>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             <NotificationBell />
             <Button 
               variant="outline" 
@@ -6048,12 +6048,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
               data-testid="button-signout-admin"
             >
-              <LogOut className="h-4 w-4 mr-2" />
-              Sign Out
+              <LogOut className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Sign Out</span>
             </Button>
             <Link href="/">
               <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90">
-                Back to Site
+                <span className="hidden sm:inline">Back to Site</span>
+                <span className="sm:hidden">Home</span>
               </Button>
             </Link>
           </div>
