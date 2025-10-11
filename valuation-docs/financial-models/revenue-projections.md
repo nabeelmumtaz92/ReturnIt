@@ -123,11 +123,11 @@ Monthly License: $2,500/month
 - Enterprise API: 3 clients × $999/mo × 9 months = $27K
 - **Total Revenue Year 1**: $513K
 
-### **Year 2 (2027) - Multi-City Expansion**
+### **Year 2 (2027) - Major Metro Expansion**
 
 **Assumptions**:
-- Cities: St. Louis + Kansas City + Indianapolis (3 total)
-- Drivers: 75 → 250
+- Cities: St. Louis + Chicago + NYC (3 major metros)
+- Drivers: 75 → 300
 - Average orders per driver per day: 4 → 6
 - Market penetration: 1.2% of target market
 
