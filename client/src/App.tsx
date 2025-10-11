@@ -7,6 +7,7 @@ import { ToastProvider } from "@/components/design-system";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { Suspense, lazy, useEffect } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { initPostHog, trackPageView } from "@/lib/posthog";
 
 // Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
@@ -556,6 +557,17 @@ function Router() {
 }
 
 function App() {
+  // Initialize PostHog on app mount
+  useEffect(() => {
+    initPostHog();
+  }, []);
+
+  // Track page views on location change
+  const [location] = useLocation();
+  useEffect(() => {
+    trackPageView(location);
+  }, [location]);
+
   return (
     <ErrorBoundary
       onError={(error, errorInfo) => {
