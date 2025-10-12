@@ -1652,6 +1652,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Finalize temporary receipt upload (set ACL before order creation)
+  app.put("/api/orders/temp/receipt", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { receiptUrl } = req.body;
+
+      if (!receiptUrl) {
+        return res.status(400).json({ error: "receiptUrl is required" });
+      }
+
+      // Parse presigned URL to get clean object path
+      // URL format: https://storage.googleapis.com/bucket-name/path?signature...
+      const url = new URL(receiptUrl);
+      const cleanPath = url.pathname; // Gets /bucket-name/path without query params
+      
+      const objectStorageService = new ObjectStorageService();
+      
+      // Normalize the path and set ACL ownership
+      const normalizedPath = objectStorageService.normalizeObjectEntityPath(
+        `https://storage.googleapis.com${cleanPath}`
+      );
+      
+      // Verify object exists and set ACL
+      const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
+      await objectStorageService.trySetObjectEntityAclPolicy(
+        normalizedPath,
+        {
+          owner: userId.toString(),
+          visibility: "private", // Receipts are private
+        }
+      );
+
+      // Return durable path
+      res.status(200).json({ objectPath: normalizedPath });
+    } catch (error) {
+      console.error("Error finalizing temp receipt:", error);
+      res.status(500).json({ error: "Failed to finalize receipt upload" });
+    }
+  });
+
   // Update order with uploaded receipt image
   app.put("/api/orders/:orderId/receipt", isAuthenticated, async (req, res) => {
     try {

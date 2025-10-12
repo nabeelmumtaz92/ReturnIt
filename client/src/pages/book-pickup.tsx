@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { trackEvent } from "@/lib/posthog";
 import { Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -87,7 +88,9 @@ export default function BookPickup() {
     hasOriginalPackaging: false, // Whether item has original packaging (separate from tags)
     hasOriginalTags: false,
     receiptImage: null as File | null,
+    receiptUrl: '', // URL to uploaded receipt in object storage
     returnLabelImage: null as File | null,
+    returnLabelUrl: '', // URL to uploaded return label in object storage
     authorizationSigned: false,
     acceptsLiabilityTerms: false,
     // Tip for driver (100% goes to driver)
@@ -298,7 +301,7 @@ export default function BookPickup() {
     }
 
     // Check for at least ONE return requirement (tags, packaging, or receipt)
-    const hasAtLeastOneRequirement = formData.hasOriginalTags || formData.hasOriginalPackaging || formData.receiptImage;
+    const hasAtLeastOneRequirement = formData.hasOriginalTags || formData.hasOriginalPackaging || formData.receiptUrl || formData.receiptImage;
     
     if (!hasAtLeastOneRequirement) {
       toast({
@@ -393,6 +396,8 @@ export default function BookPickup() {
       purchaseDate: formData.purchaseDate,
       hasOriginalTags: formData.hasOriginalTags,
       hasOriginalPackaging: formData.hasOriginalPackaging,
+      receiptUrl: formData.receiptUrl || null,
+      receiptUploaded: formData.receiptUrl !== '' || formData.receiptImage !== null,
       
       // Authorization
       authorizationSigned: formData.authorizationSigned,
@@ -436,7 +441,7 @@ export default function BookPickup() {
 
   const handleInputChange = (field: string, value: any) => {
     // CRITICAL: Invalidate policy SYNCHRONOUSLY for policy-relevant fields
-    const policyRelevantFields = ['retailer', 'itemCategories', 'purchaseDate', 'hasOriginalTags', 'hasOriginalPackaging', 'receiptImage', 'purchaseType'];
+    const policyRelevantFields = ['retailer', 'itemCategories', 'purchaseDate', 'hasOriginalTags', 'hasOriginalPackaging', 'receiptImage', 'receiptUrl', 'purchaseType'];
     if (policyRelevantFields.includes(field)) {
       invalidateMerchantPolicy();
     }
@@ -457,18 +462,51 @@ export default function BookPickup() {
     }));
   };
 
-  // Receipt upload handler
-  const handleReceiptUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // CRITICAL: Invalidate policy SYNCHRONOUSLY when receipt changes
-      invalidateMerchantPolicy();
-      
-      setFormData(prev => ({ ...prev, receiptImage: file }));
-      toast({
-        title: "Receipt uploaded",
-        description: `${file.name} has been attached`,
-      });
+  // Receipt upload handlers
+  const handleReceiptGetUploadUrl = async () => {
+    const response = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleReceiptUploadComplete = async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        // CRITICAL: Finalize upload by setting ACL and getting durable object path
+        // This must happen immediately after upload to establish ownership
+        const response = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        // CRITICAL: Invalidate policy SYNCHRONOUSLY when receipt changes
+        invalidateMerchantPolicy();
+        
+        // Update formData with the DURABLE object path, not the expiring presigned URL
+        setFormData(prev => ({ 
+          ...prev, 
+          receiptUrl: durableObjectPath,
+          receiptImage: uploadedFile.meta as any // Keep for backward compatibility
+        }));
+        
+        toast({
+          title: "Receipt uploaded",
+          description: "Your receipt has been uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing receipt upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to save receipt. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -683,7 +721,7 @@ export default function BookPickup() {
               numberOfItems: formData.numberOfItems || 1,
               originalPackaging: formData.hasOriginalPackaging || false, // Use REAL packaging status
               purchaseDate: formData.purchaseDate, // MUST be real customer input - no fallback
-              receiptUploaded: formData.receiptImage !== null,
+              receiptUploaded: formData.receiptUrl !== '' || formData.receiptImage !== null,
               tagsAttached: formData.hasOriginalTags || false,
               purchaseLocation: formData.purchaseType === 'in_store' ? 'in_store' : 'online'
             };
@@ -744,7 +782,7 @@ export default function BookPickup() {
       abortController.abort();
       isCurrentRequest = false;
     };
-  }, [formData.retailer, formData.itemCategories.join(','), formData.itemValue, formData.receiptImage, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
+  }, [formData.retailer, formData.itemCategories.join(','), formData.itemValue, formData.receiptImage, formData.receiptUrl, formData.hasOriginalTags, formData.hasOriginalPackaging, formData.purchaseType, formData.itemDescription, formData.orderName, formData.numberOfItems, formData.purchaseDate]);
 
   // Fetch available retailers on component mount
   useEffect(() => {
@@ -1366,7 +1404,7 @@ export default function BookPickup() {
             </div>
 
             {/* Return Requirements Warning */}
-            {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptImage && (
+            {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptUrl && !formData.receiptImage && (
               <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-300 rounded-lg">
                 <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
@@ -1409,15 +1447,24 @@ export default function BookPickup() {
               <Label className="text-foreground font-medium">
                 {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation' : 'Upload Store Receipt'}
               </Label>
-              <input
-                type="file" accept="image/*,application/pdf" onChange={handleReceiptUpload}
-                className="block w-full text-sm text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent file:text-foreground hover:file:bg-accent"
-                data-testid="input-receipt-upload"
-              />
-              {formData.receiptImage && (
+              <ObjectUploader
+                maxNumberOfFiles={1}
+                maxFileSize={10485760}
+                onGetUploadParameters={handleReceiptGetUploadUrl}
+                onComplete={handleReceiptUploadComplete}
+                variant="outline"
+                size="default"
+                testId="button-upload-receipt"
+              >
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  <span>{formData.receiptUrl ? 'Change Receipt' : 'Upload Receipt'}</span>
+                </div>
+              </ObjectUploader>
+              {formData.receiptUrl && (
                 <div className="flex items-center space-x-2 text-sm text-green-600">
                   <CheckCircle className="h-4 w-4" />
-                  <span>Receipt uploaded: {formData.receiptImage.name}</span>
+                  <span>Receipt uploaded successfully</span>
                 </div>
               )}
             </div>
