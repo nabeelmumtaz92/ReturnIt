@@ -74,6 +74,8 @@ import { PricingSettings } from "@/components/PricingSettings";
 import EnhancedAnalytics from "@/components/EnhancedAnalytics";
 import { trackEvent } from "@/lib/posthog";
 import { BackButton } from "@/components/BackButton";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
+import { AdminAISidebar } from "@/components/AdminAISidebar";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -128,6 +130,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [showUnifiedAI, setShowUnifiedAI] = useState(false);
   const [supportContext, setSupportContext] = useState<{type: 'driver' | 'customer', id: string, name: string} | null>(null);
   const [navigationHistory, setNavigationHistory] = useState<string[]>([]);
+  const [isAISidebarOpen, setIsAISidebarOpen] = useState(() => {
+    const saved = localStorage.getItem('adminAISidebarOpen');
+    return saved !== null ? JSON.parse(saved) : false;
+  });
+  
+  // Save AI sidebar state to localStorage
+  useEffect(() => {
+    localStorage.setItem('adminAISidebarOpen', JSON.stringify(isAISidebarOpen));
+  }, [isAISidebarOpen]);
   
   // Real-time data state
   const [dashboardStats, setDashboardStats] = useState({
@@ -6079,6 +6090,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             <div className="flex items-center gap-3">
               <RoleSwitcher />
               
+              {/* AI Sidebar Toggle */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsAISidebarOpen(!isAISidebarOpen)}
+                className="gap-2"
+                data-testid="button-toggle-ai-sidebar"
+              >
+                <Bot className="h-4 w-4" />
+                <span className="hidden sm:inline">AI Assistant</span>
+              </Button>
+              
               {/* Admin Login Button - Shows when authentication needed */}
               <button
                 onClick={handleAdminLogin}
@@ -6117,8 +6140,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           </div>
         </div>
 
-        {/* Render Section Content */}
-        <>{renderSectionContent()}</>
+        {/* Resizable Panel Layout */}
+        <ResizablePanelGroup direction="horizontal" className="h-[calc(100vh-200px)]">
+          {/* Main Content Panel */}
+          <ResizablePanel defaultSize={isAISidebarOpen ? 70 : 100} minSize={30}>
+            <div className="h-full overflow-auto">
+              {renderSectionContent()}
+            </div>
+          </ResizablePanel>
+
+          {/* AI Sidebar Panel */}
+          {isAISidebarOpen && (
+            <>
+              <ResizableHandle withHandle />
+              <ResizablePanel defaultSize={30} minSize={20} maxSize={50}>
+                <AdminAISidebar />
+              </ResizablePanel>
+            </>
+          )}
+        </ResizablePanelGroup>
 
         {/* Admin Support Modal */}
         <AdminSupportModal
@@ -6132,16 +6172,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
         />
 
-        {/* Unified AI Interface */}
-        <UnifiedAI 
-          isMinimized={!showUnifiedAI}
-          onClose={() => setShowUnifiedAI(false)}
-          defaultMode="hybrid"
-          standalone={false}
-        />
+        {/* Unified AI Interface - Only show when sidebar is closed */}
+        {!isAISidebarOpen && (
+          <UnifiedAI 
+            isMinimized={!showUnifiedAI}
+            onClose={() => setShowUnifiedAI(false)}
+            defaultMode="hybrid"
+            standalone={false}
+          />
+        )}
 
-        {/* Floating AI Button */}
-        {!showUnifiedAI && (
+        {/* Floating AI Button - Only show when sidebar is closed */}
+        {!isAISidebarOpen && !showUnifiedAI && (
           <Button
             onClick={() => setShowUnifiedAI(true)}
             className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-transparent0 hover:from-blue-600 hover:via-purple-600 hover:to-primary text-white shadow-xl z-40 transition-all duration-300 hover:scale-110"
