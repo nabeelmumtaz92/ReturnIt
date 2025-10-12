@@ -13,6 +13,7 @@ Preferred communication style: Simple, everyday language.
 - **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme).
 - **State Management**: Zustand (global), React Query (server).
 - **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens. UI/UX emphasizes a white/beige aesthetic, sophisticated gradients, and professional typography using the Stitch design system (Stitch orange primary color, Work Sans font, specific border radius and shadow patterns).
+- **Navigation**: Universal back button component (Instagram-style) for consistent navigation across all pages.
 
 ## Backend
 - **Runtime**: Node.js with Express.js (TypeScript, ES modules).

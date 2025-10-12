@@ -14,7 +14,8 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { trackEvent } from "@/lib/posthog";
-import { ArrowLeft, Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
+import { BackButton } from "@/components/BackButton";
 import PaymentMethods from "@/components/PaymentMethods";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import StoreLocator from "@/components/StoreLocator";
@@ -1778,9 +1779,7 @@ export default function BookPickup() {
       <header className="bg-[#f8f7f5]/80 dark:bg-[#231b0f]/80 backdrop-blur-sm sticky top-0 z-50 border-b border-primary/10">
         <div className="container mx-auto px-4">
           <div className="flex items-center h-16">
-            <Button variant="ghost" size="sm" onClick={() => setLocation('/')} className="p-2 -ml-2" data-testid="button-back-home">
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
+            <BackButton fallbackUrl="/" />
             <h1 className="text-lg font-bold text-center flex-1 pr-8">New Order</h1>
           </div>
         </div>

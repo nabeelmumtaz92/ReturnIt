@@ -15,6 +15,7 @@ import { registrationSchema, loginSchema, type RegistrationData, type LoginData 
 import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
 import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
 import { handleError } from "@/lib/errorHandler";
+import { BackButton } from "@/components/BackButton";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -299,6 +300,11 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Back Button - Instagram Style */}
+        <div className="mb-4">
+          <BackButton fallbackUrl="/" />
+        </div>
+        
         {/* Header - Stitch Pattern */}
         <div className="text-center mb-8">
           <Link href="/">

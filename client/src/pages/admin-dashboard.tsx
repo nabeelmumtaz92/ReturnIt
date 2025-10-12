@@ -73,6 +73,7 @@ import OrderDetailsModal from "@/components/OrderDetailsModal";
 import { PricingSettings } from "@/components/PricingSettings";
 import EnhancedAnalytics from "@/components/EnhancedAnalytics";
 import { trackEvent } from "@/lib/posthog";
+import { BackButton } from "@/components/BackButton";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
