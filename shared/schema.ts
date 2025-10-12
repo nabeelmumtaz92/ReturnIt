@@ -715,6 +715,10 @@ export const orders = pgTable("orders", {
   driverCompletionNotes: text("driver_completion_notes"), // What driver observed at completion
   driverCompletionPhotos: jsonb("driver_completion_photos").default([]), // Evidence photos at completion
   
+  // Driver verification photos (using Replit App Storage)
+  pickupVerificationPhotos: jsonb("pickup_verification_photos").default([]), // Photos taken at customer pickup
+  deliveryVerificationPhotos: jsonb("delivery_verification_photos").default([]), // Photos taken at store dropoff
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({

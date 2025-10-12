@@ -43,6 +43,8 @@ import {
 } from "./middleware/rateLimiter";
 import { getSystemStatus, withFallback, getFallbackResponse } from "./middleware/gracefulDegradation";
 import { getCrashRecoveryStatus } from "./middleware/crashRecovery";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { ObjectPermission } from "./objectAcl";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -1608,6 +1610,209 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/paypal/order/:orderID/capture", async (req, res) => {
     await capturePaypalOrder(req, res);
+  });
+
+  // Object Storage Routes (Replit App Storage)
+  // Get presigned upload URL for file uploads
+  app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ error: "Failed to get upload URL" });
+    }
+  });
+
+  // Serve private objects with ACL check
+  app.get("/objects/:objectPath(*)", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id?.toString();
+      const objectStorageService = new ObjectStorageService();
+      
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      const canAccess = await objectStorageService.canAccessObjectEntity({
+        objectFile,
+        userId: userId,
+        requestedPermission: ObjectPermission.READ,
+      });
+      
+      if (!canAccess) {
+        return res.sendStatus(401);
+      }
+      
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error accessing object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
+
+  // Update order with uploaded receipt image
+  app.put("/api/orders/:orderId/receipt", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { orderId } = req.params;
+      const { receiptUrl } = req.body;
+
+      if (!receiptUrl) {
+        return res.status(400).json({ error: "receiptUrl is required" });
+      }
+
+      // Verify user owns this order
+      const order = await storage.getOrder(orderId);
+      if (!order || order.userId !== userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        receiptUrl,
+        {
+          owner: userId.toString(),
+          visibility: "private", // Receipts are private
+        }
+      );
+
+      // Update order with receipt URL
+      await storage.updateOrder(orderId, {
+        receiptUrl: objectPath,
+        receiptUploaded: true,
+      });
+
+      res.status(200).json({ objectPath });
+    } catch (error) {
+      console.error("Error updating receipt:", error);
+      res.status(500).json({ error: "Failed to update receipt" });
+    }
+  });
+
+  // Update order with uploaded return label
+  app.put("/api/orders/:orderId/return-label", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { orderId } = req.params;
+      const { returnLabelUrl } = req.body;
+
+      if (!returnLabelUrl) {
+        return res.status(400).json({ error: "returnLabelUrl is required" });
+      }
+
+      // Verify user owns this order
+      const order = await storage.getOrder(orderId);
+      if (!order || order.userId !== userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+        returnLabelUrl,
+        {
+          owner: userId.toString(),
+          visibility: "private", // Labels are private
+        }
+      );
+
+      // Update order with return label URL
+      await storage.updateOrder(orderId, {
+        returnLabelUrl: objectPath,
+      });
+
+      res.status(200).json({ objectPath });
+    } catch (error) {
+      console.error("Error updating return label:", error);
+      res.status(500).json({ error: "Failed to update return label" });
+    }
+  });
+
+  // Update order with driver pickup verification photos
+  app.put("/api/orders/:orderId/pickup-photos", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { orderId } = req.params;
+      const { photoUrls } = req.body;
+
+      if (!Array.isArray(photoUrls) || photoUrls.length === 0) {
+        return res.status(400).json({ error: "photoUrls array is required" });
+      }
+
+      // Verify user is the assigned driver
+      const order = await storage.getOrder(orderId);
+      if (!order || order.driverId !== userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPaths = [];
+
+      for (const url of photoUrls) {
+        const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+          url,
+          {
+            owner: userId.toString(),
+            visibility: "private", // Pickup photos are private
+          }
+        );
+        objectPaths.push(objectPath);
+      }
+
+      // Update order with pickup verification photos
+      await storage.updateOrder(orderId, {
+        pickupVerificationPhotos: objectPaths,
+      });
+
+      res.status(200).json({ objectPaths });
+    } catch (error) {
+      console.error("Error updating pickup photos:", error);
+      res.status(500).json({ error: "Failed to update pickup photos" });
+    }
+  });
+
+  // Update order with driver delivery verification photos
+  app.put("/api/orders/:orderId/delivery-photos", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      const { orderId } = req.params;
+      const { photoUrls } = req.body;
+
+      if (!Array.isArray(photoUrls) || photoUrls.length === 0) {
+        return res.status(400).json({ error: "photoUrls array is required" });
+      }
+
+      // Verify user is the assigned driver
+      const order = await storage.getOrder(orderId);
+      if (!order || order.driverId !== userId) {
+        return res.status(403).json({ error: "Unauthorized" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      const objectPaths = [];
+
+      for (const url of photoUrls) {
+        const objectPath = await objectStorageService.trySetObjectEntityAclPolicy(
+          url,
+          {
+            owner: userId.toString(),
+            visibility: "private", // Delivery photos are private
+          }
+        );
+        objectPaths.push(objectPath);
+      }
+
+      // Update order with delivery verification photos
+      await storage.updateOrder(orderId, {
+        deliveryVerificationPhotos: objectPaths,
+      });
+
+      res.status(200).json({ objectPaths });
+    } catch (error) {
+      console.error("Error updating delivery photos:", error);
+      res.status(500).json({ error: "Failed to update delivery photos" });
+    }
   });
 
   // Merchant Policy API endpoints
