@@ -91,6 +91,7 @@ const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 const CostMonitoring = lazy(() => import("@/pages/cost-monitoring"));
 const MonitoringDashboard = lazy(() => import("@/pages/monitoring-dashboard"));
+const AIKnowledgeCenter = lazy(() => import("@/pages/ai-knowledge-center"));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -523,6 +524,12 @@ function Router() {
         {() => {
           const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <ComprehensiveGuidebook /> : <NotFound />;
+        }}
+      </Route>
+      <Route path="/ai-knowledge">
+        {() => {
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          return user?.isAdmin && masterAdmins.includes(user?.email) ? <AIKnowledgeCenter /> : <NotFound />;
         }}
       </Route>
 
