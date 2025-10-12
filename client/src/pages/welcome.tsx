@@ -46,7 +46,7 @@ export default function Welcome() {
       {/* Professional Hero Section */}
       <div className="w-full bg-white/95 border-b border-amber-100 relative">
         {/* Sign In/Sign Up buttons in top right */}
-        <div className="absolute top-4 sm:top-6 md:top-4 right-2 sm:right-4 z-10">
+        <div className="absolute top-2 sm:top-3 md:top-2 right-2 sm:right-4 z-10">
           {!isAuthenticated && (
             <div className="flex gap-2">
               <Link href="/login">
