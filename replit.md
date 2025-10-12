@@ -24,6 +24,10 @@ Preferred communication style: Simple, everyday language.
 ## Data Storage
 - **Database**: PostgreSQL (Neon).
 - **Schema Management**: Drizzle Kit.
+- **Object Storage**: Replit App Storage (GCS-backed) for file uploads.
+  - **Receipt uploads**: Private ACL with user ownership, durable `/objects/uploads/{uuid}` paths stored in database
+  - **Verification photos**: Driver pickup/delivery photos stored in JSONB fields with ACL policies
+  - **Security**: All uploads finalized with ACL ownership before database persistence, presigned URLs for direct-to-storage uploads
 
 ## Core Data Models
 - **Users**: Authentication, roles, Stripe Connect, payment preferences.
@@ -138,3 +142,4 @@ ReturnIt is expanding beyond returns to offer comprehensive **two-way exchange l
 - **Tawk.to**: Live chat widget.
 - **ImprovMX**: Email forwarding.
 - **Mapbox GL**: GPS tracking and mapping.
+- **Replit App Storage**: Object storage for receipt uploads, verification photos, and driver documents with ACL-based access control.
