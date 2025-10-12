@@ -8227,6 +8227,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // AI Assistant API endpoint (removed - using console version below)
 
+  // Knowledge Base Management Endpoints (Admin Only)
+  app.post("/api/ai/refresh-knowledge", requireSecureAdmin, async (req, res) => {
+    try {
+      const { KnowledgeBaseManager } = await import('./knowledge-base-manager');
+      const snapshot = await KnowledgeBaseManager.refreshKnowledge();
+      
+      res.json({
+        success: true,
+        message: "Knowledge base refreshed successfully",
+        snapshot: {
+          modelCount: snapshot.dataModels.length,
+          endpointCount: snapshot.apiEndpoints.length,
+          lastUpdated: snapshot.lastUpdated,
+          sources: snapshot.sources
+        }
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/ai/knowledge-status", requireSecureAdmin, async (req, res) => {
+    try {
+      const { KnowledgeBaseManager } = await import('./knowledge-base-manager');
+      const status = KnowledgeBaseManager.getStatus();
+      const snapshot = KnowledgeBaseManager.getSnapshot();
+      
+      res.json({
+        status,
+        snapshot: snapshot ? {
+          platformOverview: snapshot.platformOverview.substring(0, 200) + '...',
+          modelCount: snapshot.dataModels.length,
+          endpointCount: snapshot.apiEndpoints.length,
+          featureCount: snapshot.features.length,
+          integrationCount: snapshot.integrations.length,
+          lastUpdated: snapshot.lastUpdated,
+          sources: snapshot.sources,
+          sampleModels: snapshot.dataModels.slice(0, 5),
+          sampleEndpoints: snapshot.apiEndpoints.slice(0, 5)
+        } : null
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/ai/file-monitor-status", requireSecureAdmin, async (req, res) => {
+    try {
+      const { FileMonitor } = await import('./file-monitor');
+      const status = FileMonitor.getStatus();
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Quick AI actions (admin only)
   app.post("/api/ai/maintenance-mode", requireSecureAdmin, async (req, res) => {
     try {

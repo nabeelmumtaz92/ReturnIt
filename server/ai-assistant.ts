@@ -5,6 +5,7 @@ import { exec } from "child_process";
 import { promisify } from "util";
 import { db } from "./db";
 import { storage } from "./storage";
+import { KnowledgeBaseManager } from "./knowledge-base-manager";
 
 // Initialize Gemini (much cheaper than OpenAI)
 let genai: GoogleGenAI | null = null;
@@ -14,6 +15,11 @@ if (process.env.GEMINI_API_KEY) {
     apiKey: process.env.GEMINI_API_KEY 
   });
 }
+
+// Auto-refresh knowledge base on startup
+KnowledgeBaseManager.refreshKnowledge().catch(err => 
+  console.error('[AI] Failed to initialize knowledge base:', err)
+);
 
 const execAsync = promisify(exec);
 
@@ -432,14 +438,15 @@ export class AIAssistant {
     }
 
     try {
-      // Get current codebase context (key files)
+      // Get fresh system prompt from knowledge base manager
+      const systemPrompt = await KnowledgeBaseManager.generateSystemPrompt();
       const context = await this.getCodebaseContext();
       
       const startTime = Date.now();
       const response = await genai.models.generateContent({
         model: "gemini-2.5-flash", // Cost-optimized Gemini model (90% cheaper than OpenAI!)
         contents: [
-          { role: "user", parts: [{ text: `${SYSTEM_PROMPT}\n\nCurrent codebase context:\n${context}\n\nUser request: ${prompt}\n\nPlease respond with valid JSON containing: message, codeChanges (array), needsConfirmation (boolean)` }] }
+          { role: "user", parts: [{ text: `${systemPrompt}\n\nCurrent codebase context:\n${context}\n\nUser request: ${prompt}\n\nPlease respond with valid JSON containing: message, codeChanges (array), needsConfirmation (boolean)` }] }
         ],
         config: {
           responseMimeType: "application/json",
