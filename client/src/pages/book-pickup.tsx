@@ -937,14 +937,14 @@ export default function BookPickup() {
 
             {/* Show "Any Location" indicator or specific store details */}
             {isAnyLocationSelected ? (
-              <div className="mt-3 p-3 bg-blue-50/80 border border-blue-200 rounded-lg">
+              <div className="mt-3 p-3 bg-amber-50/80 border border-amber-200 rounded-lg">
                 <div className="flex items-start space-x-2">
-                  <Store className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Store className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-blue-800">
+                    <p className="text-sm font-medium text-amber-800">
                       Any {formData.retailer.replace(' (Any Location)', '')} Location
                     </p>
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-amber-600 mt-1">
                       ✓ Driver will deliver to the nearest location based on your pickup address
                     </p>
                   </div>
@@ -993,8 +993,8 @@ export default function BookPickup() {
         {(policyValidation || merchantPolicyValidation) && (
           <div className="space-y-3">
             <div className="flex items-center space-x-2 mb-2">
-              <AlertCircle className="h-4 w-4 text-blue-600" />
-              <Label className="text-blue-800 font-medium text-sm">Return Policy Status</Label>
+              <AlertCircle className="h-4 w-4 text-amber-600" />
+              <Label className="text-amber-800 font-medium text-sm">Return Policy Status</Label>
             </div>
             
             {/* General Return It Policies */}
@@ -1039,23 +1039,23 @@ export default function BookPickup() {
             {merchantPolicyValidation && (
               <div className={`p-3 rounded-lg border ${
                 merchantPolicyValidation.isValid 
-                  ? 'bg-blue-50/80 border-blue-200' 
+                  ? 'bg-amber-50/80 border-amber-200' 
                   : 'bg-red-50/80 border-red-200'
               }`}>
                 <div className="flex items-start space-x-2">
                   {merchantPolicyValidation.isValid ? (
-                    <CheckCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
                   ) : (
                     <XCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   )}
                   <div className="min-w-0 flex-1">
                     <p className={`text-sm font-medium ${
-                      merchantPolicyValidation.isValid ? 'text-blue-800' : 'text-red-800'
+                      merchantPolicyValidation.isValid ? 'text-amber-800' : 'text-red-800'
                     }`}>
                       Store Return Policy
                     </p>
                     <p className={`text-xs mt-1 ${
-                      merchantPolicyValidation.isValid ? 'text-blue-600' : 'text-red-600'
+                      merchantPolicyValidation.isValid ? 'text-amber-600' : 'text-red-600'
                     }`}>
                       {merchantPolicyValidation.message}
                     </p>
@@ -1528,41 +1528,41 @@ export default function BookPickup() {
               )}
             </div>
 
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h4 className="text-blue-900 font-semibold mb-3">Additional Fees</h4>
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <h4 className="text-amber-900 font-semibold mb-3">Additional Fees</h4>
               <div className="space-y-2 text-sm">
                 {pricingBreakdown.distanceFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">Distance Fee:</span>
+                    <span className="text-amber-700">Distance Fee:</span>
                     <span className="font-medium">${pricingBreakdown.distanceFee.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.timeFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">Time Fee:</span>
+                    <span className="text-amber-700">Time Fee:</span>
                     <span className="font-medium">${pricingBreakdown.timeFee.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.sizeUpcharge > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">Size Upcharge:</span>
+                    <span className="text-amber-700">Size Upcharge:</span>
                     <span className="font-medium">${pricingBreakdown.sizeUpcharge.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.multiItemFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">Multi-Item Fee:</span>
+                    <span className="text-amber-700">Multi-Item Fee:</span>
                     <span className="font-medium">${pricingBreakdown.multiItemFee.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.smallOrderFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-blue-700">Small Order Fee:</span>
+                    <span className="text-amber-700">Small Order Fee:</span>
                     <span className="font-medium">${pricingBreakdown.smallOrderFee.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="flex justify-between border-t pt-2">
-                  <span className="text-blue-700">Service Fee (15%):</span>
+                  <span className="text-amber-700">Service Fee (15%):</span>
                   <span className="font-medium">${pricingBreakdown.serviceFee.toFixed(2)}</span>
                 </div>
               </div>

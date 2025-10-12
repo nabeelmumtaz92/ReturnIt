@@ -409,7 +409,7 @@ export default function Login() {
                   <Button 
                     type="button" 
                     variant="outline"
-                    className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 hover:border-blue-300 text-blue-800 hover:text-blue-900 h-11 font-medium"
+                    className="w-full bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900 h-11 font-medium"
                     disabled={demoLoginMutation.isPending}
                     onClick={() => demoLoginMutation.mutate()}
                     data-testid="button-demo-login"
@@ -441,7 +441,7 @@ export default function Login() {
                     provider="Facebook" 
                     icon={SiFacebook} 
                     onClick={handleFacebookAuth}
-                    color="bg-blue-50"
+                    color="bg-amber-50"
                   />
                 </div>
                 
@@ -616,7 +616,7 @@ export default function Login() {
                     provider="Facebook" 
                     icon={SiFacebook} 
                     onClick={handleFacebookAuth}
-                    color="bg-blue-50"
+                    color="bg-amber-50"
                   />
                 </div>
                 

@@ -12,7 +12,7 @@
   --card-foreground: hsl(210, 10%, 8%);
   --popover: hsl(0, 0%, 100%);
   --popover-foreground: hsl(210, 10%, 8%);
-  --primary: #d97706;
+  --primary: #d97706; /* Amber color */
   --primary-foreground: #ffffff;
   --secondary: #FAF8F4;
   --secondary-foreground: #B8956A;
