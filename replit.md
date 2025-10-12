@@ -61,6 +61,7 @@ Preferred communication style: Simple, everyday language.
 - Live operations dashboard, driver/customer management.
 - Manual order creation, payment processing, bulk payouts.
 - Advanced analytics, Excel export system.
+- **AI Knowledge Center** (/ai-knowledge): Self-updating AI assistant with auto-scanning knowledge base. Automatically tracks all database models (84), API endpoints (240), and platform documentation. Features manual refresh capability and clean interface optimized for split-screen use with Replit AI. Master admin access only (nabeelmumtaz92@gmail.com, durremumtaz@gmail.com, nabeelmumtaz4.2@gmail.com).
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
