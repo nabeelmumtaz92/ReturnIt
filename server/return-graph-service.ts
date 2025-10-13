@@ -37,7 +37,7 @@ interface OptimizationWeights {
 export class ReturnGraphService {
   /**
    * Find the optimal drop-off node for a given customer location
-   * Uses A* pathfinding with multi-criteria optimization
+   * Automatically uses graph traversal when edges exist, direct routing otherwise
    */
   async findOptimalDropoffNode(
     customerLocation: Coordinates,
@@ -46,29 +46,235 @@ export class ReturnGraphService {
     weights: OptimizationWeights = { distance: 0.4, time: 0.3, acceptance: 0.2, cost: 0.1 }
   ): Promise<RouteResult | null> {
     // 1. Get all active nodes that can accept this return
-    const eligibleNodes = await this.getEligibleNodes(brand, category);
+    const eligibleTargetNodes = await this.getEligibleNodes(brand, category);
     
-    if (eligibleNodes.length === 0) {
+    if (eligibleTargetNodes.length === 0) {
       console.error('No eligible nodes found for return');
       return null;
     }
 
-    // 2. Calculate routes to all eligible nodes
-    const routes = await Promise.all(
-      eligibleNodes.map(node => this.calculateRouteToNode(customerLocation, node, weights))
-    );
+    // 2. Check if graph has any edges (enables A* traversal)
+    const hasEdges = await this.graphHasEdges();
 
-    // 3. Filter out null routes and sort by combined score
-    const validRoutes = routes.filter(r => r !== null) as RouteResult[];
+    if (hasEdges) {
+      // Use graph traversal with A* when edges exist
+      return await this.findOptimalRouteWithGraph(customerLocation, eligibleTargetNodes, weights);
+    } else {
+      // Fall back to direct routing when graph is empty
+      return await this.findOptimalRouteDirect(customerLocation, eligibleTargetNodes, weights);
+    }
+  }
+
+  /**
+   * Check if graph has any active edges
+   */
+  private async graphHasEdges(): Promise<boolean> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(graphEdges)
+      .where(eq(graphEdges.isActive, true));
     
-    if (validRoutes.length === 0) {
-      console.error('No valid routes found');
-      return null;
+    return (result?.count || 0) > 0;
+  }
+
+  /**
+   * Find optimal route using A* graph traversal (when edges exist)
+   */
+  private async findOptimalRouteWithGraph(
+    customerLocation: Coordinates,
+    eligibleTargetNodes: any[],
+    weights: OptimizationWeights
+  ): Promise<RouteResult | null> {
+    const routes: RouteResult[] = [];
+
+    // Find nearest existing graph node to use as start
+    const startNodeId = await this.findNearestGraphNode(customerLocation);
+    
+    if (!startNodeId) {
+      // No nodes nearby, fall back to direct routing
+      return await this.findOptimalRouteDirect(customerLocation, eligibleTargetNodes, weights);
     }
 
-    // 4. Return best route (lowest score = best)
-    validRoutes.sort((a, b) => a.score - b.score);
-    return validRoutes[0];
+    // Get start node coordinates for customer→start leg
+    const [startNode] = await db.select().from(graphNodes).where(eq(graphNodes.id, startNodeId));
+    const customerToStartDistance = this.calculateDistance(customerLocation, startNode.coordinates as Coordinates);
+    const customerToStartTime = this.estimateTime(customerToStartDistance);
+    const customerToStartCost = this.estimateCost(customerToStartDistance);
+
+    // Run A* to each eligible target
+    for (const targetNode of eligibleTargetNodes) {
+      const path = await this.findPathAStar(startNodeId, targetNode.id, weights);
+      
+      if (path.length > 0) {
+        // Calculate metrics from actual traversed edges
+        const routeMetrics = await this.calculateRouteMetrics(path, weights);
+        
+        // Add customer→start leg to total metrics
+        const totalDistance = customerToStartDistance + routeMetrics.distance;
+        const totalTime = customerToStartTime + routeMetrics.time;
+        const totalCost = customerToStartCost + routeMetrics.cost;
+        
+        // Recalculate score with complete journey
+        const normalizedDistance = totalDistance / 50;
+        const normalizedTime = totalTime / 60;
+        const normalizedCost = totalCost / 20;
+        const normalizedAcceptance = 1 - routeMetrics.acceptance;
+        
+        const completeScore = 
+          weights.distance * normalizedDistance +
+          weights.time * normalizedTime +
+          weights.cost * normalizedCost +
+          weights.acceptance * normalizedAcceptance;
+        
+        routes.push({
+          nodeId: targetNode.id,
+          nodeName: targetNode.name,
+          address: targetNode.address,
+          coordinates: targetNode.coordinates as Coordinates,
+          totalDistance,
+          totalTime,
+          estimatedCost: totalCost,
+          acceptanceProbability: routeMetrics.acceptance,
+          score: completeScore,
+          path: path
+        });
+      }
+    }
+
+    if (routes.length > 0) {
+      routes.sort((a, b) => a.score - b.score);
+      return routes[0];
+    }
+
+    // A* found no paths, fall back to direct
+    return await this.findOptimalRouteDirect(customerLocation, eligibleTargetNodes, weights);
+  }
+
+  /**
+   * Find nearest existing graph node to a location
+   */
+  private async findNearestGraphNode(location: Coordinates): Promise<number | null> {
+    const nodes = await db
+      .select()
+      .from(graphNodes)
+      .where(and(
+        eq(graphNodes.isActive, true),
+        sql`${graphNodes.nodeType} != 'customer_location'` // Exclude virtual nodes
+      ));
+
+    if (nodes.length === 0) return null;
+
+    let nearest: { node: any; distance: number } | null = null;
+
+    for (const node of nodes) {
+      const distance = this.calculateDistance(location, node.coordinates as Coordinates);
+      if (!nearest || distance < nearest.distance) {
+        nearest = { node, distance };
+      }
+    }
+
+    return nearest?.node.id || null;
+  }
+
+  /**
+   * Find optimal route using direct evaluation (when no edges exist)
+   */
+  private async findOptimalRouteDirect(
+    customerLocation: Coordinates,
+    eligibleTargetNodes: any[],
+    weights: OptimizationWeights
+  ): Promise<RouteResult | null> {
+    const routes: RouteResult[] = [];
+    
+    for (const targetNode of eligibleTargetNodes) {
+      const directDistance = this.calculateDistance(customerLocation, targetNode.coordinates as Coordinates);
+      const estimatedTime = this.estimateTime(directDistance);
+      const estimatedCost = this.estimateCost(directDistance);
+      
+      // Use learned node quality metrics
+      const acceptanceProbability = targetNode.successRate || 0.8;
+      const qualityAdjustment = targetNode.customerSatisfactionScore || 4.0;
+      
+      // Calculate score with learned metrics
+      const normalizedDistance = directDistance / 50;
+      const normalizedTime = estimatedTime / 60;
+      const normalizedCost = estimatedCost / 20;
+      const normalizedAcceptance = 1 - acceptanceProbability;
+      const qualityBonus = (5 - qualityAdjustment) / 5;
+
+      const combinedScore = 
+        weights.distance * normalizedDistance +
+        weights.time * normalizedTime +
+        weights.cost * normalizedCost +
+        weights.acceptance * (normalizedAcceptance + qualityBonus);
+
+      routes.push({
+        nodeId: targetNode.id,
+        nodeName: targetNode.name,
+        address: targetNode.address,
+        coordinates: targetNode.coordinates as Coordinates,
+        totalDistance: directDistance,
+        totalTime: estimatedTime,
+        estimatedCost,
+        acceptanceProbability,
+        score: combinedScore,
+        path: [targetNode.id]
+      });
+    }
+
+    if (routes.length === 0) return null;
+
+    routes.sort((a, b) => a.score - b.score);
+    return routes[0];
+  }
+
+  /**
+   * Calculate metrics from actual traversed edges in path
+   */
+  private async calculateRouteMetrics(path: number[], weights: OptimizationWeights) {
+    let totalDistance = 0;
+    let totalTime = 0;
+    let totalCost = 0;
+    let minAcceptance = 1.0;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      const [edge] = await db
+        .select()
+        .from(graphEdges)
+        .where(
+          and(
+            eq(graphEdges.fromNodeId, path[i]),
+            eq(graphEdges.toNodeId, path[i + 1])
+          )
+        );
+
+      if (edge) {
+        totalDistance += edge.distanceKm;
+        totalTime += edge.averageCompletionTime || edge.estimatedTimeMinutes;
+        totalCost += edge.estimatedFuelCost || 0;
+        minAcceptance = Math.min(minAcceptance, edge.acceptanceProbability || 0.8);
+      }
+    }
+
+    // Calculate combined score
+    const normalizedDistance = totalDistance / 50;
+    const normalizedTime = totalTime / 60;
+    const normalizedCost = totalCost / 20;
+    const normalizedAcceptance = 1 - minAcceptance;
+
+    const score = 
+      weights.distance * normalizedDistance +
+      weights.time * normalizedTime +
+      weights.cost * normalizedCost +
+      weights.acceptance * normalizedAcceptance;
+
+    return {
+      distance: totalDistance,
+      time: totalTime,
+      cost: totalCost,
+      acceptance: minAcceptance,
+      score
+    };
   }
 
   /**
@@ -148,6 +354,7 @@ export class ReturnGraphService {
   ): Promise<number[]> {
     const openSet = new Map<number, PathNode>();
     const closedSet = new Set<number>();
+    const cameFrom = new Map<number, number>(); // Separate map for path reconstruction
     
     // Initialize start node
     openSet.set(startNode, {
@@ -162,8 +369,8 @@ export class ReturnGraphService {
       const current = this.getLowestFScore(openSet);
       
       if (current.nodeId === endNode) {
-        // Reconstruct path
-        return this.reconstructPath(current, openSet);
+        // Reconstruct path using cameFrom map
+        return this.reconstructPath(endNode, cameFrom);
       }
 
       openSet.delete(current.nodeId);
@@ -184,6 +391,9 @@ export class ReturnGraphService {
         const existingNeighbor = openSet.get(neighbor.toNodeId);
         
         if (!existingNeighbor || tentativeGScore < existingNeighbor.gScore) {
+          // Record where this node came from
+          cameFrom.set(neighbor.toNodeId, current.nodeId);
+          
           openSet.set(neighbor.toNodeId, {
             nodeId: neighbor.toNodeId,
             gScore: tentativeGScore,
@@ -299,17 +509,15 @@ export class ReturnGraphService {
   }
 
   /**
-   * Reconstruct path from A* result
+   * Reconstruct path from A* result using cameFrom map
    */
-  private reconstructPath(endNode: PathNode, openSet: Map<number, PathNode>): number[] {
-    const path: number[] = [endNode.nodeId];
-    let current = endNode;
+  private reconstructPath(endNodeId: number, cameFrom: Map<number, number>): number[] {
+    const path: number[] = [endNodeId];
+    let current = endNodeId;
 
-    while (current.parent !== null) {
-      const parent = openSet.get(current.parent);
-      if (!parent) break;
-      path.unshift(parent.nodeId);
-      current = parent;
+    while (cameFrom.has(current)) {
+      current = cameFrom.get(current)!;
+      path.unshift(current);
     }
 
     return path;
