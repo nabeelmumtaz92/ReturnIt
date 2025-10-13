@@ -8,9 +8,10 @@ Best Buy,electronics,15,,,Yes,No,new; unopened,15,No,Restocking fee waived for E
 Blush Boutique (Kirkwood),fashion,30,,,Yes,No,unworn; unwashed; tags_attached; smoke_free,0,No,Store credit only (no refunds). Extended holiday returns. Store credit never expires. Bohemian coastal fashion.
 Catholic Supply of St. Louis,general_merchandise,30,,,Yes,No,unopened; tags_intact,0,No,Apparel: must return within 7 days; special orders final sale.
 Costco,warehouse_club,999999,,,No,No,new; used; opened,0,No,Unlimited returns on most items! Electronics have 90-day limit
-Dierbergs Markets,general_merchandise,30,,,Yes,No,unopened; perishable_within_7_days,0,No,Must return to same location of purchase.
 DNA Boutique,fashion,30,,,Yes,No,unworn; new_condition,0,No,Premium streetwear. Store credit only (no cash refunds). 3-5 day processing. 1311 Washington Ave.
+Dierbergs Markets,general_merchandise,30,,,Yes,No,unopened; perishable_within_7_days,0,No,Must return to same location of purchase.
 Gap,apparel,45,,,No,No,new; tags_attached; unworn,0,No,Applies to Gap; Old Navy; Banana Republic
+Golden Gems,accessories,30,,,Yes,No,unused; undamaged; unopened,0,No,Full refund minus original shipping. Customer pays return shipping. After 30 days: store credit only. City Foundry location: 3108 Locust St.
 H&M,fashion,30,,,Yes,No,new; tags_attached; unworn,0,No,
 Home Depot,home_improvement,90,365,Online purchases,No,No,new; unopened,0,Yes,
 IKEA,furniture,365,,,Yes,No,new; unopened; assembled,0,No,IKEA Family members get extended return window
@@ -19,13 +20,15 @@ Kohl's,department_store,180,,,No,No,new; tags_attached,0,Yes,Also accepts Amazon
 L.L.Bean,outdoor_apparel,365,,,No,No,new; used; worn,0,No,Legendary 100% satisfaction guarantee
 Levine Hat Company,accessories,30,,,Yes,No,unworn; tags_attached,0,No,100+ year tradition. Regular items: refund or exchange. Sale/special orders: store credit only. Customer pays return shipping. 1416 Washington Ave.
 Lowe's,home_improvement,90,,,No,No,new; unopened,0,Yes,
+MOD Boutique,fashion,30,,,Yes,No,unworn; unwashed; tags_attached,0,No,Store credit only (e-gift card). Extended holiday returns. Prepaid return label available (cost deducted from credit). Multiple St. Louis locations: Ladue; Kirkwood; St. Charles; O'Fallon; Ellisville.
 Macy's,department_store,30,90,Star Rewards members,No,No,new; tags_attached,0,Yes,
+Marta's Boutique,fashion,7,,,Yes,No,unworn; tags_attached; no_alterations,0,No,Full refund within 7 days. Original tags required. Sister brand to MOD. Locations: Ellisville (9208 Clayton Rd).
 Micro Center,electronics,15,30,Complete computer systems,Yes,No,new; unopened,15,No,
 Nike,athletic_apparel,60,,,No,No,new; worn; gently_used,0,No,Nike members can return worn shoes within 60 days
 Nordstrom,department_store,999999,,,No,No,new; gently_used; tags_attached,0,Yes,No time limit on returns! Legendary return policy
 Paperdolls Boutique,fashion,15,,,Yes,No,unworn; tags_attached,0,No,Store credit or exchange only (no cash refunds). Store credit never expires. Multiple St. Louis locations.
-Randall's (ShopRandalls.com),general_merchandise,30,,,Yes,No,unopened,0,No,Must have original packaging and receipt for returns.
 REI,outdoor_gear,365,,,No,No,new; used; worn,0,No,Members can return used gear within 1 year
+Randall's (ShopRandalls.com),general_merchandise,30,,,Yes,No,unopened,0,No,Must have original packaging and receipt for returns.
 Sam's Club,warehouse_club,90,,,No,Yes,new; unopened,0,No,Must be a member to make returns
 Schnucks,general_merchandise,30,,,No,No,unopened; fresh_products_refunded_immediately,0,No,Pharmacy returns not allowed by law.
 Sephora,beauty,60,,,No,No,new; gently_used; opened,0,No,Beauty Insider members can return gently used products
@@ -33,7 +36,9 @@ St. Louis Zoo Gift Shop,general_merchandise,14,,,Yes,No,new_condition,0,No,Refun
 State Beauty Supply,general_merchandise,60,,,Yes,Yes,new/unused_or_resellable,15,No,Appliances: 30 days unopened; 7 days opened; special handling for items > $100.
 Target,general_merchandise,90,365,Target-owned brands,No,No,new; unopened; tags_attached,0,Yes,RedCard holders get extra 30 days on most items
 The Vault Luxury Resale,general_merchandise,7,,,Yes,Yes,unworn; tags_attached,0,No,No returns on final sale or clearance items.
+Two Pink Elephants,fashion,30,,,Yes,No,unworn; tags_attached,0,No,Store credit only (email code). Exchanges available for different sizes. Must email 2peboutique@gmail.com before returning. O'Fallon location: 4255 Keaton Crossing Blvd.
 Ulta,beauty,60,,,No,No,new; gently_used; opened,0,No,
+Urban Matter,home_decor,14,,,Yes,No,unused; undamaged,0,No,Local women-owned boutique featuring independent designers. Contact store for return policy details: (314) 924-0535. Location: 3179 S. Grand Blvd.
 Walmart,general_merchandise,90,,,No,No,new; unopened,0,No,Does not accept third-party returns
 Wayfair,furniture_online,30,,,No,No,new; unopened,0,No,Large furniture items may require scheduled pickup
 World Wide Technology Raceway,general_merchandise,30,,,Yes,Yes,no_returns_allowed,0,No,All ticket sales final; no refunds on events unless canceled.

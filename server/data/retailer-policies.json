@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "version": "4.0",
-    "lastUpdated": "2025-10-13T16:50:00.000Z",
-    "totalRetailers": 39,
-    "source": "National chains + authentic St. Louis local boutiques",
-    "description": "Comprehensive retailer return policy database - no duplicates"
+    "version": "5.0",
+    "lastUpdated": "2025-10-13T17:00:00.000Z",
+    "totalRetailers": 44,
+    "source": "National chains + comprehensive St. Louis local boutiques",
+    "description": "Complete retailer return policy database with extensive St. Louis coverage"
   },
   "retailers": [
     {
@@ -175,22 +175,6 @@
       "notes": "Unlimited returns on most items! Electronics have 90-day limit"
     },
     {
-      "name": "Dierbergs Markets",
-      "category": "general_merchandise",
-      "defaultPolicy": {
-        "returnWindowDays": 30,
-        "requiresReceipt": true,
-        "requiresOriginalBuyer": false,
-        "acceptedConditions": [
-          "unopened",
-          "perishable_within_7_days"
-        ],
-        "restockingFee": 0,
-        "acceptsThirdParty": false
-      },
-      "notes": "Must return to same location of purchase."
-    },
-    {
       "name": "DNA Boutique",
       "category": "fashion",
       "defaultPolicy": {
@@ -205,6 +189,22 @@
         "acceptsThirdParty": false
       },
       "notes": "Premium streetwear. Store credit only (no cash refunds). 3-5 day processing. 1311 Washington Ave."
+    },
+    {
+      "name": "Dierbergs Markets",
+      "category": "general_merchandise",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unopened",
+          "perishable_within_7_days"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Must return to same location of purchase."
     },
     {
       "name": "Gap",
@@ -222,6 +222,23 @@
         "acceptsThirdParty": false
       },
       "notes": "Applies to Gap, Old Navy, Banana Republic"
+    },
+    {
+      "name": "Golden Gems",
+      "category": "accessories",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unused",
+          "undamaged",
+          "unopened"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Full refund minus original shipping. Customer pays return shipping. After 30 days: store credit only. City Foundry location: 3108 Locust St."
     },
     {
       "name": "H&M",
@@ -358,6 +375,23 @@
       }
     },
     {
+      "name": "MOD Boutique",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "unwashed",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Store credit only (e-gift card). Extended holiday returns. Prepaid return label available (cost deducted from credit). Multiple St. Louis locations: Ladue, Kirkwood, St. Charles, O'Fallon, Ellisville."
+    },
+    {
       "name": "Macy's",
       "category": "department_store",
       "defaultPolicy": {
@@ -373,6 +407,23 @@
         "restockingFee": 0,
         "acceptsThirdParty": true
       }
+    },
+    {
+      "name": "Marta's Boutique",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 7,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached",
+          "no_alterations"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Full refund within 7 days. Original tags required. Sister brand to MOD. Locations: Ellisville (9208 Clayton Rd)."
     },
     {
       "name": "Micro Center",
@@ -442,21 +493,6 @@
       "notes": "Store credit or exchange only (no cash refunds). Store credit never expires. Multiple St. Louis locations."
     },
     {
-      "name": "Randall's (ShopRandalls.com)",
-      "category": "general_merchandise",
-      "defaultPolicy": {
-        "returnWindowDays": 30,
-        "requiresReceipt": true,
-        "requiresOriginalBuyer": false,
-        "acceptedConditions": [
-          "unopened"
-        ],
-        "restockingFee": 0,
-        "acceptsThirdParty": false
-      },
-      "notes": "Must have original packaging and receipt for returns."
-    },
-    {
       "name": "REI",
       "category": "outdoor_gear",
       "defaultPolicy": {
@@ -472,6 +508,21 @@
         "acceptsThirdParty": false
       },
       "notes": "Members can return used gear within 1 year"
+    },
+    {
+      "name": "Randall's (ShopRandalls.com)",
+      "category": "general_merchandise",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unopened"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Must have original packaging and receipt for returns."
     },
     {
       "name": "Sam's Club",
@@ -596,6 +647,22 @@
       "notes": "No returns on final sale or clearance items."
     },
     {
+      "name": "Two Pink Elephants",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Store credit only (email code). Exchanges available for different sizes. Must email 2peboutique@gmail.com before returning. O'Fallon location: 4255 Keaton Crossing Blvd."
+    },
+    {
       "name": "Ulta",
       "category": "beauty",
       "defaultPolicy": {
@@ -610,6 +677,22 @@
         "restockingFee": 0,
         "acceptsThirdParty": false
       }
+    },
+    {
+      "name": "Urban Matter",
+      "category": "home_decor",
+      "defaultPolicy": {
+        "returnWindowDays": 14,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unused",
+          "undamaged"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Local women-owned boutique featuring independent designers. Contact store for return policy details: (314) 924-0535. Location: 3179 S. Grand Blvd."
     },
     {
       "name": "Walmart",
