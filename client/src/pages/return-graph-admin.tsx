@@ -223,7 +223,7 @@ export default function ReturnGraphAdmin() {
         <CardHeader>
           <CardTitle>Retailer Policy Database</CardTitle>
           <CardDescription>
-            Import 44 curated retailer return policies into your graph
+            Import 49 curated retailer return policies into your graph
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -232,7 +232,7 @@ export default function ReturnGraphAdmin() {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">Import Retailer Policies</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Load 44 professionally curated retailer return policies including 26 national chains and 18 authentic St. Louis local boutiques 
+                Load 49 professionally curated retailer return policies including 26 national chains and 23 authentic St. Louis metro boutiques across ALL counties 
                 directly into your Return Graph. Each policy includes return windows, conditions, restocking fees, special category rules, and exceptions.
               </p>
               <div className="flex gap-3 flex-wrap">
@@ -250,7 +250,7 @@ export default function ReturnGraphAdmin() {
                   ) : (
                     <>
                       <Database className="mr-2 h-4 w-4" />
-                      Import 44 Policies
+                      Import 49 Policies
                     </>
                   )}
                 </Button>
@@ -277,7 +277,7 @@ export default function ReturnGraphAdmin() {
           <Alert className="border-blue-200 dark:border-blue-800">
             <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <AlertDescription className="text-sm">
-              <strong>44 Retailers:</strong> 26 national chains (Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M) + 18 authentic St. Louis boutiques (Dierbergs, Schnucks, MOD, Marta's, Paperdolls, Blush, Levine Hat, DNA, Golden Gems, Two Pink Elephants, Urban Matter, The Vault, State Beauty Supply, Catholic Supply, Authorized Appliance, WWT Raceway, STL Zoo, Randall's)
+              <strong>49 Retailers:</strong> 26 national chains + 23 St. Louis metro boutiques | <strong>Coverage:</strong> City (Downtown, CWE), County (Kirkwood, Ladue, Clayton), West County, St. Charles (St. Peters), Jefferson (Arnold), plus Dierbergs, Schnucks, MOD (6 locations), Marta's, Paperdolls, Blush, Levine Hat (100+ years), DNA, Golden Gems, Two Pink Elephants, Urban Matter, and more!
             </AlertDescription>
           </Alert>
         </CardContent>

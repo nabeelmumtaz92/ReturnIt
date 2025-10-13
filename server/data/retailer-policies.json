@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "version": "5.0",
-    "lastUpdated": "2025-10-13T17:00:00.000Z",
-    "totalRetailers": 44,
-    "source": "National chains + comprehensive St. Louis local boutiques",
-    "description": "Complete retailer return policy database with extensive St. Louis coverage"
+    "version": "6.0",
+    "lastUpdated": "2025-10-13T17:15:00.000Z",
+    "totalRetailers": 49,
+    "source": "National chains + comprehensive St. Louis metro area coverage (City, County, West County, North County, South County, St. Charles, Jefferson)",
+    "description": "Complete retailer return policy database with ALL St. Louis metro counties coverage"
   },
   "retailers": [
     {
@@ -153,6 +153,55 @@
       "notes": "Apparel: must return within 7 days; special orders final sale."
     },
     {
+      "name": "Cato Fashions (Arnold)",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached",
+          "new_condition"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "30 days with receipt for refund. After 30 days or without receipt: exchange/store credit at current price. Jefferson County - Arnold location (3926 Vogel Rd)."
+    },
+    {
+      "name": "Cha Boutique (Ladue)",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 21,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Online purchases: 21-day return window. Store credit only. Sale items 30%+ off: final sale (no returns). 9666 Clayton Rd, Ladue. (314) 993-8080."
+    },
+    {
+      "name": "Clayton Claire Boutique",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 7,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Store credit only (7 days). Tags must be attached, unworn. Damaged items: refund available if returned. West County - Clayton location."
+    },
+    {
       "name": "Costco",
       "category": "warehouse_club",
       "defaultPolicy": {
@@ -191,6 +240,22 @@
       "notes": "Premium streetwear. Store credit only (no cash refunds). 3-5 day processing. 1311 Washington Ave."
     },
     {
+      "name": "Designer Resale Boutique (St. Peters)",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 7,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Consignment/resale boutique established 1987. Family-owned. Store credit only. St. Charles County. Hours: Mon-Fri 10-6, Sat 10-5, Sun 12-4."
+    },
+    {
       "name": "Dierbergs Markets",
       "category": "general_merchandise",
       "defaultPolicy": {
@@ -205,6 +270,21 @@
         "acceptsThirdParty": false
       },
       "notes": "Must return to same location of purchase."
+    },
+    {
+      "name": "East \u2022 West (St. Louis)",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 7,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Returns initiated within 7 days of delivery. All tags must be attached. Men's and women's fashion. Central West End boutique."
     },
     {
       "name": "Gap",
