@@ -2804,3 +2804,254 @@ export const insertRetailerWebhookDeliverySchema = createInsertSchema(retailerWe
   id: true,
   createdAt: true,
 });
+
+// ============================================================================
+// RETURN GRAPH - Proprietary Routing & Intelligence System
+// ============================================================================
+// The Return Graph is ReturnIt's competitive moat - a knowledge graph that learns
+// which drop-off points work best, which stores accept third-party returns,
+// and optimal routing strategies based on real-world performance data.
+
+// Graph Nodes - Physical locations in the return network
+export const graphNodes = pgTable("graph_nodes", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Node Type & Identity
+  nodeType: text("node_type").notNull(), // "store", "dropoff_point", "partner_network", "collection_center"
+  name: text("name").notNull(),
+  
+  // Reference to existing entities (if applicable)
+  companyId: integer("company_id").references(() => companies.id),
+  companyLocationId: integer("company_location_id").references(() => companyLocations.id),
+  
+  // Location Data
+  address: text("address").notNull(),
+  coordinates: jsonb("coordinates").notNull(), // {lat: number, lng: number}
+  serviceArea: jsonb("service_area"), // Polygon or radius defining coverage area
+  
+  // Node Capabilities
+  acceptsThirdPartyReturns: boolean("accepts_third_party_returns").default(false),
+  acceptsAllBrands: boolean("accepts_all_brands").default(false),
+  acceptedBrands: jsonb("accepted_brands").default([]), // Array of company IDs or names
+  
+  // Operational Details
+  operatingHours: jsonb("operating_hours"), // Hours by day of week
+  maxDailyCapacity: integer("max_daily_capacity").default(50),
+  averageProcessingTime: integer("average_processing_time").default(5), // minutes
+  
+  // Quality Metrics (learned over time)
+  successRate: real("success_rate").default(1.0), // 0.0 to 1.0
+  averageWaitTime: integer("average_wait_time").default(0), // minutes
+  customerSatisfactionScore: real("customer_satisfaction_score").default(5.0), // 1.0 to 5.0
+  
+  // Status & Metadata
+  isActive: boolean("is_active").default(true),
+  verifiedAt: timestamp("verified_at"), // Last time we confirmed node still works
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}, (table) => ({
+  nodeTypeIdx: index("graph_nodes_node_type_idx").on(table.nodeType),
+  coordinatesIdx: index("graph_nodes_coordinates_idx").on(table.coordinates),
+  isActiveIdx: index("graph_nodes_is_active_idx").on(table.isActive),
+}));
+
+// Graph Edges - Connections between nodes with multi-dimensional weights
+export const graphEdges = pgTable("graph_edges", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Connection
+  fromNodeId: integer("from_node_id").references(() => graphNodes.id).notNull(),
+  toNodeId: integer("to_node_id").references(() => graphNodes.id).notNull(),
+  
+  // Multi-Dimensional Weights (used for pathfinding)
+  distanceKm: real("distance_km").notNull(),
+  estimatedTimeMinutes: integer("estimated_time_minutes").notNull(),
+  
+  // Learned Weights (improve over time with ML)
+  acceptanceProbability: real("acceptance_probability").default(0.8), // 0.0 to 1.0
+  historicalSuccessRate: real("historical_success_rate").default(1.0), // 0.0 to 1.0
+  averageCompletionTime: integer("average_completion_time"), // actual minutes (vs estimated)
+  
+  // Cost Factors
+  estimatedFuelCost: real("estimated_fuel_cost").default(0),
+  trafficMultiplier: real("traffic_multiplier").default(1.0), // 1.0 = normal, 1.5 = heavy traffic
+  
+  // Routing Preferences
+  preferredTimeWindows: jsonb("preferred_time_windows").default([]), // Best times to use this route
+  avoidTimeWindows: jsonb("avoid_time_windows").default([]), // Times to avoid
+  
+  // Edge Quality
+  reliabilityScore: real("reliability_score").default(1.0), // 0.0 to 1.0
+  lastUsed: timestamp("last_used"),
+  
+  // Status
+  isActive: boolean("is_active").default(true),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}, (table) => ({
+  fromNodeIdx: index("graph_edges_from_node_idx").on(table.fromNodeId),
+  toNodeIdx: index("graph_edges_to_node_idx").on(table.toNodeId),
+  isActiveIdx: index("graph_edges_is_active_idx").on(table.isActive),
+}));
+
+// Routing Decisions - Log every routing decision for ML training
+export const routingDecisions = pgTable("routing_decisions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Order Context
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  customerId: integer("customer_id").references(() => users.id),
+  driverId: integer("driver_id").references(() => users.id),
+  
+  // Decision Details
+  pickedNodeId: integer("picked_node_id").references(() => graphNodes.id).notNull(),
+  alternativeNodeIds: jsonb("alternative_node_ids").default([]), // Other nodes considered
+  
+  // Algorithm & Criteria
+  algorithmUsed: text("algorithm_used").notNull(), // "a_star", "dijkstra", "ml_optimized", "manual"
+  optimizationCriteria: text("optimization_criteria").notNull(), // "distance", "time", "cost", "multi_criteria"
+  
+  // Input Weights Used for Decision
+  weightDistance: real("weight_distance").default(0.4),
+  weightTime: real("weight_time").default(0.3),
+  weightAcceptance: real("weight_acceptance").default(0.2),
+  weightCost: real("weight_cost").default(0.1),
+  
+  // Predicted Outcomes
+  predictedDistance: real("predicted_distance"),
+  predictedTime: integer("predicted_time"),
+  predictedAcceptanceProbability: real("predicted_acceptance_probability"),
+  predictedCost: real("predicted_cost"),
+  
+  // Actual Outcomes (filled in after completion)
+  actualDistance: real("actual_distance"),
+  actualTime: integer("actual_time"),
+  wasAccepted: boolean("was_accepted"),
+  actualCost: real("actual_cost"),
+  
+  // Success Metrics
+  wasSuccessful: boolean("was_successful"),
+  customerRating: integer("customer_rating"), // 1-5 stars
+  issuesEncountered: jsonb("issues_encountered").default([]),
+  
+  // Learning Data
+  predictionAccuracy: real("prediction_accuracy"), // How close predictions were to reality
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  completedAt: timestamp("completed_at")
+}, (table) => ({
+  orderIdIdx: index("routing_decisions_order_id_idx").on(table.orderId),
+  pickedNodeIdx: index("routing_decisions_picked_node_idx").on(table.pickedNodeId),
+  algorithmIdx: index("routing_decisions_algorithm_idx").on(table.algorithmUsed),
+  createdAtIdx: index("routing_decisions_created_at_idx").on(table.createdAt),
+}));
+
+// Node Performance History - Track how nodes perform over time
+export const nodePerformanceHistory = pgTable("node_performance_history", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  nodeId: integer("node_id").references(() => graphNodes.id).notNull(),
+  
+  // Time Period
+  periodStart: timestamp("period_start").notNull(),
+  periodEnd: timestamp("period_end").notNull(),
+  periodType: text("period_type").notNull(), // "hourly", "daily", "weekly"
+  
+  // Performance Metrics
+  totalAttempts: integer("total_attempts").default(0),
+  successfulReturns: integer("successful_returns").default(0),
+  rejectedReturns: integer("rejected_returns").default(0),
+  
+  // Timing Metrics
+  avgWaitTime: integer("avg_wait_time").default(0), // minutes
+  avgProcessingTime: integer("avg_processing_time").default(0), // minutes
+  
+  // Quality Metrics
+  avgCustomerRating: real("avg_customer_rating"),
+  issueRate: real("issue_rate").default(0), // Percentage of returns with issues
+  
+  // Capacity Metrics
+  peakHourVolume: integer("peak_hour_volume").default(0),
+  utilizationRate: real("utilization_rate").default(0), // Percentage of capacity used
+  
+  createdAt: timestamp("created_at").defaultNow()
+}, (table) => ({
+  nodeIdIdx: index("node_performance_history_node_id_idx").on(table.nodeId),
+  periodStartIdx: index("node_performance_history_period_start_idx").on(table.periodStart),
+}));
+
+// Policy Rules - Dynamic rules learned from experience
+export const graphPolicyRules = pgTable("graph_policy_rules", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Rule Identity
+  ruleName: text("rule_name").notNull(),
+  ruleType: text("rule_type").notNull(), // "acceptance", "routing", "timing", "capacity"
+  
+  // Scope
+  appliesToNodeId: integer("applies_to_node_id").references(() => graphNodes.id),
+  appliesToBrand: text("applies_to_brand"), // Specific company/brand
+  appliesToCategory: text("applies_to_category"), // Product category
+  
+  // Rule Logic
+  condition: jsonb("condition").notNull(), // Structured condition JSON
+  action: jsonb("action").notNull(), // What to do when condition met
+  
+  // Learning Metadata
+  confidenceScore: real("confidence_score").default(0.5), // 0.0 to 1.0 - how sure we are this rule is correct
+  basedOnSampleSize: integer("based_on_sample_size").default(0), // How many observations
+  
+  // Rule Status
+  isActive: boolean("is_active").default(true),
+  learnedAt: timestamp("learned_at").defaultNow(),
+  lastValidatedAt: timestamp("last_validated_at"),
+  
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
+}, (table) => ({
+  ruleTypeIdx: index("graph_policy_rules_rule_type_idx").on(table.ruleType),
+  nodeIdIdx: index("graph_policy_rules_node_id_idx").on(table.appliesToNodeId),
+  isActiveIdx: index("graph_policy_rules_is_active_idx").on(table.isActive),
+}));
+
+// Return Graph Types & Schemas
+export type GraphNode = typeof graphNodes.$inferSelect;
+export type InsertGraphNode = typeof graphNodes.$inferInsert;
+export const insertGraphNodeSchema = createInsertSchema(graphNodes).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type GraphEdge = typeof graphEdges.$inferSelect;
+export type InsertGraphEdge = typeof graphEdges.$inferInsert;
+export const insertGraphEdgeSchema = createInsertSchema(graphEdges).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type RoutingDecision = typeof routingDecisions.$inferSelect;
+export type InsertRoutingDecision = typeof routingDecisions.$inferInsert;
+export const insertRoutingDecisionSchema = createInsertSchema(routingDecisions).omit({
+  id: true,
+  createdAt: true,
+  completedAt: true,
+});
+
+export type NodePerformanceHistory = typeof nodePerformanceHistory.$inferSelect;
+export type InsertNodePerformanceHistory = typeof nodePerformanceHistory.$inferInsert;
+export const insertNodePerformanceHistorySchema = createInsertSchema(nodePerformanceHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type GraphPolicyRule = typeof graphPolicyRules.$inferSelect;
+export type InsertGraphPolicyRule = typeof graphPolicyRules.$inferInsert;
+export const insertGraphPolicyRuleSchema = createInsertSchema(graphPolicyRules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
