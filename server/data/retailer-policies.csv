@@ -1,27 +1,27 @@
-Retailer Name,Category,Return Window (Days),Extended Window (Days),Requires Receipt,Requires Original Buyer,Accepted Conditions,Restocking Fee (%),Accepts Third Party,Electronics Window,Special Notes
-Target,general_merchandise,90,365,Yes,No,"new,like_new,good",0,Yes,30,RedCard holders get extra 30 days. Free returns on online orders.
-Walmart,general_merchandise,90,,Yes,No,"new,like_new",0,No,30,Must have valid ID for returns without receipt. Store credit only without receipt.
-Best Buy,electronics,15,,Yes,No,"new,unopened",15,Yes,15,Holiday returns extended to January 14. Must bring packing slip.
-Amazon,online_marketplace,30,,No,Yes,"new,like_new,good,acceptable",0,Yes,30,Free returns at Amazon Hub locations and Whole Foods Kohl's and UPS stores.
-Home Depot,home_improvement,90,,Yes,No,"new,unopened",0,No,90,Pro Xtra members get extended return windows.
-Apple,electronics,14,,Yes,Yes,"new,unopened",0,No,14,Only accepts returns for products purchased directly from Apple (stores or online).
-Costco,warehouse_club,999,,No,Yes,"new,like_new,good,acceptable",0,No,90,Essentially unlimited returns for most items. Must have membership.
-Macy's,department_store,30,,Yes,No,"new,with_tags",0,No,30,Some fine jewelry and special order items are final sale.
-Nordstrom,department_store,999,,No,No,"new,like_new,good",0,Yes,,No time limit on returns. Returns accepted at any Nordstrom or Nordstrom Rack.
-Kohl's,department_store,180,,No,No,"new,with_tags",0,Yes,180,Also accepts Amazon returns. Premium brand returns must have tags.
-Gap,apparel,45,,Yes,No,"new,with_tags",0,No,45,Includes Gap Old Navy Banana Republic and Athleta brands.
-Nike,apparel,60,,Yes,No,"new,unworn",0,No,60,Even worn shoes can be returned within 60 days if unsatisfied.
-Adidas,apparel,30,,Yes,No,"new,unworn",0,No,30,Free returns for adiClub members.
-Sephora,beauty,60,,Yes,No,"new,gently_used",0,No,60,Items can be opened and used. Beauty Insider members get extended benefits.
-Ulta,beauty,60,,Yes,No,"new,gently_used",0,No,60,Products can be opened. Must have receipt or email confirmation.
-REI,outdoor_gear,365,,No,Yes,"new,used,worn",0,No,365,100% satisfaction guarantee for members. Used items accepted.
-L.L.Bean,outdoor_gear,365,,No,No,"new,used,worn",0,No,365,One year satisfaction guarantee. Accepts items with reasonable use.
-IKEA,furniture,365,,Yes,No,"new,unopened",0,No,365,365 day return policy for Family members. Assembled furniture accepted if intact.
-Wayfair,furniture,30,,Yes,Yes,"new,unopened",0,No,30,Large item pickup may incur fees. Must be in original packaging.
-Barnes & Noble,books_media,30,,Yes,No,"new,unopened",0,No,30,Books must be unread and in original condition.
-Sam's Club,warehouse_club,90,,No,Yes,"new,used",0,No,90,Must have membership. Returns tracked in system.
-Micro Center,electronics,30,,Yes,No,"new,unopened",15,No,15,Must be in original packaging with all accessories.
-JCPenney,department_store,90,,Yes,No,"new,with_tags",0,No,90,Fine jewelry requires original box and certificate.
-Lowe's,home_improvement,90,,Yes,No,"new,unopened",0,No,90,MyLowe's members get purchase tracking for easier returns.
-Zara,apparel,30,,Yes,No,"new,with_tags",0,No,30,Items must have tags attached and be unworn.
-H&M,apparel,30,,Yes,No,"new,with_tags",0,No,30,Online returns can be made in store or by mail.
+Retailer,Category,Return Window (Days),Extended Window (Days),Extended For,Requires Receipt,Requires Original Buyer,Accepted Conditions,Restocking Fee,Accepts Third Party,Notes
+Target,general_merchandise,90,365,Target-owned brands,No,No,new; unopened; tags_attached,0,Yes,RedCard holders get extra 30 days on most items
+Walmart,general_merchandise,90,,,No,No,new; unopened,0,No,Does not accept third-party returns
+Best Buy,electronics,15,,,Yes,No,new; unopened,15,No,Restocking fee waived for Elite members
+Amazon,online_marketplace,30,,,No,No,new; used; good; acceptable,0,Yes,Most items returnable within 30 days. Third-party sellers may vary
+Home Depot,home_improvement,90,365,Online purchases,No,No,new; unopened,0,Yes,
+Apple,electronics,14,,,Yes,No,new; unopened,0,No,"Must be direct Apple purchase, not third-party retailer"
+Costco,warehouse_club,999999,,,No,No,new; used; opened,0,No,Unlimited returns on most items! Electronics have 90-day limit
+Macy's,department_store,30,90,Star Rewards members,No,No,new; tags_attached,0,Yes,
+Nordstrom,department_store,999999,,,No,No,new; gently_used; tags_attached,0,Yes,No time limit on returns! Legendary return policy
+Kohl's,department_store,180,,,No,No,new; tags_attached,0,Yes,Also accepts Amazon returns
+Gap,apparel,45,,,No,No,new; tags_attached; unworn,0,No,"Applies to Gap, Old Navy, Banana Republic"
+Nike,athletic_apparel,60,,,No,No,new; worn; gently_used,0,No,Nike members can return worn shoes within 60 days
+Adidas,athletic_apparel,30,,,Yes,No,new; unworn; tags_attached,0,No,
+Sephora,beauty,60,,,No,No,new; gently_used; opened,0,No,Beauty Insider members can return gently used products
+Ulta,beauty,60,,,No,No,new; gently_used; opened,0,No,
+REI,outdoor_gear,365,,,No,No,new; used; worn,0,No,Members can return used gear within 1 year
+L.L.Bean,outdoor_apparel,365,,,No,No,new; used; worn,0,No,Legendary 100% satisfaction guarantee
+IKEA,furniture,365,,,Yes,No,new; unopened; assembled,0,No,IKEA Family members get extended return window
+Wayfair,furniture_online,30,,,No,No,new; unopened,0,No,Large furniture items may require scheduled pickup
+Barnes & Noble,books,30,,,Yes,No,new; unopened,0,No,
+Sam's Club,warehouse_club,90,,,No,Yes,new; unopened,0,No,Must be a member to make returns
+Micro Center,electronics,15,30,Complete computer systems,Yes,No,new; unopened,15,No,
+JCPenney,department_store,90,,,No,No,new; tags_attached,0,Yes,
+Lowe's,home_improvement,90,,,No,No,new; unopened,0,Yes,
+Zara,fashion,30,,,Yes,No,new; tags_attached; unworn,0,No,
+H&M,fashion,30,,,Yes,No,new; tags_attached; unworn,0,No,

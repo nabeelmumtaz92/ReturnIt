@@ -20,9 +20,7 @@ export default function ReturnGraphAdmin() {
   const populateMutation = useMutation({
     mutationFn: async () => {
       setIsPopulating(true);
-      return await apiRequest('/api/admin/graph/populate', {
-        method: 'POST',
-      });
+      return await apiRequest('/api/admin/graph/populate', 'POST');
     },
     onSuccess: (data: any) => {
       toast({
@@ -45,9 +43,7 @@ export default function ReturnGraphAdmin() {
   // Clear graph mutation
   const clearMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest('/api/admin/graph/clear', {
-        method: 'POST',
-      });
+      return await apiRequest('/api/admin/graph/clear', 'POST');
     },
     onSuccess: () => {
       toast({
@@ -68,9 +64,7 @@ export default function ReturnGraphAdmin() {
   // Policy import mutation
   const importPoliciesMutation = useMutation({
     mutationFn: async () => {
-      return await apiRequest('/api/admin/policies/import', {
-        method: 'POST',
-      });
+      return await apiRequest('/api/admin/policies/import', 'POST');
     },
     onSuccess: (data: any) => {
       toast({
@@ -229,7 +223,7 @@ export default function ReturnGraphAdmin() {
         <CardHeader>
           <CardTitle>Retailer Policy Database</CardTitle>
           <CardDescription>
-            Import 25+ real retailer return policies into your graph
+            Import 26 curated retailer return policies into your graph
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -238,8 +232,8 @@ export default function ReturnGraphAdmin() {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">Import Retailer Policies</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Load 25+ real retailer return policies (Target, Walmart, Best Buy, Amazon, Nordstrom, Nike, Sephora, REI, and more) 
-                directly into your Return Graph. Each policy includes return windows, conditions, restocking fees, and special category rules.
+                Load 26 professionally curated retailer return policies (Target, Walmart, Best Buy, Amazon, Nordstrom, Nike, Sephora, REI, and more) 
+                directly into your Return Graph. Each policy includes return windows, conditions, restocking fees, special category rules, and exceptions.
               </p>
               <div className="flex gap-3 flex-wrap">
                 <Button
@@ -256,7 +250,7 @@ export default function ReturnGraphAdmin() {
                   ) : (
                     <>
                       <Database className="mr-2 h-4 w-4" />
-                      Import 25+ Policies
+                      Import 26 Policies
                     </>
                   )}
                 </Button>
@@ -283,7 +277,7 @@ export default function ReturnGraphAdmin() {
           <Alert className="border-blue-200 dark:border-blue-800">
             <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <AlertDescription className="text-sm">
-              <strong>Included Retailers:</strong> Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M
+              <strong>26 Retailers Included:</strong> Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M
             </AlertDescription>
           </Alert>
         </CardContent>
