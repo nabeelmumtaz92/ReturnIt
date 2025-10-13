@@ -104,6 +104,48 @@ ReturnIt is expanding beyond returns to offer comprehensive **two-way exchange l
 - Store authorization required for all exchanges
 - Photo documentation at both pickup and delivery
 
+### Return Graph - Proprietary Routing Intelligence (Competitive Moat)
+The **Return Graph** is ReturnIt's core competitive advantage - a self-learning knowledge graph that becomes smarter with every return, creating an unassailable moat that competitors cannot replicate.
+
+**Core Concept**: A graph database that tracks which drop-off locations work best, which stores accept third-party returns, and optimal routing strategies based on real-world performance data.
+
+**Database Architecture** (5 Tables, 89 Total Models):
+- **graph_nodes**: Physical locations (stores, drop-off points, partner networks, collection centers)
+- **graph_edges**: Connections with multi-dimensional weights (distance, time, cost, acceptance probability)
+- **routing_decisions**: Every routing decision logged for ML training
+- **node_performance_history**: Time-series performance metrics per node
+- **graph_policy_rules**: Dynamic rules learned from experience
+
+**Intelligence System**:
+- **A* Pathfinding Algorithm**: Multi-criteria optimization considering distance, time, cost, and acceptance probability
+- **Machine Learning Layer**: Exponential moving average (EMA) learning updates node success rates, wait times, and satisfaction scores in real-time
+- **Multi-Dimensional Weights**: Each edge tracks distance (km), time (min), fuel cost ($), traffic multipliers, acceptance probability (0.0-1.0), and reliability scores
+- **Dynamic Policy Learning**: System learns rules like "Target Chesterfield accepts Nike returns 95% of the time before 3pm"
+
+**Proprietary Data Moat**:
+- **Historical Success Patterns**: Which stores accept which brands/items
+- **Time-Window Optimization**: Best times to visit each location
+- **Capacity Intelligence**: Real-time tracking of store return desk congestion
+- **Driver Performance Correlation**: How different drivers perform at different nodes
+
+**Business Value**:
+- **Network Effects**: Graph gets smarter with every completed return (100K+ returns = unbeatable routing intelligence)
+- **Patent Potential**: Novel multi-criteria pathfinding for reverse logistics (Patent #26 candidate)
+- **Competitive Barrier**: New competitors start with empty graph - ReturnIt has years of learned patterns
+- **Enterprise Value**: Can license graph intelligence to retailers for their own reverse logistics
+
+**Technical Implementation** (server/return-graph-service.ts):
+- ReturnGraphService class with A* pathfinding
+- findOptimalDropoffNode(): Multi-criteria route optimization
+- logRoutingDecision(): Captures every decision for ML training
+- updateRoutingDecisionActuals(): Compares predictions vs reality for learning
+- updateNodePerformance(): Real-time EMA learning of node quality
+
+**Future ML Enhancements**:
+- Deep learning models to predict acceptance probability based on item category, brand, condition, time, and store characteristics
+- Clustering algorithms to identify optimal new node locations
+- Anomaly detection to flag underperforming nodes requiring verification
+
 ## Security & Compliance
 - Bcrypt password hashing, server-side session storage, CSRF protection, rate limiting.
 - Secure API key storage, PCI-compliant payment processing via Stripe.
