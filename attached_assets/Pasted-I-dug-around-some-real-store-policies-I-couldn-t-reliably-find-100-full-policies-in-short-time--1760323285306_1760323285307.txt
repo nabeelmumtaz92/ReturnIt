@@ -1,0 +1,71 @@
+I dug around some real store policies; I couldn’t reliably find **100 full policies** in short time, but here’s a solid list of **~15 real retailer return policies** (with key rules), which you can expand. Also, I’ll sketch a template so you can scale to 100+ easily.
+
+---
+
+## 📋 Sample Real Retailer Return Policies (15 examples)
+
+Here are retailer names with core policy rules you can seed into your Return Graph:
+
+| Retailer                     | Key Return Rules / Conditions                                                                                                |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Best Buy                     | Return within policy period; heavy items may require manufacturer return; must bring packing slip / receipt. ([Best Buy][1]) |
+| Home Depot                   | Most items returned within **90 days** with proof of purchase. ([The Home Depot][2])                                         |
+| Walmart                      | 90 days for most items; electronics often 30 days. ([Walmart.com][3])                                                        |
+| Apple                        | 14 calendar days from receipt; only directly purchased from Apple (not third‑party). ([Apple][4])                            |
+| Target                       | 90 days for most items; extended for Target brands (365 days). ([Target][5])                                                 |
+| Macy’s                       | 30 days for most items (exceptions apply) for mail or in‑store. ([Macy's Customer Service][6])                               |
+| Barnes & Noble               | 30 days for items purchased online; store returns for new/unread within 30 days with receipt. ([Barnes & Noble Help][7])     |
+| Micro Center                 | Generally 30 days for most; certain categories (computers, tablets, etc.) have 15‑day window. ([Micro Center][8])            |
+| Sam’s Club                   | Most items: 90 days; electronics/major appliances: 90 days; cell phones: 14 days. ([Sam's Club Help][9])                     |
+| LG (direct)                  | Items picked up in store can be returned up to 30 days from pickup day. ([LG Electronics][10])                               |
+| Costco                       | 90 days return for televisions, major appliances. ([Costco Customer Service][11])                                            |
+| L.L.Bean                     | Historically unlimited returns (some legacy policy) with few restrictions. ([Wikipedia][12])                                 |
+| Others (state law / generic) | Some states require if no policy is posted, returns accepted within 30 days (e.g. New York) ([apps.cio.ny.gov][13])          |
+
+---
+
+## 📐 Template to Scale to 100+ Policies
+
+You can use this schema and structure to fill in many more retailers:
+
+```yaml
+RetailerName:
+  default:
+    return_window_days: [number]
+    condition: [e.g. "unopened", "like new", "with tags"]
+    requires_receipt: boolean
+    requires_original_buyer: boolean
+    accepted_conditions: [ "undamaged", "sealed", ... ]
+    restocking_fee: [percentage or fixed] (optional)
+  special_categories:
+    electronics:
+      return_window_days: [number]
+      condition: ...
+    apparel:
+      return_window_days: [number]
+      ...
+  exceptions:
+    non_returnable: [list of item categories]
+    final_sale: [boolean or conditions]
+  notes: "Any additional policy notes"
+```
+
+You can build a list (Excel / JSON) of major retailers (Amazon, eBay, Kohl’s, Best Buy, Walmart, Target, etc.) and fill with such fields—then import into your graph.
+
+---
+
+If you like, I can assemble a **downloadable file** (JSON + CSV / Excel) containing 50+ of these policies (real + template placeholders) and send it to you now. Want me to build that for you?
+
+[1]: https://www.bestbuy.com/site/help-topics/return-exchange-policy/pcmcat260800050014.c?id=pcmcat260800050014&utm_source=chatgpt.com "Best Buy Return & Exchange Policy"
+[2]: https://www.homedepot.com/c/Return_Policy?utm_source=chatgpt.com "Return Policy - The Home Depot"
+[3]: https://www.walmart.com/help/article/walmart-standard-return-policy/adc0dfb692954e67a4de206fb8d9e03a?utm_source=chatgpt.com "Walmart Standard Return Policy"
+[4]: https://www.apple.com/shop/help/returns_refund?utm_source=chatgpt.com "Returns & Refunds - Shopping Help - Apple"
+[5]: https://www.target.com/returns?utm_source=chatgpt.com "Target Return Policy"
+[6]: https://customerservice-macys.com/articles/what-is-macys-return-policy?utm_source=chatgpt.com "Macy's Return Policy - Macy's Customer Service"
+[7]: https://help.barnesandnoble.com/hc/en-us/articles/5324602017691-Refund-and-Return-Policies?utm_source=chatgpt.com "Refund and Return Policies - Barnes & Noble"
+[8]: https://community.microcenter.com/kb/articles/28-what-is-the-return-policy?utm_source=chatgpt.com "What is the return policy? - Micro Center Community"
+[9]: https://help.samsclub.com/app/answers/detail/a_id/4072/~/returns---sams-club?utm_source=chatgpt.com "Returns - Sam's Club Help"
+[10]: https://www.lg.com/us/shop-lg/shop-faq?utm_source=chatgpt.com "LG Order FAQs, Returns and Policies | LG USA"
+[11]: https://customerservice.costco.com/app/answers/detail/a_id/1191/~/what-is-costcos-return-policy%3F?utm_source=chatgpt.com "What is Costco's return policy?"
+[12]: https://en.wikipedia.org/wiki/L.L.Bean?utm_source=chatgpt.com "L.L.Bean"
+[13]: https://apps.cio.ny.gov/apps/mediacontact/public/view.cfm?backButton=&parm=919E29FA-F6A6-EA14-021F12789EF3A04D&utm_source=chatgpt.com "new york department of state's division of consumer protection ..."

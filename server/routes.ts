@@ -8302,6 +8302,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Return Graph Management Endpoints (Admin Only)
+  app.post("/api/admin/graph/populate", requireSecureAdmin, async (req, res) => {
+    try {
+      const { GraphPopulationService } = await import('./graph-population-service');
+      const service = new GraphPopulationService();
+      
+      const result = await service.populateGraph();
+      
+      res.json({
+        success: true,
+        message: "Return Graph populated successfully",
+        result
+      });
+    } catch (error: any) {
+      console.error("Error populating graph:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/graph/clear", requireSecureAdmin, async (req, res) => {
+    try {
+      const { GraphPopulationService } = await import('./graph-population-service');
+      const service = new GraphPopulationService();
+      
+      await service.clearGraph();
+      
+      res.json({
+        success: true,
+        message: "Return Graph cleared successfully"
+      });
+    } catch (error: any) {
+      console.error("Error clearing graph:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/admin/graph/stats", requireSecureAdmin, async (req, res) => {
+    try {
+      const { GraphPopulationService } = await import('./graph-population-service');
+      const service = new GraphPopulationService();
+      
+      const stats = await service.getGraphStats();
+      
+      res.json({
+        success: true,
+        stats
+      });
+    } catch (error: any) {
+      console.error("Error getting graph stats:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Enhanced platform metrics endpoint for AI business intelligence
   app.get("/api/analytics/platform-metrics", async (req, res) => {
     try {
