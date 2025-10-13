@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "version": "3.0",
-    "lastUpdated": "2025-10-13T16:32:30.261Z",
-    "totalRetailers": 37,
-    "source": "Curated database + St. Louis-specific policies",
-    "description": "Comprehensive retailer return policy database for Return Graph intelligence"
+    "version": "4.0",
+    "lastUpdated": "2025-10-13T16:50:00.000Z",
+    "totalRetailers": 39,
+    "source": "National chains + authentic St. Louis local boutiques",
+    "description": "Comprehensive retailer return policy database - no duplicates"
   },
   "retailers": [
     {
@@ -119,6 +119,24 @@
       "notes": "Restocking fee waived for Elite members"
     },
     {
+      "name": "Blush Boutique (Kirkwood)",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "unwashed",
+          "tags_attached",
+          "smoke_free"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Store credit only (no refunds). Extended holiday returns. Store credit never expires. Bohemian coastal fashion."
+    },
+    {
       "name": "Catholic Supply of St. Louis",
       "category": "general_merchandise",
       "defaultPolicy": {
@@ -171,6 +189,22 @@
         "acceptsThirdParty": false
       },
       "notes": "Must return to same location of purchase."
+    },
+    {
+      "name": "DNA Boutique",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "new_condition"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Premium streetwear. Store credit only (no cash refunds). 3-5 day processing. 1311 Washington Ave."
     },
     {
       "name": "Gap",
@@ -288,6 +322,22 @@
       "notes": "Legendary 100% satisfaction guarantee"
     },
     {
+      "name": "Levine Hat Company",
+      "category": "accessories",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "100+ year tradition. Regular items: refund or exchange. Sale/special orders: store credit only. Customer pays return shipping. 1416 Washington Ave."
+    },
+    {
       "name": "Lowe's",
       "category": "home_improvement",
       "defaultPolicy": {
@@ -323,22 +373,6 @@
         "restockingFee": 0,
         "acceptsThirdParty": true
       }
-    },
-    {
-      "name": "Macy’s (St. Louis Galleria)",
-      "category": "general_merchandise",
-      "defaultPolicy": {
-        "returnWindowDays": 30,
-        "requiresReceipt": true,
-        "requiresOriginalBuyer": false,
-        "acceptedConditions": [
-          "unworn",
-          "tags_on"
-        ],
-        "restockingFee": 15,
-        "acceptsThirdParty": false
-      },
-      "notes": "Online returns accepted in store with proof of purchase."
     },
     {
       "name": "Micro Center",
@@ -392,6 +426,22 @@
       "notes": "No time limit on returns! Legendary return policy"
     },
     {
+      "name": "Paperdolls Boutique",
+      "category": "fashion",
+      "defaultPolicy": {
+        "returnWindowDays": 15,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": [
+          "unworn",
+          "tags_attached"
+        ],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Store credit or exchange only (no cash refunds). Store credit never expires. Multiple St. Louis locations."
+    },
+    {
       "name": "Randall's (ShopRandalls.com)",
       "category": "general_merchandise",
       "defaultPolicy": {
@@ -438,21 +488,6 @@
         "acceptsThirdParty": false
       },
       "notes": "Must be a member to make returns"
-    },
-    {
-      "name": "Sam’s Club (St. Louis)",
-      "category": "general_merchandise",
-      "defaultPolicy": {
-        "returnWindowDays": 90,
-        "requiresReceipt": true,
-        "requiresOriginalBuyer": true,
-        "acceptedConditions": [
-          "unopened"
-        ],
-        "restockingFee": 0,
-        "acceptsThirdParty": false
-      },
-      "notes": "Limited return windows for certain electronics and cell phones."
     },
     {
       "name": "Schnucks",

@@ -223,7 +223,7 @@ export default function ReturnGraphAdmin() {
         <CardHeader>
           <CardTitle>Retailer Policy Database</CardTitle>
           <CardDescription>
-            Import 37 curated retailer return policies into your graph
+            Import 39 curated retailer return policies into your graph
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -232,7 +232,7 @@ export default function ReturnGraphAdmin() {
             <div className="flex-1">
               <h3 className="font-semibold mb-1">Import Retailer Policies</h3>
               <p className="text-sm text-muted-foreground mb-3">
-                Load 37 professionally curated retailer return policies including national chains (Target, Walmart, Best Buy, Amazon) and St. Louis favorites (Dierbergs, Schnucks, The Vault) 
+                Load 39 professionally curated retailer return policies including national chains (Target, Walmart, Best Buy, Amazon) and authentic St. Louis local boutiques (Dierbergs, Schnucks, Paperdolls, Blush, Levine Hat, DNA) 
                 directly into your Return Graph. Each policy includes return windows, conditions, restocking fees, special category rules, and exceptions.
               </p>
               <div className="flex gap-3 flex-wrap">
@@ -250,7 +250,7 @@ export default function ReturnGraphAdmin() {
                   ) : (
                     <>
                       <Database className="mr-2 h-4 w-4" />
-                      Import 37 Policies
+                      Import 39 Policies
                     </>
                   )}
                 </Button>
@@ -277,7 +277,7 @@ export default function ReturnGraphAdmin() {
           <Alert className="border-blue-200 dark:border-blue-800">
             <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <AlertDescription className="text-sm">
-              <strong>37 Retailers:</strong> Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M, Dierbergs, Schnucks, Randall's, Authorized Appliance, State Beauty Supply, Catholic Supply, The Vault, WWT Raceway, STL Zoo, and more!
+              <strong>39 Unique Retailers:</strong> National chains (Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M) + St. Louis local (Dierbergs, Schnucks, Paperdolls Boutique, Blush Boutique, Levine Hat Company, DNA Boutique, The Vault, State Beauty Supply, Catholic Supply, Authorized Appliance, WWT Raceway, STL Zoo, Randall's)
             </AlertDescription>
           </Alert>
         </CardContent>

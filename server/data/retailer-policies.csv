@@ -5,9 +5,11 @@ Apple,electronics,14,,,Yes,No,new; unopened,0,No,Must be direct Apple purchase; 
 Authorized Appliance,general_merchandise,14,,,Yes,Yes,factory_sealed_only,0,No,Appliances must be in original packaging; unopened.
 Barnes & Noble,books,30,,,Yes,No,new; unopened,0,No,
 Best Buy,electronics,15,,,Yes,No,new; unopened,15,No,Restocking fee waived for Elite members
+Blush Boutique (Kirkwood),fashion,30,,,Yes,No,unworn; unwashed; tags_attached; smoke_free,0,No,Store credit only (no refunds). Extended holiday returns. Store credit never expires. Bohemian coastal fashion.
 Catholic Supply of St. Louis,general_merchandise,30,,,Yes,No,unopened; tags_intact,0,No,Apparel: must return within 7 days; special orders final sale.
 Costco,warehouse_club,999999,,,No,No,new; used; opened,0,No,Unlimited returns on most items! Electronics have 90-day limit
 Dierbergs Markets,general_merchandise,30,,,Yes,No,unopened; perishable_within_7_days,0,No,Must return to same location of purchase.
+DNA Boutique,fashion,30,,,Yes,No,unworn; new_condition,0,No,Premium streetwear. Store credit only (no cash refunds). 3-5 day processing. 1311 Washington Ave.
 Gap,apparel,45,,,No,No,new; tags_attached; unworn,0,No,Applies to Gap; Old Navy; Banana Republic
 H&M,fashion,30,,,Yes,No,new; tags_attached; unworn,0,No,
 Home Depot,home_improvement,90,365,Online purchases,No,No,new; unopened,0,Yes,
@@ -15,16 +17,16 @@ IKEA,furniture,365,,,Yes,No,new; unopened; assembled,0,No,IKEA Family members ge
 JCPenney,department_store,90,,,No,No,new; tags_attached,0,Yes,
 Kohl's,department_store,180,,,No,No,new; tags_attached,0,Yes,Also accepts Amazon returns
 L.L.Bean,outdoor_apparel,365,,,No,No,new; used; worn,0,No,Legendary 100% satisfaction guarantee
+Levine Hat Company,accessories,30,,,Yes,No,unworn; tags_attached,0,No,100+ year tradition. Regular items: refund or exchange. Sale/special orders: store credit only. Customer pays return shipping. 1416 Washington Ave.
 Lowe's,home_improvement,90,,,No,No,new; unopened,0,Yes,
 Macy's,department_store,30,90,Star Rewards members,No,No,new; tags_attached,0,Yes,
-Macy’s (St. Louis Galleria),general_merchandise,30,,,Yes,No,unworn; tags_on,15,No,Online returns accepted in store with proof of purchase.
 Micro Center,electronics,15,30,Complete computer systems,Yes,No,new; unopened,15,No,
 Nike,athletic_apparel,60,,,No,No,new; worn; gently_used,0,No,Nike members can return worn shoes within 60 days
 Nordstrom,department_store,999999,,,No,No,new; gently_used; tags_attached,0,Yes,No time limit on returns! Legendary return policy
+Paperdolls Boutique,fashion,15,,,Yes,No,unworn; tags_attached,0,No,Store credit or exchange only (no cash refunds). Store credit never expires. Multiple St. Louis locations.
 Randall's (ShopRandalls.com),general_merchandise,30,,,Yes,No,unopened,0,No,Must have original packaging and receipt for returns.
 REI,outdoor_gear,365,,,No,No,new; used; worn,0,No,Members can return used gear within 1 year
 Sam's Club,warehouse_club,90,,,No,Yes,new; unopened,0,No,Must be a member to make returns
-Sam’s Club (St. Louis),general_merchandise,90,,,Yes,Yes,unopened,0,No,Limited return windows for certain electronics and cell phones.
 Schnucks,general_merchandise,30,,,No,No,unopened; fresh_products_refunded_immediately,0,No,Pharmacy returns not allowed by law.
 Sephora,beauty,60,,,No,No,new; gently_used; opened,0,No,Beauty Insider members can return gently used products
 St. Louis Zoo Gift Shop,general_merchandise,14,,,Yes,No,new_condition,0,No,Refund or exchange within 14 days with receipt.
