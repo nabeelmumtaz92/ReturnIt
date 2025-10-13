@@ -8355,6 +8355,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Policy Import Endpoints (Admin Only)
+  app.post("/api/admin/policies/import", requireSecureAdmin, async (req, res) => {
+    try {
+      const { policyImportService } = await import('./policy-import-service');
+      const result = await policyImportService.importFromJSON();
+      
+      res.json({
+        success: true,
+        message: `Imported ${result.imported} retailer policies`,
+        result
+      });
+    } catch (error: any) {
+      console.error("Error importing policies:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/admin/policies/stats", requireSecureAdmin, async (req, res) => {
+    try {
+      const { policyImportService } = await import('./policy-import-service');
+      const stats = await policyImportService.getImportStats();
+      
+      res.json({
+        success: true,
+        stats
+      });
+    } catch (error: any) {
+      console.error("Error getting policy stats:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/admin/policies/download/json", requireSecureAdmin, async (req, res) => {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const jsonPath = path.join(process.cwd(), 'server', 'data', 'retailer-policies.json');
+      const fileContent = await fs.readFile(jsonPath, 'utf-8');
+      
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename=retailer-policies.json');
+      res.send(fileContent);
+    } catch (error: any) {
+      console.error("Error downloading JSON:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/admin/policies/download/csv", requireSecureAdmin, async (req, res) => {
+    try {
+      const fs = await import('fs/promises');
+      const path = await import('path');
+      const csvPath = path.join(process.cwd(), 'server', 'data', 'retailer-policies.csv');
+      const fileContent = await fs.readFile(csvPath, 'utf-8');
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=retailer-policies.csv');
+      res.send(fileContent);
+    } catch (error: any) {
+      console.error("Error downloading CSV:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Enhanced platform metrics endpoint for AI business intelligence
   app.get("/api/analytics/platform-metrics", async (req, res) => {
     try {

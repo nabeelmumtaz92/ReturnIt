@@ -1,0 +1,490 @@
+{
+  "retailers": [
+    {
+      "name": "Target",
+      "category": "general_merchandise",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "extendedWindowDays": 365,
+        "extendedFor": "Target owned brands",
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "like_new", "good"],
+        "restockingFee": 0,
+        "acceptsThirdParty": true
+      },
+      "specialCategories": {
+        "electronics": {
+          "returnWindowDays": 30,
+          "requiresReceipt": true
+        },
+        "apple_products": {
+          "returnWindowDays": 15,
+          "requiresReceipt": true
+        }
+      },
+      "notes": "RedCard holders get extra 30 days. Free returns on online orders."
+    },
+    {
+      "name": "Walmart",
+      "category": "general_merchandise",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "like_new"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "electronics": {
+          "returnWindowDays": 30,
+          "requiresReceipt": true
+        },
+        "cell_phones": {
+          "returnWindowDays": 14,
+          "requiresReceipt": true
+        }
+      },
+      "exceptions": {
+        "nonReturnable": ["prepaid_cards", "prescription_drugs", "firearms"]
+      },
+      "notes": "Must have valid ID for returns without receipt. Store credit only without receipt."
+    },
+    {
+      "name": "Best Buy",
+      "category": "electronics",
+      "defaultPolicy": {
+        "returnWindowDays": 15,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 15,
+        "acceptsThirdParty": true
+      },
+      "specialCategories": {
+        "elite_member": {
+          "returnWindowDays": 30,
+          "restockingFee": 0
+        },
+        "elite_plus_member": {
+          "returnWindowDays": 45,
+          "restockingFee": 0
+        },
+        "major_appliances": {
+          "returnWindowDays": 15,
+          "restockingFee": 0,
+          "notes": "Must contact manufacturer for heavy items"
+        }
+      },
+      "notes": "Holiday returns extended to January 14. Must bring packing slip."
+    },
+    {
+      "name": "Amazon",
+      "category": "online_marketplace",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "like_new", "good", "acceptable"],
+        "restockingFee": 0,
+        "acceptsThirdParty": true
+      },
+      "specialCategories": {
+        "amazon_devices": {
+          "returnWindowDays": 30,
+          "notes": "Extended to Jan 31 for holiday purchases"
+        },
+        "grocery": {
+          "returnWindowDays": 30,
+          "notes": "Perishable items must be unopened"
+        }
+      },
+      "notes": "Free returns at Amazon Hub locations, Whole Foods, Kohl's, and UPS stores."
+    },
+    {
+      "name": "Home Depot",
+      "category": "home_improvement",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "major_appliances": {
+          "returnWindowDays": 48,
+          "notes": "Must be in original packaging"
+        },
+        "online_orders": {
+          "returnWindowDays": 365,
+          "notes": "Extended return window for online purchases"
+        }
+      },
+      "notes": "Pro Xtra members get extended return windows."
+    },
+    {
+      "name": "Apple",
+      "category": "electronics",
+      "defaultPolicy": {
+        "returnWindowDays": 14,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "iphone": {
+          "returnWindowDays": 14,
+          "notes": "Must be purchased directly from Apple"
+        },
+        "custom_products": {
+          "returnWindowDays": 14,
+          "notes": "Engraved products cannot be returned"
+        }
+      },
+      "exceptions": {
+        "nonReturnable": ["engraved_products", "opened_software"]
+      },
+      "notes": "Only accepts returns for products purchased directly from Apple (stores or online)."
+    },
+    {
+      "name": "Costco",
+      "category": "warehouse_club",
+      "defaultPolicy": {
+        "returnWindowDays": 999,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "like_new", "good", "acceptable"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "electronics": {
+          "returnWindowDays": 90,
+          "notes": "TVs, projectors, computers, cameras, etc."
+        },
+        "major_appliances": {
+          "returnWindowDays": 90
+        }
+      },
+      "notes": "Essentially unlimited returns for most items. Must have membership."
+    },
+    {
+      "name": "Macy's",
+      "category": "department_store",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "star_rewards_members": {
+          "returnWindowDays": 90,
+          "notes": "Extended window for loyalty members"
+        },
+        "furniture": {
+          "returnWindowDays": 30,
+          "notes": "Delivery charges may not be refunded"
+        }
+      },
+      "notes": "Some fine jewelry and special order items are final sale."
+    },
+    {
+      "name": "Nordstrom",
+      "category": "department_store",
+      "defaultPolicy": {
+        "returnWindowDays": 999,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "like_new", "good"],
+        "restockingFee": 0,
+        "acceptsThirdParty": true
+      },
+      "notes": "No time limit on returns. Returns accepted at any Nordstrom or Nordstrom Rack."
+    },
+    {
+      "name": "Kohl's",
+      "category": "department_store",
+      "defaultPolicy": {
+        "returnWindowDays": 180,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": true
+      },
+      "notes": "Also accepts Amazon returns. Premium brand returns must have tags."
+    },
+    {
+      "name": "Gap",
+      "category": "apparel",
+      "defaultPolicy": {
+        "returnWindowDays": 45,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Includes Gap, Old Navy, Banana Republic, and Athleta brands."
+    },
+    {
+      "name": "Nike",
+      "category": "apparel",
+      "defaultPolicy": {
+        "returnWindowDays": 60,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unworn"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "nike_by_you": {
+          "returnWindowDays": 30,
+          "notes": "Custom shoes can be returned if unworn"
+        }
+      },
+      "notes": "Even worn shoes can be returned within 60 days if unsatisfied."
+    },
+    {
+      "name": "Adidas",
+      "category": "apparel",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unworn"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Free returns for adiClub members."
+    },
+    {
+      "name": "Sephora",
+      "category": "beauty",
+      "defaultPolicy": {
+        "returnWindowDays": 60,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "gently_used"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Items can be opened and used. Beauty Insider members get extended benefits."
+    },
+    {
+      "name": "Ulta",
+      "category": "beauty",
+      "defaultPolicy": {
+        "returnWindowDays": 60,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "gently_used"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Products can be opened. Must have receipt or email confirmation."
+    },
+    {
+      "name": "REI",
+      "category": "outdoor_gear",
+      "defaultPolicy": {
+        "returnWindowDays": 365,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "used", "worn"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "100% satisfaction guarantee for members. Used items accepted."
+    },
+    {
+      "name": "L.L.Bean",
+      "category": "outdoor_gear",
+      "defaultPolicy": {
+        "returnWindowDays": 365,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "used", "worn"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "One year satisfaction guarantee. Accepts items with reasonable use."
+    },
+    {
+      "name": "IKEA",
+      "category": "furniture",
+      "defaultPolicy": {
+        "returnWindowDays": 365,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "plants": {
+          "returnWindowDays": 90,
+          "notes": "With original receipt and alive condition"
+        },
+        "as_is": {
+          "returnWindowDays": 0,
+          "notes": "Final sale items"
+        }
+      },
+      "notes": "365 day return policy for Family members. Assembled furniture accepted if intact."
+    },
+    {
+      "name": "Wayfair",
+      "category": "furniture",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Large item pickup may incur fees. Must be in original packaging."
+    },
+    {
+      "name": "Barnes & Noble",
+      "category": "books_media",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "opened_music_video": {
+          "returnWindowDays": 0,
+          "notes": "Cannot return opened music, DVD, or video games"
+        }
+      },
+      "notes": "Books must be unread and in original condition."
+    },
+    {
+      "name": "Sam's Club",
+      "category": "warehouse_club",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "requiresReceipt": false,
+        "requiresOriginalBuyer": true,
+        "acceptedConditions": ["new", "used"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "electronics": {
+          "returnWindowDays": 90
+        },
+        "cell_phones": {
+          "returnWindowDays": 14
+        }
+      },
+      "notes": "Must have membership. Returns tracked in system."
+    },
+    {
+      "name": "Micro Center",
+      "category": "electronics",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 15,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "computers": {
+          "returnWindowDays": 15,
+          "restockingFee": 15
+        },
+        "tablets": {
+          "returnWindowDays": 15,
+          "restockingFee": 15
+        }
+      },
+      "notes": "Must be in original packaging with all accessories."
+    },
+    {
+      "name": "JCPenney",
+      "category": "department_store",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Fine jewelry requires original box and certificate."
+    },
+    {
+      "name": "Lowe's",
+      "category": "home_improvement",
+      "defaultPolicy": {
+        "returnWindowDays": 90,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "unopened"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "specialCategories": {
+        "major_appliances": {
+          "returnWindowDays": 30,
+          "notes": "Must be in original packaging"
+        }
+      },
+      "notes": "MyLowe's members get purchase tracking for easier returns."
+    },
+    {
+      "name": "Zara",
+      "category": "apparel",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Items must have tags attached and be unworn."
+    },
+    {
+      "name": "H&M",
+      "category": "apparel",
+      "defaultPolicy": {
+        "returnWindowDays": 30,
+        "requiresReceipt": true,
+        "requiresOriginalBuyer": false,
+        "acceptedConditions": ["new", "with_tags"],
+        "restockingFee": 0,
+        "acceptsThirdParty": false
+      },
+      "notes": "Online returns can be made in store or by mail."
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "lastUpdated": "2025-01-13",
+    "totalPolicies": 25,
+    "sources": [
+      "Official retailer websites",
+      "Customer service documentation",
+      "Return policy pages"
+    ]
+  }
+}

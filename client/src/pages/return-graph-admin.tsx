@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@lib/queryClient";
-import { Network, Database, MapPin, Loader2, TrendingUp, BarChart3 } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Network, Database, MapPin, Loader2, TrendingUp, BarChart3, Download, FileJson, FileSpreadsheet } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ReturnGraphAdmin() {
@@ -65,7 +65,30 @@ export default function ReturnGraphAdmin() {
     },
   });
 
-  const stats = graphStats?.stats || { nodes: 0, edges: 0, policies: 0 };
+  // Policy import mutation
+  const importPoliciesMutation = useMutation({
+    mutationFn: async () => {
+      return await apiRequest('/api/admin/policies/import', {
+        method: 'POST',
+      });
+    },
+    onSuccess: (data: any) => {
+      toast({
+        title: "Policies Imported! 📋",
+        description: `Successfully imported ${data.result.imported} retailer policies`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/graph/stats'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Import Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const stats = (graphStats as any)?.stats || { nodes: 0, edges: 0, policies: 0 };
   const hasData = stats.nodes > 0 || stats.edges > 0 || stats.policies > 0;
 
   return (
@@ -198,6 +221,71 @@ export default function ReturnGraphAdmin() {
               </div>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Policy Import Section */}
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Retailer Policy Database</CardTitle>
+          <CardDescription>
+            Import 25+ real retailer return policies into your graph
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-start space-x-4 p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/20">
+            <FileJson className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-semibold mb-1">Import Retailer Policies</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Load 25+ real retailer return policies (Target, Walmart, Best Buy, Amazon, Nordstrom, Nike, Sephora, REI, and more) 
+                directly into your Return Graph. Each policy includes return windows, conditions, restocking fees, and special category rules.
+              </p>
+              <div className="flex gap-3 flex-wrap">
+                <Button
+                  onClick={() => importPoliciesMutation.mutate()}
+                  disabled={importPoliciesMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600"
+                  data-testid="button-import-policies"
+                >
+                  {importPoliciesMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Importing Policies...
+                    </>
+                  ) : (
+                    <>
+                      <Database className="mr-2 h-4 w-4" />
+                      Import 25+ Policies
+                    </>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('/api/admin/policies/download/json', '_blank')}
+                  data-testid="button-download-json"
+                >
+                  <FileJson className="mr-2 h-4 w-4" />
+                  Download JSON
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open('/api/admin/policies/download/csv', '_blank')}
+                  data-testid="button-download-csv"
+                >
+                  <FileSpreadsheet className="mr-2 h-4 w-4" />
+                  Download CSV
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <Alert className="border-blue-200 dark:border-blue-800">
+            <Download className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertDescription className="text-sm">
+              <strong>Included Retailers:</strong> Target, Walmart, Best Buy, Amazon, Home Depot, Apple, Costco, Macy's, Nordstrom, Kohl's, Gap, Nike, Adidas, Sephora, Ulta, REI, L.L.Bean, IKEA, Wayfair, Barnes & Noble, Sam's Club, Micro Center, JCPenney, Lowe's, Zara, H&M
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
 
