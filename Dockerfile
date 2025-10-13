@@ -1,5 +1,5 @@
-# ReturnIt Backend - Cloud Run Deployment
-FROM node:18-alpine
+# ReturnIt Backend - Cloud Run / Railway Deployment
+FROM node:20-alpine
 
 # Install security updates
 RUN apk add --no-cache dumb-init
@@ -7,11 +7,12 @@ RUN apk add --no-cache dumb-init
 # Create app directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for caching)
 COPY package*.json ./
 
 # Install dependencies (production only)
-RUN npm ci --omit=dev
+# Using npm install instead of npm ci to avoid lockfile mismatch errors
+RUN npm install --omit=dev
 
 # Copy application code
 COPY . .
@@ -21,8 +22,6 @@ RUN npm run build
 
 # Set environment
 ENV NODE_ENV=production
-
-# Cloud Run uses PORT env var
 ENV PORT=8080
 
 # Use dumb-init to handle signals properly
