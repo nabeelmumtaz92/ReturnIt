@@ -49,7 +49,8 @@ import {
   companies, returnPolicies, companyLocations, orderAuditLogs,
   retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics,
   retailerWebhooks, retailerWebhookDeliveries,
-  reviews, driverReviews, appReviews, companyRatings
+  reviews, driverReviews, appReviews, companyRatings,
+  customerWaitlist, zipCodeManagement, otpVerification
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -281,28 +282,19 @@ export interface IStorage {
   verifyDriverOTP(userId: number): Promise<User | undefined>;
   acceptDriverTerms(userId: number): Promise<User | undefined>;
   
-  // Customer Waitlist Operations (NEW) - TODO: Uncomment when schema is ready
-  // createCustomerWaitlist(waitlist: InsertCustomerWaitlist): Promise<CustomerWaitlist>;
-  // getCustomerWaitlist(id: number): Promise<CustomerWaitlist | undefined>;
-  // getCustomerWaitlistByEmail(email: string): Promise<CustomerWaitlist | undefined>;
-  // getCustomerWaitlistByZip(zipCode: string): Promise<CustomerWaitlist[]>;
-  // getAllCustomerWaitlist(): Promise<CustomerWaitlist[]>;
-  // updateCustomerWaitlist(id: number, updates: Partial<CustomerWaitlist>): Promise<CustomerWaitlist | undefined>;
-  // activateCustomerWaitlist(zipCode: string): Promise<CustomerWaitlist[]>;
+  // ZIP Code Management Operations
+  createZipCodeManagement(zipData: InsertZipCodeManagement): Promise<ZipCodeManagement>;
+  getZipCodeManagement(zipCode: string): Promise<ZipCodeManagement | undefined>;
+  getAllZipCodeManagement(): Promise<ZipCodeManagement[]>;
+  updateZipCodeManagement(zipCode: string, updates: Partial<ZipCodeManagement>): Promise<ZipCodeManagement | undefined>;
+  updateZipCodeDriverCount(zipCode: string): Promise<ZipCodeManagement | undefined>;
+  getZipCodesByLaunchPriority(): Promise<ZipCodeManagement[]>;
   
-  // ZIP Code Management Operations (NEW) - TODO: Uncomment when schema is ready
-  // createZipCodeManagement(zipData: InsertZipCodeManagement): Promise<ZipCodeManagement>;
-  // getZipCodeManagement(zipCode: string): Promise<ZipCodeManagement | undefined>;
-  // getAllZipCodeManagement(): Promise<ZipCodeManagement[]>;
-  // updateZipCodeManagement(zipCode: string, updates: Partial<ZipCodeManagement>): Promise<ZipCodeManagement | undefined>;
-  // updateZipCodeDriverCount(zipCode: string): Promise<ZipCodeManagement | undefined>;
-  // getZipCodesByLaunchPriority(): Promise<ZipCodeManagement[]>;
-  
-  // OTP Verification Operations (NEW) - TODO: Uncomment when schema is ready
-  // createOtpVerification(otp: InsertOtpVerification): Promise<OtpVerification>;
-  // getOtpVerification(phoneNumber: string, purpose: string): Promise<OtpVerification | undefined>;
-  // verifyOtpCode(phoneNumber: string, code: string, purpose: string): Promise<boolean>;
-  // cleanupExpiredOtps(): Promise<number>;
+  // OTP Verification Operations
+  createOtpVerification(otp: InsertOtpVerification): Promise<OtpVerification>;
+  getOtpVerification(phoneNumber: string, purpose: string): Promise<OtpVerification | undefined>;
+  verifyOtpCode(phoneNumber: string, code: string, purpose: string): Promise<boolean>;
+  cleanupExpiredOtps(): Promise<number>;
 
   // Business Intelligence operations
   getBusinessIntelligenceKpis(timeRange: string): Promise<any>;
@@ -2809,6 +2801,118 @@ export class DatabaseStorage implements IStorage {
       .select({ count: sql<number>`count(*)` })
       .from(customerWaitlist);
     return result.count;
+  }
+
+  // ZIP Code Management operations implementation
+  async createZipCodeManagement(zipData: InsertZipCodeManagement): Promise<ZipCodeManagement> {
+    const [result] = await db
+      .insert(zipCodeManagement)
+      .values(zipData)
+      .returning();
+    return result;
+  }
+
+  async getZipCodeManagement(zipCode: string): Promise<ZipCodeManagement | undefined> {
+    const [result] = await db
+      .select()
+      .from(zipCodeManagement)
+      .where(eq(zipCodeManagement.zipCode, zipCode));
+    return result;
+  }
+
+  async getAllZipCodeManagement(): Promise<ZipCodeManagement[]> {
+    const results = await db
+      .select()
+      .from(zipCodeManagement)
+      .orderBy(desc(zipCodeManagement.launchPriority));
+    return results;
+  }
+
+  async updateZipCodeManagement(zipCode: string, updates: Partial<ZipCodeManagement>): Promise<ZipCodeManagement | undefined> {
+    const [result] = await db
+      .update(zipCodeManagement)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(zipCodeManagement.zipCode, zipCode))
+      .returning();
+    return result;
+  }
+
+  async updateZipCodeDriverCount(zipCode: string): Promise<ZipCodeManagement | undefined> {
+    const driverCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(users)
+      .where(and(
+        eq(users.isDriver, true),
+        eq(users.zipCode, zipCode)
+      ));
+    
+    const [result] = await db
+      .update(zipCodeManagement)
+      .set({ 
+        driverCount: driverCount[0]?.count || 0,
+        updatedAt: new Date() 
+      })
+      .where(eq(zipCodeManagement.zipCode, zipCode))
+      .returning();
+    return result;
+  }
+
+  async getZipCodesByLaunchPriority(): Promise<ZipCodeManagement[]> {
+    const results = await db
+      .select()
+      .from(zipCodeManagement)
+      .where(eq(zipCodeManagement.isActive, true))
+      .orderBy(asc(zipCodeManagement.launchPriority));
+    return results;
+  }
+
+  // OTP Verification operations implementation
+  async createOtpVerification(otp: InsertOtpVerification): Promise<OtpVerification> {
+    const [result] = await db
+      .insert(otpVerification)
+      .values(otp)
+      .returning();
+    return result;
+  }
+
+  async getOtpVerification(phoneNumber: string, purpose: string): Promise<OtpVerification | undefined> {
+    const [result] = await db
+      .select()
+      .from(otpVerification)
+      .where(
+        and(
+          eq(otpVerification.phoneNumber, phoneNumber),
+          eq(otpVerification.purpose, purpose),
+          eq(otpVerification.isVerified, false),
+          sql`expires_at > NOW()`
+        )
+      )
+      .orderBy(desc(otpVerification.createdAt))
+      .limit(1);
+    return result;
+  }
+
+  async verifyOtpCode(phoneNumber: string, code: string, purpose: string): Promise<boolean> {
+    const otpRecord = await this.getOtpVerification(phoneNumber, purpose);
+    
+    if (!otpRecord || otpRecord.code !== code) {
+      return false;
+    }
+
+    await db
+      .update(otpVerification)
+      .set({ isVerified: true })
+      .where(eq(otpVerification.id, otpRecord.id));
+    
+    return true;
+  }
+
+  async cleanupExpiredOtps(): Promise<number> {
+    const result = await db
+      .delete(otpVerification)
+      .where(sql`expires_at < NOW()`);
+    
+    return result.rowCount || 0;
   }
 
   // NEW: Driver order assignment operations
