@@ -1827,7 +1827,7 @@ export default function BookPickup() {
               <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
               <span className="truncate">Book Return</span>
             </TabsTrigger>
-            <TabsTrigger value="exchange" disabled className="opacity-50 text-xs sm:text-sm py-2.5" data-testid="tab-exchange">
+            <TabsTrigger value="exchange" className="text-xs sm:text-sm py-2.5" data-testid="tab-exchange">
               <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
               <span className="truncate">Exchange</span>
             </TabsTrigger>
@@ -1882,44 +1882,8 @@ export default function BookPickup() {
 
           <TabsContent value="exchange" className="mt-0">
             <div className="bg-card rounded-xl shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border border-border">
-              <div className="p-12 text-center space-y-6">
-                <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
-                  <Package className="h-10 w-10 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-3">Exchanges Coming Soon!</h2>
-                  <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                    We're building a revolutionary exchange feature that will let you swap items seamlessly with same-day pickup and delivery.
-                  </p>
-                </div>
-                <div className="bg-accent/50 border border-border rounded-lg p-6 max-w-xl mx-auto text-left">
-                  <h3 className="font-semibold text-foreground mb-3">What to expect:</h3>
-                  <ul className="space-y-2 text-sm text-muted-foreground">
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Swap items at store or get replacement delivered to your door</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Same-day pickup and exchange processing</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Track your exchange in real-time from pickup to delivery</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <CheckCircle className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span>Zero hassle - we handle everything for you</span>
-                    </li>
-                  </ul>
-                </div>
-                <Button 
-                  onClick={() => setLocation('/')} 
-                  variant="outline"
-                  data-testid="button-exchange-back"
-                >
-                  Back to Home
-                </Button>
+              <div className="p-24 text-center">
+                <h2 className="text-6xl font-bold text-foreground">Coming Soon</h2>
               </div>
             </div>
           </TabsContent>
