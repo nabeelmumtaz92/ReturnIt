@@ -1076,7 +1076,7 @@ export default function BookPickup() {
                     {policyValidation.warnings.length > 0 && (
                       <div className="mt-2">
                         {policyValidation.warnings.map((warning, index) => (
-                          <p key={index} className="text-xs text-orange-600 bg-orange-50 p-1 rounded mt-1">
+                          <p key={index} className="text-xs text-amber-600 bg-amber-50 p-1 rounded mt-1">
                             ⚠️ {warning}
                           </p>
                         ))}
@@ -1319,19 +1319,19 @@ export default function BookPickup() {
           </div>
 
           {formData.pickupMethod === 'door_dropoff' && (
-            <div className="space-y-4 bg-orange-50 p-4 rounded-lg border border-orange-200">
+            <div className="space-y-4 bg-amber-50 p-4 rounded-lg border border-amber-200">
               <div className="flex items-start space-x-2">
-                <AlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-orange-900">Door Drop-off Liability Terms</h4>
-                  <p className="text-sm text-orange-700 mt-1">
+                  <h4 className="font-semibold text-amber-900">Door Drop-off Liability Terms</h4>
+                  <p className="text-sm text-amber-700 mt-1">
                     Important: Please read and acknowledge the following terms for leaving items at your door
                   </p>
                 </div>
               </div>
 
-              <div className="bg-white p-4 rounded border border-orange-200">
-                <div className="text-sm text-orange-800 space-y-2">
+              <div className="bg-white p-4 rounded border border-amber-200">
+                <div className="text-sm text-amber-800 space-y-2">
                   <ul className="list-disc pl-5 space-y-1">
                     <li><strong>No signature required:</strong> Driver will take photos as proof of pickup</li>
                     <li><strong>Liability:</strong> ReturnIt and our drivers are NOT liable if items are lost, stolen, damaged, or missing before driver arrives</li>
@@ -1342,15 +1342,15 @@ export default function BookPickup() {
                 </div>
               </div>
 
-              <div className="flex items-start space-x-2 bg-white p-3 rounded border border-orange-300">
+              <div className="flex items-start space-x-2 bg-white p-3 rounded border border-amber-300">
                 <Checkbox 
                   id="doorDropoffLiability" 
                   checked={formData.acceptsLiabilityTerms}
                   onCheckedChange={(checked) => handleInputChange('acceptsLiabilityTerms', checked === true)}
-                  className="mt-0.5 border-orange-600 text-orange-600"
+                  className="mt-0.5 border-amber-600 text-amber-600"
                   data-testid="checkbox-door-dropoff-liability"
                 />
-                <Label htmlFor="doorDropoffLiability" className="text-sm text-orange-900 cursor-pointer">
+                <Label htmlFor="doorDropoffLiability" className="text-sm text-amber-900 cursor-pointer">
                   I understand and accept the liability terms. ReturnIt is not responsible if items are stolen, damaged, or lost before the driver picks them up.
                 </Label>
               </div>
@@ -1359,7 +1359,7 @@ export default function BookPickup() {
                 placeholder="Where will items be left? (e.g., 'By front door in Amazon box', 'Behind planter on porch', 'In garage by side door')"
                 value={formData.pickupInstructions}
                 onChange={(e) => handleInputChange('pickupInstructions', e.target.value)}
-                className="bg-white border-orange-300 focus:border-orange-500"
+                className="bg-white border-amber-300 focus:border-amber-500"
                 rows={3}
                 data-testid="textarea-pickup-instructions"
               />

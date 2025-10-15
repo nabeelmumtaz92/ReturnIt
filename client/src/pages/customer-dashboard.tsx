@@ -101,7 +101,7 @@ export default function CustomerDashboard() {
       created: 'bg-blue-100 text-blue-800',
       assigned: 'bg-yellow-100 text-yellow-800',
       en_route: 'bg-purple-100 text-purple-800',
-      arrived: 'bg-orange-100 text-orange-800',
+      arrived: 'bg-amber-100 text-amber-800',
       picked_up: 'bg-indigo-100 text-indigo-800',
       in_transit: 'bg-cyan-100 text-cyan-800',
       delivered: 'bg-green-100 text-green-800',

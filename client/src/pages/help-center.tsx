@@ -49,7 +49,7 @@ export default function HelpCenter() {
     { id: "getting-started", name: "Getting Started", icon: HelpCircle, color: "bg-blue-500", count: 8 },
     { id: "order-management", name: "Order Management", icon: Package, color: "bg-green-500", count: 12 },
     { id: "pricing-payment", name: "Pricing & Payment", icon: CreditCard, color: "bg-purple-500", count: 6 },
-    { id: "for-drivers", name: "For Drivers", icon: Truck, color: "bg-orange-500", count: 15 },
+    { id: "for-drivers", name: "For Drivers", icon: Truck, color: "bg-amber-600", count: 15 },
     { id: "account-settings", name: "Account & Settings", icon: User, color: "bg-red-500", count: 9 },
     { id: "policies", name: "Policies", icon: Shield, color: "bg-gray-500", count: 7 }
   ];

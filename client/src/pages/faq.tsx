@@ -54,7 +54,7 @@ export default function FAQ() {
     { id: "general", name: "General Questions", icon: HelpCircle, color: "bg-blue-500" },
     { id: "booking", name: "Booking & Scheduling", icon: Package, color: "bg-green-500" },
     { id: "pricing", name: "Pricing & Payment", icon: CreditCard, color: "bg-purple-500" },
-    { id: "drivers", name: "For Drivers", icon: Truck, color: "bg-orange-500" },
+    { id: "drivers", name: "For Drivers", icon: Truck, color: "bg-amber-600" },
     { id: "policies", name: "Policies & Safety", icon: Shield, color: "bg-red-500" },
     { id: "technical", name: "Technical Support", icon: User, color: "bg-gray-500" }
   ];
