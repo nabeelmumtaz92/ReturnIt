@@ -205,16 +205,6 @@ export default function Welcome() {
             <Package className="h-4 w-4 mr-2" />
             Book Pickup
           </Button>
-          <Button 
-            variant="outline"
-            size="default" 
-            className="w-full border-amber-600 text-amber-800 hover:bg-amber-50 text-sm font-medium"
-            data-testid="button-track-order"
-            onClick={() => setLocation('/track')}
-          >
-            <Search className="h-4 w-4 mr-2" />
-            Track Your Order
-          </Button>
         </div>
 
         {/* Become a Driver Section - Prominent */}
@@ -277,34 +267,6 @@ export default function Welcome() {
         )}
 
 
-        {/* Order Tracking Section */}
-        <div className="w-full max-w-sm mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-primary/20">
-          <div className="text-center space-y-3 sm:space-y-4">
-            <h3 className="text-base sm:text-lg font-semibold text-amber-900">
-              Track Your Order
-            </h3>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder="Enter tracking number"
-                value={trackingNumber}
-                onChange={(e) => setTrackingNumber(e.target.value)}
-                className="flex-1 text-sm"
-                data-testid="input-tracking"
-              />
-              <Button 
-                size="sm"
-                onClick={() => {
-                  if (trackingNumber.trim()) {
-                    setLocation(`/order-status/${trackingNumber.trim()}`);
-                  }
-                }}
-                data-testid="button-track"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Footer */}

@@ -1835,14 +1835,14 @@ export default function BookPickup() {
       {/* Main Form Card - Stitch Shadow Pattern */}
       <div className="container mx-auto px-4 py-6 max-w-3xl">
         <Tabs defaultValue="return" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6" data-testid="tabs-order-type">
-            <TabsTrigger value="return" data-testid="tab-return">
-              <Package className="h-4 w-4 mr-2" />
-              Book Return
+          <TabsList className="grid w-full grid-cols-2 mb-6 h-auto" data-testid="tabs-order-type">
+            <TabsTrigger value="return" className="text-xs sm:text-sm py-2.5" data-testid="tab-return">
+              <Package className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Book Return</span>
             </TabsTrigger>
-            <TabsTrigger value="exchange" disabled className="opacity-50" data-testid="tab-exchange">
-              <Truck className="h-4 w-4 mr-2" />
-              Exchange (Coming Soon)
+            <TabsTrigger value="exchange" disabled className="opacity-50 text-xs sm:text-sm py-2.5" data-testid="tab-exchange">
+              <Truck className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2 flex-shrink-0" />
+              <span className="truncate">Exchange</span>
             </TabsTrigger>
           </TabsList>
 
