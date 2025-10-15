@@ -2838,12 +2838,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateZipCodeDriverCount(zipCode: string): Promise<ZipCodeManagement | undefined> {
+    // Count drivers who have an address with this ZIP code in their addresses JSONB array
     const driverCount = await db
       .select({ count: sql<number>`count(*)` })
       .from(users)
       .where(and(
         eq(users.isDriver, true),
-        eq(users.zipCode, zipCode)
+        sql`EXISTS (
+          SELECT 1 FROM jsonb_array_elements(addresses) AS addr
+          WHERE addr->>'zipCode' = ${zipCode}
+        )`
       ));
     
     const [result] = await db
