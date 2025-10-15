@@ -39,12 +39,8 @@ export default function AddressAutocomplete({
 
   useEffect(() => {
     locationService.initializeGoogleMaps().catch(err => {
-      console.error('Failed to initialize Google Maps:', err);
-      toast({
-        title: "Maps unavailable",
-        description: "Address autocomplete may be limited",
-        variant: "destructive",
-      });
+      console.warn('Google Maps not configured - address autocomplete will use basic input');
+      // Silently degrade - don't show error to users, just log for developers
     });
   }, [toast]);
 

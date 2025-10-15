@@ -49,7 +49,8 @@ export default function BookPickup() {
 
   const [formData, setFormData] = useState({
     // Customer info
-    fullName: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     // Address fields
@@ -114,6 +115,15 @@ export default function BookPickup() {
       if (savedData) {
         try {
           const parsedData = JSON.parse(savedData);
+          
+          // Migration: Handle old fullName format
+          if (parsedData.fullName && !parsedData.firstName && !parsedData.lastName) {
+            const nameParts = parsedData.fullName.split(' ');
+            parsedData.firstName = nameParts[0] || '';
+            parsedData.lastName = nameParts.slice(1).join(' ') || '';
+            delete parsedData.fullName;
+          }
+          
           setFormData(prev => ({ ...prev, ...parsedData }));
           localStorage.removeItem('guestBookingData');
           toast({
@@ -208,8 +218,8 @@ export default function BookPickup() {
   const handleStep1Submit = (e: React.FormEvent) => {
     e.preventDefault();
     const required = isAuthenticated 
-      ? ['fullName', 'phone', 'streetAddress']
-      : ['fullName', 'phone', 'email', 'streetAddress'];
+      ? ['firstName', 'lastName', 'phone', 'streetAddress']
+      : ['firstName', 'lastName', 'phone', 'email', 'streetAddress'];
     const missing = required.filter(field => !formData[field as keyof typeof formData]);
     
     if (missing.length > 0) {
@@ -361,7 +371,7 @@ export default function BookPickup() {
     // Construct order data from all form data
     const orderData = {
       // Customer info
-      customerName: formData.fullName,
+      customerName: `${formData.firstName} ${formData.lastName}`.trim(),
       customerPhone: formData.phone,
       customerEmail: user?.email || formData.email || '',
       
@@ -853,12 +863,21 @@ export default function BookPickup() {
           <Label className="text-foreground font-semibold text-lg">Contact Information</Label>
         </div>
         <div className="flex flex-col gap-4">
-          <div>
-            <Label htmlFor="fullName" className="text-foreground font-medium">Full Name *</Label>
-            <Input id="fullName" placeholder="John Doe" value={formData.fullName}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
-              className="bg-white/80 border-border focus:border-primary"
-              required data-testid="input-full-name" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="firstName" className="text-foreground font-medium">First Name *</Label>
+              <Input id="firstName" placeholder="John" value={formData.firstName}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                className="bg-white/80 border-border focus:border-primary"
+                required data-testid="input-first-name" />
+            </div>
+            <div>
+              <Label htmlFor="lastName" className="text-foreground font-medium">Last Name *</Label>
+              <Input id="lastName" placeholder="Doe" value={formData.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                className="bg-white/80 border-border focus:border-primary"
+                required data-testid="input-last-name" />
+            </div>
           </div>
           <div>
             <Label htmlFor="phone" className="text-foreground font-medium">Phone Number *</Label>
