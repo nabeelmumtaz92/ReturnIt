@@ -1,0 +1,74 @@
+{
+  "id": "com.returnit.driver",
+  "name": "Return It Driver - Earn Money",
+  "short_name": "Return It Driver",
+  "description": "Deliver returns and earn money. Get paid to help customers return packages to stores.",
+  "start_url": "/mobile-driver",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#1F2937",
+  "theme_color": "#10B981",
+  "categories": ["business", "productivity", "finance"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Available Jobs",
+      "short_name": "Jobs",
+      "description": "View available delivery jobs",
+      "url": "/driver-portal",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Earnings",
+      "short_name": "Earnings",
+      "description": "View your earnings",
+      "url": "/driver-payments",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Navigation",
+      "short_name": "Navigate",
+      "description": "Start navigation to delivery",
+      "url": "/driver-job",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
