@@ -42,11 +42,6 @@
     "cli": {
       "appVersionSource": "remote"
     },
-    "plugins": [
-      "expo-location",
-      "expo-camera",
-      "expo-image-picker"
-    ],
     "extra": {
       "eas": {
         "projectId": "9225a988-ab9f-4a64-824a-06b91366c3ee"
