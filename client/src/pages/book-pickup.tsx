@@ -1028,8 +1028,8 @@ export default function BookPickup() {
           </div>
         )}
 
-        {/* Policy Validation Results */}
-        {(policyValidation || merchantPolicyValidation) && (
+        {/* Policy Validation Results - Only show when form has retailer and categories */}
+        {formData.retailer && formData.itemCategories.length > 0 && (policyValidation || merchantPolicyValidation) && (
           <div className="space-y-3">
             <div className="flex items-center space-x-2 mb-2">
               <AlertCircle className="h-4 w-4 text-amber-600" />
