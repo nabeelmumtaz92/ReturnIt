@@ -298,7 +298,7 @@ export default function DriverPortal() {
                             Background Check Pending
                           </Badge>
                         ) : (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'in_progress' ? (
-                          <Badge variant="outline" className="border-orange-300 text-orange-700 bg-orange-50">
+                          <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
                             <Clock className="h-3 w-3 mr-1 animate-spin" />
                             Background Check In Progress
                           </Badge>

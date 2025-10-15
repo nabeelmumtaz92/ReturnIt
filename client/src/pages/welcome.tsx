@@ -80,7 +80,7 @@ export default function Welcome() {
               )}
               {user?.isDriver && (
                 <Link href="/driver-portal">
-                  <Button variant="default" size="sm" className="bg-orange-600 hover:bg-orange-700 text-white" data-testid="button-driver-portal">
+                  <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-driver-portal">
                     <Truck className="h-4 w-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Driver Portal</span>
                     <span className="sm:hidden">Portal</span>
@@ -210,7 +210,7 @@ export default function Welcome() {
         {/* Become a Driver Section - Prominent */}
         {envConfig?.allowDriverSignup && (
           <div className="w-full max-w-2xl mt-8 sm:mt-12">
-            <div className="bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+            <div className="bg-gradient-to-r from-amber-600 to-amber-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
                   <div className="bg-white/20 rounded-full p-3">

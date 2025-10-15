@@ -249,8 +249,8 @@ export default function About() {
               </div>
               <div className="flex justify-center">
                 <img 
-                  src="https://images.pexels.com/photos/6195124/pexels-photo-6195124.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=2&fit=crop&crop=center&q=80"
-                  alt="Professional package handling"
+                  src="/attached_assets/stock_images/professional_deliver_40acc382.jpg"
+                  alt="Professional delivery driver with package"
                   className="rounded-2xl shadow-lg max-w-md w-full"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function About() {
             </CardHeader>
             <CardContent>
               <p className="text-lg text-muted-foreground leading-relaxed" data-testid="text-founding-story">
-                {businessInfo?.foundingStory || "Founded in 2024 in St. Louis, Missouri, Return It was created to solve the growing frustration with online returns. Our founders experienced firsthand the time-consuming process of returning items and envisioned a better way."}
+                {businessInfo?.foundingStory || "Founded in 2024 in St. Louis, Missouri, Return It was created to solve the growing frustration with returns. Our founders experienced firsthand the time-consuming process of returning items—the long lines at stores, the inconvenient hours, the hassle of packaging and transportation. They envisioned a better way: a service that brings the return process directly to your doorstep. By connecting customers with local, professional drivers, Return It transforms what was once a dreaded chore into a seamless, stress-free experience. Our mission is simple: save you time, eliminate the hassle, and make every return as easy as the original purchase."}
               </p>
             </CardContent>
           </Card>
