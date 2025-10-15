@@ -96,7 +96,7 @@ export class PWAUpdater {
         position: fixed;
         top: 20px;
         right: 20px;
-        background: #f97316;
+        background: #d97706;
         color: white;
         padding: 16px 20px;
         border-radius: 8px;
@@ -116,7 +116,7 @@ export class PWAUpdater {
         <div style="display: flex; gap: 8px;">
           <button id="pwa-update-btn" style="
             background: white;
-            color: #f97316;
+            color: #d97706;
             border: none;
             padding: 6px 12px;
             border-radius: 4px;

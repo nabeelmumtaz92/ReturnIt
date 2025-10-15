@@ -415,7 +415,7 @@ export default function Login() {
                   <Button 
                     type="button" 
                     variant="outline"
-                    className="w-full bg-gradient-to-r from-amber-50 to-orange-50 border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900 h-11 font-medium"
+                    className="w-full bg-gradient-to-r from-amber-50 to-amber-50 border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900 h-11 font-medium"
                     disabled={demoLoginMutation.isPending}
                     onClick={() => demoLoginMutation.mutate()}
                     data-testid="button-demo-login"

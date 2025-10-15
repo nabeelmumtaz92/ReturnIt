@@ -81,12 +81,12 @@ export default function AIKnowledgeCenter() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 dark:from-gray-900 dark:to-gray-800 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-amber-50 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="max-w-7xl mx-auto space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-amber-500 to-orange-600 p-2 rounded-lg">
+            <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-2 rounded-lg">
               <Brain className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -99,7 +99,7 @@ export default function AIKnowledgeCenter() {
             onClick={() => refreshMutation.mutate()}
             disabled={refreshMutation.isPending}
             size="sm"
-            className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
             data-testid="button-refresh-knowledge"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshMutation.isPending ? 'animate-spin' : ''}`} />
@@ -230,7 +230,7 @@ export default function AIKnowledgeCenter() {
                   <div
                     className={`max-w-[80%] rounded-lg px-4 py-2 ${
                       msg.role === 'user'
-                        ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white'
                         : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
                     }`}
                     data-testid={`message-${msg.role}-${idx}`}
@@ -261,7 +261,7 @@ export default function AIKnowledgeCenter() {
             <Button
               onClick={handleSend}
               disabled={sendMutation.isPending || !prompt.trim()}
-              className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700"
               data-testid="button-send-message"
             >
               Send
@@ -290,7 +290,7 @@ export default function AIKnowledgeCenter() {
                 <ul className="space-y-1 text-gray-600 dark:text-gray-400 font-mono text-xs">
                   {knowledgeStatus.snapshot.sampleEndpoints?.map((endpoint: string, idx: number) => (
                     <li key={idx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                       {endpoint}
                     </li>
                   ))}

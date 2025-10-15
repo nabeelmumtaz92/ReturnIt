@@ -155,7 +155,7 @@ export default function NotificationCenter() {
       case 'sms': return <MessageSquare className="h-4 w-4 text-blue-500" />;
       case 'email': return <Mail className="h-4 w-4 text-green-500" />;
       case 'push': return <Bell className="h-4 w-4 text-purple-500" />;
-      case 'call': return <Phone className="h-4 w-4 text-orange-500" />;
+      case 'call': return <Phone className="h-4 w-4 text-amber-500" />;
       default: return <Bell className="h-4 w-4 text-gray-500" />;
     }
   };

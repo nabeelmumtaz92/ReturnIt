@@ -25,9 +25,9 @@ export default function RetailerDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">Loading your dashboard...</p>
         </div>
       </div>
@@ -38,7 +38,7 @@ export default function RetailerDashboard() {
 
   if (companies.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardHeader>
             <CardTitle>Welcome to Return It for Retailers</CardTitle>
@@ -60,7 +60,7 @@ export default function RetailerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto p-6">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -92,7 +92,7 @@ export default function RetailerDashboard() {
                   <Card data-testid={`card-total-orders-${item.company.id}`}>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
                       <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-                      <Package className="h-4 w-4 text-orange-600" />
+                      <Package className="h-4 w-4 text-amber-600" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">{item.stats.totalOrders}</div>

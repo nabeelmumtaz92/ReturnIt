@@ -355,7 +355,7 @@ export default function DriverJob() {
                 <Button 
                   onClick={() => handleStatusUpdate('dropped_off')}
                   disabled={statusMutation.isPending}
-                  className="bg-orange-600 hover:bg-orange-700 text-white"
+                  className="bg-amber-600 hover:bg-amber-700 text-white"
                 >
                   {statusMutation.isPending ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />

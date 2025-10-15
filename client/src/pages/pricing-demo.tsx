@@ -201,7 +201,7 @@ export default function PricingDemo() {
   const selectedPricing = pricingModel === "current" ? currentPricing : tieredPricing;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent p-4">
       <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -529,8 +529,8 @@ export default function PricingDemo() {
                   <div className="font-medium text-pink-600 text-xs">Premium ($5K-$7.5K)</div>
                   <p className="text-xs">$3.99 base +$35, +$12 driver, 23%</p>
                 </div>
-                <div className="p-2 border rounded bg-orange-50">
-                  <div className="font-medium text-orange-600 text-xs">Premium+ ($7.5K-$10K)</div>
+                <div className="p-2 border rounded bg-amber-50">
+                  <div className="font-medium text-amber-600 text-xs">Premium+ ($7.5K-$10K)</div>
                   <p className="text-xs">$3.99 base +$50, +$16 driver, 25%</p>
                 </div>
                 <div className="p-2 border rounded bg-red-50">

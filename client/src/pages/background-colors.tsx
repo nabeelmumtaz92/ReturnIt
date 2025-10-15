@@ -7,7 +7,7 @@ export default function BackgroundColors() {
   const backgroundOptions = [
     { 
       name: "Current Orange", 
-      gradient: "from-orange-600 via-red-500 to-transparent0",
+      gradient: "from-amber-600 via-red-500 to-transparent0",
       description: "Current warm orange gradient - energetic shipping theme"
     },
     { 
@@ -53,7 +53,7 @@ export default function BackgroundColors() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Background Colors for Deep Cardboard Logo</h1>

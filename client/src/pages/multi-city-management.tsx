@@ -439,7 +439,7 @@ export default function MultiCityManagement() {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
                           index === 0 ? 'bg-yellow-500 text-white' : 
                           index === 1 ? 'bg-gray-400 text-white' :
-                          index === 2 ? 'bg-orange-500 text-white' : 'bg-blue-100 text-blue-600'
+                          index === 2 ? 'bg-amber-500 text-white' : 'bg-blue-100 text-blue-600'
                         }`}>
                           {index + 1}
                         </div>
@@ -623,7 +623,7 @@ export default function MultiCityManagement() {
                   <p className="text-sm text-gray-600">Active Drivers</p>
                 </div>
                 <div className="text-center">
-                  <Activity className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+                  <Activity className="h-8 w-8 mx-auto mb-2 text-amber-500" />
                   <p className="text-2xl font-bold">{selectedCity.stats.customerSatisfaction}%</p>
                   <p className="text-sm text-gray-600">Satisfaction</p>
                 </div>

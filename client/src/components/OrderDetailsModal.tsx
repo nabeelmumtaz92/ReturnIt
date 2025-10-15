@@ -51,7 +51,7 @@ const OrderDetailsModal = ({ orderId, isOpen, onClose }: OrderDetailsModalProps)
       confirmed: 'bg-indigo-100 text-indigo-800',
       assigned: 'bg-purple-100 text-purple-800',
       picked_up: 'bg-yellow-100 text-yellow-800',
-      in_transit: 'bg-orange-100 text-orange-800',
+      in_transit: 'bg-amber-100 text-amber-800',
       delivered: 'bg-green-100 text-green-800',
       completed: 'bg-emerald-100 text-emerald-800',
       cancelled: 'bg-red-100 text-red-800',

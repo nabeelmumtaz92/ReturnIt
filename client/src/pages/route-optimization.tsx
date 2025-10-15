@@ -123,10 +123,10 @@ export default function RouteOptimization() {
                   <div className="text-sm text-blue-700">Total Distance</div>
                 </div>
                 
-                <div className="text-center p-4 bg-orange-100 rounded-lg">
-                  <Fuel className="h-8 w-8 text-orange-700 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-orange-900">${currentRoute?.fuelCost || 0}</div>
-                  <div className="text-sm text-orange-700">Fuel Cost</div>
+                <div className="text-center p-4 bg-amber-100 rounded-lg">
+                  <Fuel className="h-8 w-8 text-amber-700 mx-auto mb-2" />
+                  <div className="text-2xl font-bold text-amber-900">${currentRoute?.fuelCost || 0}</div>
+                  <div className="text-sm text-amber-700">Fuel Cost</div>
                 </div>
                 
                 <div className="text-center p-4 bg-purple-100 rounded-lg">

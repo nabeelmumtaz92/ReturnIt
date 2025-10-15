@@ -44,7 +44,7 @@ export default function MobileDriver() {
   // Redirect to login if not authenticated or not a driver/admin
   if (!isAuthenticated || (!user?.isDriver && !user?.isAdmin)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="p-6 text-center">
             <h1 className="text-xl font-bold text-foreground mb-4">Driver Access Required</h1>
@@ -205,7 +205,7 @@ export default function MobileDriver() {
   const driverRating = user?.driverRating || 4.8;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent p-4">
       {/* Header with Availability Toggle */}
       <div className="bg-white rounded-lg shadow-sm p-4 mb-4">
         <div className="flex items-center justify-between">

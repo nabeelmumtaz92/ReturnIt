@@ -68,7 +68,7 @@ export default function RealTimeTracking() {
     const colorMap: Record<string, string> = {
       'created': 'bg-gray-500',
       'assigned': 'bg-blue-500',
-      'pickup_scheduled': 'bg-orange-500',
+      'pickup_scheduled': 'bg-amber-500',
       'picked_up': 'bg-yellow-500',
       'in_transit': 'bg-purple-500',
       'delivered': 'bg-green-500',

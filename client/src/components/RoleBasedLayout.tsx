@@ -68,7 +68,7 @@ export function RoleBasedLayout({ children, userRole, userName, pageTitle }: Rol
   const config = getRoleConfig(userRole);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-amber-50 to-amber-100">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-amber-200">
         <div className="container mx-auto px-6 py-4">

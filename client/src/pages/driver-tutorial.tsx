@@ -109,13 +109,13 @@ export default function DriverTutorial() {
               </CardContent>
             </Card>
             
-            <Card className="bg-orange-50 border-orange-200">
+            <Card className="bg-amber-50 border-amber-200">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm text-orange-700">Size Bonuses</CardTitle>
+                <CardTitle className="text-sm text-amber-700">Size Bonuses</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-lg font-bold text-orange-800">$1-2</div>
-                <p className="text-xs text-orange-600">For large packages</p>
+                <div className="text-lg font-bold text-amber-800">$1-2</div>
+                <p className="text-xs text-amber-600">For large packages</p>
               </CardContent>
             </Card>
           </div>

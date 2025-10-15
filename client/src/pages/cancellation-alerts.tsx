@@ -220,14 +220,14 @@ export default function CancellationAlerts() {
           </CardContent>
         </Card>
         
-        <Card className="border-orange-200 bg-orange-50">
+        <Card className="border-amber-200 bg-amber-50">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-orange-600">High Priority</p>
-                <p className="text-3xl font-bold text-orange-900">{summaryStats.highPriorityAlerts}</p>
+                <p className="text-sm font-medium text-amber-600">High Priority</p>
+                <p className="text-3xl font-bold text-amber-900">{summaryStats.highPriorityAlerts}</p>
               </div>
-              <AlertTriangle className="h-8 w-8 text-orange-600" />
+              <AlertTriangle className="h-8 w-8 text-amber-600" />
             </div>
           </CardContent>
         </Card>
@@ -362,7 +362,7 @@ export default function CancellationAlerts() {
                 
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <p className="text-sm text-gray-600">Consecutive</p>
-                  <p className="text-xl font-bold text-orange-600">{alert.consecutiveCancellations}</p>
+                  <p className="text-xl font-bold text-amber-600">{alert.consecutiveCancellations}</p>
                 </div>
               </div>
               

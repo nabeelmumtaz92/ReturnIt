@@ -183,7 +183,7 @@ export default function CustomerServiceTickets() {
     const colors = {
       'open': 'bg-blue-500 text-white',
       'in_progress': 'bg-yellow-500 text-white',
-      'waiting': 'bg-orange-500 text-white',
+      'waiting': 'bg-amber-500 text-white',
       'resolved': 'bg-green-500 text-white',
       'closed': 'bg-gray-500 text-white',
     };
@@ -193,7 +193,7 @@ export default function CustomerServiceTickets() {
   const getPriorityColor = (priority: string) => {
     const colors = {
       'urgent': 'bg-red-500 text-white',
-      'high': 'bg-orange-500 text-white',
+      'high': 'bg-amber-500 text-white',
       'medium': 'bg-yellow-500 text-white',
       'low': 'bg-green-500 text-white',
     };

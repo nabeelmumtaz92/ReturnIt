@@ -49,7 +49,7 @@ const EMERGENCY_TYPES = {
   'safety_concern': {
     label: 'Safety Concern',
     icon: <Shield className="h-4 w-4" />,
-    color: 'bg-orange-500 text-white',
+    color: 'bg-amber-500 text-white',
     description: 'Safety issue or threatening situation',
     priority: 'high',
   },

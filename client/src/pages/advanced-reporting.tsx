@@ -349,7 +349,7 @@ export default function AdvancedReporting() {
                 <p className="text-sm text-gray-600">Avg Order Value</p>
                 <p className="text-2xl font-bold">${reportData.overview.avgOrderValue.toFixed(2)}</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-orange-500" />
+              <TrendingUp className="h-8 w-8 text-amber-500" />
             </div>
           </CardContent>
         </Card>
@@ -602,7 +602,7 @@ export default function AdvancedReporting() {
 
             <Card>
               <CardContent className="pt-6 text-center">
-                <Package className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+                <Package className="h-8 w-8 mx-auto mb-2 text-amber-500" />
                 <p className="text-2xl font-bold">{reportData.customerMetrics.avgOrdersPerCustomer.toFixed(1)}</p>
                 <p className="text-sm text-gray-600">Avg Orders per Customer</p>
               </CardContent>

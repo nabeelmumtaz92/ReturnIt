@@ -605,7 +605,7 @@ Type your request or command to get started!`,
       <div className="fixed bottom-4 right-4 z-50">
         <Button
           onClick={() => setIsExpanded(true)}
-          className="rounded-full w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 shadow-lg"
+          className="rounded-full w-14 h-14 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 shadow-lg"
         >
           {uiMode === 'terminal' ? <Terminal className="w-6 h-6" /> : 
            uiMode === 'support' ? <HeadphonesIcon className="w-6 h-6" /> : 

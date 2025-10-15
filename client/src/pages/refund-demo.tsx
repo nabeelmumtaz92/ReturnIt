@@ -36,7 +36,7 @@ export default function RefundDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Return It Refund System Demo</h1>
@@ -87,8 +87,8 @@ export default function RefundDemo() {
                   <p><strong>Total Paid:</strong> <span className="font-bold">${order.totalPrice}</span></p>
                   <div className="ml-4 text-xs text-gray-600 space-y-1">
                     <p>• Item Cost: ${order.itemCost} <span className="text-green-600">(refundable)</span></p>
-                    <p>• Service Fee: ${order.serviceFee} <span className="text-orange-600">(non-refundable)</span></p>
-                    <p>• Tax: ${order.taxAmount} <span className="text-orange-600">(non-refundable)</span></p>
+                    <p>• Service Fee: ${order.serviceFee} <span className="text-amber-600">(non-refundable)</span></p>
+                    <p>• Tax: ${order.taxAmount} <span className="text-amber-600">(non-refundable)</span></p>
                   </div>
                   <p><strong>Retailer:</strong> {order.retailer}</p>
                 </div>

@@ -44,7 +44,7 @@ export default function PaymentStructure() {
     const colors = {
       'S': 'bg-green-100 text-green-800',
       'M': 'bg-blue-100 text-blue-800',
-      'L': 'bg-orange-100 text-orange-800', 
+      'L': 'bg-amber-100 text-amber-800', 
       'XL': 'bg-red-100 text-red-800'
     };
     return colors[size as keyof typeof colors];
@@ -80,10 +80,10 @@ export default function PaymentStructure() {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="bg-orange-50 p-3 rounded-lg border border-orange-200">
-                  <h4 className="font-semibold text-orange-800">Large</h4>
-                  <p className="text-sm text-orange-600">$100 - $299</p>
-                  <p className="text-xs text-orange-500">+$2.00 upcharge</p>
+                <div className="bg-amber-50 p-3 rounded-lg border border-amber-200">
+                  <h4 className="font-semibold text-amber-800">Large</h4>
+                  <p className="text-sm text-amber-600">$100 - $299</p>
+                  <p className="text-xs text-amber-500">+$2.00 upcharge</p>
                 </div>
               </div>
               <div className="space-y-2">

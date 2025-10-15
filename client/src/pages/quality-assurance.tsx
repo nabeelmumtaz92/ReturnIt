@@ -165,7 +165,7 @@ export default function QualityAssurance() {
     switch (severity) {
       case 'low': return 'bg-blue-500';
       case 'medium': return 'bg-yellow-500';
-      case 'high': return 'bg-orange-500';
+      case 'high': return 'bg-amber-500';
       case 'critical': return 'bg-red-500';
       default: return 'bg-gray-500';
     }
@@ -184,7 +184,7 @@ export default function QualityAssurance() {
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'damage_report': return <AlertTriangle className="h-4 w-4 text-orange-500" />;
+      case 'damage_report': return <AlertTriangle className="h-4 w-4 text-amber-500" />;
       case 'photo_verification': return <Camera className="h-4 w-4 text-blue-500" />;
       case 'insurance_claim': return <Shield className="h-4 w-4 text-red-500" />;
       case 'dispute': return <MessageCircle className="h-4 w-4 text-purple-500" />;

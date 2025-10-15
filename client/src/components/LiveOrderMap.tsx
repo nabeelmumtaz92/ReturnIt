@@ -311,7 +311,7 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
                   <Badge 
                     className={
                       selectedOrder.priority === 'urgent' ? 'bg-red-100 text-red-800' :
-                      selectedOrder.priority === 'high' ? 'bg-orange-100 text-orange-800' :
+                      selectedOrder.priority === 'high' ? 'bg-amber-100 text-amber-800' :
                       'bg-green-100 text-green-800'
                     }
                   >
@@ -418,7 +418,7 @@ export default function LiveOrderMap({ driverId, onOrderAccept }: LiveOrderMapPr
             <span className="text-amber-900">Normal Priority</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
             <span className="text-amber-900">High Priority</span>
           </div>
           <div className="flex items-center gap-2">

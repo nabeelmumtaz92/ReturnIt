@@ -96,7 +96,7 @@ const ReturnGraphAdmin = lazy(() => import("@/pages/return-graph-admin"));
 
 // Loading component for Suspense
 const PageLoader = () => (
-  <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+  <div className="min-h-screen bg-gradient-to-br from-amber-50 via-amber-50 to-yellow-50 flex items-center justify-center">
     <div className="text-center space-y-4">
       <div className="relative">
         <div className="text-3xl font-bold text-amber-900 mx-auto animate-pulse">
@@ -165,7 +165,7 @@ function Router() {
   // Only show loading if actually loading
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-amber-50 to-yellow-50 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="relative">
             <div className="text-3xl font-bold text-amber-900 mx-auto animate-pulse">

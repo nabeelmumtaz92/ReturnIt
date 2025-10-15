@@ -373,49 +373,49 @@ export default function DriverPerformance() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-orange-200">
+                <Card className="border-amber-200">
                   <CardHeader>
-                    <CardTitle className="text-orange-900">Customer Feedback Trends</CardTitle>
+                    <CardTitle className="text-amber-900">Customer Feedback Trends</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-orange-700">Communication</span>
+                        <span className="text-sm font-medium text-amber-700">Communication</span>
                         <div className="flex items-center">
-                          <div className="w-32 bg-orange-200 rounded-full h-2 mr-3">
-                            <div className="bg-orange-600 h-2 rounded-full" style={{ width: '96%' }}></div>
+                          <div className="w-32 bg-amber-200 rounded-full h-2 mr-3">
+                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: '96%' }}></div>
                           </div>
-                          <span className="text-sm text-orange-600">96%</span>
+                          <span className="text-sm text-amber-600">96%</span>
                         </div>
                       </div>
 
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-orange-700">Timeliness</span>
+                        <span className="text-sm font-medium text-amber-700">Timeliness</span>
                         <div className="flex items-center">
-                          <div className="w-32 bg-orange-200 rounded-full h-2 mr-3">
-                            <div className="bg-orange-600 h-2 rounded-full" style={{ width: '94%' }}></div>
+                          <div className="w-32 bg-amber-200 rounded-full h-2 mr-3">
+                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: '94%' }}></div>
                           </div>
-                          <span className="text-sm text-orange-600">94%</span>
+                          <span className="text-sm text-amber-600">94%</span>
                         </div>
                       </div>
 
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-orange-700">Package Care</span>
+                        <span className="text-sm font-medium text-amber-700">Package Care</span>
                         <div className="flex items-center">
-                          <div className="w-32 bg-orange-200 rounded-full h-2 mr-3">
-                            <div className="bg-orange-600 h-2 rounded-full" style={{ width: '98%' }}></div>
+                          <div className="w-32 bg-amber-200 rounded-full h-2 mr-3">
+                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: '98%' }}></div>
                           </div>
-                          <span className="text-sm text-orange-600">98%</span>
+                          <span className="text-sm text-amber-600">98%</span>
                         </div>
                       </div>
 
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-orange-700">Professionalism</span>
+                        <span className="text-sm font-medium text-amber-700">Professionalism</span>
                         <div className="flex items-center">
-                          <div className="w-32 bg-orange-200 rounded-full h-2 mr-3">
-                            <div className="bg-orange-600 h-2 rounded-full" style={{ width: '99%' }}></div>
+                          <div className="w-32 bg-amber-200 rounded-full h-2 mr-3">
+                            <div className="bg-amber-600 h-2 rounded-full" style={{ width: '99%' }}></div>
                           </div>
-                          <span className="text-sm text-orange-600">99%</span>
+                          <span className="text-sm text-amber-600">99%</span>
                         </div>
                       </div>
                     </div>

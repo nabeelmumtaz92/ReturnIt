@@ -186,7 +186,7 @@ export default function ComprehensivePricingExamples() {
                     <span><strong>Value Tier Fee:</strong> $0-$75 (based on order value)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-orange-600" />
+                    <MapPin className="w-4 h-4 text-amber-600" />
                     <span><strong>Distance Fee:</strong> $0.50 per mile</span>
                   </li>
                   <li className="flex items-center gap-2">
@@ -207,7 +207,7 @@ export default function ComprehensivePricingExamples() {
                     <span><strong>Base Pay:</strong> $3.00 per trip</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-orange-600" />
+                    <MapPin className="w-4 h-4 text-amber-600" />
                     <span><strong>Distance Pay:</strong> $0.35 per mile</span>
                   </li>
                   <li className="flex items-center gap-2">

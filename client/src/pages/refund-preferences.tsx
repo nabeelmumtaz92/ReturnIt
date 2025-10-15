@@ -45,7 +45,7 @@ export default function RefundPreferences() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50">
       <Header />
       
       <div className="container mx-auto p-6 max-w-4xl">

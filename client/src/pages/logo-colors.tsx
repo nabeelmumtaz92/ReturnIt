@@ -24,7 +24,7 @@ export default function LogoColors() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Cardboard Brown Shade</h1>
@@ -45,7 +45,7 @@ export default function LogoColors() {
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
             >
               {/* Preview against orange background (like your hero) */}
-              <div className="bg-gradient-to-r from-orange-600 via-red-500 to-transparent0 h-40 flex items-center justify-center">
+              <div className="bg-gradient-to-r from-amber-600 via-red-500 to-transparent0 h-40 flex items-center justify-center">
                 <img 
                   src={`/${option.file}?v=${cacheBuster}`}
                   alt={`${option.name} logo`}
@@ -60,7 +60,7 @@ export default function LogoColors() {
               </div>
 
               {/* Preview against light background (like your welcome section) */}
-              <div className="bg-orange-50 h-32 flex items-center justify-center border-b">
+              <div className="bg-amber-50 h-32 flex items-center justify-center border-b">
                 <img 
                   src={`/${option.file}?v=${cacheBuster}`}
                   alt={`${option.name} logo`}
@@ -78,7 +78,7 @@ export default function LogoColors() {
                 <p className="text-gray-600 text-sm mb-4">{option.description}</p>
                 <Button 
                   onClick={() => handleColorSelect(option.file, option.name)}
-                  className="w-full bg-orange-600 hover:bg-orange-700"
+                  className="w-full bg-amber-600 hover:bg-amber-700"
                   size="sm"
                 >
                   Use This Color

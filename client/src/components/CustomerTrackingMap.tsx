@@ -99,7 +99,7 @@ export default function CustomerTrackingMap({
   if (!MAPBOX_TOKEN) {
     console.error('❌ VITE_MAPBOX_ACCESS_TOKEN is not configured. Live map tracking is unavailable.');
     return (
-      <Card className="w-full h-96 flex items-center justify-center border-border bg-gradient-to-r from-orange-50 to-yellow-50">
+      <Card className="w-full h-96 flex items-center justify-center border-border bg-gradient-to-r from-amber-50 to-yellow-50">
         <CardContent className="text-center p-6">
           <MapPin className="h-12 w-12 mx-auto text-[#f99806] mb-4" />
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Live Map Unavailable</h3>

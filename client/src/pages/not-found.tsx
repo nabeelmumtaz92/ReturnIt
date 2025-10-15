@@ -5,7 +5,7 @@ import { Link } from "wouter";
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
         {/* Logo */}
         <div className="text-center">

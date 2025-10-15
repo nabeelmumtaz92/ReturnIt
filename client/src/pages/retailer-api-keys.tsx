@@ -109,9 +109,9 @@ export default function RetailerAPIKeys() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">Loading API keys...</p>
         </div>
       </div>
@@ -121,7 +121,7 @@ export default function RetailerAPIKeys() {
   const keys = apiKeys?.apiKeys || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
@@ -132,8 +132,8 @@ export default function RetailerAPIKeys() {
           </p>
         </div>
 
-        <Alert className="mb-6 border-orange-200 bg-orange-50 dark:bg-orange-900/20">
-          <Shield className="h-4 w-4 text-orange-600" />
+        <Alert className="mb-6 border-amber-200 bg-amber-50 dark:bg-amber-900/20">
+          <Shield className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-sm text-gray-700 dark:text-gray-300">
             <strong>Security Notice:</strong> API keys provide full access to your account. Never share them publicly or commit them to version control.
             Use test keys for development and live keys for production only.
@@ -268,7 +268,7 @@ export default function RetailerAPIKeys() {
                         {key.currentUsage > 0 && (
                           <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div
-                              className="bg-orange-600 h-2 rounded-full"
+                              className="bg-amber-600 h-2 rounded-full"
                               style={{ width: `${Math.min(100, ((key.currentUsage || 0) / (key.rateLimit || 1000)) * 100)}%` }}
                             />
                           </div>
@@ -330,8 +330,8 @@ export default function RetailerAPIKeys() {
                 )}
               </div>
               
-              <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-900/20">
-                <AlertCircle className="h-4 w-4 text-orange-600" />
+              <Alert className="border-amber-200 bg-amber-50 dark:bg-amber-900/20">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
                 <AlertDescription className="text-xs text-gray-700 dark:text-gray-300">
                   API keys are generated as <strong>test keys (ret_test_...)</strong> in development.
                   In production, keys will use the <strong>ret_live_...</strong> prefix.

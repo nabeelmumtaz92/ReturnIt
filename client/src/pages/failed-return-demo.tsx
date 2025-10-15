@@ -48,7 +48,7 @@ export default function FailedReturnDemo() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-amber-50 to-transparent">
       <div className="container mx-auto p-6 max-w-6xl">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Failed Return Scenario Demo</h1>
@@ -275,7 +275,7 @@ export default function FailedReturnDemo() {
                     <span>Driver Original Trip:</span>
                     <span>${(3.00 + order.distance * 0.35).toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-orange-600">
+                  <div className="flex justify-between text-amber-600">
                     <span>Driver Return Trip:</span>
                     <span>${additionalDriverPay.toFixed(2)}</span>
                   </div>
@@ -332,7 +332,7 @@ export default function FailedReturnDemo() {
                 </ul>
               </div>
               <div className="p-4 border rounded-lg">
-                <h4 className="font-semibold text-orange-600 mb-2">Cost Management</h4>
+                <h4 className="font-semibold text-amber-600 mb-2">Cost Management</h4>
                 <ul className="text-sm space-y-1">
                   <li>• Driver compensated for extra trip</li>
                   <li>• Service fees cover operational costs</li>

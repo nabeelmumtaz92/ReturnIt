@@ -139,7 +139,7 @@ export default function DualAIAssistant({ onClose, isMinimized }: DualAIAssistan
 
   return (
     <Card className="fixed bottom-4 right-4 w-96 h-[600px] shadow-2xl border-amber-200 z-50">
-      <CardHeader className="pb-3 bg-gradient-to-r from-amber-50 to-orange-50">
+      <CardHeader className="pb-3 bg-gradient-to-r from-amber-50 to-amber-50">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-amber-800">
             <div className="flex">

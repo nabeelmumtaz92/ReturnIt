@@ -130,7 +130,7 @@ export default function DriverSafetyCenter() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-20 text-lg font-bold border-orange-500 text-orange-700 hover:bg-orange-50"
+                  className="h-20 text-lg font-bold border-amber-500 text-amber-700 hover:bg-amber-50"
                   onClick={() => checkInMutation.mutate('check_out')}
                   disabled={checkInMutation.isPending}
                 >

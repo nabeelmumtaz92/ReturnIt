@@ -60,7 +60,7 @@ export default function CostMonitoring() {
   const getServiceColor = (service: string) => {
     switch (service) {
       case 'openai': return 'bg-blue-500';
-      case 'replit': return 'bg-orange-500';
+      case 'replit': return 'bg-amber-500';
       case 'stripe': return 'bg-purple-500';
       default: return 'bg-gray-500';
     }
@@ -318,7 +318,7 @@ export default function CostMonitoring() {
                   
                   <div className="flex justify-between text-lg">
                     <span className="font-medium">Total Projected</span>
-                    <span className="font-bold text-orange-600">{formatCurrency(projections?.totalProjected || 0)}</span>
+                    <span className="font-bold text-amber-600">{formatCurrency(projections?.totalProjected || 0)}</span>
                   </div>
                 </div>
 

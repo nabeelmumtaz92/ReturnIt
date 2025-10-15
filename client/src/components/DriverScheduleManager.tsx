@@ -215,7 +215,7 @@ export default function DriverScheduleManager() {
   return (
     <div className="space-y-6">
       {/* Availability Toggle - Primary Control */}
-      <Card className="border-2 border-dashed border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50">
+      <Card className="border-2 border-dashed border-amber-200 bg-gradient-to-r from-amber-50 to-amber-50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">

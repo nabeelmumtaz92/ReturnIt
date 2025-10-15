@@ -654,7 +654,7 @@ export default function SupportChat({ isOpen, onClose, context }: SupportChatPro
             <Button 
               onClick={handleSendMessage} 
               disabled={!inputMessage.trim()}
-              className="bg-orange-500 hover:bg-orange-600"
+              className="bg-amber-500 hover:bg-amber-600"
             >
               <Send className="h-4 w-4" />
             </Button>

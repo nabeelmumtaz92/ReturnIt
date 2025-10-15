@@ -243,7 +243,7 @@ export default function AdvancedReporting() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Processing Fees</span>
-                    <span className="font-medium text-orange-600">$2,180</span>
+                    <span className="font-medium text-amber-600">$2,180</span>
                   </div>
                 </div>
               </CardContent>

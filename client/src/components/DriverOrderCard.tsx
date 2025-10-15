@@ -113,7 +113,7 @@ const DriverOrderCard = memo(function DriverOrderCard({
       case 'created':
         return <Badge className="bg-yellow-100 text-yellow-800">Available</Badge>;
       case 'picked_up':
-        return <Badge className="bg-orange-100 text-orange-800">In Transit</Badge>;
+        return <Badge className="bg-amber-100 text-amber-800">In Transit</Badge>;
       case 'completed':
         return <Badge className="bg-green-100 text-green-800">Completed</Badge>;
       default:

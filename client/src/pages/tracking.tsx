@@ -116,7 +116,7 @@ const StatusBadge = ({ status }: { status: string }) => {
       case 'picked_up':
       case 'en_route':
       case 'in_transit':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+        return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'delivered':
       case 'completed':
         return 'bg-green-100 text-green-800 border-green-200';

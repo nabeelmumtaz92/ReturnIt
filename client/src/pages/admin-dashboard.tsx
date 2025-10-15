@@ -729,7 +729,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div>
                 <p className="text-sm font-medium text-primary">Completion Rate</p>
                 <p className="text-2xl font-bold text-foreground">{dashboardStats.completionRate}%</p>
-                <Badge variant="outline" className="text-xs text-orange-600 border-orange-200 mt-1">
+                <Badge variant="outline" className="text-xs text-amber-600 border-amber-200 mt-1">
                   Updated
                 </Badge>
               </div>
@@ -1103,7 +1103,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           <Card className="bg-white/90 backdrop-blur-sm border-border">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Truck className="h-5 w-5 text-orange-600" />
+                <Truck className="h-5 w-5 text-amber-600" />
                 Driver Mobile App
               </CardTitle>
             </CardHeader>
@@ -1122,7 +1122,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                   <span className="text-sm font-medium">89%</span>
                 </div>
                 <Link href="/driver-app">
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white">
+                  <Button className="w-full bg-amber-600 hover:bg-amber-700 text-white">
                     <Eye className="h-4 w-4 mr-2" />
                     View Driver App
                   </Button>
@@ -2707,9 +2707,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-primary">Pending Review</p>
-                  <p className="text-2xl font-bold text-orange-700">{stats.pending}</p>
+                  <p className="text-2xl font-bold text-amber-700">{stats.pending}</p>
                 </div>
-                <Clock className="h-8 w-8 text-orange-600" />
+                <Clock className="h-8 w-8 text-amber-600" />
               </div>
             </CardContent>
           </Card>
@@ -2859,7 +2859,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                                 <Badge className={
                                   app.applicationStatus === 'approved' ? 'bg-green-100 text-green-800' :
                                   app.applicationStatus === 'waitlist' ? 'bg-blue-100 text-blue-800' :
-                                  'bg-orange-100 text-orange-800'
+                                  'bg-amber-100 text-amber-800'
                                 }>
                                   {app.applicationStatus}
                                 </Badge>
@@ -6350,7 +6350,7 @@ function FinancialOperationsContent() {
               <CardTitle className="text-sm font-medium text-primary">Reserve Hold</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">$12,750</div>
+              <div className="text-2xl font-bold text-amber-600">$12,750</div>
             </CardContent>
           </Card>
           <Card className="bg-white/90 backdrop-blur-sm border-border">
@@ -6377,7 +6377,7 @@ function FinancialOperationsContent() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Past Due (31-60 days)</span>
-                  <span className="font-semibold text-orange-600">$2,130</span>
+                  <span className="font-semibold text-amber-600">$2,130</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Overdue (60+ days)</span>
@@ -6490,14 +6490,14 @@ function TransactionManagementContent() {
                   <div className="ml-4">
                     <Badge className={`${txn.status === 'captured' ? 'bg-green-100 text-green-800' : 
                       txn.status === 'authorized' ? 'bg-blue-100 text-blue-800' :
-                      txn.status === 'refunded' ? 'bg-orange-100 text-orange-800' :
+                      txn.status === 'refunded' ? 'bg-amber-100 text-amber-800' :
                       'bg-red-100 text-red-800'}`}>
                       {txn.status}
                     </Badge>
                   </div>
                   <div className="ml-2">
                     <Badge className={`${txn.risk === 'low' ? 'bg-green-100 text-green-800' :
-                      txn.risk === 'medium' ? 'bg-orange-100 text-orange-800' :
+                      txn.risk === 'medium' ? 'bg-amber-100 text-amber-800' :
                       'bg-red-100 text-red-800'}`}>
                       {txn.risk} risk
                     </Badge>
@@ -6582,7 +6582,7 @@ function EnhancedDriverPayoutsContent() {
                       <div className="font-semibold text-foreground">{payout.amount}</div>
                       <Badge className={payout.status === 'completed' ? 'bg-green-100 text-green-800' : 
                         payout.status === 'processing' ? 'bg-blue-100 text-blue-800' :
-                        'bg-orange-100 text-orange-800'}>
+                        'bg-amber-100 text-amber-800'}>
                         {payout.status}
                       </Badge>
                     </div>
@@ -6822,7 +6822,7 @@ function PaymentTrackingContent() {
               <div className="space-y-4">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Unsettled &gt; T+2</span>
-                  <span className="font-semibold text-orange-600">$1,245</span>
+                  <span className="font-semibold text-amber-600">$1,245</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Pending Refunds</span>
@@ -6912,7 +6912,7 @@ function SupportCenterContent() {
                       <span className="font-medium text-foreground">{chat.customer}</span>
                       <div className="flex items-center gap-2">
                         <Badge className={chat.priority === 'high' ? 'bg-red-100 text-red-800' : 
-                          chat.priority === 'medium' ? 'bg-orange-100 text-orange-800' :
+                          chat.priority === 'medium' ? 'bg-amber-100 text-amber-800' :
                           'bg-green-100 text-green-800'}>
                           {chat.priority}
                         </Badge>
@@ -7298,7 +7298,7 @@ function DriverApplicationsContent() {
     const getStatusBadge = (status: string) => {
       switch (status) {
         case 'pending_review':
-          return <Badge className="bg-orange-100 text-orange-800 border-orange-200">Pending Review</Badge>;
+          return <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pending Review</Badge>;
         case 'background_check_pending':
           return <Badge className="bg-blue-100 text-blue-800 border-blue-200">Background Check</Badge>;
         default:
@@ -7335,7 +7335,7 @@ function DriverApplicationsContent() {
               <CardTitle className="text-sm font-medium text-primary">Pending Applications</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-600">{pendingApplications.length}</div>
+              <div className="text-2xl font-bold text-amber-600">{pendingApplications.length}</div>
               <p className="text-xs text-primary">Awaiting your review</p>
             </CardContent>
           </Card>

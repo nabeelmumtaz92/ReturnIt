@@ -69,7 +69,7 @@ export default function PricingAnalysis() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-transparent p-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-transparent p-4">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center space-y-4">
@@ -134,7 +134,7 @@ export default function PricingAnalysis() {
                     </ul>
                   </div>
                   <div className="space-y-4">
-                    <h4 className="font-semibold text-orange-600">Considerations</h4>
+                    <h4 className="font-semibold text-amber-600">Considerations</h4>
                     <ul className="space-y-2 text-sm">
                       <li>• Price sensitivity for clothing returns (45% of volume)</li>
                       <li>• Electronics customers expect premium service</li>
@@ -181,7 +181,7 @@ export default function PricingAnalysis() {
                         <div className="p-3 bg-purple-50 rounded-lg">
                           <strong>Enhanced ($1K-$5K):</strong> High-end devices and luxury clothing
                         </div>
-                        <div className="p-3 bg-orange-50 rounded-lg">
+                        <div className="p-3 bg-amber-50 rounded-lg">
                           <strong>Premium ($5K-$10K):</strong> Luxury electronics and designer items
                         </div>
                         <div className="p-3 bg-red-50 rounded-lg">
@@ -206,7 +206,7 @@ export default function PricingAnalysis() {
                           <p><strong>Driver Motivation:</strong> Meaningful bonuses for careful handling</p>
                         </div>
                         <div className="flex items-start gap-2">
-                          <div className="w-2 h-2 bg-orange-500 rounded-full mt-2"></div>
+                          <div className="w-2 h-2 bg-amber-500 rounded-full mt-2"></div>
                           <p><strong>Market Positioning:</strong> Competitive for volume, premium for value</p>
                         </div>
                       </div>
@@ -299,7 +299,7 @@ export default function PricingAnalysis() {
                     </ul>
                   </div>
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-orange-600">Market Gaps</h4>
+                    <h4 className="font-semibold text-amber-600">Market Gaps</h4>
                     <ul className="space-y-1 text-sm">
                       <li>• No existing tiered value-based return service</li>
                       <li>• Traditional services don't scale with item value</li>

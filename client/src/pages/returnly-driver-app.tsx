@@ -266,7 +266,7 @@ export default function ReturnItDriverApp() {
       accepted: 'bg-blue-100 text-blue-800 border-blue-300',
       en_route: 'bg-purple-100 text-purple-800 border-purple-300',
       arrived: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      picked_up: 'bg-orange-100 text-orange-800 border-orange-300',
+      picked_up: 'bg-amber-100 text-amber-800 border-amber-300',
       completed: 'bg-gray-100 text-gray-800 border-gray-300'
     };
     return variants[status as keyof typeof variants] || variants.available;
@@ -357,7 +357,7 @@ export default function ReturnItDriverApp() {
                   <Button 
                     variant="outline"
                     onClick={toggleOnlineStatus}
-                    className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 mt-4"
+                    className="w-full border-amber-300 text-amber-700 hover:bg-amber-50 mt-4"
                   >
                     <Square className="h-4 w-4 mr-2" />
                     Go Offline
@@ -441,7 +441,7 @@ export default function ReturnItDriverApp() {
                     
                     {currentJob.status === 'arrived' && (
                       <Button 
-                        className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
+                        className="flex-1 bg-amber-500 text-white hover:bg-amber-600"
                         onClick={() => updateJobStatus('picked_up')}
                       >
                         <Package className="h-4 w-4 mr-2" />

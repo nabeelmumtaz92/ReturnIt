@@ -114,9 +114,9 @@ export default function RetailerRegister() {
 
   if (loadingCompanies) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-300">Loading companies...</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function RetailerRegister() {
 
   if (step === 'success') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 text-center">
             <CheckCircle2 className="h-16 w-16 text-green-600 mx-auto mb-4" />
@@ -140,11 +140,11 @@ export default function RetailerRegister() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-white dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <ShoppingBag className="h-12 w-12 text-orange-600" />
+            <ShoppingBag className="h-12 w-12 text-amber-600" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Join Return It for Retailers
@@ -207,9 +207,9 @@ export default function RetailerRegister() {
 
                 {step === 'confirm' && selectedCompany && (
                   <div className="space-y-4">
-                    <div className="bg-orange-50 dark:bg-gray-800 p-4 rounded-lg border border-orange-200 dark:border-gray-700">
+                    <div className="bg-amber-50 dark:bg-gray-800 p-4 rounded-lg border border-amber-200 dark:border-gray-700">
                       <div className="flex items-start space-x-3">
-                        <Building2 className="h-6 w-6 text-orange-600 mt-1" />
+                        <Building2 className="h-6 w-6 text-amber-600 mt-1" />
                         <div>
                           <h3 className="font-semibold text-lg">{selectedCompany.name}</h3>
                           {selectedCompany.description && (
@@ -270,7 +270,7 @@ export default function RetailerRegister() {
                               <a
                                 href="/terms"
                                 target="_blank"
-                                className="text-orange-600 hover:underline"
+                                className="text-amber-600 hover:underline"
                               >
                                 Terms & Conditions
                               </a>{" "}
@@ -278,7 +278,7 @@ export default function RetailerRegister() {
                               <a
                                 href="/privacy"
                                 target="_blank"
-                                className="text-orange-600 hover:underline"
+                                className="text-amber-600 hover:underline"
                               >
                                 Privacy Policy
                               </a>

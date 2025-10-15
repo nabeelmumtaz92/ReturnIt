@@ -15,7 +15,7 @@ const MobileContainer = React.forwardRef<HTMLDivElement, MobileContainerProps>(
         ref={ref}
         className={cn(
           // Base mobile styles
-          "w-full mx-auto bg-gradient-to-br from-blue-50 via-white to-orange-50",
+          "w-full mx-auto bg-gradient-to-br from-blue-50 via-white to-amber-50",
           // Mobile-first responsive widths
           "max-w-sm", // Mobile: ~375px
           "sm:max-w-md", // Small tablets: ~448px  
@@ -50,7 +50,7 @@ const AppScreen = React.forwardRef<HTMLDivElement, AppScreenProps>(
       <div
         ref={ref}
         className={cn(
-          "min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex flex-col",
+          "min-h-screen bg-gradient-to-br from-blue-50 via-white to-amber-50 flex flex-col",
           // Responsive layout
           "w-full max-w-sm mx-auto", // Mobile-first
           "sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl", // Scale up

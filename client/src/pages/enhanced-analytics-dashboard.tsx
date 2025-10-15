@@ -189,7 +189,7 @@ export default function EnhancedAnalyticsDashboard() {
                   </div>
                   
                   <div className="flex items-center gap-1">
-                    <Activity className="h-4 w-4 text-orange-600" />
+                    <Activity className="h-4 w-4 text-amber-600" />
                     <span className="text-sm">Active: {realTimeMetrics.activeOrders}</span>
                   </div>
                   
@@ -308,7 +308,7 @@ export default function EnhancedAnalyticsDashboard() {
                         <p className="text-2xl font-bold">{analyticsData.completionRate.toFixed(1)}%</p>
                         <Progress value={analyticsData.completionRate} className="w-16 h-2 mt-2" />
                       </div>
-                      <TrendingUp className="h-8 w-8 text-orange-500" />
+                      <TrendingUp className="h-8 w-8 text-amber-500" />
                     </div>
                   </CardContent>
                 </Card>
@@ -388,9 +388,9 @@ export default function EnhancedAnalyticsDashboard() {
                         <p className="font-medium text-purple-800">Average Value</p>
                         <p className="text-2xl font-bold text-purple-900">${analyticsData.averageOrderValue.toFixed(2)}</p>
                       </div>
-                      <div className="p-3 bg-orange-50 rounded-lg">
-                        <p className="font-medium text-orange-800">Customer Rating</p>
-                        <p className="text-2xl font-bold text-orange-900">{analyticsData.customerSatisfaction.toFixed(1)}/5</p>
+                      <div className="p-3 bg-amber-50 rounded-lg">
+                        <p className="font-medium text-amber-800">Customer Rating</p>
+                        <p className="text-2xl font-bold text-amber-900">{analyticsData.customerSatisfaction.toFixed(1)}/5</p>
                       </div>
                     </div>
                   </CardContent>
@@ -533,11 +533,11 @@ export default function EnhancedAnalyticsDashboard() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg">
-                      <h4 className="font-semibold text-orange-800 mb-2">Optimization Opportunities</h4>
+                    <div className="p-4 bg-gradient-to-r from-amber-50 to-red-50 rounded-lg">
+                      <h4 className="font-semibold text-amber-800 mb-2">Optimization Opportunities</h4>
                       <div className="space-y-2 text-sm">
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                          <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
                           <span>Peak hour routing efficiency</span>
                         </div>
                         <div className="flex items-center gap-2">

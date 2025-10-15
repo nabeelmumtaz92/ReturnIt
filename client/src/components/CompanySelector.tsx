@@ -206,7 +206,7 @@ export default function CompanySelector({
     switch (method) {
       case 'original_payment': return <CreditCard className="h-4 w-4 text-green-600" />;
       case 'store_credit': return <Building2 className="h-4 w-4 text-blue-600" />;
-      case 'exchange_only': return <ArrowRight className="h-4 w-4 text-orange-600" />;
+      case 'exchange_only': return <ArrowRight className="h-4 w-4 text-amber-600" />;
       default: return <CreditCard className="h-4 w-4 text-gray-600" />;
     }
   };

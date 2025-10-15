@@ -944,7 +944,7 @@ body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
 </html>`;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-transparent via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50">
       <div className="container mx-auto p-6">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg border border-border p-6 mb-8">

@@ -250,12 +250,12 @@ export default function BusinessIntelligence() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-orange-50 rounded-lg">
-                      <h4 className="font-semibold text-orange-900 mb-2">Spring Cleaning</h4>
-                      <p className="text-sm text-orange-700">Moderate 15% increase predicted for March-April</p>
+                    <div className="p-4 bg-amber-50 rounded-lg">
+                      <h4 className="font-semibold text-amber-900 mb-2">Spring Cleaning</h4>
+                      <p className="text-sm text-amber-700">Moderate 15% increase predicted for March-April</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <Target className="h-4 w-4 text-orange-500" />
-                        <span className="text-xs text-orange-700">Opportunity for targeted marketing campaigns</span>
+                        <Target className="h-4 w-4 text-amber-500" />
+                        <span className="text-xs text-amber-700">Opportunity for targeted marketing campaigns</span>
                       </div>
                     </div>
                   </div>
@@ -403,7 +403,7 @@ export default function BusinessIntelligence() {
                         <p className="text-sm text-gray-600">Similar service</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-lg font-bold text-orange-600">$9.49</p>
+                        <p className="text-lg font-bold text-amber-600">$9.49</p>
                         <Badge variant="secondary">Main Competitor</Badge>
                       </div>
                     </div>
@@ -430,10 +430,10 @@ export default function BusinessIntelligence() {
 
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">ReturnEasy</span>
-                      <span className="text-sm font-bold text-orange-600">28%</span>
+                      <span className="text-sm font-bold text-amber-600">28%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div className="bg-orange-600 h-2 rounded-full" style={{ width: '28%' }}></div>
+                      <div className="bg-amber-600 h-2 rounded-full" style={{ width: '28%' }}></div>
                     </div>
 
                     <div className="flex items-center justify-between">
