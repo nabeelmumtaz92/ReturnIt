@@ -31,12 +31,6 @@ import { PolicyValidator } from "@shared/policy.rules";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 import Footer from "@/components/Footer";
 
-// Import delivery images
-import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
-import deliveryHandoffImg from "@assets/Delivery Driver- Handoff_1754856749519.jpeg";
-import deliveryOutsideImg from "@assets/Delivery Driver- outside_1754856749521.jpeg";
-import deliveryReceivingImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
-
 export default function BookPickup() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -1813,34 +1807,8 @@ export default function BookPickup() {
   // Guest checkout is allowed - no authentication check here
 
   // ---------- UI ----------
-  const selectedImage = deliveryHandoffImg;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-transparent via-transparent to-transparent">
-      {/* Hero */}
-      <div className="w-full bg-white/90 border-b border-border">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col lg:flex-row items-center gap-8 max-w-6xl mx-auto">
-            <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-4">Schedule Your Return</h1>
-              <p className="text-xl text-muted-foreground mb-6">On Demand Returns for returns, exchanges, and donations</p>
-              <div className="flex items-center justify-center lg:justify-start gap-4 text-primary">
-                <div className="flex items-center gap-2"><Package className="h-5 w-5" /><span>Free Pickup</span></div>
-                <div className="flex items-center gap-2"><Truck className="h-5 w-5" /><span>Same Day</span></div>
-              </div>
-            </div>
-            <div className="flex-1 max-w-md">
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-border">
-                <img src={selectedImage} alt="Professional delivery service" className="w-full h-64 object-cover" />
-                <div className="p-4 bg-gradient-to-r from-transparent to-transparent">
-                  <p className="text-sm text-muted-foreground font-medium">On Demand Returns pickup and delivery service</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Sticky Header - Stitch Pattern */}
       <header className="bg-[#f8f7f5]/80 dark:bg-[#231b0f]/80 backdrop-blur-sm sticky top-0 z-50 border-b border-primary/10">
         <div className="container mx-auto px-4">
