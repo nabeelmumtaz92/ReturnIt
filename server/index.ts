@@ -2,6 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import compression from "compression";
 import helmet from "helmet";
 import cors from "cors";
+import path from "path";
+import fs from "fs";
 import { registerRoutes } from "./routes";
 import { validateSecurityConfig, logSecurityStatus } from "./security-startup";
 import { setupVite, serveStatic, log } from "./vite";
@@ -99,7 +101,7 @@ app.use(performanceMiddleware);
 
 // Add caching headers for static assets
 app.use((req, res, next) => {
-  if (req.url === '/sw.js' || req.url === '/manifest.json' || req.url === '/site.webmanifest') {
+  if (req.url === '/sw.js' || req.url === '/manifest.json' || req.url === '/site.webmanifest' || req.url === '/manifest-customer.json' || req.url === '/manifest-driver.json') {
     // Critical PWA files - no cache to ensure updates work on Android
     res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
@@ -178,6 +180,31 @@ app.use((req, res, next) => {
     console.error('⚠️ WebSocket service initialization failed (non-critical):', error);
     // Continue without WebSocket - it's not critical for basic functionality
   }
+
+  // Serve PWA manifest files before Vite catches them
+  app.get('/manifest-customer.json', async (req, res) => {
+    try {
+      const manifestPath = path.resolve(import.meta.dirname, '../client/public/manifest-customer.json');
+      const manifestContent = await fs.promises.readFile(manifestPath, 'utf-8');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(manifestContent);
+    } catch (error) {
+      console.error('Error serving customer manifest:', error);
+      res.status(404).send('Manifest not found');
+    }
+  });
+  
+  app.get('/manifest-driver.json', async (req, res) => {
+    try {
+      const manifestPath = path.resolve(import.meta.dirname, '../client/public/manifest-driver.json');
+      const manifestContent = await fs.promises.readFile(manifestPath, 'utf-8');
+      res.setHeader('Content-Type', 'application/json');
+      res.send(manifestContent);
+    } catch (error) {
+      console.error('Error serving driver manifest:', error);
+      res.status(404).send('Manifest not found');
+    }
+  });
 
   // Use comprehensive error handler
   app.use(globalErrorHandler);
