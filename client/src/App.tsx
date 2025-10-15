@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { Suspense, lazy, useEffect } from "react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { initPostHog, trackPageView } from "@/lib/posthog";
+import { MapProviderProvider } from "@/contexts/MapProviderContext";
 
 // Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
@@ -590,14 +591,16 @@ function App() {
       }}
     >
       <QueryClientProvider client={queryClient}>
-        <TooltipProvider>
-          <ToastProvider>
-            <ErrorBoundary>
-              <Toaster />
-              <Router />
-            </ErrorBoundary>
-          </ToastProvider>
-        </TooltipProvider>
+        <MapProviderProvider>
+          <TooltipProvider>
+            <ToastProvider>
+              <ErrorBoundary>
+                <Toaster />
+                <Router />
+              </ErrorBoundary>
+            </ToastProvider>
+          </TooltipProvider>
+        </MapProviderProvider>
       </QueryClientProvider>
     </ErrorBoundary>
   );

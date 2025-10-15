@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth-simple';
+import MapProviderSelector from '@/components/MapProviderSelector';
 
 // Account deletion validation schema
 const accountDeletionSchema = z.object({
@@ -158,6 +159,9 @@ export default function AccountSettings() {
         <h1 className="text-3xl font-bold text-foreground mb-8">Account Settings</h1>
 
         <div className="grid gap-8">
+          {/* Map Provider Settings */}
+          <MapProviderSelector />
+
           {/* Data & Privacy Section */}
           <Card className="border-border bg-white/80 backdrop-blur-sm">
             <CardHeader className="bg-[#f8f7f5] dark:bg-[#231b0f]/50 border-b border-border">
