@@ -73,17 +73,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/track-order">
-                  <Button 
-                    variant="link" 
-                    className="text-amber-100 hover:text-white p-0 h-auto justify-start"
-                  >
-                    Track Your Return
-                  </Button>
-                </Link>
-              </li>
-
-              <li>
                 <Link href="/about">
                   <Button 
                     variant="link" 
