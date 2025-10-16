@@ -151,7 +151,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     lastUpdated: new Date()
   });
   const [isUpdating, setIsUpdating] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false); // Default to OFF to prevent scroll jumps
   
   // Function to change sections
   const changeSection = (newSection: string) => {
@@ -240,6 +240,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
   // Function to update dashboard statistics
   const updateDashboardStats = async () => {
+    // Save scroll position before update
+    const scrollPos = window.scrollY;
+    
     setIsUpdating(true);
     try {
       // Fetch real dashboard data from multiple endpoints with credentials
@@ -308,6 +311,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       }
     } finally {
       setIsUpdating(false);
+      
+      // Restore scroll position after update to prevent jumps
+      requestAnimationFrame(() => {
+        window.scrollTo(0, scrollPos);
+      });
     }
   };
 
