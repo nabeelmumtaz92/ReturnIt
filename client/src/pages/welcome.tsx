@@ -194,60 +194,70 @@ export default function Welcome() {
           </div>
         </div>
 
-        {/* Buttons - Mobile Optimized */}
-        <div className="flex flex-col gap-6 w-full max-w-sm">
+        {/* Buttons - Evenly Spaced and Centered */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full max-w-4xl px-4">
           <Button 
-            size="default" 
-            className="w-full bg-amber-800 hover:bg-amber-900 text-white text-sm font-medium"
+            size="lg" 
+            className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
             data-testid="button-book-pickup"
             onClick={() => setLocation('/book-pickup')}
           >
-            <Package className="h-4 w-4 mr-2" />
+            <Package className="h-5 w-5 mr-2" />
             Book Pickup
           </Button>
+          
+          <Button 
+            size="lg" 
+            className="w-full sm:w-auto px-8 py-6 bg-amber-700 hover:bg-amber-800 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+            data-testid="button-track-order"
+            onClick={() => setLocation('/tracking')}
+          >
+            <Search className="h-5 w-5 mr-2" />
+            Track Order
+          </Button>
+          
+          {envConfig?.allowDriverSignup && (
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto px-8 py-6 bg-amber-600 hover:bg-amber-700 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+              data-testid="button-become-driver"
+              onClick={() => setLocation('/driver-signup')}
+            >
+              <Truck className="h-5 w-5 mr-2" />
+              Become a Driver
+            </Button>
+          )}
         </div>
 
-        {/* Become a Driver Section - Prominent */}
+        {/* Driver Benefits Section - Info Only */}
         {envConfig?.allowDriverSignup && (
-          <div className="w-full max-w-2xl mt-8 sm:mt-12">
-            <div className="bg-gradient-to-r from-amber-600 to-amber-700 rounded-2xl p-6 sm:p-8 text-white shadow-xl">
+          <div className="w-full max-w-3xl mt-8 sm:mt-12">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-amber-200 shadow-lg">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
-                  <div className="bg-white/20 rounded-full p-3">
-                    <Truck className="h-8 w-8 text-white" />
+                  <div className="bg-amber-100 rounded-full p-3">
+                    <Truck className="h-8 w-8 text-amber-700" />
                   </div>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold">
+                <h3 className="text-xl sm:text-2xl font-bold text-amber-900">
                   Drive with Return It
                 </h3>
-                <p className="text-white/90 text-sm sm:text-base leading-relaxed">
-                  Join St. Louis's premier reverse logistics network. Earn competitive pay helping customers with returns, exchanges, and donations. Flexible schedules, instant payouts, and full support.
+                <p className="text-amber-800 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+                  Join St. Louis's premier reverse logistics network. Earn competitive pay helping customers with returns, exchanges, and donations.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-sm">
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Earn $15-25/hour</span>
+                  <div className="flex items-center justify-center gap-2 text-amber-700">
+                    <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                    <span className="font-medium">Earn $15-25/hour</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Flexible schedule</span>
+                  <div className="flex items-center justify-center gap-2 text-amber-700">
+                    <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                    <span className="font-medium">Flexible schedule</span>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span>Instant payouts</span>
+                  <div className="flex items-center justify-center gap-2 text-amber-700">
+                    <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+                    <span className="font-medium">Instant payouts</span>
                   </div>
-                </div>
-                <div className="pt-4">
-                  <Link href="/driver-signup">
-                    <Button 
-                      size="lg"
-                      className="bg-white text-amber-700 hover:bg-amber-50 font-semibold px-8"
-                      data-testid="button-become-driver-main"
-                    >
-                      <Truck className="h-5 w-5 mr-2" />
-                      Apply to Drive
-                    </Button>
-                  </Link>
                 </div>
               </div>
             </div>
