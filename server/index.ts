@@ -20,6 +20,16 @@ import { crashRecovery } from "./middleware/crashRecovery";
 
 const app = express();
 
+// DEPLOYMENT: Health check endpoint MUST be absolute first - responds instantly without ANY middleware
+// This endpoint is used by deployment health checks and must not go through any middleware or operations
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'healthy',
+    service: 'ReturnIt API',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Trust proxy for HTTPS cookies behind Replit proxy
 app.set('trust proxy', 1);
 
