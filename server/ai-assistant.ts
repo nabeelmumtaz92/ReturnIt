@@ -16,10 +16,17 @@ if (process.env.GEMINI_API_KEY) {
   });
 }
 
-// Auto-refresh knowledge base on startup
-KnowledgeBaseManager.refreshKnowledge().catch(err => 
-  console.error('[AI] Failed to initialize knowledge base:', err)
-);
+// Knowledge Base will be initialized lazily on first AI request
+// This prevents blocking server startup for deployment health checks
+let knowledgeBaseInitialized = false;
+async function ensureKnowledgeBase() {
+  if (!knowledgeBaseInitialized) {
+    await KnowledgeBaseManager.refreshKnowledge().catch(err => 
+      console.error('[AI] Failed to initialize knowledge base:', err)
+    );
+    knowledgeBaseInitialized = true;
+  }
+}
 
 const execAsync = promisify(exec);
 
@@ -346,6 +353,9 @@ export class AIAssistant {
     }
 
     try {
+      // Ensure knowledge base is initialized (lazy loading)
+      await ensureKnowledgeBase();
+      
       // Get fresh system prompt from knowledge base manager
       const systemPrompt = await KnowledgeBaseManager.generateSystemPrompt();
       const context = await this.getCodebaseContext();

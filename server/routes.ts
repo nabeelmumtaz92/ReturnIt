@@ -397,6 +397,16 @@ async function escalateOrderToAdmin(
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // DEPLOYMENT: Lightweight health check endpoint - must respond immediately
+  // This endpoint is used by deployment health checks and must not call database or heavy operations
+  app.get('/', (req, res) => {
+    res.status(200).json({ 
+      status: 'healthy',
+      service: 'ReturnIt API',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   // Basic Auth for staging environment (returnly.tech)
   app.use((req, res, next) => {
     // Only apply basic auth to returnly.tech domain
