@@ -6,47 +6,48 @@
 @tailwind utilities;
 
 :root {
-  /* Original ReturnIt Colors - Amber & Beige */
-  --background: hsl(0, 0%, 100%);
-  --foreground: hsl(0, 0%, 15%);
+  /* Cardboard Color Scheme */
+  --background: #FAF8F4; /* Cream/light beige background */
+  --foreground: hsl(30, 15%, 20%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(0, 0%, 15%);
+  --card-foreground: hsl(30, 15%, 20%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(0, 0%, 15%);
-  --primary: #d97706; /* Amber - main brand color */
+  --popover-foreground: hsl(30, 15%, 20%);
+  --primary: #B8956A; /* Cardboard brown - main brand color */
   --primary-foreground: #ffffff;
-  --secondary: #f5f5dc; /* Beige */
-  --secondary-foreground: #1a1a1a;
-  --muted: hsl(40, 20%, 90%);
-  --muted-foreground: hsl(0, 0%, 45%);
-  --accent: #f5f5dc; /* Beige */
-  --accent-foreground: #1a1a1a;
+  --secondary: #FAF8F4; /* Cream/beige */
+  --secondary-foreground: #8B7355;
+  --muted: hsl(40, 25%, 88%);
+  --muted-foreground: hsl(30, 15%, 45%);
+  --accent: #FAF8F4; /* Cream/beige */
+  --accent-foreground: #8B7355;
   --destructive: hsl(0, 85%, 58%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(0, 0%, 90%);
-  --input: hsl(0, 0%, 95%);
-  --ring: #d97706; /* Amber ring */
-  --chart-1: #d97706;
-  --chart-2: #f59e0b;
-  --chart-3: #fbbf24;
-  --chart-4: #fcd34d;
-  --chart-5: #fde68a;
-  --sidebar: #f5f5dc; /* Beige sidebar */
-  --sidebar-foreground: hsl(0, 0%, 15%);
-  --sidebar-primary: #d97706; /* Amber */
+  --border: hsl(30, 20%, 80%);
+  --input: hsl(0, 0%, 98%);
+  --ring: #B8956A; /* Cardboard brown ring */
+  --chart-1: #B8956A;
+  --chart-2: #A0825D;
+  --chart-3: #8B7355;
+  --chart-4: #9B8669;
+  --chart-5: #C9B18A;
+  --sidebar: #FAF8F4; /* Cream sidebar */
+  --sidebar-foreground: hsl(30, 15%, 20%);
+  --sidebar-primary: #B8956A; /* Cardboard brown */
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #ffffff;
-  --sidebar-accent-foreground: #d97706;
-  --sidebar-border: hsl(0, 0%, 85%);
-  --sidebar-ring: #d97706;
+  --sidebar-accent-foreground: #B8956A;
+  --sidebar-border: hsl(30, 20%, 85%);
+  --sidebar-ring: #B8956A;
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
   --radius: 0.5rem;
   
-  /* Brand specific colors - Simple Amber & Beige */
-  --brand-amber: #d97706;
-  --brand-beige: #f5f5dc;
+  /* Brand specific colors - Cardboard Theme */
+  --brand-cardboard: #B8956A;
+  --brand-cream: #FAF8F4;
+  --brand-cardboard-dark: #8B7355;
   --brand-white: #ffffff;
   --brand-black: #1a1a1a;
   
