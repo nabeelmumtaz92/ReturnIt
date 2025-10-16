@@ -6,61 +6,49 @@
 @tailwind utilities;
 
 :root {
+  /* Original ReturnIt Colors - Amber & Beige */
   --background: hsl(0, 0%, 100%);
-  --foreground: hsl(210, 10%, 8%);
+  --foreground: hsl(0, 0%, 15%);
   --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(210, 10%, 8%);
+  --card-foreground: hsl(0, 0%, 15%);
   --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(210, 10%, 8%);
-  --primary: #d97706; /* Amber color */
+  --popover-foreground: hsl(0, 0%, 15%);
+  --primary: #d97706; /* Amber - main brand color */
   --primary-foreground: #ffffff;
-  --secondary: #FAF8F4;
-  --secondary-foreground: #B8956A;
-  --muted: hsl(39, 20%, 85%);
-  --muted-foreground: hsl(30, 20%, 45%);
-  --accent: #FAF8F4;
-  --accent-foreground: #B8956A;
+  --secondary: #f5f5dc; /* Beige */
+  --secondary-foreground: #1a1a1a;
+  --muted: hsl(40, 20%, 90%);
+  --muted-foreground: hsl(0, 0%, 45%);
+  --accent: #f5f5dc; /* Beige */
+  --accent-foreground: #1a1a1a;
   --destructive: hsl(0, 85%, 58%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(30, 40%, 25%);
-  --input: #FAF8F4;
-  --ring: #B8956A;
-  --chart-1: hsl(20, 100%, 60%);
-  --chart-2: hsl(123, 45%, 30%);
-  --chart-3: hsl(39, 35%, 65%);
-  --chart-4: hsl(30, 28%, 35%);
-  --chart-5: hsl(210, 10%, 8%);
-  --sidebar: hsl(45, 35%, 97%);
-  --sidebar-foreground: hsl(210, 10%, 8%);
-  --sidebar-primary: hsl(30, 32%, 39%);
-  --sidebar-primary-foreground: hsl(45, 42%, 96%);
-  --sidebar-accent: hsl(45, 42%, 96%);
-  --sidebar-accent-foreground: hsl(30, 32%, 39%);
-  --sidebar-border: hsl(30, 40%, 25%);
-  --sidebar-ring: hsl(30, 32%, 39%);
-  --font-sans: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --border: hsl(0, 0%, 90%);
+  --input: hsl(0, 0%, 95%);
+  --ring: #d97706; /* Amber ring */
+  --chart-1: #d97706;
+  --chart-2: #f59e0b;
+  --chart-3: #fbbf24;
+  --chart-4: #fcd34d;
+  --chart-5: #fde68a;
+  --sidebar: #f5f5dc; /* Beige sidebar */
+  --sidebar-foreground: hsl(0, 0%, 15%);
+  --sidebar-primary: #d97706; /* Amber */
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #d97706;
+  --sidebar-border: hsl(0, 0%, 85%);
+  --sidebar-ring: #d97706;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-serif: 'Georgia', 'Times New Roman', serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
   --radius: 0.5rem;
   
-  /* Brand specific colors - Cardboard Theme - Optimized for crisp rendering */
-  --brand-cardboard: #B8956A;
-  --brand-cream: #FAF8F4;
-  --brand-cardboard-dark: hsl(30, 40%, 25%);
-  --brand-barcode-black: hsl(210, 7%, 10%);
-  --brand-tape-brown: hsl(30, 32%, 39%);
-  --brand-accent-orange: #d97706;
-  --brand-accent-green: hsl(123, 43%, 32%);
-  
-  /* Mapped brand variables */
-  --brand-primary: hsl(30, 32%, 39%);
-  --brand-primary-dark: hsl(30, 40%, 25%);
-  --brand-accent: hsl(45, 42%, 96%);
-  --brand-bg: hsl(45, 42%, 96%);
-  --brand-surface: hsl(0, 0%, 100%);
-  --brand-text: hsl(210, 7%, 10%);
-  --brand-muted: hsl(39, 39%, 70%);
-  --brand-border: hsl(30, 40%, 25%);
+  /* Brand specific colors - Simple Amber & Beige */
+  --brand-amber: #d97706;
+  --brand-beige: #f5f5dc;
+  --brand-white: #ffffff;
+  --brand-black: #1a1a1a;
   
   /* Enhanced image rendering */
   --image-rendering: optimizeQuality;
