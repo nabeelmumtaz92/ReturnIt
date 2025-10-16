@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -438,25 +438,27 @@ export default function BookPickup() {
 
   // Generic input handler
   // Synchronously invalidate merchant policy validation when relevant fields change
-  const invalidateMerchantPolicy = () => {
+  const invalidateMerchantPolicy = useCallback(() => {
     setMerchantPolicyValidation(null);
     setIsValidatingPolicy(true);
-  };
+  }, []);
 
-  const handleInputChange = (field: string, value: any) => {
+  const handleInputChange = useCallback((field: string, value: any) => {
     // CRITICAL: Invalidate policy SYNCHRONOUSLY for policy-relevant fields
     const policyRelevantFields = ['retailer', 'itemCategories', 'purchaseDate', 'hasOriginalTags', 'hasOriginalPackaging', 'receiptImage', 'receiptUrl', 'purchaseType'];
     if (policyRelevantFields.includes(field)) {
-      invalidateMerchantPolicy();
+      setMerchantPolicyValidation(null);
+      setIsValidatingPolicy(true);
     }
     
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  }, []);
 
   // Category toggle handler for multi-select
-  const handleCategoryToggle = (category: string) => {
+  const handleCategoryToggle = useCallback((category: string) => {
     // CRITICAL: Invalidate policy SYNCHRONOUSLY when categories change
-    invalidateMerchantPolicy();
+    setMerchantPolicyValidation(null);
+    setIsValidatingPolicy(true);
     
     setFormData(prev => ({
       ...prev,
@@ -464,7 +466,7 @@ export default function BookPickup() {
         ? prev.itemCategories.filter(c => c !== category)
         : [...prev.itemCategories, category]
     }));
-  };
+  }, []);
 
   // Receipt upload handlers
   const handleReceiptGetUploadUrl = async () => {
@@ -475,7 +477,7 @@ export default function BookPickup() {
     };
   };
 
-  const handleReceiptUploadComplete = async (result: any) => {
+  const handleReceiptUploadComplete = useCallback(async (result: any) => {
     if (result.successful && result.successful.length > 0) {
       try {
         const uploadedFile = result.successful[0];
@@ -490,7 +492,8 @@ export default function BookPickup() {
         const durableObjectPath = response.objectPath;
         
         // CRITICAL: Invalidate policy SYNCHRONOUSLY when receipt changes
-        invalidateMerchantPolicy();
+        setMerchantPolicyValidation(null);
+        setIsValidatingPolicy(true);
         
         // Update formData with the DURABLE object path, not the expiring presigned URL
         setFormData(prev => ({ 
@@ -512,7 +515,7 @@ export default function BookPickup() {
         });
       }
     }
-  };
+  }, [toast]);
 
   // Return label upload handler  
   const handleReturnLabelUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -687,7 +690,7 @@ export default function BookPickup() {
         warnings: result.warnings
       });
     }
-  }, [formData.itemDescription, formData.itemCategories.join(','), formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
+  }, [formData.itemDescription, formData.itemCategories, formData.retailer, formData.itemValue, formData.numberOfItems, formData.estimatedWeight]);
 
   // Validate merchant-specific return policies
   useEffect(() => {
