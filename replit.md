@@ -164,6 +164,10 @@ The **Return Graph** is ReturnIt's core competitive advantage - a self-learning 
 ## Infrastructure & Deployment
 - Production deployment at returnit.online, Neon PostgreSQL.
 - Multi-environment support, automated workflow with Replit.
+- **Server Configuration**: Binds to 0.0.0.0:5000 for deployment compatibility
+- **Health Check**: Lightweight GET / endpoint responds instantly with status 200 (no database calls)
+- **Performance Optimization**: AI Knowledge Base uses lazy loading to prevent blocking server startup
+- **Map Provider System**: Multi-provider support (Mapbox, Google Maps, OpenStreetMap, Apple Maps) with user preferences stored in account settings
 
 # External Dependencies
 
