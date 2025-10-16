@@ -686,62 +686,70 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
 
       {/* Overview dashboard content */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-gradient-to-br from-green-50 via-emerald-50 to-green-100 dark:from-green-950 dark:via-emerald-950 dark:to-green-900 border-green-200 dark:border-green-800 shadow-lg hover:shadow-xl transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Active Orders</p>
-                <p className="text-2xl font-bold text-foreground">{dashboardStats.activeOrders}</p>
-                <Badge variant="outline" className="text-xs text-green-600 border-green-200 mt-1">
+                <p className="text-sm font-semibold text-green-700 dark:text-green-300">Active Orders</p>
+                <p className="text-3xl font-bold text-green-900 dark:text-green-100 mt-1">{dashboardStats.activeOrders}</p>
+                <Badge className="text-xs bg-green-600 text-white border-0 mt-2 shadow-sm">
                   Live
                 </Badge>
               </div>
-              <Package className="h-8 w-8 text-primary" />
+              <div className="bg-green-600/20 p-3 rounded-full">
+                <Package className="h-8 w-8 text-green-600 dark:text-green-400" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-gradient-to-br from-blue-50 via-sky-50 to-blue-100 dark:from-blue-950 dark:via-sky-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Active Drivers</p>
-                <p className="text-2xl font-bold text-foreground">{dashboardStats.activeDrivers}</p>
-                <Badge variant="outline" className="text-xs text-blue-600 border-blue-200 mt-1">
+                <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Active Drivers</p>
+                <p className="text-3xl font-bold text-blue-900 dark:text-blue-100 mt-1">{dashboardStats.activeDrivers}</p>
+                <Badge className="text-xs bg-blue-600 text-white border-0 mt-2 shadow-sm">
                   Online
                 </Badge>
               </div>
-              <Truck className="h-8 w-8 text-primary" />
+              <div className="bg-blue-600/20 p-3 rounded-full">
+                <Truck className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-gradient-to-br from-purple-50 via-violet-50 to-purple-100 dark:from-purple-950 dark:via-violet-950 dark:to-purple-900 border-purple-200 dark:border-purple-800 shadow-lg hover:shadow-xl transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Today's Revenue</p>
-                <p className="text-2xl font-bold text-foreground">${dashboardStats.todayRevenue}</p>
-                <Badge variant="outline" className="text-xs text-purple-600 border-purple-200 mt-1">
+                <p className="text-sm font-semibold text-purple-700 dark:text-purple-300">Today's Revenue</p>
+                <p className="text-3xl font-bold text-purple-900 dark:text-purple-100 mt-1">${dashboardStats.todayRevenue}</p>
+                <Badge className="text-xs bg-purple-600 text-white border-0 mt-2 shadow-sm">
                   Real-time
                 </Badge>
               </div>
-              <DollarSign className="h-8 w-8 text-primary" />
+              <div className="bg-purple-600/20 p-3 rounded-full">
+                <DollarSign className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className={`bg-white/90 backdrop-blur-sm border-border transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
+        <Card className={`bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-amber-950 dark:via-orange-950 dark:to-amber-900 border-amber-200 dark:border-amber-800 shadow-lg hover:shadow-xl transition-all duration-300 ${isUpdating ? 'animate-pulse' : ''}`}>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-primary">Completion Rate</p>
-                <p className="text-2xl font-bold text-foreground">{dashboardStats.completionRate}%</p>
-                <Badge variant="outline" className="text-xs text-amber-600 border-amber-200 mt-1">
+                <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">Completion Rate</p>
+                <p className="text-3xl font-bold text-amber-900 dark:text-amber-100 mt-1">{dashboardStats.completionRate}%</p>
+                <Badge className="text-xs bg-amber-600 text-white border-0 mt-2 shadow-sm">
                   Updated
                 </Badge>
               </div>
-              <TrendingUp className="h-8 w-8 text-primary" />
+              <div className="bg-amber-600/20 p-3 rounded-full">
+                <TrendingUp className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+              </div>
             </div>
           </CardContent>
         </Card>
