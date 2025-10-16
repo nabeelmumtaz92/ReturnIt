@@ -1,7 +1,7 @@
 import { Component, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { AlertTriangle, Home, Phone, MessageSquare } from 'lucide-react';
 import { handleError } from '@/lib/errorHandler';
 
 interface Props {
@@ -17,9 +17,6 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  private retryCount = 0;
-  private maxRetries = 3;
-
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -45,7 +42,6 @@ export class ErrorBoundary extends Component<Props, State> {
     console.log('ErrorBoundary Details:', {
       componentStack: errorInfo.componentStack,
       errorId: this.state.errorId,
-      retryCount: this.retryCount,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
       url: window.location.href,
@@ -66,27 +62,11 @@ export class ErrorBoundary extends Component<Props, State> {
           react: errorInfo,
           errorBoundary: {
             errorId: this.state.errorId,
-            retryCount: this.retryCount,
           }
         }
       });
     }
   }
-
-  handleRetry = () => {
-    if (this.retryCount < this.maxRetries) {
-      this.retryCount++;
-      this.setState({
-        hasError: false,
-        error: null,
-        errorId: null,
-      });
-    }
-  };
-
-  handleReload = () => {
-    window.location.reload();
-  };
 
   handleGoHome = () => {
     window.location.href = '/';
@@ -112,54 +92,38 @@ export class ErrorBoundary extends Component<Props, State> {
               <CardTitle className="text-xl font-semibold text-gray-900">
                 Something went wrong
               </CardTitle>
-              <CardDescription>
-                We're sorry, but something unexpected happened. Our team has been notified.
-              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {this.state.errorId && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-600 font-mono">
-                    Error ID: {this.state.errorId}
-                  </p>
-                </div>
-              )}
-              
-              <div className="flex flex-col gap-2">
-                {this.retryCount < this.maxRetries && (
-                  <Button 
-                    onClick={this.handleRetry}
-                    className="w-full"
-                    data-testid="button-retry-error"
-                  >
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                    Try Again ({this.maxRetries - this.retryCount} attempts left)
-                  </Button>
-                )}
-                
-                <Button 
-                  variant="outline"
-                  onClick={this.handleGoHome}
-                  className="w-full"
-                  data-testid="button-go-home"
-                >
-                  <Home className="h-4 w-4 mr-2" />
-                  Go to Homepage
-                </Button>
-                
-                <Button 
-                  variant="outline"
-                  onClick={this.handleReload}
-                  className="w-full"
-                  data-testid="button-reload-page"
-                >
-                  <RefreshCw className="h-4 w-4 mr-2" />
-                  Reload Page
-                </Button>
-              </div>
+              <Button 
+                variant="outline"
+                onClick={this.handleGoHome}
+                className="w-full"
+                data-testid="button-go-home"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Go to Homepage
+              </Button>
 
-              <div className="text-xs text-gray-500 text-center pt-2">
-                If this problem persists, please contact support.
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline"
+                  onClick={() => window.location.href = 'tel:+1234567890'}
+                  className="flex-1"
+                  data-testid="button-call-support"
+                >
+                  <Phone className="h-4 w-4 mr-2" />
+                  Call Support
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={() => window.location.href = 'sms:+1234567890'}
+                  className="flex-1"
+                  data-testid="button-text-support"
+                >
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Text Support
+                </Button>
               </div>
             </CardContent>
           </Card>
