@@ -1,6 +1,6 @@
 # Overview
 
-Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a white/beige design, amber color scheme (#d97706), a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. Return It is production-ready, deployed at returnit.online, aiming for significant market penetration and a strong valuation. The platform uses Mapbox GL for map visualization with Google Maps integration for turn-by-turn navigation. The platform also has a comprehensive patent portfolio strategy.
+Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a cardboard brown (#B8956A) and masking tape (#FAF8F4) color scheme, a comprehensive admin dashboard, and AI-powered support chat. The platform features a distinctive cardboard/shipping theme, supporting a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. Return It is production-ready, deployed at returnit.online, aiming for significant market penetration and a strong valuation. The platform uses Mapbox GL for map visualization with Google Maps integration for turn-by-turn navigation. The platform also has a comprehensive patent portfolio strategy.
 
 # User Preferences
 
@@ -12,7 +12,7 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: React 18 with TypeScript (Vite).
 - **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme).
 - **State Management**: Zustand (global), React Query (server).
-- **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens. UI/UX emphasizes a white/beige aesthetic, sophisticated gradients, and professional typography using the Stitch design system (Stitch orange primary color, Work Sans font, specific border radius and shadow patterns).
+- **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens. UI/UX emphasizes a cardboard brown and masking tape aesthetic, sophisticated gradients, and professional typography using Inter font (cardboard brown #B8956A primary color, masking tape #FAF8F4 backgrounds, specific border radius and shadow patterns).
 - **Navigation**: Universal back button component (Instagram-style) for consistent navigation across all pages.
 
 ## Backend
