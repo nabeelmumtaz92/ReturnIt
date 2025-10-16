@@ -166,9 +166,10 @@ The **Return Graph** is ReturnIt's core competitive advantage - a self-learning 
 - Multi-environment support, automated workflow with Replit.
 - **Server Configuration**: Binds to 0.0.0.0:5000 for deployment compatibility
 - **Health Check Endpoint**: 
-  - GET / endpoint registered BEFORE all middleware for instant response (~45ms)
+  - GET /health endpoint registered BEFORE all middleware for instant response (~45ms)
   - Returns `{"status":"healthy","service":"ReturnIt API","timestamp":"..."}`
   - No database calls, no heavy operations - deployment-ready
+  - Registered as first route before Vite dev server to prevent interference
   - Responds immediately without going through session, authentication, or database middleware
 - **Performance Optimizations**:
   - AI Knowledge Base uses lazy loading (loads on first AI request, not startup)
