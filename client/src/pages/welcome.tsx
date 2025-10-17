@@ -194,8 +194,8 @@ export default function Welcome() {
           </div>
         </div>
 
-        {/* Buttons - Evenly Spaced and Centered */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 w-full max-w-4xl px-4">
+        {/* Book Pickup Button - Centered */}
+        <div className="flex items-center justify-center w-full max-w-4xl px-4">
           <Button 
             size="lg" 
             className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
@@ -205,31 +205,9 @@ export default function Welcome() {
             <Package className="h-5 w-5 mr-2" />
             Book Pickup
           </Button>
-          
-          <Button 
-            size="lg" 
-            className="w-full sm:w-auto px-8 py-6 bg-amber-700 hover:bg-amber-800 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            data-testid="button-track-order"
-            onClick={() => setLocation('/tracking')}
-          >
-            <Search className="h-5 w-5 mr-2" />
-            Track Order
-          </Button>
-          
-          {envConfig?.allowDriverSignup && (
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto px-8 py-6 bg-amber-600 hover:bg-amber-700 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-              data-testid="button-become-driver"
-              onClick={() => setLocation('/driver-signup')}
-            >
-              <Truck className="h-5 w-5 mr-2" />
-              Become a Driver
-            </Button>
-          )}
         </div>
 
-        {/* Driver Benefits Section - Info Only */}
+        {/* Driver Benefits Section with Become a Driver Button */}
         {envConfig?.allowDriverSignup && (
           <div className="w-full max-w-3xl mt-8 sm:mt-12">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-amber-200 shadow-lg">
@@ -258,6 +236,17 @@ export default function Welcome() {
                     <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
                     <span className="font-medium">Instant payouts</span>
                   </div>
+                </div>
+                <div className="pt-4">
+                  <Button 
+                    size="lg" 
+                    className="w-full sm:w-auto px-8 py-6 bg-amber-600 hover:bg-amber-700 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                    data-testid="button-become-driver"
+                    onClick={() => setLocation('/driver-signup')}
+                  >
+                    <Truck className="h-5 w-5 mr-2" />
+                    Become a Driver
+                  </Button>
                 </div>
               </div>
             </div>
