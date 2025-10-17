@@ -76,7 +76,7 @@ export default function Footer() {
                     variant="link" 
                     className="text-primary-foreground/80 hover:text-white p-0 h-auto justify-start"
                   >
-                    Book Return Pickup
+                    Book Return
                   </Button>
                 </Link>
               </li>

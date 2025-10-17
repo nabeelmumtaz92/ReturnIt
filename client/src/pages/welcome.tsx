@@ -194,7 +194,7 @@ export default function Welcome() {
           </div>
         </div>
 
-        {/* Book Pickup Button - Centered */}
+        {/* Book Return Button - Centered */}
         <div className="flex items-center justify-center w-full max-w-4xl px-4">
           <Button 
             size="lg" 
@@ -203,7 +203,7 @@ export default function Welcome() {
             onClick={() => setLocation('/book-pickup')}
           >
             <Package className="h-5 w-5 mr-2" />
-            Book Pickup
+            Book Return
           </Button>
         </div>
 

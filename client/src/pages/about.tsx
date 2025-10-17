@@ -94,7 +94,7 @@ export default function About() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link href="/book-pickup">
                   <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold" data-testid="button-book-pickup">
-                    Book Your First Pickup
+                    Book Your First Return
                   </Button>
                 </Link>
                 <Link href="/driver-portal">
