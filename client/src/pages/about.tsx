@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import Footer from "@/components/Footer";
+import professionalDriverImg from "@assets/generated_images/Professional_delivery_driver_portrait_765dd57e.png";
 
 interface BusinessInfo {
   id: number;
@@ -249,9 +250,9 @@ export default function About() {
               </div>
               <div className="flex justify-center">
                 <img 
-                  src="/attached_assets/stock_images/professional_deliver_40acc382.jpg"
+                  src={professionalDriverImg}
                   alt="Professional delivery driver with package"
-                  className="rounded-2xl shadow-lg max-w-md w-full"
+                  className="rounded-2xl shadow-lg max-w-md w-full object-cover h-80"
                 />
               </div>
             </div>
