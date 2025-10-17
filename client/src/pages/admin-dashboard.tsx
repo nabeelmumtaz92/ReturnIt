@@ -508,7 +508,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Business Operations */}
       <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">📋 Business Operations</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
           <Button onClick={() => changeSection('orders')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-manage-orders">
             <Package className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Order Management</span>
@@ -535,7 +535,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Analytics */}
       <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">📊 Analytics & Intelligence</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
           <Button onClick={() => changeSection('business-intelligence')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-business-intelligence">
             <PieChart className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Business Intelligence</span>
@@ -562,7 +562,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Financial Operations */}
       <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">💰 Financial Operations</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
           <Button onClick={() => changeSection('financial-operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-financial-operations">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Financial Operations</span>
@@ -601,7 +601,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Support & Customer Service */}
       <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">🎧 Support & Customer Service</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
           <Button onClick={() => changeSection('support-center')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-support-center">
             <HeadphonesIcon className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Support Center</span>
@@ -620,7 +620,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       {/* Operations & Management */}
       <div className="bg-white/90 backdrop-blur-sm border border-border rounded-lg p-4 sm:p-6">
         <h2 className="text-lg font-semibold text-foreground mb-4">⚙️ Operations & Management</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
           <Button onClick={() => changeSection('notifications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-border text-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f] hover:border-border flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation" variant="outline" data-testid="button-notifications">
             <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Notifications</span>
@@ -6094,7 +6094,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         {/* Section Header */}
         <div className="bg-white/80 backdrop-blur-sm border-b border-border p-4">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <div>
+            <div className="flex items-center gap-4">
+              {/* Back Button */}
+              <BackButton />
               <Link href="/admin-dashboard">
                 <h1 className="text-2xl font-bold text-foreground capitalize cursor-pointer hover:text-primary transition-colors">
                   {currentSection === 'overview' ? 'Dashboard Overview' : currentSection.replace('-', ' ')}
