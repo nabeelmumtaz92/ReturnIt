@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -436,6 +436,10 @@ export default function BookPickup() {
     else if (currentStep === 'step2') setCurrentStep('step1');
   };
 
+  // Cursor position tracking for inputs
+  const inputRefs = useRef<{[key: string]: HTMLInputElement | null}>({});
+  const cursorPositions = useRef<{[key: string]: number | null}>({});
+
   // Generic input handler
   // Synchronously invalidate merchant policy validation when relevant fields change
   const invalidateMerchantPolicy = useCallback(() => {
@@ -443,7 +447,13 @@ export default function BookPickup() {
     setIsValidatingPolicy(true);
   }, []);
 
-  const handleInputChange = useCallback((field: string, value: any) => {
+  const handleInputChange = useCallback((field: string, value: any, element?: HTMLInputElement) => {
+    // Save cursor position if input element is provided
+    if (element && (element.type === 'text' || element.type === 'email' || element.type === 'tel')) {
+      cursorPositions.current[field] = element.selectionStart;
+      inputRefs.current[field] = element;
+    }
+
     // CRITICAL: Invalidate policy SYNCHRONOUSLY for policy-relevant fields
     const policyRelevantFields = ['retailer', 'itemCategories', 'purchaseDate', 'hasOriginalTags', 'hasOriginalPackaging', 'receiptImage', 'receiptUrl', 'purchaseType'];
     if (policyRelevantFields.includes(field)) {
@@ -453,6 +463,19 @@ export default function BookPickup() {
     
     setFormData(prev => ({ ...prev, [field]: value }));
   }, []);
+
+  // Restore cursor position after render
+  useEffect(() => {
+    Object.keys(cursorPositions.current).forEach(field => {
+      const position = cursorPositions.current[field];
+      const element = inputRefs.current[field];
+      
+      if (element && position !== null) {
+        element.setSelectionRange(position, position);
+        cursorPositions.current[field] = null;
+      }
+    });
+  });
 
   // Category toggle handler for multi-select
   const handleCategoryToggle = useCallback((category: string) => {
@@ -864,14 +887,14 @@ export default function BookPickup() {
             <div>
               <Label htmlFor="firstName" className="text-foreground font-medium">First Name *</Label>
               <Input id="firstName" placeholder="John" value={formData.firstName}
-                onChange={(e) => handleInputChange('firstName', e.target.value)}
+                onChange={(e) => handleInputChange('firstName', e.target.value, e.target as HTMLInputElement)}
                 className="bg-white/80 border-border focus:border-primary"
                 required data-testid="input-first-name" />
             </div>
             <div>
               <Label htmlFor="lastName" className="text-foreground font-medium">Last Name *</Label>
               <Input id="lastName" placeholder="Doe" value={formData.lastName}
-                onChange={(e) => handleInputChange('lastName', e.target.value)}
+                onChange={(e) => handleInputChange('lastName', e.target.value, e.target as HTMLInputElement)}
                 className="bg-white/80 border-border focus:border-primary"
                 required data-testid="input-last-name" />
             </div>
@@ -879,7 +902,7 @@ export default function BookPickup() {
           <div>
             <Label htmlFor="phone" className="text-foreground font-medium">Phone Number *</Label>
             <Input id="phone" type="tel" placeholder="(555) 123-4567" value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
+              onChange={(e) => handleInputChange('phone', e.target.value, e.target as HTMLInputElement)}
               className="bg-white/80 border-border focus:border-primary"
               required data-testid="input-phone" />
           </div>
@@ -887,7 +910,7 @@ export default function BookPickup() {
             <div>
               <Label htmlFor="email" className="text-foreground font-medium">Email Address *</Label>
               <Input id="email" type="email" placeholder="your@email.com" value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={(e) => handleInputChange('email', e.target.value, e.target as HTMLInputElement)}
                 className="bg-white/80 border-border focus:border-primary"
                 required data-testid="input-email" />
               <p className="text-xs text-muted-foreground mt-1">We'll create your account with this email</p>
