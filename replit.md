@@ -2,6 +2,23 @@
 
 Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution with a distinctive cardboard/shipping theme (cardboard brown #B8956A and masking tape #FAF8F4), a comprehensive admin dashboard, and AI-powered support. The platform supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. Return It aims for significant market penetration, a strong valuation, and features a comprehensive patent portfolio strategy.
 
+# Recent Changes (October 18, 2025)
+
+## Booking Form Schema Drift Resolution
+**Critical Fix**: Resolved massive database schema drift affecting booking functionality:
+- **Database Schema Cleanup**: Removed 60+ non-existent columns from `shared/schema.ts` orders table (refund tracking, policy enforcement, gift card handling, driver timeline fields)
+- **ID Generation Fix**: Added proper ID and tracking number generation to `DatabaseStorage.createOrder` (previously missing, causing null constraint violations)
+- **Database Adjustments**: Made `orders.user_id`, `orders.pickup_address`, and `orders.pickup_method` nullable to support guest bookings and match code expectations
+- **Timeline Functions**: Stubbed out `extendOrderDeadline` and `getOverdueOrders` functions (relied on non-existent `completionDeadline` and `driverAcceptedAt` columns)
+- **Frontend Fix**: Updated booking success redirect from `/orders` (404) to `/` with improved toast message
+- **Impact**: Booking form now works end-to-end - customers can successfully create orders via `/book-return`
+
+## Schema Simplification
+The production database uses simplified payment/refund tracking:
+- **Payment Breakdown**: Single aggregate fields (`driverEarning`, `returnlyFee`) instead of detailed breakdowns
+- **Refund Tracking**: Retailer-focused fields only (`retailer_issued_refund`, `retailer_refund_amount`, `retailer_refund_method`, `retailer_refund_timeline`)
+- **Address Fields**: Hybrid model with both `pickup_address` (nullable) and separate component fields (`pickup_street_address`, `pickup_city`, `pickup_state`, `pickup_zip_code`)
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

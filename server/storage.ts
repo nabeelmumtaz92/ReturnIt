@@ -864,8 +864,6 @@ export class MemStorage implements IStorage {
       stripePaymentIntentId: insertOrder.stripePaymentIntentId || null,
       stripeChargeId: insertOrder.stripeChargeId || null,
       paymentStatus: insertOrder.paymentStatus || 'pending',
-      stripeRefundId: insertOrder.stripeRefundId || null,
-      refundAmount: insertOrder.refundAmount || null,
       driverId: insertOrder.driverId || null,
       driverAssignedAt: insertOrder.driverAssignedAt || null,
       estimatedDeliveryTime: insertOrder.estimatedDeliveryTime || null,
@@ -883,14 +881,6 @@ export class MemStorage implements IStorage {
       isFragile: insertOrder.isFragile ?? false,
       requiresSignature: insertOrder.requiresSignature ?? false,
       insuranceValue: insertOrder.insuranceValue || null,
-      itemCost: insertOrder.itemCost || null,
-      refundMethod: insertOrder.refundMethod || null,
-      refundStatus: insertOrder.refundStatus || null,
-      refundProcessedAt: insertOrder.refundProcessedAt || null,
-      refundCompletedAt: insertOrder.refundCompletedAt || null,
-      refundReason: insertOrder.refundReason || null,
-      returnRefused: insertOrder.returnRefused ?? false,
-      returnRefusedReason: insertOrder.returnRefusedReason || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -945,14 +935,11 @@ export class MemStorage implements IStorage {
     if (!order) return undefined;
 
     const now = new Date();
-    const completionDeadline = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from acceptance
 
     const updatedOrder = {
       ...order,
       driverId,
       driverAssignedAt: now,
-      driverAcceptedAt: now, // Driver accepts when assigned in MemStorage
-      completionDeadline: completionDeadline,
       status: OrderStatus.ASSIGNED as OrderStatusType,
       updatedAt: now
     };
@@ -1831,40 +1818,13 @@ export class MemStorage implements IStorage {
   }
 
   // Timeline management methods (MemStorage implementation)
+  // STUBBED OUT - completionDeadline and driverAcceptedAt don't exist in DB
   async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
-    const order = this.orders.get(orderId);
-    if (!order || !order.completionDeadline || !order.driverAcceptedAt) return undefined;
-    
-    // Max extension of 4 hours total from acceptance
-    const maxDeadline = new Date(order.driverAcceptedAt.getTime() + (4 * 60 * 60 * 1000));
-    const newDeadline = new Date(order.completionDeadline.getTime() + (extensionMinutes * 60 * 1000));
-    
-    // Don't extend beyond 4-hour max
-    const finalDeadline = newDeadline > maxDeadline ? maxDeadline : newDeadline;
-    
-    // Check if already at max
-    if (order.completionDeadline >= maxDeadline) return undefined;
-    
-    const updatedOrder = {
-      ...order,
-      completionDeadline: finalDeadline,
-      updatedAt: new Date()
-    };
-    
-    this.orders.set(orderId, updatedOrder);
-    return updatedOrder;
+    return undefined;
   }
 
   async getOverdueOrders(): Promise<Order[]> {
-    const now = new Date();
-    return Array.from(this.orders.values()).filter(order => 
-      order.completionDeadline && 
-      order.completionDeadline < now &&
-      order.status !== 'completed' &&
-      order.status !== 'cancelled' &&
-      order.status !== 'delivered' &&
-      order.status !== 'refunded'
-    );
+    return [];
   }
 
   async getUnacceptedOrders(timeoutMinutes: number = 15): Promise<Order[]> {
@@ -2453,9 +2413,22 @@ export class DatabaseStorage implements IStorage {
 
   // Order operations
   async createOrder(orderData: InsertOrder): Promise<Order> {
+    // Generate unique ID
+    const id = Math.random().toString(36).slice(2, 8).toUpperCase();
+    
+    // Generate unique tracking number
+    const trackingNumber = await generateUniqueTrackingNumber(async (tn) => {
+      const existing = await db.select().from(orders).where(eq(orders.trackingNumber, tn)).limit(1);
+      return existing.length > 0;
+    });
+    
     const [order] = await db
       .insert(orders)
-      .values(orderData)
+      .values({
+        ...orderData,
+        id,
+        trackingNumber
+      })
       .returning();
     
     await this.createAuditLog({
@@ -2534,17 +2507,7 @@ export class DatabaseStorage implements IStorage {
       });
     }
     
-    if (updates.refundStatus && updates.refundStatus !== oldOrder.refundStatus) {
-      await this.createAuditLog({
-        orderId: id,
-        action: 'refund_issued',
-        performedBy: null,
-        performedByRole: 'system',
-        oldValue: { refundStatus: oldOrder.refundStatus },
-        newValue: { refundStatus: updates.refundStatus },
-        metadata: { refundAmount: updates.refundAmount, stripeRefundId: updates.stripeRefundId }
-      });
-    }
+    // Refund audit logging removed - fields don't exist in database
     
     return order;
   }
@@ -3155,16 +3118,13 @@ export class DatabaseStorage implements IStorage {
 
   async assignOrderToDriver(orderId: string, driverId: number): Promise<Order | undefined> {
     const now = new Date();
-    const completionDeadline = new Date(now.getTime() + (2 * 60 * 60 * 1000)); // 2 hours from acceptance
     
     const [order] = await db
       .update(orders)
       .set({
         driverId,
         status: 'assigned',
-        driverAssignedAt: now,
-        driverAcceptedAt: now, // Driver accepts when assigned
-        completionDeadline: completionDeadline
+        driverAssignedAt: now
       })
       .where(eq(orders.id, orderId))
       .returning();
@@ -3181,40 +3141,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Timeline management methods
+  // STUBBED OUT - completionDeadline and driverAcceptedAt don't exist in DB
   async extendOrderDeadline(orderId: string, extensionMinutes: number = 60): Promise<Order | undefined> {
-    const order = await this.getOrder(orderId);
-    if (!order || !order.completionDeadline || !order.driverAcceptedAt) return undefined;
-    
-    // Max extension of 4 hours total from acceptance
-    const maxDeadline = new Date(order.driverAcceptedAt.getTime() + (4 * 60 * 60 * 1000));
-    const newDeadline = new Date(order.completionDeadline.getTime() + (extensionMinutes * 60 * 1000));
-    
-    // Don't extend beyond 4-hour max
-    const finalDeadline = newDeadline > maxDeadline ? maxDeadline : newDeadline;
-    
-    // Check if already at max
-    if (order.completionDeadline >= maxDeadline) return undefined;
-    
-    const [updatedOrder] = await db
-      .update(orders)
-      .set({ completionDeadline: finalDeadline })
-      .where(eq(orders.id, orderId))
-      .returning();
-    return updatedOrder;
+    return undefined;
   }
 
   async getOverdueOrders(): Promise<Order[]> {
-    return await db
-      .select()
-      .from(orders)
-      .where(
-        and(
-          isNotNull(orders.completionDeadline),
-          lt(orders.completionDeadline, new Date()),
-          notInArray(orders.status, ['completed', 'cancelled', 'delivered', 'refunded'])
-        )
-      )
-      .orderBy(asc(orders.completionDeadline));
+    return [];
   }
 
   async getUnacceptedOrders(timeoutMinutes: number = 15): Promise<Order[]> {
@@ -3936,13 +3869,10 @@ export class DatabaseStorage implements IStorage {
         tip: order.tip,
         totalPrice: order.totalPrice,
         paymentStatus: order.paymentStatus,
-        refundAmount: order.refundAmount,
-        refundStatus: order.refundStatus,
         driverName: driver ? `${driver.firstName || ''} ${driver.lastName || ''}`.trim() : 'Unassigned',
         driverEmail: driver?.email,
         driverTotalEarning: order.driverTotalEarning,
         pickupPhotos: JSON.stringify(order.itemPhotos),
-        refundPhotos: JSON.stringify(order.returnRefusedPhotos),
         createdAt: order.createdAt,
         updatedAt: order.updatedAt,
         scheduledPickupTime: order.scheduledPickupTime,

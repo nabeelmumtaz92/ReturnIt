@@ -600,59 +600,11 @@ export const orders = pgTable("orders", {
   stripeChargeId: text("stripe_charge_id"),
   paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded, refund_processing, refund_failed
   
-  // Refund tracking fields
-  stripeRefundId: text("stripe_refund_id"),
-  refundAmount: real("refund_amount"), // Actual amount refunded (item cost only)
-  itemCost: real("item_cost"), // Item cost only (excludes service fee and taxes)
-  refundMethod: text("refund_method"), // original_payment, store_credit
-  refundStatus: text("refund_status"), // pending, processing, completed, failed
-  refundProcessedAt: timestamp("refund_processed_at"),
-  refundCompletedAt: timestamp("refund_completed_at"),
-  refundReason: text("refund_reason"), // return_delivered, damaged_item, customer_request, admin_override, return_refused
-  
-  // Failed return handling
-  returnRefused: boolean("return_refused").default(false), // Store refused to accept return
-  returnRefusedReason: text("return_refused_reason"), // Why store refused (expired return window, no receipt, damaged, policy violation)
-  returnRefusedPhotos: jsonb("return_refused_photos").default([]), // Photos of refused return attempt
-  returnToCustomer: boolean("return_to_customer").default(false), // Driver returned items to customer
-  
-  // Policy enforcement tracking
-  policyViolations: jsonb("policy_violations").default([]), // Array of policy violation details
-  policyWarnings: jsonb("policy_warnings").default([]), // Array of policy warnings
-  requiresPolicyReview: boolean("requires_policy_review").default(false), // If order needs manual review
-  policyReviewStatus: text("policy_review_status").default("pending"), // pending, approved, rejected
-  policyReviewedBy: integer("policy_reviewed_by").references(() => users.id), // Admin who reviewed
-  policyReviewedAt: timestamp("policy_reviewed_at"), // When policy review was completed
-  policyNotes: text("policy_notes"), // Admin notes about policy review
-  returnToCustomerTime: timestamp("return_to_customer_time"), // When items were returned to customer
-  returnToCustomerPhotos: jsonb("return_to_customer_photos").default([]), // Photos of customer return
-  additionalDeliveryFee: real("additional_delivery_fee").default(0), // Extra fee for return to customer trip
-  refundNotes: text("refund_notes"),
-  
-  // Physical gift card handling
-  hasPhysicalGiftCard: boolean("has_physical_gift_card").default(false), // Retailer issued physical gift card
-  giftCardAmount: real("gift_card_amount"), // Dollar value shown on the retailer's gift card
-  giftCardPhotos: jsonb("gift_card_photos").default([]), // Photos of the gift card from retailer
-  giftCardDeliveryStatus: text("gift_card_delivery_status").default("pending"), // pending, in_transit, delivered
-  giftCardDeliveredAt: timestamp("gift_card_delivered_at"), // When gift card was delivered to customer
-  giftCardDeliveryFee: real("gift_card_delivery_fee").default(0), // $3.99 for returning gift card
-  giftCardDeliveryPaymentIntentId: text("gift_card_delivery_payment_intent_id"), // Stripe PI for delivery fee charge
-  giftCardDeliveryPhotos: jsonb("gift_card_delivery_photos").default([]), // Photos of gift card delivery to customer (proof of delivery)
-  giftCardDeliveryNotes: text("gift_card_delivery_notes"), // Driver notes from delivery to customer
-  giftCardCustomerSignature: text("gift_card_customer_signature"), // Customer signature/confirmation upon receipt
-  
-  // Customer refund preferences
-  customerRefundPreference: text("customer_refund_preference").default("original_payment"), // original_payment, store_credit
-  storeCreditBalance: real("store_credit_balance").default(0),
-  storeCreditUsed: real("store_credit_used").default(0),
-  
   driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid
   
   // Driver assignment
   driverId: integer("driver_id").references(() => users.id),
   driverAssignedAt: timestamp("driver_assigned_at"),
-  driverAcceptedAt: timestamp("driver_accepted_at"), // When driver actually accepts the order
-  completionDeadline: timestamp("completion_deadline"), // Driver has 2 hours from acceptance to complete
   estimatedDeliveryTime: timestamp("estimated_delivery_time"),
   actualDeliveryTime: timestamp("actual_delivery_time"),
   

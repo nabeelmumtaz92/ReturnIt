@@ -100,9 +100,9 @@ export default function BookReturn() {
     onSuccess: () => {
       toast({
         title: "Success!",
-        description: "Your return pickup has been scheduled.",
+        description: "Your return pickup has been scheduled. We'll contact you soon!",
       });
-      setLocation('/orders');
+      setLocation('/');
     },
     onError: (error: any) => {
       toast({
