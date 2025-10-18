@@ -308,7 +308,7 @@ export default function Login() {
         {/* Header - Stitch Pattern */}
         <div className="text-center mb-8">
           <Link href="/">
-            <div className="text-3xl font-bold mb-2 cursor-pointer hover:opacity-80 transition-opacity">
+            <div className="text-3xl font-bold mb-2 cursor-pointer">
               Return It
             </div>
           </Link>

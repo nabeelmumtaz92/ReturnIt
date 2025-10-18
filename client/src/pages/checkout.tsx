@@ -249,7 +249,7 @@ export default function Checkout() {
               Back
             </Button>
             <Link href="/">
-              <div className="text-xl font-bold text-foreground cursor-pointer hover:opacity-80 transition-opacity">
+              <div className="text-xl font-bold text-foreground cursor-pointer">
                 Return It
               </div>
             </Link>

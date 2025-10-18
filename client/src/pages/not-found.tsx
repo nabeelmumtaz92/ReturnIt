@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="text-center">
           <Link href="/">
             <div 
-              className="text-foreground font-bold text-3xl mx-auto cursor-pointer hover:opacity-80 transition-opacity"
+              className="text-foreground font-bold text-3xl mx-auto cursor-pointer"
             >
               Return It
             </div>

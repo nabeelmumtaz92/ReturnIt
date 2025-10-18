@@ -336,7 +336,7 @@ export default function CustomerDashboard() {
               <Plus className="h-8 w-8" />
               <div className="text-center">
                 <div className="font-semibold">Book New Return</div>
-                <div className="text-sm opacity-90">Schedule a return pickup</div>
+                <div className="text-sm font-medium">Schedule a return pickup</div>
               </div>
             </Button>
 
@@ -349,7 +349,7 @@ export default function CustomerDashboard() {
               <Search className="h-8 w-8" />
               <div className="text-center">
                 <div className="font-semibold">Track Order</div>
-                <div className="text-sm opacity-90">Track any order by number</div>
+                <div className="text-sm font-medium">Track any order by number</div>
               </div>
             </Button>
 
@@ -362,7 +362,7 @@ export default function CustomerDashboard() {
               <User className="h-8 w-8" />
               <div className="text-center">
                 <div className="font-semibold">My Profile</div>
-                <div className="text-sm opacity-90">Manage account settings</div>
+                <div className="text-sm font-medium">Manage account settings</div>
               </div>
             </Button>
           </div>

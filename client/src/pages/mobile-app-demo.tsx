@@ -29,7 +29,7 @@ export default function MobileAppDemo() {
         {/* Real Logo */}
         <div className="w-20 h-20 flex items-center justify-center">
           <Link href="/">
-            <ReturnItIcon size={64} className="text-[#A47C48] cursor-pointer hover:opacity-80 transition-opacity" />
+            <ReturnItIcon size={64} className="text-[#A47C48] cursor-pointer" />
           </Link>
         </div>
         

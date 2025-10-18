@@ -57,7 +57,7 @@ export default function About() {
               </Button>
               <Link href="/">
                 <div 
-                  className="text-foreground font-bold text-2xl cursor-pointer hover:opacity-80 transition-opacity"
+                  className="text-foreground font-bold text-2xl cursor-pointer"
                 >
                   Return It
                 </div>
