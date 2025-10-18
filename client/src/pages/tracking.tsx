@@ -35,6 +35,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { useWebSocketTracking } from '@/hooks/useWebSocket';
 import CustomerTrackingMap from '@/components/CustomerTrackingMap';
+import { EngagementOfferBanner } from '@/components/EngagementOfferBanner';
 
 const formSchema = z.object({
   trackingNumber: trackingNumberSchema,
@@ -724,6 +725,9 @@ export default function TrackingPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Partner Engagement Offer Banner */}
+            <EngagementOfferBanner />
 
             {/* Live Tracking Map */}
             {trackingInfo.driver.assigned && trackingInfo.driver.currentLocation && trackingInfo.pickup.coordinates && (

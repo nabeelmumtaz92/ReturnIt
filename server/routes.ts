@@ -11975,6 +11975,51 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
+  // Get pending engagement offers for current user (unviewed offers from recent orders)
+  app.get("/api/engagement/offers/pending", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      
+      const { db } = await import('./db');
+      const { engagementPrompts, partnerOffers } = await import('@shared/schema');
+      const { eq, and, isNull, desc } = await import('drizzle-orm');
+      
+      // Get unviewed prompts with offer details (most recent first)
+      const prompts = await db
+        .select({
+          promptId: engagementPrompts.id,
+          orderId: engagementPrompts.orderId,
+          sentAt: engagementPrompts.sentAt,
+          offer: {
+            id: partnerOffers.id,
+            brand: partnerOffers.brand,
+            title: partnerOffers.title,
+            description: partnerOffers.description,
+            couponCode: partnerOffers.couponCode,
+            affiliateLink: partnerOffers.affiliateLink,
+            imageUrl: partnerOffers.imageUrl,
+            discountPercentage: partnerOffers.discountPercentage,
+            category: partnerOffers.category,
+          }
+        })
+        .from(engagementPrompts)
+        .innerJoin(partnerOffers, eq(engagementPrompts.offerId, partnerOffers.id))
+        .where(
+          and(
+            eq(engagementPrompts.userId, userId),
+            isNull(engagementPrompts.viewedAt)
+          )
+        )
+        .orderBy(desc(engagementPrompts.sentAt))
+        .limit(5);
+      
+      res.json(prompts);
+    } catch (error) {
+      console.error('[Engagement] Error fetching pending offers:', error);
+      res.status(500).json({ message: 'Failed to fetch pending offers' });
+    }
+  });
+  
   // Get engagement prompt details (for displaying offers to users)
   app.get("/api/engagement/prompts/:promptId", isAuthenticated, async (req, res) => {
     try {

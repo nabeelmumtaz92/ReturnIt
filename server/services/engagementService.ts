@@ -90,16 +90,16 @@ export class EngagementService {
         userId: event.userId,
         orderId: event.orderId,
         offerId: matchedOffer.id,
-        channels: [], // Will be populated as notifications are sent
+        channels: ['in_app'], // In-app banner is always shown
       });
 
       console.log('[Engagement] Engagement prompt logged:', promptId);
+      console.log('[Engagement] In-app offer banner queued for display');
 
-      // TODO (Task 9): Show in-app offer banner
       // TODO (Task 10): Send web push notification  
       // TODO (Task 11): Send email notification (with quota check)
 
-      console.log('[Engagement] Offer processing complete (notification channels pending)');
+      console.log('[Engagement] Offer processing complete');
 
     } catch (error) {
       console.error('[Engagement] Error handling return completed event:', error);
