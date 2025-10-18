@@ -326,6 +326,33 @@ export const users = pgTable("users", {
   stripeConnectAccountIdIdx: index("users_stripe_connect_account_id_idx").on(table.stripeConnectAccountId),
 }));
 
+// Push Subscriptions table for Web Push API notifications
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  
+  // Web Push API subscription data
+  endpoint: text("endpoint").notNull(),
+  p256dhKey: text("p256dh_key").notNull(), // Public key for encryption
+  authKey: text("auth_key").notNull(), // Authentication secret
+  
+  // Browser/device information
+  userAgent: text("user_agent"),
+  deviceType: text("device_type"), // desktop, mobile, tablet
+  
+  // Subscription management
+  isEnabled: boolean("is_enabled").default(true).notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  lastUsedAt: timestamp("last_used_at"), // Track when subscription was last used
+}, (table) => ({
+  userIdIdx: index("push_subscriptions_user_id_idx").on(table.userId),
+  endpointIdx: index("push_subscriptions_endpoint_idx").on(table.endpoint),
+  isEnabledIdx: index("push_subscriptions_is_enabled_idx").on(table.isEnabled),
+  uniqueUserEndpoint: unique("unique_user_endpoint").on(table.userId, table.endpoint),
+}));
+
 // SMS Notifications table
 export const smsNotifications = pgTable("sms_notifications", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1643,6 +1670,17 @@ export const insertUserSchema = createInsertSchema(users).omit({
   email: z.string().email("Invalid email format"),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
+});
+
+export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastUsedAt: true,
+}).extend({
+  endpoint: z.string().url("Invalid endpoint URL"),
+  p256dhKey: z.string().min(1, "P256DH key required"),
+  authKey: z.string().min(1, "Auth key required"),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
