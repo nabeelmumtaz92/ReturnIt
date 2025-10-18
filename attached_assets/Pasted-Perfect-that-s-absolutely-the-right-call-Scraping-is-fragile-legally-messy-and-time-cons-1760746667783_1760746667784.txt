@@ -1,0 +1,189 @@
+Perfect ✅ — that’s absolutely the **right call**.
+Scraping is fragile, legally messy, and time-consuming — whereas **affiliate and partner APIs** are *stable, structured, and designed for automation*.
+
+Let’s walk through how you can build your **Offer Engine entirely around APIs**, no scraping needed 👇
+
+---
+
+## 🧩 1️⃣ Core Idea: “API-Driven Offer Feed”
+
+Instead of scraping websites, Return It becomes a **data consumer** of existing affiliate networks and partner APIs.
+
+Every few hours, your system:
+
+1. Pulls the latest offers/coupons via official APIs.
+2. Normalizes them into your database.
+3. Links each to brands, categories, and cities (for your matching logic).
+4. Marks old ones expired automatically (based on `valid_to`).
+
+→ Always fresh, no scraping headaches.
+
+---
+
+## ⚙️ 2️⃣ How It Works Technically
+
+### Step 1: Connect to Affiliate APIs
+
+Start with networks that aggregate thousands of retailers:
+
+| Network                      | Example Brands                | API Docs                                                                               | Notes                            |
+| ---------------------------- | ----------------------------- | -------------------------------------------------------------------------------------- | -------------------------------- |
+| **Impact**                   | Nike, Adidas, Target, Walmart | [Impact API Docs](https://developer.impact.com/documentation)                          | Great reporting + coupon feed    |
+| **Rakuten Advertising**      | Macy’s, Best Buy, H&M         | [Rakuten API](https://rakutenadvertising.com/publishers/)                              | Many fashion & retail partners   |
+| **CJ (Commission Junction)** | Overstock, eBay, Kohl’s       | [CJ API Docs](https://developers.cj.com/)                                              | Very mature ecosystem            |
+| **Awin**                     | Etsy, HP, AliExpress          | [Awin API Docs](https://wiki.awin.com/index.php/API)                                   | Also includes ShareASale network |
+| **Amazon Associates**        | Amazon.com                    | [Amazon Product Advertising API](https://webservices.amazon.com/paapi5/documentation/) | For Amazon store offers          |
+
+🧠 Each of these gives:
+
+* Offer title & description
+* Coupon code (if applicable)
+* Deep link with affiliate tracking
+* Start / end date
+* Brand metadata
+* Category & commission rate
+
+---
+
+### Step 2: Build Your **“Offer Sync Worker”**
+
+This is a background job (Node, Python, etc.) that:
+
+1. Authenticates with API (token-based, usually OAuth or key).
+2. Fetches new or updated offers.
+3. Writes them into your database.
+4. Disables expired ones.
+
+**Example pseudo-flow:**
+
+```js
+for each network in connected_networks:
+    offers = network.fetchOffers(lastSyncTimestamp)
+    for offer in offers:
+        normalized = mapToReturnItSchema(offer)
+        db.upsertOffer(normalized)
+```
+
+Each run updates thousands of offers in minutes.
+
+---
+
+### Step 3: Normalize Data (Standard Schema)
+
+You define your own internal structure — simple, clean, and consistent:
+
+| Field             | Source                  | Example                    |
+| ----------------- | ----------------------- | -------------------------- |
+| `brand`           | Affiliate merchant name | Nike                       |
+| `category`        | Merchant vertical       | Shoes                      |
+| `offer_title`     | API feed                | “10% Off Full Price Items” |
+| `coupon_code`     | API feed                | RETURNIT10                 |
+| `link`            | Affiliate deep link     | impact.com/deeplink/...    |
+| `valid_from`      | API feed                | 2025-10-15                 |
+| `valid_to`        | API feed                | 2025-12-31                 |
+| `source_network`  | your internal tag       | impact                     |
+| `commission_rate` | optional                | 8%                         |
+| `active`          | computed                | true/false                 |
+
+---
+
+### Step 4: Offer Matching (What You Already Planned)
+
+Now you apply your Offer Engine logic:
+
+1. `brand` match → strongest
+2. `category` match → fallback
+3. `geo` match → local if applicable
+
+Example:
+
+```js
+SELECT * FROM offers 
+WHERE brand='Nike' AND active=true 
+ORDER BY valid_to DESC LIMIT 1;
+```
+
+Fallback query for `category='Shoes'` if no Nike offers exist.
+
+---
+
+### Step 5: Refresh Strategy
+
+All major networks include **modified-since** filters so you can poll efficiently:
+
+| Network | Update Method                                   | Typical Rate  |
+| ------- | ----------------------------------------------- | ------------- |
+| Impact  | `GET /Promotions?UpdatedSince=`                 | Every 2–4 hrs |
+| Awin    | `GET /publishers/{id}/programmes?updatedSince=` | Every 6 hrs   |
+| CJ      | `GET /advertiser-lookup?modifiedSince=`         | Every 6 hrs   |
+
+You can schedule each connector to sync every 3–6 hours and never miss a new coupon.
+
+---
+
+### Step 6: Monetization Tracking
+
+Each API already encodes your affiliate ID in the URL — that’s how you get paid automatically.
+
+Example from Impact:
+
+```
+https://click.linksynergy.com/deeplink?id=YOUR_RETURNIT_ID&murl=https://www.nike.com
+```
+
+You’ll see conversions inside each affiliate dashboard.
+
+Later, you can centralize this by querying their **reporting APIs** to calculate Return It’s affiliate revenue automatically.
+
+---
+
+## 🧠 3️⃣ Scaling into Direct Partnerships (Phase 2)
+
+Once Return It shows strong engagement stats, you’ll start signing **direct brand partnerships**.
+At that point, brands can:
+
+* Give you their **private API token** or **webhook** to push new promos directly.
+* Set up **Return It dashboards** to upload exclusive deals not visible in public affiliate feeds.
+
+That’s your real differentiator — the data & behavior layer you own.
+
+---
+
+## 🧩 4️⃣ Implementation Summary
+
+| Step | Action                                                | Tools                             |
+| ---- | ----------------------------------------------------- | --------------------------------- |
+| 1️⃣  | Create affiliate accounts (Impact, Awin, CJ, Rakuten) | Browser sign-up                   |
+| 2️⃣  | Store API keys in secure env vars                     | `.env` + Vercel / Railway Secrets |
+| 3️⃣  | Build Offer Sync Worker (API poller)                  | Node + Axios + Cron               |
+| 4️⃣  | Normalize & upsert into `offers` DB                   | Neon / Supabase                   |
+| 5️⃣  | Connect Offer Engine to use new data                  | Reuse your existing event trigger |
+| 6️⃣  | Add analytics reporting                               | Network reporting APIs + PostHog  |
+| 7️⃣  | Scale to direct partner APIs                          | Secure OAuth integrations         |
+
+---
+
+## 🧱 5️⃣ MVP Timeline
+
+| Week | Deliverable                                        |
+| ---- | -------------------------------------------------- |
+| 1    | Connect Impact API + store first offers            |
+| 2    | Build Offer Sync Worker + DB normalization         |
+| 3    | Trigger Offer Engine from return events            |
+| 4    | Add affiliate click tracking + reporting dashboard |
+| 5    | Connect Rakuten + Awin for redundancy              |
+| 6    | Launch first branded pilot (Nike, H&M, Target)     |
+
+---
+
+✅ **Result:**
+You’ll have a **fully automated, API-driven offer pipeline** that:
+
+* Updates itself daily (no scraping),
+* Delivers relevant post-return promos,
+* Generates affiliate revenue automatically,
+* Positions Return It as a *retention infrastructure partner* for retailers.
+
+---
+
+Would you like me to list **the exact API endpoints + data fields** from the major networks (Impact, Rakuten, CJ, Awin) so your dev team can build connectors for each quickly?
