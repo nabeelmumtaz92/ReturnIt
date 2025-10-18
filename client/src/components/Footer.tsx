@@ -71,7 +71,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/book-pickup">
+                <Link href="/book-return">
                   <Button 
                     variant="link" 
                     className="text-primary-foreground/80 hover:text-white p-0 h-auto justify-start"

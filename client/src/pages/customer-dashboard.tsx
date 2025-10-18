@@ -329,13 +329,13 @@ export default function CustomerDashboard() {
           <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Button
-              onClick={() => setLocation('/book-pickup')}
+              onClick={() => setLocation('/book-return')}
               className="bg-primary hover:bg-primary/90 text-white h-auto p-6 flex flex-col items-center gap-3"
-              data-testid="button-book-pickup"
+              data-testid="button-book-return"
             >
               <Plus className="h-8 w-8" />
               <div className="text-center">
-                <div className="font-semibold">Book New Pickup</div>
+                <div className="font-semibold">Book New Return</div>
                 <div className="text-sm opacity-90">Schedule a return pickup</div>
               </div>
             </Button>
@@ -545,12 +545,12 @@ export default function CustomerDashboard() {
                 </p>
                 {!searchTerm && (
                   <Button
-                    onClick={() => setLocation('/book-pickup')}
+                    onClick={() => setLocation('/book-return')}
                     className="bg-primary hover:bg-primary/90 text-white"
-                    data-testid="button-first-pickup"
+                    data-testid="button-first-return"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    Book Your First Pickup
+                    Book Your First Return
                   </Button>
                 )}
               </CardContent>

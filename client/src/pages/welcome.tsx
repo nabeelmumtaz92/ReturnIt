@@ -199,8 +199,8 @@ export default function Welcome() {
           <Button 
             size="lg" 
             className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            data-testid="button-book-pickup"
-            onClick={() => setLocation('/book-pickup')}
+            data-testid="button-book-return"
+            onClick={() => setLocation('/book-return')}
           >
             <Package className="h-5 w-5 mr-2" />
             Book Return

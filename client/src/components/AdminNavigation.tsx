@@ -253,10 +253,10 @@ export function AdminNavigation() {
           description: "Track packages and deliveries"
         },
         {
-          label: "Book Pickup",
-          href: "/book-pickup",
+          label: "Book Return",
+          href: "/book-return",
           icon: Truck,
-          description: "Schedule new pickup service"
+          description: "Schedule new return pickup"
         }
       ]
     }
