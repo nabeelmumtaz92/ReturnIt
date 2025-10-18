@@ -576,61 +576,29 @@ export const orders = pgTable("orders", {
   authorizationSigned: boolean("authorization_signed").default(false).notNull(),
   authorizationSignature: text("authorization_signature"), // Digital signature data
   authorizationTimestamp: timestamp("authorization_timestamp"),
-  // requiresInStoreReturn: boolean("requires_in_store_return").default(false).notNull(), // COMMENTED OUT - column doesn't exist in DB
-  // requiresCarrierDropoff: boolean("requires_carrier_dropoff").default(false).notNull(), // COMMENTED OUT - column doesn't exist in DB
   
-  // Item and pricing details
-  // numberOfItems: integer("number_of_items").default(1).notNull(), // COMMENTED OUT - column doesn't exist in DB (use number_of_boxes instead)
-  // itemSize: text("item_size").notNull(), // COMMENTED OUT - column doesn't exist in DB
-  // packagingType: text("packaging_type").default("bag"), // COMMENTED OUT - column doesn't exist in DB
-  
-  // Pricing breakdown
-  basePrice: real("base_price").default(3.99), // Base service fee (always applied)
-  distanceFee: real("distance_fee").default(0), // $0.50 per mile
-  timeFee: real("time_fee").default(0), // $12/hour estimated time
-  sizeUpcharge: real("size_upcharge").default(0), // L: +$2, XL: +$4
-  multiItemFee: real("multi_item_fee").default(0), // $1.00 per additional item
-  serviceFee: real("service_fee").default(0), // 15% of subtotal
-  taxAmount: real("tax_amount").default(0), // Sales tax on service
-  
-  // Tiered value-based pricing (based on total order value)
-  totalOrderValue: real("total_order_value"), // Combined value of all items in this order
-  valueTier: text("value_tier"), // Standard, Basic, Express, Basic+, Value, Value+, Enhanced, Enhanced+, Premium, Premium+, Ultra Premium, Ultra Premium+, Elite Luxury
-  valueTierFee: real("value_tier_fee").default(0), // Fixed fee based on value tier
-  serviceFeeRate: real("service_fee_rate").default(0.15), // Variable service fee rate (15% to 35%)
-  driverValueBonus: real("driver_value_bonus").default(0), // Driver bonus for value tier handling
-  
-  // Optional fees and discounts
-  rushFee: real("rush_fee").default(0), // Same-day pickup +$3
+  // Pricing - simplified to match actual DB columns
+  basePrice: real("base_price").default(3.99),
+  sizeUpcharge: real("size_upcharge").default(0),
+  multiBoxFee: real("multi_box_fee").default(0), // Actual DB column (not multiItemFee)
   surcharges: jsonb("surcharges").default([]),
   discountCode: text("discount_code"),
   discountAmount: real("discount_amount").default(0),
   tip: real("tip").default(0),
-  totalPrice: real("total_price"), // Full amount paid by customer
-  itemRefundAmount: real("item_refund_amount"), // Calculated refundable amount (excludes service fee/tax)
+  totalPrice: real("total_price"),
   
-  // Payment breakdown
+  // Simplified payment breakdown - DB has aggregate fields
   customerPaid: real("customer_paid"),
-  driverBasePay: real("driver_base_pay").default(0), // $3 minimum per delivery
-  driverDistancePay: real("driver_distance_pay").default(0), // $0.35 per mile
-  driverTimePay: real("driver_time_pay").default(0), // $8/hour
-  driverSizeBonus: real("driver_size_bonus").default(0), // L: +$1, XL: +$2
-  driverTip: real("driver_tip").default(0), // 100% of customer tip
-  driverTotalEarning: real("driver_total_earning").default(0),
-  
-  // Company revenue
-  companyServiceFee: real("company_service_fee").default(0), // 15% service fee
-  companyBaseFeeShare: real("company_base_fee_share").default(0), // $0.99 from base price
-  companyDistanceFeeShare: real("company_distance_fee_share").default(0), // $0.15 per mile
-  companyTimeFeeShare: real("company_time_fee_share").default(0), // $4/hour
-  companyTotalRevenue: real("company_total_revenue").default(0),
+  driverEarning: real("driver_earning").default(0), // Aggregate driver earning
+  returnlyFee: real("returnly_fee").default(0), // Platform fee
+  sizeBonusAmount: real("size_bonus_amount").default(0),
+  peakSeasonBonus: real("peak_season_bonus").default(0),
+  multiStopBonus: real("multi_stop_bonus").default(0),
   
   // Stripe Connect payment fields
   stripePaymentIntentId: text("stripe_payment_intent_id"),
   stripeChargeId: text("stripe_charge_id"),
   paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded, refund_processing, refund_failed
-  paymentMethod: text("payment_method").default("stripe"), // stripe, paypal, apple_pay, google_pay
-  originalPaymentMethod: text("original_payment_method"), // card, bank_account, paypal, etc.
   
   // Refund tracking fields
   stripeRefundId: text("stripe_refund_id"),
@@ -678,8 +646,6 @@ export const orders = pgTable("orders", {
   storeCreditBalance: real("store_credit_balance").default(0),
   storeCreditUsed: real("store_credit_used").default(0),
   
-  peakSeasonBonus: real("peak_season_bonus").default(0),
-  multiStopBonus: real("multi_stop_bonus").default(0),
   driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid
   
   // Driver assignment

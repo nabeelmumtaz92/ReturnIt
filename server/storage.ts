@@ -847,47 +847,23 @@ export class MemStorage implements IStorage {
       authorizationSigned: insertOrder.authorizationSigned ?? false,
       authorizationSignature: insertOrder.authorizationSignature || null,
       authorizationTimestamp: insertOrder.authorizationTimestamp || null,
-      // requiresInStoreReturn: insertOrder.requiresInStoreReturn ?? false, // COMMENTED OUT - column doesn't exist in DB
-      // requiresCarrierDropoff: insertOrder.requiresCarrierDropoff ?? false, // COMMENTED OUT - column doesn't exist in DB
-      // numberOfItems: insertOrder.numberOfItems ?? 1, // COMMENTED OUT - column doesn't exist in DB
-      // itemSize: insertOrder.itemSize || 'M', // COMMENTED OUT - column doesn't exist in DB
-      // packagingType: insertOrder.packagingType || 'bag', // COMMENTED OUT - column doesn't exist in DB
       basePrice: insertOrder.basePrice ?? 3.99,
-      distanceFee: insertOrder.distanceFee ?? 0,
-      timeFee: insertOrder.timeFee ?? 0,
       sizeUpcharge: insertOrder.sizeUpcharge ?? 0,
-      multiItemFee: insertOrder.multiItemFee ?? 0,
-      serviceFee: insertOrder.serviceFee ?? 0,
-      taxAmount: insertOrder.taxAmount ?? 0,
-      totalOrderValue: insertOrder.totalOrderValue || null,
-      valueTier: insertOrder.valueTier || null,
-      valueTierFee: insertOrder.valueTierFee ?? 0,
-      serviceFeeRate: insertOrder.serviceFeeRate ?? 0.15,
-      driverValueBonus: insertOrder.driverValueBonus ?? 0,
-      rushFee: insertOrder.rushFee ?? 0,
+      multiBoxFee: insertOrder.multiBoxFee ?? 0,
       surcharges: insertOrder.surcharges || [],
       discountCode: insertOrder.discountCode || null,
       discountAmount: insertOrder.discountAmount ?? 0,
       tip: insertOrder.tip ?? 0,
       totalPrice: insertOrder.totalPrice ?? 3.99,
-      itemRefundAmount: insertOrder.itemRefundAmount || null,
       customerPaid: insertOrder.customerPaid || null,
-      driverBasePay: insertOrder.driverBasePay ?? 0,
-      driverDistancePay: insertOrder.driverDistancePay ?? 0,
-      driverTimePay: insertOrder.driverTimePay ?? 0,
-      driverSizeBonus: insertOrder.driverSizeBonus ?? 0,
-      driverTip: insertOrder.driverTip ?? 0,
-      driverTotalEarning: insertOrder.driverTotalEarning ?? 0,
-      companyServiceFee: insertOrder.companyServiceFee ?? 0,
-      companyBaseFeeShare: insertOrder.companyBaseFeeShare ?? 0,
-      companyDistanceFeeShare: insertOrder.companyDistanceFeeShare ?? 0,
-      companyTimeFeeShare: insertOrder.companyTimeFeeShare ?? 0,
-      companyTotalRevenue: insertOrder.companyTotalRevenue ?? 0,
+      driverEarning: insertOrder.driverEarning ?? 0,
+      returnlyFee: insertOrder.returnlyFee ?? 0,
+      sizeBonusAmount: insertOrder.sizeBonusAmount ?? 0,
+      peakSeasonBonus: insertOrder.peakSeasonBonus ?? 0,
+      multiStopBonus: insertOrder.multiStopBonus ?? 0,
       stripePaymentIntentId: insertOrder.stripePaymentIntentId || null,
       stripeChargeId: insertOrder.stripeChargeId || null,
       paymentStatus: insertOrder.paymentStatus || 'pending',
-      paymentMethod: insertOrder.paymentMethod || 'stripe',
-      originalPaymentMethod: insertOrder.originalPaymentMethod || null,
       stripeRefundId: insertOrder.stripeRefundId || null,
       refundAmount: insertOrder.refundAmount || null,
       driverId: insertOrder.driverId || null,
@@ -1009,19 +985,17 @@ export class MemStorage implements IStorage {
       orderId: order.id,
       transactionDate: new Date(),
       driverEarnings: {
-        basePay: order.driverBasePay || 3.00,
-        distancePay: order.driverDistancePay || 0,
-        timePay: order.driverTimePay || 0,
-        sizeBonus: order.driverSizeBonus || 0,
+        baseEarning: order.driverEarning || 0,
+        sizeBonusAmount: order.sizeBonusAmount || 0,
+        peakSeasonBonus: order.peakSeasonBonus || 0,
+        multiStopBonus: order.multiStopBonus || 0,
         tip: order.tip || 0,
-        total: (order.driverBasePay || 3.00) + (order.driverDistancePay || 0) + 
-               (order.driverTimePay || 0) + (order.driverSizeBonus || 0) + (order.tip || 0)
+        total: (order.driverEarning || 0) + (order.sizeBonusAmount || 0) + (order.peakSeasonBonus || 0) + 
+               (order.multiStopBonus || 0) + (order.tip || 0)
       },
       companyRevenue: {
-        serviceFee: order.companyServiceFee || 0.99,
-        distanceFee: order.distanceFee || 0,
-        timeFee: order.timeFee || 0,
-        total: (order.companyServiceFee || 0.99) + (order.distanceFee || 0) + (order.timeFee || 0)
+        returnlyFee: order.returnlyFee || 0,
+        total: order.returnlyFee || 0
       },
       customerPayment: {
         basePrice: order.basePrice || 3.99,
@@ -1128,17 +1102,17 @@ export class MemStorage implements IStorage {
   private generatePaymentCSV(records: any[]): string {
     const headers = [
       'Payment ID', 'Order ID', 'Transaction Date', 'Driver Name',
-      'Driver Base Pay', 'Driver Distance Pay', 'Driver Time Pay', 'Driver Size Bonus', 'Driver Tip', 'Driver Total',
-      'Company Service Fee', 'Company Distance Fee', 'Company Time Fee', 'Company Total',
+      'Driver Base Earning', 'Size Bonus', 'Peak Season Bonus', 'Multi Stop Bonus', 'Driver Tip', 'Driver Total',
+      'Company Returnly Fee', 'Company Total',
       'Customer Base Price', 'Customer Surcharges', 'Customer Taxes', 'Customer Total',
       'Payment Method', 'Status', 'Tax Year', 'Quarter'
     ];
 
     const rows = records.map(r => [
       r.id, r.orderId, r.transactionDate, r.driverName,
-      r.driverEarnings.basePay, r.driverEarnings.distancePay, r.driverEarnings.timePay, 
-      r.driverEarnings.sizeBonus, r.driverEarnings.tip, r.driverEarnings.total,
-      r.companyRevenue.serviceFee, r.companyRevenue.distanceFee, r.companyRevenue.timeFee, r.companyRevenue.total,
+      r.driverEarnings.baseEarning, r.driverEarnings.sizeBonusAmount, r.driverEarnings.peakSeasonBonus,
+      r.driverEarnings.multiStopBonus, r.driverEarnings.tip, r.driverEarnings.total,
+      r.companyRevenue.returnlyFee, r.companyRevenue.total,
       r.customerPayment.basePrice, r.customerPayment.surcharges, r.customerPayment.taxes, r.customerPayment.total,
       r.paymentMethod, r.status, r.taxYear, r.quarter
     ]);
@@ -3317,17 +3291,15 @@ export class DatabaseStorage implements IStorage {
       // Convert orders to payment records format
       const paymentRecords = completedOrders.map(({ orders: order, users: user }) => {
         const driverName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email : 'Unknown Driver';
-        const basePay = order.driverEarnings || 3.00;
-        const distancePay = order.distanceFee || 0;
-        const timePay = order.timeFee || 0;
-        const sizeBonus = 0; // Could be calculated based on item size
+        const baseEarning = order.driverEarning || 0;
+        const sizeBonusAmount = order.sizeBonusAmount || 0;
+        const peakSeasonBonus = order.peakSeasonBonus || 0;
+        const multiStopBonus = order.multiStopBonus || 0;
         const tip = order.tip || 0;
-        const driverTotal = basePay + distancePay + timePay + sizeBonus + tip;
+        const driverTotal = baseEarning + sizeBonusAmount + peakSeasonBonus + multiStopBonus + tip;
         
-        const serviceFee = order.companyServiceFee || 0.99;
-        const companyDistanceFee = order.distanceFee ? order.distanceFee * 0.3 : 0; // Company takes 30%
-        const companyTimeFee = order.timeFee ? order.timeFee * 0.3 : 0;
-        const companyTotal = serviceFee + companyDistanceFee + companyTimeFee;
+        const returnlyFee = order.returnlyFee || 0;
+        const companyTotal = returnlyFee;
         
         const basePrice = order.basePrice || 3.99;
         const surcharges = 0; // Could be calculated from order surcharges
@@ -3339,17 +3311,15 @@ export class DatabaseStorage implements IStorage {
           orderId: order.id,
           transactionDate: order.updatedAt || order.createdAt,
           driverEarnings: {
-            basePay,
-            distancePay,
-            timePay,
-            sizeBonus,
+            baseEarning,
+            sizeBonusAmount,
+            peakSeasonBonus,
+            multiStopBonus,
             tip,
             total: driverTotal
           },
           companyRevenue: {
-            serviceFee,
-            distanceFee: companyDistanceFee,
-            timeFee: companyTimeFee,
+            returnlyFee,
             total: companyTotal
           },
           customerPayment: {
@@ -3360,7 +3330,7 @@ export class DatabaseStorage implements IStorage {
           },
           driverId: order.driverId,
           driverName,
-          paymentMethod: order.paymentMethod || 'stripe',
+          paymentMethod: 'stripe', // Default payment method (column doesn't exist in orders table)
           status: 'completed' as const,
           taxYear: new Date(order.updatedAt || order.createdAt).getFullYear(),
           quarter: Math.ceil((new Date(order.updatedAt || order.createdAt).getMonth() + 1) / 3)
@@ -3961,14 +3931,8 @@ export class DatabaseStorage implements IStorage {
         retailer: order.retailer,
         itemCategory: order.itemCategory,
         itemDescription: order.itemDescription,
-        numberOfItems: order.numberOfItems,
-        totalOrderValue: order.totalOrderValue,
         basePrice: order.basePrice,
-        distanceFee: order.distanceFee,
-        timeFee: order.timeFee,
         sizeUpcharge: order.sizeUpcharge,
-        serviceFee: order.serviceFee,
-        taxAmount: order.taxAmount,
         tip: order.tip,
         totalPrice: order.totalPrice,
         paymentStatus: order.paymentStatus,
