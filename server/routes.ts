@@ -4007,6 +4007,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
+      // Trigger post-return engagement when driver marks order as delivered
+      if (status === OrderStatus.DELIVERED && status !== order.status) {
+        const { engagementService } = await import('./services/engagementService');
+        
+        // Fire return_completed event (non-blocking)
+        engagementService.onReturnCompleted({
+          orderId: order.id,
+          userId: order.userId,
+          brand: order.brand,
+          category: order.category,
+          retailerName: order.storeName,
+          completedAt: new Date()
+        }).catch(err => {
+          console.error('[Engagement] Failed to process return_completed event:', err);
+          // Don't fail the request - engagement is supplementary
+        });
+      }
+      
       res.json(updatedOrder);
     } catch (error) {
       res.status(500).json({ message: "Failed to update order" });
