@@ -11710,6 +11710,160 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === NOTIFICATION PREFERENCES ROUTES ===
+  
+  // Get current user's notification preferences
+  app.get("/api/notifications/preferences", isAuthenticated, async (req, res) => {
+    try {
+      const { notificationPreferencesService } = await import("./services/notificationPreferencesService");
+      const userId = req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      
+      const preferences = await notificationPreferencesService.getPreferences(userId);
+      res.json(preferences);
+    } catch (error) {
+      console.error('Error fetching notification preferences:', error);
+      res.status(500).json({ message: 'Failed to fetch preferences' });
+    }
+  });
+  
+  // Update current user's notification preferences
+  app.patch("/api/notifications/preferences", isAuthenticated, async (req, res) => {
+    try {
+      const { notificationPreferencesService } = await import("./services/notificationPreferencesService");
+      const userId = req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      
+      // Validate input with Zod
+      const updateSchema = z.object({
+        enablePush: z.boolean().optional(),
+        enableEmail: z.boolean().optional(),
+      }).strict(); // Prevent additional fields
+      
+      const validation = updateSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({ 
+          message: 'Invalid input', 
+          errors: validation.error.errors 
+        });
+      }
+      
+      const { enablePush, enableEmail } = validation.data;
+      
+      const updated = await notificationPreferencesService.updatePreferences(userId, {
+        enablePush,
+        enableEmail,
+        // Note: enableInApp is always true and can't be changed (hard-guarded in service)
+      });
+      
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating notification preferences:', error);
+      res.status(500).json({ message: 'Failed to update preferences' });
+    }
+  });
+  
+  // Unsubscribe from emails via token (CAN-SPAM compliance)
+  app.get("/unsubscribe/:token", async (req, res) => {
+    try {
+      const { notificationPreferencesService } = await import("./services/notificationPreferencesService");
+      const { token } = req.params;
+      const { reason } = req.query;
+      
+      const success = await notificationPreferencesService.unsubscribeByToken(
+        token, 
+        reason as string
+      );
+      
+      if (success) {
+        // Return a simple HTML page confirming unsubscribe
+        res.send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Unsubscribed | Return It</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                max-width: 600px; 
+                margin: 80px auto; 
+                padding: 20px;
+                text-align: center;
+                background: #faf8f4;
+              }
+              .container {
+                background: white;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+              }
+              h1 { color: #231b0f; margin-bottom: 16px; }
+              p { color: #666; line-height: 1.6; margin-bottom: 24px; }
+              .success-icon { font-size: 48px; margin-bottom: 16px; }
+              a { color: #B8956A; text-decoration: none; }
+              a:hover { text-decoration: underline; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <div class="success-icon">✓</div>
+              <h1>You've Been Unsubscribed</h1>
+              <p>You will no longer receive post-return offer emails from Return It.</p>
+              <p>You'll still receive important order updates and notifications through the app.</p>
+              <p><a href="/">Return to Home</a> | <a href="/account">Manage Settings</a></p>
+            </div>
+          </body>
+          </html>
+        `);
+      } else {
+        res.status(404).send(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Error | Return It</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <style>
+              body { 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                max-width: 600px; 
+                margin: 80px auto; 
+                padding: 20px;
+                text-align: center;
+                background: #faf8f4;
+              }
+              .container {
+                background: white;
+                padding: 40px;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+              }
+              h1 { color: #231b0f; margin-bottom: 16px; }
+              p { color: #666; line-height: 1.6; }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>Invalid Unsubscribe Link</h1>
+              <p>This unsubscribe link is invalid or has expired.</p>
+              <p><a href="/">Return to Home</a></p>
+            </div>
+          </body>
+          </html>
+        `);
+      }
+    } catch (error) {
+      console.error('Error processing unsubscribe:', error);
+      res.status(500).json({ message: 'Failed to process unsubscribe request' });
+    }
+  });
+
   // === EMAIL QUOTA MANAGEMENT ROUTES ===
   
   // Get current email quota status (admin only)

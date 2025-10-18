@@ -35,6 +35,7 @@ import {
   type DriverReview, type InsertDriverReview,
   type AppReview, type InsertAppReview,
   type CompanyRating,
+  type UserNotificationPreference, type InsertUserNotificationPreference,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -50,7 +51,8 @@ import {
   retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics,
   retailerWebhooks, retailerWebhookDeliveries,
   reviews, driverReviews, appReviews, companyRatings,
-  customerWaitlist, zipCodeManagement, otpVerification
+  customerWaitlist, zipCodeManagement, otpVerification,
+  userNotificationPreferences
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";

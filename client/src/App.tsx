@@ -73,6 +73,7 @@ const BusinessIntelligence = lazy(() => import("@/pages/business-intelligence"))
 const NotificationCenter = lazy(() => import("@/pages/notification-center"));
 const QualityAssurance = lazy(() => import("@/pages/quality-assurance"));
 const DriverIncentives = lazy(() => import("@/pages/driver-incentives"));
+const NotificationSettings = lazy(() => import("@/pages/notification-settings"));
 const Profile = lazy(() => import("@/pages/profile"));
 const FeatureDocumentGenerator = lazy(() => import("@/pages/feature-document-generator"));
 const EmployeeGuide = lazy(() => import("@/pages/employee-guide"));
@@ -207,6 +208,7 @@ function Router() {
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/customer-waitlist" component={CustomerWaitlist} />
       <Route path="/account-settings" component={AccountSettings} />
+      <Route path="/notification-settings" component={NotificationSettings} />
       <Route path="/driver-tutorial" component={DriverTutorial} />
       <Route path="/driver-documents" component={DriverDocuments} />
       <Route path="/help-center" component={HelpCenter} />
