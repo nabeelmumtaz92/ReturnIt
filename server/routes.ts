@@ -5712,6 +5712,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Real-time driver tracking endpoint - Get all active drivers with locations
+  app.get("/api/admin/drivers/tracking", requireSecureAdmin, async (req, res) => {
+    try {
+      const drivers = await storage.getDrivers();
+      
+      // Filter for active drivers and format tracking data
+      const trackingData = drivers
+        .filter(driver => driver.isActive)
+        .map(driver => ({
+          id: driver.id,
+          email: driver.email,
+          firstName: driver.firstName,
+          lastName: driver.lastName,
+          phone: driver.phone,
+          isOnline: driver.isOnline,
+          currentLocation: driver.currentLocation,
+          driverRating: driver.driverRating,
+          vehicleInfo: {
+            make: driver.vehicleMake,
+            model: driver.vehicleModel,
+            year: driver.vehicleYear,
+            color: driver.vehicleColor,
+            licensePlate: driver.licensePlate
+          },
+          lastUpdated: driver.updatedAt
+        }));
+      
+      res.json(trackingData);
+    } catch (error) {
+      console.error("Error fetching driver tracking data:", error);
+      res.status(500).json({ message: "Failed to fetch driver tracking data" });
+    }
+  });
+
+  // Get specific driver's current location
+  app.get("/api/admin/drivers/:id/location", requireSecureAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver || !driver.isDriver) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+      
+      res.json({
+        id: driver.id,
+        email: driver.email,
+        firstName: driver.firstName,
+        lastName: driver.lastName,
+        isOnline: driver.isOnline,
+        currentLocation: driver.currentLocation,
+        lastUpdated: driver.updatedAt
+      });
+    } catch (error) {
+      console.error("Error fetching driver location:", error);
+      res.status(500).json({ message: "Failed to fetch driver location" });
+    }
+  });
+
   // Driver oversight management endpoint
   app.patch("/api/admin/drivers/:id/oversight", requireSecureAdmin, async (req, res) => {
     try {
