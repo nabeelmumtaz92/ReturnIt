@@ -85,10 +85,19 @@ export class EngagementService {
         network: matchedOffer.network
       });
 
+      // Log engagement prompt to database (Task 14)
+      const promptId = await this.logEngagementPrompt({
+        userId: event.userId,
+        orderId: event.orderId,
+        offerId: matchedOffer.id,
+        channels: [], // Will be populated as notifications are sent
+      });
+
+      console.log('[Engagement] Engagement prompt logged:', promptId);
+
       // TODO (Task 9): Show in-app offer banner
-      // TODO (Task 10): Send web push notification
+      // TODO (Task 10): Send web push notification  
       // TODO (Task 11): Send email notification (with quota check)
-      // TODO (Task 14): Log engagement prompt event in database
 
       console.log('[Engagement] Offer processing complete (notification channels pending)');
 
@@ -204,6 +213,139 @@ export class EngagementService {
     } catch (error) {
       console.error('[Engagement] Invalid URL:', url, error);
       return false;
+    }
+  }
+
+  /**
+   * Log engagement prompt to database
+   * Creates initial engagement_prompts record when offer is sent
+   */
+  async logEngagementPrompt(data: {
+    userId: number;
+    orderId: string;
+    offerId: number;
+    channels: string[];
+  }): Promise<number> {
+    const [prompt] = await db
+      .insert(engagementPrompts)
+      .values({
+        userId: data.userId,
+        orderId: data.orderId,
+        offerId: data.offerId,
+        channels: data.channels,
+        sentAt: new Date(),
+      })
+      .returning({ id: engagementPrompts.id });
+
+    return prompt.id;
+  }
+
+  /**
+   * Track when user views the offer (viewed event)
+   * Prevents double-counting - only logs first view
+   * Verifies ownership to prevent fraud
+   */
+  async trackView(promptId: number, userId: number): Promise<boolean> {
+    try {
+      // Only update if viewedAt is null AND userId matches (prevents tampering)
+      const result = await db
+        .update(engagementPrompts)
+        .set({ viewedAt: new Date() })
+        .where(
+          and(
+            eq(engagementPrompts.id, promptId),
+            eq(engagementPrompts.userId, userId), // Ownership verification
+            isNull(engagementPrompts.viewedAt)
+          )
+        );
+
+      const success = !!(result.rowCount && result.rowCount > 0);
+      
+      if (success) {
+        console.log('[Engagement] View tracked for prompt:', promptId);
+      } else {
+        console.log('[Engagement] View not tracked (already viewed or unauthorized):', promptId);
+      }
+      
+      return success;
+    } catch (error) {
+      console.error('[Engagement] Error tracking view:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Track when user clicks the affiliate link (clicked event)
+   * Prevents click fraud - only logs first click
+   * Verifies ownership to prevent fraud
+   */
+  async trackClick(promptId: number, userId: number): Promise<boolean> {
+    try {
+      // Only update if clickedAt is null AND userId matches (prevents tampering)
+      const result = await db
+        .update(engagementPrompts)
+        .set({ clickedAt: new Date() })
+        .where(
+          and(
+            eq(engagementPrompts.id, promptId),
+            eq(engagementPrompts.userId, userId), // Ownership verification
+            isNull(engagementPrompts.clickedAt)
+          )
+        );
+
+      const success = !!(result.rowCount && result.rowCount > 0);
+      
+      if (success) {
+        console.log('[Engagement] Click tracked for prompt:', promptId);
+      } else {
+        console.log('[Engagement] Click not tracked (already clicked or unauthorized):', promptId);
+      }
+      
+      return success;
+    } catch (error) {
+      console.error('[Engagement] Error tracking click:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Update channels array for engagement prompt
+   * Called when notifications are sent via different channels
+   */
+  async updateChannels(promptId: number, channels: string[]): Promise<void> {
+    try {
+      await db
+        .update(engagementPrompts)
+        .set({ channels })
+        .where(eq(engagementPrompts.id, promptId));
+
+      console.log('[Engagement] Channels updated for prompt:', promptId, channels);
+    } catch (error) {
+      console.error('[Engagement] Error updating channels:', error);
+    }
+  }
+
+  /**
+   * Log affiliate commission data (if available from network)
+   * Called when conversion tracking data is received
+   */
+  async logConversion(promptId: number, data: {
+    conversionValue?: number;
+    affiliateCommission?: number;
+  }): Promise<void> {
+    try {
+      await db
+        .update(engagementPrompts)
+        .set({
+          conversionValue: data.conversionValue ? data.conversionValue.toString() : undefined,
+          affiliateCommission: data.affiliateCommission ? data.affiliateCommission.toString() : undefined,
+          conversionTrackedAt: new Date()
+        })
+        .where(eq(engagementPrompts.id, promptId));
+
+      console.log('[Engagement] Conversion logged for prompt:', promptId, data);
+    } catch (error) {
+      console.error('[Engagement] Error logging conversion:', error);
     }
   }
 

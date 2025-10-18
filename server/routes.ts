@@ -11921,6 +11921,115 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
+  // === ENGAGEMENT TRACKING ROUTES ===
+  
+  // Track when user views an offer (logged in users only)
+  app.post("/api/engagement/track/view", isAuthenticated, async (req, res) => {
+    try {
+      const { promptId } = req.body;
+      const userId = (req.session as any).user.id;
+      
+      if (!promptId || typeof promptId !== 'number') {
+        return res.status(400).json({ message: 'Invalid prompt ID' });
+      }
+      
+      const { engagementService } = await import('./services/engagementService');
+      const success = await engagementService.trackView(promptId, userId);
+      
+      if (!success) {
+        return res.status(404).json({ 
+          message: 'Prompt not found or already viewed' 
+        });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('[Engagement] Error tracking view:', error);
+      res.status(500).json({ message: 'Failed to track view' });
+    }
+  });
+  
+  // Track when user clicks an affiliate link (logged in users only)
+  app.post("/api/engagement/track/click", isAuthenticated, async (req, res) => {
+    try {
+      const { promptId } = req.body;
+      const userId = (req.session as any).user.id;
+      
+      if (!promptId || typeof promptId !== 'number') {
+        return res.status(400).json({ message: 'Invalid prompt ID' });
+      }
+      
+      const { engagementService } = await import('./services/engagementService');
+      const success = await engagementService.trackClick(promptId, userId);
+      
+      if (!success) {
+        return res.status(404).json({ 
+          message: 'Prompt not found or already clicked' 
+        });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error('[Engagement] Error tracking click:', error);
+      res.status(500).json({ message: 'Failed to track click' });
+    }
+  });
+  
+  // Get engagement prompt details (for displaying offers to users)
+  app.get("/api/engagement/prompts/:promptId", isAuthenticated, async (req, res) => {
+    try {
+      const promptId = parseInt(req.params.promptId);
+      const userId = (req.session as any).user.id;
+      
+      if (isNaN(promptId)) {
+        return res.status(400).json({ message: 'Invalid prompt ID' });
+      }
+      
+      // Query engagement_prompts joined with partner_offers
+      const { db } = await import('./db');
+      const { engagementPrompts, partnerOffers } = await import('@shared/schema');
+      const { eq, and } = await import('drizzle-orm');
+      
+      const [prompt] = await db
+        .select({
+          id: engagementPrompts.id,
+          offerId: engagementPrompts.offerId,
+          sentAt: engagementPrompts.sentAt,
+          viewedAt: engagementPrompts.viewedAt,
+          clickedAt: engagementPrompts.clickedAt,
+          offer: {
+            id: partnerOffers.id,
+            brand: partnerOffers.brand,
+            title: partnerOffers.title,
+            description: partnerOffers.description,
+            couponCode: partnerOffers.couponCode,
+            affiliateLink: partnerOffers.affiliateLink,
+            imageUrl: partnerOffers.imageUrl,
+            discountPercentage: partnerOffers.discountPercentage,
+            category: partnerOffers.category,
+          }
+        })
+        .from(engagementPrompts)
+        .innerJoin(partnerOffers, eq(engagementPrompts.offerId, partnerOffers.id))
+        .where(
+          and(
+            eq(engagementPrompts.id, promptId),
+            eq(engagementPrompts.userId, userId)
+          )
+        )
+        .limit(1);
+      
+      if (!prompt) {
+        return res.status(404).json({ message: 'Prompt not found' });
+      }
+      
+      res.json(prompt);
+    } catch (error) {
+      console.error('[Engagement] Error fetching prompt:', error);
+      res.status(500).json({ message: 'Failed to fetch prompt' });
+    }
+  });
+  
   // === EMAIL QUOTA MANAGEMENT ROUTES ===
   
   // Get current email quota status (admin only)
