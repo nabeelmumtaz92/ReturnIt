@@ -4,6 +4,21 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (October 18, 2025)
 
+## Booking Form Redesign & Dynamic Pricing (Latest)
+**Professional UI Overhaul**: Complete booking form redesign with dynamic pricing system:
+- **UI Redesign**: Crisp, professional 3-step form with solid color buttons (#B8956A), progress indicator, removed arcade-style elements
+- **Dynamic Pricing Calculator**: Real-time pricing with itemized breakdown
+  - Base pickup fee: $8.99 (up from $3.99)
+  - Size upcharges: Small $0, Medium +$2, Large +$4
+  - Multi-box fee: $3 per additional box (previously $1.50)
+  - Service fee: $1.50 flat
+  - Tax: 8.75% on subtotal
+  - Total range: $11-$18 depending on box size/quantity
+- **Backend Pricing Fix**: Removed hardcoded backend pricing recalculation that was overriding frontend values (was forcing $3.99 base price)
+- **Confirmation Page**: Added Step 4 showing order ID, tracking number, and total paid after successful booking
+- **apiRequest Fix**: Fixed `client/src/lib/queryClient.ts` to parse JSON responses (was returning raw Response object causing undefined order data)
+- **End-to-End Verified**: Testing confirmed correct pricing persistence to database, confirmation page displays all values, dynamic totals calculate accurately
+
 ## Booking Form Schema Drift Resolution
 **Critical Fix**: Resolved massive database schema drift affecting booking functionality:
 - **Database Schema Cleanup**: Removed 60+ non-existent columns from `shared/schema.ts` orders table (refund tracking, policy enforcement, gift card handling, driver timeline fields)
