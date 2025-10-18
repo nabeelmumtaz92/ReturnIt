@@ -60,23 +60,41 @@ export default function BookReturn() {
 
   const createOrderMutation = useMutation({
     mutationFn: async (data: FormData) => {
-      return apiRequest('/api/orders', 'POST', {
-        customerId: user?.id || null,
+      return apiRequest('POST', '/api/orders', {
+        // User info (optional for guests)
+        userId: user?.id || null,
         customerEmail: data.email,
         customerPhone: data.phone,
-        pickupStreetAddress: data.streetAddress,
-        pickupCity: data.city,
-        pickupState: data.state,
-        pickupZipCode: data.zipCode,
-        retailer: data.retailer,
-        itemDescription: data.itemDescription,
-        itemValue: parseFloat(data.itemValue) || 0,
-        orderName: data.orderName,
+        
+        // Pickup details (use field names server expects)
+        streetAddress: data.streetAddress,
+        city: data.city,
+        state: data.state,
+        zipCode: data.zipCode,
         notes: data.notes,
-        paymentMethod: data.paymentMethod,
-        status: 'created',
+        
+        // Return details
+        retailer: data.retailer,
+        itemCategory: 'Other', // Default category
+        itemDescription: data.itemDescription,
+        orderName: data.orderName,
+        
+        // Required fields with defaults
+        purchaseType: 'online', // Default to online purchase
+        itemSize: 'M', // Default to medium size
+        numberOfItems: 1,
+        hasOriginalTags: false,
+        receiptUploaded: false,
+        acceptsLiabilityTerms: true,
+        
+        // Pricing
+        itemValue: parseFloat(data.itemValue) || 0,
         totalPrice: 12.00,
-        basePrice: 12.00
+        basePrice: 12.00,
+        
+        // Status
+        status: 'created',
+        paymentMethod: data.paymentMethod
       });
     },
     onSuccess: () => {
@@ -96,6 +114,16 @@ export default function BookReturn() {
   });
 
   const handleSubmit = () => {
+    console.log('Form Data being submitted:', formData);
+    console.log('Mapped order data:', {
+      userId: user?.id || null,
+      customerEmail: formData.email,
+      customerPhone: formData.phone,
+      pickupStreetAddress: formData.streetAddress,
+      pickupCity: formData.city,
+      pickupState: formData.state,
+      pickupZipCode: formData.zipCode,
+    });
     createOrderMutation.mutate(formData);
   };
 

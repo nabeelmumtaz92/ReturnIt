@@ -534,7 +534,7 @@ export const orderItems = pgTable("order_items", {
 
 export const orders = pgTable("orders", {
   id: text("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id), // Nullable to support guest bookings
   status: text("status").notNull().default("created"), // created, confirmed, assigned, pickup_scheduled, picked_up, in_transit, delivered, completed, cancelled, refunded, return_refused
   trackingNumber: text("tracking_number").unique(),
   trackingEnabled: boolean("tracking_enabled").default(true).notNull(),

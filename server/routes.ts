@@ -3679,10 +3679,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new order (protected)
-  app.post("/api/orders", isAuthenticated, async (req, res) => {
+  // Create new order (supports both authenticated and guest users)
+  app.post("/api/orders", async (req, res) => {
     try {
-      const userId = (req.session as any).user.id;
+      // Allow both logged-in users and guests
+      const userId = (req.session as any)?.user?.id || null;
       
       // Import policy validator
       const { validateOrderPolicy, determinePolicyAction, PolicyAction } = await import('@shared/policyValidator');
