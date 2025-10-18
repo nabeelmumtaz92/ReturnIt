@@ -576,13 +576,13 @@ export const orders = pgTable("orders", {
   authorizationSigned: boolean("authorization_signed").default(false).notNull(),
   authorizationSignature: text("authorization_signature"), // Digital signature data
   authorizationTimestamp: timestamp("authorization_timestamp"),
-  requiresInStoreReturn: boolean("requires_in_store_return").default(false).notNull(),
-  requiresCarrierDropoff: boolean("requires_carrier_dropoff").default(false).notNull(),
+  // requiresInStoreReturn: boolean("requires_in_store_return").default(false).notNull(), // COMMENTED OUT - column doesn't exist in DB
+  // requiresCarrierDropoff: boolean("requires_carrier_dropoff").default(false).notNull(), // COMMENTED OUT - column doesn't exist in DB
   
   // Item and pricing details
-  numberOfItems: integer("number_of_items").default(1).notNull(),
-  itemSize: text("item_size").notNull(), // S, M, L, XL (individual item size)
-  packagingType: text("packaging_type").default("bag"), // bag, box, envelope, none
+  // numberOfItems: integer("number_of_items").default(1).notNull(), // COMMENTED OUT - column doesn't exist in DB (use number_of_boxes instead)
+  // itemSize: text("item_size").notNull(), // COMMENTED OUT - column doesn't exist in DB
+  // packagingType: text("packaging_type").default("bag"), // COMMENTED OUT - column doesn't exist in DB
   
   // Pricing breakdown
   basePrice: real("base_price").default(3.99), // Base service fee (always applied)

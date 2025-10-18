@@ -847,11 +847,11 @@ export class MemStorage implements IStorage {
       authorizationSigned: insertOrder.authorizationSigned ?? false,
       authorizationSignature: insertOrder.authorizationSignature || null,
       authorizationTimestamp: insertOrder.authorizationTimestamp || null,
-      requiresInStoreReturn: insertOrder.requiresInStoreReturn ?? false,
-      requiresCarrierDropoff: insertOrder.requiresCarrierDropoff ?? false,
-      numberOfItems: insertOrder.numberOfItems ?? 1,
-      itemSize: insertOrder.itemSize || 'M',
-      packagingType: insertOrder.packagingType || 'bag',
+      // requiresInStoreReturn: insertOrder.requiresInStoreReturn ?? false, // COMMENTED OUT - column doesn't exist in DB
+      // requiresCarrierDropoff: insertOrder.requiresCarrierDropoff ?? false, // COMMENTED OUT - column doesn't exist in DB
+      // numberOfItems: insertOrder.numberOfItems ?? 1, // COMMENTED OUT - column doesn't exist in DB
+      // itemSize: insertOrder.itemSize || 'M', // COMMENTED OUT - column doesn't exist in DB
+      // packagingType: insertOrder.packagingType || 'bag', // COMMENTED OUT - column doesn't exist in DB
       basePrice: insertOrder.basePrice ?? 3.99,
       distanceFee: insertOrder.distanceFee ?? 0,
       timeFee: insertOrder.timeFee ?? 0,
