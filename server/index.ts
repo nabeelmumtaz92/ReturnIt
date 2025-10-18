@@ -191,6 +191,15 @@ app.use((req, res, next) => {
     // Continue without WebSocket - it's not critical for basic functionality
   }
 
+  // Initialize offer sync scheduler for post-purchase engagement
+  try {
+    const { offerSyncScheduler } = await import('./services/offerSyncScheduler');
+    offerSyncScheduler.start();
+  } catch (error) {
+    console.error('⚠️ Offer sync scheduler initialization failed (non-critical):', error);
+    // Continue without scheduler - offers can still be synced manually via API
+  }
+
   // Serve PWA manifest files before Vite catches them
   app.get('/manifest-customer.json', async (req, res) => {
     try {
@@ -267,15 +276,31 @@ app.use((req, res, next) => {
   });
 
   // Graceful shutdown handling
-  process.on('SIGINT', () => {
+  process.on('SIGINT', async () => {
     console.log('\n🛑 Shutting down gracefully...');
     webSocketService.cleanup();
+    
+    try {
+      const { offerSyncScheduler } = await import('./services/offerSyncScheduler');
+      offerSyncScheduler.stop();
+    } catch (error) {
+      // Ignore - scheduler may not be initialized
+    }
+    
     process.exit(0);
   });
 
-  process.on('SIGTERM', () => {
+  process.on('SIGTERM', async () => {
     console.log('\n🛑 SIGTERM received, shutting down gracefully...');
     webSocketService.cleanup();
+    
+    try {
+      const { offerSyncScheduler } = await import('./services/offerSyncScheduler');
+      offerSyncScheduler.stop();
+    } catch (error) {
+      // Ignore - scheduler may not be initialized
+    }
+    
     process.exit(0);
   });
 })();

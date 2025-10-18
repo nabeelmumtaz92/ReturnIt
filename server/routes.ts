@@ -11864,6 +11864,45 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === AFFILIATE OFFER SYNC ROUTES ===
+  
+  // Get offer sync statistics (admin only)
+  app.get("/api/admin/offers/sync/stats", requireSecureAdmin, async (req, res) => {
+    try {
+      const { offerSyncService } = await import("./services/offerSyncService");
+      const stats = await offerSyncService.getSyncStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting sync stats:', error);
+      res.status(500).json({ message: 'Failed to get sync stats' });
+    }
+  });
+  
+  // Manually trigger offer sync (admin only)
+  app.post("/api/admin/offers/sync/trigger", requireSecureAdmin, async (req, res) => {
+    try {
+      const { offerSyncService } = await import("./services/offerSyncService");
+      
+      // Run sync in background
+      offerSyncService.syncAllNetworks()
+        .then(result => {
+          console.log('[Offer Sync] Manual sync completed:', result);
+        })
+        .catch(error => {
+          console.error('[Offer Sync] Manual sync failed:', error);
+        });
+      
+      // Return immediately
+      res.json({ 
+        message: 'Offer sync started in background',
+        status: 'running'
+      });
+    } catch (error) {
+      console.error('Error triggering sync:', error);
+      res.status(500).json({ message: 'Failed to trigger sync' });
+    }
+  });
+  
   // === EMAIL QUOTA MANAGEMENT ROUTES ===
   
   // Get current email quota status (admin only)
