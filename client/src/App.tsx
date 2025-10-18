@@ -14,6 +14,7 @@ import { MapProviderProvider } from "@/contexts/MapProviderContext";
 import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import BookPickup from "@/pages/book-pickup";
+import BookReturn from "@/pages/book-return";
 import OrderStatus from "@/pages/order-status";
 import Checkout from "@/pages/checkout";
 import DriverPortal from "@/pages/driver-portal";
@@ -193,6 +194,7 @@ function Router() {
       </Route>
       <Route path="/login" component={Login} />
       <Route path="/book-pickup" component={BookPickup} />
+      <Route path="/book-return" component={BookReturn} />
       <Route path="/checkout" component={Checkout} />
       <Route path="/track" component={TrackingPage} />
       <Route path="/order-status/:orderId">
