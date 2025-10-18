@@ -4,6 +4,19 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (October 18, 2025)
 
+## Real-Time Driver Tracking Implementation
+**NEW**: Admin panel real-time driver tracking with GPS location monitoring:
+- **Backend API Endpoints**: Added GET `/api/admin/drivers/tracking` (all active drivers) and GET `/api/admin/drivers/:id/location` (specific driver)
+- **Tracking Dashboard**: Comprehensive real-time tracking page with:
+  - Interactive Mapbox map showing all active driver locations
+  - Search by name, email, phone number (for support)
+  - Auto-refresh every 10 seconds with toggle control
+  - Stats cards: Total Drivers, Online Now, With Location, Offline
+  - Driver list with status badges, vehicle info, location availability
+  - Detailed driver modal: contact info, vehicle details, GPS coordinates, speed, accuracy
+- **Navigation**: Accessible via "Real-time Tracking" button in Business Operations section
+- **Database Integration**: Uses existing `users.currentLocation` (jsonb) and `users.isOnline` (boolean) fields
+
 ## Admin Dashboard Verification & Cleanup
 **System Integration Verified**: Confirmed all admin features are connected to real database:
 - **Order Management**: Connected to booking form via `/api/admin/orders` endpoint - all orders from `/book-return` appear in admin dashboard
