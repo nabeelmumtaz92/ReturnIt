@@ -15,7 +15,7 @@ import { Package2, MapPin, Phone, User, CreditCard } from 'lucide-react';
 import { ReturnItIcon } from '@/components/ReturnItLogo';
 import { useLocation, Link } from 'wouter';
 
-type MobileView = 'welcome' | 'login' | 'book-pickup' | 'order-status';
+type MobileView = 'welcome' | 'login' | 'book-return' | 'order-status';
 
 export default function MobileAppDemo() {
   const [, setLocation] = useLocation();
@@ -49,9 +49,9 @@ export default function MobileAppDemo() {
             variant="primary" 
             size="lg" 
             className="w-full h-12"
-            onClick={() => setCurrentView('book-pickup')}
+            onClick={() => setCurrentView('book-return')}
           >
-            Book Pickup
+            Book Return
           </Button>
           <Button 
             variant="outline" 
@@ -126,7 +126,7 @@ export default function MobileAppDemo() {
           className="w-full mt-4"
           onClick={() => {
             addToast({ variant: 'success', title: 'Signed in!', description: 'Welcome to Returnly' });
-            setCurrentView('book-pickup');
+            setCurrentView('book-return');
           }}
         >
           Continue
@@ -248,8 +248,8 @@ export default function MobileAppDemo() {
               <Button variant="outline" size="sm">Contact Driver</Button>
               <Button variant="outline" size="sm">Update Address</Button>
               <Button variant="outline" size="sm">Add Items</Button>
-              <Button variant="outline" size="sm" onClick={() => setCurrentView('book-pickup')}>
-                New Pickup
+              <Button variant="outline" size="sm" onClick={() => setCurrentView('book-return')}>
+                New Return
               </Button>
             </ResponsiveGrid>
           </CardContent>
@@ -277,9 +277,9 @@ export default function MobileAppDemo() {
             Login
           </Button>
           <Button 
-            variant={currentView === 'book-pickup' ? 'primary' : 'ghost'} 
+            variant={currentView === 'book-return' ? 'primary' : 'ghost'} 
             size="sm"
-            onClick={() => setCurrentView('book-pickup')}
+            onClick={() => setCurrentView('book-return')}
           >
             Book
           </Button>
@@ -312,7 +312,7 @@ export default function MobileAppDemo() {
       <div className="pb-20"> {/* Space for bottom navigation */}
         {currentView === 'welcome' && renderWelcome()}
         {currentView === 'login' && renderLogin()}
-        {currentView === 'book-pickup' && renderBookPickup()}
+        {currentView === 'book-return' && renderBookPickup()}
         {currentView === 'order-status' && renderOrderStatus()}
       </div>
 

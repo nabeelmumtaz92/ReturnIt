@@ -295,11 +295,11 @@ export default function OrderStatus({ orderId }: OrderStatusProps) {
             {/* Action Button */}
             <div className="pt-4">
               <Button
-                onClick={() => setLocation('/book-pickup')}
+                onClick={() => setLocation('/book-return')}
                 className="w-full bg-primary hover:bg-primary/90 text-white"
                 data-testid="button-book-another"
               >
-                Book Another Pickup
+                Book Another Return
               </Button>
             </div>
           </CardContent>

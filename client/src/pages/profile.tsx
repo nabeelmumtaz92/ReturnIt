@@ -463,10 +463,10 @@ export default function Profile() {
             </>
           ) : (
             <>
-              <Link href="/book-pickup">
+              <Link href="/book-return">
                 <Button variant="outline" className="w-full h-16 border-primary text-primary hover:bg-primary/10">
                   <Package className="h-5 w-5 mr-2" />
-                  Book Pickup
+                  Book Return
                 </Button>
               </Link>
               <Link href="/help-center">

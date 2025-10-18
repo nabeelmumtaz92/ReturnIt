@@ -77,9 +77,9 @@ export default function LoyaltyDashboard() {
               <h1 className="text-3xl font-bold text-foreground">Returnly Rewards</h1>
             </div>
             <div className="flex space-x-3">
-              <Link href="/book-pickup">
+              <Link href="/book-return">
                 <Button className="bg-primary hover:bg-primary/90 text-white">
-                  Book Pickup
+                  Book Return
                 </Button>
               </Link>
             </div>

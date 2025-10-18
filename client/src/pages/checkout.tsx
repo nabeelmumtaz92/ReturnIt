@@ -241,7 +241,7 @@ export default function Checkout() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLocation('/book-pickup')}
+              onClick={() => setLocation('/book-return')}
               className="text-foreground hover:text-foreground"
               data-testid="button-back-booking"
             >

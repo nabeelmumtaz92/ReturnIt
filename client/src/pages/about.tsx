@@ -92,8 +92,8 @@ export default function About() {
                 {businessInfo?.description || "At Return It, we believe returning an item should be as easy as ordering it. Our On Demand Returns connects you with local drivers who handle every step of the return process."}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/book-pickup">
-                  <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold" data-testid="button-book-pickup">
+                <Link href="/book-return">
+                  <Button className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold" data-testid="button-book-return">
                     Book Your First Return
                   </Button>
                 </Link>

@@ -1203,10 +1203,10 @@ Thank you for using Return It!
         <Button 
           onClick={() => setCurrentView('book')}
           className="h-20 bg-primary hover:bg-primary/90 flex flex-col gap-2"
-          data-testid="button-book-pickup"
+          data-testid="button-book-return"
         >
           <Plus className="h-6 w-6" />
-          <span>Book Pickup</span>
+          <span>Book Return</span>
         </Button>
         <Button 
           onClick={() => setCurrentView('orders')}

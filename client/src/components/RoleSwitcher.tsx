@@ -39,9 +39,9 @@ export function RoleSwitcher() {
       name: 'Customer',
       icon: User,
       color: 'bg-blue-100 text-blue-800',
-      description: 'Book pickups and track orders',
+      description: 'Book returns and track orders',
       routes: [
-        { name: 'Book Pickup', path: '/book-pickup', icon: Package },
+        { name: 'Book Return', path: '/book-return', icon: Package },
         { name: 'Order Status', path: '/order-status/DEMO01', icon: BarChart3 },
       ]
     },
