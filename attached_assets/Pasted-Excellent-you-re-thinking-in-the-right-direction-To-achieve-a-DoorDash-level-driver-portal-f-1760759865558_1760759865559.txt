@@ -1,0 +1,273 @@
+Excellent — you’re thinking in the right direction.
+To achieve a **DoorDash-level driver portal** for **Return It**, we’ll extend the current admin setup to include a **fully functional Driver Portal system** — with real-time order flow, earnings, routing, and performance tracking.
+
+Below is a **complete specification + minimal functional code base** your Replit devs can implement right away.
+
+---
+
+## 🚚 RETURN IT DRIVER PORTAL — “DOORDASH-LEVEL” CORE MODULE
+
+### 🧩 1️⃣ Purpose
+
+Give drivers the same experience professional gig-apps provide:
+
+* Real-time incoming return/exchange requests
+* Map-based routing & order details
+* Earnings dashboard
+* Instant payout tracking
+* Profile + document management
+
+---
+
+## ⚙️ CORE FEATURES
+
+### **A. Authentication**
+
+* Login / signup (JWT or Firebase Auth)
+* Upload license + insurance documents
+* Verify background status (Checkr API ready)
+* Password reset & profile update
+
+---
+
+### **B. Live Orders Feed**
+
+* Socket-based (WebSocket) real-time feed of new requests
+* Cards showing:
+
+  * Store → Drop-off distance
+  * Payout (base + bonus)
+  * Return type (Return / Exchange / Donation)
+  * Time estimate
+* Accept / Reject buttons (with timeout countdown)
+
+---
+
+### **C. Active Order Tracking**
+
+* Once accepted → “Active Route” view:
+
+  * Map view with pickup/drop-off pins
+  * Step progress (Picked up → Dropped off → Completed)
+  * Update status buttons
+  * Customer contact masked number (if needed)
+* Auto-sync with admin’s order table
+
+---
+
+### **D. Earnings Dashboard**
+
+* Total completed orders
+* Total earnings (daily / weekly / monthly)
+* Instant payout toggle (Stripe Connect)
+* Graph of orders completed per day
+
+---
+
+### **E. Notifications & Support**
+
+* Toast or push notifications for new orders / changes
+* “Report Issue” button (links to support ticket)
+* Help/FAQ modal
+
+---
+
+### **F. Settings & Availability**
+
+* Toggle “Online / Offline”
+* Set preferred delivery radius or zone
+* Edit vehicle info
+
+---
+
+## 🧱 TECH BASE (REPLIT-READY)
+
+### 📁 Structure
+
+```
+driver-portal/
+ ├── client/ (React + Tailwind)
+ └── server/ (Express + Socket.io)
+```
+
+---
+
+### 🖥 server/index.ts
+
+```ts
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+app.use(cors());
+app.use(express.json());
+
+// Mock data
+let activeDrivers: any[] = [];
+
+app.post("/api/driver/login", (req, res) => {
+  const { email } = req.body;
+  const driver = { id: Date.now(), email, earnings: 0, status: "online" };
+  activeDrivers.push(driver);
+  res.json(driver);
+});
+
+// Simulated new order every 20s
+setInterval(() => {
+  const order = {
+    id: Date.now(),
+    store: "Target",
+    customer: "Jane Doe",
+    payout: (Math.random() * 10 + 3).toFixed(2),
+    distance: (Math.random() * 5 + 1).toFixed(1),
+  };
+  io.emit("new_order", order);
+}, 20000);
+
+io.on("connection", (socket) => {
+  console.log("Driver connected");
+  socket.on("accept_order", (order) => {
+    io.emit("order_accepted", order);
+  });
+});
+
+server.listen(4000, () => console.log("Driver server running on :4000"));
+```
+
+---
+
+### 💻 client/src/App.tsx
+
+```tsx
+import { useEffect, useState } from "react";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:4000");
+
+export default function DriverPortal() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [activeOrder, setActiveOrder] = useState<any>(null);
+  const [earnings, setEarnings] = useState(0);
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    socket.on("new_order", (order) => setOrders((prev) => [...prev, order]));
+    socket.on("order_accepted", (order) =>
+      setOrders((prev) => prev.filter((o) => o.id !== order.id))
+    );
+  }, []);
+
+  const acceptOrder = (order: any) => {
+    setActiveOrder(order);
+    socket.emit("accept_order", order);
+    setOrders((prev) => prev.filter((o) => o.id !== order.id));
+  };
+
+  const completeOrder = () => {
+    setEarnings((e) => e + parseFloat(activeOrder.payout));
+    setActiveOrder(null);
+  };
+
+  return (
+    <div className="p-6 space-y-4">
+      <header className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Return It Driver Portal</h1>
+        <button
+          onClick={() => setOnline(!online)}
+          className={`px-3 py-1 rounded text-white ${
+            online ? "bg-green-500" : "bg-gray-500"
+          }`}
+        >
+          {online ? "Online" : "Offline"}
+        </button>
+      </header>
+
+      {activeOrder ? (
+        <div className="p-4 border rounded shadow">
+          <h2 className="text-lg font-semibold mb-2">Active Order</h2>
+          <p>Store: {activeOrder.store}</p>
+          <p>Customer: {activeOrder.customer}</p>
+          <p>Distance: {activeOrder.distance} mi</p>
+          <p>Payout: ${activeOrder.payout}</p>
+          <button
+            onClick={completeOrder}
+            className="mt-3 bg-blue-500 text-white px-3 py-1 rounded"
+          >
+            Mark Complete
+          </button>
+        </div>
+      ) : (
+        <div>
+          <h2 className="text-lg font-semibold mb-2">Available Orders</h2>
+          {orders.length === 0 ? (
+            <p>No new orders right now...</p>
+          ) : (
+            orders.map((o) => (
+              <div
+                key={o.id}
+                className="p-3 border mb-2 rounded flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-semibold">{o.store}</p>
+                  <p>{o.distance} mi • ${o.payout}</p>
+                </div>
+                <button
+                  onClick={() => acceptOrder(o)}
+                  className="bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  Accept
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      <div className="border-t pt-4">
+        <h2 className="text-lg font-semibold">Earnings</h2>
+        <p className="text-xl font-bold">${earnings.toFixed(2)}</p>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+### 🧰 client/package.json
+
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.7.5",
+    "tailwindcss": "^3.4.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}
+```
+
+---
+
+## 🚀 What This Gives You
+
+✅ Live order feed (like DoorDash’s “Orders Nearby”)
+✅ Real-time accept/reject workflow
+✅ Active order tracking panel
+✅ Earnings dashboard
+✅ Online/offline toggle
+✅ Foundation for instant-pay + routing integration
+
+---
+
+Would you like me to now add **map routing + driver GPS tracking (Google Maps API + location updates)** so that it shows real-time routes and customer drop-offs just like DoorDash’s active delivery screen?
