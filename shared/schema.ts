@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, real, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, real, jsonb, index, numeric, unique } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -3051,6 +3051,216 @@ export const insertNodePerformanceHistorySchema = createInsertSchema(nodePerform
 export type GraphPolicyRule = typeof graphPolicyRules.$inferSelect;
 export type InsertGraphPolicyRule = typeof graphPolicyRules.$inferInsert;
 export const insertGraphPolicyRuleSchema = createInsertSchema(graphPolicyRules).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+// ============================================================================
+// POST-PURCHASE ENGAGEMENT SYSTEM
+// ============================================================================
+
+// Partner Offers - All offers synced from affiliate networks
+export const partnerOffers = pgTable("partner_offers", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Source tracking
+  network: text("network").notNull(), // "impact", "rakuten", "cj", "amazon_direct", "walmart_direct"
+  networkOfferId: text("network_offer_id").notNull(), // External offer ID from network
+  
+  // Brand and category
+  brand: text("brand").notNull(), // "Nike", "Target", "H&M"
+  category: text("category"), // "Shoes", "Clothing", "Electronics"
+  
+  // Offer details
+  title: text("title").notNull(),
+  description: text("description"),
+  couponCode: text("coupon_code"), // "NIKE20" or null
+  affiliateLink: text("affiliate_link").notNull(), // Tracking URL
+  imageUrl: text("image_url"),
+  
+  // Validity period
+  validFrom: timestamp("valid_from").notNull(),
+  validTo: timestamp("valid_to").notNull(),
+  
+  // Financial - using numeric for precision
+  commissionRate: numeric("commission_rate", { precision: 5, scale: 2 }), // 8.50 = 8.5%
+  
+  // Status and control
+  status: text("status").notNull().default("active"), // "pending", "active", "paused", "expired"
+  priority: integer("priority").default(0), // Higher = shows first
+  
+  // Metadata
+  autoSyncedAt: timestamp("auto_synced_at").defaultNow(),
+  pausedBy: integer("paused_by").references(() => users.id),
+  pausedAt: timestamp("paused_at"),
+  pauseReason: text("pause_reason"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  // Unique constraint to prevent duplicate offers from same network
+  networkOfferUnique: unique("partner_offers_network_offer_unique").on(table.network, table.networkOfferId),
+  // Indexes for query performance
+  networkIdx: index("partner_offers_network_idx").on(table.network),
+  brandIdx: index("partner_offers_brand_idx").on(table.brand),
+  categoryIdx: index("partner_offers_category_idx").on(table.category),
+  statusIdx: index("partner_offers_status_idx").on(table.status),
+  validToIdx: index("partner_offers_valid_to_idx").on(table.validTo),
+}));
+
+// Engagement Prompts - Track what offers were shown to users
+export const engagementPrompts = pgTable("engagement_prompts", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // References
+  userId: integer("user_id").references(() => users.id).notNull(),
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  offerId: integer("offer_id").references(() => partnerOffers.id).notNull(),
+  
+  // Channel tracking
+  channels: jsonb("channels").default([]).notNull(), // ["in_app", "push", "email"]
+  
+  // Engagement tracking
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  viewedAt: timestamp("viewed_at"), // When user saw the offer
+  clickedAt: timestamp("clicked_at"), // When user clicked
+  
+  // Conversion tracking (if available from affiliate network) - using numeric for precision
+  conversionValue: numeric("conversion_value", { precision: 10, scale: 2 }), // Purchase amount if tracked
+  affiliateCommission: numeric("affiliate_commission", { precision: 10, scale: 2 }), // Our commission earned
+  conversionTrackedAt: timestamp("conversion_tracked_at"),
+  
+  // Metadata
+  metadata: jsonb("metadata").default({}),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("engagement_prompts_user_id_idx").on(table.userId),
+  orderIdIdx: index("engagement_prompts_order_id_idx").on(table.orderId),
+  offerIdIdx: index("engagement_prompts_offer_id_idx").on(table.offerId),
+  sentAtIdx: index("engagement_prompts_sent_at_idx").on(table.sentAt),
+  clickedAtIdx: index("engagement_prompts_clicked_at_idx").on(table.clickedAt),
+}));
+
+// User Notification Preferences
+export const userNotificationPreferences = pgTable("user_notification_preferences", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  
+  // Channel preferences
+  enableInApp: boolean("enable_in_app").default(true).notNull(), // Always true
+  enablePush: boolean("enable_push").default(true).notNull(),
+  enableEmail: boolean("enable_email").default(true).notNull(),
+  
+  // Unsubscribe tracking
+  unsubscribeToken: text("unsubscribe_token").unique(), // For email unsubscribe links
+  unsubscribedAt: timestamp("unsubscribed_at"),
+  unsubscribeReason: text("unsubscribe_reason"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("user_notification_preferences_user_id_idx").on(table.userId),
+  unsubscribeTokenIdx: index("user_notification_preferences_unsubscribe_token_idx").on(table.unsubscribeToken),
+}));
+
+// Email Quota Tracker - Auto-cutoff system to prevent costs
+export const emailQuotaTracker = pgTable("email_quota_tracker", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Date tracking
+  date: timestamp("date").notNull().unique(), // Date for this quota period
+  month: text("month").notNull(), // "2025-10" for monthly tracking
+  
+  // Quota counts
+  emailsSentToday: integer("emails_sent_today").default(0).notNull(),
+  emailsSentMonth: integer("emails_sent_month").default(0).notNull(),
+  
+  // Limits (configurable)
+  quotaDaily: integer("quota_daily").default(100).notNull(),
+  quotaMonthly: integer("quota_monthly").default(3000).notNull(),
+  safetyBuffer: integer("safety_buffer").default(5).notNull(), // Stop at 95 instead of 100
+  
+  // Status
+  isPaused: boolean("is_paused").default(false).notNull(),
+  pausedAt: timestamp("paused_at"),
+  pauseReason: text("pause_reason"),
+  
+  // Manual override
+  manuallyPausedBy: integer("manually_paused_by").references(() => users.id),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  dateIdx: index("email_quota_tracker_date_idx").on(table.date),
+  monthIdx: index("email_quota_tracker_month_idx").on(table.month),
+}));
+
+// Engagement Analytics - Aggregated metrics (optional, can be calculated on-the-fly)
+export const engagementAnalytics = pgTable("engagement_analytics", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Period
+  date: timestamp("date").notNull(),
+  offerId: integer("offer_id").references(() => partnerOffers.id).notNull(),
+  
+  // Metrics
+  impressions: integer("impressions").default(0).notNull(), // Times shown
+  views: integer("views").default(0).notNull(), // Actually viewed
+  clicks: integer("clicks").default(0).notNull(),
+  conversions: integer("conversions").default(0).notNull(),
+  
+  // Calculated rates - using numeric for precision
+  ctr: numeric("ctr", { precision: 5, scale: 2 }).default("0"), // Click-through rate percentage
+  conversionRate: numeric("conversion_rate", { precision: 5, scale: 2 }).default("0"), // Conversion rate percentage
+  
+  // Revenue - using numeric for precision
+  revenueGenerated: numeric("revenue_generated", { precision: 10, scale: 2 }).default("0"),
+  commissionEarned: numeric("commission_earned", { precision: 10, scale: 2 }).default("0"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  dateOfferIdx: index("engagement_analytics_date_offer_idx").on(table.date, table.offerId),
+  offerIdIdx: index("engagement_analytics_offer_id_idx").on(table.offerId),
+}));
+
+// Type exports for post-purchase engagement
+export type PartnerOffer = typeof partnerOffers.$inferSelect;
+export type InsertPartnerOffer = typeof partnerOffers.$inferInsert;
+export const insertPartnerOfferSchema = createInsertSchema(partnerOffers).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type EngagementPrompt = typeof engagementPrompts.$inferSelect;
+export type InsertEngagementPrompt = typeof engagementPrompts.$inferInsert;
+export const insertEngagementPromptSchema = createInsertSchema(engagementPrompts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type UserNotificationPreference = typeof userNotificationPreferences.$inferSelect;
+export type InsertUserNotificationPreference = typeof userNotificationPreferences.$inferInsert;
+export const insertUserNotificationPreferenceSchema = createInsertSchema(userNotificationPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type EmailQuotaTracker = typeof emailQuotaTracker.$inferSelect;
+export type InsertEmailQuotaTracker = typeof emailQuotaTracker.$inferInsert;
+export const insertEmailQuotaTrackerSchema = createInsertSchema(emailQuotaTracker).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type EngagementAnalytic = typeof engagementAnalytics.$inferSelect;
+export type InsertEngagementAnalytic = typeof engagementAnalytics.$inferInsert;
+export const insertEngagementAnalyticSchema = createInsertSchema(engagementAnalytics).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
