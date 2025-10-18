@@ -11710,6 +11710,78 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === EMAIL QUOTA MANAGEMENT ROUTES ===
+  
+  // Get current email quota status (admin only)
+  app.get("/api/admin/email-quota/status", requireSecureAdmin, async (req, res) => {
+    try {
+      const { emailQuotaService } = await import("./services/emailQuotaService");
+      const status = await emailQuotaService.getQuotaStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error fetching email quota status:', error);
+      res.status(500).json({ message: 'Failed to fetch quota status' });
+    }
+  });
+  
+  // Get historical email quota data (admin only)
+  app.get("/api/admin/email-quota/history", requireSecureAdmin, async (req, res) => {
+    try {
+      const { emailQuotaService } = await import("./services/emailQuotaService");
+      const days = parseInt(req.query.days as string) || 30;
+      const history = await emailQuotaService.getHistoricalData(days);
+      res.json(history);
+    } catch (error) {
+      console.error('Error fetching email quota history:', error);
+      res.status(500).json({ message: 'Failed to fetch quota history' });
+    }
+  });
+  
+  // Manually pause email sending (admin only)
+  app.post("/api/admin/email-quota/pause", requireSecureAdmin, async (req, res) => {
+    try {
+      const { emailQuotaService } = await import("./services/emailQuotaService");
+      const { reason } = req.body;
+      const adminId = req.session?.user?.id;
+      
+      if (!adminId) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+      
+      await emailQuotaService.manualPause(adminId, reason || "Manually paused by admin");
+      res.json({ success: true, message: 'Email sending paused' });
+    } catch (error) {
+      console.error('Error pausing email quota:', error);
+      res.status(500).json({ message: 'Failed to pause email quota' });
+    }
+  });
+  
+  // Manually unpause email sending (admin only)
+  app.post("/api/admin/email-quota/unpause", requireSecureAdmin, async (req, res) => {
+    try {
+      const { emailQuotaService } = await import("./services/emailQuotaService");
+      await emailQuotaService.manualUnpause();
+      res.json({ success: true, message: 'Email sending resumed' });
+    } catch (error) {
+      console.error('Error unpausing email quota:', error);
+      res.status(500).json({ message: 'Failed to unpause email quota' });
+    }
+  });
+  
+  // Update quota limits (admin only)
+  app.patch("/api/admin/email-quota/limits", requireSecureAdmin, async (req, res) => {
+    try {
+      const { emailQuotaService } = await import("./services/emailQuotaService");
+      const { dailyLimit, monthlyLimit, safetyBuffer } = req.body;
+      
+      await emailQuotaService.updateQuotaLimits(dailyLimit, monthlyLimit, safetyBuffer);
+      res.json({ success: true, message: 'Quota limits updated' });
+    } catch (error) {
+      console.error('Error updating quota limits:', error);
+      res.status(500).json({ message: 'Failed to update quota limits' });
+    }
+  });
+
   // === SEO ROUTES ===
   
   // Sitemap.xml - Dynamic sitemap generation for search engines

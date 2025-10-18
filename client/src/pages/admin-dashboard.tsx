@@ -76,6 +76,7 @@ import { trackEvent } from "@/lib/posthog";
 import { BackButton } from "@/components/BackButton";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { AdminAISidebar } from "@/components/AdminAISidebar";
+import { EmailQuotaWidget } from "@/components/EmailQuotaWidget";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -753,6 +754,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Email Quota Monitoring Widget */}
+      <div className="mb-8">
+        <EmailQuotaWidget />
       </div>
     </div>
   );
