@@ -77,6 +77,7 @@ import { BackButton } from "@/components/BackButton";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { AdminAISidebar } from "@/components/AdminAISidebar";
 import { EmailQuotaWidget } from "@/components/EmailQuotaWidget";
+import UniversalMap from "@/components/UniversalMap";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -399,6 +400,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <DriversContent />;
       case 'driver-applications':
         return <DriverApplicationsContent />;
+      case 'driver-locations':
+        return <DriverTrackingContent />;
       case 'customers':
         return <CustomersContent />;
       case 'payments':
@@ -7886,4 +7889,97 @@ function CustomerFeedbackContent() {
         </div>
       </div>
     );
+}
+
+// Real-Time Driver Tracking Component
+function DriverTrackingContent() {
+  const { toast } = useToast();
+  const [drivers, setDrivers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDriver, setSelectedDriver] = useState<any>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
+  const fetchDrivers = async () => {
+    try {
+      const response = await fetch('/api/admin/drivers/tracking', { credentials: 'include' });
+      if (response.ok) {
+        const data = await response.json();
+        setDrivers(data);
+      }
+    } catch (error) {
+      console.error('Error fetching driver tracking:', error);
+      toast({ title: "Error", description: "Failed to load driver tracking data", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchDrivers(); }, []);
+
+  useEffect(() => {
+    if (!autoRefresh) return;
+    const interval = setInterval(() => { fetchDrivers(); }, 10000);
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
+
+  const filteredDrivers = drivers.filter(driver => {
+    const searchLower = searchQuery.toLowerCase();
+    const fullName = `${driver.firstName || ''} ${driver.lastName || ''}`.toLowerCase();
+    const email = (driver.email || '').toLowerCase();
+    const phone = (driver.phone || '').toLowerCase();
+    return fullName.includes(searchLower) || email.includes(searchLower) || phone.includes(searchLower);
+  });
+
+  const mapMarkers = filteredDrivers
+    .filter(driver => driver.currentLocation && driver.currentLocation.lat && driver.currentLocation.lng)
+    .map(driver => ({
+      id: driver.id.toString(),
+      latitude: driver.currentLocation.lat,
+      longitude: driver.currentLocation.lng,
+      label: `${driver.firstName} ${driver.lastName}`,
+      color: driver.isOnline ? '#10b981' : '#6b7280',
+      onClick: () => setSelectedDriver(driver)
+    }));
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-96"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Real-Time Driver Tracking</h2>
+          <p className="text-muted-foreground">Monitor active drivers and their current locations</p>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch checked={autoRefresh} onCheckedChange={setAutoRefresh} data-testid="switch-auto-refresh" />
+            <Label>Auto-refresh</Label>
+          </div>
+          <Button onClick={fetchDrivers} variant="outline" data-testid="button-refresh-tracking">
+            <RefreshCw className="h-4 w-4 mr-2" />Refresh
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card><CardContent className="p-6"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Total Drivers</p><p className="text-2xl font-bold text-foreground" data-testid="text-total-drivers">{drivers.length}</p></div><Users className="h-8 w-8 text-primary" /></div></CardContent></Card>
+        <Card><CardContent className="p-6"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Online Now</p><p className="text-2xl font-bold text-green-600" data-testid="text-online-drivers">{drivers.filter(d => d.isOnline).length}</p></div><Activity className="h-8 w-8 text-green-600" /></div></CardContent></Card>
+        <Card><CardContent className="p-6"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">With Location</p><p className="text-2xl font-bold text-blue-600" data-testid="text-drivers-with-location">{drivers.filter(d => d.currentLocation && d.currentLocation.lat).length}</p></div><MapPin className="h-8 w-8 text-blue-600" /></div></CardContent></Card>
+        <Card><CardContent className="p-6"><div className="flex items-center justify-between"><div><p className="text-sm text-muted-foreground">Offline</p><p className="text-2xl font-bold text-gray-600" data-testid="text-offline-drivers">{drivers.filter(d => !d.isOnline).length}</p></div><Users className="h-8 w-8 text-gray-600" /></div></CardContent></Card>
+      </div>
+
+      <Card><CardContent className="p-6"><Input placeholder="Search by name, email, or phone number..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} data-testid="input-search-drivers" className="max-w-md" /></CardContent></Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2"><CardHeader><CardTitle>Driver Locations</CardTitle><CardDescription>{mapMarkers.length} driver{mapMarkers.length !== 1 ? 's' : ''} with location data</CardDescription></CardHeader><CardContent><div className="h-[600px] rounded-lg overflow-hidden"><UniversalMap markers={mapMarkers} initialZoom={11} showControls={true} showGeolocate={false} /></div></CardContent></Card>
+
+        <Card><CardHeader><CardTitle>Drivers ({filteredDrivers.length})</CardTitle></CardHeader><CardContent><ScrollArea className="h-[600px]"><div className="space-y-3">{filteredDrivers.map((driver) => (<div key={driver.id} className={`p-4 rounded-lg border cursor-pointer transition-colors ${selectedDriver?.id === driver.id ? 'bg-primary/10 border-primary' : 'bg-white dark:bg-gray-800 border-border hover:bg-gray-50 dark:hover:bg-gray-700'}`} onClick={() => setSelectedDriver(driver)} data-testid={`driver-card-${driver.id}`}><div className="flex items-start justify-between mb-2"><div className="flex-1"><div className="font-medium text-foreground">{driver.firstName} {driver.lastName}</div><div className="text-sm text-muted-foreground">{driver.email}</div>{driver.phone && (<div className="text-sm text-muted-foreground">{driver.phone}</div>)}</div><Badge className={driver.isOnline ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} data-testid={`badge-status-${driver.id}`}>{driver.isOnline ? 'Online' : 'Offline'}</Badge></div>{driver.vehicleInfo && (driver.vehicleInfo.make || driver.vehicleInfo.model) && (<div className="text-sm text-muted-foreground mb-2"><Truck className="h-3 w-3 inline mr-1" />{driver.vehicleInfo.year} {driver.vehicleInfo.make} {driver.vehicleInfo.model}{driver.vehicleInfo.color && ` (${driver.vehicleInfo.color})`}</div>)}{driver.currentLocation && driver.currentLocation.lat ? (<div className="flex items-center gap-2 text-sm"><MapPin className="h-3 w-3 text-green-600" /><span className="text-green-600">Location available</span></div>) : (<div className="flex items-center gap-2 text-sm"><MapPin className="h-3 w-3 text-gray-400" /><span className="text-gray-400">No location data</span></div>)}{driver.driverRating && (<div className="flex items-center gap-1 mt-2"><Star className="h-3 w-3 text-yellow-500 fill-yellow-500" /><span className="text-sm font-medium">{driver.driverRating.toFixed(1)}</span></div>)}</div>))}{filteredDrivers.length === 0 && (<div className="text-center py-8 text-muted-foreground">No drivers found matching your search</div>)}</div></ScrollArea></CardContent></Card>
+      </div>
+
+      {selectedDriver && (<Dialog open={!!selectedDriver} onOpenChange={() => setSelectedDriver(null)}><DialogContent className="max-w-2xl"><DialogHeader><DialogTitle>Driver Details</DialogTitle></DialogHeader><div className="space-y-4"><div className="grid grid-cols-2 gap-4"><div><Label className="text-muted-foreground">Name</Label><p className="font-medium">{selectedDriver.firstName} {selectedDriver.lastName}</p></div><div><Label className="text-muted-foreground">Status</Label><p><Badge className={selectedDriver.isOnline ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>{selectedDriver.isOnline ? 'Online' : 'Offline'}</Badge></p></div><div><Label className="text-muted-foreground">Email</Label><p className="font-medium">{selectedDriver.email}</p></div><div><Label className="text-muted-foreground">Phone</Label><p className="font-medium">{selectedDriver.phone || 'Not provided'}</p></div><div><Label className="text-muted-foreground">Rating</Label><div className="flex items-center gap-1"><Star className="h-4 w-4 text-yellow-500 fill-yellow-500" /><span className="font-medium">{selectedDriver.driverRating?.toFixed(1) || 'N/A'}</span></div></div><div><Label className="text-muted-foreground">Last Updated</Label><p className="font-medium">{selectedDriver.lastUpdated ? new Date(selectedDriver.lastUpdated).toLocaleString() : 'N/A'}</p></div></div>{selectedDriver.vehicleInfo && (<div><Label className="text-muted-foreground mb-2 block">Vehicle Information</Label><div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2"><p><span className="font-medium">Make/Model:</span> {selectedDriver.vehicleInfo.year} {selectedDriver.vehicleInfo.make} {selectedDriver.vehicleInfo.model}</p><p><span className="font-medium">Color:</span> {selectedDriver.vehicleInfo.color || 'Not specified'}</p><p><span className="font-medium">License Plate:</span> {selectedDriver.vehicleInfo.licensePlate || 'Not specified'}</p></div></div>)}{selectedDriver.currentLocation && selectedDriver.currentLocation.lat ? (<div><Label className="text-muted-foreground mb-2 block">Current Location</Label><div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg space-y-2"><p><span className="font-medium">Latitude:</span> {selectedDriver.currentLocation.lat.toFixed(6)}</p><p><span className="font-medium">Longitude:</span> {selectedDriver.currentLocation.lng.toFixed(6)}</p>{selectedDriver.currentLocation.accuracy && (<p><span className="font-medium">Accuracy:</span> {selectedDriver.currentLocation.accuracy.toFixed(0)}m</p>)}{selectedDriver.currentLocation.speed && (<p><span className="font-medium">Speed:</span> {selectedDriver.currentLocation.speed.toFixed(1)} mph</p>)}{selectedDriver.currentLocation.timestamp && (<p><span className="font-medium">Last Update:</span> {new Date(selectedDriver.currentLocation.timestamp).toLocaleString()}</p>)}</div></div>) : (<div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg text-center text-muted-foreground">No location data available for this driver</div>)}</div></DialogContent></Dialog>)}
+    </div>
+  );
 }
