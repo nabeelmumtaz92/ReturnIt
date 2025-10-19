@@ -135,7 +135,7 @@ const DriverOrderCard = memo(function DriverOrderCard({
             <div className="flex items-center gap-2">
               {getStatusBadge()}
               <Badge variant="outline" className="border-amber-300">
-                {order.boxSize} • {order.numberOfBoxes} box{order.numberOfBoxes > 1 ? 'es' : ''}
+                {order.boxSize} • {order.numberOfBoxes} box/bag{order.numberOfBoxes > 1 ? 's' : ''}
               </Badge>
             </div>
           </div>

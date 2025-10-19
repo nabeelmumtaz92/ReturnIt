@@ -568,8 +568,8 @@ export const orders = pgTable("orders", {
   originalOrderNumber: text("original_order_number"),
   
   // Package details for pickup
-  boxSize: text("box_size"), // Small, Medium, Large
-  numberOfBoxes: integer("number_of_boxes").default(1),
+  boxSize: text("box_size"), // Small, Medium, Large (boxes/bags)
+  numberOfBoxes: integer("number_of_boxes").default(1), // Number of boxes/bags
   
   // Return Authorization Fields
   purchaseType: text("purchase_type").notNull(), // "online" or "in_store" 

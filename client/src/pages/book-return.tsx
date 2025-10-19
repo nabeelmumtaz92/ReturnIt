@@ -24,7 +24,9 @@ interface FormData {
   state: string;
   zipCode: string;
   // Page 2
-  retailer: string;
+  retailerName: string; // Changed: First select retailer name
+  retailerLocation: string; // New: Then select specific store location
+  retailer: string; // Combined value for backend
   itemDescription: string;
   itemValue: string;
   orderName: string;
@@ -33,6 +35,34 @@ interface FormData {
   numberOfBoxes: number;
   // Page 3
   paymentMethod: string;
+}
+
+// Store locations for each retailer (St. Louis area)
+const STORE_LOCATIONS: Record<string, string[]> = {
+  'Target': [
+    'Target - Brentwood (2801 S Brentwood Blvd)',
+    'Target - Chesterfield (17300 Chesterfield Airport Rd)',
+    'Target - South City (4200 S Grand Blvd)',
+    'Target - Clayton (8024 Bonhomme Ave)',
+  ],
+  'Nike': [
+    'Nike Factory Store - St. Louis Outlets (5555 St. Louis Mills Blvd)',
+    'Nike Store - West County Center (249 West County Center)',
+  ],
+  'H&M': [
+    'H&M - Galleria (1155 St. Louis Galleria)',
+    'H&M - West County (221 West County Center)',
+  ],
+  'Best Buy': [
+    'Best Buy - Brentwood (2701 S Brentwood Blvd)',
+    'Best Buy - Chesterfield (1830 Clarkson Rd)',
+    'Best Buy - South County (5650 S Lindbergh Blvd)',
+  ],
+  'Walmart': [
+    'Walmart Supercenter - Lemay Ferry (4551 Lemay Ferry Rd)',
+    'Walmart Supercenter - Manchester (3751 Marketplace Dr)',
+    'Walmart Supercenter - Telegraph (3615 Telegraph Rd)',
+  ],
 }
 
 // Pricing calculation based on business rules
@@ -84,6 +114,8 @@ export default function BookReturn() {
     city: 'St. Louis',
     state: 'MO',
     zipCode: '',
+    retailerName: '',
+    retailerLocation: '',
     retailer: '',
     itemDescription: '',
     itemValue: '',
@@ -97,7 +129,22 @@ export default function BookReturn() {
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
 
   const updateField = (field: keyof FormData, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [field]: value };
+      
+      // When retailer name changes, reset location and update combined retailer field
+      if (field === 'retailerName') {
+        updated.retailerLocation = '';
+        updated.retailer = value as string;
+      }
+      
+      // When location is selected, update combined retailer field
+      if (field === 'retailerLocation' && value) {
+        updated.retailer = value as string;
+      }
+      
+      return updated;
+    });
   };
 
   const createOrderMutation = useMutation({
@@ -332,9 +379,9 @@ export default function BookReturn() {
             {page === 2 && (
               <div className="space-y-5">
                 <div>
-                  <Label htmlFor="retailer" className="text-sm font-semibold">Retailer *</Label>
-                  <Select value={formData.retailer} onValueChange={(value) => updateField('retailer', value)}>
-                    <SelectTrigger className="mt-1.5" data-testid="select-retailer">
+                  <Label htmlFor="retailerName" className="text-sm font-semibold">Retailer *</Label>
+                  <Select value={formData.retailerName} onValueChange={(value) => updateField('retailerName', value)}>
+                    <SelectTrigger className="mt-1.5" data-testid="select-retailer-name">
                       <SelectValue placeholder="Select retailer" />
                     </SelectTrigger>
                     <SelectContent>
@@ -346,6 +393,24 @@ export default function BookReturn() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {formData.retailerName && (
+                  <div>
+                    <Label htmlFor="retailerLocation" className="text-sm font-semibold">Store Location *</Label>
+                    <Select value={formData.retailerLocation} onValueChange={(value) => updateField('retailerLocation', value)}>
+                      <SelectTrigger className="mt-1.5" data-testid="select-retailer-location">
+                        <SelectValue placeholder="Select store location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STORE_LOCATIONS[formData.retailerName]?.map((location) => (
+                          <SelectItem key={location} value={location}>
+                            {location}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="orderName" className="text-sm font-semibold">Order Name *</Label>
@@ -399,7 +464,7 @@ export default function BookReturn() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="small">Small (Shoebox)</SelectItem>
+                        <SelectItem value="small">Small (Shoebox/Bag)</SelectItem>
                         <SelectItem value="medium">Medium (+ $2.00)</SelectItem>
                         <SelectItem value="large">Large (+ $4.00)</SelectItem>
                         <SelectItem value="xlarge">Extra Large (+ $6.00)</SelectItem>
@@ -407,7 +472,7 @@ export default function BookReturn() {
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="numberOfBoxes" className="text-sm font-semibold">Number of Boxes</Label>
+                    <Label htmlFor="numberOfBoxes" className="text-sm font-semibold">Number of Boxes/Bags</Label>
                     <Input
                       id="numberOfBoxes"
                       type="number"
@@ -420,7 +485,7 @@ export default function BookReturn() {
                     />
                     {formData.numberOfBoxes > 1 && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        +${((formData.numberOfBoxes - 1) * 3).toFixed(2)} multi-box fee
+                        +${((formData.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee
                       </p>
                     )}
                   </div>
@@ -482,7 +547,7 @@ export default function BookReturn() {
                     </div>
                     {formData.numberOfBoxes > 1 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Number of Boxes:</span>
+                        <span className="text-muted-foreground">Number of Boxes/Bags:</span>
                         <span className="font-medium">{formData.numberOfBoxes}</span>
                       </div>
                     )}
@@ -513,7 +578,7 @@ export default function BookReturn() {
                     )}
                     {pricing.multiBoxFee > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Multi-Box Fee ({formData.numberOfBoxes} boxes)</span>
+                        <span className="text-muted-foreground">Multi-Package Fee ({formData.numberOfBoxes} boxes/bags)</span>
                         <span className="font-medium">${pricing.multiBoxFee.toFixed(2)}</span>
                       </div>
                     )}
