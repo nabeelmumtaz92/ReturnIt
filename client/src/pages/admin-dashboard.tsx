@@ -1379,7 +1379,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     // Filter orders based on search and filters
     const filteredOrders = orders.filter((order: any) => {
       const matchesSearch = !searchTerm || 
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(order.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.customer?.toLowerCase().includes(searchTerm.toLowerCase());
       
