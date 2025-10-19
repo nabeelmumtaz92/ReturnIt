@@ -80,6 +80,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { AdminAISidebar } from "@/components/AdminAISidebar";
 import { EmailQuotaWidget } from "@/components/EmailQuotaWidget";
 import UniversalMap from "@/components/UniversalMap";
+import { useAdminWebSocket } from "@/hooks/useAdminWebSocket";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -108,6 +109,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
   const { toast } = useToast();
+  
+  // Real-time admin notifications via WebSocket
+  useAdminWebSocket({
+    onMessage: (message) => {
+      if (message.type === 'admin_notification') {
+        const { title, description, variant } = message.data;
+        toast({
+          title: title || "Update",
+          description: description || "New system event",
+          variant: variant || "default",
+        });
+      }
+    },
+    onConnect: () => {
+      console.log('✅ Admin WebSocket connected - real-time notifications enabled');
+    },
+    onDisconnect: () => {
+      console.log('🔌 Admin WebSocket disconnected');
+    }
+  });
   
   // Get current section from URL parameters or props
   const [currentSection, setCurrentSection] = useState(() => {
@@ -1330,6 +1351,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [searchTerm, setSearchTerm] = useState('');
     const [orderAuditLogs, setOrderAuditLogs] = useState<any[]>([]);
     const [isLoadingAuditLogs, setIsLoadingAuditLogs] = useState(false);
+    const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
+    const [isBulkUpdating, setIsBulkUpdating] = useState(false);
     
     // Fetch real orders from database
     const fetchOrders = async () => {
@@ -1480,6 +1503,82 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           ? { ...order, status: 'in_progress', driver: driverName }
           : order
       ));
+    };
+
+    // Bulk selection helpers
+    const toggleOrderSelection = (orderId: string) => {
+      const newSelected = new Set(selectedOrders);
+      if (newSelected.has(orderId)) {
+        newSelected.delete(orderId);
+      } else {
+        newSelected.add(orderId);
+      }
+      setSelectedOrders(newSelected);
+    };
+
+    const toggleSelectAll = () => {
+      const displayedOrders = selectedTab === 'active' ? activeOrders : completedOrders;
+      if (selectedOrders.size === displayedOrders.length) {
+        setSelectedOrders(new Set());
+      } else {
+        setSelectedOrders(new Set(displayedOrders.map((o: any) => String(o.id))));
+      }
+    };
+
+    const clearSelection = () => setSelectedOrders(new Set());
+
+    // Bulk status update
+    const bulkUpdateStatus = async (newStatus: string) => {
+      if (selectedOrders.size === 0) {
+        toast({
+          title: "No Orders Selected",
+          description: "Please select orders to update",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setIsBulkUpdating(true);
+      try {
+        const response = await fetch('/api/admin/orders/bulk-update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ 
+            orderIds: Array.from(selectedOrders),
+            status: newStatus 
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          // Update local orders
+          setOrders(prev => prev.map((order: any) => 
+            selectedOrders.has(String(order.id))
+              ? { ...order, status: newStatus }
+              : order
+          ));
+          
+          toast({
+            title: "Bulk Update Successful",
+            description: `Updated ${result.updated} order(s) to ${newStatus.replace('_', ' ')}`,
+          });
+          
+          clearSelection();
+        } else {
+          throw new Error('Bulk update failed');
+        }
+      } catch (error) {
+        console.error('Error in bulk update:', error);
+        toast({
+          title: "Bulk Update Failed",
+          description: "Failed to update orders. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsBulkUpdating(false);
+      }
     };
 
     const activeOrders = filteredOrders.filter((o: any) => 
@@ -1674,10 +1773,91 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                 </div>
               )}
 
+              {/* Bulk Actions Bar */}
+              {(selectedTab === 'active' ? activeOrders : completedOrders).length > 0 && (
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 bg-gradient-to-r from-[#B8956A]/10 to-[#A0805A]/10 border border-[#B8956A]/20 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={selectedOrders.size > 0 && selectedOrders.size === (selectedTab === 'active' ? activeOrders : completedOrders).length}
+                      onChange={toggleSelectAll}
+                      className="w-5 h-5 rounded border-gray-300 text-[#B8956A] focus:ring-[#B8956A] cursor-pointer"
+                      data-testid="checkbox-select-all"
+                    />
+                    <span className="text-sm font-medium text-foreground">
+                      {selectedOrders.size === 0 ? 'Select All' : `${selectedOrders.size} Selected`}
+                    </span>
+                  </div>
+                  
+                  {selectedOrders.size > 0 && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        onClick={() => bulkUpdateStatus('pending_assignment')}
+                        disabled={isBulkUpdating}
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                        data-testid="button-bulk-approve"
+                      >
+                        Approve Selected
+                      </Button>
+                      <Button
+                        onClick={() => bulkUpdateStatus('in_progress')}
+                        disabled={isBulkUpdating}
+                        size="sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        data-testid="button-bulk-in-progress"
+                      >
+                        Mark In Progress
+                      </Button>
+                      <Button
+                        onClick={() => bulkUpdateStatus('completed')}
+                        disabled={isBulkUpdating}
+                        size="sm"
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                        data-testid="button-bulk-complete"
+                      >
+                        Mark Completed
+                      </Button>
+                      <Button
+                        onClick={() => bulkUpdateStatus('cancelled')}
+                        disabled={isBulkUpdating}
+                        size="sm"
+                        variant="outline"
+                        className="border-red-200 text-red-600 hover:bg-red-50"
+                        data-testid="button-bulk-cancel"
+                      >
+                        Cancel Selected
+                      </Button>
+                      <Button
+                        onClick={clearSelection}
+                        disabled={isBulkUpdating}
+                        size="sm"
+                        variant="ghost"
+                        data-testid="button-clear-selection"
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-4">
                 {(selectedTab === 'active' ? activeOrders : completedOrders).map(order => (
                   <div key={order.id} className="p-3 sm:p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
-                    <div className="flex flex-col space-y-3">
+                    <div className="flex gap-3">
+                      {/* Checkbox for bulk selection */}
+                      <div className="flex items-start pt-1">
+                        <input
+                          type="checkbox"
+                          checked={selectedOrders.has(String(order.id))}
+                          onChange={() => toggleOrderSelection(String(order.id))}
+                          className="w-5 h-5 rounded border-gray-300 text-[#B8956A] focus:ring-[#B8956A] cursor-pointer"
+                          data-testid={`checkbox-order-${order.id}`}
+                        />
+                      </div>
+                      
+                      <div className="flex-1 flex flex-col space-y-3">
                       {/* Header section */}
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                         <div className="flex-1">
@@ -1802,6 +1982,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                           📍 Track Live
                         </Button>
                       </div>
+                    </div>
                     </div>
                   </div>
                 ))}

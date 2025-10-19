@@ -233,6 +233,118 @@ export class EmailNotificationService {
       console.error('❌ Failed to send tip received email:', error);
     }
   }
+
+  /**
+   * Send daily stats summary email to admin
+   */
+  async sendDailyStatsSummary(stats: {
+    totalOrders: number;
+    completedOrders: number;
+    totalRevenue: number;
+    driverPayouts: number;
+    platformRevenue: number;
+    activeDrivers: number;
+    date: string;
+  }, adminEmail: string): Promise<void> {
+    try {
+      const { client, fromEmail } = await getUncachableResendClient();
+
+      const completionRate = stats.totalOrders > 0 
+        ? ((stats.completedOrders / stats.totalOrders) * 100).toFixed(1)
+        : '0.0';
+
+      const emailData: EmailNotificationData = {
+        to: adminEmail,
+        subject: `📊 Daily Stats Summary - ${stats.date}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto;">
+            <div style="background: linear-gradient(135deg, #B8956A 0%, #A0805A 100%); padding: 30px; border-radius: 12px 12px 0 0;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">📊 Daily Operations Report</h1>
+              <p style="color: #FAF8F4; margin: 8px 0 0 0; font-size: 16px;">${stats.date}</p>
+            </div>
+            
+            <div style="background: #f8f7f5; padding: 30px; border-radius: 0 0 12px 12px;">
+              <h2 style="color: #8B6F47; margin-top: 0;">Yesterday's Performance</h2>
+              
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr style="border-bottom: 2px solid #B8956A;">
+                  <td style="padding: 15px 0; font-weight: bold; color: #8B6F47; font-size: 18px;">Orders</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; color: #666;">Total Orders</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 24px; font-weight: bold; color: #B8956A;">${stats.totalOrders}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; color: #666;">Completed</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 24px; font-weight: bold; color: #10b981;">${stats.completedOrders}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0 20px 0; color: #666;">Completion Rate</td>
+                  <td style="padding: 12px 0 20px 0; text-align: right; font-size: 20px; font-weight: bold; color: #059669;">${completionRate}%</td>
+                </tr>
+                
+                <tr style="border-bottom: 2px solid #B8956A;">
+                  <td style="padding: 15px 0; font-weight: bold; color: #8B6F47; font-size: 18px;">Revenue</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; color: #666;">Total Revenue</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 24px; font-weight: bold; color: #B8956A;">$${stats.totalRevenue.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; color: #666;">Driver Payouts (70%)</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 20px; font-weight: bold; color: #6366f1;">$${stats.driverPayouts.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0 20px 0; color: #666;">Platform Revenue (30%)</td>
+                  <td style="padding: 12px 0 20px 0; text-align: right; font-size: 20px; font-weight: bold; color: #10b981;">$${stats.platformRevenue.toFixed(2)}</td>
+                </tr>
+                
+                <tr style="border-bottom: 2px solid #B8956A;">
+                  <td style="padding: 15px 0; font-weight: bold; color: #8B6F47; font-size: 18px;">Drivers</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0; color: #666;">Active Drivers</td>
+                  <td style="padding: 12px 0; text-align: right; font-size: 24px; font-weight: bold; color: #B8956A;">${stats.activeDrivers}</td>
+                </tr>
+              </table>
+              
+              <div style="margin-top: 30px; padding: 20px; background: white; border-radius: 8px; border-left: 4px solid #B8956A;">
+                <p style="margin: 0; color: #666; font-size: 14px;">
+                  <strong style="color: #8B6F47;">Automated Report</strong><br>
+                  This summary is automatically generated every morning at 8:00 AM CST with data from the previous day.
+                </p>
+              </div>
+              
+              <div style="margin-top: 25px; text-align: center;">
+                <a href="${process.env.REPLIT_DOMAINS?.split(',')[0]}/admin-dashboard" 
+                   style="background: linear-gradient(135deg, #B8956A 0%, #A0805A 100%); color: white; padding: 14px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold;">
+                  View Full Dashboard
+                </a>
+              </div>
+            </div>
+            
+            <div style="margin-top: 20px; text-align: center; color: #999; font-size: 12px;">
+              <p>Return It - Reverse Delivery Service Platform</p>
+            </div>
+          </div>
+        `
+      };
+
+      await client.emails.send({
+        from: fromEmail,
+        to: emailData.to,
+        subject: emailData.subject,
+        html: emailData.html
+      });
+
+      console.log(`✅ Daily stats summary email sent to ${adminEmail}`);
+    } catch (error) {
+      console.error('❌ Failed to send daily stats summary email:', error);
+    }
+  }
 }
 
 // Export singleton instance

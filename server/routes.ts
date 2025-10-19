@@ -45,6 +45,7 @@ import { getSystemStatus, withFallback, getFallbackResponse } from "./middleware
 import { getCrashRecoveryStatus } from "./middleware/crashRecovery";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
+import { dailyStatsScheduler } from "./daily-stats-scheduler";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -1595,6 +1596,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Demo login route error:', error);
       res.status(500).json({ message: "Demo login failed" });
+    }
+  });
+
+  // Saved addresses endpoints
+  app.get("/api/user/addresses", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      const addresses = user?.addresses || [];
+      res.json(addresses);
+    } catch (error) {
+      console.error('Get addresses error:', error);
+      res.status(500).json({ message: "Failed to fetch saved addresses" });
+    }
+  });
+
+  app.post("/api/user/addresses", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { label, street, city, state, zipCode, isDefault } = req.body;
+      
+      if (!label || !street || !city || !state || !zipCode) {
+        return res.status(400).json({ message: "Missing required address fields" });
+      }
+
+      const user = await storage.getUser(userId);
+      let addresses = (user?.addresses as any[]) || [];
+      
+      // If this is default, unset other defaults
+      if (isDefault) {
+        addresses = addresses.map(addr => ({ ...addr, isDefault: false }));
+      }
+      
+      // Add new address
+      const newAddress = {
+        id: `addr_${Date.now()}`,
+        label,
+        street,
+        city,
+        state,
+        zipCode,
+        isDefault: isDefault || addresses.length === 0,
+        createdAt: new Date().toISOString()
+      };
+      
+      addresses.push(newAddress);
+      
+      await storage.updateUser(userId, { addresses });
+      
+      res.json({ message: "Address saved successfully", address: newAddress });
+    } catch (error) {
+      console.error('Save address error:', error);
+      res.status(500).json({ message: "Failed to save address" });
+    }
+  });
+
+  app.delete("/api/user/addresses/:addressId", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { addressId } = req.params;
+      const user = await storage.getUser(userId);
+      let addresses = (user?.addresses as any[]) || [];
+      
+      addresses = addresses.filter(addr => addr.id !== addressId);
+      
+      // If we deleted the default and there are other addresses, make the first one default
+      if (addresses.length > 0 && !addresses.some(addr => addr.isDefault)) {
+        addresses[0].isDefault = true;
+      }
+      
+      await storage.updateUser(userId, { addresses });
+      
+      res.json({ message: "Address deleted successfully" });
+    } catch (error) {
+      console.error('Delete address error:', error);
+      res.status(500).json({ message: "Failed to delete address" });
+    }
+  });
+
+  app.patch("/api/user/addresses/:addressId/default", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session?.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { addressId } = req.params;
+      const user = await storage.getUser(userId);
+      let addresses = (user?.addresses as any[]) || [];
+      
+      // Set all addresses to not default, then set the selected one as default
+      addresses = addresses.map(addr => ({
+        ...addr,
+        isDefault: addr.id === addressId
+      }));
+      
+      await storage.updateUser(userId, { addresses });
+      
+      res.json({ message: "Default address updated successfully" });
+    } catch (error) {
+      console.error('Set default address error:', error);
+      res.status(500).json({ message: "Failed to set default address" });
     }
   });
 
@@ -3892,6 +4007,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manually trigger daily stats email (for testing)
+  app.post("/api/admin/trigger-daily-stats", requireSecureAdmin, async (req, res) => {
+    try {
+      await dailyStatsScheduler.triggerManual();
+      res.json({ message: "Daily stats email sent successfully" });
+    } catch (error) {
+      console.error("Error triggering daily stats:", error);
+      res.status(500).json({ message: "Failed to send daily stats email" });
+    }
+  });
+
   // GET endpoint for tax report data (for dashboard display)
   app.get("/api/admin/tax-reports", requireSecureAdmin, async (req, res) => {
     try {
@@ -4771,6 +4897,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(orders);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch orders" });
+    }
+  });
+
+  // Bulk update orders status (admin only)
+  app.post("/api/admin/orders/bulk-update", requireSecureAdmin, async (req, res) => {
+    try {
+      const { orderIds, status } = req.body;
+      
+      if (!Array.isArray(orderIds) || orderIds.length === 0) {
+        return res.status(400).json({ message: "orderIds must be a non-empty array" });
+      }
+      
+      if (!status) {
+        return res.status(400).json({ message: "status is required" });
+      }
+      
+      let updatedCount = 0;
+      const errors = [];
+      
+      // Update each order
+      for (const orderId of orderIds) {
+        try {
+          await storage.updateOrder(orderId, { status });
+          updatedCount++;
+          
+          // Broadcast status update
+          webSocketService.broadcastOrderUpdate({
+            orderId,
+            status,
+            timestamp: new Date().toISOString()
+          });
+          
+          // Send admin notification
+          webSocketService.broadcastAdminNotification({
+            title: "Bulk Order Update",
+            description: `Order #${orderId} status changed to ${status.replace('_', ' ')}`,
+            variant: "default"
+          });
+        } catch (error) {
+          console.error(`Failed to update order ${orderId}:`, error);
+          errors.push({ orderId, error: 'Update failed' });
+        }
+      }
+      
+      res.json({
+        message: `Bulk update completed`,
+        updated: updatedCount,
+        total: orderIds.length,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error("Error in bulk update:", error);
+      res.status(500).json({ message: "Failed to perform bulk update" });
     }
   });
 
@@ -12409,5 +12588,9 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   });
 
   const httpServer = createServer(app);
+  
+  // Start daily stats scheduler
+  dailyStatsScheduler.start();
+  
   return httpServer;
 }
