@@ -3795,6 +3795,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertOrderSchema.parse(orderData);
       const order = await storage.createOrder(validatedData);
       
+      // Send email confirmation (if customer email available)
+      try {
+        const { emailNotificationService } = await import('./email-notifications');
+        const customerEmail = req.body.email || (req.session as any)?.user?.email;
+        
+        if (customerEmail) {
+          await emailNotificationService.sendOrderConfirmation(order, customerEmail);
+          console.log(`📧 Order confirmation email sent to ${customerEmail}`);
+        }
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Continue with order creation even if email fails
+      }
+      
       // Send SMS notification for new order
       try {
         await smsService.sendOrderNotification({
@@ -4022,6 +4036,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedOrder);
     } catch (error) {
       res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+
+  // Add or update tip for an order
+  app.post("/api/orders/:orderId/tip", isAuthenticated, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { tipAmount } = req.body;
+      const userId = (req.session as any).user.id;
+
+      // Validate tip amount
+      if (typeof tipAmount !== 'number' || tipAmount < 0) {
+        return res.status(400).json({ error: 'Invalid tip amount' });
+      }
+
+      // Get the order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Only the customer who created the order can add a tip
+      if (order.userId !== userId) {
+        return res.status(403).json({ error: 'Access denied' });
+      }
+
+      // Only allow tipping on completed or delivered orders
+      if (!['completed', 'delivered'].includes(order.status)) {
+        return res.status(400).json({ error: 'Tips can only be added to completed orders' });
+      }
+
+      // Update order with tip
+      const updatedOrder = await storage.updateOrder(orderId, {
+        tip: tipAmount,
+        totalPrice: (order.totalPrice || 0) + tipAmount - (order.tip || 0), // Adjust total
+        driverEarning: (order.driverEarning || 0) + tipAmount - (order.tip || 0) // Add tip to driver earnings
+      });
+
+      // Notify driver about the tip
+      if (order.driverId) {
+        await storage.createNotification({
+          userId: order.driverId,
+          type: 'tip_received',
+          title: '🎉 You received a tip!',
+          message: `You received a $${tipAmount.toFixed(2)} tip for order ${order.trackingNumber}`,
+          data: { orderId: order.id, tipAmount }
+        });
+      }
+
+      res.json({
+        success: true,
+        message: `Tip of $${tipAmount.toFixed(2)} added successfully`,
+        order: updatedOrder
+      });
+    } catch (error) {
+      console.error('Error adding tip:', error);
+      res.status(500).json({ error: 'Failed to add tip' });
     }
   });
 
@@ -7286,13 +7357,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(drivers);
   });
 
-  // Update order status
-  app.patch('/api/admin/orders/:orderId/status', requireSecureAdmin, (req, res) => {
+  // Update order status - REAL IMPLEMENTATION
+  app.patch('/api/admin/orders/:orderId/status', requireSecureAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { status } = req.body;
 
-    const { orderId } = req.params;
-    const { status } = req.body;
+      // Validate status
+      const validStatuses = ['created', 'pending', 'requested', 'pending_assignment', 'assigned', 'in_progress', 'picked_up', 'completed', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
+      }
 
-    res.json({ message: `Order ${orderId} status updated to ${status}` });
+      // Get original order to check what changed
+      const originalOrder = await storage.getOrder(orderId);
+      if (!originalOrder) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      // Update order in database using existing updateOrder method
+      const updatedOrder = await storage.updateOrder(orderId, { status });
+
+      // Create status history record
+      try {
+        await storage.createOrderStatusHistory({
+          orderId,
+          status,
+          changedBy: (req.session as any).user.id,
+          notes: `Status changed to ${status} by admin`
+        });
+      } catch (historyError) {
+        console.error('Failed to create status history:', historyError);
+        // Non-fatal - continue
+      }
+
+      // Send email notifications based on status change
+      try {
+        const { emailNotificationService } = await import('./email-notifications');
+        
+        // Get customer email
+        let customerEmail: string | undefined;
+        if (updatedOrder.userId) {
+          const customer = await storage.getUser(updatedOrder.userId);
+          customerEmail = customer?.email;
+        }
+
+        if (customerEmail) {
+          // Send appropriate email based on new status
+          if (status === 'assigned' && originalOrder.status !== 'assigned') {
+            await emailNotificationService.sendDriverAssigned(updatedOrder, customerEmail);
+          } else if (status === 'picked_up' && originalOrder.status !== 'picked_up') {
+            await emailNotificationService.sendPickupConfirmation(updatedOrder, customerEmail);
+          } else if (status === 'completed' && originalOrder.status !== 'completed') {
+            await emailNotificationService.sendReturnCompleted(updatedOrder, customerEmail);
+          }
+        }
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError);
+        // Non-fatal - continue
+      }
+
+      // Broadcast to WebSocket clients for real-time updates
+      if (websocketService && updatedOrder.trackingNumber) {
+        websocketService.broadcastStatusUpdate(
+          updatedOrder.trackingNumber,
+          status,
+          orderId,
+          { updatedBy: 'admin' }
+        );
+      }
+
+      res.json({ 
+        success: true,
+        message: `Order ${orderId} status updated to ${status}`,
+        order: updatedOrder
+      });
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      res.status(500).json({ error: 'Failed to update order status' });
+    }
   });
 
   // Approve driver
