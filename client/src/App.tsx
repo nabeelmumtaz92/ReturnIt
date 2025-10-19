@@ -22,6 +22,7 @@ import NotFound from "@/pages/not-found";
 // Lazy-loaded components for better performance
 const TrackingPage = lazy(() => import("@/pages/tracking"));
 const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
+const SystemHealth = lazy(() => import("@/pages/system-health"));
 const CustomerDashboard = lazy(() => import("@/pages/customer-dashboard"));
 const DriverPayments = lazy(() => import("@/pages/driver-payments"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
@@ -243,6 +244,27 @@ function Router() {
           }
           
           // User is logged in but not an admin
+          return <NotFound />;
+        }}
+      </Route>
+      <Route path="/system-health">
+        {() => {
+          // System health page - admin only
+          if (isLoading) return <PageLoader />;
+          
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com"];
+          
+          if (!user || !isAuthenticated) {
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          
+          if (user.isAdmin && masterAdmins.includes(user.email)) {
+            return <SystemHealth />;
+          }
+          
           return <NotFound />;
         }}
       </Route>

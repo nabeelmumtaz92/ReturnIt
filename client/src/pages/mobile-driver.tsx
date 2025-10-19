@@ -24,7 +24,8 @@ import {
   LogOut,
   ArrowLeft,
   Menu,
-  Zap
+  Zap,
+  Truck
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Order, User as UserType } from "@shared/schema";
@@ -390,36 +391,60 @@ export default function MobileDriver() {
 
                   <Separator className="my-3" />
 
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => startNavigation(order.pickupAddress)}
-                      className="flex items-center gap-1"
-                      data-testid={`button-navigate-${order.id}`}
-                    >
-                      <Navigation className="h-4 w-4" />
-                      Navigate
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => callCustomer(order.id)}
-                      className="flex items-center gap-1"
-                      data-testid={`button-call-${order.id}`}
-                    >
-                      <Phone className="h-4 w-4" />
-                      Call
-                    </Button>
-                    <Button 
-                      size="sm"
-                      onClick={() => markCompleted(order.id)}
-                      className="flex items-center gap-1"
-                      data-testid={`button-complete-${order.id}`}
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Complete
-                    </Button>
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        size="sm" 
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        onClick={() => {
+                          const pickupEncoded = encodeURIComponent(order.pickupAddress);
+                          const dropoffEncoded = encodeURIComponent(order.dropoffLocation || order.retailer);
+                          window.open(`https://www.google.com/maps/dir/?api=1&origin=${pickupEncoded}&destination=${dropoffEncoded}`, '_blank');
+                        }}
+                        data-testid={`button-navigate-google-${order.id}`}
+                      >
+                        <Navigation className="h-4 w-4 mr-1" />
+                        Google
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-gray-800 hover:bg-gray-900 text-white"
+                        onClick={() => {
+                          const pickupEncoded = encodeURIComponent(order.pickupAddress);
+                          const dropoffEncoded = encodeURIComponent(order.dropoffLocation || order.retailer);
+                          if (/(iPhone|iPad|iPod|Macintosh)/i.test(navigator.userAgent)) {
+                            window.location.href = `maps://maps.apple.com/?saddr=${pickupEncoded}&daddr=${dropoffEncoded}`;
+                          } else {
+                            window.open(`https://www.google.com/maps/dir/?api=1&origin=${pickupEncoded}&destination=${dropoffEncoded}`, '_blank');
+                          }
+                        }}
+                        data-testid={`button-navigate-apple-${order.id}`}
+                      >
+                        <Navigation className="h-4 w-4 mr-1" />
+                        Apple
+                      </Button>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => callCustomer(order.id)}
+                        className="flex-1 flex items-center justify-center gap-1"
+                        data-testid={`button-call-${order.id}`}
+                      >
+                        <Phone className="h-4 w-4" />
+                        Call
+                      </Button>
+                      <Button 
+                        size="sm"
+                        onClick={() => markCompleted(order.id)}
+                        className="flex-1 flex items-center justify-center gap-1 bg-green-600 hover:bg-green-700"
+                        data-testid={`button-complete-${order.id}`}
+                      >
+                        <CheckCircle className="h-4 w-4" />
+                        Complete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               ))}

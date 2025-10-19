@@ -506,6 +506,10 @@ class WebSocketTrackingService {
     }
   }
 
+  public getConnectionCount(): number {
+    return this.clientConnections.size;
+  }
+
   public getStats() {
     return {
       totalRooms: this.trackingRooms.size,

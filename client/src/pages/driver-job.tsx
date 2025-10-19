@@ -279,20 +279,45 @@ export default function DriverJob() {
                 </div>
               )}
 
-              <div className="pt-2">
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90 text-white"
-                  asChild
-                >
-                  <a 
-                    href={mapsQuery.google} 
-                    target="_blank" 
-                    rel="noreferrer"
+              <div className="pt-2 space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button 
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                    asChild
+                    data-testid="button-navigate-google"
                   >
-                    <Navigation className="h-4 w-4 mr-2" />
-                    Open in Google Maps
-                  </a>
-                </Button>
+                    <a 
+                      href={mapsQuery.google} 
+                      target="_blank" 
+                      rel="noreferrer"
+                    >
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Google Maps
+                    </a>
+                  </Button>
+                  <Button 
+                    className="w-full bg-gray-800 hover:bg-gray-900 text-white"
+                    asChild
+                    data-testid="button-navigate-apple"
+                    onClick={() => {
+                      const pickupEncoded = encodeURIComponent(formattedJob.pickup);
+                      const storeEncoded = encodeURIComponent(formattedJob.retailer);
+                      if (/(iPhone|iPad|iPod|Macintosh)/i.test(navigator.userAgent)) {
+                        window.location.href = `maps://maps.apple.com/?saddr=${pickupEncoded}&daddr=${storeEncoded}`;
+                      } else {
+                        window.open(mapsQuery.google, '_blank');
+                      }
+                    }}
+                  >
+                    <a>
+                      <Navigation className="h-4 w-4 mr-2" />
+                      Apple Maps
+                    </a>
+                  </Button>
+                </div>
+                <div className="text-xs text-center text-muted-foreground">
+                  Route: {formattedJob.pickup.split(',')[0]} → {formattedJob.retailer.split(',')[0]}
+                </div>
               </div>
             </CardContent>
           </Card>

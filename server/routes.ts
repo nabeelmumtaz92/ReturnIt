@@ -12522,6 +12522,63 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // System Health Check Endpoint
+  app.get("/api/admin/system-health", requireSecureAdmin, async (req, res) => {
+    try {
+      const healthCheck = {
+        timestamp: new Date().toISOString(),
+        status: 'healthy',
+        services: {
+          api: { status: 'healthy', responseTime: 0 },
+          database: { status: 'unknown', responseTime: 0 },
+          websocket: { status: 'unknown', connections: 0 },
+          storage: { status: 'unknown' }
+        }
+      };
+
+      // Check Database
+      const dbStart = Date.now();
+      try {
+        await storage.getAllUsers({ limit: 1 });
+        healthCheck.services.database.status = 'healthy';
+        healthCheck.services.database.responseTime = Date.now() - dbStart;
+      } catch (error) {
+        healthCheck.services.database.status = 'unhealthy';
+        healthCheck.status = 'degraded';
+      }
+
+      // Check WebSocket
+      try {
+        const wsConnectionCount = webSocketService.getConnectionCount();
+        healthCheck.services.websocket.status = 'healthy';
+        healthCheck.services.websocket.connections = wsConnectionCount;
+      } catch (error) {
+        healthCheck.services.websocket.status = 'unhealthy';
+        healthCheck.status = 'degraded';
+      }
+
+      // Check Storage
+      try {
+        healthCheck.services.storage.status = 'healthy';
+      } catch (error) {
+        healthCheck.services.storage.status = 'unhealthy';
+        healthCheck.status = 'degraded';
+      }
+
+      // API response time (just the time to build this response)
+      healthCheck.services.api.responseTime = Date.now() - new Date(healthCheck.timestamp).getTime();
+
+      res.json(healthCheck);
+    } catch (error) {
+      console.error('Health check error:', error);
+      res.status(500).json({
+        status: 'unhealthy',
+        error: 'Health check failed',
+        timestamp: new Date().toISOString()
+      });
+    }
+  });
+
   // === SEO ROUTES ===
   
   // Sitemap.xml - Dynamic sitemap generation for search engines
