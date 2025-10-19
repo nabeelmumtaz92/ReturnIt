@@ -1328,6 +1328,8 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoadingOrders, setIsLoadingOrders] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [orderAuditLogs, setOrderAuditLogs] = useState<any[]>([]);
+    const [isLoadingAuditLogs, setIsLoadingAuditLogs] = useState(false);
     
     // Fetch real orders from database
     const fetchOrders = async () => {
@@ -1363,6 +1365,25 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       }
     };
     
+    // Fetch audit logs for selected order
+    const fetchAuditLogs = async (orderId: string) => {
+      setIsLoadingAuditLogs(true);
+      try {
+        const response = await fetch(`/api/admin/orders/${orderId}/audit-logs`);
+        if (response.ok) {
+          const logs = await response.json();
+          setOrderAuditLogs(logs);
+        } else {
+          setOrderAuditLogs([]);
+        }
+      } catch (error) {
+        console.error('Error fetching audit logs:', error);
+        setOrderAuditLogs([]);
+      } finally {
+        setIsLoadingAuditLogs(false);
+      }
+    };
+    
     // Load orders on component mount
     useEffect(() => {
       fetchOrders();
@@ -1385,10 +1406,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     
     const closeOrderDetails = () => {
       setSelectedOrderForDetails(null);
+      setOrderAuditLogs([]);
     };
     
-    // Placeholder for audit logs (would need to fetch from API)
-    const orderAuditLogs: any[] = [];
+    // Fetch audit logs when order is selected
+    useEffect(() => {
+      if (selectedOrderForDetails) {
+        fetchAuditLogs(selectedOrderForDetails);
+      }
+    }, [selectedOrderForDetails]);
 
     // Filter orders based on search and filters
     const filteredOrders = orders.filter((order: any) => {
@@ -1991,7 +2017,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
                     </CardHeader>
                     <CardContent>
                       <ScrollArea className="h-64">
-                        {orderAuditLogs.length > 0 ? (
+                        {isLoadingAuditLogs ? (
+                          <div className="flex items-center justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#B8956A]"></div>
+                          </div>
+                        ) : orderAuditLogs.length > 0 ? (
                           <div className="space-y-3">
                             {orderAuditLogs.map((log: any, idx: number) => (
                               <div key={idx} className="flex gap-3 p-3 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30" data-testid={`audit-log-${idx}`}>
