@@ -1,0 +1,282 @@
+Perfect — since your **admin panel UI already exists**, all you need is a **fully functional backend + frontend logic** for **Order Management** — no extra dashboards, just the engine that drives it.
+
+Let’s build exactly that:
+
+* **Backend:** Express + Socket.io (real-time orders, updates, secure endpoints).
+* **Frontend:** Simple React component to plug into your existing admin panel’s page.
+
+---
+
+## 🧱 FILES YOU NEED
+
+```
+/server/index.ts         → backend (Node + Express + Socket.io)
+/client/src/orders.tsx   → frontend logic for your admin panel
+/package.json            → minimal deps
+```
+
+---
+
+## 🖥 server/index.ts
+
+```ts
+import express from "express";
+import http from "http";
+import { Server } from "socket.io";
+import cors from "cors";
+import { randomUUID } from "crypto";
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server, { cors: { origin: "*" } });
+
+app.use(cors());
+app.use(express.json());
+
+// Temporary in-memory store (replace with DB later)
+let orders: any[] = [];
+
+// Create new order
+app.post("/api/orders", (req, res) => {
+  const {
+    customer = "Guest User",
+    store = "Nike STL",
+    type = "Return",
+    distance = 4,
+    items = [{ sku: "NK123", name: "Air Max 90", qty: 1 }],
+  } = req.body;
+
+  const order = {
+    orderId: randomUUID(),
+    trackingNumber: "TRK" + Math.floor(Math.random() * 1e9),
+    customer,
+    store,
+    type,
+    status: "pending",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    distance,
+    driverId: null,
+    items,
+    fees: { total: 7.99, driverPay: 5.59, platformCut: 2.4 },
+  };
+
+  orders.unshift(order);
+  io.emit("new_order", order);
+  res.json(order);
+});
+
+// Get all orders
+app.get("/api/orders", (_, res) => res.json(orders));
+
+// Update an order (status, driver, etc.)
+app.put("/api/orders/:id", (req, res) => {
+  const { id } = req.params;
+  const { status, driverId } = req.body;
+  const order = orders.find((o) => o.orderId === id);
+  if (!order) return res.status(404).json({ error: "Not found" });
+
+  if (status) order.status = status;
+  if (driverId) order.driverId = driverId;
+  order.updatedAt = new Date().toISOString();
+
+  io.emit("order_updated", order);
+  res.json(order);
+});
+
+// WebSocket setup
+io.on("connection", (socket) => {
+  console.log("Admin connected");
+  socket.on("disconnect", () => console.log("Admin disconnected"));
+});
+
+server.listen(4000, () => console.log("✅ Order Management API running on port 4000"));
+```
+
+---
+
+## 💻 client/src/orders.tsx
+
+This is your **frontend logic** for the admin’s **Order Management** section.
+It plugs directly into your existing React admin UI (replace with your styling framework).
+
+```tsx
+import { useEffect, useState } from "react";
+import io from "socket.io-client";
+
+const socket = io("http://localhost:4000");
+
+export default function OrdersManagement() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [filter, setFilter] = useState("");
+
+  // Fetch existing orders once
+  useEffect(() => {
+    fetch("http://localhost:4000/api/orders")
+      .then((r) => r.json())
+      .then(setOrders);
+  }, []);
+
+  // Real-time listeners
+  useEffect(() => {
+    socket.on("new_order", (order) => {
+      setOrders((prev) => [order, ...prev]);
+    });
+    socket.on("order_updated", (updated) => {
+      setOrders((prev) =>
+        prev.map((o) => (o.orderId === updated.orderId ? updated : o))
+      );
+    });
+    return () => {
+      socket.off("new_order");
+      socket.off("order_updated");
+    };
+  }, []);
+
+  // Update order status (e.g., mark completed)
+  const updateStatus = async (id: string, status: string) => {
+    await fetch(`http://localhost:4000/api/orders/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+  };
+
+  const filtered = orders.filter((o) =>
+    filter ? o.status.toLowerCase().includes(filter.toLowerCase()) : true
+  );
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Order Management</h1>
+
+      <input
+        type="text"
+        placeholder="Filter by status (pending, completed...)"
+        onChange={(e) => setFilter(e.target.value)}
+        className="border p-2 rounded mb-4 w-full"
+      />
+
+      <div className="overflow-x-auto">
+        <table className="w-full border text-sm">
+          <thead className="bg-gray-100 text-left">
+            <tr>
+              <th className="p-2">Tracking #</th>
+              <th className="p-2">Customer</th>
+              <th className="p-2">Store</th>
+              <th className="p-2">Type</th>
+              <th className="p-2">Status</th>
+              <th className="p-2">Driver</th>
+              <th className="p-2">Actions</th>
+              <th className="p-2">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((o) => (
+              <tr key={o.orderId} className="border-b hover:bg-gray-50">
+                <td className="p-2 font-mono">{o.trackingNumber}</td>
+                <td className="p-2">{o.customer}</td>
+                <td className="p-2">{o.store}</td>
+                <td className="p-2">{o.type}</td>
+                <td className="p-2">
+                  <span
+                    className={`px-2 py-1 rounded text-white ${
+                      o.status === "completed"
+                        ? "bg-green-500"
+                        : o.status === "pending"
+                        ? "bg-yellow-500"
+                        : "bg-blue-500"
+                    }`}
+                  >
+                    {o.status}
+                  </span>
+                </td>
+                <td className="p-2">{o.driverId || "—"}</td>
+                <td className="p-2 space-x-2">
+                  {o.status !== "completed" && (
+                    <button
+                      onClick={() => updateStatus(o.orderId, "completed")}
+                      className="bg-green-600 text-white px-2 py-1 rounded"
+                    >
+                      Mark Complete
+                    </button>
+                  )}
+                  {o.status === "completed" && (
+                    <button
+                      onClick={() => updateStatus(o.orderId, "refunded")}
+                      className="bg-blue-600 text-white px-2 py-1 rounded"
+                    >
+                      Refund
+                    </button>
+                  )}
+                </td>
+                <td className="p-2 text-gray-500 text-xs">
+                  {new Date(o.createdAt).toLocaleTimeString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 📦 package.json
+
+```json
+{
+  "name": "returnit-order-management",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "server": "tsx server/index.ts"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.5",
+    "cors": "^2.8.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.0",
+    "vite": "^5.0.0"
+  }
+}
+```
+
+---
+
+## ✅ What You Get
+
+* **Backend**:
+
+  * Create new orders (`POST /api/orders`)
+  * Get all (`GET /api/orders`)
+  * Update (`PUT /api/orders/:id`)
+  * Real-time updates with Socket.io
+* **Frontend**:
+
+  * Live order feed
+  * Filter + inline actions (complete/refund)
+  * Auto-refresh on updates
+
+---
+
+## 🚀 To Run on Replit
+
+1. Add both `/server` and `/client` folders.
+2. Run `npm install`.
+3. In one shell: `npm run server`
+4. In another: `npm run dev`
+5. Open your client → every new order created via API or mock script appears instantly in your existing admin panel.
+
+---
+
+Would you like me to add **driver assignment + automatic notifications to drivers** as the next upgrade for this system? That’s the next step for real-time dispatch (DoorDash-level).

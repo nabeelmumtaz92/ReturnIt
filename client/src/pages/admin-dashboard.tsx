@@ -12,10 +12,12 @@ import {
   BarChart3,
   Settings,
   CheckCircle,
+  CheckCircle2,
   CreditCard,
   MessageCircle,
   HeadphonesIcon,
   UserCheck,
+  UserPlus,
   MapPin,
   Shield,
   Trophy,
@@ -1375,6 +1377,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       retailer: ''
     });
     const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<string | null>(null);
+    
+    // Get order details from selected order
+    const orderDetails = selectedOrderForDetails 
+      ? orders.find((o: any) => String(o.id) === selectedOrderForDetails)
+      : null;
+    
+    const closeOrderDetails = () => {
+      setSelectedOrderForDetails(null);
+    };
+    
+    // Placeholder for audit logs (would need to fetch from API)
+    const orderAuditLogs: any[] = [];
 
     // Filter orders based on search and filters
     const filteredOrders = orders.filter((order: any) => {
