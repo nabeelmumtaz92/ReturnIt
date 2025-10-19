@@ -1,93 +1,6 @@
 # Overview
 
-Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution with a distinctive cardboard/shipping theme (cardboard brown #B8956A and masking tape #FAF8F4), a comprehensive admin dashboard, and AI-powered support. The platform supports a complete customer experience (booking, tracking, order management) and robust admin/driver management capabilities. Return It aims for significant market penetration, a strong valuation, and features a comprehensive patent portfolio strategy.
-
-# Recent Changes (October 19, 2025)
-
-## Order Management System Verification
-**STATUS**: Backend working ✅ | Frontend UI has rendering issue ⚠️
-
-**What's Working:**
-- ✅ Booking form creates orders successfully (POST /api/orders)
-- ✅ Orders save to database with all correct data
-- ✅ Admin can fetch orders via API (GET /api/admin/orders returns 200)
-- ✅ Order data includes: tracking number, retailer, address, pricing
-- ✅ Admin authentication working (admin@returnit.com)
-
-**Known Issue:**
-- ⚠️ Admin dashboard Orders section shows ErrorBoundary when accessed via UI
-- ⚠️ GET /api/admin/orders returns correct data, but UI component crashes during render
-- ⚠️ Backend → Database → API flow is 100% functional
-- ⚠️ Issue is isolated to frontend OrdersContent component rendering
-
-**Fixes Applied (October 19):**
-1. Fixed login response parsing (removed redundant .json() calls)
-2. Created admin account in database (admin@returnit.com, id=52)
-3. Added admin to masterAdmins whitelist in App.tsx
-4. Fixed TypeScript error: BookPickup → BookReturn
-5. Fixed runtime error: order.id.toLowerCase() → String(order.id).toLowerCase()
-6. Added missing orderDetails and closeOrderDetails to OrdersContent
-7. Added orderAuditLogs placeholder
-8. Added missing icon imports: UserPlus, CheckCircle2
-
-**Test Results:**
-- Multiple e2e tests confirm booking form → database works perfectly
-- Orders appear in database with correct data (verified via SQL)
-- API endpoints return order data successfully
-- Admin can authenticate and access dashboard
-- Only UI rendering fails (ErrorBoundary during Orders section load)
-
-# Recent Changes (October 18, 2025)
-
-## Real-Time Driver Tracking Implementation
-**NEW**: Admin panel real-time driver tracking with GPS location monitoring:
-- **Backend API Endpoints**: Added GET `/api/admin/drivers/tracking` (all active drivers) and GET `/api/admin/drivers/:id/location` (specific driver)
-- **Tracking Dashboard**: Comprehensive real-time tracking page with:
-  - Interactive Mapbox map showing all active driver locations
-  - Search by name, email, phone number (for support)
-  - Auto-refresh every 10 seconds with toggle control
-  - Stats cards: Total Drivers, Online Now, With Location, Offline
-  - Driver list with status badges, vehicle info, location availability
-  - Detailed driver modal: contact info, vehicle details, GPS coordinates, speed, accuracy
-- **Navigation**: Accessible via "Real-time Tracking" button in Business Operations section
-- **Database Integration**: Uses existing `users.currentLocation` (jsonb) and `users.isOnline` (boolean) fields
-
-## Admin Dashboard Verification & Cleanup
-**System Integration Verified**: Confirmed all admin features are connected to real database:
-- **Order Management**: Connected to booking form via `/api/admin/orders` endpoint - all orders from `/book-return` appear in admin dashboard
-- **Enhanced Analytics**: Existing comprehensive analytics dashboard with real-time metrics (not replaced)
-- **Driver Applications**: Fetches pending applications from database via `/api/admin/driver-applications/pending`
-- **Identified for Cleanup**: Duplicate DriverApplicationsContent functions and some hardcoded demo data in chat/support sections
-
-## Booking Form Redesign & Dynamic Pricing
-**Professional UI Overhaul**: Complete booking form redesign with dynamic pricing system:
-- **UI Redesign**: Crisp, professional 3-step form with solid color buttons (#B8956A), progress indicator, removed arcade-style elements
-- **Dynamic Pricing Calculator**: Real-time pricing with itemized breakdown
-  - Base pickup fee: $8.99 (up from $3.99)
-  - Size upcharges: Small $0, Medium +$2, Large +$4
-  - Multi-box fee: $3 per additional box (previously $1.50)
-  - Service fee: $1.50 flat
-  - Tax: 8.75% on subtotal
-  - Total range: $11-$18 depending on box size/quantity
-- **Backend Pricing Fix**: Removed hardcoded backend pricing recalculation that was overriding frontend values (was forcing $3.99 base price)
-- **Confirmation Page**: Added Step 4 showing order ID, tracking number, and total paid after successful booking
-- **apiRequest Fix**: Fixed `client/src/lib/queryClient.ts` to parse JSON responses (was returning raw Response object causing undefined order data)
-- **End-to-End Verified**: Testing confirmed correct pricing persistence to database, confirmation page displays all values, dynamic totals calculate accurately
-
-## Booking Form Schema Drift Resolution
-**Critical Fix**: Resolved massive database schema drift affecting booking functionality:
-- **Database Schema Cleanup**: Removed 60+ non-existent columns from `shared/schema.ts` orders table (refund tracking, policy enforcement, gift card handling, driver timeline fields)
-- **ID Generation Fix**: Added proper ID and tracking number generation to `DatabaseStorage.createOrder` (previously missing, causing null constraint violations)
-- **Database Adjustments**: Made `orders.user_id`, `orders.pickup_address`, and `orders.pickup_method` nullable to support guest bookings and match code expectations
-- **Timeline Functions**: Stubbed out `extendOrderDeadline` and `getOverdueOrders` functions (relied on non-existent `completionDeadline` and `driverAcceptedAt` columns)
-- **Frontend Fix**: Updated booking success redirect from `/orders` (404) to `/` with improved toast message
-- **Impact**: Booking form now works end-to-end - customers can successfully create orders via `/book-return`
-
-## Schema Simplification
-The production database uses simplified payment/refund tracking:
-- **Payment Breakdown**: Single aggregate fields (`driverEarning`, `returnlyFee`) instead of detailed breakdowns
-- **Refund Tracking**: Retailer-focused fields only (`retailer_issued_refund`, `retailer_refund_amount`, `retailer_refund_method`, `retailer_refund_timeline`)
-- **Address Fields**: Hybrid model with both `pickup_address` (nullable) and separate component fields (`pickup_street_address`, `pickup_city`, `pickup_state`, `pickup_zip_code`)
+Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and a strong valuation, supported by a comprehensive patent portfolio strategy. Key capabilities include a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
 # User Preferences
 
@@ -97,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Frontend
 - **Framework**: React 18 with TypeScript (Vite).
-- **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme).
+- **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme: cardboard brown #B8956A and masking tape #FAF8F4).
 - **State Management**: Zustand (global), React Query (server).
 - **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens, emphasizing a cardboard brown and masking tape aesthetic, sophisticated gradients, and Inter font.
 
@@ -110,7 +23,7 @@ Preferred communication style: Simple, everyday language.
 ## Data Storage
 - **Database**: PostgreSQL (Neon).
 - **Schema Management**: Drizzle Kit.
-- **Object Storage**: Replit App Storage (GCS-backed) for file uploads (receipts, verification photos) with ACL policies and presigned URLs.
+- **Object Storage**: Replit App Storage (GCS-backed) for file uploads with ACL policies and presigned URLs.
 
 ## Core Data Models
 - **Users**: Authentication, roles, Stripe Connect, payment preferences.
@@ -122,8 +35,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Customer Features
 - Account management, social login, guest checkout.
-- Store location autocomplete (any location or specific address).
-- Real-time WebSocket GPS tracking.
+- Store location autocomplete, real-time WebSocket GPS tracking.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.
 - Multi-package booking, special handling, donation options.
@@ -140,22 +52,20 @@ Preferred communication style: Simple, everyday language.
 - Manual order creation, payment processing, bulk payouts.
 - Advanced analytics, Excel export system.
 - **AI Knowledge Center**: Self-updating AI assistant tracking database models and API endpoints.
+- **Real-Time Driver Tracking**: Admin panel with interactive Mapbox map showing active driver locations, search capabilities, and detailed driver modals.
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
 - **Tier 2 (API & Integration System)**: RESTful API, API keys with permission scoping, webhook notification system.
 
 ### Exchange Feature Roadmap
-- Planning for comprehensive two-way exchange logistics (Patent #25).
-- **Exchange Flow**: Customer selects "Exchange," driver collects original, driver takes to store for exchange, replacement delivered or returned to customer if refused.
-- **Technical Plan**: Core workflow, driver app integration, operator warehouse system, multi-leg routing, price differential payments, enterprise API.
+- Comprehensive two-way exchange logistics (Patent #25).
+- **Exchange Flow**: Driver collects original, takes to store for exchange, replacement delivered or returned.
 
 ### Return Graph - Proprietary Routing Intelligence
 - A self-learning knowledge graph optimizing reverse logistics.
 - **Core Concept**: Graph database tracking optimal drop-off locations, store acceptance policies, and routing strategies.
-- **Database Architecture**: Tables for nodes, edges (with multi-dimensional weights), routing decisions, node performance history, and policy rules.
-- **Intelligence System**: A* Pathfinding Algorithm with a Machine Learning layer for real-time updates and dynamic policy learning based on success rates, wait times, and satisfaction scores.
-- **Business Value**: Creates a strong competitive moat through network effects, patent potential (Patent #26 candidate), and high enterprise value.
+- **Intelligence System**: A* Pathfinding Algorithm with a Machine Learning layer for real-time updates and dynamic policy learning.
 
 ## Security & Compliance
 - Bcrypt password hashing, server-side session storage, CSRF protection, rate limiting.
@@ -165,7 +75,7 @@ Preferred communication style: Simple, everyday language.
 ## Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.
 - **Requirements**: Proof of purchase upload, mandatory photo verification by drivers at drop-off.
-- **Driver Conduct**: Drivers interact with public return desks, present as customer's agent, and adhere to professional standards.
+- **Driver Conduct**: Drivers interact with public return desks, present as customer's agent.
 
 ## Infrastructure & Deployment
 - Production deployment at returnit.online with Neon PostgreSQL.
@@ -194,4 +104,4 @@ Preferred communication style: Simple, everyday language.
 - **Tawk.to**: Live chat widget.
 - **ImprovMX**: Email forwarding.
 - **Mapbox GL**: GPS tracking and mapping.
-- **Replit App Storage**: Object storage for uploads with ACL-based access control.
+- **Replit App Storage**: Object storage for uploads.
