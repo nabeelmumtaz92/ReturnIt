@@ -396,7 +396,7 @@ export default function Login() {
               <CardFooter className="flex flex-col space-y-3 md:space-y-4 pt-2 md:pt-6">
                 <Button 
                   type="submit" 
-                  className="w-full h-11"
+                  className="w-full h-11 bg-[#B8956A] hover:bg-[#A0805A] text-white"
                   disabled={loginMutation.isPending}
                   data-testid="button-login-submit"
                 >
@@ -595,7 +595,7 @@ export default function Login() {
               <CardFooter className="flex flex-col space-y-4">
                 <Button 
                   type="submit" 
-                  className="w-full h-12"
+                  className="w-full h-12 bg-[#B8956A] hover:bg-[#A0805A] text-white"
                   disabled={registerMutation.isPending}
                   data-testid="button-register-submit"
                 >
