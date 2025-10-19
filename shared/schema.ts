@@ -3225,3 +3225,41 @@ export const insertEngagementAnalyticSchema = createInsertSchema(engagementAnaly
   createdAt: true,
   updatedAt: true,
 });
+
+// System Settings - Configurable operational parameters
+export const systemSettings = pgTable("system_settings", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Setting identification
+  key: text("key").notNull().unique(), // Unique setting identifier
+  value: text("value").notNull(), // JSON-encoded value
+  dataType: text("data_type").notNull(), // "number", "boolean", "string", "json"
+  
+  // Metadata
+  category: text("category").notNull(), // "driver", "order", "timeout", "notification", etc.
+  label: text("label").notNull(), // Human-readable label
+  description: text("description"), // Detailed description of what this setting controls
+  
+  // Validation
+  minValue: numeric("min_value"), // For numeric settings
+  maxValue: numeric("max_value"), // For numeric settings
+  allowedValues: jsonb("allowed_values"), // For enum-like settings
+  
+  // Status
+  isActive: boolean("is_active").default(true).notNull(),
+  lastModifiedBy: integer("last_modified_by").references(() => users.id),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  keyIdx: index("system_settings_key_idx").on(table.key),
+  categoryIdx: index("system_settings_category_idx").on(table.category),
+}));
+
+export type SystemSetting = typeof systemSettings.$inferSelect;
+export const insertSystemSettingSchema = createInsertSchema(systemSettings).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertSystemSetting = z.infer<typeof insertSystemSettingSchema>;

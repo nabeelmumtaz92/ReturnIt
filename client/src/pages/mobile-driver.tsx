@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Order, User as UserType } from "@shared/schema";
+import { SwipeToAccept } from "@/components/SwipeToAccept";
 
 interface DriverMobileView {
   view: 'home' | 'jobs' | 'earnings' | 'profile' | 'settings';
@@ -337,15 +338,19 @@ export default function MobileDriver() {
 
                 <Separator className="my-3" />
 
-                <Button 
-                  size="sm" 
-                  className="w-full bg-primary hover:bg-primary/90"
-                  onClick={() => acceptJob(order.id)}
+                <SwipeToAccept
+                  orderId={order.id}
+                  onAccept={() => acceptJob(order.id)}
+                  onTimeout={() => {
+                    toast({
+                      title: "Job Offer Expired",
+                      description: "This job has been offered to another driver.",
+                      variant: "default",
+                    });
+                  }}
+                  timeoutSeconds={60}
                   disabled={acceptJobMutation.isPending}
-                  data-testid={`button-accept-${order.id}`}
-                >
-                  {acceptJobMutation.isPending ? 'Accepting...' : 'Accept Job'}
-                </Button>
+                />
               </div>
             ))}
           </CardContent>

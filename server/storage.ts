@@ -36,6 +36,7 @@ import {
   type AppReview, type InsertAppReview,
   type CompanyRating,
   type UserNotificationPreference, type InsertUserNotificationPreference,
+  type SystemSetting, type InsertSystemSetting,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -52,7 +53,8 @@ import {
   retailerWebhooks, retailerWebhookDeliveries,
   reviews, driverReviews, appReviews, companyRatings,
   customerWaitlist, zipCodeManagement, otpVerification,
-  userNotificationPreferences
+  userNotificationPreferences,
+  systemSettings
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -417,6 +419,13 @@ export interface IStorage {
   
   // Company Ratings (aggregated from customer reviews)
   getCompanyRating(companyId: number): Promise<CompanyRating | undefined>;
+  
+  // === SYSTEM SETTINGS ===
+  getSystemSettings(): Promise<SystemSetting[]>;
+  getSystemSettingByKey(key: string): Promise<SystemSetting | undefined>;
+  getSystemSettingsByCategory(category: string): Promise<SystemSetting[]>;
+  updateSystemSetting(key: string, value: string, userId?: number): Promise<SystemSetting | undefined>;
+  createSystemSetting(setting: InsertSystemSetting): Promise<SystemSetting>;
 }
 
 export class MemStorage implements IStorage {

@@ -12579,6 +12579,81 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // === SYSTEM SETTINGS ROUTES ===
+  
+  // Get all system settings (admin only)
+  app.get("/api/admin/settings", requireSecureAdmin, async (req, res) => {
+    try {
+      const settings = await db.select().from(systemSettings).orderBy(asc(systemSettings.category), asc(systemSettings.label));
+      res.json(settings);
+    } catch (error) {
+      console.error('Error fetching system settings:', error);
+      res.status(500).json({ message: "Failed to fetch system settings" });
+    }
+  });
+
+  // Get settings by category (admin only)
+  app.get("/api/admin/settings/category/:category", requireSecureAdmin, async (req, res) => {
+    try {
+      const { category } = req.params;
+      const settings = await db.select().from(systemSettings)
+        .where(eq(systemSettings.category, category))
+        .orderBy(asc(systemSettings.label));
+      
+      res.json(settings);
+    } catch (error) {
+      console.error('Error fetching settings by category:', error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  // Get a single setting by key (admin only)
+  app.get("/api/admin/settings/:key", requireSecureAdmin, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const [setting] = await db.select().from(systemSettings).where(eq(systemSettings.key, key)).limit(1);
+      
+      if (!setting) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+
+      res.json(setting);
+    } catch (error) {
+      console.error('Error fetching setting:', error);
+      res.status(500).json({ message: "Failed to fetch setting" });
+    }
+  });
+
+  // Update a system setting (admin only)
+  app.patch("/api/admin/settings/:key", requireSecureAdmin, async (req, res) => {
+    try {
+      const { key } = req.params;
+      const { value } = req.body;
+
+      if (value === undefined || value === null) {
+        return res.status(400).json({ message: "Value is required" });
+      }
+
+      const [updated] = await db.update(systemSettings)
+        .set({ 
+          value: String(value), 
+          lastModifiedBy: req.user!.id,
+          updatedAt: new Date()
+        })
+        .where(eq(systemSettings.key, key))
+        .returning();
+
+      if (!updated) {
+        return res.status(404).json({ message: "Setting not found" });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error('Error updating setting:', error);
+      res.status(500).json({ message: "Failed to update setting" });
+    }
+  });
+
   // === SEO ROUTES ===
   
   // Sitemap.xml - Dynamic sitemap generation for search engines
