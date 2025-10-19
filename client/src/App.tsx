@@ -226,7 +226,7 @@ function Router() {
             return <PageLoader />;
           }
           
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com"];
           
           // Check if user is authenticated and is admin
           if (!user || !isAuthenticated) {
@@ -333,7 +333,7 @@ function Router() {
       <Route path="/admin-app">
         {() => {
           // Admins only
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com"];
           if (!user?.isAdmin || !masterAdmins.includes(user?.email)) {
             if (typeof window !== 'undefined') {
               window.location.replace('/login');
@@ -533,13 +533,13 @@ function Router() {
       </Route>
       <Route path="/ai-knowledge">
         {() => {
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AIKnowledgeCenter /> : <NotFound />;
         }}
       </Route>
       <Route path="/return-graph">
         {() => {
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <ReturnGraphAdmin /> : <NotFound />;
         }}
       </Route>
@@ -550,7 +550,7 @@ function Router() {
           // Detect if user is on mobile and redirect to appropriate experience
           const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
           if (isMobile) {
-            return <BookPickup />;
+            return <BookReturn />;
           }
           return <Welcome />;
         }}

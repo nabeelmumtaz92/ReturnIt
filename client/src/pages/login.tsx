@@ -71,8 +71,8 @@ export default function Login() {
   // Demo login mutation
   const demoLoginMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest("POST", "/api/auth/demo-login", {});
-      return await response.json();
+      const data = await apiRequest("POST", "/api/auth/demo-login", {});
+      return data;
     },
     onSuccess: async (data: any) => {
       console.log('Demo login response data:', data);
@@ -106,8 +106,8 @@ export default function Login() {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (credentials: LoginData) => {
-      const response = await apiRequest("POST", "/api/auth/login", credentials);
-      return await response.json();
+      const data = await apiRequest("POST", "/api/auth/login", credentials);
+      return data;
     },
     onSuccess: async (data: any) => {
       console.log('Login response data:', data);
