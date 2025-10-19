@@ -87,6 +87,9 @@ export default function MobileDriver() {
   const { data: earnings = [] } = useQuery<any[]>({
     queryKey: ["/api/driver/earnings"],
     enabled: isAuthenticated,
+    retry: 1,
+    retryDelay: 1000,
+    throwOnError: false,
   });
 
   // Availability toggle mutation
