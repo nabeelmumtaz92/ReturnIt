@@ -4,6 +4,8 @@
 export interface RouteInfo {
   distance: number; // in miles
   estimatedTime: number; // in minutes
+  actualTime?: number; // Actual time taken (optional, for final billing)
+  useTimeCap?: boolean; // Whether to apply ±10 minute time cap
 }
 
 export interface PaymentBreakdown {
@@ -169,10 +171,20 @@ export function calculatePayment(
   config: PaymentConfig = DEFAULT_CONFIG
 ): PaymentBreakdown {
   
+  // Determine billable time based on time cap logic
+  let billableTime = routeInfo.estimatedTime;
+  
+  if (routeInfo.useTimeCap && routeInfo.actualTime !== undefined) {
+    // Apply ±10 minute cap
+    const minTime = Math.max(routeInfo.estimatedTime - 10, 0);
+    const maxTime = routeInfo.estimatedTime + 10;
+    billableTime = Math.min(Math.max(routeInfo.actualTime, minTime), maxTime);
+  }
+  
   // Calculate base fees
   const basePrice = config.basePrice;
   const distanceFee = routeInfo.distance * config.distanceRateTotal;
-  const timeFee = (routeInfo.estimatedTime / 60) * config.timeRateTotal;
+  const timeFee = (billableTime / 60) * config.timeRateTotal; // Use billableTime instead of estimatedTime
   const sizeUpcharge = config.sizeUpcharges[itemSize] || 0;
   const multiItemFee = numberOfItems > 1 ? (numberOfItems - 1) * config.multiItemFee : 0;
   const rushFee = isRush ? config.rushFee : 0;
@@ -188,19 +200,19 @@ export function calculatePayment(
   const serviceFee = subtotal * config.serviceFeeRate;
   const totalPrice = subtotal + serviceFee + tip; // Total price without artificial cap
   
-  // Calculate driver earnings
+  // Calculate driver earnings (using billable time with cap)
   const driverBasePay = config.driverBasePay;
   const driverDistancePay = routeInfo.distance * config.driverDistanceRate;
-  const driverTimePay = (routeInfo.estimatedTime / 60) * config.driverTimeRate;
+  const driverTimePay = (billableTime / 60) * config.driverTimeRate; // Use billableTime
   const driverSizeBonus = config.driverSizeBonuses[itemSize] || 0;
   const driverTip = tip; // Driver gets 100% of tip
   const driverTotalEarning = driverBasePay + driverDistancePay + driverTimePay + driverSizeBonus + driverTip;
   
-  // Calculate company revenue
+  // Calculate company revenue (using billable time with cap)
   const companyServiceFee = serviceFee; // Company gets 100% of service fee
   const companyBaseFeeShare = config.companyBaseFeeShare;
   const companyDistanceFeeShare = routeInfo.distance * config.companyDistanceRate;
-  const companyTimeFeeShare = (routeInfo.estimatedTime / 60) * config.companyTimeRate;
+  const companyTimeFeeShare = (billableTime / 60) * config.companyTimeRate; // Use billableTime
   const companyTotalRevenue = companyServiceFee + companyBaseFeeShare + companyDistanceFeeShare + companyTimeFeeShare;
   
   return {

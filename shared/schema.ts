@@ -612,6 +612,12 @@ export const orders = pgTable("orders", {
   estimatedDeliveryTime: timestamp("estimated_delivery_time"),
   actualDeliveryTime: timestamp("actual_delivery_time"),
   
+  // Route and time tracking for distance+time payments
+  routeDistanceMiles: real("route_distance_miles"), // Actual route distance
+  estimatedDurationMinutes: integer("estimated_duration_minutes"), // Estimated delivery time
+  actualDurationMinutes: integer("actual_duration_minutes"), // Actual time taken (for payment cap)
+  timeCapMinutes: integer("time_cap_minutes"), // Max billable time (estimated ± 10 min)
+  
   // Tracking and communication
   statusHistory: jsonb("status_history").default([]),
   customerNotes: text("customer_notes"),
