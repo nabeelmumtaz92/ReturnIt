@@ -34,11 +34,29 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "INTERNET",
-        "ACCESS_NETWORK_STATE"
+        "ACCESS_NETWORK_STATE",
+        "POST_NOTIFICATIONS",
+        "VIBRATE"
       ],
       "usesCleartextTraffic": false,
-      "allowBackup": false
+      "allowBackup": false,
+      "googleServicesFile": "./google-services.json"
     },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#B8956A",
+      "androidMode": "default",
+      "androidCollapsedTitle": "New delivery available"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#B8956A"
+        }
+      ]
+    ],
     "cli": {
       "appVersionSource": "remote"
     },

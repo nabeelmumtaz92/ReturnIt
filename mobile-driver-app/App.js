@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import LoginScreen from './src/screens/LoginScreen';
@@ -8,6 +8,7 @@ import ActiveJobScreen from './src/screens/ActiveJobScreen';
 import CameraScreen from './src/screens/CameraScreen';
 import EarningsScreen from './src/screens/EarningsScreen';
 import PayoutScreen from './src/screens/PayoutScreen';
+import NotificationService from './src/services/notifications';
 import { COLORS } from './src/constants/theme';
 
 export default function App() {
@@ -17,9 +18,63 @@ export default function App() {
   const [activeJob, setActiveJob] = useState(null);
   const [cameraCallback, setCameraCallback] = useState(null);
 
-  const handleLoginSuccess = (userData) => {
+  // Set up push notifications when app loads
+  useEffect(() => {
+    setupPushNotifications();
+    
+    return () => {
+      NotificationService.removeNotificationListeners();
+    };
+  }, []);
+
+  const setupPushNotifications = async () => {
+    // Register for push notifications
+    const token = await NotificationService.registerForPushNotifications();
+    
+    if (token) {
+      console.log('Push token:', token);
+      // Send token to backend when user logs in
+      await NotificationService.sendPushTokenToBackend(token);
+    }
+
+    // Set up notification listeners
+    NotificationService.setupNotificationListeners(
+      (notification) => {
+        // Handle notification received while app is open
+        console.log('Notification received:', notification);
+        
+        // Show alert for new job
+        if (notification.request.content.data.type === 'new_job') {
+          Alert.alert(
+            '🚗 New Job Available!',
+            notification.request.content.body,
+            [
+              { text: 'Dismiss', style: 'cancel' },
+              { text: 'View Job', onPress: () => setCurrentScreen('jobs') },
+            ]
+          );
+        }
+      },
+      (response) => {
+        // Handle notification tap
+        const data = response.notification.request.content.data;
+        
+        if (data.type === 'new_job' && user) {
+          setCurrentScreen('jobs');
+        }
+      }
+    );
+  };
+
+  const handleLoginSuccess = async (userData) => {
     setUser(userData);
     setCurrentScreen('jobs');
+    
+    // Send push token to backend after login
+    const token = NotificationService.getExpoPushToken();
+    if (token) {
+      await NotificationService.sendPushTokenToBackend(token);
+    }
   };
 
   const handleSelectJob = (job) => {

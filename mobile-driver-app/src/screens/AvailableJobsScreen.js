@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert } from 'react-native';
 import * as Location from 'expo-location';
 import ApiService from '../services/api';
+import JobClusterMap from '../components/JobClusterMap';
 import { COLORS, SPACING, FONTS } from '../constants/theme';
 import { PAYOUT_SPLIT } from '../constants/config';
 
@@ -122,6 +123,11 @@ export default function AvailableJobsScreen({ onSelectJob }) {
         contentContainerStyle={styles.listContainer}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListHeaderComponent={
+          jobs.length > 0 ? (
+            <JobClusterMap jobs={jobs} userLocation={location} />
+          ) : null
         }
         ListEmptyComponent={!loading && renderEmpty()}
       />
