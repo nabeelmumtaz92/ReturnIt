@@ -41,11 +41,20 @@ Preferred communication style: Simple, everyday language.
 - Multi-package booking, special handling, donation options.
 
 ### Driver Features
-- Native mobile app (React Native).
-- Real-time job notifications, GPS navigation, multi-stop batching.
-- Camera package verification, digital signature.
-- Earnings dashboard, instant/weekly payouts, 70/30 split via Stripe Connect.
-- AI-Powered Nearby Order Detection with cluster visualization.
+- **Native Mobile App** (React Native with Expo) - Complete production-ready app built.
+  - **Package**: com.returnit.app
+  - **Screens**: Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout
+  - **Components**: Button, Input, JobClusterMap (AI cluster visualization)
+  - **Services**: API integration, Push notifications
+- **Real-time Job Notifications** - expo-notifications with background/foreground handling, deep linking.
+- **GPS Navigation** - expo-location with Google Maps integration for turn-by-turn directions.
+- **Multi-Stop Batching** - AI-powered route optimization and cluster detection.
+- **Camera Package Verification** - expo-camera for pickup/dropoff photo capture.
+- **Digital Signature** - Store receipt signature capture for delivery confirmation.
+- **Earnings Dashboard** - Daily/weekly/monthly views with job history and stats.
+- **Instant/Weekly Payouts** - Stripe Connect integration with $1.50 instant fee or free standard.
+- **70/30 Split** - Driver earnings automatically calculated (PAYOUT_SPLIT constant).
+- **AI-Powered Nearby Order Detection** - Cluster visualization with recommended routes and multi-stop earnings aggregation.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
