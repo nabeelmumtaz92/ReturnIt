@@ -1,98 +1,162 @@
-import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Alert, Linking } from 'react-native';
+import { useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import LoginScreen from './src/screens/LoginScreen';
+import AvailableJobsScreen from './src/screens/AvailableJobsScreen';
+import JobDetailsScreen from './src/screens/JobDetailsScreen';
+import ActiveJobScreen from './src/screens/ActiveJobScreen';
+import CameraScreen from './src/screens/CameraScreen';
+import EarningsScreen from './src/screens/EarningsScreen';
+import PayoutScreen from './src/screens/PayoutScreen';
+import { COLORS } from './src/constants/theme';
 
 export default function App() {
-  const openWebApp = () => {
-    Linking.openURL('https://returnit.online');
+  const [user, setUser] = useState(null);
+  const [currentScreen, setCurrentScreen] = useState('login'); // login, jobs, jobDetails, activeJob, camera, earnings, payout
+  const [selectedJob, setSelectedJob] = useState(null);
+  const [activeJob, setActiveJob] = useState(null);
+  const [cameraCallback, setCameraCallback] = useState(null);
+
+  const handleLoginSuccess = (userData) => {
+    setUser(userData);
+    setCurrentScreen('jobs');
   };
 
-  const bookReturn = () => {
-    Linking.openURL('https://returnit.online/book-pickup');
+  const handleSelectJob = (job) => {
+    setSelectedJob(job);
+    setCurrentScreen('jobDetails');
   };
 
-  const trackReturn = () => {
-    Alert.alert("Track Return", "Enter your tracking number to see real-time updates on your return status.", [
-      { text: "Open Web App", onPress: openWebApp },
-      { text: "Cancel", style: "cancel" }
-    ]);
+  const handleAcceptJob = (job) => {
+    setActiveJob(job);
+    setSelectedJob(null);
+    setCurrentScreen('activeJob');
   };
 
-  const driverPortal = () => {
-    Linking.openURL('https://returnit.online/driver-portal');
+  const handleTakePhoto = () => {
+    return new Promise((resolve) => {
+      setCameraCallback(() => resolve);
+      setCurrentScreen('camera');
+    });
+  };
+
+  const handlePhotoTaken = (photoUri) => {
+    if (cameraCallback) {
+      cameraCallback(photoUri);
+      setCameraCallback(null);
+    }
+    setCurrentScreen('activeJob');
+  };
+
+  const handleGetSignature = () => {
+    return new Promise((resolve) => {
+      // For simplicity, return a mock signature
+      // In a real app, you'd navigate to a signature capture screen
+      Alert.alert(
+        'Signature',
+        'Get store employee signature on receipt',
+        [
+          {
+            text: 'Got Signature',
+            onPress: () => resolve('signature_mock_' + Date.now()),
+          },
+        ]
+      );
+    });
+  };
+
+  const handleCompleteJob = (data) => {
+    Alert.alert(
+      'Job Complete!',
+      'Great work! Earnings have been added to your account.',
+      [
+        {
+          text: 'View Earnings',
+          onPress: () => {
+            setActiveJob(null);
+            setCurrentScreen('earnings');
+          },
+        },
+        {
+          text: 'Find More Jobs',
+          onPress: () => {
+            setActiveJob(null);
+            setCurrentScreen('jobs');
+          },
+        },
+      ]
+    );
+  };
+
+  const handleRequestPayout = () => {
+    setCurrentScreen('payout');
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'login':
+        return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
+      
+      case 'jobs':
+        return (
+          <AvailableJobsScreen 
+            onSelectJob={handleSelectJob}
+            onViewEarnings={() => setCurrentScreen('earnings')}
+          />
+        );
+      
+      case 'jobDetails':
+        return (
+          <JobDetailsScreen
+            job={selectedJob}
+            onAccept={handleAcceptJob}
+            onBack={() => setCurrentScreen('jobs')}
+          />
+        );
+      
+      case 'activeJob':
+        return (
+          <ActiveJobScreen
+            job={activeJob}
+            onTakePhoto={handleTakePhoto}
+            onGetSignature={handleGetSignature}
+            onComplete={handleCompleteJob}
+          />
+        );
+      
+      case 'camera':
+        return (
+          <CameraScreen
+            onPhotoTaken={handlePhotoTaken}
+            onCancel={() => setCurrentScreen('activeJob')}
+          />
+        );
+      
+      case 'earnings':
+        return (
+          <EarningsScreen 
+            onRequestPayout={handleRequestPayout}
+            onBack={() => setCurrentScreen('jobs')}
+          />
+        );
+      
+      case 'payout':
+        return (
+          <PayoutScreen
+            availableBalance={145.80}
+            onBack={() => setCurrentScreen('earnings')}
+          />
+        );
+      
+      default:
+        return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
+    }
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.logo}>📦 ReturnIt</Text>
-          <Text style={styles.subtitle}>Return Delivery Service</Text>
-          <Text style={styles.version}>Mobile App v1.0.0</Text>
-        </View>
-
-        {/* Main Features */}
-        <View style={styles.featuresContainer}>
-          <TouchableOpacity style={styles.featureCard} onPress={bookReturn}>
-            <Text style={styles.featureIcon}>📦</Text>
-            <Text style={styles.featureTitle}>Book Return</Text>
-            <Text style={styles.featureDescription}>Schedule a pickup for your package returns</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.featureCard} onPress={trackReturn}>
-            <Text style={styles.featureIcon}>📍</Text>
-            <Text style={styles.featureTitle}>Track Return</Text>
-            <Text style={styles.featureDescription}>Real-time tracking of your return delivery</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.featureCard} onPress={driverPortal}>
-            <Text style={styles.featureIcon}>🚗</Text>
-            <Text style={styles.featureTitle}>Driver Portal</Text>
-            <Text style={styles.featureDescription}>Access driver dashboard and manage deliveries</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.featureCard} onPress={openWebApp}>
-            <Text style={styles.featureIcon}>🌐</Text>
-            <Text style={styles.featureTitle}>Full Web App</Text>
-            <Text style={styles.featureDescription}>Access all ReturnIt features and admin tools</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Quick Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>1,000+</Text>
-            <Text style={styles.statLabel}>Returns Completed</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>50+</Text>
-            <Text style={styles.statLabel}>Active Drivers</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>4.9</Text>
-            <Text style={styles.statLabel}>Customer Rating</Text>
-          </View>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionContainer}>
-          <TouchableOpacity style={styles.primaryButton} onPress={bookReturn}>
-            <Text style={styles.primaryButtonText}>🚚 Book a Return Now</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.secondaryButton} onPress={trackReturn}>
-            <Text style={styles.secondaryButtonText}>📱 Track My Return</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Available in St. Louis, MO</Text>
-          <Text style={styles.footerText}>© 2024 ReturnIt. All rights reserved.</Text>
-        </View>
-      </ScrollView>
+      <StatusBar style="dark" />
+      {renderScreen()}
     </View>
   );
 }
@@ -100,137 +164,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FEF3E2',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 30,
-    paddingTop: 40,
-  },
-  logo: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#D2691E',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#8B4513',
-    marginBottom: 4,
-  },
-  version: {
-    fontSize: 14,
-    color: '#A0A0A0',
-  },
-  featuresContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  featureCard: {
-    width: '48%',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  featureIcon: {
-    fontSize: 40,
-    marginBottom: 12,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#8B4513',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  featureDescription: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
-    lineHeight: 16,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 30,
-  },
-  statCard: {
-    backgroundColor: 'white',
-    borderRadius: 8,
-    padding: 16,
-    alignItems: 'center',
-    flex: 1,
-    marginHorizontal: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#D2691E',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    textAlign: 'center',
-  },
-  actionContainer: {
-    marginBottom: 30,
-  },
-  primaryButton: {
-    backgroundColor: '#D2691E',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  secondaryButton: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#D2691E',
-  },
-  secondaryButtonText: {
-    color: '#D2691E',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  footer: {
-    alignItems: 'center',
-    paddingTop: 20,
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#999',
-    marginBottom: 4,
+    backgroundColor: COLORS.background,
   },
 });
