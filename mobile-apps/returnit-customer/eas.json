@@ -29,7 +29,8 @@
     "production": {
       "android": {
         "buildType": "app-bundle",
-        "gradleCommand": ":app:bundleRelease"
+        "gradleCommand": ":app:bundleRelease",
+        "image": "latest"
       },
       "ios": {
         "simulator": false,
