@@ -353,12 +353,18 @@ export default function BookPickup() {
 
   // Create payment intent when Step 4 loads
   useEffect(() => {
-    if (currentStep === 'step4' && pricingBreakdown && !clientSecret && routeInfo) {
+    if (currentStep === 'step4' && pricingBreakdown && !clientSecret) {
       const createPaymentIntent = async () => {
         try {
           // SECURITY: Send route info to server for price calculation and verification
+          // Use actual route info if available, otherwise use estimated St. Louis average
+          const routeDataToSend = routeInfo || {
+            distance: '5 miles', // St. Louis average return distance
+            duration: '15 mins'  // Average time for St. Louis returns
+          };
+          
           const response: any = await apiRequest("POST", "/api/create-payment-intent", {
-            routeInfo: routeInfo, // Server will calculate price from this
+            routeInfo: routeDataToSend, // Server will calculate price from this
             boxSize: formData.boxSize || 'small',
             numberOfBoxes: formData.numberOfBoxes || 1,
             tip: formData.tip || 0,
@@ -369,6 +375,15 @@ export default function BookPickup() {
           
           setClientSecret(response.clientSecret);
           setPaymentIntentId(response.id);
+          
+          // If using estimated route, show warning
+          if (!routeInfo) {
+            toast({
+              title: "Estimated Pricing",
+              description: "Using average St. Louis pricing. Final amount based on actual route.",
+              variant: "default",
+            });
+          }
         } catch (error) {
           console.error('Error creating payment intent:', error);
           toast({
