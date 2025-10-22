@@ -643,12 +643,17 @@ export default function BookPickup() {
 
   // Recalculate pricing when form data changes
   useEffect(() => {
-    if (routeInfo && formData.itemValue) {
+    if (formData.itemValue) {
       const itemValue = parseFloat(formData.itemValue) || 50;
       const numberOfItems = formData.numberOfItems || 1;
-      const paymentRouteInfo: PaymentRouteInfo = {
+      
+      // Use estimated route info if available, otherwise use default St. Louis average (5 miles, 15 mins)
+      const paymentRouteInfo: PaymentRouteInfo = routeInfo ? {
         distance: parseFloat(routeInfo.distance.replace(' miles', '')) || 0,
         estimatedTime: parseFloat(routeInfo.duration.replace(' mins', '')) || 0
+      } : {
+        distance: 5, // St. Louis average return distance
+        estimatedTime: 15 // Average time for St. Louis returns
       };
       
       const breakdown = calculatePaymentWithValue(
@@ -1574,6 +1579,15 @@ export default function BookPickup() {
       <div className="space-y-4">
         {pricingBreakdown ? (
           <>
+            {!routeInfo && (
+              <div className="bg-blue-50 p-3 rounded-lg border border-blue-200 mb-4">
+                <p className="text-sm text-blue-800 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <span><strong>Estimated pricing</strong> based on St. Louis average (5 miles, 15 mins). Final price may vary.</span>
+                </p>
+              </div>
+            )}
+
             <div className="bg-accent p-4 rounded-lg border border-border">
               <div className="flex justify-between items-center">
                 <span className="text-foreground font-semibold text-lg">Base Service:</span>
@@ -1587,18 +1601,21 @@ export default function BookPickup() {
             </div>
 
             <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="text-amber-900 font-semibold mb-3">Additional Fees</h4>
+              <h4 className="text-amber-900 font-semibold mb-3">
+                Additional Fees
+                {!routeInfo && <span className="text-xs font-normal ml-2">(Estimated)</span>}
+              </h4>
               <div className="space-y-2 text-sm">
                 {pricingBreakdown.distanceFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-amber-700">Distance Fee:</span>
-                    <span className="font-medium">${pricingBreakdown.distanceFee.toFixed(2)}</span>
+                    <span className="text-amber-700">Distance Fee ($0.50/mile):</span>
+                    <span className="font-medium" data-testid="text-distance-fee">${pricingBreakdown.distanceFee.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.timeFee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-amber-700">Time Fee:</span>
-                    <span className="font-medium">${pricingBreakdown.timeFee.toFixed(2)}</span>
+                    <span className="text-amber-700">Time Fee ($12/hour):</span>
+                    <span className="font-medium" data-testid="text-time-fee">${pricingBreakdown.timeFee.toFixed(2)}</span>
                   </div>
                 )}
                 {pricingBreakdown.sizeUpcharge > 0 && (
