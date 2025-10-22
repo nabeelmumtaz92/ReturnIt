@@ -546,6 +546,7 @@ export const orders = pgTable("orders", {
   trackingNumber: text("tracking_number").unique(),
   trackingEnabled: boolean("tracking_enabled").default(true).notNull(),
   trackingExpiresAt: timestamp("tracking_expires_at"),
+  accessToken: text("access_token").unique(), // Secure token for accessing order details via URL
   
   // Pickup details
   pickupStreetAddress: text("pickup_street_address").notNull(),
