@@ -4,8 +4,6 @@ import {
   Phone, 
   Mail, 
   MapPin, 
-  Facebook, 
-  Twitter, 
   Instagram, 
   Linkedin
 } from "lucide-react";
@@ -27,24 +25,6 @@ export default function Footer() {
               On Demand Returns in St. Louis, MO. We handle your returns so you don't have to.
             </p>
             <div className="flex space-x-4">
-              <a href="https://facebook.com/returnitstl" target="_blank" rel="noopener noreferrer">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
-                >
-                  <Facebook className="h-4 w-4" />
-                </Button>
-              </a>
-              <a href="https://twitter.com/Return_It" target="_blank" rel="noopener noreferrer">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-primary-foreground/80 hover:text-white hover:bg-primary-foreground/20 p-2"
-                >
-                  <Twitter className="h-4 w-4" />
-                </Button>
-              </a>
               <a href="https://instagram.com/returnitstl" target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="ghost" 

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { MapPin, Mail, Phone, Clock, Instagram, Facebook, Twitter, ArrowLeft } from "lucide-react";
+import { MapPin, Mail, Phone, Clock, Instagram, ArrowLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -336,34 +336,14 @@ export default function About() {
           </h2>
           <div className="flex justify-center gap-8">
             <a 
-              href={`https://instagram.com/${businessInfo?.instagramHandle?.replace('@', '') || 'ReturnlyApp'}`}
+              href="https://instagram.com/returnitstl"
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
               data-testid="link-instagram"
             >
               <Instagram className="w-8 h-8" />
-              <span>{businessInfo?.instagramHandle || "@ReturnItApp"}</span>
-            </a>
-            <a 
-              href={`https://${businessInfo?.facebookUrl || 'facebook.com/Return It'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="link-facebook"
-            >
-              <Facebook className="w-8 h-8" />
-              <span>Facebook</span>
-            </a>
-            <a 
-              href={`https://twitter.com/${businessInfo?.twitterHandle?.replace('@', '') || 'Return It'}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="link-twitter"
-            >
-              <Twitter className="w-8 h-8" />
-              <span>{businessInfo?.twitterHandle || "@Return It"}</span>
+              <span>@returnitstl</span>
             </a>
           </div>
         </div>
