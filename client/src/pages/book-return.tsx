@@ -379,14 +379,14 @@ export default function BookReturn() {
       return;
     }
 
-    if (page === 2) {
-      // Create payment intent before going to page 3
+    if (page === 3) {
+      // Create payment intent before going to payment page (page 4)
       try {
         const response = await apiRequest('POST', '/api/create-payment-intent', {
           amount: pricing.total,
         });
         setClientSecret(response.clientSecret);
-        setPage(3);
+        setPage(4);
       } catch (error: any) {
         toast({
           title: "Error",
@@ -488,7 +488,7 @@ export default function BookReturn() {
     },
     onSuccess: (data) => {
       setConfirmedOrder(data);
-      setPage(4); // Show confirmation page
+      setPage(5); // Show confirmation page
     },
     onError: (error: any) => {
       toast({
@@ -509,11 +509,11 @@ export default function BookReturn() {
       <div className="container max-w-3xl mx-auto px-4">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Book a Return</h1>
-          {page < 4 && <p className="text-muted-foreground text-lg">Step {page} of 3</p>}
+          {page <= 3 && <p className="text-muted-foreground text-lg">Step {page} of 3</p>}
         </div>
 
         {/* Professional progress bar */}
-        {page < 4 && (
+        {page <= 3 && (
           <div className="mb-10">
             <div className="flex items-center gap-3">
               {[1, 2, 3].map((step) => (
@@ -546,12 +546,14 @@ export default function BookReturn() {
             <CardTitle className="flex items-center gap-3 text-2xl">
               {page === 1 && <><MapPin className="h-6 w-6 text-[#B8956A]" /> Pickup Information</>}
               {page === 2 && <><Package className="h-6 w-6 text-[#B8956A]" /> Return Details</>}
-              {page === 3 && <><CreditCard className="h-6 w-6 text-[#B8956A]" /> Review & Payment</>}
+              {page === 3 && <><Check className="h-6 w-6 text-[#B8956A]" /> Review</>}
+              {page === 4 && <><CreditCard className="h-6 w-6 text-[#B8956A]" /> Payment</>}
             </CardTitle>
             <CardDescription className="text-base">
               {page === 1 && "Where should we pick up your return?"}
               {page === 2 && "Tell us about the item you're returning"}
-              {page === 3 && "Review your information and confirm"}
+              {page === 3 && "Review your information before payment"}
+              {page === 4 && "Complete your booking"}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -828,9 +830,77 @@ export default function BookReturn() {
               </div>
             )}
 
-            {/* PAGE 3: Payment */}
+            {/* PAGE 3: Review */}
             {page === 3 && (
               <div className="space-y-6">
+                <div className="bg-muted/30 p-5 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-[#B8956A]" />
+                    Pickup Information
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Name:</span>
+                      <span className="font-medium">{formData.firstName} {formData.lastName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="font-medium">{formData.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Phone:</span>
+                      <span className="font-medium">{formData.phone}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Address:</span>
+                      <span className="font-medium text-right">{formData.streetAddress}, {formData.city}, {formData.state} {formData.zipCode}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 p-5 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <Package className="h-5 w-5 text-[#B8956A]" />
+                    Return Details
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Retailer:</span>
+                      <span className="font-medium">{formData.retailerName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Store Location:</span>
+                      <span className="font-medium text-right max-w-[60%]">{formData.retailerLocation}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Order Name:</span>
+                      <span className="font-medium">{formData.orderName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Item:</span>
+                      <span className="font-medium">{formData.itemDescription}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Value:</span>
+                      <span className="font-medium">${formData.itemValue}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Package Size:</span>
+                      <span className="font-medium capitalize">{formData.boxSize}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Number of Packages:</span>
+                      <span className="font-medium">{formData.numberOfBoxes}</span>
+                    </div>
+                    {formData.notes && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Notes:</span>
+                        <span className="font-medium text-right max-w-[60%]">{formData.notes}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-[#B8956A]" />
@@ -883,6 +953,49 @@ export default function BookReturn() {
                     <strong>Cancellation Policy:</strong> If you cancel after a driver has been dispatched, a $4.99 cancellation fee will apply to cover driver costs.
                   </p>
                 </div>
+              </div>
+            )}
+
+            {/* PAGE 4: Payment */}
+            {page === 4 && (
+              <div className="space-y-6">
+                <div className="bg-muted/30 p-5 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-[#B8956A]" />
+                    Price Summary
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Base Pickup Fee</span>
+                      <span className="font-medium">${pricing.basePrice.toFixed(2)}</span>
+                    </div>
+                    {pricing.sizeUpcharge > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Size Upcharge</span>
+                        <span className="font-medium">${pricing.sizeUpcharge.toFixed(2)}</span>
+                      </div>
+                    )}
+                    {pricing.multiBoxFee > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Multi-Package Fee</span>
+                        <span className="font-medium">${pricing.multiBoxFee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Service Fee</span>
+                      <span className="font-medium">${pricing.serviceFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Fuel Fee</span>
+                      <span className="font-medium">${pricing.fuelFee.toFixed(2)}</span>
+                    </div>
+                    <Separator className="bg-border" />
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-lg font-bold">Total</span>
+                      <span className="text-2xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
@@ -903,8 +1016,8 @@ export default function BookReturn() {
               </div>
             )}
 
-            {/* PAGE 4: Confirmation */}
-            {page === 4 && confirmedOrder && (
+            {/* PAGE 5: Confirmation */}
+            {page === 5 && confirmedOrder && (
               <div className="space-y-6 text-center py-8" data-testid="confirmation-page">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                   <Check className="h-8 w-8 text-green-600" />
@@ -949,7 +1062,7 @@ export default function BookReturn() {
             )}
 
             {/* Navigation Buttons */}
-            {page < 3 && (
+            {page < 4 && (
               <div className="flex justify-between mt-8 pt-6 border-t">
                 <Button
                   variant="outline"
@@ -966,22 +1079,8 @@ export default function BookReturn() {
                   className="bg-[#B8956A] hover:bg-[#A0805A] text-white px-8"
                   data-testid="button-next"
                 >
-                  Next
+                  {page === 3 ? 'Continue to Payment' : 'Next'}
                   <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              </div>
-            )}
-            
-            {page === 3 && (
-              <div className="mt-8 pt-6 border-t">
-                <Button
-                  variant="outline"
-                  onClick={() => setPage(2)}
-                  className="px-6"
-                  data-testid="button-back-to-details"
-                >
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Details
                 </Button>
               </div>
             )}
