@@ -2,7 +2,13 @@ import React from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Truck, Package, User, Search, LogOut, Settings } from 'lucide-react';
+import { Truck, Package, User, Search, LogOut, Settings, ChevronDown } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Footer from '@/components/Footer';
 import { useState } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
@@ -62,62 +68,65 @@ export default function Welcome() {
             </div>
           )}
           {isAuthenticated && (
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-2 bg-amber-50 border border-amber-200 rounded-lg">
-                <Settings className="h-4 w-4 text-amber-600" />
-                <span className="text-xs sm:text-sm font-medium text-amber-900">
-                  {user?.firstName} {user?.lastName}
-                </span>
-              </div>
-              {user?.isAdmin && (
-                <Link href="/admin-dashboard">
-                  <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-admin-dashboard">
-                    <User className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Admin Dashboard</span>
-                    <span className="sm:hidden">Admin</span>
-                  </Button>
-                </Link>
-              )}
-              {user?.isDriver && (
-                <Link href="/driver-portal">
-                  <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-driver-portal">
-                    <Truck className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">Driver Portal</span>
-                    <span className="sm:hidden">Portal</span>
-                  </Button>
-                </Link>
-              )}
-              {user && !user.isDriver && !user.isAdmin && (
-                <Link href="/customer-dashboard">
-                  <Button variant="default" size="sm" className="bg-amber-600 hover:bg-amber-700 text-white" data-testid="button-customer-dashboard">
-                    <User className="h-4 w-4 mr-1 sm:mr-2" />
-                    <span className="hidden sm:inline">My Dashboard</span>
-                    <span className="sm:hidden">Dashboard</span>
-                  </Button>
-                </Link>
-              )}
-              <Link href="/account-settings">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-amber-300 text-amber-700 hover:bg-amber-50"
-                  data-testid="button-account-settings"
-                >
-                  <Settings className="h-4 w-4 mr-1 sm:mr-2" />
-                  <span className="hidden sm:inline">Settings</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="flex items-center gap-2 border-amber-300 hover:bg-amber-50" data-testid="button-user-menu">
+                  <div className="flex flex-col items-start">
+                    <span className="text-xs sm:text-sm font-medium text-amber-900">
+                      {user?.firstName} {user?.lastName}
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-amber-600" />
                 </Button>
-              </Link>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                data-testid="button-sign-out"
-              >
-                <LogOut className="h-4 w-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">Sign Out</span>
-                <span className="sm:hidden">Out</span>
-              </Button>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="px-2 py-1.5 text-sm font-semibold text-amber-900">
+                  {user?.firstName} {user?.lastName}
+                </div>
+                {user?.isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/admin-dashboard">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-admin-dashboard">
+                        <User className="h-4 w-4 mr-2" />
+                        <span>Admin Dashboard</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {user?.isDriver && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/driver-portal">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-driver-portal">
+                        <Truck className="h-4 w-4 mr-2" />
+                        <span>Driver Portal</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                {user && !user.isDriver && !user.isAdmin && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/customer-dashboard">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-customer-dashboard">
+                        <User className="h-4 w-4 mr-2" />
+                        <span>My Dashboard</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem asChild>
+                  <Link href="/account-settings">
+                    <div className="flex items-center w-full cursor-pointer" data-testid="menu-settings">
+                      <Settings className="h-4 w-4 mr-2" />
+                      <span>Settings</span>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer" data-testid="menu-sign-out">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
         <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
@@ -127,6 +136,9 @@ export default function Welcome() {
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-2 sm:mb-3">
                 Return It
               </h1>
+              <p className="text-sm sm:text-base lg:text-lg font-medium text-amber-700 italic mb-3 sm:mb-4">
+                Give back, uplift others.
+              </p>
               <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-amber-800 mb-4 sm:mb-6">
                 The Leader in Reverse Logistics, Delivery, and Returns.
               </h2>
