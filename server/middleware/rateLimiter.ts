@@ -62,6 +62,20 @@ export const RATE_LIMIT_CONFIGS = {
     windowMs: 60 * 1000,      // 1 minute
     maxRequests: 60,          // 60 requests per minute
     message: "Admin API rate limit exceeded"
+  },
+  
+  // Tracking endpoints - public but protected
+  tracking: {
+    windowMs: 5 * 60 * 1000,  // 5 minutes
+    maxRequests: 30,          // 30 requests per 5 minutes
+    message: "Too many tracking requests. Please wait before checking again."
+  },
+  
+  // Sensitive document access (receipts, invoices, etc.)
+  sensitiveDocuments: {
+    windowMs: 60 * 60 * 1000, // 1 hour
+    maxRequests: 20,          // 20 requests per hour
+    message: "Document access limit exceeded. Please try again later."
   }
 };
 
@@ -265,6 +279,8 @@ export const paymentRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.payments);
 export const driverActionRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.driverActions);
 export const generalRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.general);
 export const adminRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.admin);
+export const trackingRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.tracking);
+export const sensitiveDocRateLimit = createRateLimit(RATE_LIMIT_CONFIGS.sensitiveDocuments);
 
 // Custom rate limiter for user-specific limits
 export function createUserRateLimit(config: RateLimitConfig) {
@@ -307,4 +323,136 @@ export function getRateLimitHealth() {
       manyActiveKeys: stats.totalKeys > 500
     }
   };
+}
+
+/**
+ * IP-based throttling for failed authentication attempts
+ * Blocks IPs after repeated failed login attempts
+ */
+interface IpThrottleRecord {
+  failedAttempts: number;
+  blockedUntil: number | null;
+  lastAttempt: number;
+}
+
+const ipThrottleStore = new Map<string, IpThrottleRecord>();
+
+// Clean up IP throttle records every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  const maxAge = 24 * 60 * 60 * 1000; // Keep records for 24 hours
+  
+  for (const [ip, record] of ipThrottleStore.entries()) {
+    // Remove if not blocked and last attempt was > 24 hours ago
+    if (!record.blockedUntil && now - record.lastAttempt > maxAge) {
+      ipThrottleStore.delete(ip);
+    }
+    // Remove if block has expired > 24 hours ago
+    else if (record.blockedUntil && now - record.blockedUntil > maxAge) {
+      ipThrottleStore.delete(ip);
+    }
+  }
+}, 10 * 60 * 1000);
+
+export function ipThrottleMiddleware(req: Request, res: Response, next: NextFunction) {
+  const ip = req.ip || 'unknown';
+  const now = Date.now();
+  
+  let record = ipThrottleStore.get(ip);
+  
+  // Initialize if not exists
+  if (!record) {
+    record = { failedAttempts: 0, blockedUntil: null, lastAttempt: now };
+    ipThrottleStore.set(ip, record);
+  }
+  
+  // Check if IP is currently blocked
+  if (record.blockedUntil && record.blockedUntil > now) {
+    const retryAfter = Math.ceil((record.blockedUntil - now) / 1000);
+    res.setHeader('Retry-After', retryAfter);
+    log(`🚫 Blocked IP ${ip} attempted access - ${record.failedAttempts} failed attempts`, 'ip-throttle');
+    
+    return res.status(429).json({
+      error: true,
+      message: 'Too many failed attempts. Your IP has been temporarily blocked.',
+      retryAfter,
+      blockedUntil: new Date(record.blockedUntil).toISOString()
+    });
+  }
+  
+  // Reset block if expired
+  if (record.blockedUntil && record.blockedUntil <= now) {
+    record.failedAttempts = 0;
+    record.blockedUntil = null;
+    log(`✅ IP ${ip} block expired - resetting`, 'ip-throttle');
+  }
+  
+  // Track response to increment failed attempts
+  res.on('finish', () => {
+    record!.lastAttempt = now;
+    
+    // Failed authentication (401) or forbidden (403)
+    if (res.statusCode === 401 || res.statusCode === 403) {
+      record!.failedAttempts++;
+      
+      // Block IP after 10 failed attempts for 1 hour
+      if (record!.failedAttempts >= 10) {
+        record!.blockedUntil = now + (60 * 60 * 1000); // 1 hour
+        log(`⚠️  IP ${ip} BLOCKED for 1 hour - ${record!.failedAttempts} failed attempts`, 'ip-throttle');
+      }
+      // Warning after 5 attempts - shorter block (5 minutes)
+      else if (record!.failedAttempts >= 5) {
+        record!.blockedUntil = now + (5 * 60 * 1000); // 5 minutes
+        log(`⚠️  IP ${ip} blocked for 5 minutes - ${record!.failedAttempts} failed attempts`, 'ip-throttle');
+      }
+      else {
+        log(`⚠️  Failed auth from IP ${ip} - attempt ${record!.failedAttempts}/10`, 'ip-throttle');
+      }
+    }
+    // Reset on successful authentication (200)
+    else if (res.statusCode === 200) {
+      if (record!.failedAttempts > 0) {
+        log(`✅ Successful auth from IP ${ip} - resetting failed attempts`, 'ip-throttle');
+      }
+      record!.failedAttempts = 0;
+      record!.blockedUntil = null;
+    }
+  });
+  
+  next();
+}
+
+/**
+ * Get IP throttle info (admin function)
+ */
+export function getIpThrottleInfo(ip: string): IpThrottleRecord | null {
+  return ipThrottleStore.get(ip) || null;
+}
+
+/**
+ * Clear IP throttle block (admin function)
+ */
+export function clearIpThrottle(ip: string): boolean {
+  const existed = ipThrottleStore.has(ip);
+  ipThrottleStore.delete(ip);
+  if (existed) {
+    log(`🧹 Cleared IP throttle for ${ip}`, 'ip-throttle');
+  }
+  return existed;
+}
+
+/**
+ * Get all blocked IPs (admin function)
+ */
+export function getBlockedIps(): Array<{ ip: string; record: IpThrottleRecord }> {
+  const now = Date.now();
+  const blocked = [];
+  
+  for (const [ip, record] of ipThrottleStore.entries()) {
+    if (record.blockedUntil && record.blockedUntil > now) {
+      blocked.push({ ip, record });
+    }
+  }
+  
+  return blocked;
 }
