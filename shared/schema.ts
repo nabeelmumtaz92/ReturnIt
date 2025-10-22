@@ -1395,7 +1395,7 @@ export const driverIncentives = pgTable("driver_incentives", {
 export const businessInfo = pgTable("business_info", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   companyName: text("company_name").default("Return It"),
-  tagline: text("tagline").default("Making Returns Effortless"),
+  tagline: text("tagline").default("Return it. Give back, move forward."),
   description: text("description"),
   headquarters: text("headquarters").default("St. Louis, MO"),
   supportEmail: text("support_email").default("support@returnit.com"),

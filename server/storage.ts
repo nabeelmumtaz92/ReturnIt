@@ -1638,7 +1638,7 @@ export class MemStorage implements IStorage {
       this.businessInfo = {
         id: 1,
         companyName: "Return It",
-        tagline: "Making Returns Effortless",
+        tagline: "Return it. Give back, move forward.",
         description: "At Return It, we believe returning an item should be as easy as ordering it. We're the first on-demand service dedicated to picking up unwanted purchases from your doorstep and returning them to the store for you. No more long lines, no more printing labels, and no more hassle — just a simple, stress-free way to handle returns.",
         headquarters: "St. Louis, MO",
         supportEmail: "support@returnit.com",
@@ -1661,7 +1661,7 @@ export class MemStorage implements IStorage {
     this.businessInfo = {
       id: currentInfo?.id || 1,
       companyName: info.companyName || currentInfo?.companyName || "ReturnIt",
-      tagline: info.tagline || currentInfo?.tagline || "Making Returns Effortless",
+      tagline: info.tagline || currentInfo?.tagline || "Return it. Give back, move forward.",
       description: info.description || currentInfo?.description || "",
       headquarters: info.headquarters || currentInfo?.headquarters || "St. Louis, MO",
       supportEmail: info.supportEmail || currentInfo?.supportEmail || "support@returnit.com",
