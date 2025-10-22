@@ -185,14 +185,6 @@ export default function MapProviderSelector() {
           </div>
         </div>
 
-        {/* Info about available providers */}
-        {availableProviders.length < Object.keys(MAP_PROVIDERS).length && (
-          <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
-              <strong>Note:</strong> Some map providers require API keys. Contact your administrator to enable additional providers.
-            </p>
-          </div>
-        )}
       </CardContent>
     </Card>
   );
