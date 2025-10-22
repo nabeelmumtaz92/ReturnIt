@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,8 +10,16 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+// Load Stripe
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+}
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 interface FormData {
   // Page 1
@@ -238,6 +246,74 @@ function calculatePricing(formData: FormData) {
   };
 }
 
+// Payment Form Component
+function PaymentForm({ amount, onSuccess }: { amount: number; onSuccess: (paymentIntent: any) => void }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        toast({
+          title: "Payment Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        toast({
+          title: "Payment Successful",
+          description: "Your payment has been processed.",
+        });
+        onSuccess(paymentIntent);
+      }
+    } catch (err: any) {
+      toast({
+        title: "Payment Error",
+        description: err.message,
+        variant: "destructive",
+      });
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <PaymentElement />
+      <Button
+        type="submit"
+        disabled={!stripe || isProcessing}
+        className="w-full bg-[#B8956A] hover:bg-[#A0805A] text-white"
+        data-testid="button-confirm-payment"
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            Processing Payment...
+          </>
+        ) : (
+          `Pay $${amount.toFixed(2)}`
+        )}
+      </Button>
+    </form>
+  );
+}
+
 export default function BookReturn() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
@@ -245,6 +321,7 @@ export default function BookReturn() {
   
   const [page, setPage] = useState(1);
   const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
+  const [clientSecret, setClientSecret] = useState<string>("");
   const [formData, setFormData] = useState<FormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -267,6 +344,58 @@ export default function BookReturn() {
   });
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
+
+  // Validate current page before proceeding
+  const validatePage = (pageNum: number): boolean => {
+    if (pageNum === 1) {
+      if (!formData.firstName || !formData.lastName || !formData.email || 
+          !formData.phone || !formData.streetAddress || !formData.city || 
+          !formData.state || !formData.zipCode) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return false;
+      }
+    } else if (pageNum === 2) {
+      if (!formData.retailerName || !formData.retailerLocation || 
+          !formData.orderName || !formData.itemDescription || !formData.itemValue) {
+        toast({
+          title: "Missing Information",
+          description: "Please fill in all required fields",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleNextPage = async () => {
+    if (!validatePage(page)) {
+      return;
+    }
+
+    if (page === 2) {
+      // Create payment intent before going to page 3
+      try {
+        const response = await apiRequest('POST', '/api/create-payment-intent', {
+          amount: pricing.total,
+        });
+        setClientSecret(response.clientSecret);
+        setPage(3);
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: "Failed to initialize payment",
+          variant: "destructive",
+        });
+      }
+    } else {
+      setPage(page + 1);
+    }
+  };
 
   const updateField = (field: keyof FormData, value: string | number) => {
     setFormData(prev => {
@@ -306,7 +435,7 @@ export default function BookReturn() {
   };
 
   const createOrderMutation = useMutation({
-    mutationFn: async (data: FormData) => {
+    mutationFn: async (data: FormData & { paymentIntentId?: string }) => {
       const pricing = calculatePricing(data);
       
       return apiRequest('POST', '/api/orders', {
@@ -349,16 +478,13 @@ export default function BookReturn() {
         // returnlyFee represents platform revenue (service fee + our margin)
         returnlyFee: pricing.serviceFee,
         
-        // Status
-        status: 'created',
-        paymentMethod: data.paymentMethod
+        // Payment
+        status: 'paid',
+        paymentMethod: 'card',
+        paymentIntentId: data.paymentIntentId,
       });
     },
     onSuccess: (data) => {
-      console.log('Order created successfully:', data);
-      console.log('Order ID:', data?.id);
-      console.log('Tracking Number:', data?.trackingNumber);
-      console.log('Total Price:', data?.totalPrice);
       setConfirmedOrder(data);
       setPage(4); // Show confirmation page
     },
@@ -371,8 +497,9 @@ export default function BookReturn() {
     },
   });
 
-  const handleSubmit = () => {
-    createOrderMutation.mutate(formData);
+  const handlePaymentSuccess = (paymentIntent: any) => {
+    // After successful payment, create the order
+    createOrderMutation.mutate({ ...formData, paymentIntentId: paymentIntent.id });
   };
 
   return (
@@ -438,6 +565,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('firstName', e.target.value)}
                       placeholder="John"
                       className="mt-1.5"
+                      required
                       data-testid="input-first-name"
                     />
                   </div>
@@ -449,6 +577,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('lastName', e.target.value)}
                       placeholder="Doe"
                       className="mt-1.5"
+                      required
                       data-testid="input-last-name"
                     />
                   </div>
@@ -463,6 +592,7 @@ export default function BookReturn() {
                     onChange={(e) => updateField('email', e.target.value)}
                     placeholder="your@email.com"
                     className="mt-1.5"
+                    required
                     data-testid="input-email"
                   />
                 </div>
@@ -476,6 +606,7 @@ export default function BookReturn() {
                     onChange={(e) => updateField('phone', e.target.value)}
                     placeholder="(314) 555-1234"
                     className="mt-1.5"
+                    required
                     data-testid="input-phone"
                   />
                 </div>
@@ -490,6 +621,7 @@ export default function BookReturn() {
                     onChange={(e) => updateField('streetAddress', e.target.value)}
                     placeholder="123 Main St, Apt 4B"
                     className="mt-1.5"
+                    required
                     data-testid="input-street-address"
                   />
                 </div>
@@ -503,6 +635,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('city', e.target.value)}
                       placeholder="St. Louis"
                       className="mt-1.5"
+                      required
                       data-testid="input-city"
                     />
                   </div>
@@ -515,6 +648,7 @@ export default function BookReturn() {
                       placeholder="MO"
                       maxLength={2}
                       className="mt-1.5"
+                      required
                       data-testid="input-state"
                     />
                   </div>
@@ -526,6 +660,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('zipCode', e.target.value)}
                       placeholder="63101"
                       className="mt-1.5"
+                      required
                       data-testid="input-zip-code"
                     />
                   </div>
@@ -602,6 +737,7 @@ export default function BookReturn() {
                     onChange={(e) => updateField('orderName', e.target.value)}
                     placeholder="Black Purse, Running Shoes, etc."
                     className="mt-1.5"
+                    required
                     data-testid="input-order-name"
                   />
                 </div>
@@ -615,6 +751,7 @@ export default function BookReturn() {
                     placeholder="Describe the item you're returning..."
                     rows={3}
                     className="mt-1.5"
+                    required
                     data-testid="input-item-description"
                   />
                 </div>
@@ -631,6 +768,7 @@ export default function BookReturn() {
                       placeholder="50.00"
                       step="0.01"
                       className="pl-7"
+                      required
                       data-testid="input-item-value"
                     />
                   </div>
@@ -688,60 +826,9 @@ export default function BookReturn() {
               </div>
             )}
 
-            {/* PAGE 3: Review */}
+            {/* PAGE 3: Payment */}
             {page === 3 && (
               <div className="space-y-6">
-                <div className="bg-muted/30 p-5 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-[#B8956A]" />
-                    Pickup Information
-                  </h3>
-                  <div className="space-y-1.5 text-sm">
-                    <p className="font-medium">{formData.firstName} {formData.lastName}</p>
-                    <p className="text-muted-foreground">{formData.email}</p>
-                    <p className="text-muted-foreground">{formData.phone}</p>
-                    <p className="text-muted-foreground mt-2">{formData.streetAddress}</p>
-                    <p className="text-muted-foreground">{formData.city}, {formData.state} {formData.zipCode}</p>
-                  </div>
-                </div>
-
-                <div className="bg-muted/30 p-5 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                    <Package className="h-5 w-5 text-[#B8956A]" />
-                    Return Details
-                  </h3>
-                  <div className="space-y-1.5 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Retailer:</span>
-                      <span className="font-medium">{formData.retailer}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Item:</span>
-                      <span className="font-medium">{formData.orderName}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Value:</span>
-                      <span className="font-medium">${formData.itemValue}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Package Size:</span>
-                      <span className="font-medium capitalize">{formData.boxSize}</span>
-                    </div>
-                    {formData.numberOfBoxes > 1 && (
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Number of Boxes/Bags:</span>
-                        <span className="font-medium">{formData.numberOfBoxes}</span>
-                      </div>
-                    )}
-                    {formData.itemDescription && (
-                      <div className="mt-2 pt-2 border-t">
-                        <span className="text-muted-foreground">Description:</span>
-                        <p className="mt-1 text-foreground">{formData.itemDescription}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-[#B8956A]" />
@@ -783,6 +870,23 @@ export default function BookReturn() {
                       <span className="text-2xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
                     </div>
                   </div>
+                </div>
+
+                <div className="bg-muted/30 p-5 rounded-lg">
+                  <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-[#B8956A]" />
+                    Payment Information
+                  </h3>
+                  {clientSecret ? (
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <PaymentForm amount={pricing.total} onSuccess={handlePaymentSuccess} />
+                    </Elements>
+                  ) : (
+                    <div className="flex items-center justify-center py-8">
+                      <Loader2 className="h-6 w-6 animate-spin text-amber-600" />
+                      <span className="ml-2 text-amber-700">Initializing payment...</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -833,7 +937,7 @@ export default function BookReturn() {
             )}
 
             {/* Navigation Buttons */}
-            {page < 4 && (
+            {page < 3 && (
               <div className="flex justify-between mt-8 pt-6 border-t">
                 <Button
                   variant="outline"
@@ -845,25 +949,28 @@ export default function BookReturn() {
                   Back
                 </Button>
 
-                {page < 3 ? (
-                  <Button
-                    onClick={() => setPage(page + 1)}
-                    className="bg-[#B8956A] hover:bg-[#A0805A] text-white px-8"
-                    data-testid="button-next"
-                  >
-                    Next
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={createOrderMutation.isPending}
-                    className="bg-[#B8956A] hover:bg-[#A0805A] text-white px-8"
-                    data-testid="button-submit"
-                  >
-                    {createOrderMutation.isPending ? "Processing..." : "Book Return"}
-                  </Button>
-                )}
+                <Button
+                  onClick={handleNextPage}
+                  className="bg-[#B8956A] hover:bg-[#A0805A] text-white px-8"
+                  data-testid="button-next"
+                >
+                  Next
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </div>
+            )}
+            
+            {page === 3 && (
+              <div className="mt-8 pt-6 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage(2)}
+                  className="px-6"
+                  data-testid="button-back-to-details"
+                >
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Details
+                </Button>
               </div>
             )}
           </CardContent>
