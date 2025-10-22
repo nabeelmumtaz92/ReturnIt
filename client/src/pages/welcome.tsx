@@ -52,7 +52,7 @@ export default function Welcome() {
       {/* Professional Hero Section */}
       <div className="w-full bg-white/95 border-b border-amber-100 relative">
         {/* Sign In/Sign Up buttons in top right */}
-        <div className="absolute top-2 sm:top-3 md:top-2 right-2 sm:right-4 z-10">
+        <div className="absolute top-2 sm:top-3 md:top-2 right-2 sm:right-4 z-10 mb-8">
           {!isAuthenticated && (
             <div className="flex gap-2">
               <Link href="/login">
@@ -129,7 +129,7 @@ export default function Welcome() {
             </DropdownMenu>
           )}
         </div>
-        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
+        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8 mt-12 sm:mt-14 md:mt-16">
           <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left pt-8 sm:pt-0">
