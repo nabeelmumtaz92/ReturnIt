@@ -230,7 +230,7 @@ function calculatePricing(formData: FormData) {
   
   const subtotal = basePrice + sizeUpcharge + multiBoxFee;
   const serviceFee = 1.50; // Platform service fee
-  const taxRate = 0.0875; // 8.75% tax (St. Louis rate)
+  const taxRate = 0; // 0% tax
   const tax = (subtotal + serviceFee) * taxRate;
   
   const total = subtotal + serviceFee + tax;
