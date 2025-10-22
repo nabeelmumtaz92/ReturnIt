@@ -25,11 +25,15 @@ export default function SupportScreen({ navigation }) {
     },
     {
       question: 'How much does the service cost?',
-      answer: 'Pricing varies by distance and package size. You\'ll see the exact cost before confirming your booking.'
+      answer: 'Our transparent pricing starts at $8.99 base fee, plus $1.25 fuel surcharge and $1.50 service fee. Package size affects pricing: Small (shoebox) $0, Medium (microwave) $3, Large (TV box) $6. Multiple packages add $3 each after the first.'
     },
     {
       question: 'Can I track my package in real-time?',
       answer: 'Yes! You can track your package from pickup to delivery with live updates and driver location.'
+    },
+    {
+      question: 'Can I cancel my pickup?',
+      answer: 'Yes! Cancellations before driver dispatch receive a full refund. After driver dispatch, a $4.99 cancellation fee applies.'
     }
   ];
 
@@ -47,11 +51,11 @@ export default function SupportScreen({ navigation }) {
   };
 
   const handleCallSupport = () => {
-    Linking.openURL('tel:+15551234567');
+    Linking.openURL('tel:+16362544821');
   };
 
   const handleEmailSupport = () => {
-    Linking.openURL('mailto:support@returnit.com');
+    Linking.openURL('mailto:support@returnit.online');
   };
 
   return (
@@ -73,12 +77,12 @@ export default function SupportScreen({ navigation }) {
           <View style={styles.contactRow}>
             <TouchableOpacity style={styles.contactButton} onPress={handleCallSupport}>
               <Text style={styles.contactButtonText}>📞 Call Support</Text>
-              <Text style={styles.contactSubtext}>(555) 123-4567</Text>
+              <Text style={styles.contactSubtext}>(636) 254-4821</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.contactButton} onPress={handleEmailSupport}>
               <Text style={styles.contactButtonText}>✉️ Email Support</Text>
-              <Text style={styles.contactSubtext}>support@returnit.com</Text>
+              <Text style={styles.contactSubtext}>support@returnit.online</Text>
             </TouchableOpacity>
           </View>
         </View>
