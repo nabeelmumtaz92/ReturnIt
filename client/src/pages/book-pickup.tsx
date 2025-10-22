@@ -322,8 +322,8 @@ export default function BookPickup() {
     
     if (!hasAtLeastOneRequirement) {
       toast({
-        title: "Return Requirements Not Met",
-        description: "You must have at least ONE of the following: original tags, original packaging, or receipt. The store may refuse your return without these items.",
+        title: "Return Verification Required",
+        description: "We CANNOT process your return without verification. You must have AT LEAST ONE: receipt uploaded, original tags, or original packaging.",
         variant: "destructive",
       });
       return;
@@ -1223,19 +1223,43 @@ export default function BookPickup() {
           )}
         </div>
 
-        {/* Value */}
-        <div>
-          <Label htmlFor="itemValue" className="text-foreground font-medium">Item Value (USD) *</Label>
-          <Input id="itemValue" type="number" placeholder="25.99" value={formData.itemValue}
-            onChange={(e) => handleInputChange('itemValue', e.target.value)}
-            onFocus={(e) => e.target.select()}
-            className="bg-white/80 border-border focus:border-primary"
-            required data-testid="input-item-value" />
+        {/* Item Details - Description + Value */}
+        <div className="space-y-3">
+          <Label className="text-foreground font-medium">Item Details *</Label>
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <Input 
+                id="itemDescription" 
+                type="text" 
+                placeholder="e.g., Black leather purse" 
+                value={formData.itemDescription || ''}
+                onChange={(e) => handleInputChange('itemDescription', e.target.value)}
+                className="bg-white/80 border-border focus:border-primary"
+                required 
+                data-testid="input-item-description" 
+              />
+              <p className="text-xs text-muted-foreground mt-1">Item description</p>
+            </div>
+            <div className="w-32">
+              <Input 
+                id="itemValue" 
+                type="number" 
+                placeholder="200" 
+                value={formData.itemValue}
+                onChange={(e) => handleInputChange('itemValue', e.target.value)}
+                onFocus={(e) => e.target.select()}
+                className="bg-white/80 border-border focus:border-primary"
+                required 
+                data-testid="input-item-value" 
+              />
+              <p className="text-xs text-muted-foreground mt-1">Value ($)</p>
+            </div>
+          </div>
           <Button
             type="button"
             variant="ghost"
             size="sm"
-            className="mt-2 text-primary hover:text-primary/80"
+            className="text-primary hover:text-primary/80"
             data-testid="button-add-another-item"
           >
             <Plus className="h-4 w-4 mr-1" />
@@ -1495,21 +1519,23 @@ export default function BookPickup() {
 
             {/* Return Requirements Warning */}
             {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptUrl && !formData.receiptImage && (
-              <div className="flex items-start space-x-2 p-3 bg-amber-50 border border-amber-300 rounded-lg">
-                <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start space-x-2 p-3 bg-red-50 border-2 border-red-400 rounded-lg">
+                <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-amber-900">Return Requirements Warning</h4>
-                  <p className="text-sm text-amber-700 mt-1">
-                    Most stores require at least ONE of the following for returns: original tags, original packaging, or receipt. 
-                    Without these items, the store may refuse your return.
+                  <h4 className="font-semibold text-red-900">Return Verification Required</h4>
+                  <p className="text-sm text-red-700 mt-1 font-medium">
+                    We CANNOT process your return without verification. You must have AT LEAST ONE of the following: receipt uploaded, original tags attached, or original packaging.
+                  </p>
+                  <p className="text-xs text-red-600 mt-2">
+                    This requirement protects both you and our drivers from liability issues.
                   </p>
                 </div>
               </div>
             )}
 
             <div className="space-y-3">
-              <Label className="text-foreground font-semibold">Return Requirements (At least 1 required) *</Label>
-              <p className="text-sm text-muted-foreground">Select all that apply to increase return acceptance:</p>
+              <Label className="text-foreground font-semibold">Return Verification (At least 1 required) *</Label>
+              <p className="text-sm text-muted-foreground">You must have at least one of these to proceed:</p>
               
               <div className="flex items-center space-x-2">
                 <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
