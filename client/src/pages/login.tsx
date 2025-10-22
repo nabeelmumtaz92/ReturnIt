@@ -95,10 +95,8 @@ export default function Login() {
         userMessage: "Demo login failed"
       });
       
-      toast({
-        title: "Demo unavailable",
-        description: "Please try again or sign in with your account.",
-        variant: "destructive",
+      setValidationErrors({ 
+        general: "Demo unavailable. Please try again or sign in with your account."
       });
     }
   });
@@ -145,10 +143,8 @@ export default function Login() {
         
         // Handle specific authentication scenarios with preserved UX logic
         if (errorData.requiresSignup) {
-          toast({
-            title: "Error",
-            description: "Please try again.",
-            variant: "destructive",
+          setValidationErrors({ 
+            general: "No account found with this email. Please sign up."
           });
           
           // Automatically switch to signup tab if user doesn't exist
@@ -158,18 +154,14 @@ export default function Login() {
           }, 2000);
           
         } else {
-          toast({
-            title: "Error",
-            description: "Please check your credentials and try again.",
-            variant: "destructive",
+          setValidationErrors({ 
+            general: "Invalid email or password. Please check your credentials and try again."
           });
         }
       } catch {
         // Fallback for unparseable errors
-        toast({
-          title: "Error",
-          description: "Please check your credentials and try again.",
-          variant: "destructive",
+        setValidationErrors({ 
+          general: "Invalid email or password. Please check your credentials and try again."
         });
       }
     },
@@ -205,17 +197,17 @@ export default function Login() {
           const validationError = JSON.parse(errorMessage);
           setValidationErrors(validationError.fieldErrors || {});
         } catch {
-          toast({
-            title: "Error",
-            description: "Please check your information and try again.",
-            variant: "destructive",
+          setValidationErrors({ 
+            general: "Please check your information and try again."
           });
         }
+      } else if (errorMessage.includes('already exists') || errorMessage.includes('Email already registered')) {
+        setValidationErrors({ 
+          email: "An account with this email already exists. Please sign in instead."
+        });
       } else {
-        toast({
-          title: "Error",
-          description: "Please check your information and try again.",
-          variant: "destructive",
+        setValidationErrors({ 
+          general: "Registration failed. Please check your information and try again."
         });
       }
     },
@@ -354,6 +346,11 @@ export default function Login() {
           {activeTab === 'login' ? (
             <form onSubmit={handleLogin}>
               <CardContent className="space-y-4 md:space-y-6">
+                {validationErrors.general && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-red-600 text-sm">{validationErrors.general}</p>
+                  </div>
+                )}
                 <div className="space-y-2">
                   <Label htmlFor="login-email" className="text-xs sm:text-sm font-medium">Email Address</Label>
                   <div className="relative">
@@ -368,10 +365,10 @@ export default function Login() {
                       autoComplete="off"
                     />
                     <Mail className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
-                    {validationErrors.email && (
-                      <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
-                    )}
                   </div>
+                  {validationErrors.email && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="login-password" className="text-xs sm:text-sm font-medium">Password</Label>
@@ -387,10 +384,10 @@ export default function Login() {
                       autoComplete="off"
                     />
                     <Lock className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
-                    {validationErrors.password && (
-                      <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
-                    )}
                   </div>
+                  {validationErrors.password && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
+                  )}
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-3 md:space-y-4 pt-2 md:pt-6">
@@ -465,6 +462,11 @@ export default function Login() {
           ) : (
             <form onSubmit={handleRegister}>
               <CardContent className="space-y-6">
+                {validationErrors.general && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p className="text-red-600 text-sm">{validationErrors.general}</p>
+                  </div>
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="register-firstName" className="text-foreground font-medium">First Name</Label>
