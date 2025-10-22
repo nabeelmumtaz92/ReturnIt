@@ -41,6 +41,7 @@ import {
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
 import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
+import { generateAccessToken } from "@shared/utils/urlSigner";
 import { 
   users, orders, promoCodes, notifications, analytics, 
   driverPayouts, driverIncentives, businessInfo, appSettings,
@@ -820,9 +821,13 @@ export class MemStorage implements IStorage {
       return this.trackingNumberIndex.has(tn);
     });
     
+    // Generate secure access token for URL-based access
+    const accessToken = generateAccessToken();
+    
     const order: Order = {
       id,
       trackingNumber,
+      accessToken,
       userId: insertOrder.userId,
       status: OrderStatus.CREATED,
       trackingEnabled: insertOrder.trackingEnabled ?? true,
