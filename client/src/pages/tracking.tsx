@@ -29,7 +29,8 @@ import {
   WifiOff,
   RefreshCw,
   Camera,
-  FileText
+  FileText,
+  Car
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
@@ -67,6 +68,12 @@ interface TrackingInfo {
   driver: {
     assigned: boolean;
     assignedAt?: string;
+    firstName?: string;
+    lastName?: string;
+    vehicleMake?: string;
+    vehicleModel?: string;
+    vehicleColor?: string;
+    vehicleYear?: string;
     currentLocation?: {
       lat: number;
       lng: number;
@@ -133,6 +140,45 @@ const StatusBadge = ({ status }: { status: string }) => {
     <Badge className={`${getStatusColor(status)} font-medium px-3 py-1 text-sm border`}>
       {status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
     </Badge>
+  );
+};
+
+const DriverVehicleCard = ({ trackingInfo }: { trackingInfo: TrackingInfo }) => {
+  if (!trackingInfo.driver.assigned) {
+    return null;
+  }
+
+  const { driver, status } = trackingInfo;
+  const driverName = driver.firstName || 'Your driver';
+  const vehicleInfo = driver.vehicleMake && driver.vehicleModel 
+    ? `${driver.vehicleColor || ''} ${driver.vehicleYear || ''} ${driver.vehicleMake} ${driver.vehicleModel}`.trim()
+    : null;
+
+  // Show Uber-style message for en route and picked up statuses
+  const isEnRoute = status === 'en_route' || status === 'picked_up' || status === 'driver_assigned';
+
+  if (!isEnRoute || !vehicleInfo) {
+    return null;
+  }
+
+  return (
+    <Card className="w-full border-border bg-gradient-to-r from-primary/5 to-transparent">
+      <CardContent className="pt-6">
+        <div className="flex items-start gap-4">
+          <div className="bg-primary/10 rounded-full p-3">
+            <Car className="h-6 w-6 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className="text-lg font-medium text-foreground mb-1">
+              Your Return It driver <span className="text-primary">{driverName}</span> {status === 'picked_up' ? 'is on the way' : 'has been assigned'}
+            </p>
+            <p className="text-muted-foreground">
+              in a {vehicleInfo}
+            </p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -725,6 +771,9 @@ export default function TrackingPage() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Driver & Vehicle Information (Uber-style) */}
+            <DriverVehicleCard trackingInfo={trackingInfo} />
 
             {/* Partner Engagement Offer Banner */}
             <EngagementOfferBanner />

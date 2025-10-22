@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import deliveryDriverSignupImg from "@assets/Delivery Driver Receiving Box_1754856749524.jpeg";
+import { VEHICLE_MAKES, VEHICLE_MODELS, VEHICLE_YEARS, VEHICLE_COLORS } from '@/data/vehicleData';
 
 // Form validation schema
 const driverSignupSchema = z.object({
@@ -85,6 +86,7 @@ export default function DriverSignup() {
   const [applicationSubmitted, setApplicationSubmitted] = useState(false);
   const [zipCodeInfo, setZipCodeInfo] = useState<ZipCodeInfo | null>(null);
   const [applicationStatus, setApplicationStatus] = useState<ApplicationStatus | null>(null);
+  const [selectedMake, setSelectedMake] = useState<string>('');
 
   const form = useForm<DriverSignupData>({
     resolver: zodResolver(driverSignupSchema),
@@ -557,13 +559,24 @@ export default function DriverSignup() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label htmlFor="vehicleMake">Vehicle Make</Label>
-                        <Input
+                        <select
                           id="vehicleMake"
                           {...form.register('vehicleMake')}
-                          placeholder="e.g., Toyota, Honda, Ford"
-                          className="border-border focus:border-border"
-                          data-testid="input-vehicle-make"
-                        />
+                          onChange={(e) => {
+                            form.setValue('vehicleMake', e.target.value);
+                            setSelectedMake(e.target.value);
+                            form.setValue('vehicleModel', ''); // Reset model when make changes
+                          }}
+                          className="w-full p-2 border border-border rounded-md focus:border-border focus:outline-none"
+                          data-testid="select-vehicle-make"
+                        >
+                          <option value="">Select make</option>
+                          {VEHICLE_MAKES.map((make) => (
+                            <option key={make} value={make}>
+                              {make}
+                            </option>
+                          ))}
+                        </select>
                         {form.formState.errors.vehicleMake && (
                           <p className="text-red-500 text-sm mt-1">
                             {form.formState.errors.vehicleMake.message}
@@ -573,13 +586,20 @@ export default function DriverSignup() {
 
                       <div>
                         <Label htmlFor="vehicleModel">Vehicle Model</Label>
-                        <Input
+                        <select
                           id="vehicleModel"
                           {...form.register('vehicleModel')}
-                          placeholder="e.g., Camry, Civic, F-150"
-                          className="border-border focus:border-border"
-                          data-testid="input-vehicle-model"
-                        />
+                          disabled={!selectedMake}
+                          className="w-full p-2 border border-border rounded-md focus:border-border focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                          data-testid="select-vehicle-model"
+                        >
+                          <option value="">Select model</option>
+                          {selectedMake && VEHICLE_MODELS[selectedMake]?.map((model) => (
+                            <option key={model} value={model}>
+                              {model}
+                            </option>
+                          ))}
+                        </select>
                         {form.formState.errors.vehicleModel && (
                           <p className="text-red-500 text-sm mt-1">
                             {form.formState.errors.vehicleModel.message}
@@ -591,13 +611,19 @@ export default function DriverSignup() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label htmlFor="vehicleYear">Vehicle Year</Label>
-                        <Input
+                        <select
                           id="vehicleYear"
                           {...form.register('vehicleYear')}
-                          placeholder="2020"
-                          className="border-border focus:border-border"
-                          data-testid="input-vehicle-year"
-                        />
+                          className="w-full p-2 border border-border rounded-md focus:border-border focus:outline-none"
+                          data-testid="select-vehicle-year"
+                        >
+                          <option value="">Select year</option>
+                          {VEHICLE_YEARS.map((year) => (
+                            <option key={year} value={year}>
+                              {year}
+                            </option>
+                          ))}
+                        </select>
                         {form.formState.errors.vehicleYear && (
                           <p className="text-red-500 text-sm mt-1">
                             {form.formState.errors.vehicleYear.message}
@@ -607,13 +633,19 @@ export default function DriverSignup() {
 
                       <div>
                         <Label htmlFor="vehicleColor">Vehicle Color</Label>
-                        <Input
+                        <select
                           id="vehicleColor"
                           {...form.register('vehicleColor')}
-                          placeholder="e.g., Red, Blue, Silver"
-                          className="border-border focus:border-border"
-                          data-testid="input-vehicle-color"
-                        />
+                          className="w-full p-2 border border-border rounded-md focus:border-border focus:outline-none"
+                          data-testid="select-vehicle-color"
+                        >
+                          <option value="">Select color</option>
+                          {VEHICLE_COLORS.map((color) => (
+                            <option key={color} value={color}>
+                              {color}
+                            </option>
+                          ))}
+                        </select>
                         {form.formState.errors.vehicleColor && (
                           <p className="text-red-500 text-sm mt-1">
                             {form.formState.errors.vehicleColor.message}

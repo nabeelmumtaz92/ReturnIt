@@ -9430,8 +9430,21 @@ Always think strategically, explain your reasoning, and provide value beyond bas
       
       // Get current driver location if order is assigned
       let driverLocation = null;
+      let driverInfo = null;
       if (order.driverId) {
         driverLocation = await storage.getDriverLocation(order.driverId);
+        // Get driver details including vehicle information
+        const driver = await storage.getUserById(order.driverId);
+        if (driver) {
+          driverInfo = {
+            firstName: driver.firstName,
+            lastName: driver.lastName,
+            vehicleMake: driver.vehicleMake,
+            vehicleModel: driver.vehicleModel,
+            vehicleColor: driver.vehicleColor,
+            vehicleYear: driver.vehicleYear
+          };
+        }
       }
       
       // Get tracking events
@@ -9458,7 +9471,13 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         driver: order.driverId ? {
           assigned: true,
           assignedAt: order.driverAssignedAt,
-          currentLocation: driverLocation
+          currentLocation: driverLocation,
+          firstName: driverInfo?.firstName,
+          lastName: driverInfo?.lastName,
+          vehicleMake: driverInfo?.vehicleMake,
+          vehicleModel: driverInfo?.vehicleModel,
+          vehicleColor: driverInfo?.vehicleColor,
+          vehicleYear: driverInfo?.vehicleYear
         } : {
           assigned: false
         },
