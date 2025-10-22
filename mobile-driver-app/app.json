@@ -54,8 +54,21 @@
           "android": {
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
+            "buildToolsVersion": "35.0.0",
+            "kotlinVersion": "1.9.22"
           }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "ReturnIt needs camera access to capture package photos for delivery confirmation."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "ReturnIt uses location to provide real-time tracking and route optimization."
         }
       ]
     ],
