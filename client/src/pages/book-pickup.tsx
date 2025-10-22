@@ -1228,8 +1228,19 @@ export default function BookPickup() {
           <Label htmlFor="itemValue" className="text-foreground font-medium">Item Value (USD) *</Label>
           <Input id="itemValue" type="number" placeholder="25.99" value={formData.itemValue}
             onChange={(e) => handleInputChange('itemValue', e.target.value)}
+            onFocus={(e) => e.target.select()}
             className="bg-white/80 border-border focus:border-primary"
             required data-testid="input-item-value" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mt-2 text-primary hover:text-primary/80"
+            data-testid="button-add-another-item"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add another item
+          </Button>
         </div>
 
         {/* Auto size + qty */}
