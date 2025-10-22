@@ -523,11 +523,18 @@ export const orderItems = pgTable("order_items", {
   orderId: text("order_id").notNull(),
   itemName: text("item_name"),
   itemDescription: text("item_description"),
-  itemValue: real("item_value").notNull(), // Individual item value
+  itemValue: real("item_value").notNull(), // Individual item value (customer-stated)
   category: text("category"), // Electronics, Clothing, etc.
   condition: text("condition"), // New, Used, Damaged
   reason: text("reason"), // Reason for return
   originalOrderNumber: text("original_order_number"), // Customer's original order number for this item
+  
+  // Driver Receipt Verification (prevents fake data)
+  driverVerifiedPrice: real("driver_verified_price"), // Actual price from receipt scan
+  driverVerifiedAt: timestamp("driver_verified_at"), // When driver confirmed
+  priceDiscrepancy: real("price_discrepancy"), // Difference between customer/driver values
+  verificationStatus: text("verification_status").default("pending"), // pending, verified, discrepancy_flagged
+  
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -673,6 +680,14 @@ export const orders = pgTable("orders", {
   // Driver verification photos (using Replit App Storage)
   pickupVerificationPhotos: jsonb("pickup_verification_photos").default([]), // Photos taken at customer pickup
   deliveryVerificationPhotos: jsonb("delivery_verification_photos").default([]), // Photos taken at store dropoff
+  
+  // Driver Receipt Verification (Data Integrity)
+  receiptPhotoUrl: text("receipt_photo_url"), // Driver scans customer's receipt at pickup
+  receiptVerifiedAt: timestamp("receipt_verified_at"), // When driver scanned receipt
+  driverVerifiedTotal: real("driver_verified_total"), // Total from scanned receipt
+  totalDiscrepancy: real("total_discrepancy"), // Difference between customer & driver totals
+  discrepancyFlagged: boolean("discrepancy_flagged").default(false), // Auto-flag if >10% difference
+  discrepancyNotes: text("discrepancy_notes"), // Why totals don't match
   
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
