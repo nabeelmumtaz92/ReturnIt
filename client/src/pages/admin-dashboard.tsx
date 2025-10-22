@@ -471,23 +471,6 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         return <MobileAnalyticsContent />;
       case 'interface-preview':
         return <InterfacePreviewContent />;
-      case 'driver-locations':
-        return (
-          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-            <Card className="bg-white/90 backdrop-blur-sm border-border">
-              <CardHeader>
-                <CardTitle className="text-foreground text-xl">Driver Locations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="p-8 text-center">
-                  <MapPin className="h-12 w-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Coming Soon</h3>
-                  <p className="text-primary">Real-time driver GPS tracking and location analytics will be available in a future update.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        );
       case 'zone-management':
         return (
           <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">

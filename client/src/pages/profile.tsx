@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { ArrowLeft, User, Mail, Phone, Star, Package, DollarSign, Save, LogOut, MapPin, Calendar, Heart, Shield, Building, Car } from "lucide-react";
-import { vehicleData } from "@/data/vehicleData";
+import { VEHICLE_MAKES, VEHICLE_MODELS, VEHICLE_YEARS, VEHICLE_COLORS } from "@/data/vehicleData";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
@@ -463,7 +463,7 @@ export default function Profile() {
                               <SelectValue placeholder="Select make" />
                             </SelectTrigger>
                             <SelectContent>
-                              {vehicleData.makes.map((make) => (
+                              {VEHICLE_MAKES.map((make) => (
                                 <SelectItem key={make} value={make}>{make}</SelectItem>
                               ))}
                             </SelectContent>
@@ -481,7 +481,7 @@ export default function Profile() {
                               <SelectValue placeholder="Select model" />
                             </SelectTrigger>
                             <SelectContent>
-                              {formData.vehicleMake && vehicleData.modelsByMake[formData.vehicleMake]?.map((model) => (
+                              {formData.vehicleMake && VEHICLE_MODELS[formData.vehicleMake]?.map((model) => (
                                 <SelectItem key={model} value={model}>{model}</SelectItem>
                               ))}
                             </SelectContent>
@@ -498,7 +498,7 @@ export default function Profile() {
                               <SelectValue placeholder="Select year" />
                             </SelectTrigger>
                             <SelectContent>
-                              {vehicleData.years.map((year) => (
+                              {VEHICLE_YEARS.map((year) => (
                                 <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
                               ))}
                             </SelectContent>
@@ -515,7 +515,7 @@ export default function Profile() {
                               <SelectValue placeholder="Select color" />
                             </SelectTrigger>
                             <SelectContent>
-                              {vehicleData.colors.map((color) => (
+                              {VEHICLE_COLORS.map((color) => (
                                 <SelectItem key={color} value={color}>{color}</SelectItem>
                               ))}
                             </SelectContent>
