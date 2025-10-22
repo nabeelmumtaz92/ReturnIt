@@ -38,30 +38,170 @@ interface FormData {
 }
 
 // Store locations for each retailer (St. Louis area)
+// Format: "City, State - Address - Store Name"
 const STORE_LOCATIONS: Record<string, string[]> = {
-  'Target': [
-    'Target - Brentwood (2801 S Brentwood Blvd)',
-    'Target - Chesterfield (17300 Chesterfield Airport Rd)',
-    'Target - South City (4200 S Grand Blvd)',
-    'Target - Clayton (8024 Bonhomme Ave)',
+  'Adidas': [
+    'St. Louis, MO - 249 West County Center - Adidas West County',
+    'Hazelwood, MO - 5555 St. Louis Mills Blvd - Adidas Outlet',
   ],
-  'Nike': [
-    'Nike Factory Store - St. Louis Outlets (5555 St. Louis Mills Blvd)',
-    'Nike Store - West County Center (249 West County Center)',
+  'Amazon': [
+    'St. Louis, MO - Use Kohl\'s or Whole Foods for returns - Amazon Returns',
   ],
-  'H&M': [
-    'H&M - Galleria (1155 St. Louis Galleria)',
-    'H&M - West County (221 West County Center)',
+  'Apple': [
+    'St. Louis, MO - 249 West County Center - Apple West County',
+    'St. Louis, MO - 1155 St. Louis Galleria - Apple Galleria',
+    'Chesterfield, MO - 230 Chesterfield Mall - Apple Chesterfield',
+  ],
+  'Authorized Appliance': [
+    'St. Louis, MO - 5641 S Lindbergh Blvd - Authorized Appliance',
+  ],
+  'Barnes & Noble': [
+    'Chesterfield, MO - 1600 Clarkson Rd - Barnes & Noble Chesterfield',
+    'Creve Coeur, MO - 11500 Olive Blvd - Barnes & Noble Creve Coeur',
   ],
   'Best Buy': [
-    'Best Buy - Brentwood (2701 S Brentwood Blvd)',
-    'Best Buy - Chesterfield (1830 Clarkson Rd)',
-    'Best Buy - South County (5650 S Lindbergh Blvd)',
+    'Brentwood, MO - 2701 S Brentwood Blvd - Best Buy Brentwood',
+    'Chesterfield, MO - 1830 Clarkson Rd - Best Buy Chesterfield',
+    'St. Louis, MO - 5650 S Lindbergh Blvd - Best Buy South County',
+  ],
+  'Blush Boutique': [
+    'Kirkwood, MO - 143 W Argonne Dr - Blush Boutique Kirkwood',
+  ],
+  'Catholic Supply of St. Louis': [
+    'St. Louis, MO - 6759 Chippewa St - Catholic Supply',
+  ],
+  'Cato Fashions': [
+    'Arnold, MO - 3926 Vogel Rd - Cato Fashions Arnold',
+  ],
+  'Cha Boutique': [
+    'Ladue, MO - 9666 Clayton Rd - Cha Boutique Ladue',
+  ],
+  'Clayton Claire Boutique': [
+    'Clayton, MO - 8008 Maryland Ave - Clayton Claire Boutique',
+  ],
+  'Costco': [
+    'St. Louis, MO - 7130 Lansdowne Ave - Costco Richmond Heights',
+    'Town and Country, MO - 13550 S Outer Forty Rd - Costco Town and Country',
+  ],
+  'DNA Boutique': [
+    'St. Louis, MO - 1311 Washington Ave - DNA Boutique Downtown',
+  ],
+  'Designer Resale Boutique': [
+    'St. Peters, MO - 3800 Mexico Rd - Designer Resale Boutique',
+  ],
+  'Dierbergs Markets': [
+    'St. Louis, MO - 6700 Clayton Rd - Dierbergs Clayton',
+    'Chesterfield, MO - 17701 Chesterfield Airport Rd - Dierbergs Chesterfield',
+    'Kirkwood, MO - 10233 Manchester Rd - Dierbergs Kirkwood',
+  ],
+  'East • West': [
+    'St. Louis, MO - 4660 Maryland Ave - East West Central West End',
+  ],
+  'Gap': [
+    'St. Louis, MO - 249 West County Center - Gap West County',
+    'St. Louis, MO - 1155 St. Louis Galleria - Gap Galleria',
+    'Chesterfield, MO - 230 Chesterfield Mall - Gap Chesterfield',
+  ],
+  'Golden Gems': [
+    'St. Louis, MO - 3108 Locust St - Golden Gems City Foundry',
+  ],
+  'H&M': [
+    'St. Louis, MO - 1155 St. Louis Galleria - H&M Galleria',
+    'St. Louis, MO - 221 West County Center - H&M West County',
+  ],
+  'Home Depot': [
+    'Brentwood, MO - 2720 S Brentwood Blvd - Home Depot Brentwood',
+    'St. Louis, MO - 5901 Arsenal St - Home Depot South City',
+    'Chesterfield, MO - 17050 North Outer 40 Rd - Home Depot Chesterfield',
+  ],
+  'IKEA': [
+    'St. Louis, MO - 1 IKEA Way - IKEA St. Louis',
+  ],
+  'JCPenney': [
+    'St. Louis, MO - 249 West County Center - JCPenney West County',
+    'St. Louis, MO - 1155 St. Louis Galleria - JCPenney Galleria',
+  ],
+  'Kohl\'s': [
+    'Brentwood, MO - 2701 S Brentwood Blvd - Kohl\'s Brentwood',
+    'St. Louis, MO - 3959 S Grand Blvd - Kohl\'s South Grand',
+    'Chesterfield, MO - 17421 Chesterfield Airport Rd - Kohl\'s Chesterfield',
+  ],
+  'L.L.Bean': [
+    'St. Louis, MO - Order online for returns - L.L.Bean',
+  ],
+  'Levine Hat Company': [
+    'St. Louis, MO - 1416 Washington Ave - Levine Hat Company',
+  ],
+  'Lowe\'s': [
+    'Brentwood, MO - 2901 S Brentwood Blvd - Lowe\'s Brentwood',
+    'St. Louis, MO - 6700 S Lindbergh Blvd - Lowe\'s South County',
+    'Chesterfield, MO - 15750 Olive Blvd - Lowe\'s Chesterfield',
+  ],
+  'MOD Boutique': [
+    'Ladue, MO - 9643 Clayton Rd - MOD Boutique Ladue',
+    'Kirkwood, MO - 140 W Argonne Dr - MOD Boutique Kirkwood',
+    'St. Charles, MO - 3720 Veterans Memorial Pkwy - MOD Boutique St. Charles',
+  ],
+  'Macy\'s': [
+    'St. Louis, MO - 249 West County Center - Macy\'s West County',
+    'St. Louis, MO - 1155 St. Louis Galleria - Macy\'s Galleria',
+  ],
+  'Marta\'s Boutique': [
+    'Ellisville, MO - 9208 Clayton Rd - Marta\'s Boutique Ellisville',
+  ],
+  'Micro Center': [
+    'Brentwood, MO - 1565 S Brentwood Blvd - Micro Center Brentwood',
+  ],
+  'Nike': [
+    'Hazelwood, MO - 5555 St. Louis Mills Blvd - Nike Factory Store',
+    'St. Louis, MO - 249 West County Center - Nike West County',
+  ],
+  'Nordstrom': [
+    'St. Louis, MO - 249 West County Center - Nordstrom West County',
+    'St. Louis, MO - 1155 St. Louis Galleria - Nordstrom Rack Galleria',
+  ],
+  'Paperdolls Boutique': [
+    'St. Louis, MO - Multiple locations - Paperdolls Boutique',
+  ],
+  'REI': [
+    'Brentwood, MO - 1703 S Brentwood Blvd - REI Brentwood',
+  ],
+  'Randall\'s': [
+    'St. Louis, MO - Online only - Randall\'s',
+  ],
+  'Sam\'s Club': [
+    'Bridgeton, MO - 3660 Pennridge Dr - Sam\'s Club Bridgeton',
+    'St. Louis, MO - 6001 S Lindbergh Blvd - Sam\'s Club South County',
+  ],
+  'Schnucks': [
+    'St. Louis, MO - 4171 Laclede Ave - Schnucks Central West End',
+    'Clayton, MO - 8400 Forsyth Blvd - Schnucks Clayton',
+    'Kirkwood, MO - 10233 Manchester Rd - Schnucks Kirkwood',
+  ],
+  'Target': [
+    'Brentwood, MO - 2801 S Brentwood Blvd - Target Brentwood',
+    'Chesterfield, MO - 17300 Chesterfield Airport Rd - Target Chesterfield',
+    'St. Louis, MO - 4200 S Grand Blvd - Target South City',
+    'Clayton, MO - 8024 Bonhomme Ave - Target Clayton',
+  ],
+  'TJ Maxx': [
+    'Brentwood, MO - 2701 S Brentwood Blvd - TJ Maxx Brentwood',
+    'Chesterfield, MO - 17040 North Outer 40 Rd - TJ Maxx Chesterfield',
+  ],
+  'Ulta Beauty': [
+    'Brentwood, MO - 2701 S Brentwood Blvd - Ulta Beauty Brentwood',
+    'St. Louis, MO - 249 West County Center - Ulta Beauty West County',
+    'Chesterfield, MO - 17301 Chesterfield Airport Rd - Ulta Beauty Chesterfield',
   ],
   'Walmart': [
-    'Walmart Supercenter - Lemay Ferry (4551 Lemay Ferry Rd)',
-    'Walmart Supercenter - Manchester (3751 Marketplace Dr)',
-    'Walmart Supercenter - Telegraph (3615 Telegraph Rd)',
+    'Lemay, MO - 4551 Lemay Ferry Rd - Walmart Supercenter Lemay Ferry',
+    'Des Peres, MO - 3751 Marketplace Dr - Walmart Supercenter Manchester',
+    'St. Louis, MO - 3615 Telegraph Rd - Walmart Supercenter Telegraph',
+    'Bridgeton, MO - 3849 Dunn Rd - Walmart Supercenter Bridgeton',
+  ],
+  'Whole Foods': [
+    'Brentwood, MO - 1601 S Brentwood Blvd - Whole Foods Brentwood',
+    'Town and Country, MO - 224 N Woods Mill Rd - Whole Foods Town and Country',
   ],
 }
 
@@ -138,9 +278,27 @@ export default function BookReturn() {
         updated.retailer = value as string;
       }
       
-      // When location is selected, update combined retailer field
+      // When location is selected, parse and auto-fill address fields
+      // Format: "City, State - Address - Store Name"
       if (field === 'retailerLocation' && value) {
-        updated.retailer = value as string;
+        const locationString = value as string;
+        const parts = locationString.split(' - ');
+        
+        if (parts.length >= 3) {
+          const [cityState, address, storeName] = parts;
+          const [city, state] = cityState.split(', ');
+          
+          // Auto-fill the store location fields (NOT the pickup address)
+          // These are displayed below for reference
+          updated.retailer = locationString;
+          
+          toast({
+            title: "Store location selected",
+            description: `${storeName} - ${address}, ${city}, ${state}`,
+          });
+        } else {
+          updated.retailer = locationString;
+        }
       }
       
       return updated;
@@ -384,12 +542,12 @@ export default function BookReturn() {
                     <SelectTrigger className="mt-1.5" data-testid="select-retailer-name">
                       <SelectValue placeholder="Select retailer" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Target">Target</SelectItem>
-                      <SelectItem value="Nike">Nike</SelectItem>
-                      <SelectItem value="H&M">H&M</SelectItem>
-                      <SelectItem value="Best Buy">Best Buy</SelectItem>
-                      <SelectItem value="Walmart">Walmart</SelectItem>
+                    <SelectContent className="max-h-[300px]">
+                      {Object.keys(STORE_LOCATIONS).sort().map((retailer) => (
+                        <SelectItem key={retailer} value={retailer}>
+                          {retailer}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -411,6 +569,30 @@ export default function BookReturn() {
                     </Select>
                   </div>
                 )}
+
+                {formData.retailerLocation && (() => {
+                  const parts = formData.retailerLocation.split(' - ');
+                  if (parts.length >= 3) {
+                    const [cityState, address, storeName] = parts;
+                    const [city, state] = cityState.split(', ');
+                    return (
+                      <Card className="bg-amber-50 border-amber-200">
+                        <CardContent className="p-4">
+                          <h3 className="text-sm font-semibold text-amber-900 mb-2 flex items-center">
+                            <MapPin className="h-4 w-4 mr-2" />
+                            Return Destination
+                          </h3>
+                          <div className="space-y-1 text-sm text-amber-800">
+                            <p className="font-semibold">{storeName}</p>
+                            <p>{address}</p>
+                            <p>{city}, {state}</p>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+                  return null;
+                })()}
 
                 <div>
                   <Label htmlFor="orderName" className="text-sm font-semibold">Order Name *</Label>
