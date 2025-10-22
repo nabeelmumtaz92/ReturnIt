@@ -63,7 +63,7 @@ export default function HelpCenter() {
       category: "Getting Started",
       readTime: "3 min",
       popularity: 98,
-      content: "Complete step-by-step guide for booking your first return pickup with Returnly. Learn about package requirements, pickup scheduling, pricing breakdown, and payment options.",
+      content: "Complete step-by-step guide for booking your first return pickup with Return It. Learn about package requirements, pickup scheduling, transparent pricing breakdown (base fee + size + fuel surcharge + service fee), and payment options.",
       tags: ["booking", "pickup", "getting-started", "tutorial", "first-time"]
     },
     {
@@ -72,25 +72,25 @@ export default function HelpCenter() {
       category: "Getting Started", 
       readTime: "2 min",
       popularity: 85,
-      content: "Find out if Returnly services your area. Complete coverage map for St. Louis metro area including pickup and delivery zones.",
+      content: "Find out if Return It services your area. Complete coverage map for St. Louis metro area including pickup and delivery zones with 57+ store locations.",
       tags: ["service-area", "coverage", "availability", "location"]
     },
     {
       id: "account-setup",
-      title: "Creating Your Returnly Account",
+      title: "Creating Your Return It Account",
       category: "Getting Started",
       readTime: "2 min", 
       popularity: 92,
-      content: "Quick guide to setting up your Returnly account, adding payment methods, and configuring notification preferences.",
+      content: "Quick guide to setting up your Return It account, adding payment methods, and configuring notification preferences.",
       tags: ["account", "setup", "registration", "profile"]
     },
     {
       id: "mobile-app-guide",
-      title: "Using the Returnly Mobile App",
+      title: "Using the Return It Mobile App",
       category: "Getting Started",
       readTime: "4 min",
       popularity: 76,
-      content: "Complete guide to downloading and using the Returnly mobile app for iOS and Android. Features, navigation, and pro tips.",
+      content: "Complete guide to downloading and using the Return It mobile app for iOS and Android. Features, navigation, and pro tips.",
       tags: ["mobile-app", "ios", "android", "app-guide"]
     },
 
@@ -135,11 +135,11 @@ export default function HelpCenter() {
     // Pricing & Payment
     {
       id: "pricing-guide",
-      title: "Understanding Returnly Pricing",
+      title: "Understanding Return It Pricing",
       category: "Pricing & Payment",
       readTime: "4 min",
       popularity: 94,
-      content: "Comprehensive breakdown of our transparent pricing model including base fees, distance charges, size upcharges, rush fees, and money-saving tips.",
+      content: "Comprehensive breakdown of our transparent pricing model: $8.99 base fee + size upcharge ($0-6) + $3 per additional package + $1.50 service fee + $1.25 fuel surcharge. Cancellation after dispatch: $4.99. Money-saving tips included.",
       tags: ["pricing", "fees", "cost", "payment", "billing", "transparent"]
     },
     {
@@ -177,7 +177,7 @@ export default function HelpCenter() {
       category: "For Drivers",
       readTime: "6 min",
       popularity: 89,
-      content: "Comprehensive FAQ for Returnly drivers covering requirements, earnings, schedules, app usage, customer interaction, payments, and support resources.",
+      content: "Comprehensive FAQ for Return It drivers covering requirements (18+, vehicle, smartphone, background check), earnings (70/30 split + tips), schedules, app usage, customer interaction, instant payouts ($1.50 fee or free weekly), and support resources.",
       tags: ["driver", "faq", "earnings", "requirements", "schedule", "comprehensive"]
     },
     {
@@ -186,7 +186,7 @@ export default function HelpCenter() {
       category: "For Drivers",
       readTime: "4 min", 
       popularity: 86,
-      content: "Complete list of requirements to become a Returnly driver. Application process, background checks, vehicle standards, and approval timeline.",
+      content: "Complete list of requirements to become a Return It driver: 18+ years old, valid driver's license, reliable vehicle, smartphone, background check. Application process takes 3-5 business days. Vehicle info includes make, model, year, and color for customer identification.",
       tags: ["driver", "requirements", "application", "background-check", "vehicle"]
     },
     {
@@ -195,7 +195,7 @@ export default function HelpCenter() {
       category: "For Drivers",
       readTime: "5 min",
       popularity: 93,
-      content: "Detailed breakdown of driver earnings including base pay, mileage, time bonuses, tips, and instant payout options. Tax information included.",
+      content: "Detailed breakdown of driver earnings: 70% of delivery fee (approximately $8-9 per pickup on average $12 orders) + 100% of tips. Instant payout available for $1.50 fee, or free weekly direct deposit. 1099 tax forms provided annually for independent contractors.",
       tags: ["driver", "payments", "earnings", "payouts", "taxes", "1099"]
     },
     {
@@ -204,7 +204,7 @@ export default function HelpCenter() {
       category: "For Drivers",
       readTime: "4 min",
       popularity: 81,
-      content: "Complete guide to using the Returnly driver app. From going online to completing deliveries, navigation, customer communication, and earnings tracking.",
+      content: "Complete guide to using the Return It driver app (com.returnit.app). Features: GPS navigation, real-time job notifications, camera for package verification, earnings tracking, instant pay, customer messaging, and route optimization. Available on iOS and Android.",
       tags: ["driver", "app", "tutorial", "features", "navigation"]
     },
     {

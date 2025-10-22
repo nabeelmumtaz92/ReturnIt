@@ -114,7 +114,7 @@ export default function FAQ() {
     {
       id: "change-cancel",
       question: "Can I change or cancel my pickup?",
-      answer: "Yes! You can modify or cancel your pickup up to 2 hours before the scheduled time through your account dashboard or by calling us. Cancellations made more than 4 hours in advance receive a full refund. Changes to pickup details (time, location, items) can be made easily online.",
+      answer: "Yes! You can modify or cancel your pickup before a driver is dispatched through your account dashboard or by calling (636) 254-4821. Cancellations before driver dispatch receive a full refund. After driver dispatch, a $4.99 cancellation fee applies. Changes to pickup details (time, location, items) can be made easily online.",
       category: "booking",
       tags: ["cancel", "modify", "change", "refund"],
       isPopular: false
@@ -122,7 +122,7 @@ export default function FAQ() {
     {
       id: "multiple-packages",
       question: "Can I return multiple packages in one pickup?",
-      answer: "Absolutely! You can return packages for different retailers in a single pickup. Our pricing includes up to 5 packages in the base fee. Each additional package is $2. This is one of the most cost-effective ways to handle multiple returns at once.",
+      answer: "Absolutely! You can return packages for different retailers in a single pickup. The first package is included in the base fee. Each additional package adds $3 to your total. This is one of the most cost-effective ways to handle multiple returns at once.",
       category: "booking",
       tags: ["multiple", "packages", "bulk", "cost-effective"],
       isPopular: true
@@ -132,7 +132,7 @@ export default function FAQ() {
     {
       id: "pricing-structure",
       question: "How much does Return It cost?",
-      answer: "Our simple, transparent pricing is just $3.99 for all return pickups, regardless of size or distance within our service area. No hidden fees, no distance charges, no size upcharges - just one flat rate that includes all taxes and service fees. You see the total cost of $3.99 before booking.",
+      answer: "Our transparent pricing starts at $8.99 base fee, plus $1.25 fuel surcharge and $1.50 service fee. Package size affects pricing: Small (shoebox) $0, Medium (microwave) $3, Large (TV box) $6. Multiple packages add $3 each after the first. Cancellation after driver dispatch is $4.99. You see the total cost breakdown before booking.",
       category: "pricing",
       tags: ["pricing", "cost", "fees", "transparent"],
       isPopular: true
@@ -148,7 +148,7 @@ export default function FAQ() {
     {
       id: "refund-policy",
       question: "What is your refund policy?",
-      answer: "We offer full refunds for cancellations made 4+ hours before pickup. If we can't complete your pickup due to our error, you receive a full refund plus a $5 credit. Service issues are addressed with partial refunds or credits based on the situation. Refunds process within 3-5 business days.",
+      answer: "We offer full refunds for cancellations made before a driver is dispatched. After driver dispatch, a $4.99 cancellation fee applies. If we can't complete your pickup due to our error, you receive a full refund plus a service credit. Service issues are addressed with partial refunds or credits based on the situation. Refunds process within 3-5 business days.",
       category: "pricing",
       tags: ["refund", "cancellation", "policy", "credits"],
       isPopular: false
@@ -166,7 +166,7 @@ export default function FAQ() {
     {
       id: "become-driver",
       question: "How do I become a Return It driver?",
-      answer: "Apply through our driver portal at returnit.online/driver-onboarding. Requirements: 21+ years old, valid driver's license, reliable vehicle, smartphone, pass background check. The process takes 3-5 business days. Drivers earn 70% of delivery fees plus tips and bonuses.",
+      answer: "Apply through our driver portal at returnit.online/driver-signup. Requirements: 18+ years old, valid driver's license, reliable vehicle, smartphone, pass background check. The process takes 3-5 business days. Drivers earn 70% of delivery fees plus tips and bonuses.",
       category: "drivers",
       tags: ["driver", "apply", "requirements", "earnings"],
       isPopular: true
@@ -174,7 +174,7 @@ export default function FAQ() {
     {
       id: "driver-earnings",
       question: "How much do drivers earn?",
-      answer: "Drivers keep 70% of the delivery fee plus 100% of tips. Average earnings: $15-25/hour during peak times, $10-18/hour off-peak. Bonuses available for peak seasons, large packages, and excellent ratings. Instant pay available for 50¢ fee, or free weekly deposits.",
+      answer: "Drivers keep 70% of the delivery fee plus 100% of tips. With average order fees around $12, drivers earn approximately $8-9 per pickup plus tips. Bonuses available for peak seasons and excellent ratings. Instant pay available for $1.50 fee, or free weekly deposits to your bank account.",
       category: "drivers",
       tags: ["earnings", "pay", "tips", "bonuses", "instant-pay"],
       isPopular: true
