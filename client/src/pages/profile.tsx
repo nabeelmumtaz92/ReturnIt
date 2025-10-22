@@ -11,7 +11,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { ArrowLeft, User, Mail, Phone, Star, Package, DollarSign, Save, LogOut, MapPin, Calendar, Heart, Shield, Building } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Star, Package, DollarSign, Save, LogOut, MapPin, Calendar, Heart, Shield, Building, Car } from "lucide-react";
+import { vehicleData } from "@/data/vehicleData";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
@@ -32,6 +33,12 @@ export default function Profile() {
     emergencyContactName: (user?.emergencyContacts && user.emergencyContacts[0]?.name) || '',
     emergencyContactPhone: (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || '',
     emergencyContactRelation: (user?.emergencyContacts && user.emergencyContacts[0]?.relationship) || '',
+    vehicleMake: user?.vehicleMake || '',
+    vehicleModel: user?.vehicleModel || '',
+    vehicleYear: user?.vehicleYear?.toString() || '',
+    vehicleColor: user?.vehicleColor || '',
+    vehicleType: user?.vehicleType || '',
+    licensePlate: user?.licensePlate || '',
     preferences: {
       notifications: user?.preferences?.notifications || true,
       emailUpdates: user?.preferences?.emailUpdates || true,
@@ -59,6 +66,12 @@ export default function Profile() {
         emergencyContactName: (user.emergencyContacts && user.emergencyContacts[0]?.name) || '',
         emergencyContactPhone: (user.emergencyContacts && user.emergencyContacts[0]?.phone) || '',
         emergencyContactRelation: (user.emergencyContacts && user.emergencyContacts[0]?.relationship) || '',
+        vehicleMake: user.vehicleMake || '',
+        vehicleModel: user.vehicleModel || '',
+        vehicleYear: user.vehicleYear?.toString() || '',
+        vehicleColor: user.vehicleColor || '',
+        vehicleType: user.vehicleType || '',
+        licensePlate: user.licensePlate || '',
         preferences: {
           notifications: user.preferences?.notifications || true,
           emailUpdates: user.preferences?.emailUpdates || true,
@@ -428,6 +441,132 @@ export default function Profile() {
                     </div>
                   </div>
                 </div>
+
+                {/* Vehicle Information (Drivers Only) */}
+                {user?.isDriver && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
+                      <Car className="h-5 w-5" />
+                      Vehicle Information
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicleMake">Vehicle Make</Label>
+                          <Select 
+                            value={formData.vehicleMake} 
+                            onValueChange={(value) => {
+                              setFormData(prev => ({ ...prev, vehicleMake: value, vehicleModel: '' }));
+                            }}
+                          >
+                            <SelectTrigger data-testid="select-vehicle-make">
+                              <SelectValue placeholder="Select make" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicleData.makes.map((make) => (
+                                <SelectItem key={make} value={make}>{make}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicleModel">Vehicle Model</Label>
+                          <Select 
+                            value={formData.vehicleModel} 
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, vehicleModel: value }))}
+                            disabled={!formData.vehicleMake}
+                          >
+                            <SelectTrigger data-testid="select-vehicle-model">
+                              <SelectValue placeholder="Select model" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {formData.vehicleMake && vehicleData.modelsByMake[formData.vehicleMake]?.map((model) => (
+                                <SelectItem key={model} value={model}>{model}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicleYear">Vehicle Year</Label>
+                          <Select 
+                            value={formData.vehicleYear} 
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, vehicleYear: value }))}
+                          >
+                            <SelectTrigger data-testid="select-vehicle-year">
+                              <SelectValue placeholder="Select year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicleData.years.map((year) => (
+                                <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicleColor">Vehicle Color</Label>
+                          <Select 
+                            value={formData.vehicleColor} 
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, vehicleColor: value }))}
+                          >
+                            <SelectTrigger data-testid="select-vehicle-color">
+                              <SelectValue placeholder="Select color" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {vehicleData.colors.map((color) => (
+                                <SelectItem key={color} value={color}>{color}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="vehicleType">Vehicle Type</Label>
+                          <Select 
+                            value={formData.vehicleType} 
+                            onValueChange={(value) => setFormData(prev => ({ ...prev, vehicleType: value }))}
+                          >
+                            <SelectTrigger data-testid="select-vehicle-type">
+                              <SelectValue placeholder="Select type" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Sedan">Sedan</SelectItem>
+                              <SelectItem value="SUV">SUV</SelectItem>
+                              <SelectItem value="Truck">Truck</SelectItem>
+                              <SelectItem value="Van">Van</SelectItem>
+                              <SelectItem value="Hatchback">Hatchback</SelectItem>
+                              <SelectItem value="Coupe">Coupe</SelectItem>
+                              <SelectItem value="Wagon">Wagon</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="licensePlate">License Plate</Label>
+                          <Input
+                            id="licensePlate"
+                            value={formData.licensePlate}
+                            onChange={(e) => setFormData(prev => ({ ...prev, licensePlate: e.target.value.toUpperCase() }))}
+                            data-testid="input-license-plate"
+                            placeholder="ABC123"
+                            maxLength={10}
+                          />
+                        </div>
+                      </div>
+
+                      {formData.vehicleMake && formData.vehicleModel && formData.vehicleYear && formData.vehicleColor && (
+                        <div className="bg-muted/30 border border-primary/20 rounded-lg p-4">
+                          <p className="text-sm text-muted-foreground mb-2">Your vehicle will be displayed to customers as:</p>
+                          <p className="text-base font-semibold text-primary">
+                            {formData.vehicleColor} {formData.vehicleYear} {formData.vehicleMake} {formData.vehicleModel}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               
               <Button 
