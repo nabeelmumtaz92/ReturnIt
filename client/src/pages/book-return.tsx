@@ -230,10 +230,11 @@ function calculatePricing(formData: FormData) {
   
   const subtotal = basePrice + sizeUpcharge + multiBoxFee;
   const serviceFee = 1.50; // Platform service fee
+  const fuelFee = 1.25; // Flat fuel fee
   const taxRate = 0; // 0% tax
-  const tax = (subtotal + serviceFee) * taxRate;
+  const tax = (subtotal + serviceFee + fuelFee) * taxRate;
   
-  const total = subtotal + serviceFee + tax;
+  const total = subtotal + serviceFee + fuelFee + tax;
   
   return {
     basePrice,
@@ -241,6 +242,7 @@ function calculatePricing(formData: FormData) {
     multiBoxFee,
     subtotal,
     serviceFee,
+    fuelFee,
     tax,
     total
   };
@@ -861,7 +863,11 @@ export default function BookReturn() {
                       <span className="font-medium">${pricing.serviceFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Tax (8.75%)</span>
+                      <span className="text-muted-foreground">Fuel Fee</span>
+                      <span className="font-medium">${pricing.fuelFee.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Tax</span>
                       <span className="font-medium">${pricing.tax.toFixed(2)}</span>
                     </div>
                     <Separator className="bg-border" />
@@ -870,6 +876,12 @@ export default function BookReturn() {
                       <span className="text-2xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
                     </div>
                   </div>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                  <p className="text-sm text-amber-900">
+                    <strong>Cancellation Policy:</strong> If you cancel after a driver has been dispatched, a $4.99 cancellation fee will apply to cover driver costs.
+                  </p>
                 </div>
 
                 <div className="bg-muted/30 p-5 rounded-lg">
