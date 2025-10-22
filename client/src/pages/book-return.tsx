@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -507,6 +507,15 @@ export default function BookReturn() {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container max-w-3xl mx-auto px-4">
+        {/* Header with Return It logo link */}
+        <div className="text-center mb-8">
+          <Link href="/">
+            <div className="text-3xl font-bold mb-2 cursor-pointer text-[#B8956A] hover:text-[#A0805A] transition-colors">
+              Return It
+            </div>
+          </Link>
+        </div>
+
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">Book a Return</h1>
           {page <= 3 && <p className="text-muted-foreground text-lg">Step {page} of 3</p>}
