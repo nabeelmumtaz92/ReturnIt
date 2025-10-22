@@ -202,11 +202,11 @@ export default function BookPickup() {
 
   // Item size info based on value ranges
   const itemSizes = [
-    { size: 'XS', label: 'Extra Small', valueRange: '$0 - $25', upcharge: 0 },
-    { size: 'S', label: 'Small', valueRange: '$25 - $50', upcharge: 0 },
-    { size: 'M', label: 'Medium', valueRange: '$50 - $100', upcharge: 0 },
-    { size: 'L', label: 'Large', valueRange: '$100 - $200', upcharge: 2 },
-    { size: 'XL', label: 'Extra Large', valueRange: '$200+', upcharge: 5 }
+    { size: 'XS', label: 'Extra Small', valueRange: '$0 - $25', upcharge: 0, examples: 'Accessories, phone cases, small items' },
+    { size: 'S', label: 'Small', valueRange: '$25 - $50', upcharge: 0, examples: 'Shoes, books, kitchen gadgets' },
+    { size: 'M', label: 'Medium', valueRange: '$50 - $100', upcharge: 0, examples: 'Clothing, headphones, small appliances' },
+    { size: 'L', label: 'Large', valueRange: '$100 - $200', upcharge: 2, examples: 'Coats, laptops, coffee makers' },
+    { size: 'XL', label: 'Extra Large', valueRange: '$200+', upcharge: 5, examples: 'TVs, furniture, large electronics' }
   ];
 
   // Available retailers from database (fetched on component mount)
@@ -1288,6 +1288,9 @@ export default function BookPickup() {
                       )}
                     </div>
                     <span className="text-xs text-primary">{sizeInfo?.valueRange}</span>
+                    <p className="text-xs text-muted-foreground italic mt-1">
+                      Examples: {sizeInfo?.examples}
+                    </p>
                   </div>
                 );
               })()}
