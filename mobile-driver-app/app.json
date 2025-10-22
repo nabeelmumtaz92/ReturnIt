@@ -39,8 +39,7 @@
         "VIBRATE"
       ],
       "usesCleartextTraffic": false,
-      "allowBackup": false,
-      "googleServicesFile": "./google-services.json"
+      "allowBackup": false
     },
     "notification": {
       "icon": "./assets/notification-icon.png",
@@ -57,13 +56,6 @@
             "targetSdkVersion": 35,
             "buildToolsVersion": "35.0.0"
           }
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/notification-icon.png",
-          "color": "#B8956A"
         }
       ]
     ],
