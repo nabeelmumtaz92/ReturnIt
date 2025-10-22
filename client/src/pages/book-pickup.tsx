@@ -30,6 +30,14 @@ import { validateOrderPolicy, determinePolicyAction, PolicyAction, formatPolicyM
 import { PolicyValidator } from "@shared/policy.rules";
 import { type Location, type PlaceResult, type RouteInfo, type NearbyStore } from "@/lib/locationServices";
 import Footer from "@/components/Footer";
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+// Load Stripe
+if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
+  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
+}
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
 export default function BookPickup() {
   const [, setLocation] = useLocation();
@@ -156,6 +164,11 @@ export default function BookPickup() {
   const [policyValidation, setPolicyValidation] = useState<{ isValid: boolean; message: string; warnings: string[] } | null>(null);
   const [merchantPolicyValidation, setMerchantPolicyValidation] = useState<{ isValid: boolean; message: string; violations: string[] } | null>(null);
   const [isValidatingPolicy, setIsValidatingPolicy] = useState(false);
+  
+  // Payment processing state
+  const [clientSecret, setClientSecret] = useState<string>('');
+  const [paymentIntentId, setPaymentIntentId] = useState<string>('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Item categories for multiple selection
   const itemCategories = [
@@ -338,8 +351,40 @@ export default function BookPickup() {
     setCurrentStep('step4');
   };
 
-  // Step 4: Payment & Final Submission
-  const handleStep4Submit = (e: React.FormEvent) => {
+  // Create payment intent when Step 4 loads
+  useEffect(() => {
+    if (currentStep === 'step4' && pricingBreakdown && !clientSecret && routeInfo) {
+      const createPaymentIntent = async () => {
+        try {
+          // SECURITY: Send route info to server for price calculation and verification
+          const response: any = await apiRequest("POST", "/api/create-payment-intent", {
+            routeInfo: routeInfo, // Server will calculate price from this
+            boxSize: formData.boxSize || 'small',
+            numberOfBoxes: formData.numberOfBoxes || 1,
+            tip: formData.tip || 0,
+            currency: 'usd',
+            description: `Return service for ${formData.retailer || 'store'}`,
+            orderId: 'pending' // Will be updated after order creation
+          });
+          
+          setClientSecret(response.clientSecret);
+          setPaymentIntentId(response.id);
+        } catch (error) {
+          console.error('Error creating payment intent:', error);
+          toast({
+            title: "Payment Error",
+            description: "Failed to initialize payment. Please try again.",
+            variant: "destructive",
+          });
+        }
+      };
+      
+      createPaymentIntent();
+    }
+  }, [currentStep, pricingBreakdown, clientSecret, formData.tip, formData.retailer, formData.boxSize, formData.numberOfBoxes, routeInfo, toast]);
+
+  // Step 4: Payment & Final Submission (now requires Stripe confirmation)
+  const handleStep4Submit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate payment method selected
@@ -361,6 +406,10 @@ export default function BookPickup() {
       setShowAuthPrompt(true);
       return;
     }
+    
+    // Critical: Payment must be confirmed via Stripe before creating order
+    // This is handled by the StripePaymentForm component
+    // The order will only be created after successful payment confirmation
 
     // Construct order data from all form data
     const orderData = {
@@ -824,7 +873,7 @@ export default function BookPickup() {
         retailer: formData.retailer,
         itemValue: formData.itemValue,
         totalPrice: data.totalPrice,
-        paymentMethod: selectedPaymentMethod?.type || 'unknown',
+        paymentMethod: selectedPaymentMethod || 'unknown',
       });
       
       toast({
@@ -1562,6 +1611,117 @@ export default function BookPickup() {
     </div>
   );
 
+  // Payment success handler - creates order only after payment confirms
+  const handlePaymentSuccess = async (paymentIntent: any) => {
+    toast({
+      title: "Payment Successful!",
+      description: "Creating your pickup order...",
+    });
+    
+    // Update payment intent ID
+    setPaymentIntentId(paymentIntent.id);
+    
+    // Order will be created by StripePaymentForm after payment confirmation
+  };
+
+  // Stripe Payment Form Component
+  const StripePaymentForm = ({ onPaymentSuccess, isProcessing, setIsProcessing, orderData }: any) => {
+    const stripe = useStripe();
+    const elements = useElements();
+    const { toast } = useToast();
+    const queryClient = useQueryClient();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (!stripe || !elements) {
+        return;
+      }
+
+      setIsProcessing(true);
+
+      try {
+        // Confirm payment with Stripe
+        const { error, paymentIntent } = await stripe.confirmPayment({
+          elements,
+          redirect: 'if_required',
+        });
+
+        if (error) {
+          toast({
+            title: "Payment Failed",
+            description: error.message,
+            variant: "destructive",
+          });
+          setIsProcessing(false);
+          return;
+        }
+
+        // Payment successful - now create the order
+        if (paymentIntent && paymentIntent.status === 'succeeded') {
+          // Update order data with confirmed payment intent ID
+          const finalOrderData = {
+            ...orderData,
+            stripePaymentIntentId: paymentIntent.id,
+            paymentStatus: 'completed'
+          };
+
+          // Create order in database
+          const response: any = await apiRequest("POST", "/api/orders", finalOrderData);
+          
+          queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+          
+          trackEvent('order_created', {
+            orderId: response.id,
+            totalPrice: orderData.totalPrice,
+            retailer: orderData.retailer
+          });
+
+          toast({
+            title: "Pickup Booked Successfully!",
+            description: `Order #${response.id} has been confirmed. We'll notify you when a driver accepts.`,
+          });
+
+          // Redirect to order confirmation
+          setLocation(`/orders/${response.id}`);
+        }
+      } catch (error: any) {
+        console.error('Payment confirmation error:', error);
+        toast({
+          title: "Booking Failed",
+          description: error.message || "Failed to complete booking. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsProcessing(false);
+      }
+    };
+
+    return (
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="p-3 bg-gray-50 rounded border">
+          <PaymentElement />
+        </div>
+        
+        <Button
+          type="submit"
+          className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3"
+          disabled={isProcessing || !stripe || !elements}
+          data-testid="button-confirm-payment"
+        >
+          {isProcessing ? (
+            <span className="flex items-center gap-2">
+              <span className="animate-spin">⏳</span>
+              Processing Payment...
+            </span>
+          ) : (
+            `Pay $${(orderData.totalPrice + orderData.tip).toFixed(2)} & Book Pickup`
+          )}
+        </Button>
+      </form>
+    );
+  };
+
   const Step4 = () => (
     <div className="space-y-6">
       {/* Route preview */}
@@ -1675,43 +1835,78 @@ export default function BookPickup() {
         )}
       </div>
 
-      {/* Payment */}
+      {/* Secure Payment - Stripe Elements */}
       <div className="bg-white p-4 rounded-lg border border-gray-200">
-        <h4 className="text-gray-900 font-semibold mb-3">Payment Method</h4>
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <Button type="button" variant={selectedPaymentMethod === 'card' ? 'default' : 'outline'}
-              onClick={() => setSelectedPaymentMethod('card')} className="h-12" data-testid="button-payment-card">
-              <CreditCard className="h-4 w-4 mr-2" /> Debit/Credit
-            </Button>
-            <Button type="button" variant={selectedPaymentMethod === 'paypal' ? 'default' : 'outline'}
-              onClick={() => setSelectedPaymentMethod('paypal')} className="h-12" data-testid="button-payment-paypal">
-              💳 PayPal
-            </Button>
+        <h4 className="text-gray-900 font-semibold mb-3 flex items-center gap-2">
+          <Shield className="h-5 w-5 text-green-600" />
+          Secure Payment
+        </h4>
+        
+        {!clientSecret ? (
+          <div className="py-8 text-center">
+            <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full mx-auto mb-3" />
+            <p className="text-sm text-gray-600">Initializing secure payment...</p>
           </div>
-
-          {selectedPaymentMethod === 'card' && (
-            <div className="space-y-3 mt-4 p-3 bg-gray-50 rounded border">
-              <div>
-                <Label htmlFor="cardNumber">Card Number</Label>
-                <Input id="cardNumber" placeholder="1234 5678 9012 3456" className="bg-white" data-testid="input-card-number" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label htmlFor="expiry">Expiry</Label>
-                  <Input id="expiry" placeholder="MM/YY" className="bg-white" data-testid="input-card-expiry" />
-                </div>
-                <div>
-                  <Label htmlFor="cvv">CVV</Label>
-                  <Input id="cvv" placeholder="123" className="bg-white" data-testid="input-card-cvv" />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="cardName">Name on Card</Label>
-                <Input id="cardName" placeholder="John Doe" className="bg-white" data-testid="input-card-name" />
-              </div>
-            </div>
-          )}
+        ) : (
+          <Elements stripe={stripePromise} options={{ clientSecret }}>
+            <StripePaymentForm 
+              onPaymentSuccess={handlePaymentSuccess}
+              isProcessing={isProcessingPayment}
+              setIsProcessing={setIsProcessingPayment}
+              orderData={{
+                customerName: `${formData.firstName} ${formData.lastName}`.trim(),
+                customerPhone: formData.phone,
+                customerEmail: user?.email || formData.email || '',
+                pickupAddress: formData.streetAddress,
+                pickupLocation: formData.pickupLocation,
+                pickupMethod: formData.pickupMethod,
+                signatureRequired: formData.pickupMethod === 'handoff',
+                pickupInstructions: formData.pickupInstructions || '',
+                preferredTimeSlot: formData.preferredTimeSlot,
+                orderName: formData.orderName,
+                returnReason: formData.returnReason,
+                itemDescription: formData.itemDescription,
+                itemCategories: formData.itemCategories,
+                itemValue: parseFloat(formData.itemValue) || 0,
+                numberOfItems: formData.numberOfItems || 1,
+                retailer: formData.retailer,
+                retailerLocation: selectedStore ? {
+                  name: selectedStore.name,
+                  address: selectedStore.address,
+                  lat: selectedStore.location.lat,
+                  lng: selectedStore.location.lng
+                } : null,
+                dropoffAddress: selectedStore?.address || formData.retailer,
+                purchaseType: formData.purchaseType,
+                purchaseDate: formData.purchaseDate,
+                hasOriginalTags: formData.hasOriginalTags,
+                hasOriginalPackaging: formData.hasOriginalPackaging,
+                receiptUrl: formData.receiptUrl || null,
+                receiptUploaded: formData.receiptUrl !== '' || formData.receiptImage !== null,
+                authorizationSigned: formData.authorizationSigned,
+                acceptsLiabilityTerms: formData.acceptsLiabilityTerms,
+                totalPrice: pricingBreakdown?.totalPrice || 3.99,
+                basePrice: pricingBreakdown?.basePrice || 3.99,
+                distanceFee: pricingBreakdown?.distanceFee || 0,
+                timeFee: pricingBreakdown?.timeFee || 0,
+                serviceFee: pricingBreakdown?.serviceFee || 0,
+                distance: routeInfo?.distance || 'N/A',
+                estimatedTime: routeInfo?.duration || 'N/A',
+                paymentMethod: 'card',
+                paymentStatus: 'pending',
+                tip: formData.tip || 0,
+                status: 'created',
+                stripePaymentIntentId: paymentIntentId
+              }}
+            />
+          </Elements>
+        )}
+        
+        <div className="mt-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
+          <p className="text-xs text-blue-800 flex items-center gap-2">
+            <Shield className="h-3.5 w-3.5" />
+            <span>Your payment is secured by Stripe. We never see your card details.</span>
+          </p>
         </div>
       </div>
 
@@ -1788,22 +1983,6 @@ export default function BookPickup() {
         )}
       </div>
 
-      {/* Submit */}
-      <div className="pt-2">
-        <Button
-          type="submit"
-          className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3"
-          disabled={createOrderMutation.isPending || !selectedPaymentMethod}
-          data-testid="button-book-pickup"
-        >
-          {createOrderMutation.isPending ? "Booking Pickup..." : "Book Pickup"}
-        </Button>
-        {!selectedPaymentMethod && (
-          <p className="text-sm text-red-600 mt-2 text-center">
-            Please select a payment method to continue
-          </p>
-        )}
-      </div>
     </div>
   );
 

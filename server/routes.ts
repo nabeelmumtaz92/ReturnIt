@@ -3800,6 +3800,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Allow both logged-in users and guests
       const userId = (req.session as any)?.user?.id || null;
       
+      // CRITICAL SECURITY: Payment intent is REQUIRED for all orders
+      if (!req.body.stripePaymentIntentId) {
+        console.error(`🚨 SECURITY: Order creation attempted without payment`);
+        return res.status(400).json({
+          message: "Payment required to create order",
+          code: 'PAYMENT_REQUIRED'
+        });
+      }
+
+      try {
+        // 1. CHECK FOR PAYMENT REPLAY ATTACK: Ensure payment intent hasn't been used before
+        const existingOrder = await db.select()
+          .from(schema.orders)
+          .where(eq(schema.orders.stripePaymentIntentId, req.body.stripePaymentIntentId))
+          .limit(1);
+        
+        if (existingOrder.length > 0) {
+          console.error(`🚨 SECURITY: Payment replay attack detected - Intent ${req.body.stripePaymentIntentId} already used for order ${existingOrder[0].id}`);
+          return res.status(400).json({
+            message: "This payment has already been used for another order",
+            code: 'PAYMENT_ALREADY_USED'
+          });
+        }
+        
+        // 2. RETRIEVE AND VERIFY PAYMENT FROM STRIPE
+        const paymentIntent = await stripe.paymentIntents.retrieve(req.body.stripePaymentIntentId);
+        
+        if (paymentIntent.status !== 'succeeded') {
+          console.error(`🚨 SECURITY: Payment not confirmed - Intent ${req.body.stripePaymentIntentId} status: ${paymentIntent.status}`);
+          return res.status(400).json({
+            message: "Payment has not been confirmed. Please complete payment before booking.",
+            code: 'PAYMENT_NOT_CONFIRMED'
+          });
+        }
+        
+        // 3. VERIFY AGAINST SERVER-STORED METADATA (REQUIRED for security)
+        const metadata = paymentIntent.metadata;
+        
+        // CRITICAL: Reject payments without server metadata to prevent bypass attacks
+        if (!metadata.serverCalculatedAmount || !metadata.routeDistance || !metadata.routeTime) {
+          console.error(`🚨 SECURITY: Payment intent missing required metadata - Intent: ${req.body.stripePaymentIntentId}, Metadata: ${JSON.stringify(metadata)}`);
+          return res.status(400).json({
+            message: "Invalid payment - please create a new booking",
+            code: 'PAYMENT_METADATA_MISSING'
+          });
+        }
+        
+        // Verify against server-calculated amount stored in metadata
+        const serverAmount = parseInt(metadata.serverCalculatedAmount);
+        
+        if (paymentIntent.amount !== serverAmount) {
+          console.error(`🚨 SECURITY: Payment intent amount mismatch - Intent: $${paymentIntent.amount/100}, Metadata: $${serverAmount/100}`);
+          return res.status(400).json({
+            message: "Payment verification failed - amount mismatch",
+            code: 'PAYMENT_VERIFICATION_FAILED'
+          });
+        }
+        
+        // Additional validation: verify route info hasn't been tampered with
+        if (req.body.routeInfo) {
+          const clientDistance = parseFloat(req.body.routeInfo.distance.replace(' miles', ''));
+          const clientTime = parseFloat(req.body.routeInfo.duration.replace(' mins', ''));
+          const serverDistance = parseFloat(metadata.routeDistance);
+          const serverTime = parseFloat(metadata.routeTime);
+          
+          // Allow 10% tolerance for route recalculation differences
+          const distanceTolerance = serverDistance * 0.1;
+          const timeTolerance = serverTime * 0.1;
+          
+          if (Math.abs(clientDistance - serverDistance) > distanceTolerance ||
+              Math.abs(clientTime - serverTime) > timeTolerance) {
+            console.error(`🚨 SECURITY: Route info tampering detected - Client: ${clientDistance}mi/${clientTime}min, Server: ${serverDistance}mi/${serverTime}min`);
+            return res.status(400).json({
+              message: "Route information has changed since payment. Please create a new booking.",
+              code: 'ROUTE_INFO_MISMATCH'
+            });
+          }
+        }
+        
+        console.log(`✅ Payment verified - Intent: ${req.body.stripePaymentIntentId}, Amount: $${paymentIntent.amount/100}`);
+        
+        // ✅ ALL CHECKS PASSED - Force payment status to completed
+        req.body.paymentStatus = 'completed';
+        
+      } catch (error: any) {
+        console.error(`🚨 SECURITY: Payment verification failed - ${error.message}`, error);
+        return res.status(400).json({
+          message: "Failed to verify payment. Please contact support.",
+          code: 'PAYMENT_VERIFICATION_FAILED'
+        });
+      }
+      
       // Import policy validator
       const { validateOrderPolicy, determinePolicyAction, PolicyAction } = await import('@shared/policyValidator');
       
@@ -7684,21 +7776,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Stripe payment route for customer bookings (supports both web and mobile)
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { amount, currency = 'usd', description, orderId, mobile } = req.body;
+      const { currency = 'usd', description, orderId, mobile, routeInfo, boxSize, numberOfBoxes, tip } = req.body;
       
-      // Validate amount
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
-      }
+      // SECURITY: Server-side price calculation (don't trust client amount)
+      let amountInCents: number;
+      let paymentMetadata: any = {
+        orderId: orderId || 'unknown',
+      };
 
-      // Smart amount detection: if amount > 100 and mobile is not explicitly true, assume it's already in cents
-      // Otherwise, if amount <= 100 or mobile is explicitly false, assume dollars and convert
-      const amountInCents = mobile === true 
-        ? Math.round(amount)  // Mobile explicitly sends cents
-        : (amount > 100 ? Math.round(amount) : Math.round(amount * 100));  // Auto-detect: >100 = already cents, <=100 = dollars
+      if (routeInfo) {
+        // Calculate price server-side from route info
+        const { calculatePayment } = await import('@shared/paymentCalculator');
+        const distance = parseFloat(routeInfo.distance.replace(' miles', ''));
+        const time = parseFloat(routeInfo.duration.replace(' mins', ''));
+        
+        const paymentBreakdown = calculatePayment(
+          { distance, estimatedTime: time },
+          boxSize || 'small',
+          numberOfBoxes || 1,
+          false, // rush delivery
+          parseFloat(tip || 0)
+        );
+        
+        amountInCents = Math.round(paymentBreakdown.totalPrice * 100);
+        
+        // Store route info and pricing in metadata for verification
+        paymentMetadata = {
+          ...paymentMetadata,
+          routeDistance: distance.toString(),
+          routeTime: time.toString(),
+          boxSize: boxSize || 'small',
+          numberOfBoxes: (numberOfBoxes || 1).toString(),
+          tip: (parseFloat(tip || 0)).toString(),
+          serverCalculatedAmount: amountInCents.toString()
+        };
+      } else if (req.body.amount) {
+        // Fallback for mobile/legacy: use provided amount
+        const amount = req.body.amount;
+        amountInCents = mobile === true 
+          ? Math.round(amount)
+          : (amount > 100 ? Math.round(amount) : Math.round(amount * 100));
+        paymentMetadata.legacyAmount = 'true';
+      } else {
+        return res.status(400).json({ message: "Route info or amount required" });
+      }
 
       const user = (req.session as any)?.user;
       const userEmail = user?.email || 'guest@returnit.online';
+      paymentMetadata.userId = user?.id?.toString() || 'guest';
 
       // Get or create Stripe customer
       const customers = await stripe.customers.list({
@@ -7725,20 +7850,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         { apiVersion: '2024-11-20.acacia' }
       );
 
-      // Create payment intent
+      // Create payment intent with server-calculated amount and metadata
       const paymentIntent = await stripe.paymentIntents.create({
         amount: amountInCents,
         currency: currency,
         customer: customer.id,
         description: description || 'ReturnIt Service',
-        metadata: {
-          orderId: orderId || 'unknown',
-          userId: user?.id?.toString() || 'guest'
-        },
+        metadata: paymentMetadata,
         automatic_payment_methods: {
           enabled: true,
         }
       });
+      
+      console.log(`✅ Payment intent created - Amount: $${amountInCents/100}, Intent: ${paymentIntent.id}`);
       
       // Return both formats for compatibility with web and mobile
       res.json({ 

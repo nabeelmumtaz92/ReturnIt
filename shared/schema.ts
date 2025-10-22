@@ -600,7 +600,7 @@ export const orders = pgTable("orders", {
   multiStopBonus: real("multi_stop_bonus").default(0),
   
   // Stripe Connect payment fields
-  stripePaymentIntentId: text("stripe_payment_intent_id"),
+  stripePaymentIntentId: text("stripe_payment_intent_id").unique(), // SECURITY: Unique constraint prevents payment replay attacks
   stripeChargeId: text("stripe_charge_id"),
   paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded, refund_processing, refund_failed
   
