@@ -47,19 +47,21 @@ export default function MapProviderSelector() {
                     ? 'border-[#f99806] bg-amber-50 dark:bg-amber-950/20'
                     : 'border-border bg-white dark:bg-gray-900'
                 } ${!isAvailable ? 'opacity-50' : 'cursor-pointer hover:border-[#f99806]/50'}`}
+                onClick={() => isAvailable && setProvider(provider.id)}
+                data-testid={`card-${provider.id}`}
               >
                 <RadioGroupItem
                   value={provider.id}
                   id={provider.id}
                   disabled={!isAvailable}
-                  className="mt-1"
+                  className="mt-1 pointer-events-none"
                   data-testid={`radio-${provider.id}`}
                 />
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center justify-between">
                     <Label
                       htmlFor={provider.id}
-                      className={`font-semibold text-base cursor-pointer ${
+                      className={`font-semibold text-base ${
                         !isAvailable ? 'text-gray-400' : ''
                       }`}
                     >
