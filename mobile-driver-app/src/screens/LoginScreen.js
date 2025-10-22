@@ -74,7 +74,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                 label="Phone Number"
                 value={phone}
                 onChangeText={setPhone}
-                placeholder="(555) 123-4567"
+                placeholder="(636) 254-4821"
                 keyboardType="phone-pad"
               />
             </>

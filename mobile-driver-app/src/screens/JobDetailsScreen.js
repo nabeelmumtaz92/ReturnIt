@@ -46,7 +46,7 @@ export default function JobDetailsScreen({ job, onAccept, onBack }) {
           <Text style={styles.cardTitle}>📦 Package Details</Text>
           <DetailRow label="Boxes/Bags" value={`${job.packageCount || 1} item(s)`} />
           <DetailRow label="Customer" value={job.customerName || 'Customer'} />
-          <DetailRow label="Phone" value={job.customerPhone || '(555) 123-4567'} />
+          <DetailRow label="Phone" value={job.customerPhone || '(636) 254-4821'} />
         </View>
 
         <View style={styles.detailsCard}>
