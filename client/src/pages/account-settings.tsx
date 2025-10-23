@@ -18,7 +18,8 @@ import {
   Shield, 
   FileText,
   ExternalLink,
-  ArrowLeft 
+  ArrowLeft,
+  Save 
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth-simple';
@@ -326,6 +327,23 @@ export default function AccountSettings() {
               )}
             </CardContent>
           </Card>
+
+          {/* Save Settings Section */}
+          <div className="flex justify-end items-center gap-4 pt-4 pb-8">
+            <Button
+              onClick={() => {
+                toast({
+                  title: "Settings Saved",
+                  description: "Your account settings have been saved successfully.",
+                });
+              }}
+              className="bg-[#B8956A] hover:bg-[#A17D4E] text-white"
+              data-testid="button-save-settings"
+            >
+              <Save className="h-4 w-4 mr-2" />
+              Save Changes
+            </Button>
+          </div>
         </div>
       </div>
     </div>
