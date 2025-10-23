@@ -328,6 +328,7 @@ export default function BookReturn() {
   const [page, setPage] = useState(1);
   const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
+  const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState<FormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -357,10 +358,20 @@ export default function BookReturn() {
 
   // Validate current page before proceeding
   const validatePage = (pageNum: number): boolean => {
+    const errors = new Set<string>();
+    
     if (pageNum === 1) {
-      if (!formData.firstName || !formData.lastName || !formData.email || 
-          !formData.phone || !formData.streetAddress || !formData.city || 
-          !formData.state || !formData.zipCode) {
+      if (!formData.firstName) errors.add('firstName');
+      if (!formData.lastName) errors.add('lastName');
+      if (!formData.email) errors.add('email');
+      if (!formData.phone) errors.add('phone');
+      if (!formData.streetAddress) errors.add('streetAddress');
+      if (!formData.city) errors.add('city');
+      if (!formData.state) errors.add('state');
+      if (!formData.zipCode) errors.add('zipCode');
+      
+      if (errors.size > 0) {
+        setValidationErrors(errors);
         toast({
           title: "Missing Information",
           description: "Please fill in all required fields",
@@ -369,8 +380,14 @@ export default function BookReturn() {
         return false;
       }
     } else if (pageNum === 2) {
-      if (!formData.retailerName || !formData.retailerLocation || 
-          !formData.orderName || !formData.itemDescription || !formData.itemValue) {
+      if (!formData.retailerName) errors.add('retailerName');
+      if (!formData.retailerLocation) errors.add('retailerLocation');
+      if (!formData.orderName) errors.add('orderName');
+      if (!formData.itemDescription) errors.add('itemDescription');
+      if (!formData.itemValue) errors.add('itemValue');
+      
+      if (errors.size > 0) {
+        setValidationErrors(errors);
         toast({
           title: "Missing Information",
           description: "Please fill in all required fields",
@@ -379,6 +396,8 @@ export default function BookReturn() {
         return false;
       }
     }
+    
+    setValidationErrors(new Set());
     return true;
   };
 
@@ -408,6 +427,15 @@ export default function BookReturn() {
   };
 
   const updateField = (field: keyof FormData, value: string | number) => {
+    // Clear validation error for this field when user starts typing
+    if (validationErrors.has(field)) {
+      setValidationErrors(prev => {
+        const newErrors = new Set(prev);
+        newErrors.delete(field);
+        return newErrors;
+      });
+    }
+    
     setFormData(prev => {
       const updated = { ...prev, [field]: value };
       
@@ -595,7 +623,7 @@ export default function BookReturn() {
                       value={formData.firstName}
                       onChange={(e) => updateField('firstName', e.target.value)}
                       placeholder="John"
-                      className="mt-1.5"
+                      className={`mt-1.5 ${validationErrors.has('firstName') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-first-name"
                     />
@@ -607,7 +635,7 @@ export default function BookReturn() {
                       value={formData.lastName}
                       onChange={(e) => updateField('lastName', e.target.value)}
                       placeholder="Doe"
-                      className="mt-1.5"
+                      className={`mt-1.5 ${validationErrors.has('lastName') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-last-name"
                     />
@@ -622,7 +650,7 @@ export default function BookReturn() {
                     value={formData.email}
                     onChange={(e) => updateField('email', e.target.value)}
                     placeholder="your@email.com"
-                    className="mt-1.5"
+                    className={`mt-1.5 ${validationErrors.has('email') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-email"
                   />
@@ -636,7 +664,7 @@ export default function BookReturn() {
                     value={formData.phone}
                     onChange={(e) => updateField('phone', e.target.value)}
                     placeholder="(314) 555-1234"
-                    className="mt-1.5"
+                    className={`mt-1.5 ${validationErrors.has('phone') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-phone"
                   />
@@ -651,7 +679,7 @@ export default function BookReturn() {
                     value={formData.streetAddress}
                     onChange={(e) => updateField('streetAddress', e.target.value)}
                     placeholder="123 Main St, Apt 4B"
-                    className="mt-1.5"
+                    className={`mt-1.5 ${validationErrors.has('streetAddress') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-street-address"
                   />
@@ -665,7 +693,7 @@ export default function BookReturn() {
                       value={formData.city}
                       onChange={(e) => updateField('city', e.target.value)}
                       placeholder="St. Louis"
-                      className="mt-1.5"
+                      className={`mt-1.5 ${validationErrors.has('city') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-city"
                     />
@@ -678,7 +706,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('state', e.target.value)}
                       placeholder="MO"
                       maxLength={2}
-                      className="mt-1.5"
+                      className={`mt-1.5 ${validationErrors.has('state') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-state"
                     />
@@ -690,7 +718,7 @@ export default function BookReturn() {
                       value={formData.zipCode}
                       onChange={(e) => updateField('zipCode', e.target.value)}
                       placeholder="63101"
-                      className="mt-1.5"
+                      className={`mt-1.5 ${validationErrors.has('zipCode') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-zip-code"
                     />
@@ -705,7 +733,7 @@ export default function BookReturn() {
                 <div>
                   <Label htmlFor="retailerName" className="text-sm font-semibold">Retailer *</Label>
                   <Select value={formData.retailerName} onValueChange={(value) => updateField('retailerName', value)}>
-                    <SelectTrigger className="mt-1.5" data-testid="select-retailer-name">
+                    <SelectTrigger className={`mt-1.5 ${validationErrors.has('retailerName') ? 'border-red-500 border-2' : ''}`} data-testid="select-retailer-name">
                       <SelectValue placeholder="Select retailer" />
                     </SelectTrigger>
                     <SelectContent className="max-h-[300px]">
@@ -722,7 +750,7 @@ export default function BookReturn() {
                   <div>
                     <Label htmlFor="retailerLocation" className="text-sm font-semibold">Store Location *</Label>
                     <Select value={formData.retailerLocation} onValueChange={(value) => updateField('retailerLocation', value)}>
-                      <SelectTrigger className="mt-1.5" data-testid="select-retailer-location">
+                      <SelectTrigger className={`mt-1.5 ${validationErrors.has('retailerLocation') ? 'border-red-500 border-2' : ''}`} data-testid="select-retailer-location">
                         <SelectValue placeholder="Select store location" />
                       </SelectTrigger>
                       <SelectContent>
@@ -805,7 +833,7 @@ export default function BookReturn() {
                     value={formData.orderName}
                     onChange={(e) => updateField('orderName', e.target.value)}
                     placeholder="Black Purse, Running Shoes, etc."
-                    className="mt-1.5"
+                    className={`mt-1.5 ${validationErrors.has('orderName') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-order-name"
                   />
@@ -819,7 +847,7 @@ export default function BookReturn() {
                     onChange={(e) => updateField('itemDescription', e.target.value)}
                     placeholder="Describe the item you're returning..."
                     rows={3}
-                    className="mt-1.5"
+                    className={`mt-1.5 ${validationErrors.has('itemDescription') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-item-description"
                   />
@@ -836,7 +864,7 @@ export default function BookReturn() {
                       onChange={(e) => updateField('itemValue', e.target.value)}
                       placeholder="50.00"
                       step="0.01"
-                      className="pl-7"
+                      className={`pl-7 ${validationErrors.has('itemValue') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-item-value"
                     />
