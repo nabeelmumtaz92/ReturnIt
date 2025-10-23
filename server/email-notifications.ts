@@ -1,5 +1,6 @@
 import { getUncachableResendClient } from './resend-client';
 import type { Order, User } from '@shared/schema';
+import { generateSignedToken } from '@shared/utils/urlSigner';
 
 interface EmailNotificationData {
   to: string;
@@ -14,6 +15,24 @@ export class EmailNotificationService {
   async sendOrderConfirmation(order: Order, customerEmail: string): Promise<void> {
     try {
       const { client, fromEmail } = await getUncachableResendClient();
+      
+      // Generate signed URLs for secure access (valid for 72 hours)
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(',')[0] || 'https://returnit.online';
+      const orderViewToken = generateSignedToken({
+        resource: 'order',
+        resourceId: order.id,
+        userId: order.userId || undefined,
+        expiresInHours: 72
+      });
+      const receiptToken = generateSignedToken({
+        resource: 'receipt',
+        resourceId: order.id,
+        userId: order.userId || undefined,
+        expiresInHours: 72
+      });
+      
+      const orderViewUrl = `${baseUrl}/api/orders/${order.id}/view?token=${orderViewToken}`;
+      const receiptUrl = `${baseUrl}/api/orders/${order.id}/receipt?token=${receiptToken}`;
 
       const emailData: EmailNotificationData = {
         to: customerEmail,
@@ -33,9 +52,18 @@ export class EmailNotificationService {
 
             <p>We'll notify you when a driver is assigned to your pickup.</p>
             
-            <p style="margin-top: 30px; color: #666;">
-              Track your return: <a href="${process.env.REPLIT_DOMAINS?.split(',')[0]}/track/${order.trackingNumber}" style="color: #B8956A;">View Status</a>
-            </p>
+            <div style="margin-top: 30px; padding: 20px; background: white; border-radius: 8px; border: 2px dashed #B8956A;">
+              <p style="margin: 0 0 15px 0; font-weight: bold; color: #8B6F47;">Secure Order Links (valid for 72 hours)</p>
+              <p style="margin: 8px 0;">
+                📄 <a href="${receiptUrl}" style="color: #B8956A; text-decoration: none; font-weight: bold;">View Receipt</a>
+              </p>
+              <p style="margin: 8px 0;">
+                📦 <a href="${baseUrl}/track/${order.trackingNumber}" style="color: #B8956A; text-decoration: none; font-weight: bold;">Track Your Return</a>
+              </p>
+              <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">
+                These secure links are unique to you and will expire in 72 hours. For continued access, please track your order using your tracking number and ZIP code.
+              </p>
+            </div>
           </div>
         `
       };
@@ -145,6 +173,24 @@ export class EmailNotificationService {
   async sendReturnCompleted(order: Order, customerEmail: string): Promise<void> {
     try {
       const { client, fromEmail } = await getUncachableResendClient();
+      
+      // Generate signed URLs for secure access (valid for 72 hours)
+      const baseUrl = process.env.REPLIT_DOMAINS?.split(',')[0] || 'https://returnit.online';
+      const invoiceToken = generateSignedToken({
+        resource: 'invoice',
+        resourceId: order.id,
+        userId: order.userId || undefined,
+        expiresInHours: 72
+      });
+      const receiptToken = generateSignedToken({
+        resource: 'receipt',
+        resourceId: order.id,
+        userId: order.userId || undefined,
+        expiresInHours: 72
+      });
+      
+      const invoiceUrl = `${baseUrl}/api/orders/${order.id}/invoice?token=${invoiceToken}`;
+      const receiptUrl = `${baseUrl}/api/orders/${order.id}/receipt?token=${receiptToken}`;
 
       const emailData: EmailNotificationData = {
         to: customerEmail,
@@ -162,10 +208,23 @@ export class EmailNotificationService {
 
             <p>Please allow ${order.retailer} 3-5 business days to process your refund.</p>
 
+            <div style="margin-top: 30px; padding: 20px; background: white; border-radius: 8px; border: 2px dashed #B8956A;">
+              <p style="margin: 0 0 15px 0; font-weight: bold; color: #8B6F47;">Download Your Documents</p>
+              <p style="margin: 8px 0;">
+                📄 <a href="${receiptUrl}" style="color: #B8956A; text-decoration: none; font-weight: bold;">Download Receipt</a>
+              </p>
+              <p style="margin: 8px 0;">
+                🧾 <a href="${invoiceUrl}" style="color: #B8956A; text-decoration: none; font-weight: bold;">Download Invoice</a>
+              </p>
+              <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">
+                These secure links are unique to you and will expire in 72 hours. Please download your documents for your records.
+              </p>
+            </div>
+
             ${!order.tip || order.tip === 0 ? `
               <p style="margin-top: 30px;">
                 <strong>Loved your driver's service?</strong><br/>
-                <a href="${process.env.REPLIT_DOMAINS?.split(',')[0]}/orders/${order.id}/tip" 
+                <a href="${baseUrl}/orders/${order.id}/tip" 
                    style="background: #B8956A; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 10px;">
                   Add a Tip
                 </a>
