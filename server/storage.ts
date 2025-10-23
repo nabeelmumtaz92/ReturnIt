@@ -821,11 +821,28 @@ export class MemStorage implements IStorage {
       return this.trackingNumberIndex.has(tn);
     });
     
+    // Generate unique order number (ORD-XXXXXX format) with collision handling
+    const { generateOrderNumber } = await import('@shared/utils/orderNumberGenerator');
+    let orderNumber = generateOrderNumber();
+    
+    // Check for collisions and regenerate if needed (similar to tracking number)
+    let attempts = 0;
+    const maxAttempts = 10;
+    while (Array.from(this.orders.values()).some(o => o.orderNumber === orderNumber) && attempts < maxAttempts) {
+      orderNumber = generateOrderNumber();
+      attempts++;
+    }
+    
+    if (attempts >= maxAttempts) {
+      throw new Error('Failed to generate unique order number after 10 attempts');
+    }
+    
     // Generate secure access token for URL-based access
     const accessToken = generateAccessToken();
     
     const order: Order = {
       id,
+      orderNumber,
       trackingNumber,
       accessToken,
       userId: insertOrder.userId,
@@ -861,14 +878,24 @@ export class MemStorage implements IStorage {
       authorizationSigned: insertOrder.authorizationSigned ?? false,
       authorizationSignature: insertOrder.authorizationSignature || null,
       authorizationTimestamp: insertOrder.authorizationTimestamp || null,
-      basePrice: insertOrder.basePrice ?? 3.99,
+      basePrice: insertOrder.basePrice ?? 8.99,
       sizeUpcharge: insertOrder.sizeUpcharge ?? 0,
       multiBoxFee: insertOrder.multiBoxFee ?? 0,
+      serviceFee: insertOrder.serviceFee ?? 1.50,
+      fuelFee: insertOrder.fuelFee ?? 1.25,
       surcharges: insertOrder.surcharges || [],
       discountCode: insertOrder.discountCode || null,
       discountAmount: insertOrder.discountAmount ?? 0,
       tip: insertOrder.tip ?? 0,
-      totalPrice: insertOrder.totalPrice ?? 3.99,
+      totalPrice: insertOrder.totalPrice ?? (
+        (insertOrder.basePrice ?? 8.99) +
+        (insertOrder.sizeUpcharge ?? 0) +
+        (insertOrder.multiBoxFee ?? 0) +
+        (insertOrder.serviceFee ?? 1.50) +
+        (insertOrder.fuelFee ?? 1.25) +
+        (insertOrder.tip ?? 0) -
+        (insertOrder.discountAmount ?? 0)
+      ),
       customerPaid: insertOrder.customerPaid || null,
       driverEarning: insertOrder.driverEarning ?? 0,
       returnlyFee: insertOrder.returnlyFee ?? 0,

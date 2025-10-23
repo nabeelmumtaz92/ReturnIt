@@ -34,9 +34,11 @@ export class EmailNotificationService {
       const orderViewUrl = `${baseUrl}/api/orders/${order.id}/view?token=${orderViewToken}`;
       const receiptUrl = `${baseUrl}/api/orders/${order.id}/receipt?token=${receiptToken}`;
 
+      const subtotal = (order.basePrice || 0) + (order.sizeUpcharge || 0) + (order.multiBoxFee || 0);
+      
       const emailData: EmailNotificationData = {
         to: customerEmail,
-        subject: `Return Pickup Confirmed - ${order.trackingNumber}`,
+        subject: `Return Pickup Confirmed - ${order.orderNumber || order.trackingNumber}`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
             <h2 style="color: #B8956A;">Your Return Pickup is Confirmed!</h2>
@@ -44,10 +46,51 @@ export class EmailNotificationService {
             
             <div style="background: #f8f7f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
               <h3 style="margin-top: 0;">Order Details</h3>
+              <p><strong>Order Number:</strong> ${order.orderNumber || 'N/A'}</p>
               <p><strong>Tracking Number:</strong> ${order.trackingNumber}</p>
               <p><strong>Pickup Address:</strong> ${order.pickupStreetAddress}, ${order.pickupCity}, ${order.pickupState} ${order.pickupZipCode}</p>
               <p><strong>Return To:</strong> ${order.retailer}</p>
-              <p><strong>Total:</strong> $${order.totalPrice?.toFixed(2)}</p>
+            </div>
+
+            <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #e5e5e5;">
+              <h3 style="margin-top: 0; color: #8B6F47;">Payment Summary</h3>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Base Pickup Fee</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.basePrice || 0).toFixed(2)}</td>
+                </tr>
+                ${(order.sizeUpcharge || 0) > 0 ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Size Upcharge</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.sizeUpcharge || 0).toFixed(2)}</td>
+                </tr>` : ''}
+                ${(order.multiBoxFee || 0) > 0 ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Multi-Box Fee (${order.numberOfBoxes || 1} boxes)</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.multiBoxFee || 0).toFixed(2)}</td>
+                </tr>` : ''}
+                <tr>
+                  <td style="padding: 8px 0; color: #666; font-weight: bold;">Subtotal</td>
+                  <td style="padding: 8px 0; text-align: right; font-weight: bold;">${subtotal.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Service Fee</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.serviceFee || 1.50).toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Fuel Surcharge</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.fuelFee || 1.25).toFixed(2)}</td>
+                </tr>
+                ${(order.tip || 0) > 0 ? `
+                <tr>
+                  <td style="padding: 8px 0; color: #666;">Driver Tip</td>
+                  <td style="padding: 8px 0; text-align: right;">${(order.tip || 0).toFixed(2)}</td>
+                </tr>` : ''}
+                <tr style="border-top: 2px solid #B8956A;">
+                  <td style="padding: 12px 0 0 0; color: #8B6F47; font-weight: bold; font-size: 18px;">Total</td>
+                  <td style="padding: 12px 0 0 0; text-align: right; color: #B8956A; font-weight: bold; font-size: 18px;">$${(order.totalPrice || 0).toFixed(2)}</td>
+                </tr>
+              </table>
             </div>
 
             <p>We'll notify you when a driver is assigned to your pickup.</p>
@@ -62,6 +105,13 @@ export class EmailNotificationService {
               </p>
               <p style="margin: 15px 0 0 0; font-size: 12px; color: #666;">
                 These secure links are unique to you and will expire in 72 hours. For continued access, please track your order using your tracking number and ZIP code.
+              </p>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 15px; background: #f9f9f9; border-radius: 6px; text-align: center;">
+              <p style="margin: 0; color: #666;">Problem with your pickup?</p>
+              <p style="margin: 10px 0 0 0;">
+                <a href="${baseUrl}/contact" style="color: #B8956A; text-decoration: none; font-weight: bold;">Contact Us Here</a> or call <strong>(636) 254-4821</strong>
               </p>
             </div>
           </div>

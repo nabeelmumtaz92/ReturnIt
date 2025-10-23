@@ -541,6 +541,7 @@ export const orderItems = pgTable("order_items", {
 
 export const orders = pgTable("orders", {
   id: text("id").primaryKey(),
+  orderNumber: text("order_number").unique(), // Human-friendly order number (ORD-XXXXXX)
   userId: integer("user_id").references(() => users.id), // Nullable to support guest bookings
   status: text("status").notNull().default("created"), // created, confirmed, assigned, pickup_scheduled, picked_up, in_transit, delivered, completed, cancelled, refunded, return_refused
   trackingNumber: text("tracking_number").unique(),
@@ -590,9 +591,11 @@ export const orders = pgTable("orders", {
   authorizationTimestamp: timestamp("authorization_timestamp"),
   
   // Pricing - simplified to match actual DB columns
-  basePrice: real("base_price").default(3.99),
+  basePrice: real("base_price").default(8.99),
   sizeUpcharge: real("size_upcharge").default(0),
   multiBoxFee: real("multi_box_fee").default(0), // Actual DB column (not multiItemFee)
+  serviceFee: real("service_fee").default(1.50), // Platform service fee
+  fuelFee: real("fuel_fee").default(1.25), // Flat fuel surcharge
   surcharges: jsonb("surcharges").default([]),
   discountCode: text("discount_code"),
   discountAmount: real("discount_amount").default(0),
