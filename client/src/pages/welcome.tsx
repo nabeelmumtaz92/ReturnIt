@@ -50,86 +50,88 @@ export default function Welcome() {
     <div className="min-h-screen bg-amber-50">
 
       {/* Professional Hero Section */}
-      <div className="w-full bg-white/95 border-b border-amber-100 relative">
+      <div className="w-full bg-white/95 border-b border-amber-100">
         {/* Sign In/Sign Up buttons in top right */}
-        <div className="absolute top-2 sm:top-3 md:top-2 right-2 sm:right-4 z-10 mb-8">
-          {!isAuthenticated && (
-            <div className="flex gap-2">
-              <Link href="/login">
-                <Button variant="outline" size="sm" data-testid="button-sign-in">
-                  Sign In
-                </Button>
-              </Link>
-              <Link href="/login?tab=register">
-                <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-sign-up">
-                  Sign Up
-                </Button>
-              </Link>
-            </div>
-          )}
-          {isAuthenticated && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2 border-amber-300 hover:bg-amber-50" data-testid="button-user-menu">
-                  <div className="flex flex-col items-start">
-                    <span className="text-xs sm:text-sm font-medium text-amber-900">
-                      {user?.firstName} {user?.lastName}
-                    </span>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-amber-600" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <div className="px-2 py-1.5 text-sm font-semibold text-amber-900">
-                  {user?.firstName} {user?.lastName}
-                </div>
-                {user?.isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin-dashboard">
-                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-admin-dashboard">
-                        <User className="h-4 w-4 mr-2" />
-                        <span>Admin Dashboard</span>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {user?.isDriver && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/driver-portal">
-                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-driver-portal">
-                        <Truck className="h-4 w-4 mr-2" />
-                        <span>Driver Portal</span>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                {user && !user.isDriver && !user.isAdmin && (
-                  <DropdownMenuItem asChild>
-                    <Link href="/customer-dashboard">
-                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-customer-dashboard">
-                        <User className="h-4 w-4 mr-2" />
-                        <span>My Dashboard</span>
-                      </div>
-                    </Link>
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem asChild>
-                  <Link href="/account-settings">
-                    <div className="flex items-center w-full cursor-pointer" data-testid="menu-settings">
-                      <Settings className="h-4 w-4 mr-2" />
-                      <span>Settings</span>
+        <div className="container mx-auto px-4 pt-3 pb-2">
+          <div className="flex justify-end">
+            {!isAuthenticated && (
+              <div className="flex gap-2">
+                <Link href="/login">
+                  <Button variant="outline" size="sm" data-testid="button-sign-in">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/login?tab=register">
+                  <Button variant="default" size="sm" className="bg-primary hover:bg-primary/90" data-testid="button-sign-up">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
+            {isAuthenticated && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 border-amber-300 hover:bg-amber-50" data-testid="button-user-menu">
+                    <div className="flex flex-col items-start">
+                      <span className="text-xs sm:text-sm font-medium text-amber-900">
+                        {user?.firstName} {user?.lastName}
+                      </span>
                     </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer" data-testid="menu-sign-out">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  <span>Sign Out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+                    <ChevronDown className="h-4 w-4 text-amber-600" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-semibold text-amber-900">
+                    {user?.firstName} {user?.lastName}
+                  </div>
+                  {user?.isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin-dashboard">
+                        <div className="flex items-center w-full cursor-pointer" data-testid="menu-admin-dashboard">
+                          <User className="h-4 w-4 mr-2" />
+                          <span>Admin Dashboard</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.isDriver && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/driver-portal">
+                        <div className="flex items-center w-full cursor-pointer" data-testid="menu-driver-portal">
+                          <Truck className="h-4 w-4 mr-2" />
+                          <span>Driver Portal</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user && !user.isDriver && !user.isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/customer-dashboard">
+                        <div className="flex items-center w-full cursor-pointer" data-testid="menu-customer-dashboard">
+                          <User className="h-4 w-4 mr-2" />
+                          <span>My Dashboard</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link href="/account-settings">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-settings">
+                        <Settings className="h-4 w-4 mr-2" />
+                        <span>Settings</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer" data-testid="menu-sign-out">
+                    <LogOut className="h-4 w-4 mr-2" />
+                    <span>Sign Out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
-        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8 mt-12 sm:mt-14 md:mt-16">
+        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
           <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
             {/* Hero Content */}
             <div className="flex-1 text-center lg:text-left pt-8 sm:pt-0">
