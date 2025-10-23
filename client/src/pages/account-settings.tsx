@@ -17,7 +17,8 @@ import {
   Trash2, 
   Shield, 
   FileText,
-  ExternalLink 
+  ExternalLink,
+  ArrowLeft 
 } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '@/hooks/useAuth-simple';
@@ -144,9 +145,17 @@ export default function AccountSettings() {
       <div className="bg-white/90 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3">
-              <div className="text-2xl font-bold text-foreground">Return It</div>
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="gap-2" data-testid="button-back">
+                  <ArrowLeft className="h-4 w-4" />
+                  Back
+                </Button>
+              </Link>
+              <Link href="/" className="flex items-center space-x-3">
+                <div className="text-2xl font-bold text-foreground">Return It</div>
+              </Link>
+            </div>
             <div className="text-sm text-muted-foreground">
               {user.firstName} {user.lastName} • {user.email}
             </div>
