@@ -39,8 +39,12 @@ import {
   paymentRateLimit, 
   adminRateLimit, 
   driverActionRateLimit,
+  sensitiveDocRateLimit,
+  trackingRateLimit,
+  ipThrottleMiddleware,
   getRateLimitHealth 
 } from "./middleware/rateLimiter";
+import { requireSignedUrl, requireSignedUrlForResource, requireSignedUrlWithUserCheck } from "./middleware/signedUrlMiddleware";
 import { getSystemStatus, withFallback, getFallbackResponse } from "./middleware/gracefulDegradation";
 import { getCrashRecoveryStatus } from "./middleware/crashRecovery";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
@@ -2998,7 +3002,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get specific order (protected)
+  // Get specific order (protected - requires authentication)
   app.get("/api/orders/:id", isAuthenticated, async (req, res) => {
     try {
       const order = await storage.getOrder(req.params.id);
@@ -3016,6 +3020,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(order);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
+  // Get order via signed URL (public with token verification)
+  app.get("/api/orders/:id/view", sensitiveDocRateLimit, requireSignedUrlForResource('id'), async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Token verification already handled by middleware
+      // Return full order details
+      res.json({
+        ...order,
+        _access: 'signed_url'
+      });
+    } catch (error) {
+      console.error('Error fetching order via signed URL:', error);
+      res.status(500).json({ message: "Failed to fetch order details" });
+    }
+  });
+
+  // Get order receipt via signed URL (public with token verification)
+  app.get("/api/orders/:id/receipt", sensitiveDocRateLimit, requireSignedUrlForResource('id'), async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Return receipt-specific information
+      res.json({
+        orderId: order.id,
+        trackingNumber: order.trackingNumber,
+        createdAt: order.createdAt,
+        customerEmail: order.customerEmail,
+        pickupAddress: {
+          street: order.pickupStreetAddress,
+          city: order.pickupCity,
+          state: order.pickupState,
+          zipCode: order.pickupZipCode
+        },
+        returnAddress: order.returnAddress,
+        retailer: order.retailer,
+        pricing: {
+          basePrice: order.basePrice,
+          sizeUpcharge: order.sizeUpcharge,
+          multiBoxFee: order.multiBoxFee,
+          tip: order.tip,
+          totalPrice: order.totalPrice
+        },
+        receiptUrl: order.receiptUrl,
+        paymentStatus: order.paymentStatus,
+        _access: 'signed_url'
+      });
+    } catch (error) {
+      console.error('Error fetching receipt via signed URL:', error);
+      res.status(500).json({ message: "Failed to fetch receipt" });
+    }
+  });
+
+  // Get order invoice via signed URL (public with token verification)
+  app.get("/api/orders/:id/invoice", sensitiveDocRateLimit, requireSignedUrlForResource('id'), async (req, res) => {
+    try {
+      const order = await storage.getOrder(req.params.id);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Return invoice-specific information
+      res.json({
+        orderId: order.id,
+        invoiceNumber: `INV-${order.id}`,
+        trackingNumber: order.trackingNumber,
+        createdAt: order.createdAt,
+        dueDate: order.createdAt, // Immediate payment
+        customerEmail: order.customerEmail,
+        billing: {
+          name: `${order.customerFirstName || ''} ${order.customerLastName || ''}`.trim(),
+          email: order.customerEmail,
+          phone: order.customerPhone,
+          address: {
+            street: order.pickupStreetAddress,
+            city: order.pickupCity,
+            state: order.pickupState,
+            zipCode: order.pickupZipCode
+          }
+        },
+        lineItems: [
+          {
+            description: `Return Service - ${order.retailer}`,
+            quantity: 1,
+            unitPrice: order.basePrice,
+            total: order.basePrice
+          },
+          ...(order.sizeUpcharge > 0 ? [{
+            description: 'Size Upcharge',
+            quantity: 1,
+            unitPrice: order.sizeUpcharge,
+            total: order.sizeUpcharge
+          }] : []),
+          ...(order.multiBoxFee > 0 ? [{
+            description: `Multi-Box Fee (${order.numberOfBoxes} boxes)`,
+            quantity: 1,
+            unitPrice: order.multiBoxFee,
+            total: order.multiBoxFee
+          }] : []),
+          ...(order.tip > 0 ? [{
+            description: 'Driver Tip',
+            quantity: 1,
+            unitPrice: order.tip,
+            total: order.tip
+          }] : [])
+        ],
+        subtotal: order.basePrice + (order.sizeUpcharge || 0) + (order.multiBoxFee || 0),
+        tip: order.tip,
+        total: order.totalPrice,
+        paymentStatus: order.paymentStatus,
+        paymentMethod: order.stripePaymentIntentId ? 'Credit Card' : 'Other',
+        _access: 'signed_url'
+      });
+    } catch (error) {
+      console.error('Error fetching invoice via signed URL:', error);
+      res.status(500).json({ message: "Failed to fetch invoice" });
     }
   });
 
