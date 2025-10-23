@@ -5,8 +5,18 @@ import { createHmac, randomBytes } from 'crypto';
  * Generates cryptographically signed URLs with expiration for secure access to sensitive resources
  */
 
-// Secret key for HMAC signing - should be stored in environment variables in production
-const SIGNING_SECRET = process.env.URL_SIGNING_SECRET || 'return-it-url-signing-secret-key-2025';
+// Secret key for HMAC signing - MUST be set via URL_SIGNING_SECRET environment variable
+// No fallback value - server will refuse to start without this critical security setting
+if (!process.env.URL_SIGNING_SECRET || process.env.URL_SIGNING_SECRET.length < 32) {
+  throw new Error(
+    'CRITICAL SECURITY ERROR: URL_SIGNING_SECRET environment variable is missing or too short. ' +
+    'This secret is required for generating secure signed URLs for order receipts and invoices. ' +
+    'Please set a strong secret (minimum 32 characters) in your environment variables.'
+  );
+}
+
+// Type-safe constant after validation
+const SIGNING_SECRET: string = process.env.URL_SIGNING_SECRET;
 
 export interface SignedUrlParams {
   resource: string; // e.g., 'order', 'tracking', 'invoice', 'receipt'

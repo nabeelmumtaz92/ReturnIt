@@ -77,9 +77,72 @@ Preferred communication style: Simple, everyday language.
 - **Intelligence System**: A* Pathfinding Algorithm with a Machine Learning layer for real-time updates and dynamic policy learning.
 
 ## Security & Compliance
-- Bcrypt password hashing, server-side session storage, CSRF protection, rate limiting.
-- PCI-compliant payment processing, secure API key storage, Stripe Identity verification.
-- Data encryption, SQL injection prevention, security headers, CORS protection.
+
+### Multi-Layer Security Architecture
+Return It implements a comprehensive 4-level security architecture to protect customer data and prevent unauthorized access:
+
+**Level 1: Public Access (No Authentication)**
+- Basic rate limiting on all endpoints
+- Public tracking page with ZIP code verification requirement
+- Input validation and sanitization
+
+**Level 2: Authenticated Access (Session Required)**
+- Secure session-based authentication with server-side storage
+- Bcrypt password hashing (10 rounds)
+- Role-based authorization (Customer, Driver, Admin)
+- OAuth integration (Google, Facebook, Apple)
+- Session cookies with sameSite and httpOnly flags
+
+**Level 3: Sensitive Documents (Signed URLs)**
+- HMAC-SHA256 signed URLs for receipts, invoices, and order details
+- Token expiration (24-72 hours configurable)
+- Resource-specific access tokens stored in database
+- Prevents tampering and unauthorized sharing
+- Automatic email delivery with secure links
+
+**Level 4: Real-Time Tracking (Multi-Factor Verification)**
+- Tracking number + ZIP code verification required
+- Enhanced rate limiting (30 requests per 5 minutes)
+- IP-based throttling for abuse prevention
+- WebSocket authentication for live updates
+
+### Enhanced Rate Limiting
+- **Authentication endpoints**: 5 requests per 15 minutes
+- **Registration**: 3 requests per hour
+- **Payments**: 10 requests per minute
+- **Tracking queries**: 30 requests per 5 minutes
+- **Sensitive documents**: 20 requests per hour
+- **IP throttling**: Automatic 1-hour block after 10 failed auth attempts
+- **Admin endpoints**: 100 requests per 15 minutes
+
+### Signed URL System
+- **Implementation**: HMAC-SHA256 cryptographic signatures
+- **Token Format**: `{base64url-payload}.{base64url-signature}`
+- **Expiration**: Configurable (default 72 hours)
+- **Use Cases**: Order receipts, invoices, confirmation emails
+- **Security**: Tamper-proof, resource-specific, user-bound (optional)
+- **Endpoints**:
+  - `/api/orders/:id/view?token=...` - Full order details
+  - `/api/orders/:id/receipt?token=...` - Receipt information
+  - `/api/orders/:id/invoice?token=...` - Invoice with line items
+
+### Data Protection & Compliance
+- PCI-compliant payment processing via Stripe
+- Stripe Identity verification for drivers
+- Server-side session storage (PostgreSQL)
+- SQL injection prevention via Drizzle ORM
+- XSS protection with input sanitization
+- Security headers (Helmet middleware)
+- CORS protection with environment-specific origins
+- Data encryption in transit (HTTPS/TLS)
+- Secure API key storage in environment variables
+
+### Tracking Security
+- ZIP code verification required for all tracking queries
+- Prevents unauthorized order visibility
+- Rate limiting prevents enumeration attacks
+- WebSocket connections require tracking# + ZIP validation
+- Smart polling reduces server load (30s → 2min when WS connected)
 
 ## Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.
