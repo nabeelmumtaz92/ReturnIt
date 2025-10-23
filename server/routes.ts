@@ -9393,10 +9393,11 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   };
 
-  // Customer Tracking Lookup API (Public)
+  // Customer Tracking Lookup API (Public - requires ZIP code verification)
   app.get("/api/tracking/:trackingNumber", rateLimit, async (req, res) => {
     try {
       const { trackingNumber } = req.params;
+      const { zipCode } = req.query;
       
       // Validate tracking number format
       const trackingValidation = trackingNumberSchema.safeParse(trackingNumber);
@@ -9406,11 +9407,28 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         });
       }
       
+      // Require ZIP code for verification
+      if (!zipCode || typeof zipCode !== 'string') {
+        return res.status(400).json({
+          message: "ZIP code is required for tracking verification",
+          requiresZipCode: true
+        });
+      }
+      
       // Get order by tracking number
       const order = await storage.getOrderByTrackingNumber(trackingNumber);
       if (!order) {
         return res.status(404).json({ 
-          message: "Order not found. Please check your tracking number."
+          message: "Order not found. Please check your tracking number and ZIP code."
+        });
+      }
+      
+      // Verify ZIP code matches pickup address (security check)
+      const normalizeZip = (zip: string) => zip.replace(/\s+/g, '').trim().toUpperCase();
+      if (normalizeZip(order.pickupZipCode) !== normalizeZip(zipCode)) {
+        return res.status(403).json({ 
+          message: "ZIP code does not match. Please verify your information.",
+          requiresZipCode: true
         });
       }
       
@@ -9510,10 +9528,11 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
   
-  // Order Location History API (Public)
+  // Order Location History API (Public - requires ZIP code verification)
   app.get("/api/tracking/:trackingNumber/events", rateLimit, async (req, res) => {
     try {
       const { trackingNumber } = req.params;
+      const { zipCode } = req.query;
       
       // Validate tracking number format
       const trackingValidation = trackingNumberSchema.safeParse(trackingNumber);
@@ -9523,11 +9542,28 @@ Always think strategically, explain your reasoning, and provide value beyond bas
         });
       }
       
+      // Require ZIP code for verification
+      if (!zipCode || typeof zipCode !== 'string') {
+        return res.status(400).json({
+          message: "ZIP code is required for tracking verification",
+          requiresZipCode: true
+        });
+      }
+      
       // Get order by tracking number
       const order = await storage.getOrderByTrackingNumber(trackingNumber);
       if (!order) {
         return res.status(404).json({ 
-          message: "Order not found. Please check your tracking number."
+          message: "Order not found. Please check your tracking number and ZIP code."
+        });
+      }
+      
+      // Verify ZIP code matches pickup address (security check)
+      const normalizeZip = (zip: string) => zip.replace(/\s+/g, '').trim().toUpperCase();
+      if (normalizeZip(order.pickupZipCode) !== normalizeZip(zipCode)) {
+        return res.status(403).json({ 
+          message: "ZIP code does not match. Please verify your information.",
+          requiresZipCode: true
         });
       }
       

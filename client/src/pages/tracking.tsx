@@ -40,6 +40,7 @@ import { EngagementOfferBanner } from '@/components/EngagementOfferBanner';
 
 const formSchema = z.object({
   trackingNumber: trackingNumberSchema,
+  zipCode: z.string().min(5, 'ZIP code must be at least 5 digits').max(10, 'ZIP code is too long'),
 });
 
 interface TrackingInfo {
@@ -490,6 +491,7 @@ const ConnectionStatus = ({
 
 export default function TrackingPage() {
   const [searchedTrackingNumber, setSearchedTrackingNumber] = useState<string>('');
+  const [searchedZipCode, setSearchedZipCode] = useState<string>('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -497,6 +499,7 @@ export default function TrackingPage() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       trackingNumber: '',
+      zipCode: '',
     },
   });
 
@@ -538,23 +541,25 @@ export default function TrackingPage() {
 
   // Fetch tracking information with smart polling (reduced when WebSocket connected)
   const { data: trackingInfo, isLoading: isLoadingTracking, error: trackingError, refetch: refetchTracking } = useQuery<TrackingInfo>({
-    queryKey: ['/api/tracking', searchedTrackingNumber],
-    enabled: !!searchedTrackingNumber,
+    queryKey: [`/api/tracking/${searchedTrackingNumber}?zipCode=${searchedZipCode}`],
+    enabled: !!searchedTrackingNumber && !!searchedZipCode,
     refetchInterval: searchedTrackingNumber ? (wsConnected ? 120000 : 30000) : false, // 2 min if WS connected, 30s if not
     staleTime: wsConnected ? 60000 : 25000, // Longer stale time if WS connected
   });
 
   // Fetch tracking events with smart polling
   const { data: trackingEvents, isLoading: isLoadingEvents, error: eventsError } = useQuery<TrackingEventsResponse>({
-    queryKey: ['/api/tracking', searchedTrackingNumber, 'events'],
-    enabled: !!searchedTrackingNumber,
+    queryKey: [`/api/tracking/${searchedTrackingNumber}/events?zipCode=${searchedZipCode}`],
+    enabled: !!searchedTrackingNumber && !!searchedZipCode,
     refetchInterval: searchedTrackingNumber ? (wsConnected ? 120000 : 30000) : false,
     staleTime: wsConnected ? 60000 : 25000,
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const trackingNumber = values.trackingNumber.trim().toUpperCase();
+    const zipCode = values.zipCode.trim();
     setSearchedTrackingNumber(trackingNumber);
+    setSearchedZipCode(zipCode);
     
     toast({
       title: "Tracking Order",
@@ -566,14 +571,14 @@ export default function TrackingPage() {
     console.log('🔄 Manual refresh triggered');
     refetchTracking();
     queryClient.invalidateQueries({ 
-      queryKey: ['/api/tracking', searchedTrackingNumber, 'events'] 
+      queryKey: [`/api/tracking/${searchedTrackingNumber}/events?zipCode=${searchedZipCode}`] 
     });
     
     toast({
       title: "Refreshing",
       description: "Updating tracking information...",
     });
-  }, [refetchTracking, searchedTrackingNumber, toast]);
+  }, [refetchTracking, searchedTrackingNumber, searchedZipCode, queryClient, toast]);
 
   const isLoading = isLoadingTracking || isLoadingEvents;
   const hasError = trackingError || eventsError;
@@ -603,7 +608,7 @@ export default function TrackingPage() {
               Enter Tracking Number
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              Format: RTN-XXXXXXXX (e.g., RTN-ABC12345)
+              For security, you'll need both your tracking number and pickup ZIP code
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -624,6 +629,26 @@ export default function TrackingPage() {
                         />
                       </FormControl>
                       <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="zipCode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-foreground font-medium">Pickup ZIP Code</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="63101"
+                          className="text-center text-lg font-mono border-border focus:border-border"
+                          data-testid="input-zip-code"
+                          maxLength={10}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <p className="text-sm text-muted-foreground">Enter the ZIP code from your pickup address</p>
                     </FormItem>
                   )}
                 />
