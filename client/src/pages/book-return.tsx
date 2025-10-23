@@ -926,10 +926,66 @@ export default function BookReturn() {
             {/* PAGE 3: Review */}
             {page === 3 && (
               <div className="space-y-6">
+                {/* Address Verification Section */}
+                <div className="bg-blue-50 border-2 border-blue-300 p-5 rounded-lg">
+                  <h3 className="font-bold text-lg mb-4 text-blue-900 flex items-center gap-2">
+                    <MapPin className="h-6 w-6" />
+                    ⚠️ Verify Your Addresses
+                  </h3>
+                  <p className="text-sm text-blue-800 mb-4">
+                    Please carefully review both addresses below. Make sure they are correct before proceeding to payment.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Pickup Address */}
+                    <div className="bg-white p-4 rounded-lg border border-blue-200">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="font-semibold text-blue-900">📍 Pickup Location</h4>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setPage(1)}
+                          className="h-7 text-xs"
+                          data-testid="button-edit-pickup"
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                      <div className="text-sm space-y-1 text-gray-700">
+                        <p className="font-medium">{formData.firstName} {formData.lastName}</p>
+                        <p>{formData.streetAddress}</p>
+                        <p>{formData.city}, {formData.state} {formData.zipCode}</p>
+                        <p className="text-blue-600">{formData.phone}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Return Destination */}
+                    <div className="bg-white p-4 rounded-lg border border-blue-200">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="font-semibold text-blue-900">🏪 Return Destination</h4>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setPage(2)}
+                          className="h-7 text-xs"
+                          data-testid="button-edit-destination"
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                      <div className="text-sm space-y-1 text-gray-700">
+                        <p className="font-medium">{formData.storeDestinationName || formData.retailerName}</p>
+                        <p>{formData.storeDestinationAddress}</p>
+                        <p>{formData.storeDestinationCity}, {formData.storeDestinationState}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-                    <MapPin className="h-5 w-5 text-[#B8956A]" />
-                    Pickup Information
+                    <Package className="h-5 w-5 text-[#B8956A]" />
+                    Contact Information
                   </h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
@@ -943,10 +999,6 @@ export default function BookReturn() {
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Phone:</span>
                       <span className="font-medium">{formData.phone}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Address:</span>
-                      <span className="font-medium text-right">{formData.streetAddress}, {formData.city}, {formData.state} {formData.zipCode}</span>
                     </div>
                   </div>
                 </div>
