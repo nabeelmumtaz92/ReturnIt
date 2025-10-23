@@ -535,28 +535,35 @@ export default function BookReturn() {
         {/* Professional progress bar */}
         {page <= 3 && (
           <div className="mb-10">
-            <div className="flex items-center gap-3">
-              {[1, 2, 3].map((step) => (
-                <div key={step} className="flex items-center flex-1">
-                  <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                    page >= step 
-                      ? 'bg-[#B8956A] border-[#B8956A] text-white' 
-                      : 'bg-background border-muted-foreground/20 text-muted-foreground'
-                  }`}>
-                    {page > step ? <Check className="h-5 w-5" /> : step}
+            <div className="flex items-start justify-between">
+              {[
+                { num: 1, label: 'Pickup Info' },
+                { num: 2, label: 'Return Details' },
+                { num: 3, label: 'Review' }
+              ].map((step, index) => (
+                <div key={step.num} className="flex flex-col items-center flex-1">
+                  <div className="flex items-center w-full">
+                    {index > 0 && (
+                      <div className={`flex-1 h-0.5 ${
+                        page > step.num - 1 ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
+                      }`} />
+                    )}
+                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 flex-shrink-0 ${
+                      page >= step.num 
+                        ? 'bg-[#B8956A] border-[#B8956A] text-white' 
+                        : 'bg-background border-muted-foreground/20 text-muted-foreground'
+                    }`}>
+                      {page > step.num ? <Check className="h-5 w-5" /> : step.num}
+                    </div>
+                    {index < 2 && (
+                      <div className={`flex-1 h-0.5 ${
+                        page > step.num ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
+                      }`} />
+                    )}
                   </div>
-                  {step < 3 && (
-                    <div className={`flex-1 h-0.5 mx-2 ${
-                      page > step ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
-                    }`} />
-                  )}
+                  <span className="text-sm font-medium mt-3 text-center">{step.label}</span>
                 </div>
               ))}
-            </div>
-            <div className="flex justify-between mt-3 px-1">
-              <span className="text-sm font-medium">Pickup Info</span>
-              <span className="text-sm font-medium">Return Details</span>
-              <span className="text-sm font-medium">Review</span>
             </div>
           </div>
         )}
