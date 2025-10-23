@@ -1093,10 +1093,54 @@ export default function BookReturn() {
                   </div>
                 </div>
 
-                <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                  <p className="text-sm text-amber-900">
-                    <strong>Cancellation Policy:</strong> If you cancel after a driver has been dispatched, a $4.99 cancellation fee will apply to cover driver costs.
-                  </p>
+                {/* Terms and Policies */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Important Terms & Policies</h3>
+                  
+                  {/* Cancellation Policy */}
+                  <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded">
+                    <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                      <span>📋</span> Cancellation Policy
+                    </h4>
+                    <p className="text-sm text-amber-800">
+                      A <strong>$4.99 cancellation fee</strong> will apply if you cancel after a driver has been dispatched to your location. This fee covers driver compensation and operational costs.
+                    </p>
+                  </div>
+
+                  {/* Service Requirements */}
+                  <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                    <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                      <span>📸</span> Service Requirements
+                    </h4>
+                    <ul className="text-sm text-blue-800 space-y-1.5 list-disc list-inside">
+                      <li><strong>Photo Verification:</strong> Driver will take a photo at drop-off for confirmation</li>
+                      <li><strong>Proof of Purchase:</strong> Upload your receipt or order confirmation when available</li>
+                      <li><strong>Package Condition:</strong> Items must be properly packaged and ready for pickup</li>
+                    </ul>
+                  </div>
+
+                  {/* Legal Terms */}
+                  <div className="bg-gray-50 border-l-4 border-gray-400 p-4 rounded">
+                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                      <span>⚖️</span> Service Terms
+                    </h4>
+                    <p className="text-sm text-gray-700 mb-2">
+                      <strong>Agency Relationship:</strong> Return It acts as your authorized agent for transportation purposes only. Our driver will present your return to the retailer's public return desk on your behalf.
+                    </p>
+                    <p className="text-sm text-gray-700">
+                      <strong>Service Area:</strong> Currently available in St. Louis, MO only. Expanding to additional cities soon.
+                    </p>
+                  </div>
+
+                  {/* Contact Support */}
+                  <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                    <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                      <span>💬</span> Need Help?
+                    </h4>
+                    <p className="text-sm text-green-800">
+                      Questions about your return? Contact us at <strong>(636) 254-4821</strong> or <a href="mailto:support@returnit.online" className="underline">support@returnit.online</a>
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
