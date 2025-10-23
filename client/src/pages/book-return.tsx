@@ -35,6 +35,10 @@ interface FormData {
   retailerName: string; // Changed: First select retailer name
   retailerLocation: string; // New: Then select specific store location
   retailer: string; // Combined value for backend
+  storeDestinationName: string; // Editable store name
+  storeDestinationAddress: string; // Editable store address
+  storeDestinationCity: string; // Editable city
+  storeDestinationState: string; // Editable state
   itemDescription: string;
   itemValue: string;
   orderName: string;
@@ -336,6 +340,10 @@ export default function BookReturn() {
     retailerName: '',
     retailerLocation: '',
     retailer: '',
+    storeDestinationName: '',
+    storeDestinationAddress: '',
+    storeDestinationCity: '',
+    storeDestinationState: '',
     itemDescription: '',
     itemValue: '',
     orderName: '',
@@ -419,9 +427,12 @@ export default function BookReturn() {
           const [cityState, address, storeName] = parts;
           const [city, state] = cityState.split(', ');
           
-          // Auto-fill the store location fields (NOT the pickup address)
-          // These are displayed below for reference
+          // Auto-fill the store location fields (editable by user)
           updated.retailer = locationString;
+          updated.storeDestinationName = storeName;
+          updated.storeDestinationAddress = address;
+          updated.storeDestinationCity = city;
+          updated.storeDestinationState = state;
           
           toast({
             title: "Store location selected",
@@ -718,29 +729,67 @@ export default function BookReturn() {
                   </div>
                 )}
 
-                {formData.retailerLocation && (() => {
-                  const parts = formData.retailerLocation.split(' - ');
-                  if (parts.length >= 3) {
-                    const [cityState, address, storeName] = parts;
-                    const [city, state] = cityState.split(', ');
-                    return (
-                      <Card className="bg-amber-50 border-amber-200">
-                        <CardContent className="p-4">
-                          <h3 className="text-sm font-semibold text-amber-900 mb-2 flex items-center">
-                            <MapPin className="h-4 w-4 mr-2" />
-                            Return Destination
-                          </h3>
-                          <div className="space-y-1 text-sm text-amber-800">
-                            <p className="font-semibold">{storeName}</p>
-                            <p>{address}</p>
-                            <p>{city}, {state}</p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  }
-                  return null;
-                })()}
+                {formData.retailerLocation && (
+                  <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
+                    <h3 className="text-sm font-semibold text-amber-900 flex items-center">
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Return Destination (Editable)
+                    </h3>
+                    
+                    <div>
+                      <Label htmlFor="storeDestinationName" className="text-sm font-semibold">Store Name *</Label>
+                      <Input
+                        id="storeDestinationName"
+                        value={formData.storeDestinationName}
+                        onChange={(e) => updateField('storeDestinationName', e.target.value)}
+                        placeholder="Store Name"
+                        className="mt-1.5 bg-white"
+                        required
+                        data-testid="input-store-name"
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="storeDestinationAddress" className="text-sm font-semibold">Address *</Label>
+                      <Input
+                        id="storeDestinationAddress"
+                        value={formData.storeDestinationAddress}
+                        onChange={(e) => updateField('storeDestinationAddress', e.target.value)}
+                        placeholder="Street Address"
+                        className="mt-1.5 bg-white"
+                        required
+                        data-testid="input-store-address"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="storeDestinationCity" className="text-sm font-semibold">City *</Label>
+                        <Input
+                          id="storeDestinationCity"
+                          value={formData.storeDestinationCity}
+                          onChange={(e) => updateField('storeDestinationCity', e.target.value)}
+                          placeholder="City"
+                          className="mt-1.5 bg-white"
+                          required
+                          data-testid="input-store-city"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="storeDestinationState" className="text-sm font-semibold">State *</Label>
+                        <Input
+                          id="storeDestinationState"
+                          value={formData.storeDestinationState}
+                          onChange={(e) => updateField('storeDestinationState', e.target.value)}
+                          placeholder="MO"
+                          className="mt-1.5 bg-white"
+                          required
+                          data-testid="input-store-state"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <Label htmlFor="orderName" className="text-sm font-semibold">Order Name *</Label>
