@@ -6325,6 +6325,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
             {/* Role Switcher */}
             <div className="flex items-center gap-3">
               <RoleSwitcher />
+            </div>
           </div>
         </div>
           <div className="max-w-7xl mx-auto px-4">
