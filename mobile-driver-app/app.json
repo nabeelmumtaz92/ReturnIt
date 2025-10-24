@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Return It - Driver",
-    "slug": "returnit-driver",
+    "slug": "returnit-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "../assets/icon.png",
@@ -49,7 +49,6 @@
       "allowBackup": false
     },
     "notification": {
-      "icon": "./assets/notification-icon.png",
       "color": "#B8956A",
       "androidMode": "default",
       "androidCollapsedTitle": "New delivery available"
