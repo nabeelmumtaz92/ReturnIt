@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/useAuth-simple";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
 import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
-import { SiGoogle, SiApple, SiFacebook } from "react-icons/si";
+import { SiGoogle, SiApple } from "react-icons/si";
 import { handleError } from "@/lib/errorHandler";
 import { BackButton } from "@/components/BackButton";
 
@@ -265,11 +265,6 @@ export default function Login() {
     window.location.href = '/api/auth/apple';
   };
 
-  const handleFacebookAuth = () => {
-    // Redirect to Facebook OAuth endpoint
-    window.location.href = '/api/auth/facebook';
-  };
-
   // Social button component
   const SocialButton = ({ provider, icon: Icon, onClick, color }: {
     provider: string;
@@ -439,12 +434,6 @@ export default function Login() {
                     icon={SiGoogle} 
                     onClick={handleGoogleAuth}
                     color="bg-red-50"
-                  />
-                  <SocialButton 
-                    provider="Facebook" 
-                    icon={SiFacebook} 
-                    onClick={handleFacebookAuth}
-                    color="bg-amber-50"
                   />
                 </div>
                 
@@ -619,12 +608,6 @@ export default function Login() {
                     icon={SiGoogle} 
                     onClick={handleGoogleAuth}
                     color="bg-red-50"
-                  />
-                  <SocialButton 
-                    provider="Facebook" 
-                    icon={SiFacebook} 
-                    onClick={handleFacebookAuth}
-                    color="bg-amber-50"
                   />
                 </div>
                 
