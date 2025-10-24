@@ -6321,30 +6321,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               </Link>
             </div>
             
-            {/* Role Switcher and Controls */}
+            {/* Role Switcher */}
             <div className="flex items-center gap-3">
               <RoleSwitcher />
-              
-              {/* AI Sidebar Toggle */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAISidebarOpen(!isAISidebarOpen)}
-                className="gap-2 border-[#B8956A]/30 hover:border-[#B8956A] hover:bg-[#B8956A]/5 transition-all"
-                data-testid="button-toggle-ai-sidebar"
-              >
-                <Bot className="h-4 w-4" />
-                <span className="hidden sm:inline">AI Assistant</span>
-              </Button>
-              
-              {/* Admin Login Button - Shows when authentication needed */}
-              <button
-                onClick={handleAdminLogin}
-                className="px-4 py-2 bg-gradient-to-r from-[#B8956A] to-[#A0805A] hover:from-[#A0805A] hover:to-[#8B6F47] text-white rounded-lg transition-all text-sm font-medium shadow-sm"
-                data-testid="button-admin-login"
-              >
-              🔑 Admin Login
-            </button>
           </div>
         </div>
           <div className="max-w-7xl mx-auto px-4">
