@@ -563,13 +563,13 @@ export default function BookReturn() {
         {/* Professional progress bar */}
         {page <= 3 && (
           <div className="mb-10">
-            <div className="flex items-start justify-between">
+            <div className="flex items-start justify-between gap-2">
               {[
                 { num: 1, label: 'Pickup Info' },
                 { num: 2, label: 'Return Details' },
                 { num: 3, label: 'Review' }
               ].map((step, index) => (
-                <div key={step.num} className="flex flex-col items-center flex-1">
+                <div key={step.num} className="flex flex-col items-center flex-1 min-w-0">
                   <div className="flex items-center w-full">
                     {index > 0 && (
                       <div className={`flex-1 h-0.5 ${
@@ -589,7 +589,7 @@ export default function BookReturn() {
                       }`} />
                     )}
                   </div>
-                  <span className="text-sm font-medium mt-3 text-center">{step.label}</span>
+                  <span className="text-xs sm:text-sm font-medium mt-2 text-center w-full">{step.label}</span>
                 </div>
               ))}
             </div>
@@ -685,33 +685,35 @@ export default function BookReturn() {
                   />
                 </div>
 
-                <div className="grid grid-cols-6 gap-4">
-                  <div className="col-span-3">
-                    <Label htmlFor="city" className="text-sm font-semibold">City *</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => updateField('city', e.target.value)}
-                      placeholder="St. Louis"
-                      className={`mt-1.5 ${validationErrors.has('city') ? 'border-red-500 border-2' : ''}`}
-                      required
-                      data-testid="input-city"
-                    />
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="col-span-2">
+                      <Label htmlFor="city" className="text-sm font-semibold">City *</Label>
+                      <Input
+                        id="city"
+                        value={formData.city}
+                        onChange={(e) => updateField('city', e.target.value)}
+                        placeholder="St. Louis"
+                        className={`mt-1.5 ${validationErrors.has('city') ? 'border-red-500 border-2' : ''}`}
+                        required
+                        data-testid="input-city"
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <Label htmlFor="state" className="text-sm font-semibold">State *</Label>
+                      <Input
+                        id="state"
+                        value={formData.state}
+                        onChange={(e) => updateField('state', e.target.value)}
+                        placeholder="MO"
+                        maxLength={2}
+                        className={`mt-1.5 ${validationErrors.has('state') ? 'border-red-500 border-2' : ''}`}
+                        required
+                        data-testid="input-state"
+                      />
+                    </div>
                   </div>
-                  <div className="col-span-1">
-                    <Label htmlFor="state" className="text-sm font-semibold">State *</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => updateField('state', e.target.value)}
-                      placeholder="MO"
-                      maxLength={2}
-                      className={`mt-1.5 ${validationErrors.has('state') ? 'border-red-500 border-2' : ''}`}
-                      required
-                      data-testid="input-state"
-                    />
-                  </div>
-                  <div className="col-span-2">
+                  <div>
                     <Label htmlFor="zipCode" className="text-sm font-semibold">ZIP Code *</Label>
                     <Input
                       id="zipCode"
