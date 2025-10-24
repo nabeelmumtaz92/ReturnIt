@@ -61,6 +61,8 @@ Preferred communication style: Simple, everyday language.
 - Manual order creation, payment processing, bulk payouts.
 - Advanced analytics, Excel export system.
 - **AI Knowledge Center**: Self-updating AI assistant tracking database models and API endpoints.
+  - **Draggable AI Button**: Floating button (bottom-right corner) that can be repositioned anywhere on screen, with 5px drag threshold to distinguish drag from click.
+  - **Contact Support**: Separate fixed button (bottom-left corner) for customer support at (636) 254-4821.
 - **Real-Time Driver Tracking**: Admin panel with interactive Mapbox map showing active driver locations, search capabilities, and detailed driver modals.
 
 ### Retailer Enterprise Platform
