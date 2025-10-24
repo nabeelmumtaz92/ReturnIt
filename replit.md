@@ -2,6 +2,15 @@
 
 Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and a strong valuation, supported by a comprehensive patent portfolio strategy. Key capabilities include a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
+# Recent Changes
+
+**October 24, 2025 - Admin Dashboard Navigation Fixes**
+- Fixed critical JSX structure error in admin dashboard that prevented all navigation buttons from working (removed extra closing div tag in header section)
+- Enhanced demo login security: Admin access now environment-gated (development only) via NODE_ENV check
+- Added demo@returnit.demo to master admins allowlist for development testing
+- Verified all 30+ admin dashboard content components are properly wired and functional
+- All navigation buttons now properly call changeSection() and route to correct sections
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
