@@ -86,13 +86,16 @@ export class AuthV2 {
   // Demo login endpoint
   static async demoLogin(req: Request, res: Response) {
     try {
+      // Only allow demo admin in development mode for security
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      
       // Create demo user session (no database lookup needed)
       const demoUser = {
         id: 999999, // Use a high ID that won't conflict with real users
         email: 'demo@returnit.demo',
         phone: '555-DEMO-USER',
         isDriver: false,
-        isAdmin: false, // Explicitly not admin - can't access admin panel
+        isAdmin: isDevelopment, // Admin access only in development for security
         firstName: 'Demo',
         lastName: 'User'
       };

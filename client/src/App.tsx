@@ -228,7 +228,7 @@ function Router() {
             return <PageLoader />;
           }
           
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           
           // Check if user is authenticated and is admin
           if (!user || !isAuthenticated) {
@@ -253,7 +253,7 @@ function Router() {
           // System health page - admin only
           if (isLoading) return <PageLoader />;
           
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           
           if (!user || !isAuthenticated) {
             if (typeof window !== 'undefined') {
@@ -274,7 +274,7 @@ function Router() {
           // Admin settings page - admin only
           if (isLoading) return <PageLoader />;
           
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           
           if (!user || !isAuthenticated) {
             if (typeof window !== 'undefined') {
@@ -377,7 +377,7 @@ function Router() {
       <Route path="/admin-app">
         {() => {
           // Admins only
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           if (!user?.isAdmin || !masterAdmins.includes(user?.email)) {
             if (typeof window !== 'undefined') {
               window.location.replace('/login');
@@ -577,13 +577,13 @@ function Router() {
       </Route>
       <Route path="/ai-knowledge">
         {() => {
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <AIKnowledgeCenter /> : <NotFound />;
         }}
       </Route>
       <Route path="/return-graph">
         {() => {
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test"];
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
           return user?.isAdmin && masterAdmins.includes(user?.email) ? <ReturnGraphAdmin /> : <NotFound />;
         }}
       </Route>
