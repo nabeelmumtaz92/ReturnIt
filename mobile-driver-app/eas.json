@@ -6,12 +6,19 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "ios": {
+        "simulator": false,
+        "bundleIdentifier": "com.returnit.app"
       }
     },
     "production-apk": {
@@ -23,6 +30,9 @@
       "android": {
         "buildType": "app-bundle",
         "image": "latest"
+      },
+      "ios": {
+        "bundleIdentifier": "com.returnit.app"
       }
     }
   },
