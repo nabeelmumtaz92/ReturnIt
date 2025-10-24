@@ -81,6 +81,7 @@ import { AdminAISidebar } from "@/components/AdminAISidebar";
 import { EmailQuotaWidget } from "@/components/EmailQuotaWidget";
 import UniversalMap from "@/components/UniversalMap";
 import { useAdminWebSocket } from "@/hooks/useAdminWebSocket";
+import { DraggableAIButton } from "@/components/DraggableAIButton";
 
 // Type definitions for admin dashboard
 type User = typeof users.$inferSelect;
@@ -6396,15 +6397,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
           />
         )}
 
-        {/* Floating AI Button - Only show when sidebar is closed */}
+        {/* Draggable Floating AI Button - Only show when sidebar is closed */}
         {!isAISidebarOpen && !showUnifiedAI && (
-          <Button
-            onClick={() => setShowUnifiedAI(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-transparent0 hover:from-blue-600 hover:via-purple-600 hover:to-primary text-white shadow-xl z-40 transition-all duration-300 hover:scale-110"
-            data-testid="button-unified-ai-toggle"
-          >
-            <Bot className="w-6 h-6" />
-          </Button>
+          <DraggableAIButton onClick={() => setShowUnifiedAI(true)} />
         )}
 
       </div>

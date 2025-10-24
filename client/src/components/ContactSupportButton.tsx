@@ -18,7 +18,7 @@ export default function ContactSupportButton({ context, className = "" }: Contac
   return (
     <>
       {/* Floating Contact Support Button */}
-      <div className={`fixed bottom-6 right-6 z-40 ${className}`}>
+      <div className={`fixed bottom-6 left-6 z-40 ${className}`}>
         <Button
           onClick={() => setShowSupportChat(true)}
           className="bg-amber-600 hover:bg-amber-700 text-white rounded-full px-6 py-3 shadow-lg flex items-center space-x-2 font-medium"
