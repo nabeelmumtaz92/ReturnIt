@@ -1,17 +1,19 @@
 {
   "expo": {
-    "name": "ReturnIt - Return Delivery",
-    "slug": "returnit-app",
+    "name": "Return It - Driver",
+    "slug": "returnit-driver",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "https://via.placeholder.com/1024x1024/D2691E/FFFFFF?text=R",
+    "icon": "../assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "https://via.placeholder.com/1284x2778/D2691E/FFFFFF?text=ReturnIt",
+      "image": "../assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#D2691E"
+      "backgroundColor": "#B8956A"
     },
-    "assetBundlePatterns": [],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.app",
@@ -24,6 +26,11 @@
     },
     "android": {
       "package": "com.returnit.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "../assets/adaptive-icon.png",
+        "backgroundColor": "#B8956A"
+      },
       "compileSdkVersion": 35,
       "targetSdkVersion": 35,
       "buildToolsVersion": "35.0.0",
