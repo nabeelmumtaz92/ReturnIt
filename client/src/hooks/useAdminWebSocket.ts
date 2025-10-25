@@ -36,8 +36,9 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isManualDisconnectRef = useRef(false);
+  const connectionAttemptsRef = useRef(0);
   const queryClient = useQueryClient();
-  const [isManualDisconnect, setIsManualDisconnect] = useState(false);
 
   const [state, setState] = useState<AdminWebSocketState>({
     isConnected: false,
@@ -62,11 +63,12 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
       return;
     }
 
+    connectionAttemptsRef.current += 1;
     setState(prev => ({ 
       ...prev, 
       isConnecting: true, 
       error: null,
-      connectionAttempts: prev.connectionAttempts + 1
+      connectionAttempts: connectionAttemptsRef.current
     }));
 
     try {
@@ -78,6 +80,7 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
 
       ws.onopen = () => {
         console.log(`✅ Admin WebSocket connected`);
+        connectionAttemptsRef.current = 0;
         setState(prev => ({
           ...prev,
           isConnected: true,
@@ -143,11 +146,11 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
         onDisconnect?.();
 
         // Attempt to reconnect if not manually disconnected
-        if (!isManualDisconnect && 
-            state.connectionAttempts < maxReconnectAttempts && 
+        if (!isManualDisconnectRef.current && 
+            connectionAttemptsRef.current < maxReconnectAttempts && 
             event.code !== 1000) {
           
-          console.log(`🔄 Attempting to reconnect in ${reconnectInterval}ms (attempt ${state.connectionAttempts + 1}/${maxReconnectAttempts})`);
+          console.log(`🔄 Attempting to reconnect in ${reconnectInterval}ms (attempt ${connectionAttemptsRef.current + 1}/${maxReconnectAttempts})`);
           
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
@@ -170,11 +173,11 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
       }));
     }
   }, [onConnect, onDisconnect, onError, onMessage, queryClient, 
-      getWebSocketUrl, reconnectInterval, maxReconnectAttempts, state.connectionAttempts, isManualDisconnect]);
+      getWebSocketUrl, reconnectInterval, maxReconnectAttempts]);
 
   const disconnect = useCallback(() => {
     console.log(`🔌 Manually disconnecting Admin WebSocket`);
-    setIsManualDisconnect(true);
+    isManualDisconnectRef.current = true;
     
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -186,6 +189,7 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
       wsRef.current = null;
     }
 
+    connectionAttemptsRef.current = 0;
     setState(prev => ({ 
       ...prev, 
       isConnected: false, 
@@ -205,11 +209,11 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
 
   // Auto-connect on mount
   useEffect(() => {
-    setIsManualDisconnect(false);
+    isManualDisconnectRef.current = false;
     connect();
 
     return () => {
-      setIsManualDisconnect(true);
+      isManualDisconnectRef.current = true;
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
