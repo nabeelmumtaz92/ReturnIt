@@ -6327,7 +6327,6 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               <RoleSwitcher />
             </div>
           </div>
-        </div>
           <div className="max-w-7xl mx-auto px-4">
             <p className="text-muted-foreground text-sm mt-1">
               {currentSection === 'overview' && 'Complete system overview and quick actions'}
