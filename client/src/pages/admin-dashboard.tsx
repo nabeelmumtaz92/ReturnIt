@@ -2336,6 +2336,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         const realDrivers = await response.json();
         console.log('Fetched drivers:', realDrivers);
         
+        // Safety check: ensure realDrivers is an array
+        if (!Array.isArray(realDrivers)) {
+          console.error('API returned non-array:', realDrivers);
+          setDrivers([]);
+          return;
+        }
+        
         // Transform to expected format with better error handling
         const transformedDrivers = realDrivers.map((driver: Driver) => ({
           id: driver.id,
@@ -2810,6 +2817,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         });
         if (response.ok) {
           const data = await response.json();
+          // Safety check: ensure data is an array
+          if (!Array.isArray(data)) {
+            console.error('API returned non-array:', data);
+            setApplications([]);
+            return;
+          }
           setApplications(data);
         }
       } catch (error) {
@@ -3157,6 +3170,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         const response = await fetch('/api/admin/customers');
         if (response.ok) {
           const realCustomers = await response.json();
+          // Safety check: ensure realCustomers is an array
+          if (!Array.isArray(realCustomers)) {
+            console.error('API returned non-array:', realCustomers);
+            setCustomers([]);
+            return;
+          }
           // Transform to expected format
           const transformedCustomers = realCustomers.map((customer: Customer) => ({
             id: customer.id,
