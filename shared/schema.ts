@@ -584,7 +584,13 @@ export const orders = pgTable("orders", {
   purchaseType: text("purchase_type").notNull(), // "online" or "in_store" 
   hasOriginalTags: boolean("has_original_tags").default(false).notNull(),
   receiptUploaded: boolean("receipt_uploaded").default(false).notNull(),
-  receiptUrl: text("receipt_url"), // URL to uploaded receipt/proof of purchase
+  receiptUrl: text("receipt_url"), // URL to uploaded receipt/proof of purchase (legacy)
+  
+  // Customer Proof of Purchase Photos (uploaded at booking - shown to driver for retailer verification)
+  customerReceiptPhotoUrl: text("customer_receipt_photo_url"), // Photo of receipt or order confirmation
+  customerTagsPhotoUrl: text("customer_tags_photo_url"), // Photo of original tags still attached
+  customerPackagingPhotoUrl: text("customer_packaging_photo_url"), // Photo of item in original packaging
+  
   returnLabelUrl: text("return_label_url"), // For online returns - uploaded label or QR
   authorizationSigned: boolean("authorization_signed").default(false).notNull(),
   authorizationSignature: text("authorization_signature"), // Digital signature data
