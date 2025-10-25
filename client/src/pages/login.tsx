@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
-import { Mail, Lock, User, Phone, Eye, EyeOff, Shield } from "lucide-react";
+import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { handleError } from "@/lib/errorHandler";
 import { BackButton } from "@/components/BackButton";
@@ -394,31 +394,6 @@ export default function Login() {
                 >
                   {loginMutation.isPending ? "Signing in..." : "Sign In"}
                 </Button>
-                
-                {/* Demo Account Button */}
-                <div className="relative">
-                  <div className="flex items-center my-3">
-                    <div className="flex-1 h-px bg-accent"></div>
-                    <span className="px-3 text-xs font-medium text-muted-foreground bg-white">
-                      Try without signing up
-                    </span>
-                    <div className="flex-1 h-px bg-accent"></div>
-                  </div>
-                  <Button 
-                    type="button" 
-                    variant="outline"
-                    className="w-full bg-gradient-to-r from-amber-50 to-amber-50 border-amber-200 hover:border-amber-300 text-amber-800 hover:text-amber-900 h-11 font-medium"
-                    disabled={demoLoginMutation.isPending}
-                    onClick={() => demoLoginMutation.mutate()}
-                    data-testid="button-demo-login"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    {demoLoginMutation.isPending ? "Starting demo..." : "Try Demo Account"}
-                  </Button>
-                  <p className="text-xs text-center text-gray-600 mt-2">
-                    Explore all features except admin panel • No signup required
-                  </p>
-                </div>
                 
                 <div className="flex items-center my-4 md:my-8">
                   <div className="flex-1 h-px bg-accent"></div>

@@ -4,6 +4,11 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes
 
+**October 25, 2025 - Demo Login Privacy & Security**
+- Removed demo login button from public login page for privacy
+- Demo endpoint remains functional at `/api/auth/demo-login` for company presentations when needed
+- Demo admin access environment-gated: Only grants isAdmin in development (NODE_ENV check)
+
 **October 24, 2025 - Admin Dashboard Navigation Fixes**
 - Fixed critical JSX structure error in admin dashboard that prevented all navigation buttons from working (removed extra closing div tag in header section)
 - Enhanced demo login security: Admin access now environment-gated (development only) via NODE_ENV check
