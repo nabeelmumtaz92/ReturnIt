@@ -322,8 +322,8 @@ export default function BookPickup() {
     
     if (!hasAtLeastOneRequirement) {
       toast({
-        title: "Return Verification Required",
-        description: "We CANNOT process your return without verification. You must have AT LEAST ONE: receipt uploaded, original tags, or original packaging.",
+        title: "Proof of Purchase Required",
+        description: "Please confirm you have at least one proof of purchase: receipt (upload above), original tags, or original packaging. This helps us process your return smoothly.",
         variant: "destructive",
       });
       return;
@@ -1522,42 +1522,56 @@ export default function BookPickup() {
 
             {/* Return Requirements Warning */}
             {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptUrl && !formData.receiptImage && (
-              <div className="flex items-start space-x-2 p-3 bg-red-50 border-2 border-red-400 rounded-lg">
-                <XCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="flex items-start space-x-2 p-3 bg-red-50 dark:bg-red-950/30 border-2 border-red-400 dark:border-red-600 rounded-lg">
+                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-red-900">Return Verification Required</h4>
-                  <p className="text-sm text-red-700 mt-1 font-medium">
-                    We CANNOT process your return without verification. You must have AT LEAST ONE of the following: receipt uploaded, original tags attached, or original packaging.
+                  <h4 className="font-semibold text-red-900 dark:text-red-100">Proof of Purchase Required</h4>
+                  <p className="text-sm text-red-700 dark:text-red-200 mt-1 font-medium">
+                    To process your return, you must have at least one proof that you purchased this item. Select at least one option below.
                   </p>
-                  <p className="text-xs text-red-600 mt-2">
-                    This requirement protects both you and our drivers from liability issues.
+                  <p className="text-xs text-red-600 dark:text-red-300 mt-2">
+                    This protects you, our drivers, and ensures a smooth return process.
                   </p>
                 </div>
               </div>
             )}
 
-            <div className="space-y-3">
-              <Label className="text-foreground font-semibold">Return Verification (At least 1 required) *</Label>
-              <p className="text-sm text-muted-foreground">You must have at least one of these to proceed:</p>
-              
+            <div className="space-y-3 p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
               <div className="flex items-center space-x-2">
+                <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <Label className="text-foreground font-semibold text-base">Proof of Purchase (Choose at least 1) *</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">To book your return, confirm you have ONE of the following:</p>
+              
+              <div className="flex items-start space-x-3 p-3 bg-white dark:bg-background rounded border border-border hover:border-primary transition-colors">
                 <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
                   onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked === true)}
-                  className="border-primary text-primary"
+                  className="border-primary text-primary mt-1"
                   data-testid="checkbox-original-tags" />
-                <Label htmlFor="hasOriginalTags" className="text-foreground font-medium">
-                  Original tags are still attached
-                </Label>
+                <div className="flex-1">
+                  <Label htmlFor="hasOriginalTags" className="text-foreground font-medium cursor-pointer">
+                    ✓ I have the original tags still attached
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">Price tags, brand tags, or store labels</p>
+                </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-start space-x-3 p-3 bg-white dark:bg-background rounded border border-border hover:border-primary transition-colors">
                 <Checkbox id="hasOriginalPackaging" checked={!!formData.hasOriginalPackaging}
                   onCheckedChange={(checked) => handleInputChange('hasOriginalPackaging', checked === true)}
-                  className="border-primary text-primary"
+                  className="border-primary text-primary mt-1"
                   data-testid="checkbox-original-packaging" />
-                <Label htmlFor="hasOriginalPackaging" className="text-foreground font-medium">
-                  Item has original packaging (box, bag, etc.)
-                </Label>
+                <div className="flex-1">
+                  <Label htmlFor="hasOriginalPackaging" className="text-foreground font-medium cursor-pointer">
+                    ✓ I have the original packaging
+                  </Label>
+                  <p className="text-xs text-muted-foreground mt-1">Original box, bag, or manufacturer packaging</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                <span className="font-medium">OR</span>
+                <span>upload your receipt below</span>
               </div>
             </div>
 
