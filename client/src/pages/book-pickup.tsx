@@ -1563,9 +1563,9 @@ export default function BookPickup() {
                   data-testid="checkbox-original-packaging" />
                 <div className="flex-1">
                   <Label htmlFor="hasOriginalPackaging" className="text-foreground font-medium cursor-pointer">
-                    ✓ I have the original packaging
+                    ✓ Item is properly packaged (not just the item)
                   </Label>
-                  <p className="text-xs text-muted-foreground mt-1">Original box, bag, or manufacturer packaging</p>
+                  <p className="text-xs text-muted-foreground mt-1">Original box, bag, or manufacturer packaging - item must be packaged for transport</p>
                 </div>
               </div>
               
