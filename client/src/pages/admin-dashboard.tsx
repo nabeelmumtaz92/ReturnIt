@@ -197,12 +197,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       setCurrentSection(newSection);
       console.log('Section changed to:', newSection);
       
-      // Update URL
-      if (newSection === 'overview') {
-        setLocation('/admin-dashboard');
-      } else {
-        setLocation(`/admin-dashboard?section=${newSection}`);
-      }
+      // Update URL without triggering navigation (avoids component remount)
+      const newUrl = newSection === 'overview' 
+        ? '/admin-dashboard' 
+        : `/admin-dashboard?section=${newSection}`;
+      window.history.replaceState({}, '', newUrl);
     } else {
       console.log('Already on section:', newSection);
     }
@@ -220,12 +219,11 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       // Update current section to the previous one
       setCurrentSection(previousSection);
       
-      // Update URL
-      if (previousSection === 'overview') {
-        setLocation('/admin-dashboard');
-      } else {
-        setLocation(`/admin-dashboard?section=${previousSection}`);
-      }
+      // Update URL without triggering navigation (avoids component remount)
+      const newUrl = previousSection === 'overview'
+        ? '/admin-dashboard'
+        : `/admin-dashboard?section=${previousSection}`;
+      window.history.replaceState({}, '', newUrl);
     }
   };
 
@@ -1437,6 +1435,13 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       return matchesSearch && matchesStatus && matchesRetailer;
     });
 
+    // Define order categories BEFORE functions that use them
+    const activeOrders = filteredOrders.filter((o: any) => 
+      ['created', 'assigned', 'in_progress', 'pending_assignment', 'requested', 'picked_up'].includes(o.status)
+    );
+    const completedOrders = filteredOrders.filter((o: any) => o.status === 'completed');
+    const pendingOrders = filteredOrders.filter((o: any) => o.status === 'pending' || o.status === 'requested');
+
     // Enhanced order management functions - matching HTML structure functionality
     const updateOrderStatus = async (orderId: string, newStatus: string) => {
       try {
@@ -1564,12 +1569,6 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         setIsBulkUpdating(false);
       }
     };
-
-    const activeOrders = filteredOrders.filter((o: any) => 
-      ['created', 'assigned', 'in_progress', 'pending_assignment', 'requested', 'picked_up'].includes(o.status)
-    );
-    const completedOrders = filteredOrders.filter((o: any) => o.status === 'completed');
-    const pendingOrders = filteredOrders.filter((o: any) => o.status === 'pending' || o.status === 'requested');
 
     return (
       <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
