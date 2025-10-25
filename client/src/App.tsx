@@ -221,6 +221,33 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/admin">
+        {() => {
+          // Show loading while auth is being checked
+          if (isLoading) {
+            return <PageLoader />;
+          }
+          
+          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
+          
+          // Check if user is authenticated and is admin
+          if (!user || !isAuthenticated) {
+            // Not logged in - redirect to login
+            if (typeof window !== 'undefined') {
+              window.location.replace('/login');
+            }
+            return null;
+          }
+          
+          // Check if user has admin privileges
+          if (user.isAdmin && masterAdmins.includes(user.email)) {
+            return <AdminDashboard />;
+          }
+          
+          // User is logged in but not an admin
+          return <NotFound />;
+        }}
+      </Route>
       <Route path="/admin-dashboard*">
         {() => {
           // Show loading while auth is being checked

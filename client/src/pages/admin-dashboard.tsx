@@ -1427,8 +1427,9 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       }
     }, [selectedOrderForDetails]);
 
-    // Filter orders based on search and filters
-    const filteredOrders = orders.filter((order: any) => {
+    // Filter orders based on search and filters - ensure orders is always an array
+    const safeOrders = Array.isArray(orders) ? orders : [];
+    const filteredOrders = safeOrders.filter((order: any) => {
       const matchesSearch = !searchTerm || 
         String(order.id).toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.trackingNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -1832,7 +1833,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               )}
 
               <div className="space-y-4">
-                {(selectedTab === 'active' ? activeOrders : completedOrders).map(order => (
+                {((selectedTab === 'active' ? activeOrders : completedOrders) || []).map(order => (
                   <div key={order.id} className="p-3 sm:p-4 border border-border rounded-lg bg-[#f8f7f5] dark:bg-[#231b0f]/30">
                     <div className="flex gap-3">
                       {/* Checkbox for bulk selection */}
