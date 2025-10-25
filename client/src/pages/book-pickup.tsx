@@ -88,7 +88,12 @@ export default function BookPickup() {
     // Return authorization & purchase type
     purchaseType: '', // 'online' or 'in_store'
     purchaseDate: '', // When item was purchased - critical for return window validation
-    hasOriginalPackaging: false, // Whether item has original packaging (separate from tags)
+    // Photo verification (at least ONE required)
+    receiptPhotoUrl: '', // Photo of receipt
+    tagsPhotoUrl: '', // Photo of original tags
+    packagingPhotoUrl: '', // Photo of original packaging
+    // Legacy fields for backward compatibility
+    hasOriginalPackaging: false,
     hasOriginalTags: false,
     receiptImage: null as File | null,
     receiptUrl: '', // URL to uploaded receipt in object storage
@@ -317,13 +322,13 @@ export default function BookPickup() {
       return;
     }
 
-    // Check for at least ONE return requirement (tags, packaging, or receipt)
-    const hasAtLeastOneRequirement = formData.hasOriginalTags || formData.hasOriginalPackaging || formData.receiptUrl || formData.receiptImage;
+    // Check for at least ONE photo upload (receipt, tags, or packaging)
+    const hasAtLeastOnePhoto = formData.receiptPhotoUrl || formData.tagsPhotoUrl || formData.packagingPhotoUrl || formData.receiptUrl;
     
-    if (!hasAtLeastOneRequirement) {
+    if (!hasAtLeastOnePhoto) {
       toast({
-        title: "Proof of Purchase Required",
-        description: "Please confirm you have at least one proof of purchase: receipt (upload above), original tags, or original packaging. This helps us process your return smoothly.",
+        title: "Photo Verification Required",
+        description: "Please upload a photo of your receipt, original tags, OR original packaging. This is required to process your return.",
         variant: "destructive",
       });
       return;
@@ -556,7 +561,8 @@ export default function BookPickup() {
         // Update formData with the DURABLE object path, not the expiring presigned URL
         setFormData(prev => ({ 
           ...prev, 
-          receiptUrl: durableObjectPath,
+          receiptPhotoUrl: durableObjectPath,
+          receiptUrl: durableObjectPath, // Keep for backward compatibility
           receiptImage: uploadedFile.meta as any // Keep for backward compatibility
         }));
         
@@ -569,6 +575,96 @@ export default function BookPickup() {
         toast({
           title: "Upload failed",
           description: "Failed to save receipt. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
+  // Tags photo upload handlers
+  const handleTagsGetUploadUrl = async () => {
+    const response: any = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleTagsUploadComplete = useCallback(async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        setMerchantPolicyValidation(null);
+        setIsValidatingPolicy(true);
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          tagsPhotoUrl: durableObjectPath,
+          hasOriginalTags: true // Set for backward compatibility
+        }));
+        
+        toast({
+          title: "Tags photo uploaded",
+          description: "Photo of original tags uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing tags photo upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload tags photo. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
+  // Packaging photo upload handlers
+  const handlePackagingGetUploadUrl = async () => {
+    const response: any = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handlePackagingUploadComplete = useCallback(async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        setMerchantPolicyValidation(null);
+        setIsValidatingPolicy(true);
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          packagingPhotoUrl: durableObjectPath,
+          hasOriginalPackaging: true // Set for backward compatibility
+        }));
+        
+        toast({
+          title: "Packaging photo uploaded",
+          description: "Photo of original packaging uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing packaging photo upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload packaging photo. Please try again.",
           variant: "destructive",
         });
       }
@@ -1520,14 +1616,14 @@ export default function BookPickup() {
               </p>
             </div>
 
-            {/* Return Requirements Warning */}
-            {!formData.hasOriginalTags && !formData.hasOriginalPackaging && !formData.receiptUrl && !formData.receiptImage && (
+            {/* Photo Upload Requirements - Must have at least ONE */}
+            {!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl && (
               <div className="flex items-start space-x-2 p-3 bg-red-50 dark:bg-red-950/30 border-2 border-red-400 dark:border-red-600 rounded-lg">
-                <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-red-900 dark:text-red-100">Proof of Purchase Required</h4>
+                  <h4 className="font-semibold text-red-900 dark:text-red-100">Photo Verification Required</h4>
                   <p className="text-sm text-red-700 dark:text-red-200 mt-1 font-medium">
-                    To process your return, you must have at least one proof that you purchased this item. Select at least one option below.
+                    You must upload a photo showing proof of purchase. Choose ONE option below.
                   </p>
                   <p className="text-xs text-red-600 dark:text-red-300 mt-2">
                     This protects you, our drivers, and ensures a smooth return process.
@@ -1536,70 +1632,108 @@ export default function BookPickup() {
               </div>
             )}
 
-            <div className="space-y-3 p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
+            <div className="space-y-4 p-4 bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-700 rounded-lg">
               <div className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                <Label className="text-foreground font-semibold text-base">Proof of Purchase (Choose at least 1) *</Label>
+                <Label className="text-foreground font-semibold text-base">Photo Verification (Upload 1 of 3) *</Label>
               </div>
-              <p className="text-sm text-muted-foreground">To book your return, confirm you have ONE of the following:</p>
+              <p className="text-sm text-muted-foreground font-medium">Upload a photo of ONE of the following:</p>
               
-              <div className="flex items-start space-x-3 p-3 bg-white dark:bg-background rounded border border-border hover:border-primary transition-colors">
-                <Checkbox id="hasOriginalTags" checked={!!formData.hasOriginalTags}
-                  onCheckedChange={(checked) => handleInputChange('hasOriginalTags', checked === true)}
-                  className="border-primary text-primary mt-1"
-                  data-testid="checkbox-original-tags" />
-                <div className="flex-1">
-                  <Label htmlFor="hasOriginalTags" className="text-foreground font-medium cursor-pointer">
-                    ✓ I have the original tags still attached
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-1">Price tags, brand tags, or store labels</p>
+              {/* Option 1: Receipt Photo */}
+              <div className="space-y-2 p-3 bg-white dark:bg-background rounded border border-border">
+                <div className="flex items-start space-x-2">
+                  <div className="flex-1">
+                    <Label className="text-foreground font-semibold">1. Receipt or Order Confirmation</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      📄 Take a clear photo of your paper receipt or screenshot your email confirmation
+                    </p>
+                  </div>
                 </div>
+                <ObjectUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={handleReceiptGetUploadUrl}
+                  onComplete={handleReceiptUploadComplete}
+                  variant="outline"
+                  size="sm"
+                  testId="button-upload-receipt"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    <span>{formData.receiptPhotoUrl ? 'Change Receipt Photo' : 'Upload Receipt Photo'}</span>
+                  </div>
+                </ObjectUploader>
+                {formData.receiptPhotoUrl && (
+                  <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Receipt photo uploaded ✓</span>
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-start space-x-3 p-3 bg-white dark:bg-background rounded border border-border hover:border-primary transition-colors">
-                <Checkbox id="hasOriginalPackaging" checked={!!formData.hasOriginalPackaging}
-                  onCheckedChange={(checked) => handleInputChange('hasOriginalPackaging', checked === true)}
-                  className="border-primary text-primary mt-1"
-                  data-testid="checkbox-original-packaging" />
-                <div className="flex-1">
-                  <Label htmlFor="hasOriginalPackaging" className="text-foreground font-medium cursor-pointer">
-                    ✓ Item is properly packaged (not just the item)
-                  </Label>
-                  <p className="text-xs text-muted-foreground mt-1">Original box, bag, or manufacturer packaging - item must be packaged for transport</p>
+              {/* Option 2: Tags Photo */}
+              <div className="space-y-2 p-3 bg-white dark:bg-background rounded border border-border">
+                <div className="flex items-start space-x-2">
+                  <div className="flex-1">
+                    <Label className="text-foreground font-semibold">2. Original Tags Still Attached</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      🏷️ Photo showing price tags, brand labels, or store tags still on the item
+                    </p>
+                  </div>
                 </div>
+                <ObjectUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={handleTagsGetUploadUrl}
+                  onComplete={handleTagsUploadComplete}
+                  variant="outline"
+                  size="sm"
+                  testId="button-upload-tags"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    <span>{formData.tagsPhotoUrl ? 'Change Tags Photo' : 'Upload Tags Photo'}</span>
+                  </div>
+                </ObjectUploader>
+                {formData.tagsPhotoUrl && (
+                  <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Tags photo uploaded ✓</span>
+                  </div>
+                )}
               </div>
-              
-              <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                <span className="font-medium">OR</span>
-                <span>upload your receipt below</span>
-              </div>
-            </div>
 
-            {/* Receipt upload */}
-            <div className="space-y-2">
-              <Label className="text-foreground font-medium">
-                {formData.purchaseType === 'online' ? 'Upload Receipt/Order Confirmation' : 'Upload Store Receipt'}
-              </Label>
-              <ObjectUploader
-                maxNumberOfFiles={1}
-                maxFileSize={10485760}
-                onGetUploadParameters={handleReceiptGetUploadUrl}
-                onComplete={handleReceiptUploadComplete}
-                variant="outline"
-                size="default"
-                testId="button-upload-receipt"
-              >
-                <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4" />
-                  <span>{formData.receiptUrl ? 'Change Receipt' : 'Upload Receipt'}</span>
+              {/* Option 3: Packaging Photo */}
+              <div className="space-y-2 p-3 bg-white dark:bg-background rounded border border-border">
+                <div className="flex items-start space-x-2">
+                  <div className="flex-1">
+                    <Label className="text-foreground font-semibold">3. Original Packaging</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      📦 Photo of item in its original box, bag, or manufacturer packaging (not just the item)
+                    </p>
+                  </div>
                 </div>
-              </ObjectUploader>
-              {formData.receiptUrl && (
-                <div className="flex items-center space-x-2 text-sm text-green-600">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Receipt uploaded successfully</span>
-                </div>
-              )}
+                <ObjectUploader
+                  maxNumberOfFiles={1}
+                  maxFileSize={10485760}
+                  onGetUploadParameters={handlePackagingGetUploadUrl}
+                  onComplete={handlePackagingUploadComplete}
+                  variant="outline"
+                  size="sm"
+                  testId="button-upload-packaging"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4" />
+                    <span>{formData.packagingPhotoUrl ? 'Change Packaging Photo' : 'Upload Packaging Photo'}</span>
+                  </div>
+                </ObjectUploader>
+                {formData.packagingPhotoUrl && (
+                  <div className="flex items-center space-x-2 text-sm text-green-600 dark:text-green-400">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">Packaging photo uploaded ✓</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Optional return label for online */}

@@ -4,6 +4,16 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes
 
+**October 25, 2025 - Photo Verification Requirement for Returns**
+- **Mandatory Photo Upload**: Customers must now upload a photo of ONE of three proof-of-purchase options:
+  1. Receipt or order confirmation (paper receipt or email screenshot)
+  2. Original tags still attached (price tags, brand labels, store tags)  
+  3. Original packaging (item in box, bag, or manufacturer packaging - not just the item)
+- **Enhanced UI**: Replaced checkboxes with actual photo upload buttons with clear emoji-based instructions (📄, 🏷️, 📦)
+- **Validation**: Booking is blocked until at least one photo is uploaded, with friendly error messaging
+- **Backend Integration**: All three photo types upload to object storage and are stored in order records
+- **Result**: Ensures legal compliance, reduces fraud, and protects drivers from liability issues
+
 **October 25, 2025 - Admin Dashboard Comprehensive Stability Fixes**
 - **Routing Enhancement**: Added missing `/admin` route in App.tsx (previously only had `/admin-dashboard*`)
 - **Array Safety Guards**: Implemented comprehensive Array.isArray() checks before all .map() operations to prevent crashes:
