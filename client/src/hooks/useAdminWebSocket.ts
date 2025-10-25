@@ -207,8 +207,14 @@ export function useAdminWebSocket(config: AdminWebSocketConfig = {}) {
     }
   }, []);
 
-  // Auto-connect on mount
+  // Auto-connect on mount (skip in development to avoid CSP errors)
   useEffect(() => {
+    // Skip WebSocket in development if CSP blocks it
+    if (import.meta.env.DEV) {
+      console.log('⚠️ WebSocket disabled in development (CSP restrictions)');
+      return;
+    }
+    
     isManualDisconnectRef.current = false;
     connect();
 

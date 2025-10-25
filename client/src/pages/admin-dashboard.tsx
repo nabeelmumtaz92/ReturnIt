@@ -1343,6 +1343,12 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         const response = await fetch('/api/admin/orders');
         if (response.ok) {
           const realOrders = await response.json();
+          // Safety check: ensure realOrders is an array
+          if (!Array.isArray(realOrders)) {
+            console.error('API returned non-array:', realOrders);
+            setOrders([]);
+            return;
+          }
           // Transform to expected format
           const transformedOrders = realOrders.map((order: Order) => ({
             id: order.id,
