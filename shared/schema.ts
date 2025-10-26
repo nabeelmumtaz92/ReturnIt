@@ -3257,6 +3257,42 @@ export const insertEngagementAnalyticSchema = createInsertSchema(engagementAnaly
   updatedAt: true,
 });
 
+// Messages - Customer-Driver real-time chat for active orders
+export const messages = pgTable("messages", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Order association (orders.id is TEXT)
+  orderId: text("order_id").references(() => orders.id).notNull(),
+  
+  // Sender information (users.id is INTEGER)
+  senderId: integer("sender_id").references(() => users.id).notNull(),
+  senderType: text("sender_type").notNull(), // "customer" or "driver"
+  senderName: text("sender_name").notNull(), // Display name for chat
+  
+  // Message content
+  messageText: text("message_text").notNull(),
+  
+  // Message metadata
+  isRead: boolean("is_read").default(false).notNull(),
+  readAt: timestamp("read_at"),
+  
+  // Timestamps
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  orderIdIdx: index("messages_order_id_idx").on(table.orderId),
+  senderIdIdx: index("messages_sender_id_idx").on(table.senderId),
+  createdAtIdx: index("messages_created_at_idx").on(table.createdAt),
+}));
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = typeof messages.$inferInsert;
+export const insertMessageSchema = createInsertSchema(messages).omit({
+  id: true,
+  createdAt: true,
+  isRead: true,
+  readAt: true,
+});
+
 // System Settings - Configurable operational parameters
 export const systemSettings = pgTable("system_settings", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
