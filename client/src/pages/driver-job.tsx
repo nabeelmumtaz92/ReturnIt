@@ -348,6 +348,80 @@ export default function DriverJob() {
           </Card>
         </div>
 
+        {/* Proof of Purchase Photos - CRITICAL for driver verification */}
+        {(job.customerReceiptPhotoUrl || job.customerTagsPhotoUrl || job.customerPackagingPhotoUrl) && (
+          <Card className="bg-white/90 backdrop-blur-sm border-border">
+            <CardHeader>
+              <CardTitle className="text-foreground flex items-center space-x-2">
+                <Package className="h-5 w-5" />
+                <span>Customer Proof of Purchase</span>
+              </CardTitle>
+              <CardDescription>
+                Customer-provided photos for retailer verification
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {job.customerReceiptPhotoUrl && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm text-foreground">📄 Receipt / Order Confirmation</h4>
+                    <div className="relative group">
+                      <img 
+                        src={job.customerReceiptPhotoUrl} 
+                        alt="Receipt or Order Confirmation" 
+                        className="w-full h-48 object-cover rounded-lg border-2 border-border hover:border-primary transition-colors cursor-pointer"
+                        onClick={() => window.open(job.customerReceiptPhotoUrl, '_blank')}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">Click to enlarge</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {job.customerTagsPhotoUrl && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm text-foreground">🏷️ Original Tags Attached</h4>
+                    <div className="relative group">
+                      <img 
+                        src={job.customerTagsPhotoUrl} 
+                        alt="Original Tags" 
+                        className="w-full h-48 object-cover rounded-lg border-2 border-border hover:border-primary transition-colors cursor-pointer"
+                        onClick={() => window.open(job.customerTagsPhotoUrl, '_blank')}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">Click to enlarge</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {job.customerPackagingPhotoUrl && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm text-foreground">📦 Original Packaging</h4>
+                    <div className="relative group">
+                      <img 
+                        src={job.customerPackagingPhotoUrl} 
+                        alt="Original Packaging" 
+                        className="w-full h-48 object-cover rounded-lg border-2 border-border hover:border-primary transition-colors cursor-pointer"
+                        onClick={() => window.open(job.customerPackagingPhotoUrl, '_blank')}
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors rounded-lg flex items-center justify-center">
+                        <span className="text-white opacity-0 group-hover:opacity-100 text-sm font-medium">Click to enlarge</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-700 rounded-lg">
+                <p className="text-sm text-amber-900 dark:text-amber-100">
+                  <strong>Important:</strong> These photos serve as proof of purchase for the retailer. Present them if the retailer requests verification during drop-off.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Status Update Actions */}
         <Card className="bg-white/90 backdrop-blur-sm border-border">
           <CardHeader>

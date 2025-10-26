@@ -3366,11 +3366,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Order Messages
   app.get("/api/orders/:orderId/messages", isAuthenticated, async (req, res) => {
     try {
-      const messages = await storage.getOrderMessages(req.params.orderId);
+      const userId = (req.session as any).user.id;
+      const messages = await storage.getOrderMessages(req.params.orderId, userId);
       res.json(messages);
     } catch (error) {
       console.error('Get order messages error:', error);
-      res.status(500).json({ message: "Failed to fetch messages" });
+      const statusCode = error instanceof Error && error.message.includes('Unauthorized') ? 403 : 500;
+      res.status(statusCode).json({ message: error instanceof Error ? error.message : "Failed to fetch messages" });
     }
   });
   
@@ -3381,7 +3383,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(message);
     } catch (error) {
       console.error('Send order message error:', error);
-      res.status(500).json({ message: "Failed to send message" });
+      const statusCode = error instanceof Error && error.message.includes('Unauthorized') ? 403 : 500;
+      res.status(statusCode).json({ message: error instanceof Error ? error.message : "Failed to send message" });
     }
   });
 

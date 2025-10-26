@@ -36,6 +36,7 @@ import {
   type AppReview, type InsertAppReview,
   type CompanyRating,
   type UserNotificationPreference, type InsertUserNotificationPreference,
+  type Message, type InsertMessage,
   type SystemSetting, type InsertSystemSetting,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
@@ -55,6 +56,7 @@ import {
   reviews, driverReviews, appReviews, companyRatings,
   customerWaitlist, zipCodeManagement, otpVerification,
   userNotificationPreferences,
+  messages,
   systemSettings
 } from "@shared/schema";
 import { db } from "./db";
@@ -399,7 +401,7 @@ export interface IStorage {
   updateCustomerNotificationSettings(userId: number, settings: any): Promise<any>;
   
   // Order Messages (using existing chatMessages/chatConversations tables)
-  getOrderMessages(orderId: string): Promise<any[]>;
+  getOrderMessages(orderId: string, requesterId?: number): Promise<any[]>;
   sendOrderMessage(orderId: string, senderId: number, message: string): Promise<any>;
   
   // === REVIEW SYSTEM ===
@@ -4666,28 +4668,62 @@ export class DatabaseStorage implements IStorage {
   }
   
   // Order Messages Management
-  async getOrderMessages(orderId: string): Promise<any[]> {
-    // For now, return mock messages - full implementation would use chatConversations/chatMessages
-    return [
-      {
-        id: '1',
-        sender: 'driver',
-        message: 'On my way to pick up your package!',
-        timestamp: new Date(Date.now() - 300000).toISOString()
+  async getOrderMessages(orderId: string, requesterId?: number): Promise<any[]> {
+    // SECURITY: If requesterId provided, verify they're authorized to view messages
+    if (requesterId) {
+      const order = await this.getOrder(orderId);
+      if (!order) throw new Error('Order not found');
+      
+      const isCustomer = order.userId === requesterId;
+      const isDriver = order.driverId === requesterId;
+      
+      if (!isCustomer && !isDriver) {
+        throw new Error('Unauthorized: You are not a participant in this order conversation');
       }
-    ];
+    }
+    
+    const msgs = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.orderId, orderId))
+      .orderBy(messages.createdAt);
+    return msgs;
   }
   
-  async sendOrderMessage(orderId: string, senderId: number, message: string): Promise<any> {
-    // For now, return mock response - full implementation would create chatMessage
-    return {
-      id: `msg_${Date.now()}`,
-      orderId,
-      senderId,
-      message,
-      timestamp: new Date().toISOString(),
-      success: true
-    };
+  async sendOrderMessage(orderId: string, senderId: number, messageText: string): Promise<any> {
+    // Get sender information
+    const sender = await this.getUser(senderId);
+    if (!sender) throw new Error('Sender not found');
+    
+    // Get order to determine sender type
+    const order = await this.getOrder(orderId);
+    if (!order) throw new Error('Order not found');
+    
+    // SECURITY: Verify sender is authorized (must be customer or assigned driver)
+    const isCustomer = order.userId === senderId;
+    const isDriver = order.driverId === senderId;
+    
+    if (!isCustomer && !isDriver) {
+      throw new Error('Unauthorized: You are not a participant in this order conversation');
+    }
+    
+    // Determine sender type (customer or driver)
+    const senderType = isCustomer ? 'customer' : 'driver';
+    const senderName = sender.name || sender.email;
+    
+    // Insert message
+    const [newMessage] = await db
+      .insert(messages)
+      .values({
+        orderId,
+        senderId,
+        senderType,
+        senderName,
+        messageText,
+      })
+      .returning();
+    
+    return newMessage;
   }
   
   // === REVIEW SYSTEM IMPLEMENTATION ===
