@@ -181,6 +181,22 @@ export default function CustomerDashboard() {
               <p className="text-muted-foreground mt-2">Customer Dashboard</p>
             </div>
             <div className="flex items-center gap-3">
+              {/* Notifications Bell */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="relative border-amber-300 hover:bg-amber-50"
+                onClick={() => setLocation('/customer-notifications')}
+                data-testid="button-notifications"
+              >
+                <Bell className="h-5 w-5 text-amber-700" />
+                {unreadNotificationsCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                  </span>
+                )}
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" className="flex items-center gap-2 border-amber-300 hover:bg-amber-50" data-testid="button-user-menu">
@@ -216,6 +232,19 @@ export default function CustomerDashboard() {
                       </Link>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem asChild>
+                    <Link href="/customer-notifications">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-notifications">
+                        <Bell className="h-4 w-4 mr-2" />
+                        <span>Notifications</span>
+                        {unreadNotificationsCount > 0 && (
+                          <span className="ml-auto bg-red-600 text-white text-xs font-bold rounded-full px-2 py-0.5">
+                            {unreadNotificationsCount}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/account-settings">
                       <div className="flex items-center w-full cursor-pointer" data-testid="menu-account-settings">
