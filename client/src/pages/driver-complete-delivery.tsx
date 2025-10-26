@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocation, useRoute } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { AlertTriangle, CheckCircle, CreditCard, Gift, FileText } from "lucide-react";
+import { AlertTriangle, CheckCircle, CreditCard, Gift, FileText, Camera, Upload, X } from "lucide-react";
 
 export default function DriverCompleteDelivery() {
   const [, params] = useRoute("/driver/complete/:orderId");
@@ -18,12 +18,17 @@ export default function DriverCompleteDelivery() {
   const queryClient = useQueryClient();
 
   const [deliveryNotes, setDeliveryNotes] = useState("");
-  const [photosUploaded, setPhotosUploaded] = useState(false);
+  const [photos, setPhotos] = useState<Array<{url: string, file?: File}>>([]);
   const [refundMethod, setRefundMethod] = useState("original_payment");
   const [refundAmount, setRefundAmount] = useState("");
   const [isCustomAmount, setIsCustomAmount] = useState(false);
   const [hasPhysicalGiftCard, setHasPhysicalGiftCard] = useState(false);
   const [giftCardAmount, setGiftCardAmount] = useState("");
+  const [showCamera, setShowCamera] = useState(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch order details
   const { data: order, isLoading } = useQuery({
@@ -68,7 +73,7 @@ export default function DriverCompleteDelivery() {
     }
 
     if (hasPhysicalGiftCard) {
-      if (!photosUploaded) {
+      if (photos.length === 0) {
         toast({
           title: "Photo Required",
           description: "Please upload photos of the gift card before completing.",
@@ -87,12 +92,15 @@ export default function DriverCompleteDelivery() {
         return;
       }
     }
+    
+    // TODO: Upload photos to server if needed
+    // For now, we just track that photos were taken
 
     const customRefundAmount = isCustomAmount ? parseFloat(refundAmount) : undefined;
     
     completeMutation.mutate({
       deliveryNotes,
-      photosUploaded,
+      photosUploaded: photos.length > 0,
       refundMethod,
       customRefundAmount,
       refundReason: "return_delivered",
@@ -100,6 +108,77 @@ export default function DriverCompleteDelivery() {
       giftCardAmount: hasPhysicalGiftCard ? parseFloat(giftCardAmount) : undefined
       // Note: giftCardDeliveryFee is determined server-side for security
     });
+  };
+
+  // Camera functions
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } // Use back camera on mobile
+      });
+      setStream(mediaStream);
+      setShowCamera(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (error) {
+      toast({
+        title: "Camera Access Denied",
+        description: "Please allow camera access to take photos.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+    }
+    setShowCamera(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(video, 0, 0);
+        const photoUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setPhotos(prev => [...prev, { url: photoUrl }]);
+        stopCamera();
+        toast({
+          title: "Photo Captured",
+          description: `Photo ${photos.length + 1} added successfully.`,
+        });
+      }
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            setPhotos(prev => [...prev, { url: event.target!.result as string, file }]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      toast({
+        title: "Photos Added",
+        description: `${files.length} photo(s) uploaded successfully.`,
+      });
+    }
+  };
+
+  const removePhoto = (index: number) => {
+    setPhotos(prev => prev.filter((_, i) => i !== index));
   };
 
   if (isLoading) {
@@ -194,17 +273,101 @@ export default function DriverCompleteDelivery() {
               />
             </div>
 
-            {/* Photo Confirmation */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="photosUploaded"
-                checked={photosUploaded}
-                onCheckedChange={setPhotosUploaded}
-                data-testid="checkbox-photos-uploaded"
-              />
-              <Label htmlFor="photosUploaded" className="text-sm">
-                Delivery photos uploaded
-              </Label>
+            {/* Package Verification Photos */}
+            <div className="space-y-3">
+              <Label className="text-sm font-medium">Package Verification Photos</Label>
+              <p className="text-xs text-muted-foreground">Take or upload photos of the package for verification</p>
+              
+              {/* Photo Preview Grid */}
+              {photos.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {photos.map((photo, index) => (
+                    <div key={index} className="relative group">
+                      <img 
+                        src={photo.url} 
+                        alt={`Package photo ${index + 1}`}
+                        className="w-full h-32 object-cover rounded-lg border border-border"
+                      />
+                      <button
+                        onClick={() => removePhoto(index)}
+                        className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        type="button"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Camera View */}
+              {showCamera && (
+                <div className="relative">
+                  <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline
+                    className="w-full rounded-lg border border-border"
+                  />
+                  <canvas ref={canvasRef} className="hidden" />
+                  <div className="flex gap-2 mt-2">
+                    <Button 
+                      onClick={capturePhoto}
+                      className="flex-1"
+                      type="button"
+                      data-testid="button-capture-photo"
+                    >
+                      <Camera className="h-4 w-4 mr-2" />
+                      Capture Photo
+                    </Button>
+                    <Button 
+                      onClick={stopCamera}
+                      variant="outline"
+                      type="button"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Camera/Upload Buttons */}
+              {!showCamera && (
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={startCamera}
+                    variant="outline"
+                    className="flex-1"
+                    type="button"
+                    data-testid="button-open-camera"
+                  >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Take Photo
+                  </Button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <Button 
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="outline"
+                    className="flex-1"
+                    type="button"
+                    data-testid="button-upload-photo"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Photos
+                  </Button>
+                </div>
+              )}
+
+              <p className="text-xs text-muted-foreground">
+                {photos.length} photo(s) added {photos.length > 0 && '✓'}
+              </p>
             </div>
 
             {/* Refund Method */}
