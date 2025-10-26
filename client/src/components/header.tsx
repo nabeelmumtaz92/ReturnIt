@@ -37,19 +37,12 @@ export function Header({ title, subtitle, showBack = false, backUrl = "/", class
                   height="32" 
                   viewBox="0 0 100 100" 
                   aria-label="Return It"
+                  fill="none"
                 >
-                  <text 
-                    x="50" 
-                    y="75" 
-                    fontSize="80" 
-                    fontWeight="700" 
+                  <path 
+                    d="M20 10 L20 90 L35 90 L35 55 L50 55 L65 90 L82 90 L65 53 C72 50 78 42 78 30 C78 16 68 10 55 10 L20 10 Z M35 24 L53 24 C60 24 63 27 63 32 C63 37 60 41 53 41 L35 41 L35 24 Z" 
                     fill="#8B4513"
-                    fontFamily="Inter, system-ui, sans-serif"
-                    textAnchor="middle"
-                    letterSpacing="-2px"
-                  >
-                    R
-                  </text>
+                  />
                 </svg>
               </div>
             </Link>
