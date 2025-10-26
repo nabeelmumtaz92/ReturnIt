@@ -181,8 +181,15 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   
   // Function to change sections
   const changeSection = (newSection: string) => {
-    console.log('Admin Dashboard - Changing section to:', newSection);
-    console.log('Current section:', currentSection);
+    console.log('🔄 [ADMIN NAVIGATION] Changing section to:', newSection);
+    console.log('📍 [ADMIN NAVIGATION] Current section:', currentSection);
+    
+    // Show a toast to confirm button click
+    toast({
+      title: "Navigation",
+      description: `Switching to ${newSection.replace('-', ' ')}...`,
+      duration: 1500,
+    });
     
     // Don't add to history if we're already on this section
     if (newSection !== currentSection) {
@@ -195,7 +202,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       });
       
       setCurrentSection(newSection);
-      console.log('Section changed to:', newSection);
+      console.log('✅ [ADMIN NAVIGATION] Section changed to:', newSection);
       
       // Update URL without triggering navigation (avoids component remount)
       const newUrl = newSection === 'overview' 
@@ -203,7 +210,7 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
         : `/admin-dashboard?section=${newSection}`;
       window.history.replaceState({}, '', newUrl);
     } else {
-      console.log('Already on section:', newSection);
+      console.log('⚠️  [ADMIN NAVIGATION] Already on section:', newSection);
     }
   };
 
