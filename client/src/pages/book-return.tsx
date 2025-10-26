@@ -57,6 +57,7 @@ interface FormData {
   tagsPhotoUrl?: string;
   packagingPhotoUrl?: string;
   // Page 3
+  tip: number;
   paymentMethod: string;
 }
 
@@ -228,8 +229,95 @@ const STORE_LOCATIONS: Record<string, string[]> = {
   ],
 }
 
+// Simple geocoding for St. Louis area ZIP codes (approximate coordinates)
+const ZIP_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  '63101': { lat: 38.6270, lng: -90.1994 }, // Downtown
+  '63102': { lat: 38.6350, lng: -90.1880 },
+  '63103': { lat: 38.6340, lng: -90.2080 },
+  '63104': { lat: 38.6040, lng: -90.2360 },
+  '63105': { lat: 38.6450, lng: -90.3340 }, // Clayton
+  '63106': { lat: 38.6580, lng: -90.2160 },
+  '63107': { lat: 38.6680, lng: -90.2220 },
+  '63108': { lat: 38.6380, lng: -90.2650 },
+  '63109': { lat: 38.5740, lng: -90.2860 },
+  '63110': { lat: 38.5980, lng: -90.2540 },
+  '63111': { lat: 38.5420, lng: -90.2660 },
+  '63112': { lat: 38.6540, lng: -90.2680 },
+  '63113': { lat: 38.6760, lng: -90.2380 },
+  '63114': { lat: 38.7020, lng: -90.3340 },
+  '63115': { lat: 38.6880, lng: -90.2040 },
+  '63116': { lat: 38.5680, lng: -90.2680 },
+  '63117': { lat: 38.6620, lng: -90.3120 },
+  '63118': { lat: 38.5860, lng: -90.2280 },
+  '63119': { lat: 38.5780, lng: -90.3360 }, // Webster Groves
+  '63120': { lat: 38.7060, lng: -90.2620 },
+  '63121': { lat: 38.7380, lng: -90.3140 },
+  '63122': { lat: 38.5920, lng: -90.3840 },
+  '63123': { lat: 38.5380, lng: -90.3140 },
+  '63124': { lat: 38.6320, lng: -90.3660 }, // Ladue
+  '63125': { lat: 38.4840, lng: -90.2980 },
+  '63126': { lat: 38.5460, lng: -90.3860 },
+  '63127': { lat: 38.5260, lng: -90.3640 },
+  '63128': { lat: 38.4880, lng: -90.3660 },
+  '63129': { lat: 38.4720, lng: -90.3220 },
+  '63130': { lat: 38.6660, lng: -90.3300 }, // University City
+  '63131': { lat: 38.6140, lng: -90.4540 },
+  '63132': { lat: 38.6720, lng: -90.3680 },
+  '63133': { lat: 38.7260, lng: -90.2780 },
+  '63134': { lat: 38.7340, lng: -90.3620 },
+  '63135': { lat: 38.7600, lng: -90.2780 },
+  '63136': { lat: 38.7520, lng: -90.3140 },
+  '63137': { lat: 38.7700, lng: -90.2420 },
+  '63138': { lat: 38.7860, lng: -90.2160 },
+  '63139': { lat: 38.6160, lng: -90.2940 },
+  '63140': { lat: 38.6960, lng: -90.2940 },
+  '63141': { lat: 38.6620, lng: -90.4340 },
+  '63143': { lat: 38.6060, lng: -90.3320 }, // Brentwood
+  '63144': { lat: 38.6080, lng: -90.3180 },
+  '63146': { lat: 38.7080, lng: -90.4340 },
+};
+
+// Calculate distance between two coordinates using Haversine formula
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 3959; // Earth's radius in miles
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
+  
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Parse store location to get coordinates
+function getStoreCoordinates(storeLocation: string): { lat: number; lng: number } {
+  // Extract city from store location string (format: "City, State - Address - Store Name")
+  const cityMatch = storeLocation.match(/^([^,]+)/);
+  const city = cityMatch ? cityMatch[1].trim() : '';
+  
+  // Map cities to approximate coordinates
+  const cityCoordinates: Record<string, { lat: number; lng: number }> = {
+    'Brentwood': { lat: 38.6167, lng: -90.3461 },
+    'Chesterfield': { lat: 38.6631, lng: -90.5772 },
+    'Clayton': { lat: 38.6456, lng: -90.3234 },
+    'Kirkwood': { lat: 38.5833, lng: -90.4067 },
+    'St. Louis': { lat: 38.6270, lng: -90.1994 },
+    'Des Peres': { lat: 38.6000, lng: -90.4333 },
+    'Lemay': { lat: 38.5156, lng: -90.2881 },
+    'Bridgeton': { lat: 38.7692, lng: -90.4184 },
+    'Town and Country': { lat: 38.6250, lng: -90.4750 },
+  };
+  
+  return cityCoordinates[city] || { lat: 38.6270, lng: -90.1994 }; // Default to downtown St. Louis
+}
+
 // Pricing calculation based on business rules
-function calculatePricing(formData: FormData) {
+function calculatePricing(formData: FormData & { tip?: number }) {
   const basePrice = 8.99; // Base pickup fee
   
   // Size upcharge based on box size
@@ -249,23 +337,51 @@ function calculatePricing(formData: FormData) {
     return sum + value;
   }, 0);
   
+  // Calculate distance for fuel fee
+  let distance = 10; // Default 10 miles if calculation fails
+  let fuelFee = 1.25; // Default fuel fee
+  
+  if (formData.zipCode && formData.retailerLocation) {
+    const pickupCoords = ZIP_COORDINATES[formData.zipCode] || { lat: 38.6270, lng: -90.1994 };
+    const storeCoords = getStoreCoordinates(formData.retailerLocation);
+    
+    // Calculate straight-line distance and apply 1.3x factor for actual roads
+    const straightLineDistance = calculateDistance(
+      pickupCoords.lat,
+      pickupCoords.lng,
+      storeCoords.lat,
+      storeCoords.lng
+    );
+    distance = straightLineDistance * 1.3; // Account for actual road distance
+    
+    // Calculate fuel fee based on distance
+    // Assumptions: $3.50/gallon gas, 25 MPG average, round trip
+    const gasPrice = 3.50;
+    const mpg = 25;
+    const roundTripDistance = distance * 2;
+    fuelFee = (roundTripDistance / mpg) * gasPrice;
+    fuelFee = Math.max(fuelFee, 1.25); // Minimum $1.25 fuel fee
+  }
+  
   const subtotal = basePrice + sizeUpcharge + multiBoxFee;
-  const serviceFee = 1.50; // Platform service fee
-  const fuelFee = 1.25; // Flat fuel fee
+  const serviceFee = subtotal * 0.15; // 15% of subtotal
   const taxRate = 0; // 0% tax
   const tax = (subtotal + serviceFee + fuelFee) * taxRate;
+  const tip = formData.tip || 0;
   
-  const total = subtotal + serviceFee + fuelFee + tax;
+  const total = subtotal + serviceFee + fuelFee + tax + tip;
   
   return {
     basePrice,
     sizeUpcharge,
     multiBoxFee,
     totalItemValue,
+    distance: Math.round(distance * 10) / 10, // Round to 1 decimal
     subtotal,
     serviceFee,
     fuelFee,
     tax,
+    tip,
     total
   };
 }
@@ -372,6 +488,7 @@ export default function BookReturn() {
     notes: '',
     boxSize: 'small',
     numberOfBoxes: 1,
+    tip: 0,
     paymentMethod: 'card'
   });
 
@@ -1523,11 +1640,11 @@ export default function BookReturn() {
                       <span className="font-medium">${pricing.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Service Fee</span>
+                      <span className="text-muted-foreground">Service Fee (15%)</span>
                       <span className="font-medium">${pricing.serviceFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Fuel Fee</span>
+                      <span className="text-muted-foreground">Fuel Fee ({pricing.distance} mi roundtrip)</span>
                       <span className="font-medium">${pricing.fuelFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
@@ -1539,6 +1656,80 @@ export default function BookReturn() {
                       <span className="text-lg font-bold">Total</span>
                       <span className="text-2xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
                     </div>
+                  </div>
+                </div>
+
+                {/* Add Tip Section */}
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-5 rounded-lg border-2 border-amber-200">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-amber-900">
+                    ❤️ Add a Tip for Your Driver (Optional)
+                  </h3>
+                  <p className="text-sm text-amber-800 mb-4">
+                    Show appreciation for great service! 100% of tips go directly to your driver.
+                  </p>
+                  
+                  {/* Preset Tip Buttons */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    <Button
+                      type="button"
+                      variant={formData.tip === pricing.subtotal * 0.10 ? "default" : "outline"}
+                      onClick={() => updateField('tip', pricing.subtotal * 0.10)}
+                      className={formData.tip === pricing.subtotal * 0.10 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-10"
+                    >
+                      10%
+                      <br />
+                      <span className="text-xs">${(pricing.subtotal * 0.10).toFixed(2)}</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.tip === pricing.subtotal * 0.15 ? "default" : "outline"}
+                      onClick={() => updateField('tip', pricing.subtotal * 0.15)}
+                      className={formData.tip === pricing.subtotal * 0.15 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-15"
+                    >
+                      15%
+                      <br />
+                      <span className="text-xs">${(pricing.subtotal * 0.15).toFixed(2)}</span>
+                    </Button>
+                    <Button
+                      type="button"
+                      variant={formData.tip === pricing.subtotal * 0.20 ? "default" : "outline"}
+                      onClick={() => updateField('tip', pricing.subtotal * 0.20)}
+                      className={formData.tip === pricing.subtotal * 0.20 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-20"
+                    >
+                      20%
+                      <br />
+                      <span className="text-xs">${(pricing.subtotal * 0.20).toFixed(2)}</span>
+                    </Button>
+                  </div>
+                  
+                  {/* Custom Tip Input */}
+                  <div>
+                    <Label htmlFor="customTip" className="text-sm font-semibold text-amber-900">Custom Tip Amount</Label>
+                    <div className="relative mt-1.5">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                      <Input
+                        id="customTip"
+                        type="number"
+                        value={formData.tip || ''}
+                        onChange={(e) => updateField('tip', parseFloat(e.target.value) || 0)}
+                        placeholder="0.00"
+                        step="0.01"
+                        min="0"
+                        className="pl-7"
+                        data-testid="input-custom-tip"
+                      />
+                    </div>
+                    {formData.tip > 0 && (
+                      <div className="mt-3 p-3 bg-white rounded-lg border border-amber-300">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-amber-900">New Total with Tip:</span>
+                          <span className="text-xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
