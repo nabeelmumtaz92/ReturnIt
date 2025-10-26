@@ -29,6 +29,7 @@ Preferred communication style: Simple, everyday language.
 - **Users**: Authentication, roles, Stripe Connect, payment preferences.
 - **Orders**: Full lifecycle management, payment processing, retailer tracking.
 - **Driver Payouts**: Tracking, Stripe transfers, 1099 generation.
+- **Driver Payment Methods**: PCI-compliant storage of Stripe references for bank accounts and debit cards (no raw PAN/ABA data).
 - **Retailer Accounts**: Multi-admin access, role management, API keys, webhooks.
 
 ## Key Features
@@ -94,7 +95,8 @@ Preferred communication style: Simple, everyday language.
 - HMAC-SHA256 cryptographic signatures with configurable expiration (default 72 hours) for tamper-proof, resource-specific access to order details, receipts, and invoices.
 
 ### Data Protection & Compliance
-- PCI-compliant payment processing via Stripe.
+- **PCI-compliant payment processing via Stripe**: All payment card and bank account data stored only as Stripe references (IDs), never raw PAN/ABA data.
+- **Driver Instant Pay System**: Complete backend implementation with $0.50 fee, comprehensive validation (KYC, balance, eligibility), and rate-limited API endpoints.
 - Stripe Identity verification for drivers with webhook-based status sync.
 - IRS-compliant 1099-NEC tax form generation and distribution system.
 - Server-side session storage (PostgreSQL).
@@ -102,6 +104,39 @@ Preferred communication style: Simple, everyday language.
 - Data encryption in transit (HTTPS/TLS).
 - Secure API key storage in environment variables.
 - Private object storage for sensitive tax documents.
+
+### Instant Pay System Implementation Status
+**✅ Completed Backend Infrastructure:**
+- `driver_payment_methods` table (PCI-compliant, Stripe references only)
+- Complete storage interface with CRUD operations for payment methods
+- Stripe service layer with Financial Connections API (bank accounts), Setup Intents (debit cards), and instant payout execution
+- Comprehensive API routes with proper rate limiting (paymentRateLimit, driverActionRateLimit)
+- Instant payout validation: KYC checks, balance verification, minimum amounts ($5), eligibility validation, payment method ownership
+- $0.50 flat fee per instant payout transaction
+
+**✅ Completed Frontend UI:**
+- Driver payments page with 5 tabs: Instant Pay, Payment Methods, Earnings, Incentives, Tax Info
+- Payment methods management interface (list, remove, set default)
+- Instant payout modal with amount input, fee calculation, and confirmation
+- Comprehensive validation warnings (KYC required, payment method required, insufficient balance)
+- Complete data-testid coverage for e2e testing
+
+**🔄 Next Steps (Stripe UI Integration):**
+1. Integrate Stripe Financial Connections SDK for bank account linking
+2. Integrate Stripe Card Element for debit card capture
+3. Complete client-side flow handling and callbacks
+4. Implement webhook handlers for payment method verification events
+5. End-to-end testing with real Stripe test accounts
+
+**API Endpoints:**
+- `GET /api/driver/payment-methods` - List all payment methods (with driverActionRateLimit)
+- `POST /api/driver/payment-methods/bank-account/session` - Create Financial Connections session (with paymentRateLimit)
+- `POST /api/driver/payment-methods/bank-account` - Attach bank account (with paymentRateLimit)
+- `POST /api/driver/payment-methods/card/setup` - Create card setup intent (with paymentRateLimit)
+- `POST /api/driver/payment-methods/card` - Attach debit card (with paymentRateLimit)
+- `DELETE /api/driver/payment-methods/:id` - Remove payment method (with paymentRateLimit)
+- `POST /api/driver/payment-methods/:id/set-default` - Set default payment method (with driverActionRateLimit)
+- `POST /api/driver/instant-payout` - Execute instant payout (with driverActionRateLimit)
 
 ### Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.
