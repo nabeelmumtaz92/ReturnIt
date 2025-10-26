@@ -1387,7 +1387,7 @@ export default function BookReturn() {
                       <div className="flex-1">
                         <h4 className="font-semibold text-red-900">Photo Verification Required</h4>
                         <p className="text-sm text-red-700 mt-1 font-medium">
-                          You must upload a photo showing proof of purchase. Choose ONE option below.
+                          Upload at least 1 of the 3 options below (preferably all 3)
                         </p>
                         <p className="text-xs text-red-600 mt-2">
                           This protects you, our drivers, and ensures a smooth return process.
@@ -1399,9 +1399,9 @@ export default function BookReturn() {
                   <div className="space-y-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <Shield className="h-5 w-5 text-amber-600" />
-                      <Label className="text-foreground font-semibold text-base">Upload 1 of 3 Options *</Label>
+                      <Label className="text-foreground font-semibold text-base">Upload at least 1 (preferably all 3) *</Label>
                     </div>
-                    <p className="text-sm text-muted-foreground font-medium">Upload a photo of ONE of the following:</p>
+                    <p className="text-sm text-muted-foreground font-medium">Upload at least 1 of the 3 options (preferably all 3):</p>
                     
                     {/* Option 1: Receipt Photo */}
                     <div className="space-y-2 p-3 bg-white rounded border border-border">
