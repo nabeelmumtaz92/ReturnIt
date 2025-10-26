@@ -52,6 +52,8 @@ Preferred communication style: Simple, everyday language.
 - **Earnings Dashboard**: Daily/weekly/monthly views.
 - **Instant/Weekly Payouts**: Stripe Connect integration (70/30 split).
 - **AI-Powered Nearby Order Detection**: Cluster visualization with recommended routes.
+- **Stripe Identity Verification**: Complete KYC flow with session-based verification for driver onboarding.
+- **Tax Documents Portal**: Access and download annual 1099-NEC forms for tax filing.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
@@ -59,6 +61,8 @@ Preferred communication style: Simple, everyday language.
 - Advanced analytics, Excel export.
 - **AI Knowledge Center**: Self-updating AI assistant tracking database models and API endpoints with a draggable button.
 - **Real-Time Driver Tracking**: Interactive Mapbox map with active driver locations and detailed modals.
+- **Driver Identity Verification Management**: Review Stripe Identity verification results and status.
+- **1099 Tax Form System**: Annual tax form generation, bulk processing, email distribution, and compliance tracking for IRS 1099-NEC requirements.
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
@@ -77,6 +81,7 @@ Preferred communication style: Simple, everyday language.
 - **Level 2 (Authenticated Access)**: Session-based authentication, Bcrypt hashing, role-based authorization, OAuth, secure session cookies.
 - **Level 3 (Sensitive Documents)**: HMAC-SHA256 signed URLs with configurable expiration for receipts, invoices, and order details.
 - **Level 4 (Real-Time Tracking)**: Tracking number + ZIP code verification, enhanced rate limiting, IP-based throttling, WebSocket authentication.
+- **Level 5 (Tax Documents)**: Private object storage with ACL policies, driver/admin-only access control for 1099 forms.
 
 ### Enhanced Rate Limiting
 - Specific limits for authentication, registration, payments, tracking, sensitive documents, and admin endpoints.
@@ -87,11 +92,13 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Protection & Compliance
 - PCI-compliant payment processing via Stripe.
-- Stripe Identity verification for drivers.
+- Stripe Identity verification for drivers with webhook-based status sync.
+- IRS-compliant 1099-NEC tax form generation and distribution system.
 - Server-side session storage (PostgreSQL).
 - SQL injection prevention (Drizzle ORM), XSS protection, security headers (Helmet), CORS protection.
 - Data encryption in transit (HTTPS/TLS).
 - Secure API key storage in environment variables.
+- Private object storage for sensitive tax documents.
 
 ### Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.

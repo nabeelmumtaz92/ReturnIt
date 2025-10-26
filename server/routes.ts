@@ -6490,6 +6490,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Stripe Identity Verification - Create Session
+  app.post("/api/driver/identity/create-session", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Check if already verified
+      if (driver.stripeIdentityStatus === 'verified') {
+        return res.status(400).json({ 
+          message: "Identity already verified",
+          status: 'verified'
+        });
+      }
+
+      // Create Stripe Identity verification session
+      const verificationSession = await stripe.identity.verificationSessions.create({
+        type: 'document',
+        metadata: {
+          userId: driverId.toString(),
+          userEmail: driver.email,
+        },
+        options: {
+          document: {
+            // Request both ID document and selfie for enhanced verification
+            require_id_number: true,
+            require_live_capture: true,
+            require_matching_selfie: true,
+          },
+        },
+      });
+
+      // Update driver with session ID
+      await storage.updateUser(driverId, {
+        stripeIdentitySessionId: verificationSession.id,
+        stripeIdentityStatus: 'processing'
+      });
+
+      res.json({
+        sessionId: verificationSession.id,
+        clientSecret: verificationSession.client_secret,
+        status: verificationSession.status,
+        url: verificationSession.url
+      });
+    } catch (error: any) {
+      console.error('Stripe Identity session creation failed:', error);
+      res.status(500).json({ 
+        message: "Failed to create identity verification session", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Stripe Identity Verification - Check Status
+  app.get("/api/driver/identity/status", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const driver = await storage.getUser(driverId);
+      
+      if (!driver?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      if (!driver.stripeIdentitySessionId) {
+        return res.json({ 
+          status: 'not_started',
+          message: 'No verification session found'
+        });
+      }
+
+      // Retrieve current status from Stripe
+      const verificationSession = await stripe.identity.verificationSessions.retrieve(
+        driver.stripeIdentitySessionId
+      );
+
+      // Update local status if changed
+      if (verificationSession.status !== driver.stripeIdentityStatus) {
+        await storage.updateUser(driverId, {
+          stripeIdentityStatus: verificationSession.status,
+          stripeIdentityVerificationId: verificationSession.last_verification_report || undefined,
+          stripeIdentityVerifiedAt: verificationSession.status === 'verified' ? new Date() : undefined,
+        });
+      }
+
+      res.json({
+        status: verificationSession.status,
+        sessionId: verificationSession.id,
+        verifiedAt: driver.stripeIdentityVerifiedAt,
+        lastError: verificationSession.last_error?.message
+      });
+    } catch (error: any) {
+      console.error('Failed to check identity verification status:', error);
+      res.status(500).json({ 
+        message: "Failed to check verification status", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Stripe Identity Webhook Handler
+  app.post("/api/webhooks/stripe-identity", express.raw({type: 'application/json'}), async (req, res) => {
+    const sig = req.headers['stripe-signature'];
+    
+    if (!sig) {
+      return res.status(400).send('No signature');
+    }
+
+    let event;
+    try {
+      event = stripe.webhooks.constructEvent(
+        req.body,
+        sig,
+        process.env.STRIPE_IDENTITY_WEBHOOK_SECRET || process.env.STRIPE_WEBHOOK_SECRET || ''
+      );
+    } catch (err: any) {
+      console.error('Webhook signature verification failed:', err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the verification session events
+    if (event.type === 'identity.verification_session.verified' || 
+        event.type === 'identity.verification_session.requires_input' ||
+        event.type === 'identity.verification_session.canceled') {
+      
+      const session = event.data.object as any;
+      const userId = parseInt(session.metadata.userId);
+      
+      if (!userId) {
+        console.error('No userId in webhook metadata');
+        return res.status(400).send('No userId in metadata');
+      }
+
+      // Update driver verification status
+      const updateData: any = {
+        stripeIdentityStatus: session.status,
+        stripeIdentityVerificationData: session,
+      };
+
+      if (session.status === 'verified') {
+        updateData.stripeIdentityVerifiedAt = new Date();
+        updateData.stripeIdentityVerificationId = session.last_verification_report;
+        
+        // Automatically update application status
+        updateData.backgroundCheckStatus = 'passed';
+        updateData.applicationStatus = 'approved_active';
+        
+        console.log(`✅ Driver ${userId} identity verified successfully`);
+      } else if (session.status === 'requires_input') {
+        console.log(`⚠️ Driver ${userId} identity verification requires input`);
+      } else if (session.status === 'canceled') {
+        updateData.stripeIdentityStatus = 'canceled';
+        console.log(`❌ Driver ${userId} identity verification canceled`);
+      }
+
+      await storage.updateUser(userId, updateData);
+      
+      // Send notification to driver
+      await storage.createNotification({
+        userId: userId,
+        type: session.status === 'verified' ? 'verification_approved' : 'verification_action_required',
+        title: session.status === 'verified' ? 'Identity Verified!' : 'Identity Verification Update',
+        message: session.status === 'verified' 
+          ? 'Your identity has been successfully verified. You can now start accepting orders!' 
+          : 'Please complete your identity verification to continue.',
+        data: { sessionId: session.id, status: session.status }
+      });
+    }
+
+    res.json({ received: true });
+  });
+
   // Driver routes
   app.get("/api/driver/orders/available", async (req, res) => {
     try {
@@ -13036,6 +13210,274 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     } catch (error) {
       console.error("Error generating sitemap:", error);
       res.status(500).send('<?xml version="1.0" encoding="UTF-8"?><error>Failed to generate sitemap</error>');
+    }
+  });
+
+  // === 1099 TAX FORM ROUTES ===
+  
+  // Get all drivers requiring 1099 for a tax year (admin only)
+  app.get("/api/admin/tax/1099/drivers/:taxYear", requireSecureAdmin, async (req, res) => {
+    try {
+      const { Tax1099Service } = await import("./tax1099Service");
+      const taxYear = parseInt(req.params.taxYear);
+
+      if (!taxYear || taxYear < 2020 || taxYear > new Date().getFullYear()) {
+        return res.status(400).json({ message: "Invalid tax year" });
+      }
+
+      const drivers = await Tax1099Service.getDriversRequiring1099(taxYear);
+      res.json(drivers);
+    } catch (error) {
+      console.error('Error fetching drivers requiring 1099:', error);
+      res.status(500).json({ message: "Failed to fetch drivers requiring 1099" });
+    }
+  });
+
+  // Get tax year summary (admin only)
+  app.get("/api/admin/tax/1099/summary/:taxYear", requireSecureAdmin, async (req, res) => {
+    try {
+      const { Tax1099Service } = await import("./tax1099Service");
+      const taxYear = parseInt(req.params.taxYear);
+
+      if (!taxYear || taxYear < 2020 || taxYear > new Date().getFullYear()) {
+        return res.status(400).json({ message: "Invalid tax year" });
+      }
+
+      const summary = await Tax1099Service.getTaxYearSummary(taxYear);
+      res.json(summary);
+    } catch (error) {
+      console.error('Error fetching tax year summary:', error);
+      res.status(500).json({ message: "Failed to fetch tax year summary" });
+    }
+  });
+
+  // Generate 1099 for a specific driver (admin only)
+  app.post("/api/admin/tax/1099/generate", requireSecureAdmin, async (req, res) => {
+    try {
+      const { Tax1099Service } = await import("./tax1099Service");
+      const { PDF1099Service } = await import("./pdf1099Service");
+      const { driverId, taxYear } = req.body;
+
+      if (!driverId || !taxYear) {
+        return res.status(400).json({ message: "Driver ID and tax year are required" });
+      }
+
+      // Check if already generated
+      const alreadyGenerated = await Tax1099Service.has1099BeenGenerated(driverId, taxYear);
+      if (alreadyGenerated) {
+        return res.status(409).json({ 
+          message: "1099 already generated for this driver/year",
+          regenerate: false
+        });
+      }
+
+      // Calculate earnings data
+      const earningsData = await Tax1099Service.calculateDriverAnnualEarnings(driverId, taxYear);
+      
+      if (!earningsData) {
+        return res.status(404).json({ message: "No earnings data found for this driver/year" });
+      }
+
+      if (earningsData.totalEarnings < 600) {
+        return res.status(400).json({ 
+          message: `Driver earnings ($${earningsData.totalEarnings.toFixed(2)}) are below IRS threshold ($600)` 
+        });
+      }
+
+      // Generate PDF
+      const pdfBuffer = await PDF1099Service.generate1099PDF(earningsData);
+      const filename = PDF1099Service.generateFilename(driverId, taxYear);
+
+      // Upload to object storage
+      const objectStorage = ObjectStorageService.getInstance();
+      const uploadPath = `tax-forms/1099/${taxYear}/${filename}`;
+      
+      await objectStorage.uploadFile({
+        buffer: pdfBuffer,
+        fileName: uploadPath,
+        directory: '.private',
+        acl: ObjectPermission.PRIVATE,
+      });
+
+      const pdfUrl = await objectStorage.getSignedUrl(uploadPath, '.private');
+
+      // Mark as generated in database
+      await Tax1099Service.mark1099Generated(driverId, taxYear, pdfUrl);
+
+      res.json({
+        success: true,
+        message: "1099 generated successfully",
+        driverId,
+        taxYear,
+        filename,
+        pdfUrl,
+        earningsData
+      });
+    } catch (error) {
+      console.error('Error generating 1099:', error);
+      res.status(500).json({ message: "Failed to generate 1099" });
+    }
+  });
+
+  // Bulk generate 1099s for all eligible drivers (admin only)
+  app.post("/api/admin/tax/1099/generate-bulk", requireSecureAdmin, async (req, res) => {
+    try {
+      const { Tax1099Service } = await import("./tax1099Service");
+      const { PDF1099Service } = await import("./pdf1099Service");
+      const { taxYear, forceRegenerate } = req.body;
+
+      if (!taxYear) {
+        return res.status(400).json({ message: "Tax year is required" });
+      }
+
+      // Get all eligible drivers
+      const drivers = await Tax1099Service.getDriversRequiring1099(taxYear);
+      
+      const results = {
+        total: drivers.length,
+        generated: 0,
+        skipped: 0,
+        failed: 0,
+        errors: [] as any[]
+      };
+
+      for (const driverData of drivers) {
+        try {
+          // Check if already generated (unless force regenerate)
+          if (!forceRegenerate) {
+            const alreadyGenerated = await Tax1099Service.has1099BeenGenerated(driverData.driverId, taxYear);
+            if (alreadyGenerated) {
+              results.skipped++;
+              continue;
+            }
+          }
+
+          // Generate PDF
+          const pdfBuffer = await PDF1099Service.generate1099PDF(driverData);
+          const filename = PDF1099Service.generateFilename(driverData.driverId, taxYear);
+
+          // Upload to object storage
+          const objectStorage = ObjectStorageService.getInstance();
+          const uploadPath = `tax-forms/1099/${taxYear}/${filename}`;
+          
+          await objectStorage.uploadFile({
+            buffer: pdfBuffer,
+            fileName: uploadPath,
+            directory: '.private',
+            acl: ObjectPermission.PRIVATE,
+          });
+
+          const pdfUrl = await objectStorage.getSignedUrl(uploadPath, '.private');
+
+          // Mark as generated
+          await Tax1099Service.mark1099Generated(driverData.driverId, taxYear, pdfUrl);
+
+          results.generated++;
+        } catch (error: any) {
+          results.failed++;
+          results.errors.push({
+            driverId: driverData.driverId,
+            email: driverData.driverInfo.email,
+            error: error.message
+          });
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Bulk generation complete`,
+        results
+      });
+    } catch (error) {
+      console.error('Error in bulk 1099 generation:', error);
+      res.status(500).json({ message: "Failed to bulk generate 1099s" });
+    }
+  });
+
+  // Download 1099 PDF for a driver (admin or driver themselves)
+  app.get("/api/tax/1099/download/:driverId/:taxYear", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      const taxYear = parseInt(req.params.taxYear);
+      const user = req.session.user;
+
+      // Check authorization - admin or the driver themselves
+      if (!user?.isAdmin && user?.id !== driverId) {
+        return res.status(403).json({ message: "Not authorized to download this 1099" });
+      }
+
+      const { Tax1099Service } = await import("./tax1099Service");
+
+      // Check if 1099 has been generated
+      const hasGenerated = await Tax1099Service.has1099BeenGenerated(driverId, taxYear);
+      if (!hasGenerated) {
+        return res.status(404).json({ message: "1099 not yet generated for this year" });
+      }
+
+      // Get the PDF URL from object storage
+      const { PDF1099Service } = await import("./pdf1099Service");
+      const filename = PDF1099Service.generateFilename(driverId, taxYear);
+      const objectStorage = ObjectStorageService.getInstance();
+      const uploadPath = `tax-forms/1099/${taxYear}/${filename}`;
+      
+      const pdfUrl = await objectStorage.getSignedUrl(uploadPath, '.private');
+
+      res.json({
+        success: true,
+        pdfUrl,
+        filename
+      });
+    } catch (error) {
+      console.error('Error downloading 1099:', error);
+      res.status(500).json({ message: "Failed to download 1099" });
+    }
+  });
+
+  // Get driver's own 1099 forms
+  app.get("/api/driver/tax/1099/my-forms", isAuthenticated, async (req, res) => {
+    try {
+      const user = req.session.user;
+      
+      if (!user?.isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { Tax1099Service } = await import("./tax1099Service");
+      const { driverPayouts } = await import("@shared/schema");
+      const { eq, and } = await import("drizzle-orm");
+
+      // Get all years with generated 1099s
+      const payouts = await db
+        .select()
+        .from(driverPayouts)
+        .where(
+          and(
+            eq(driverPayouts.driverId, user.id),
+            eq(driverPayouts.form1099Generated, true)
+          )
+        )
+        .execute();
+
+      // Get unique tax years
+      const taxYears = [...new Set(payouts.map(p => p.taxYear))].sort((a, b) => b - a);
+
+      const forms = [];
+      for (const taxYear of taxYears) {
+        const earningsData = await Tax1099Service.calculateDriverAnnualEarnings(user.id, taxYear);
+        if (earningsData) {
+          forms.push({
+            taxYear,
+            totalEarnings: earningsData.totalEarnings,
+            payoutCount: earningsData.payoutCount,
+            available: true
+          });
+        }
+      }
+
+      res.json(forms);
+    } catch (error) {
+      console.error('Error fetching driver 1099 forms:', error);
+      res.status(500).json({ message: "Failed to fetch 1099 forms" });
     }
   });
 

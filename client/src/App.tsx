@@ -71,6 +71,9 @@ const ChatCenter = lazy(() => import("@/pages/chat-center"));
 const DriverJob = lazy(() => import("@/pages/driver-job"));
 const DriverCompleteDelivery = lazy(() => import("@/pages/driver-complete-delivery"));
 const DriverCompleteGiftCardDelivery = lazy(() => import("@/pages/driver-complete-gift-card-delivery"));
+const DriverIdentityVerification = lazy(() => import("@/pages/driver-identity-verification"));
+const AdminTax1099 = lazy(() => import("@/pages/admin-tax-1099"));
+const DriverTaxDocuments = lazy(() => import("@/pages/driver-tax-documents"));
 const RealTimeTrackingAdvanced = lazy(() => import("@/pages/real-time-tracking-advanced"));
 const BusinessIntelligence = lazy(() => import("@/pages/business-intelligence"));
 const NotificationCenter = lazy(() => import("@/pages/notification-center"));
@@ -208,6 +211,8 @@ function Router() {
       <Route path="/driver/complete/:orderId" component={DriverCompleteDelivery} />
       <Route path="/driver/complete-gift-card/:orderId" component={DriverCompleteGiftCardDelivery} />
       <Route path="/driver-review-order" component={DriverReviewOrder} />
+      <Route path="/driver-identity-verification" component={DriverIdentityVerification} />
+      <Route path="/driver-tax-documents" component={DriverTaxDocuments} />
       <Route path="/driver-payments" component={DriverPayments} />
       <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
@@ -382,6 +387,15 @@ function Router() {
             return <NotFound />;
           }
           return <AdminPaymentTracking />;
+        }}
+      </Route>
+      <Route path="/admin-tax-1099">
+        {() => {
+          // Admin access required
+          if (!user?.isAdmin) {
+            return <NotFound />;
+          }
+          return <AdminTax1099 />;
         }}
       </Route>
       <Route path="/about" component={About} />
