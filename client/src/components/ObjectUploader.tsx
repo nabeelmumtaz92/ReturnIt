@@ -1,4 +1,4 @@
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useRef } from "react";
 import Uppy from "@uppy/core";
 import { DashboardModal } from "@uppy/react";
 import "@uppy/core/dist/style.min.css";
@@ -6,6 +6,7 @@ import "@uppy/dashboard/dist/style.min.css";
 import AwsS3 from "@uppy/aws-s3";
 import type { UploadResult } from "@uppy/core";
 import { Button } from "@/components/ui/button";
+import { Camera, Upload } from "lucide-react";
 
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
@@ -64,11 +65,18 @@ export function ObjectUploader({
   testId = "button-upload",
 }: ObjectUploaderProps) {
   const [showModal, setShowModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Detect mobile device
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
   const [uppy] = useState(() =>
     new Uppy({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize,
+        allowedFileTypes: ['image/*'], // Only images for mobile camera
       },
       autoProceed: false,
     })
@@ -79,28 +87,89 @@ export function ObjectUploader({
       .on("complete", (result) => {
         onComplete?.(result);
         setShowModal(false);
+        setIsUploading(false);
       })
   );
+
+  // Handle native file input for mobile
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    try {
+      // Add files to Uppy
+      Array.from(files).forEach(file => {
+        uppy.addFile({
+          name: file.name,
+          type: file.type,
+          data: file,
+          source: 'Native File Input',
+        });
+      });
+      
+      // Upload files
+      await uppy.upload();
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsUploading(false);
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (isMobile && fileInputRef.current) {
+      // On mobile, trigger native file input (opens camera/photos)
+      fileInputRef.current.click();
+    } else {
+      // On desktop, show Uppy modal
+      setShowModal(true);
+    }
+  };
 
   return (
     <div>
       <Button 
-        onClick={() => setShowModal(true)} 
+        onClick={handleButtonClick}
         className={buttonClassName}
         variant={variant}
         size={size}
         type="button"
         data-testid={testId}
+        disabled={isUploading}
       >
-        {children}
+        {isUploading ? (
+          <>Uploading...</>
+        ) : (
+          <>
+            {isMobile ? <Camera className="h-4 w-4 mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
+            {children}
+          </>
+        )}
       </Button>
 
-      <DashboardModal
-        uppy={uppy}
-        open={showModal}
-        onRequestClose={() => setShowModal(false)}
-        proudlyDisplayPoweredByUppy={false}
-      />
+      {/* Native file input for mobile (hidden) */}
+      {isMobile && (
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment" // Opens camera on mobile
+          multiple={maxNumberOfFiles > 1}
+          onChange={handleFileChange}
+          style={{ display: 'none' }}
+          data-testid={`${testId}-input`}
+        />
+      )}
+
+      {/* Uppy modal for desktop */}
+      {!isMobile && (
+        <DashboardModal
+          uppy={uppy}
+          open={showModal}
+          onRequestClose={() => setShowModal(false)}
+          proudlyDisplayPoweredByUppy={false}
+        />
+      )}
     </div>
   );
 }
