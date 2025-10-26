@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Truck, Package, User, Search, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { Truck, Package, User, Search, LogOut, Settings, ChevronDown, MapPin } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -165,17 +165,39 @@ export default function Welcome() {
         <div className="w-full max-w-6xl">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 lg:gap-12">
             
-            {/* Left Side - All Headers */}
+            {/* Left Side - Headers, Button, and Badge */}
             <div className="flex-1 space-y-4 text-center md:text-left">
-              {/* Slogan */}
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-black font-medium italic text-amber-700">
-                Return It. Give back, uplift others.
-              </p>
+              {/* H1 - Main Title */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-amber-900">
+                Return It
+              </h1>
               
-              {/* Tagline */}
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-semibold">
+              {/* H2 - Slogan */}
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium italic text-amber-700">
+                Return It. Give back, uplift others.
+              </h2>
+              
+              {/* H3 - Tagline */}
+              <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-amber-800">
                 The Leader in Returns Delivery and Reverse Logistics.
-              </p>
+              </h3>
+              
+              {/* Book Return Button */}
+              <div className="pt-2">
+                <Link href="/book-pickup">
+                  <Button size="lg" className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg" data-testid="button-book-return">
+                    Book Return
+                  </Button>
+                </Link>
+              </div>
+              
+              {/* St. Louis Badge */}
+              <div className="flex justify-center md:justify-start pt-2">
+                <div className="inline-flex items-center gap-2 bg-amber-100 border-2 border-amber-600 rounded-full px-4 py-2">
+                  <MapPin className="h-5 w-5 text-amber-700" />
+                  <span className="font-semibold text-amber-900">St. Louis</span>
+                </div>
+              </div>
             </div>
 
             {/* Right Side - Truck Image */}
@@ -187,38 +209,15 @@ export default function Welcome() {
                   className="w-full h-56 md:h-64 lg:h-72 object-cover img-crisp"
                 />
                 <div className="p-6 bg-amber-50">
-                  <h3 className="text-xl font-semibold text-amber-900 mb-2">
+                  <h4 className="text-xl font-semibold text-amber-900 mb-2">
                     Professional Service
-                  </h3>
+                  </h4>
                   <p className="text-amber-700">
                     Trusted by customers for reliable pickup and delivery
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Book Return Button - Centered Below */}
-        <div className="w-full flex flex-col items-center gap-4 mt-6">
-          <Button 
-            size="lg" 
-            className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            data-testid="button-book-return"
-            onClick={() => setLocation('/book-return')}
-          >
-            <Package className="h-5 w-5 mr-2" />
-            Book Return
-          </Button>
-          
-          {/* St. Louis Notice */}
-          <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3">
-            <p className="text-sm sm:text-base lg:text-lg text-black font-semibold text-center">
-              📍 St. Louis only right now
-            </p>
-            <p className="text-xs sm:text-sm text-black mt-1 text-center">
-              Coming to your city soon!
-            </p>
           </div>
         </div>
 
