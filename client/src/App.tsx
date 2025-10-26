@@ -26,6 +26,7 @@ const SystemHealth = lazy(() => import("@/pages/system-health"));
 const AdminSettings = lazy(() => import("@/pages/admin-settings"));
 const CustomerDashboard = lazy(() => import("@/pages/customer-dashboard"));
 const DriverPayments = lazy(() => import("@/pages/driver-payments"));
+const DriverMyOrders = lazy(() => import("@/pages/driver-my-orders"));
 const PaymentStructure = lazy(() => import("@/pages/payment-structure"));
 const DriverSignup = lazy(() => import("@/pages/driver-signup"));
 const DriverOnboarding = lazy(() => import("@/pages/driver-onboarding"));
