@@ -343,7 +343,7 @@ export default function DriverOnboarding() {
             </Link>
             <div>
               <h1 className="text-2xl font-bold text-foreground">Driver Application</h1>
-              <p className="text-muted-foreground">Join the Returnly driver network</p>
+              <p className="text-muted-foreground">Join the Return It driver network</p>
             </div>
           </div>
         </div>
