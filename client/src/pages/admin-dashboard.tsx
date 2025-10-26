@@ -108,8 +108,38 @@ interface AdminDashboardProps {
 
 export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
   const [location, setLocation] = useLocation();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const { toast } = useToast();
+  
+  // SECURITY: Block non-admin access immediately
+  const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
+  
+  // Show loading while auth check is in progress
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F4]">
+        <div className="text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-[#B8956A] mx-auto mb-4" />
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  // SECURITY: Redirect non-admins immediately - customers and drivers CANNOT access
+  if (!user || !user.isAdmin || !masterAdmins.includes(user.email)) {
+    console.error('🚫 [SECURITY] Unauthorized admin dashboard access attempt:', {
+      userEmail: user?.email || 'none',
+      isAdmin: user?.isAdmin || false,
+      timestamp: new Date().toISOString()
+    });
+    
+    // Redirect to home page
+    if (typeof window !== 'undefined') {
+      window.location.replace('/');
+    }
+    return null;
+  }
   
   // Real-time admin notifications via WebSocket
   useAdminWebSocket({

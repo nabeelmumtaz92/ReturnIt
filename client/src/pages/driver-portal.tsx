@@ -406,12 +406,15 @@ export default function DriverPortal() {
                   My Orders
                 </Button>
               </Link>
-              <Link href="/admin-dashboard">
-                <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
-                  <Users className="h-4 w-4 mr-3" />
-                  Admin Dashboard
-                </Button>
-              </Link>
+              {/* SECURITY: Only show admin dashboard link to admins */}
+              {user?.isAdmin && (
+                <Link href="/admin-dashboard">
+                  <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
+                    <Users className="h-4 w-4 mr-3" />
+                    Admin Dashboard
+                  </Button>
+                </Link>
+              )}
               <Link href="/welcome">
                 <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:bg-[#f8f7f5] dark:bg-[#231b0f]">
                   <Home className="h-4 w-4 mr-3" />
