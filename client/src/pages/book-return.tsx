@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle } from "lucide-react";
+import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle, X, Plus } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -22,6 +22,13 @@ if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
 }
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+interface ReturnItem {
+  id: string;
+  orderName: string;
+  itemDescription: string;
+  itemValue: string;
+}
 
 interface FormData {
   // Page 1
@@ -41,9 +48,7 @@ interface FormData {
   storeDestinationAddress: string; // Editable store address
   storeDestinationCity: string; // Editable city
   storeDestinationState: string; // Editable state
-  itemDescription: string;
-  itemValue: string;
-  orderName: string;
+  items: ReturnItem[]; // Multiple items in one return order
   notes: string;
   boxSize: string;
   numberOfBoxes: number;
@@ -238,6 +243,12 @@ function calculatePricing(formData: FormData) {
   const sizeUpcharge = sizeUpcharges[formData.boxSize] || 0;
   const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 3.00 : 0;
   
+  // Calculate total item values
+  const totalItemValue = formData.items.reduce((sum, item) => {
+    const value = parseFloat(item.itemValue) || 0;
+    return sum + value;
+  }, 0);
+  
   const subtotal = basePrice + sizeUpcharge + multiBoxFee;
   const serviceFee = 1.50; // Platform service fee
   const fuelFee = 1.25; // Flat fuel fee
@@ -250,6 +261,7 @@ function calculatePricing(formData: FormData) {
     basePrice,
     sizeUpcharge,
     multiBoxFee,
+    totalItemValue,
     subtotal,
     serviceFee,
     fuelFee,
@@ -351,9 +363,12 @@ export default function BookReturn() {
     storeDestinationAddress: '',
     storeDestinationCity: '',
     storeDestinationState: '',
-    itemDescription: '',
-    itemValue: '',
-    orderName: '',
+    items: [{
+      id: crypto.randomUUID(),
+      orderName: '',
+      itemDescription: '',
+      itemValue: ''
+    }],
     notes: '',
     boxSize: 'small',
     numberOfBoxes: 1,
@@ -361,6 +376,46 @@ export default function BookReturn() {
   });
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
+
+  // Item management functions
+  const addItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      items: [
+        ...prev.items,
+        {
+          id: crypto.randomUUID(),
+          orderName: '',
+          itemDescription: '',
+          itemValue: ''
+        }
+      ]
+    }));
+  };
+
+  const removeItem = (itemId: string) => {
+    if (formData.items.length <= 1) {
+      toast({
+        title: "Cannot remove",
+        description: "You must have at least one item",
+        variant: "destructive",
+      });
+      return;
+    }
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item.id !== itemId)
+    }));
+  };
+
+  const updateItem = (itemId: string, field: keyof ReturnItem, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map(item =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      )
+    }));
+  };
 
   // Photo upload handlers
   const handleReceiptGetUploadUrl = async () => {
@@ -509,9 +564,32 @@ export default function BookReturn() {
     } else if (pageNum === 2) {
       if (!formData.retailerName) errors.add('retailerName');
       if (!formData.retailerLocation) errors.add('retailerLocation');
-      if (!formData.orderName) errors.add('orderName');
-      if (!formData.itemDescription) errors.add('itemDescription');
-      if (!formData.itemValue) errors.add('itemValue');
+      
+      // Validate all items
+      let hasEmptyItems = false;
+      formData.items.forEach((item, index) => {
+        if (!item.orderName) {
+          errors.add(`item-${index}-orderName`);
+          hasEmptyItems = true;
+        }
+        if (!item.itemDescription) {
+          errors.add(`item-${index}-itemDescription`);
+          hasEmptyItems = true;
+        }
+        if (!item.itemValue) {
+          errors.add(`item-${index}-itemValue`);
+          hasEmptyItems = true;
+        }
+      });
+      
+      if (hasEmptyItems) {
+        toast({
+          title: "Missing Item Information",
+          description: "Please fill in all item details (name, description, and value)",
+          variant: "destructive",
+        });
+        return false;
+      }
       
       // MANDATORY: At least one photo required
       if (!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl) {
@@ -617,6 +695,12 @@ export default function BookReturn() {
     mutationFn: async (data: FormData & { paymentIntentId?: string }) => {
       const pricing = calculatePricing(data);
       
+      // Combine all items into order name and description
+      const orderName = data.items.map(item => item.orderName).join(', ');
+      const itemDescription = data.items.map((item, index) => 
+        `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue})`
+      ).join('\n');
+      
       return apiRequest('POST', '/api/orders', {
         // User info (optional for guests)
         userId: user?.id || null,
@@ -633,8 +717,8 @@ export default function BookReturn() {
         // Return details
         retailer: data.retailer,
         itemCategory: 'Other',
-        itemDescription: data.itemDescription,
-        orderName: data.orderName,
+        itemDescription: itemDescription,
+        orderName: orderName,
         
         // Box details
         boxSize: data.boxSize,
@@ -643,13 +727,13 @@ export default function BookReturn() {
         // Required fields with defaults
         purchaseType: 'online',
         itemSize: data.boxSize,
-        numberOfItems: 1,
+        numberOfItems: data.items.length,
         hasOriginalTags: false,
-        receiptUploaded: false,
+        receiptUploaded: !!(data.receiptPhotoUrl || data.tagsPhotoUrl || data.packagingPhotoUrl),
         acceptsLiabilityTerms: true,
         
         // Pricing (send essential values - service fee and tax are included in total)
-        itemValue: parseFloat(data.itemValue) || 0,
+        itemValue: pricing.totalItemValue,
         basePrice: pricing.basePrice,
         sizeUpcharge: pricing.sizeUpcharge,
         multiBoxFee: pricing.multiBoxFee,
@@ -966,49 +1050,104 @@ export default function BookReturn() {
                   </div>
                 )}
 
-                <div>
-                  <Label htmlFor="orderName" className="text-sm font-semibold">Order Name *</Label>
-                  <Input
-                    id="orderName"
-                    value={formData.orderName}
-                    onChange={(e) => updateField('orderName', e.target.value)}
-                    placeholder="Black Purse, Running Shoes, etc."
-                    className={`mt-1.5 ${validationErrors.has('orderName') ? 'border-red-500 border-2' : ''}`}
-                    required
-                    data-testid="input-order-name"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="itemDescription" className="text-sm font-semibold">Item Description *</Label>
-                  <Textarea
-                    id="itemDescription"
-                    value={formData.itemDescription}
-                    onChange={(e) => updateField('itemDescription', e.target.value)}
-                    placeholder="Describe the item you're returning..."
-                    rows={3}
-                    className={`mt-1.5 ${validationErrors.has('itemDescription') ? 'border-red-500 border-2' : ''}`}
-                    required
-                    data-testid="input-item-description"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="itemValue" className="text-sm font-semibold">Item Value *</Label>
-                  <div className="relative mt-1.5">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
-                    <Input
-                      id="itemValue"
-                      type="number"
-                      value={formData.itemValue}
-                      onChange={(e) => updateField('itemValue', e.target.value)}
-                      placeholder="50.00"
-                      step="0.01"
-                      className={`pl-7 ${validationErrors.has('itemValue') ? 'border-red-500 border-2' : ''}`}
-                      required
-                      data-testid="input-item-value"
-                    />
+                {/* Multiple Items Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">Items to Return *</Label>
+                    <span className="text-sm text-muted-foreground">
+                      {formData.items.length} item{formData.items.length !== 1 ? 's' : ''}
+                    </span>
                   </div>
+
+                  {formData.items.map((item, index) => (
+                    <div key={item.id} className="p-4 border-2 border-border rounded-lg bg-muted/30 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-semibold text-sm flex items-center gap-2">
+                          <Package className="h-4 w-4" />
+                          Item {index + 1}
+                        </h4>
+                        {formData.items.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeItem(item.id)}
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                            data-testid={`button-remove-item-${index}`}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`orderName-${item.id}`} className="text-sm font-semibold">Item Name *</Label>
+                        <Input
+                          id={`orderName-${item.id}`}
+                          value={item.orderName}
+                          onChange={(e) => updateItem(item.id, 'orderName', e.target.value)}
+                          placeholder="Black Purse, Running Shoes, etc."
+                          className={`mt-1.5 ${validationErrors.has(`item-${index}-orderName`) ? 'border-red-500 border-2' : ''}`}
+                          required
+                          data-testid={`input-order-name-${index}`}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`itemDescription-${item.id}`} className="text-sm font-semibold">Item Description *</Label>
+                        <Textarea
+                          id={`itemDescription-${item.id}`}
+                          value={item.itemDescription}
+                          onChange={(e) => updateItem(item.id, 'itemDescription', e.target.value)}
+                          placeholder="Describe the item you're returning..."
+                          rows={2}
+                          className={`mt-1.5 ${validationErrors.has(`item-${index}-itemDescription`) ? 'border-red-500 border-2' : ''}`}
+                          required
+                          data-testid={`input-item-description-${index}`}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor={`itemValue-${item.id}`} className="text-sm font-semibold">Item Value *</Label>
+                        <div className="relative mt-1.5">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                          <Input
+                            id={`itemValue-${item.id}`}
+                            type="number"
+                            value={item.itemValue}
+                            onChange={(e) => updateItem(item.id, 'itemValue', e.target.value)}
+                            placeholder="50.00"
+                            step="0.01"
+                            className={`pl-7 ${validationErrors.has(`item-${index}-itemValue`) ? 'border-red-500 border-2' : ''}`}
+                            required
+                            data-testid={`input-item-value-${index}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Add Another Item Button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addItem}
+                    className="w-full border-dashed border-2 hover:bg-muted/50"
+                    data-testid="button-add-item"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Another Item
+                  </Button>
+
+                  {/* Total Value Display */}
+                  {formData.items.length > 1 && (
+                    <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-amber-900">Total Item Value:</span>
+                        <span className="text-lg font-bold text-amber-900">${pricing.totalItemValue.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <Separator className="my-6" />
@@ -1269,7 +1408,7 @@ export default function BookReturn() {
                     <Package className="h-5 w-5 text-[#B8956A]" />
                     Return Details
                   </h3>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Retailer:</span>
                       <span className="font-medium">{formData.retailerName}</span>
@@ -1278,18 +1417,46 @@ export default function BookReturn() {
                       <span className="text-muted-foreground">Store Location:</span>
                       <span className="font-medium text-right max-w-[60%]">{formData.retailerLocation}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Order Name:</span>
-                      <span className="font-medium">{formData.orderName}</span>
+                    
+                    <Separator className="my-2" />
+                    
+                    {/* Items List */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-foreground">Items ({formData.items.length}):</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setPage(2)}
+                          className="h-7 text-xs"
+                          data-testid="button-edit-items"
+                        >
+                          Edit
+                        </Button>
+                      </div>
+                      {formData.items.map((item, index) => (
+                        <div key={item.id} className="p-3 bg-background border border-border rounded-lg space-y-1">
+                          <div className="flex justify-between items-start">
+                            <span className="font-semibold text-foreground">Item {index + 1}:</span>
+                            <span className="font-semibold text-[#B8956A]">${parseFloat(item.itemValue || '0').toFixed(2)}</span>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            <p className="font-medium text-foreground">{item.orderName}</p>
+                            <p className="mt-1">{item.itemDescription}</p>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {formData.items.length > 1 && (
+                        <div className="flex justify-between pt-2 border-t border-border">
+                          <span className="font-semibold">Total Item Value:</span>
+                          <span className="font-bold text-[#B8956A]">${pricing.totalItemValue.toFixed(2)}</span>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Item:</span>
-                      <span className="font-medium">{formData.itemDescription}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Value:</span>
-                      <span className="font-medium">${formData.itemValue}</span>
-                    </div>
+                    
+                    <Separator className="my-2" />
+                    
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Package Size:</span>
                       <span className="font-medium capitalize">{formData.boxSize}</span>

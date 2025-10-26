@@ -39,7 +39,8 @@ Preferred communication style: Simple, everyday language.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.
 - Multi-package booking, special handling, donation options.
-- Mandatory photo upload for proof-of-purchase.
+- **Multiple Items Per Return**: Users can add unlimited items to a single return booking. Each item has its own name, description, and value. Items can be added/removed dynamically with automatic total value calculation.
+- **Mandatory Photo Verification**: Users must upload at least one photo (receipt, tags, or packaging) before completing booking.
 
 ### Driver Features
 - **Native Mobile App**: React Native with Expo (com.returnit.app) featuring screens for Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout.
