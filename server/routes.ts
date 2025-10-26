@@ -7114,52 +7114,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
 
-  // Driver routes
-  app.get("/api/driver/orders/available", async (req, res) => {
-    try {
-      const orders = await storage.getOrdersByStatus("created");
-      res.json(orders);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch available orders" });
-    }
-  });
-
-  app.get("/api/driver/orders", async (req, res) => {
-    try {
-      const driverId = (req.session as any).user?.id;
-      const orders = await storage.getOrdersByDriver(driverId);
-      res.json(orders);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch driver orders" });
-    }
-  });
-
-  app.post("/api/driver/orders/:orderId/accept", async (req, res) => {
-    try {
-      const { orderId } = req.params;
-      const driverId = (req.session as any).user?.id;
-      
-      const order = await storage.updateOrder(orderId, { 
-        driverId, 
-        status: "assigned"
-      });
-      
-      res.json(order);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to accept order" });
-    }
-  });
-
-  app.get("/api/driver/earnings", async (req, res) => {
-    try {
-      const driverId = (req.session as any).user?.id;
-      const earnings = await storage.getDriverEarnings(driverId);
-      res.json(earnings);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch earnings" });
-    }
-  });
-
   // Driver completes return delivery - automatically triggers customer refund
   app.post("/api/driver/orders/:orderId/complete", isAuthenticated, async (req, res) => {
     try {
