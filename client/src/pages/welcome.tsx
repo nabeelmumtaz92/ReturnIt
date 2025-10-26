@@ -49,9 +49,8 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-amber-50">
 
-      {/* Professional Hero Section */}
+      {/* Sign In/Sign Up buttons in top right */}
       <div className="w-full bg-white/95 border-b border-amber-100">
-        {/* Sign In/Sign Up buttons in top right */}
         <div className="container mx-auto px-4 pt-3 pb-2">
           <div className="flex justify-end">
             {!isAuthenticated && (
@@ -131,58 +130,10 @@ export default function Welcome() {
             )}
           </div>
         </div>
-        <div className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
-          <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto">
-            {/* Hero Content */}
-            <div className="flex-1 text-center lg:text-left pt-8 sm:pt-0">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-amber-900 mb-2 sm:mb-3">
-                Return It
-              </h1>
-              <p className="text-sm sm:text-base lg:text-lg font-medium text-amber-700 italic mb-3 sm:mb-4">
-                Give back, uplift others.
-              </p>
-              <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-amber-800 mb-4 sm:mb-6">
-                The Leader in Reverse Logistics, Delivery, and Returns.
-              </h2>
-              <p className="text-sm sm:text-base md:text-lg text-amber-700 mb-4 sm:mb-6 leading-relaxed">
-                Return It is the first platform purpose-built for reverse logistics — offering on-demand returns, exchanges, refunds, and donations as seamless as delivery itself. We're not just an app; we are the infrastructure powering the return economy.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
-                  <Package className="h-4 w-4 sm:h-6 sm:w-6" />
-                  <span className="text-sm sm:text-base md:text-lg">Fast & Reliable</span>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3 text-amber-600">
-                  <Truck className="h-4 w-4 sm:h-6 sm:w-6" />
-                  <span className="text-sm sm:text-base md:text-lg">Professional Drivers</span>
-                </div>
-              </div>
-            </div>
-            {/* Hero Image Card */}
-            <div className="flex-1 max-w-lg">
-              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
-                <img 
-                  src={deliveryHandoffImg} 
-                  alt="Professional delivery service homepage hero" 
-                  className="w-full h-40 sm:h-56 md:h-64 object-cover img-crisp"
-                />
-                <div className="p-6 bg-amber-50">
-                  <h3 className="text-lg font-semibold text-amber-900 mb-2">
-                    Professional Service
-                  </h3>
-                  <p className="text-amber-700">
-                    Trusted by customers for reliable pickup and delivery
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
-      
 
-      {/* Main Content - Mobile Optimized */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6">
+      {/* Main Content - Mobile Optimized - BOOK RETURN SECTION FIRST */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 lg:py-12 space-y-4 sm:space-y-6">
         
         {/* Return It Logo - Centered */}
         <div className="text-center">
@@ -196,7 +147,7 @@ export default function Welcome() {
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-medium px-2">
-            The Leader in Reverse Logistics, Delivery, and Returns
+            The Leader in Returns
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
             <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
@@ -219,6 +170,25 @@ export default function Welcome() {
             <Package className="h-5 w-5 mr-2" />
             Book Return
           </Button>
+        </div>
+
+        {/* Professional Service Section - Now appears AFTER Book Return */}
+        <div className="w-full max-w-3xl mt-8 sm:mt-12">
+          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
+            <img 
+              src={deliveryHandoffImg} 
+              alt="Professional delivery service homepage hero" 
+              className="w-full h-48 sm:h-64 md:h-80 object-cover img-crisp"
+            />
+            <div className="p-6 bg-amber-50">
+              <h3 className="text-xl font-semibold text-amber-900 mb-2">
+                Professional Service
+              </h3>
+              <p className="text-amber-700">
+                Trusted by customers for reliable pickup and delivery
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Driver Benefits Section with Become a Driver Button */}
