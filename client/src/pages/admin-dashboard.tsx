@@ -511,30 +511,33 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
     }
   };
 
-  // All Admin Functions - No Sidebar Needed Component
+  // Shared button style - prevents re-render issues and jumping
+  const adminButtonClass = "h-auto p-4 sm:p-6 bg-white border border-[#B8956A]/20 text-foreground hover:bg-[#B8956A]/10 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center gap-2 min-h-[80px] rounded-xl transition-colors transition-shadow duration-200";
+
+  // All Admin Functions - No Sidebar Needed Component  
   const AllAdminFunctions = () => (
     <div className="space-y-6">
       {/* Business Operations */}
-      <div className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="bg-white/95 border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-[#8B6F47] to-[#B8956A] bg-clip-text text-transparent mb-4">📋 Business Operations</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
-          <Button onClick={() => changeSection('orders')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-manage-orders">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('orders')} className={adminButtonClass} variant="outline" data-testid="button-manage-orders">
             <Package className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Order Management</span>
           </Button>
-          <Button onClick={() => changeSection('drivers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-view-drivers">
+          <Button onClick={() => changeSection('drivers')} className={adminButtonClass} variant="outline" data-testid="button-view-drivers">
             <Truck className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Management</span>
           </Button>
-          <Button onClick={() => changeSection('driver-applications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-driver-applications">
+          <Button onClick={() => changeSection('driver-applications')} className={adminButtonClass} variant="outline" data-testid="button-driver-applications">
             <UserCheck className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Applications</span>
           </Button>
-          <Button onClick={() => changeSection('customers')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-customers">
+          <Button onClick={() => changeSection('customers')} className={adminButtonClass} variant="outline" data-testid="button-customers">
             <Users className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Customer Management</span>
           </Button>
-          <Button onClick={() => changeSection('driver-locations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-driver-locations">
+          <Button onClick={() => changeSection('driver-locations')} className={adminButtonClass} variant="outline" data-testid="button-driver-locations">
             <Activity className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Real-time Tracking</span>
           </Button>
@@ -542,10 +545,10 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Analytics */}
-      <div className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="bg-white/95 border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-[#8B6F47] to-[#B8956A] bg-clip-text text-transparent mb-4">📊 Analytics & Intelligence</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
-          <Button onClick={() => changeSection('business-intelligence')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-business-intelligence">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('business-intelligence')} className={adminButtonClass} variant="outline" data-testid="button-business-intelligence">
             <PieChart className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Business Intelligence</span>
           </Button>
@@ -554,14 +557,14 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
               changeSection('enhanced-analytics');
               trackEvent('admin_view_analytics', { type: 'enhanced' });
             }} 
-            className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" 
+            className={adminButtonClass}
             variant="outline" 
             data-testid="button-analytics"
           >
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Enhanced Analytics</span>
           </Button>
-          <Button onClick={() => changeSection('support-analytics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-support-analytics">
+          <Button onClick={() => changeSection('support-analytics')} className={adminButtonClass} variant="outline" data-testid="button-support-analytics">
             <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Support Analytics</span>
           </Button>
@@ -569,38 +572,38 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Financial Operations */}
-      <div className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="bg-white/95 border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-[#8B6F47] to-[#B8956A] bg-clip-text text-transparent mb-4">💰 Financial Operations</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
-          <Button onClick={() => changeSection('financial-operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-financial-operations">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('financial-operations')} className={adminButtonClass} variant="outline" data-testid="button-financial-operations">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Financial Operations</span>
           </Button>
-          <Button onClick={() => changeSection('transaction-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-transaction-management">
+          <Button onClick={() => changeSection('transaction-management')} className={adminButtonClass} variant="outline" data-testid="button-transaction-management">
             <CreditCard className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Transaction Management</span>
           </Button>
-          <Button onClick={() => changeSection('enhanced-driver-payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-enhanced-driver-payouts">
+          <Button onClick={() => changeSection('enhanced-driver-payouts')} className={adminButtonClass} variant="outline" data-testid="button-enhanced-driver-payouts">
             <Zap className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Enhanced Payouts</span>
           </Button>
-          <Button onClick={() => changeSection('enhanced-tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-enhanced-tax-reports">
+          <Button onClick={() => changeSection('enhanced-tax-reports')} className={adminButtonClass} variant="outline" data-testid="button-enhanced-tax-reports">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Enhanced Tax Reports</span>
           </Button>
-          <Button onClick={() => changeSection('payment-tracking')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-payment-tracking">
+          <Button onClick={() => changeSection('payment-tracking')} className={adminButtonClass} variant="outline" data-testid="button-payment-tracking">
             <Clock className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Payment Tracking</span>
           </Button>
-          <Button onClick={() => changeSection('payouts')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-driver-payouts">
+          <Button onClick={() => changeSection('payouts')} className={adminButtonClass} variant="outline" data-testid="button-driver-payouts">
             <DollarSign className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Driver Payouts</span>
           </Button>
-          <Button onClick={() => changeSection('tax-reports')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-tax-reports">
+          <Button onClick={() => changeSection('tax-reports')} className={adminButtonClass} variant="outline" data-testid="button-tax-reports">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Tax Reports</span>
           </Button>
-          <Button onClick={() => changeSection('pricing-settings')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-pricing-settings">
+          <Button onClick={() => changeSection('pricing-settings')} className={adminButtonClass} variant="outline" data-testid="button-pricing-settings">
             <Settings className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Pricing Settings</span>
           </Button>
@@ -608,18 +611,18 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Support & Customer Service */}
-      <div className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="bg-white/95 border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-[#8B6F47] to-[#B8956A] bg-clip-text text-transparent mb-4">🎧 Support & Customer Service</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
-          <Button onClick={() => changeSection('support-center')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-support-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('support-center')} className={adminButtonClass} variant="outline" data-testid="button-support-center">
             <HeadphonesIcon className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Support Center</span>
           </Button>
-          <Button onClick={() => changeSection('customer-feedback')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-customer-feedback">
+          <Button onClick={() => changeSection('customer-feedback')} className={adminButtonClass} variant="outline" data-testid="button-customer-feedback">
             <Star className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Customer Feedback</span>
           </Button>
-          <Button onClick={() => changeSection('chat')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-support-chat">
+          <Button onClick={() => changeSection('chat')} className={adminButtonClass} variant="outline" data-testid="button-support-chat">
             <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Live Support Chat</span>
           </Button>
@@ -627,26 +630,26 @@ export default function AdminDashboard({ section }: AdminDashboardProps = {}) {
       </div>
 
       {/* Operations & Management */}
-      <div className="bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-sm border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all">
+      <div className="bg-white/95 border border-[#B8956A]/10 rounded-xl p-4 sm:p-6 shadow-sm">
         <h2 className="text-lg font-semibold bg-gradient-to-r from-[#8B6F47] to-[#B8956A] bg-clip-text text-transparent mb-4">⚙️ Operations & Management</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4 place-items-center justify-items-center">
-          <Button onClick={() => changeSection('notifications')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-notifications">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3 sm:gap-4">
+          <Button onClick={() => changeSection('notifications')} className={adminButtonClass} variant="outline" data-testid="button-notifications">
             <Bell className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Notifications</span>
           </Button>
-          <Button onClick={() => changeSection('employees')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-employees">
+          <Button onClick={() => changeSection('employees')} className={adminButtonClass} variant="outline" data-testid="button-employees">
             <Users2 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Employees</span>
           </Button>
-          <Button onClick={() => changeSection('operations')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-operations">
+          <Button onClick={() => changeSection('operations')} className={adminButtonClass} variant="outline" data-testid="button-operations">
             <Building2 className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Operations</span>
           </Button>
-          <Button onClick={() => changeSection('system-metrics')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-system-metrics">
+          <Button onClick={() => changeSection('system-metrics')} className={adminButtonClass} variant="outline" data-testid="button-system-metrics">
             <Monitor className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">System Metrics</span>
           </Button>
-          <Button onClick={() => changeSection('zone-management')} className="h-auto p-4 sm:p-6 bg-white backdrop-blur-sm border border-[#B8956A]/20 text-foreground hover:bg-gradient-to-br hover:from-[#B8956A]/5 hover:to-[#A0805A]/5 hover:border-[#B8956A] hover:shadow-md flex flex-col items-center space-y-2 min-h-[80px] touch-manipulation transition-all rounded-xl" variant="outline" data-testid="button-zone-management">
+          <Button onClick={() => changeSection('zone-management')} className={adminButtonClass} variant="outline" data-testid="button-zone-management">
             <Target className="h-6 w-6 sm:h-8 sm:w-8" />
             <span className="text-xs sm:text-sm font-medium text-center">Zone Management</span>
           </Button>
