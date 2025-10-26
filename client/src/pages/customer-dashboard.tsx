@@ -257,9 +257,9 @@ export default function CustomerDashboard() {
             </div>
           </div>
 
-          {/* Stats Cards - Stitch Pattern */}
+          {/* Stats Cards - Enhanced Depth */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
+            <Card className="shadow-elevated border-border hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -277,7 +277,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
+            <Card className="shadow-elevated border-border hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -295,7 +295,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
+            <Card className="shadow-elevated border-border hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>
@@ -313,7 +313,7 @@ export default function CustomerDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="shadow-[0_10px_30px_-15px_rgba(0,0,0,0.3)] dark:shadow-[0_10px_30px_-15px_rgba(249,152,6,0.2)] border-border">
+            <Card className="shadow-elevated border-border hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-1">
               <CardContent className="flex items-center p-6">
                 <div className="flex items-center justify-between w-full">
                   <div>

@@ -183,7 +183,7 @@ export default function Welcome() {
               {/* Book Return Button */}
               <div className="pt-2">
                 <Link href="/book-pickup">
-                  <Button size="lg" className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg" data-testid="button-book-return">
+                  <Button size="lg" className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg shadow-elevated hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-0.5" data-testid="button-book-return">
                     Book Return
                   </Button>
                 </Link>
@@ -191,7 +191,7 @@ export default function Welcome() {
               
               {/* St. Louis Badge */}
               <div className="flex justify-center md:justify-start pt-2">
-                <div className="inline-flex items-center gap-2 bg-amber-100 border-2 border-amber-600 rounded-full px-4 py-2">
+                <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-amber-50 border-2 border-amber-600 rounded-full px-4 py-2 shadow-crisp hover:shadow-crisp-lg transition-all duration-200">
                   <MapPin className="h-5 w-5 text-amber-700" />
                   <span className="font-semibold text-amber-900">St. Louis</span>
                 </div>
@@ -200,13 +200,13 @@ export default function Welcome() {
 
             {/* Right Side - Truck Image */}
             <div className="flex-shrink-0 w-full md:w-96 lg:w-auto md:max-w-md lg:max-w-lg">
-              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
+              <div className="bg-white rounded-3xl shadow-crisp-xl hover:shadow-elevated overflow-hidden border border-amber-200 transition-all duration-300 hover:-translate-y-1">
                 <img 
                   src={deliveryHandoffImg} 
                   alt="Professional delivery service homepage hero" 
                   className="w-full h-56 md:h-64 lg:h-72 object-cover img-crisp"
                 />
-                <div className="p-6 bg-amber-50">
+                <div className="p-6 bg-gradient-to-br from-amber-50 to-amber-100/50">
                   <h4 className="text-xl font-semibold text-amber-900 mb-2">
                     Professional Service
                   </h4>
@@ -222,7 +222,7 @@ export default function Welcome() {
         {/* Driver Benefits Section with Become a Driver Button */}
         {envConfig?.allowDriverSignup && (
           <div className="w-full max-w-3xl mt-8 sm:mt-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 sm:p-8 border border-amber-200 shadow-lg">
+            <div className="glass-card rounded-2xl p-6 sm:p-8 border border-amber-200">
               <div className="text-center space-y-4">
                 <div className="flex justify-center">
                   <div className="bg-amber-100 rounded-full p-3">
@@ -252,7 +252,7 @@ export default function Welcome() {
                 <div className="pt-4">
                   <Button 
                     size="lg" 
-                    className="w-full sm:w-auto px-8 py-6 bg-amber-600 hover:bg-amber-700 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                    className="w-full sm:w-auto px-8 py-6 bg-amber-600 hover:bg-amber-700 text-white text-base font-semibold shadow-elevated hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-0.5"
                     data-testid="button-become-driver"
                     onClick={() => setLocation('/driver-signup')}
                   >
