@@ -172,6 +172,10 @@ export default function BookPickup() {
   
   // Payment processing state
   const [clientSecret, setClientSecret] = useState<string>('');
+  
+  // Dialog state for terms and policies
+  const [showLiabilityDialog, setShowLiabilityDialog] = useState(false);
+  const [showAuthorizationDialog, setShowAuthorizationDialog] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState<string>('');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
@@ -1656,22 +1660,17 @@ export default function BookPickup() {
               <div className="flex items-start space-x-2">
                 <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-amber-900">Door Drop-off Liability Terms</h4>
+                  <h4 className="font-semibold text-amber-900">Door Drop-off Liability</h4>
                   <p className="text-sm text-amber-700 mt-1">
-                    Important: Please read and acknowledge the following terms for leaving items at your door
+                    <button 
+                      type="button"
+                      onClick={() => setShowLiabilityDialog(true)}
+                      className="text-amber-800 underline hover:text-amber-900 font-medium"
+                      data-testid="link-liability-terms"
+                    >
+                      View liability terms
+                    </button> before leaving items at your door
                   </p>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded border border-amber-200">
-                <div className="text-sm text-amber-800 space-y-2">
-                  <ul className="list-disc pl-5 space-y-1">
-                    <li><strong>No signature required:</strong> Driver will take photos as proof of pickup</li>
-                    <li><strong>Liability:</strong> ReturnIt and our drivers are NOT liable if items are lost, stolen, damaged, or missing before driver arrives</li>
-                    <li><strong>Weather exposure:</strong> Items may be affected by weather conditions while left outside</li>
-                    <li><strong>Theft risk:</strong> Items left unattended may be vulnerable to theft</li>
-                    <li><strong>Your responsibility:</strong> You assume full risk for items left outside before pickup</li>
-                  </ul>
                 </div>
               </div>
 
@@ -1684,7 +1683,7 @@ export default function BookPickup() {
                   data-testid="checkbox-door-dropoff-liability"
                 />
                 <Label htmlFor="doorDropoffLiability" className="text-sm text-amber-900 cursor-pointer">
-                  I understand and accept the liability terms. ReturnIt is not responsible if items are stolen, damaged, or lost before the driver picks them up.
+                  I understand and accept the liability terms *
                 </Label>
               </div>
 
@@ -1772,8 +1771,14 @@ export default function BookPickup() {
                 </Label>
               </div>
               <p className="text-muted-foreground text-xs ml-6">
-                This digital authorization allows our driver to act as your proxy when returning items
-                {formData.purchaseType === 'online' ? ' to carrier locations.' : ' to the store.'}
+                <button 
+                  type="button"
+                  onClick={() => setShowAuthorizationDialog(true)}
+                  className="text-primary underline hover:text-primary/80"
+                  data-testid="link-authorization-details"
+                >
+                  View authorization details
+                </button>
               </p>
             </div>
 
@@ -2342,6 +2347,118 @@ export default function BookPickup() {
                 </Button>
               </Link>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Liability Terms Dialog */}
+      <Dialog open={showLiabilityDialog} onOpenChange={setShowLiabilityDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-amber-900 flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Door Drop-off Liability Terms
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground pt-2">
+              Please review these important terms before leaving items at your door
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+              <ul className="space-y-3 text-sm text-amber-900">
+                <li className="flex items-start gap-2">
+                  <span className="font-bold mt-0.5">•</span>
+                  <div>
+                    <strong>No signature required:</strong> Driver will take photos as proof of pickup
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold mt-0.5">•</span>
+                  <div>
+                    <strong>Liability:</strong> ReturnIt and our drivers are NOT liable if items are lost, stolen, damaged, or missing before driver arrives
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold mt-0.5">•</span>
+                  <div>
+                    <strong>Weather exposure:</strong> Items may be affected by weather conditions while left outside
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold mt-0.5">•</span>
+                  <div>
+                    <strong>Theft risk:</strong> Items left unattended may be vulnerable to theft
+                  </div>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="font-bold mt-0.5">•</span>
+                  <div>
+                    <strong>Your responsibility:</strong> You assume full risk for items left outside before pickup
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <Button 
+              onClick={() => setShowLiabilityDialog(false)} 
+              className="w-full bg-amber-600 hover:bg-amber-700"
+              data-testid="button-close-liability"
+            >
+              I Understand
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Authorization Details Dialog */}
+      <Dialog open={showAuthorizationDialog} onOpenChange={setShowAuthorizationDialog}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Return Authorization Details
+            </DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground pt-2">
+              What you're authorizing when you book a pickup
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-2">
+            <div className="bg-accent/50 p-4 rounded-lg border border-border">
+              <h4 className="font-semibold text-foreground mb-3">By checking this box, you authorize ReturnIt to:</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Transport your item(s) to the designated return location</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Complete the return process on your behalf using your proof of purchase</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>
+                    {formData.purchaseType === 'online' 
+                      ? 'Drop off your package at UPS, FedEx, or USPS locations' 
+                      : 'Present your receipt at the store return counter'}
+                  </span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Provide photo verification at pickup and drop-off</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-800">
+                <strong>Note:</strong> This is a digital authorization for our service. You maintain ownership of your items throughout the return process.
+              </p>
+            </div>
+            <Button 
+              onClick={() => setShowAuthorizationDialog(false)} 
+              className="w-full bg-primary hover:bg-primary/90"
+              data-testid="button-close-authorization"
+            >
+              Got It
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
