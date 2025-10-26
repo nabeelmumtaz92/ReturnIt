@@ -64,10 +64,33 @@ export default function Welcome() {
   return (
     <div className="min-h-screen bg-amber-50">
 
-      {/* Sign In/Sign Up buttons in top right */}
+      {/* Top Navigation Bar */}
       <div className="w-full bg-white/95 border-b border-amber-100">
-        <div className="container mx-auto px-4 pt-3 pb-2">
-          <div className="flex justify-end">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex justify-between items-center">
+            {/* Spacer for left side */}
+            <div className="w-32"></div>
+            
+            {/* Centered Logo */}
+            <div className="flex items-center gap-3">
+              <svg 
+                width="40" 
+                height="40" 
+                viewBox="0 0 100 100" 
+                className="filter drop-shadow-sm"
+                aria-label="Return It"
+                fill="none"
+              >
+                <path 
+                  d="M20 10 L20 90 L35 90 L35 55 L50 55 L65 90 L82 90 L65 53 C72 50 78 42 78 30 C78 16 68 10 55 10 L20 10 Z M35 24 L53 24 C60 24 63 27 63 32 C63 37 60 41 53 41 L35 41 L35 24 Z" 
+                  fill="#8B4513"
+                />
+              </svg>
+              <span className="text-2xl font-bold text-amber-900">Return It</span>
+            </div>
+            
+            {/* Right side - Sign In/Sign Up buttons */}
+            <div className="flex justify-end w-32">
             {!isAuthenticated && (
               <div className="flex gap-2">
                 <Link href="/login">
@@ -143,6 +166,7 @@ export default function Welcome() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
+            </div>
           </div>
         </div>
       </div>
@@ -156,23 +180,6 @@ export default function Welcome() {
             
             {/* Left Side - All Headers */}
             <div className="flex-1 space-y-4 text-center md:text-left">
-              {/* Return It Logo */}
-              <div className="flex justify-center md:justify-start">
-                <svg 
-                  width="80" 
-                  height="80" 
-                  viewBox="0 0 100 100" 
-                  className="filter drop-shadow-lg"
-                  aria-label="Return It"
-                  fill="none"
-                >
-                  <path 
-                    d="M20 10 L20 90 L35 90 L35 55 L50 55 L65 90 L82 90 L65 53 C72 50 78 42 78 30 C78 16 68 10 55 10 L20 10 Z M35 24 L53 24 C60 24 63 27 63 32 C63 37 60 41 53 41 L35 41 L35 24 Z" 
-                    fill="#8B4513"
-                  />
-                </svg>
-              </div>
-              
               {/* Slogan */}
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-black font-medium italic text-amber-700">
                 Return It. Give back, uplift others.
