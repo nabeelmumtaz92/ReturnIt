@@ -97,6 +97,7 @@ const CostMonitoring = lazy(() => import("@/pages/cost-monitoring"));
 const MonitoringDashboard = lazy(() => import("@/pages/monitoring-dashboard"));
 const AIKnowledgeCenter = lazy(() => import("@/pages/ai-knowledge-center"));
 const ReturnGraphAdmin = lazy(() => import("@/pages/return-graph-admin"));
+const MarketingLinks = lazy(() => import("@/pages/marketing-links"));
 
 // Loading component for Suspense
 const PageLoader = () => (
@@ -530,6 +531,9 @@ function Router() {
       </Route>
       <Route path="/monitoring-dashboard">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <MonitoringDashboard /> : <NotFound />}
+      </Route>
+      <Route path="/marketing-links">
+        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <MarketingLinks /> : <NotFound />}
       </Route>
 
       {/* Employee Routes */}

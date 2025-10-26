@@ -10,11 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Footer from '@/components/Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import deliveryHandoffImg from "@assets/generated_images/Professional_delivery_homepage_hero_4017d9ae.png";
+import { captureTrackingParams, getTrackingContext } from '@/lib/tracking';
+import { trackEvent } from '@/lib/posthog';
 
 interface EnvironmentConfig {
   allowPublicRegistration: boolean;
@@ -45,6 +47,19 @@ export default function Welcome() {
       description: "You have been signed out successfully.",
     });
   };
+
+  // Capture tracking parameters on page load (like DoorDash does)
+  useEffect(() => {
+    const trackingParams = captureTrackingParams();
+    
+    // Send to analytics if we have tracking data
+    if (Object.keys(trackingParams).length > 0) {
+      trackEvent('page_view_with_tracking', {
+        page: 'homepage',
+        ...trackingParams,
+      });
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-amber-50">

@@ -14,6 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { trackEvent } from "@/lib/posthog";
+import { captureTrackingParams, getTrackingContext } from "@/lib/tracking";
 import { Package, CreditCard, Search, MapPin, Minus, Plus, User, Navigation, Home, Shield, AlertTriangle, Clock, Truck, Store, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import { BackButton } from "@/components/BackButton";
 import { ObjectUploader } from "@/components/ObjectUploader";
