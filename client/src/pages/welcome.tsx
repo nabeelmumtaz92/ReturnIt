@@ -182,16 +182,6 @@ export default function Welcome() {
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-semibold">
                 The Leader in Returns Delivery and Reverse Logistics.
               </p>
-              
-              {/* St. Louis Notice */}
-              <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
-                <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
-                  📍 St. Louis only right now
-                </p>
-                <p className="text-xs sm:text-sm text-black mt-1">
-                  Coming to your city soon!
-                </p>
-              </div>
             </div>
 
             {/* Right Side - Truck Image */}
@@ -216,7 +206,7 @@ export default function Welcome() {
         </div>
 
         {/* Book Return Button - Centered Below */}
-        <div className="w-full flex justify-center mt-6">
+        <div className="w-full flex flex-col items-center gap-4 mt-6">
           <Button 
             size="lg" 
             className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
@@ -226,6 +216,16 @@ export default function Welcome() {
             <Package className="h-5 w-5 mr-2" />
             Book Return
           </Button>
+          
+          {/* St. Louis Notice */}
+          <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3">
+            <p className="text-sm sm:text-base lg:text-lg text-black font-semibold text-center">
+              📍 St. Louis only right now
+            </p>
+            <p className="text-xs sm:text-sm text-black mt-1 text-center">
+              Coming to your city soon!
+            </p>
+          </div>
         </div>
 
         {/* Driver Benefits Section with Become a Driver Button */}
