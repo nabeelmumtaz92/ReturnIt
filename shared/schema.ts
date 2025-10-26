@@ -360,6 +360,55 @@ export const pushSubscriptions = pgTable("push_subscriptions", {
   uniqueUserEndpoint: unique("unique_user_endpoint").on(table.userId, table.endpoint),
 }));
 
+// Driver Payment Methods table - PCI Compliant (Stripe references only)
+export const driverPaymentMethods = pgTable("driver_payment_methods", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+  
+  // Stripe references (NEVER store raw card/bank data)
+  stripePaymentMethodId: text("stripe_payment_method_id"), // For cards via Stripe Elements
+  stripeExternalAccountId: text("stripe_external_account_id"), // For bank accounts via Financial Connections
+  
+  // Payment method type
+  type: text("type").notNull(), // "card" or "bank_account"
+  
+  // Display metadata (last4, brand, bank name - safe to store)
+  last4: text("last4"), // Last 4 digits for display
+  brand: text("brand"), // "visa", "mastercard", "bank_of_america", etc.
+  bankName: text("bank_name"), // For bank accounts
+  accountHolderName: text("account_holder_name"),
+  
+  // Instant pay eligibility
+  instantPayEligible: boolean("instant_pay_eligible").default(false).notNull(),
+  instantPayFee: real("instant_pay_fee").default(0.50), // Fee for instant payout
+  
+  // Default payment method
+  isDefault: boolean("is_default").default(false).notNull(),
+  
+  // Status and verification
+  status: text("status").notNull().default("active"), // active, pending_verification, verification_failed, expired, removed
+  verifiedAt: timestamp("verified_at"),
+  verificationFailureReason: text("verification_failure_reason"),
+  
+  // Financial Connections specific (for bank accounts)
+  financialConnectionsAccountId: text("financial_connections_account_id"),
+  
+  // Metadata and compliance
+  metadata: jsonb("metadata").default({}),
+  
+  // Security audit trail
+  addedByIp: text("added_by_ip"),
+  lastUsedAt: timestamp("last_used_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("driver_payment_methods_user_id_idx").on(table.userId),
+  statusIdx: index("driver_payment_methods_status_idx").on(table.status),
+  isDefaultIdx: index("driver_payment_methods_is_default_idx").on(table.isDefault),
+  instantPayEligibleIdx: index("driver_payment_methods_instant_pay_eligible_idx").on(table.instantPayEligible),
+}));
+
 // SMS Notifications table
 export const smsNotifications = pgTable("sms_notifications", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1644,6 +1693,17 @@ export const insertPushSubscriptionSchema = createInsertSchema(pushSubscriptions
   authKey: z.string().min(1, "Auth key required"),
 });
 
+export const insertDriverPaymentMethodSchema = createInsertSchema(driverPaymentMethods).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  lastUsedAt: true,
+  verifiedAt: true,
+}).extend({
+  type: z.enum(["card", "bank_account"]),
+  status: z.enum(["active", "pending_verification", "verification_failed", "expired", "removed"]).optional(),
+});
+
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   trackingNumber: true,
@@ -1810,6 +1870,8 @@ export const insertEmergencyAlertSchema = createInsertSchema(emergencyAlerts).om
 // Enhanced types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type DriverPaymentMethod = typeof driverPaymentMethods.$inferSelect;
+export type InsertDriverPaymentMethod = z.infer<typeof insertDriverPaymentMethodSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type OrderAuditLog = typeof orderAuditLogs.$inferSelect;
