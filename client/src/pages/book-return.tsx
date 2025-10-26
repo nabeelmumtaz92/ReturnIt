@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,10 +10,12 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2 } from "lucide-react";
+import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ObjectUploader } from "@/components/ObjectUploader";
 
 // Load Stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -45,6 +47,10 @@ interface FormData {
   notes: string;
   boxSize: string;
   numberOfBoxes: number;
+  // Photo verification (MANDATORY - at least one required)
+  receiptPhotoUrl?: string;
+  tagsPhotoUrl?: string;
+  packagingPhotoUrl?: string;
   // Page 3
   paymentMethod: string;
 }
@@ -356,6 +362,127 @@ export default function BookReturn() {
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
 
+  // Photo upload handlers
+  const handleReceiptGetUploadUrl = async () => {
+    const response: any = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleReceiptUploadComplete = useCallback(async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          receiptPhotoUrl: durableObjectPath,
+        }));
+        
+        toast({
+          title: "Receipt uploaded",
+          description: "Your receipt has been uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing receipt upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to save receipt. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
+  const handleTagsGetUploadUrl = async () => {
+    const response: any = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleTagsUploadComplete = useCallback(async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          tagsPhotoUrl: durableObjectPath,
+        }));
+        
+        toast({
+          title: "Tags photo uploaded",
+          description: "Photo of original tags uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing tags photo upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload tags photo. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
+  const handlePackagingGetUploadUrl = async () => {
+    const response: any = await apiRequest("POST", "/api/objects/upload");
+    return {
+      method: "PUT" as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handlePackagingUploadComplete = useCallback(async (result: any) => {
+    if (result.successful && result.successful.length > 0) {
+      try {
+        const uploadedFile = result.successful[0];
+        const tempUploadUrl = uploadedFile.uploadURL;
+        
+        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
+          receiptUrl: tempUploadUrl,
+        });
+        
+        const durableObjectPath = response.objectPath;
+        
+        setFormData(prev => ({ 
+          ...prev, 
+          packagingPhotoUrl: durableObjectPath,
+        }));
+        
+        toast({
+          title: "Packaging photo uploaded",
+          description: "Photo of original packaging uploaded successfully",
+        });
+      } catch (error) {
+        console.error("Error finalizing packaging photo upload:", error);
+        toast({
+          title: "Upload failed",
+          description: "Failed to upload packaging photo. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  }, [toast]);
+
   // Validate current page before proceeding
   const validatePage = (pageNum: number): boolean => {
     const errors = new Set<string>();
@@ -385,6 +512,17 @@ export default function BookReturn() {
       if (!formData.orderName) errors.add('orderName');
       if (!formData.itemDescription) errors.add('itemDescription');
       if (!formData.itemValue) errors.add('itemValue');
+      
+      // MANDATORY: At least one photo required
+      if (!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl) {
+        errors.add('photoRequired');
+        toast({
+          title: "Photo Verification Required",
+          description: "You must upload at least one photo: receipt, tags, or packaging",
+          variant: "destructive",
+        });
+        return false;
+      }
       
       if (errors.size > 0) {
         setValidationErrors(errors);
@@ -922,6 +1060,127 @@ export default function BookReturn() {
                     data-testid="input-notes"
                   />
                 </div>
+
+                <Separator className="my-6" />
+
+                {/* Photo Verification - MANDATORY */}
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Shield className="h-5 w-5 text-red-600" />
+                    <Label className="text-foreground font-semibold text-lg">Photo Verification (Required) *</Label>
+                  </div>
+
+                  {/* Warning if no photos uploaded */}
+                  {!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl && (
+                    <div className="flex items-start space-x-2 p-3 bg-red-50 border-2 border-red-400 rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-red-900">Photo Verification Required</h4>
+                        <p className="text-sm text-red-700 mt-1 font-medium">
+                          You must upload a photo showing proof of purchase. Choose ONE option below.
+                        </p>
+                        <p className="text-xs text-red-600 mt-2">
+                          This protects you, our drivers, and ensures a smooth return process.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Shield className="h-5 w-5 text-amber-600" />
+                      <Label className="text-foreground font-semibold text-base">Upload 1 of 3 Options *</Label>
+                    </div>
+                    <p className="text-sm text-muted-foreground font-medium">Upload a photo of ONE of the following:</p>
+                    
+                    {/* Option 1: Receipt Photo */}
+                    <div className="space-y-2 p-3 bg-white rounded border border-border">
+                      <div className="flex items-start space-x-2">
+                        <div className="flex-1">
+                          <Label className="text-foreground font-semibold">1. Receipt or Order Confirmation</Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            📄 Take a clear photo of your paper receipt or screenshot your email confirmation
+                          </p>
+                        </div>
+                      </div>
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={10485760}
+                        onGetUploadParameters={handleReceiptGetUploadUrl}
+                        onComplete={handleReceiptUploadComplete}
+                        variant="outline"
+                        size="sm"
+                        testId="button-upload-receipt"
+                      >
+                        {formData.receiptPhotoUrl ? 'Change Receipt Photo' : 'Upload Receipt Photo'}
+                      </ObjectUploader>
+                      {formData.receiptPhotoUrl && (
+                        <div className="flex items-center space-x-2 text-green-600 text-sm">
+                          <Check className="h-4 w-4" />
+                          <span className="font-medium">Receipt photo uploaded ✓</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Option 2: Tags Photo */}
+                    <div className="space-y-2 p-3 bg-white rounded border border-border">
+                      <div className="flex items-start space-x-2">
+                        <div className="flex-1">
+                          <Label className="text-foreground font-semibold">2. Original Tags</Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            🏷️ Take a photo showing the item with original tags still attached
+                          </p>
+                        </div>
+                      </div>
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={10485760}
+                        onGetUploadParameters={handleTagsGetUploadUrl}
+                        onComplete={handleTagsUploadComplete}
+                        variant="outline"
+                        size="sm"
+                        testId="button-upload-tags"
+                      >
+                        {formData.tagsPhotoUrl ? 'Change Tags Photo' : 'Upload Tags Photo'}
+                      </ObjectUploader>
+                      {formData.tagsPhotoUrl && (
+                        <div className="flex items-center space-x-2 text-green-600 text-sm">
+                          <Check className="h-4 w-4" />
+                          <span className="font-medium">Tags photo uploaded ✓</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Option 3: Packaging Photo */}
+                    <div className="space-y-2 p-3 bg-white rounded border border-border">
+                      <div className="flex items-start space-x-2">
+                        <div className="flex-1">
+                          <Label className="text-foreground font-semibold">3. Original Packaging</Label>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            📦 Take a photo showing the item in its original packaging
+                          </p>
+                        </div>
+                      </div>
+                      <ObjectUploader
+                        maxNumberOfFiles={1}
+                        maxFileSize={10485760}
+                        onGetUploadParameters={handlePackagingGetUploadUrl}
+                        onComplete={handlePackagingUploadComplete}
+                        variant="outline"
+                        size="sm"
+                        testId="button-upload-packaging"
+                      >
+                        {formData.packagingPhotoUrl ? 'Change Packaging Photo' : 'Upload Packaging Photo'}
+                      </ObjectUploader>
+                      {formData.packagingPhotoUrl && (
+                        <div className="flex items-center space-x-2 text-green-600 text-sm">
+                          <Check className="h-4 w-4" />
+                          <span className="font-medium">Packaging photo uploaded ✓</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
 
@@ -1095,50 +1354,136 @@ export default function BookReturn() {
                   </div>
                 </div>
 
-                {/* Terms and Policies */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg">Important Terms & Policies</h3>
+                {/* Terms and Policies - Clickable Links */}
+                <div className="space-y-3 p-4 bg-muted/30 rounded-lg border border-border">
+                  <h3 className="font-semibold text-lg flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Important Terms & Policies
+                  </h3>
+                  <p className="text-sm text-muted-foreground">Click to view details:</p>
                   
-                  {/* Cancellation Policy */}
-                  <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded">
-                    <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
-                      <span>📋</span> Cancellation Policy
-                    </h4>
-                    <p className="text-sm text-amber-800">
-                      A <strong>$4.99 cancellation fee</strong> will apply if you cancel after a driver has been dispatched to your location. This fee covers driver compensation and operational costs.
-                    </p>
-                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    {/* Cancellation Policy Dialog */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-amber-700 hover:text-amber-800 border-amber-300 hover:bg-amber-50" data-testid="link-cancellation-policy">
+                          📋 Cancellation Policy
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2 text-amber-900">
+                            <span>📋</span> Cancellation Policy
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription asChild>
+                          <div className="space-y-3">
+                            <p className="text-sm text-foreground">
+                              A <strong className="text-amber-700">$4.99 cancellation fee</strong> will apply if you cancel after a driver has been dispatched to your location.
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              This fee covers driver compensation and operational costs.
+                            </p>
+                          </div>
+                        </DialogDescription>
+                      </DialogContent>
+                    </Dialog>
 
-                  {/* Service Requirements */}
-                  <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
-                    <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-                      <span>📸</span> Service Requirements
-                    </h4>
-                    <ul className="text-sm text-blue-800 space-y-1.5 list-disc list-inside">
-                      <li><strong>Photo Verification:</strong> Driver will take a photo at drop-off for confirmation</li>
-                      <li><strong>Proof of Purchase:</strong> Upload your receipt or order confirmation when available</li>
-                      <li><strong>Package Condition:</strong> Items must be properly packaged and ready for pickup</li>
-                    </ul>
-                  </div>
+                    {/* Service Requirements Dialog */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-blue-700 hover:text-blue-800 border-blue-300 hover:bg-blue-50" data-testid="link-service-requirements">
+                          📸 Service Requirements
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2 text-blue-900">
+                            <span>📸</span> Service Requirements
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription asChild>
+                          <div>
+                            <ul className="text-sm text-foreground space-y-2 list-none">
+                              <li className="flex gap-2">
+                                <span className="text-blue-600">•</span>
+                                <div>
+                                  <strong>Photo Verification:</strong> Driver will take a photo at drop-off for confirmation
+                                </div>
+                              </li>
+                              <li className="flex gap-2">
+                                <span className="text-blue-600">•</span>
+                                <div>
+                                  <strong>Proof of Purchase:</strong> Upload your receipt or order confirmation when available
+                                </div>
+                              </li>
+                              <li className="flex gap-2">
+                                <span className="text-blue-600">•</span>
+                                <div>
+                                  <strong>Package Condition:</strong> Items must be properly packaged and ready for pickup
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                        </DialogDescription>
+                      </DialogContent>
+                    </Dialog>
 
-                  {/* Legal Terms */}
-                  <div className="bg-gray-50 border-l-4 border-gray-400 p-4 rounded">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <span>⚖️</span> Service Terms
-                    </h4>
-                    <p className="text-sm text-gray-700">
-                      <strong>Service Area:</strong> Currently available in St. Louis, MO only. Expanding to additional cities soon.
-                    </p>
-                  </div>
+                    {/* Service Terms Dialog */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-gray-700 hover:text-gray-800 border-gray-300 hover:bg-gray-50" data-testid="link-service-terms">
+                          ⚖️ Service Terms
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2 text-gray-900">
+                            <span>⚖️</span> Service Terms
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription asChild>
+                          <div className="space-y-3">
+                            <p className="text-sm text-foreground">
+                              <strong>Service Area:</strong> Currently available in St. Louis, MO only. Expanding to additional cities soon.
+                            </p>
+                          </div>
+                        </DialogDescription>
+                      </DialogContent>
+                    </Dialog>
 
-                  {/* Contact Support */}
-                  <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
-                    <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
-                      <span>💬</span> Need Help?
-                    </h4>
-                    <p className="text-sm text-green-800">
-                      Questions about your return? Contact us at <strong>(636) 254-4821</strong> or <a href="mailto:support@returnit.online" className="underline">support@returnit.online</a>
-                    </p>
+                    {/* Need Help Dialog */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="text-green-700 hover:text-green-800 border-green-300 hover:bg-green-50" data-testid="link-need-help">
+                          💬 Need Help?
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-md">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2 text-green-900">
+                            <span>💬</span> Need Help?
+                          </DialogTitle>
+                        </DialogHeader>
+                        <DialogDescription asChild>
+                          <div className="space-y-3">
+                            <p className="text-sm text-foreground">
+                              Questions about your return? Contact us:
+                            </p>
+                            <div className="space-y-2 text-sm">
+                              <p className="flex items-center gap-2">
+                                <span className="font-semibold">Phone:</span>
+                                <a href="tel:6362544821" className="text-blue-600 hover:underline">(636) 254-4821</a>
+                              </p>
+                              <p className="flex items-center gap-2">
+                                <span className="font-semibold">Email:</span>
+                                <a href="mailto:support@returnit.online" className="text-blue-600 hover:underline">support@returnit.online</a>
+                              </p>
+                            </div>
+                          </div>
+                        </DialogDescription>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               </div>
