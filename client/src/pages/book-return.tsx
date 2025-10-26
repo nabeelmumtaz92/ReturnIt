@@ -58,6 +58,7 @@ interface FormData {
   tagsPhotoUrl?: string;
   packagingPhotoUrl?: string;
   // Page 3
+  serviceTier: 'standard' | 'priority' | 'instant'; // Service tier selection
   tip: number;
   paymentMethod: string;
 }
@@ -317,9 +318,35 @@ function getStoreCoordinates(storeLocation: string): { lat: number; lng: number 
   return cityCoordinates[city] || { lat: 38.6270, lng: -90.1994 }; // Default to downtown St. Louis
 }
 
+// Service tier pricing
+const SERVICE_TIERS = {
+  standard: {
+    name: 'Standard',
+    price: 6.99,
+    driverEarns: 5.00,
+    description: '1-3 hour pickup window',
+    icon: '📦'
+  },
+  priority: {
+    name: 'Priority',
+    price: 9.99,
+    driverEarns: 8.00,
+    description: 'Under 1 hour pickup',
+    icon: '⚡'
+  },
+  instant: {
+    name: 'Instant',
+    price: 12.99,
+    driverEarns: 10.00,
+    description: 'ASAP pickup',
+    icon: '🚀'
+  }
+};
+
 // Pricing calculation based on business rules
 function calculatePricing(formData: FormData & { tip?: number }) {
-  const basePrice = 8.99; // Base pickup fee
+  const tier = SERVICE_TIERS[formData.serviceTier || 'standard'];
+  const basePrice = tier.price; // Base pickup fee from selected tier
   
   // Size upcharge based on box size
   const sizeUpcharges: Record<string, number> = {
@@ -497,6 +524,7 @@ export default function BookReturn() {
     notes: '',
     boxSize: 'small',
     numberOfBoxes: 1,
+    serviceTier: 'standard',
     tip: 0,
     paymentMethod: 'card'
   });
@@ -1617,6 +1645,45 @@ export default function BookReturn() {
                   </div>
                 </div>
 
+                {/* Service Tier Selection */}
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-lg border-2 border-blue-200">
+                  <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-blue-900">
+                    ⏱️ Choose Your Pickup Speed
+                  </h3>
+                  <p className="text-sm text-blue-800 mb-4">
+                    Select how quickly you need your return picked up
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {Object.entries(SERVICE_TIERS).map(([key, tier]) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => updateField('serviceTier', key as 'standard' | 'priority' | 'instant')}
+                        className={`relative p-4 rounded-lg border-2 transition-all ${
+                          formData.serviceTier === key
+                            ? 'border-[#B8956A] bg-amber-50 shadow-lg'
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md'
+                        }`}
+                        data-testid={`button-tier-${key}`}
+                      >
+                        {formData.serviceTier === key && (
+                          <div className="absolute -top-2 -right-2 bg-[#B8956A] text-white rounded-full p-1">
+                            <Check className="h-4 w-4" />
+                          </div>
+                        )}
+                        <div className="text-3xl mb-2">{tier.icon}</div>
+                        <div className="font-bold text-lg text-gray-900">{tier.name}</div>
+                        <div className="text-sm text-gray-600 mb-2">{tier.description}</div>
+                        <div className="text-2xl font-bold text-[#B8956A]">${tier.price.toFixed(2)}</div>
+                        <div className="text-xs text-green-700 mt-1">
+                          💰 Driver earns ${tier.driverEarns.toFixed(2)}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                     <CreditCard className="h-5 w-5 text-[#B8956A]" />
@@ -1624,7 +1691,7 @@ export default function BookReturn() {
                   </h3>
                   <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Base Pickup Fee</span>
+                      <span className="text-muted-foreground">Base Pickup Fee ({SERVICE_TIERS[formData.serviceTier].name})</span>
                       <span className="font-medium">${pricing.basePrice.toFixed(2)}</span>
                     </div>
                     {pricing.sizeUpcharge > 0 && (
@@ -1667,48 +1734,68 @@ export default function BookReturn() {
                 {/* Add Tip Section */}
                 <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-5 rounded-lg border-2 border-amber-200">
                   <h3 className="font-semibold text-lg mb-3 flex items-center gap-2 text-amber-900">
-                    ❤️ Add a Tip for Your Driver (Optional)
+                    ❤️ Add a Tip for Your Driver
                   </h3>
-                  <p className="text-sm text-amber-800 mb-4">
-                    Show appreciation for great service! 100% of tips go directly to your driver.
-                  </p>
+                  <div className="bg-white p-3 rounded-lg mb-4 border border-amber-300">
+                    <div className="flex items-center gap-2 text-green-700 font-semibold">
+                      <span className="text-2xl">💯</span>
+                      <span className="text-sm">100% of your tip goes directly to your driver!</span>
+                    </div>
+                  </div>
                   
-                  {/* Preset Tip Buttons */}
+                  {/* Preset Tip Buttons - Higher Amounts */}
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     <Button
                       type="button"
-                      variant={formData.tip === pricing.subtotal * 0.10 ? "default" : "outline"}
-                      onClick={() => updateField('tip', pricing.subtotal * 0.10)}
-                      className={formData.tip === pricing.subtotal * 0.10 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
-                      data-testid="button-tip-10"
+                      variant={formData.tip === 3 ? "default" : "outline"}
+                      onClick={() => updateField('tip', 3)}
+                      className={formData.tip === 3 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-3"
                     >
-                      10%
-                      <br />
-                      <span className="text-xs">${(pricing.subtotal * 0.10).toFixed(2)}</span>
+                      <span className="text-lg font-bold">$3</span>
                     </Button>
                     <Button
                       type="button"
-                      variant={formData.tip === pricing.subtotal * 0.15 ? "default" : "outline"}
-                      onClick={() => updateField('tip', pricing.subtotal * 0.15)}
-                      className={formData.tip === pricing.subtotal * 0.15 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
-                      data-testid="button-tip-15"
+                      variant={formData.tip === 5 ? "default" : "outline"}
+                      onClick={() => updateField('tip', 5)}
+                      className={formData.tip === 5 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-5"
                     >
-                      15%
+                      <span className="text-lg font-bold">$5</span>
                       <br />
-                      <span className="text-xs">${(pricing.subtotal * 0.15).toFixed(2)}</span>
+                      <span className="text-xs">⭐ Popular</span>
                     </Button>
                     <Button
                       type="button"
-                      variant={formData.tip === pricing.subtotal * 0.20 ? "default" : "outline"}
-                      onClick={() => updateField('tip', pricing.subtotal * 0.20)}
-                      className={formData.tip === pricing.subtotal * 0.20 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
-                      data-testid="button-tip-20"
+                      variant={formData.tip === 8 ? "default" : "outline"}
+                      onClick={() => updateField('tip', 8)}
+                      className={formData.tip === 8 ? "bg-[#B8956A] hover:bg-[#A07A4F]" : ""}
+                      data-testid="button-tip-8"
                     >
-                      20%
+                      <span className="text-lg font-bold">$8</span>
                       <br />
-                      <span className="text-xs">${(pricing.subtotal * 0.20).toFixed(2)}</span>
+                      <span className="text-xs">🌟 Generous</span>
                     </Button>
                   </div>
+                  
+                  {/* Round-Up Option */}
+                  {pricing.total % 1 !== 0 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        const roundUpAmount = Math.ceil(pricing.total) - pricing.total;
+                        updateField('tip', Number((formData.tip + roundUpAmount).toFixed(2)));
+                      }}
+                      className="w-full mb-4 border-dashed border-2 border-amber-400 hover:bg-amber-100"
+                      data-testid="button-tip-roundup"
+                    >
+                      <span className="text-sm">
+                        Round up to ${Math.ceil(pricing.total).toFixed(2)} 
+                        <span className="font-semibold text-amber-700"> (+${(Math.ceil(pricing.total) - pricing.total).toFixed(2)})</span>
+                      </span>
+                    </Button>
+                  )}
                   
                   {/* Custom Tip Input */}
                   <div>

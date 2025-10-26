@@ -41,6 +41,8 @@ Preferred communication style: Simple, everyday language.
 - Multi-package booking, special handling, donation options.
 - **Multiple Items Per Return**: Users can add unlimited items to a single return booking. Each item has its own name, description, and value. Items can be added/removed dynamically with automatic total value calculation.
 - **Mandatory Photo Verification**: Users must upload at least one photo (receipt, tags, or packaging) before completing booking.
+- **Customer-Paid Premium Pricing Tiers**: Standard ($6.99, driver earns $5), Priority ($9.99, driver earns $8), Instant ($12.99, driver earns $10) - shifts cost to customer for faster service.
+- **Enhanced Tip Encouragement**: Pre-selected higher amounts ($3/$5/$8), prominent "100% to driver" messaging, round-up tip option, and post-delivery tip prompts to boost driver earnings without company subsidy.
 
 ### Driver Features
 - **Native Mobile App**: React Native with Expo (com.returnit.app) featuring screens for Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout.

@@ -604,6 +604,7 @@ export const orders = pgTable("orders", {
   authorizationTimestamp: timestamp("authorization_timestamp"),
   
   // Pricing - simplified to match actual DB columns
+  serviceTier: text("service_tier").default("standard").notNull(), // "standard" ($6.99), "priority" ($9.99), "instant" ($12.99)
   basePrice: real("base_price").default(8.99),
   sizeUpcharge: real("size_upcharge").default(0),
   multiBoxFee: real("multi_box_fee").default(0), // Actual DB column (not multiItemFee)

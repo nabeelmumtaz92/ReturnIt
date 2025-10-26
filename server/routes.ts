@@ -3913,11 +3913,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Service tier pricing - Server-side validation
+  const SERVICE_TIERS = {
+    standard: {
+      price: 6.99,
+      driverEarns: 5.00,
+      description: '1-3 hour pickup window'
+    },
+    priority: {
+      price: 9.99,
+      driverEarns: 8.00,
+      description: 'Under 1 hour pickup'
+    },
+    instant: {
+      price: 12.99,
+      driverEarns: 10.00,
+      description: 'ASAP pickup'
+    }
+  } as const;
+
   // Create new order (supports both authenticated and guest users)
   app.post("/api/orders", async (req, res) => {
     try {
       // Allow both logged-in users and guests
       const userId = (req.session as any)?.user?.id || null;
+      
+      // SECURITY: Validate service tier
+      const serviceTier = req.body.serviceTier || 'standard';
+      if (!['standard', 'priority', 'instant'].includes(serviceTier)) {
+        console.error(`🚨 SECURITY: Invalid service tier: ${serviceTier}`);
+        return res.status(400).json({
+          message: "Invalid service tier",
+          code: 'INVALID_SERVICE_TIER'
+        });
+      }
       
       // CRITICAL SECURITY: Payment intent is REQUIRED for all orders
       if (!req.body.stripePaymentIntentId) {
