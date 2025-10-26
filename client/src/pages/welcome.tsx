@@ -142,8 +142,27 @@ export default function Welcome() {
             {/* Left Side - All Headers */}
             <div className="flex-1 space-y-4 text-center lg:text-left">
               {/* Return It Logo */}
-              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black filter drop-shadow-lg">
-                Return It
+              <div className="flex justify-center lg:justify-start">
+                <svg 
+                  width="80" 
+                  height="80" 
+                  viewBox="0 0 100 100" 
+                  className="filter drop-shadow-lg"
+                  aria-label="Return It"
+                >
+                  <text 
+                    x="50" 
+                    y="75" 
+                    fontSize="80" 
+                    fontWeight="700" 
+                    fill="#8B4513"
+                    fontFamily="Inter, system-ui, sans-serif"
+                    textAnchor="middle"
+                    letterSpacing="-2px"
+                  >
+                    R
+                  </text>
+                </svg>
               </div>
               
               {/* Slogan */}

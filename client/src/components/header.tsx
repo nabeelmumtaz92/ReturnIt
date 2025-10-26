@@ -31,10 +31,26 @@ export function Header({ title, subtitle, showBack = false, backUrl = "/", class
             )}
             
             <Link href="/">
-              <div 
-                className="text-amber-900 font-bold text-xl cursor-pointer hover:opacity-80 transition-opacity"
-              >
-                Return It
+              <div className="cursor-pointer hover:opacity-80 transition-opacity">
+                <svg 
+                  width="32" 
+                  height="32" 
+                  viewBox="0 0 100 100" 
+                  aria-label="Return It"
+                >
+                  <text 
+                    x="50" 
+                    y="75" 
+                    fontSize="80" 
+                    fontWeight="700" 
+                    fill="#8B4513"
+                    fontFamily="Inter, system-ui, sans-serif"
+                    textAnchor="middle"
+                    letterSpacing="-2px"
+                  >
+                    R
+                  </text>
+                </svg>
               </div>
             </Link>
             
