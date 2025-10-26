@@ -277,9 +277,16 @@ export const users = pgTable("users", {
   paymentPreference: text("payment_preference").default("weekly"), // weekly, instant
   instantPayFeePreference: real("instant_pay_fee").default(1.00), // $0.50-$1.00 fee
   
+  // Stripe Identity Verification (for driver identity verification)
+  stripeIdentitySessionId: text("stripe_identity_session_id"),
+  stripeIdentityVerificationId: text("stripe_identity_verification_id"),
+  stripeIdentityStatus: text("stripe_identity_status").default("not_started"), // not_started, processing, verified, requires_input, canceled
+  stripeIdentityVerifiedAt: timestamp("stripe_identity_verified_at"),
+  stripeIdentityVerificationData: jsonb("stripe_identity_verification_data"), // Full verification result from Stripe
+  
   // Driver onboarding and application status
   applicationStatus: text("application_status").default("pending_review"), // pending_review, background_check_pending, background_check_approved, background_check_failed, documents_required, approved_active, rejected, waitlisted
-  onboardingStep: text("onboarding_step").default("signup"), // signup, vehicle_info, background_check, documents, banking, approval, complete
+  onboardingStep: text("onboarding_step").default("signup"), // signup, vehicle_info, identity_verification, background_check, documents, banking, approval, complete
   // Background check fields
   backgroundCheckConsent: boolean("background_check_consent").default(false),
   backgroundCheckStatus: text("background_check_status").default("not_started"), // not_started, in_progress, passed, failed, expired
