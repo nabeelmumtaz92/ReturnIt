@@ -152,12 +152,12 @@ export default function Welcome() {
         
         {/* Hero Section: Headers Left, Truck Image Right */}
         <div className="w-full max-w-6xl">
-          <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 lg:gap-12">
             
             {/* Left Side - All Headers */}
-            <div className="flex-1 space-y-4 text-center lg:text-left">
+            <div className="flex-1 space-y-4 text-center md:text-left">
               {/* Return It Logo */}
-              <div className="flex justify-center lg:justify-start">
+              <div className="flex justify-center md:justify-start">
                 <svg 
                   width="80" 
                   height="80" 
@@ -195,12 +195,12 @@ export default function Welcome() {
             </div>
 
             {/* Right Side - Truck Image */}
-            <div className="flex-shrink-0 w-full lg:w-auto max-w-md lg:max-w-lg">
+            <div className="flex-shrink-0 w-full md:w-96 lg:w-auto md:max-w-md lg:max-w-lg">
               <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
                 <img 
                   src={deliveryHandoffImg} 
                   alt="Professional delivery service homepage hero" 
-                  className="w-full h-48 sm:h-56 md:h-64 object-cover img-crisp"
+                  className="w-full h-56 md:h-64 lg:h-72 object-cover img-crisp"
                 />
                 <div className="p-6 bg-amber-50">
                   <h3 className="text-xl font-semibold text-amber-900 mb-2">
