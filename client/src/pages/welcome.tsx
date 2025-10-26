@@ -68,29 +68,16 @@ export default function Welcome() {
       <div className="w-full bg-white/95 border-b border-amber-100">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
-            {/* Spacer for left side */}
-            <div className="w-32"></div>
-            
             {/* Centered Logo */}
-            <div className="flex items-center gap-3">
-              <svg 
-                width="40" 
-                height="40" 
-                viewBox="0 0 100 100" 
-                className="filter drop-shadow-sm"
-                aria-label="Return It"
-                fill="none"
-              >
-                <path 
-                  d="M20 10 L20 90 L35 90 L35 55 L50 55 L65 90 L82 90 L65 53 C72 50 78 42 78 30 C78 16 68 10 55 10 L20 10 Z M35 24 L53 24 C60 24 63 27 63 32 C63 37 60 41 53 41 L35 41 L35 24 Z" 
-                  fill="#8B4513"
-                />
-              </svg>
-              <span className="text-2xl font-bold text-amber-900">Return It</span>
+            <div className="flex-1 flex justify-center">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl font-bold text-[#8B4513]">R</span>
+                <span className="text-lg font-semibold text-amber-900">Return It</span>
+              </div>
             </div>
             
             {/* Right side - Sign In/Sign Up buttons */}
-            <div className="flex justify-end w-32">
+            <div className="absolute right-4">
             {!isAuthenticated && (
               <div className="flex gap-2">
                 <Link href="/login">
