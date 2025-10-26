@@ -147,7 +147,7 @@ export default function Welcome() {
         {/* Service Area and Description - Centered */}
         <div className="text-center space-y-3">
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-black font-medium px-2">
-            The Leader in Returns
+            The Leader in Reverse Logistics, Delivery, and Returns
           </p>
           <div className="bg-amber-100 border border-amber-200 rounded-lg px-4 sm:px-6 py-2 sm:py-3 inline-block">
             <p className="text-sm sm:text-base lg:text-lg text-black font-semibold">
@@ -159,34 +159,39 @@ export default function Welcome() {
           </div>
         </div>
 
-        {/* Book Return Button - Centered */}
-        <div className="flex items-center justify-center w-full max-w-4xl px-4">
-          <Button 
-            size="lg" 
-            className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-            data-testid="button-book-return"
-            onClick={() => setLocation('/book-return')}
-          >
-            <Package className="h-5 w-5 mr-2" />
-            Book Return
-          </Button>
-        </div>
+        {/* Book Return Button with Image to the Right */}
+        <div className="w-full max-w-6xl px-4">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-12">
+            {/* Book Return Button - Left Side */}
+            <div className="flex items-center justify-center">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto px-8 py-6 bg-amber-800 hover:bg-amber-900 text-white text-base font-semibold shadow-lg hover:shadow-xl transition-all"
+                data-testid="button-book-return"
+                onClick={() => setLocation('/book-return')}
+              >
+                <Package className="h-5 w-5 mr-2" />
+                Book Return
+              </Button>
+            </div>
 
-        {/* Professional Service Section - Now appears AFTER Book Return */}
-        <div className="w-full max-w-3xl mt-8 sm:mt-12">
-          <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
-            <img 
-              src={deliveryHandoffImg} 
-              alt="Professional delivery service homepage hero" 
-              className="w-full h-48 sm:h-64 md:h-80 object-cover img-crisp"
-            />
-            <div className="p-6 bg-amber-50">
-              <h3 className="text-xl font-semibold text-amber-900 mb-2">
-                Professional Service
-              </h3>
-              <p className="text-amber-700">
-                Trusted by customers for reliable pickup and delivery
-              </p>
+            {/* Professional Service Image - Right Side */}
+            <div className="flex-shrink-0 max-w-md lg:max-w-lg">
+              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-amber-200">
+                <img 
+                  src={deliveryHandoffImg} 
+                  alt="Professional delivery service homepage hero" 
+                  className="w-full h-48 sm:h-56 md:h-64 object-cover img-crisp"
+                />
+                <div className="p-6 bg-amber-50">
+                  <h3 className="text-xl font-semibold text-amber-900 mb-2">
+                    Professional Service
+                  </h3>
+                  <p className="text-amber-700">
+                    Trusted by customers for reliable pickup and delivery
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

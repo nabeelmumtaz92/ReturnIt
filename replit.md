@@ -4,11 +4,11 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes
 
-**October 26, 2025 - Homepage Optimization & Branding Update**
-- **Book Return CTA Priority**: Moved Book Return button to center of homepage for immediate visibility when page loads
-- **Simplified Messaging**: Changed tagline from "The Leader in Reverse Logistics, Delivery, and Returns" to "The Leader in Returns" for cleaner, more focused branding
-- **Section Reordering**: Professional Service section now appears after Book Return CTA instead of before
-- **Result**: Clearer user journey with primary action (booking a return) front and center
+**October 26, 2025 - Homepage Optimization & Layout Update**
+- **Book Return CTA Priority**: Book Return button now appears at center of homepage immediately when page loads
+- **Side-by-Side Layout**: Professional Service image positioned to the right of Book Return button (stacks vertically on mobile)
+- **Tagline Preserved**: Kept "The Leader in Reverse Logistics, Delivery, and Returns" branding
+- **Result**: Cleaner layout with CTA and trust-building image both visible above the fold
 
 **October 25, 2025 - Photo Verification Requirement for Returns**
 - **Mandatory Photo Upload**: Customers must now upload a photo of ONE of three proof-of-purchase options:
