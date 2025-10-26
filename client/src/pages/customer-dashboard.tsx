@@ -33,7 +33,8 @@ import {
   Activity,
   Navigation,
   Settings,
-  LogOut
+  LogOut,
+  Bell
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -90,6 +91,14 @@ export default function CustomerDashboard() {
     queryKey: ['/api/customers/stats'],
     enabled: isAuthenticated && !!user?.id,
   });
+
+  // Fetch notifications for badge count
+  const { data: notifications = [] } = useQuery<Array<{id: number, isRead: boolean}>>({
+    queryKey: ['/api/customers/notifications'],
+    enabled: isAuthenticated && !!user?.id,
+  });
+
+  const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
 
   // Filter orders based on search
   const filteredOrders = orders.filter(order => 

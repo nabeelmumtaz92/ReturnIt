@@ -57,6 +57,7 @@ const RetailerAPIKeys = lazy(() => import("@/pages/retailer-api-keys"));
 const RetailerWebhooks = lazy(() => import("@/pages/retailer-webhooks"));
 const DriverAnalytics = lazy(() => import("@/pages/driver-analytics"));
 const CustomerRating = lazy(() => import("@/pages/customer-rating"));
+const CustomerNotifications = lazy(() => import("@/pages/customer-notifications"));
 const AdvancedReporting = lazy(() => import("@/pages/advanced-reporting"));
 const MultiCityManagement = lazy(() => import("@/pages/multi-city-management"));
 const EnhancedAnalyticsDashboard = lazy(() => import("@/pages/enhanced-analytics-dashboard"));
@@ -430,6 +431,7 @@ function Router() {
       <Route path="/real-time-tracking" component={RealTimeTracking} />
       <Route path="/driver-analytics" component={DriverAnalytics} />
       <Route path="/customer-rating" component={CustomerRating} />
+      <Route path="/customer-notifications" component={CustomerNotifications} />
       <Route path="/advanced-reporting">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdvancedReporting /> : <NotFound />}
       </Route>
