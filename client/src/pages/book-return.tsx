@@ -1126,9 +1126,6 @@ export default function BookReturn() {
                     <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
                       <span>⚖️</span> Service Terms
                     </h4>
-                    <p className="text-sm text-gray-700 mb-2">
-                      <strong>Agency Relationship:</strong> Return It acts as your authorized agent for transportation purposes only. Our driver will present your return to the retailer's public return desk on your behalf.
-                    </p>
                     <p className="text-sm text-gray-700">
                       <strong>Service Area:</strong> Currently available in St. Louis, MO only. Expanding to additional cities soon.
                     </p>
