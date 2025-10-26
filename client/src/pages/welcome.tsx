@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Footer from '@/components/Footer';
+import { BrandLogo } from '@/components/BrandLogo';
 import { useState, useEffect } from 'react';
 import { useAuth } from "@/hooks/useAuth-simple";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
@@ -70,10 +71,7 @@ export default function Welcome() {
           <div className="flex justify-between items-center">
             {/* Centered Logo */}
             <div className="flex-1 flex justify-center">
-              <div className="flex items-center gap-2">
-                <span className="text-3xl font-bold text-[#8B4513]">R</span>
-                <span className="text-lg font-semibold text-amber-900">Return It</span>
-              </div>
+              <BrandLogo size="md" linkToHome={false} />
             </div>
             
             {/* Right side - Sign In/Sign Up buttons */}

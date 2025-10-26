@@ -28,16 +28,26 @@ import {
   RefreshCw,
   Eye,
   ChevronRight,
+  ChevronDown,
   User,
   Activity,
-  Navigation
+  Navigation,
+  Settings,
+  LogOut
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth-simple';
 import { useToast } from '@/hooks/use-toast';
 import LiveOrderTracking from '@/components/LiveOrderTracking';
 import { apiRequest } from '@/lib/queryClient';
 import { Order } from '@shared/schema';
+import { BrandLogo } from '@/components/BrandLogo';
 
 // Customer stats interface matching server response
 interface CustomerStats {
@@ -158,32 +168,76 @@ export default function CustomerDashboard() {
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
-              <Link href="/">
-                <div className="text-2xl font-bold text-foreground cursor-pointer hover:text-primary transition-colors">
-                  Return It
-                </div>
-              </Link>
-              <p className="text-muted-foreground mt-1">Customer Dashboard</p>
+              <BrandLogo size="md" linkToHome={true} />
+              <p className="text-muted-foreground mt-2">Customer Dashboard</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-2 bg-accent border border-border rounded-lg">
-                <User className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-foreground">
-                  {user?.firstName && user?.lastName 
-                    ? `${user.firstName} ${user.lastName}`
-                    : user?.email?.split('@')[0] || 'User'
-                  }
-                </span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setLocation('/')}
-                className="border-border text-muted-foreground hover:bg-accent"
-                data-testid="button-home"
-              >
-                Home
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="flex items-center gap-2 border-amber-300 hover:bg-amber-50" data-testid="button-user-menu">
+                    <div className="flex flex-col items-start">
+                      <span className="text-xs sm:text-sm font-medium text-amber-900">
+                        {user?.firstName} {user?.lastName}
+                      </span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-amber-600" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <div className="px-2 py-1.5 text-sm font-semibold text-amber-900">
+                    {user?.firstName} {user?.lastName}
+                  </div>
+                  {user?.isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin-dashboard">
+                        <div className="flex items-center w-full cursor-pointer" data-testid="menu-admin-dashboard">
+                          <User className="h-4 w-4 mr-2" />
+                          <span>Admin Dashboard</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  {user?.isDriver && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/driver-portal">
+                        <div className="flex items-center w-full cursor-pointer" data-testid="menu-driver-portal">
+                          <Truck className="h-4 w-4 mr-2" />
+                          <span>Driver Portal</span>
+                        </div>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem asChild>
+                    <Link href="/account-settings">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-account-settings">
+                        <User className="h-4 w-4 mr-2" />
+                        <span>Account Settings</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/">
+                      <div className="flex items-center w-full cursor-pointer" data-testid="menu-home">
+                        <Navigation className="h-4 w-4 mr-2" />
+                        <span>Home</span>
+                      </div>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button
+                      onClick={() => {
+                        // Logout functionality - will be implemented
+                        window.location.href = '/api/auth/logout';
+                      }}
+                      className="flex items-center w-full cursor-pointer text-left"
+                      data-testid="menu-sign-out"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      <span>Sign Out</span>
+                    </button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>

@@ -16,6 +16,7 @@ import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { handleError } from "@/lib/errorHandler";
 import { BackButton } from "@/components/BackButton";
+import { BrandLogo } from "@/components/BrandLogo";
 
 // Import delivery images
 import deliveryCarImg from "@assets/Delivery Driver- Box in Car_1754856749497.jpeg";
@@ -287,6 +288,11 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
+        {/* Logo */}
+        <div className="mb-6 flex justify-center">
+          <BrandLogo size="lg" linkToHome={true} />
+        </div>
+        
         {/* Back Button - Instagram Style */}
         <div className="mb-4">
           <BackButton fallbackUrl="/" />

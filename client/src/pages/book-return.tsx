@@ -16,6 +16,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ObjectUploader } from "@/components/ObjectUploader";
+import { BrandLogo } from "@/components/BrandLogo";
 
 // Load Stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -364,12 +365,20 @@ function calculatePricing(formData: FormData & { tip?: number }) {
   }
   
   const subtotal = basePrice + sizeUpcharge + multiBoxFee;
-  const serviceFee = subtotal * 0.15; // 15% of subtotal
   const taxRate = 0; // 0% tax
-  const tax = (subtotal + serviceFee + fuelFee) * taxRate;
   const tip = formData.tip || 0;
   
-  const total = subtotal + serviceFee + fuelFee + tax + tip;
+  // Service fee is 5.5% of total order
+  // Since serviceFee is part of total, we need to calculate it algebraically:
+  // total = subtotal + fuelFee + tax + serviceFee + tip
+  // serviceFee = total * 0.055
+  // Solving: total = (subtotal + fuelFee + tax + tip) / (1 - 0.055)
+  const baseBeforeServiceFee = subtotal + fuelFee + tip;
+  const tax = baseBeforeServiceFee * taxRate;
+  const totalBeforeServiceFee = baseBeforeServiceFee + tax;
+  const serviceFee = totalBeforeServiceFee * (0.055 / (1 - 0.055)); // 5.5% of final total
+  
+  const total = totalBeforeServiceFee + serviceFee;
   
   return {
     basePrice,
@@ -887,11 +896,7 @@ export default function BookReturn() {
       <div className="container max-w-3xl mx-auto px-4">
         {/* Header with Return It logo link */}
         <div className="text-center mb-8">
-          <Link href="/">
-            <div className="text-3xl font-bold mb-2 cursor-pointer text-[#B8956A] hover:text-[#A0805A] transition-colors">
-              Return It
-            </div>
-          </Link>
+          <BrandLogo size="lg" linkToHome={true} className="justify-center" />
         </div>
 
         <div className="mb-8">
@@ -1640,7 +1645,7 @@ export default function BookReturn() {
                       <span className="font-medium">${pricing.subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Service Fee (15%)</span>
+                      <span className="text-muted-foreground">Service Fee (5.5%)</span>
                       <span className="font-medium">${pricing.serviceFee.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between">
