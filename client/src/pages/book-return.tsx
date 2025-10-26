@@ -1171,11 +1171,32 @@ export default function BookReturn() {
                     <Label htmlFor="numberOfBoxes" className="text-sm font-semibold">Number of Boxes/Bags</Label>
                     <Input
                       id="numberOfBoxes"
-                      type="number"
-                      min="1"
-                      max="5"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={formData.numberOfBoxes}
-                      onChange={(e) => updateField('numberOfBoxes', parseInt(e.target.value) || 1)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        // Allow empty string for deletion, or validate numeric input
+                        if (value === '') {
+                          updateField('numberOfBoxes', '');
+                        } else {
+                          const numValue = parseInt(value);
+                          if (!isNaN(numValue) && numValue >= 1 && numValue <= 5) {
+                            updateField('numberOfBoxes', numValue);
+                          } else if (!isNaN(numValue) && numValue > 5) {
+                            // Cap at 5
+                            updateField('numberOfBoxes', 5);
+                          }
+                        }
+                      }}
+                      onBlur={(e) => {
+                        // If empty on blur, reset to 1
+                        if (e.target.value === '') {
+                          updateField('numberOfBoxes', 1);
+                        }
+                      }}
+                      placeholder="1"
                       className="mt-1.5"
                       data-testid="input-number-of-boxes"
                     />
