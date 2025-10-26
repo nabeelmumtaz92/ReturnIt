@@ -472,6 +472,11 @@ export default function BookPickup() {
       receiptUrl: formData.receiptUrl || null,
       receiptUploaded: formData.receiptUrl !== '' || formData.receiptImage !== null,
       
+      // Customer photo verification (MANDATORY proof of purchase)
+      customerReceiptPhotoUrl: formData.receiptPhotoUrl || null,
+      customerTagsPhotoUrl: formData.tagsPhotoUrl || null,
+      customerPackagingPhotoUrl: formData.packagingPhotoUrl || null,
+      
       // Authorization
       authorizationSigned: formData.authorizationSigned,
       acceptsLiabilityTerms: formData.acceptsLiabilityTerms,
