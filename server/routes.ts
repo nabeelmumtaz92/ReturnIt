@@ -50,6 +50,8 @@ import { getCrashRecoveryStatus } from "./middleware/crashRecovery";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import { dailyStatsScheduler } from "./daily-stats-scheduler";
+import * as stripePaymentMethods from "./services/stripePaymentMethods";
+import { insertDriverPaymentMethodSchema } from "@shared/schema";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -4565,6 +4567,425 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(earnings);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch earnings" });
+    }
+  });
+
+  // ========================================
+  // DRIVER PAYMENT METHODS (Instant Pay)
+  // ========================================
+
+  // Get all payment methods for authenticated driver
+  app.get("/api/driver/payment-methods", isAuthenticated, driverActionRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+      
+      const paymentMethods = await storage.getDriverPaymentMethods(driverId);
+      res.json(paymentMethods);
+    } catch (error) {
+      console.error('Error fetching payment methods:', error);
+      res.status(500).json({ message: "Failed to fetch payment methods" });
+    }
+  });
+
+  // Create Financial Connections session for bank account setup
+  app.post("/api/driver/payment-methods/bank-account/session", isAuthenticated, paymentRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Get driver's Stripe Connect account ID
+      const driver = await storage.getUser(driverId);
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ 
+          message: "Stripe Connect account required. Please complete driver onboarding first." 
+        });
+      }
+
+      const session = await stripePaymentMethods.createFinancialConnectionsSession(
+        driver.stripeConnectAccountId,
+        driverId
+      );
+
+      res.json(session);
+    } catch (error: any) {
+      console.error('Error creating Financial Connections session:', error);
+      res.status(500).json({ message: error.message || "Failed to create bank account setup" });
+    }
+  });
+
+  // Attach bank account from Financial Connections
+  app.post("/api/driver/payment-methods/bank-account", isAuthenticated, paymentRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { financialConnectionsAccountId } = req.body;
+      if (!financialConnectionsAccountId) {
+        return res.status(400).json({ message: "Financial Connections account ID required" });
+      }
+
+      // Get driver's Stripe Connect account ID
+      const driver = await storage.getUser(driverId);
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ message: "Stripe Connect account required" });
+      }
+
+      // Attach bank account via Stripe
+      const bankAccount = await stripePaymentMethods.attachBankAccountFromFinancialConnections(
+        financialConnectionsAccountId,
+        driver.stripeConnectAccountId
+      );
+
+      // Save to database (PCI compliant - only Stripe references)
+      const paymentMethod = await storage.createDriverPaymentMethod({
+        userId: driverId,
+        type: "bank_account",
+        stripeExternalAccountId: bankAccount.id,
+        last4: bankAccount.last4,
+        bankName: bankAccount.bankName,
+        accountHolderName: bankAccount.accountHolderName,
+        financialConnectionsAccountId: financialConnectionsAccountId,
+        instantPayEligible: true, // Bank accounts are eligible for instant pay
+        instantPayFee: 0.50, // $0.50 fee for bank accounts
+        status: bankAccount.status === 'verified' ? 'active' : 'pending_verification',
+        verifiedAt: bankAccount.status === 'verified' ? new Date() : null,
+        isDefault: false,
+        addedByIp: req.ip || req.socket.remoteAddress,
+      });
+
+      res.json(paymentMethod);
+    } catch (error: any) {
+      console.error('Error attaching bank account:', error);
+      res.status(500).json({ message: error.message || "Failed to attach bank account" });
+    }
+  });
+
+  // Create card setup intent for debit card
+  app.post("/api/driver/payment-methods/card/setup", isAuthenticated, paymentRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Get driver's Stripe Connect account ID
+      const driver = await storage.getUser(driverId);
+      if (!driver?.stripeConnectAccountId) {
+        return res.status(400).json({ 
+          message: "Stripe Connect account required. Please complete driver onboarding first." 
+        });
+      }
+
+      const setupIntent = await stripePaymentMethods.createCardSetupIntent(
+        driver.stripeConnectAccountId,
+        driverId
+      );
+
+      res.json(setupIntent);
+    } catch (error: any) {
+      console.error('Error creating card setup intent:', error);
+      res.status(500).json({ message: error.message || "Failed to create card setup" });
+    }
+  });
+
+  // Attach debit card from setup intent
+  app.post("/api/driver/payment-methods/card", isAuthenticated, paymentRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { paymentMethodId } = req.body;
+      if (!paymentMethodId) {
+        return res.status(400).json({ message: "Payment method ID required" });
+      }
+
+      // Get card details from Stripe
+      const cardDetails = await stripePaymentMethods.getCardDetails(paymentMethodId);
+
+      // Save to database (PCI compliant - only Stripe references)
+      const paymentMethod = await storage.createDriverPaymentMethod({
+        userId: driverId,
+        type: "card",
+        stripePaymentMethodId: paymentMethodId,
+        last4: cardDetails.last4,
+        brand: cardDetails.brand,
+        instantPayEligible: cardDetails.instantPayEligible, // Only debit cards
+        instantPayFee: 0.50, // $0.50 fee for cards
+        status: "active",
+        verifiedAt: new Date(),
+        isDefault: false,
+        addedByIp: req.ip || req.socket.remoteAddress,
+      });
+
+      res.json(paymentMethod);
+    } catch (error: any) {
+      console.error('Error attaching card:', error);
+      res.status(500).json({ message: error.message || "Failed to attach card" });
+    }
+  });
+
+  // Remove payment method
+  app.delete("/api/driver/payment-methods/:id", isAuthenticated, paymentRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      const paymentMethodId = parseInt(req.params.id);
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Verify ownership
+      const paymentMethod = await storage.getDriverPaymentMethod(paymentMethodId);
+      if (!paymentMethod || paymentMethod.userId !== driverId) {
+        return res.status(404).json({ message: "Payment method not found" });
+      }
+
+      // Delete from Stripe
+      const driver = await storage.getUser(driverId);
+      if (driver?.stripeConnectAccountId) {
+        try {
+          if (paymentMethod.stripeExternalAccountId) {
+            await stripePaymentMethods.deleteExternalAccount(
+              driver.stripeConnectAccountId,
+              paymentMethod.stripeExternalAccountId
+            );
+          } else if (paymentMethod.stripePaymentMethodId) {
+            await stripePaymentMethods.detachPaymentMethod(
+              paymentMethod.stripePaymentMethodId
+            );
+          }
+        } catch (stripeError) {
+          console.error('Error deleting from Stripe:', stripeError);
+          // Continue with database deletion even if Stripe fails
+        }
+      }
+
+      // Delete from database
+      const deleted = await storage.deleteDriverPaymentMethod(paymentMethodId);
+      if (!deleted) {
+        return res.status(500).json({ message: "Failed to delete payment method" });
+      }
+
+      res.json({ success: true, message: "Payment method removed successfully" });
+    } catch (error: any) {
+      console.error('Error removing payment method:', error);
+      res.status(500).json({ message: error.message || "Failed to remove payment method" });
+    }
+  });
+
+  // Set default payment method
+  app.post("/api/driver/payment-methods/:id/set-default", isAuthenticated, driverActionRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      const paymentMethodId = parseInt(req.params.id);
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      // Verify ownership
+      const paymentMethod = await storage.getDriverPaymentMethod(paymentMethodId);
+      if (!paymentMethod || paymentMethod.userId !== driverId) {
+        return res.status(404).json({ message: "Payment method not found" });
+      }
+
+      // Set as default (automatically unsets other defaults)
+      const updatedPaymentMethod = await storage.setDefaultDriverPaymentMethod(driverId, paymentMethodId);
+      
+      if (!updatedPaymentMethod) {
+        return res.status(500).json({ message: "Failed to set default payment method" });
+      }
+
+      res.json(updatedPaymentMethod);
+    } catch (error: any) {
+      console.error('Error setting default payment method:', error);
+      res.status(500).json({ message: error.message || "Failed to set default payment method" });
+    }
+  });
+
+  // ========================================
+  // INSTANT PAYOUT (with comprehensive validation)
+  // ========================================
+
+  app.post("/api/driver/instant-payout", isAuthenticated, driverActionRateLimit, async (req, res) => {
+    try {
+      const driverId = (req.session as any).user.id;
+      const isDriver = (req.session as any).user.isDriver;
+      
+      if (!isDriver) {
+        return res.status(403).json({ message: "Driver access required" });
+      }
+
+      const { amount, paymentMethodId } = req.body;
+
+      // Validation: Amount required
+      if (!amount || typeof amount !== 'number' || amount <= 0) {
+        return res.status(400).json({ message: "Valid amount required" });
+      }
+
+      // Validation: Minimum payout amount ($5)
+      if (amount < 5) {
+        return res.status(400).json({ 
+          message: "Minimum instant payout amount is $5.00" 
+        });
+      }
+
+      // Get driver details
+      const driver = await storage.getUser(driverId);
+      if (!driver) {
+        return res.status(404).json({ message: "Driver not found" });
+      }
+
+      // Validation: Stripe Connect account required
+      if (!driver.stripeConnectAccountId) {
+        return res.status(400).json({ 
+          message: "Stripe Connect account required. Please complete driver onboarding first." 
+        });
+      }
+
+      // Validation: Driver must be verified (KYC)
+      if (driver.stripeIdentityStatus !== 'verified') {
+        return res.status(403).json({ 
+          message: "Identity verification required for instant payouts. Please complete verification first." 
+        });
+      }
+
+      // Validation: Driver must be active and approved
+      if (driver.applicationStatus !== 'approved_active') {
+        return res.status(403).json({ 
+          message: "Your driver account must be approved before requesting payouts." 
+        });
+      }
+
+      // Validation: Check available balance
+      if (!driver.totalEarnings || driver.totalEarnings < amount) {
+        return res.status(400).json({ 
+          message: `Insufficient balance. Available: $${(driver.totalEarnings || 0).toFixed(2)}` 
+        });
+      }
+
+      // Get payment method (use default if not specified)
+      let paymentMethod;
+      if (paymentMethodId) {
+        paymentMethod = await storage.getDriverPaymentMethod(paymentMethodId);
+        if (!paymentMethod || paymentMethod.userId !== driverId) {
+          return res.status(404).json({ message: "Payment method not found" });
+        }
+      } else {
+        paymentMethod = await storage.getDefaultDriverPaymentMethod(driverId);
+        if (!paymentMethod) {
+          return res.status(400).json({ 
+            message: "No payment method found. Please add a bank account or debit card first." 
+          });
+        }
+      }
+
+      // Validation: Payment method must be active
+      if (paymentMethod.status !== 'active') {
+        return res.status(400).json({ 
+          message: `Payment method is ${paymentMethod.status}. Please use a verified payment method.` 
+        });
+      }
+
+      // Validation: Payment method must be eligible for instant pay
+      if (!paymentMethod.instantPayEligible) {
+        return res.status(400).json({ 
+          message: "This payment method is not eligible for instant payouts. Only debit cards and verified bank accounts are supported." 
+        });
+      }
+
+      // Check Stripe account eligibility
+      const eligibility = await stripePaymentMethods.validateInstantPayoutEligibility(
+        driver.stripeConnectAccountId
+      );
+      if (!eligibility.eligible) {
+        return res.status(403).json({ 
+          message: `Instant payouts not available: ${eligibility.reason || 'Unknown error'}` 
+        });
+      }
+
+      // Calculate fees
+      const fee = paymentMethod.instantPayFee || 0.50; // Default $0.50
+      const netAmount = amount - fee;
+
+      if (netAmount <= 0) {
+        return res.status(400).json({ 
+          message: "Amount too small to process after fees" 
+        });
+      }
+
+      // Get destination (external account ID or payment method ID)
+      const destination = paymentMethod.stripeExternalAccountId || paymentMethod.stripePaymentMethodId;
+      if (!destination) {
+        return res.status(500).json({ 
+          message: "Payment method configuration error. Please contact support." 
+        });
+      }
+
+      // Execute instant payout via Stripe
+      const payout = await stripePaymentMethods.createInstantPayout(
+        driver.stripeConnectAccountId,
+        destination,
+        Math.round(amount * 100), // Convert to cents
+        Math.round(fee * 100) // Fee in cents
+      );
+
+      // Update driver balance
+      await storage.updateUser(driverId, {
+        totalEarnings: (driver.totalEarnings || 0) - amount
+      });
+
+      // Create payout record
+      const payoutRecord = await storage.createDriverPayout({
+        driverId,
+        payoutType: 'instant',
+        totalAmount: amount,
+        feeAmount: fee,
+        netAmount,
+        stripeTransferId: payout.transferId,
+        status: payout.status === 'paid' ? 'completed' : payout.status === 'failed' ? 'failed' : 'processing',
+        taxYear: new Date().getFullYear(),
+        completedAt: payout.status === 'paid' ? new Date() : null,
+      });
+
+      // Update payment method last used timestamp
+      await storage.updateDriverPaymentMethod(paymentMethod.id, {
+        lastUsedAt: new Date()
+      });
+
+      res.json({
+        success: true,
+        payout: payoutRecord,
+        estimatedArrival: payout.estimatedArrival,
+        message: `Instant payout of $${netAmount.toFixed(2)} initiated successfully (Fee: $${fee.toFixed(2)})`
+      });
+
+    } catch (error: any) {
+      console.error('Error processing instant payout:', error);
+      res.status(500).json({ 
+        message: error.message || "Failed to process instant payout. Please try again later." 
+      });
     }
   });
 

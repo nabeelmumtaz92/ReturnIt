@@ -38,6 +38,7 @@ import {
   type UserNotificationPreference, type InsertUserNotificationPreference,
   type Message, type InsertMessage,
   type SystemSetting, type InsertSystemSetting,
+  type DriverPaymentMethod, type InsertDriverPaymentMethod,
   OrderStatus, type OrderStatus as OrderStatusType,
   type Location, LocationSchema, AssignmentStatus
 } from "@shared/schema";
@@ -57,7 +58,8 @@ import {
   customerWaitlist, zipCodeManagement, otpVerification,
   userNotificationPreferences,
   messages,
-  systemSettings
+  systemSettings,
+  driverPaymentMethods
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -152,6 +154,15 @@ export interface IStorage {
   createDriverPayout(payout: InsertDriverPayout): Promise<DriverPayout>;
   getDriverPayouts(driverId: number): Promise<DriverPayout[]>;
   updateDriverPayout(id: number, updates: Partial<DriverPayout>): Promise<DriverPayout | undefined>;
+  
+  // Driver payment methods (instant pay)
+  getDriverPaymentMethods(driverId: number): Promise<DriverPaymentMethod[]>;
+  getDriverPaymentMethod(id: number): Promise<DriverPaymentMethod | undefined>;
+  createDriverPaymentMethod(paymentMethod: InsertDriverPaymentMethod): Promise<DriverPaymentMethod>;
+  updateDriverPaymentMethod(id: number, updates: Partial<DriverPaymentMethod>): Promise<DriverPaymentMethod | undefined>;
+  deleteDriverPaymentMethod(id: number): Promise<boolean>;
+  setDefaultDriverPaymentMethod(driverId: number, paymentMethodId: number): Promise<DriverPaymentMethod | undefined>;
+  getDefaultDriverPaymentMethod(driverId: number): Promise<DriverPaymentMethod | undefined>;
   
   // Driver incentives and bonuses
   createDriverIncentive(incentive: InsertDriverIncentive): Promise<DriverIncentive>;
@@ -1618,6 +1629,74 @@ export class MemStorage implements IStorage {
     const updatedPayout = { ...payout, ...updates };
     this.driverPayouts.set(id, updatedPayout);
     return updatedPayout;
+  }
+
+  // Driver payment methods (instant pay) - Database implementation
+  async getDriverPaymentMethods(driverId: number): Promise<DriverPaymentMethod[]> {
+    return await db.select()
+      .from(driverPaymentMethods)
+      .where(eq(driverPaymentMethods.userId, driverId))
+      .orderBy(desc(driverPaymentMethods.isDefault), desc(driverPaymentMethods.createdAt));
+  }
+
+  async getDriverPaymentMethod(id: number): Promise<DriverPaymentMethod | undefined> {
+    const [result] = await db.select()
+      .from(driverPaymentMethods)
+      .where(eq(driverPaymentMethods.id, id))
+      .limit(1);
+    return result;
+  }
+
+  async createDriverPaymentMethod(paymentMethod: InsertDriverPaymentMethod): Promise<DriverPaymentMethod> {
+    const [result] = await db.insert(driverPaymentMethods)
+      .values(paymentMethod)
+      .returning();
+    return result;
+  }
+
+  async updateDriverPaymentMethod(id: number, updates: Partial<DriverPaymentMethod>): Promise<DriverPaymentMethod | undefined> {
+    const [result] = await db.update(driverPaymentMethods)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(driverPaymentMethods.id, id))
+      .returning();
+    return result;
+  }
+
+  async deleteDriverPaymentMethod(id: number): Promise<boolean> {
+    const result = await db.delete(driverPaymentMethods)
+      .where(eq(driverPaymentMethods.id, id))
+      .returning();
+    return result.length > 0;
+  }
+
+  async setDefaultDriverPaymentMethod(driverId: number, paymentMethodId: number): Promise<DriverPaymentMethod | undefined> {
+    // First, unset all other defaults for this driver
+    await db.update(driverPaymentMethods)
+      .set({ isDefault: false, updatedAt: new Date() })
+      .where(eq(driverPaymentMethods.userId, driverId));
+    
+    // Then set the new default
+    const [result] = await db.update(driverPaymentMethods)
+      .set({ isDefault: true, updatedAt: new Date() })
+      .where(and(
+        eq(driverPaymentMethods.id, paymentMethodId),
+        eq(driverPaymentMethods.userId, driverId)
+      ))
+      .returning();
+    
+    return result;
+  }
+
+  async getDefaultDriverPaymentMethod(driverId: number): Promise<DriverPaymentMethod | undefined> {
+    const [result] = await db.select()
+      .from(driverPaymentMethods)
+      .where(and(
+        eq(driverPaymentMethods.userId, driverId),
+        eq(driverPaymentMethods.isDefault, true),
+        eq(driverPaymentMethods.status, "active")
+      ))
+      .limit(1);
+    return result;
   }
 
   // Driver incentives and bonuses methods

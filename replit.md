@@ -53,6 +53,7 @@ Preferred communication style: Simple, everyday language.
 - **Digital Signature**: Capture for delivery confirmation.
 - **Earnings Dashboard**: Daily/weekly/monthly views.
 - **Instant/Weekly Payouts**: Stripe Connect integration (70/30 split).
+- **Instant Pay System**: Add bank accounts (Financial Connections) or debit cards, $0.50 fee, comprehensive KYC/balance/eligibility validation.
 - **AI-Powered Nearby Order Detection**: Cluster visualization with recommended routes.
 - **Stripe Identity Verification**: Complete KYC flow with session-based verification for driver onboarding.
 - **Tax Documents Portal**: Access and download annual 1099-NEC forms for tax filing.
