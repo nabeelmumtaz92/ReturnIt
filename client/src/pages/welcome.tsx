@@ -180,8 +180,8 @@ export default function Welcome() {
                 The Leader in Returns Delivery and Reverse Logistics.
               </h3>
               
-              {/* Book Return Button */}
-              <div className="pt-2">
+              {/* Book Return Button - Centered under headers */}
+              <div className="pt-2 flex justify-center md:justify-center">
                 <Link href="/book-pickup">
                   <Button size="lg" className="bg-amber-700 hover:bg-amber-800 text-white px-8 py-6 text-lg shadow-elevated hover:shadow-crisp-xl transition-all duration-300 hover:-translate-y-0.5" data-testid="button-book-return">
                     Book Return
@@ -189,11 +189,11 @@ export default function Welcome() {
                 </Link>
               </div>
               
-              {/* St. Louis Badge */}
-              <div className="flex justify-center md:justify-start pt-2">
+              {/* Location Badge - Centered under headers */}
+              <div className="flex justify-center md:justify-center pt-2">
                 <div className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-amber-50 border-2 border-amber-600 rounded-full px-4 py-2 shadow-crisp hover:shadow-crisp-lg transition-all duration-200">
                   <MapPin className="h-5 w-5 text-amber-700" />
-                  <span className="font-semibold text-amber-900">St. Louis</span>
+                  <span className="font-semibold text-amber-900">Now Serving St. Louis</span>
                 </div>
               </div>
             </div>
