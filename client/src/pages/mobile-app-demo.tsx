@@ -125,7 +125,7 @@ export default function MobileAppDemo() {
           size="lg" 
           className="w-full mt-4"
           onClick={() => {
-            addToast({ variant: 'success', title: 'Signed in!', description: 'Welcome to Returnly' });
+            addToast({ variant: 'success', title: 'Signed in!', description: 'Welcome to Return It' });
             setCurrentView('book-return');
           }}
         >

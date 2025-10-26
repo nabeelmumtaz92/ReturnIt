@@ -257,7 +257,7 @@ export default function DriverSafetyCenter() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
                       <div>
-                        <h3 className="font-semibold text-red-900">Returnly Emergency Dispatch</h3>
+                        <h3 className="font-semibold text-red-900">Return It Emergency Dispatch</h3>
                         <p className="text-sm text-red-700">24/7 emergency response team</p>
                         <p className="text-lg font-bold text-red-900">(636) 254-4821</p>
                       </div>

@@ -21,11 +21,11 @@ import { Link } from 'wouter';
 
 const DRIVER_HANDBOOK = `RETURNLY DRIVER HANDBOOK
 
-1. Welcome to Returnly
-Thank you for joining Returnly! You are a vital part of our mission to make returns easier for customers.
+1. Welcome to Return It
+Thank you for joining Return It! You are a vital part of our mission to make returns easier for customers.
 
 2. Getting Started
-- Download the Returnly Driver app
+- Download the Return It Driver app
 - Log in with your contractor credentials
 - Accept or decline orders as they appear
 
@@ -49,13 +49,13 @@ Thank you for joining Returnly! You are a vital part of our mission to make retu
 
 const CONTRACTOR_AGREEMENT = `RETURNLY INDEPENDENT CONTRACTOR AGREEMENT (1099)
 
-This Independent Contractor Agreement ("Agreement") is made between Returnly ("Company") and the undersigned contractor ("Contractor").
+This Independent Contractor Agreement ("Agreement") is made between Return It ("Company") and the undersigned contractor ("Contractor").
 
 1. INDEPENDENT CONTRACTOR STATUS
-Contractor acknowledges they are an independent contractor and not an employee, agent, or representative of Returnly. Contractor is solely responsible for all taxes, insurance, and benefits.
+Contractor acknowledges they are an independent contractor and not an employee, agent, or representative of Return It. Contractor is solely responsible for all taxes, insurance, and benefits.
 
 2. SERVICES PROVIDED
-Contractor agrees to perform package return and delivery services via the Returnly platform. Contractor determines their own routes, work hours, and manner of completing tasks.
+Contractor agrees to perform package return and delivery services via the Return It platform. Contractor determines their own routes, work hours, and manner of completing tasks.
 
 3. VEHICLE & INSURANCE REQUIREMENTS
 - Valid driver's license in state of operation.
@@ -66,7 +66,7 @@ Contractor agrees to perform package return and delivery services via the Return
 - Any lapse in registration or insurance must be reported immediately; failure to do so may result in suspension.
 
 4. PAYMENT TERMS
-Contractor will be paid per completed order according to the current pay schedule in the Returnly platform. Contractor is responsible for tracking earnings for tax purposes.
+Contractor will be paid per completed order according to the current pay schedule in the Return It platform. Contractor is responsible for tracking earnings for tax purposes.
 
 5. EQUIPMENT & EXPENSES
 Contractor will supply their own vehicle, smartphone, and other equipment necessary to perform services. Contractor is responsible for fuel, maintenance, tolls, and other operating expenses.
@@ -81,7 +81,7 @@ Signed: _____________________    Date: ____________`;
 
 const W9_INSTRUCTIONS = `IRS FORM W-9 INSTRUCTIONS FOR RETURNLY CONTRACTORS
 
-As a 1099 independent contractor, you must submit a completed IRS Form W-9 to Returnly before receiving your first payment.
+As a 1099 independent contractor, you must submit a completed IRS Form W-9 to Return It before receiving your first payment.
 
 Steps:
 1. Fill in your legal name as shown on your tax return.
@@ -91,7 +91,7 @@ Steps:
 5. Provide your Social Security Number (SSN) or Employer Identification Number (EIN).
 6. Sign and date the form.
 
-Return the completed W-9 securely to Returnly's onboarding team.`;
+Return the completed W-9 securely to Return It's onboarding team.`;
 
 interface Document {
   id: string;
@@ -115,7 +115,7 @@ export default function DriverDocuments() {
       title: 'Driver Handbook',
       type: 'handbook',
       status: 'approved',
-      description: 'Complete guide for Returnly drivers covering procedures, earnings, and requirements',
+      description: 'Complete guide for Return It drivers covering procedures, earnings, and requirements',
       content: DRIVER_HANDBOOK,
       icon: FileText
     },

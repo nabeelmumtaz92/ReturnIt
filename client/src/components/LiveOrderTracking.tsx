@@ -228,7 +228,7 @@ export default function LiveOrderTracking({
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div>
                 <p className="font-semibold text-gray-900">{order.driverName}</p>
-                <p className="text-sm text-gray-600">Returnly Driver</p>
+                <p className="text-sm text-gray-600">Return It Driver</p>
               </div>
               
               {order.driverPhone && (

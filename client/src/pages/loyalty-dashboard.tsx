@@ -74,7 +74,7 @@ export default function LoyaltyDashboard() {
                   Return It
                 </div>
               </Link>
-              <h1 className="text-3xl font-bold text-foreground">Returnly Rewards</h1>
+              <h1 className="text-3xl font-bold text-foreground">Return It Rewards</h1>
             </div>
             <div className="flex space-x-3">
               <Link href="/book-return">

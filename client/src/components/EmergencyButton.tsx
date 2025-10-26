@@ -137,13 +137,13 @@ export default function EmergencyButton({
       if (selectedEmergencyType === 'emergency_911') {
         toast({
           title: "🚨 EMERGENCY ALERT SENT",
-          description: "Emergency services and Returnly support have been notified. Help is on the way.",
+          description: "Emergency services and Return It support have been notified. Help is on the way.",
           variant: "destructive",
         });
       } else {
         toast({
           title: "Alert Sent",
-          description: `Your ${emergencyType.label.toLowerCase()} alert has been sent to Returnly support.`,
+          description: `Your ${emergencyType.label.toLowerCase()} alert has been sent to Return It support.`,
         });
       }
       
@@ -243,7 +243,7 @@ export default function EmergencyButton({
                 <Phone className="h-5 w-5 text-red-600 mt-0.5" />
                 <div className="text-sm text-red-800">
                   <p className="font-semibold">For life-threatening emergencies:</p>
-                  <p>Call 911 immediately, then use this form to notify Returnly.</p>
+                  <p>Call 911 immediately, then use this form to notify Return It.</p>
                 </div>
               </div>
             </div>
@@ -352,7 +352,7 @@ export default function EmergencyButton({
                   <a href="tel:1-800-222-1222" className="font-medium text-blue-600 hover:underline">1-800-222-1222</a>
                 </div>
                 <div className="flex justify-between">
-                  <span>Returnly Support:</span>
+                  <span>Return It Support:</span>
                   <a href="tel:555-123-4567" className="font-medium text-blue-600 hover:underline">(555) 123-4567</a>
                 </div>
               </div>

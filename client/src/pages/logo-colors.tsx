@@ -28,7 +28,7 @@ export default function LogoColors() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-4">Choose Your Cardboard Brown Shade</h1>
-          <p className="text-xl text-gray-600 mb-6">Find the perfect shade of cardboard brown for your "Returnly" logo</p>
+          <p className="text-xl text-gray-600 mb-6">Find the perfect shade of cardboard brown for your "Return It" logo</p>
           <Button 
             onClick={() => setLocation('/welcome')}
             variant="outline"

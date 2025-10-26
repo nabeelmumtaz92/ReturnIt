@@ -746,7 +746,7 @@ export default function DriverOnboarding() {
                     Complete Your Professional Training
                   </h3>
                   <p className="text-green-700 mb-4">
-                    Before you can start working as a Returnly driver, you must complete our 
+                    Before you can start working as a Return It driver, you must complete our 
                     comprehensive training program. This covers safety protocols, payment structure, 
                     and professional service standards.
                   </p>
@@ -823,7 +823,7 @@ export default function DriverOnboarding() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="max-h-96 overflow-y-auto border border-border rounded-lg p-4 bg-white">
-                <h3 className="font-semibold text-foreground mb-4">Returnly Driver Terms of Service</h3>
+                <h3 className="font-semibold text-foreground mb-4">Return It Driver Terms of Service</h3>
                 
                 <div className="space-y-4 text-sm text-gray-700">
                   <section>

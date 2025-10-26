@@ -271,7 +271,7 @@ export default function HelpCenter() {
       category: "Policies",
       readTime: "6 min", 
       popularity: 52,
-      content: "Detailed privacy policy explaining data collection, usage, sharing, and your privacy rights when using Returnly services.",
+      content: "Detailed privacy policy explaining data collection, usage, sharing, and your privacy rights when using Return It services.",
       tags: ["privacy", "data-collection", "rights", "policy"]
     },
 
@@ -357,7 +357,7 @@ export default function HelpCenter() {
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-foreground mb-4">Help Center</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Find answers to your questions about Returnly's return pickup service
+            Find answers to your questions about Return It's return pickup service
           </p>
         </div>
 

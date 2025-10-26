@@ -57,7 +57,7 @@ export default function PaymentStructure() {
         <Card className="border-border">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl text-foreground">
-              Returnly Payment Structure Demo
+              Return It Payment Structure Demo
             </CardTitle>
             <p className="text-muted-foreground text-lg mt-2">
               Transparent pricing based on item value with detailed financial breakdowns

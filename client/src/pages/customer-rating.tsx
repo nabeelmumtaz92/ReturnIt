@@ -203,7 +203,7 @@ export default function CustomerRating() {
 
             {/* Recommendation */}
             <div className="space-y-4 border-t pt-6">
-              <Label className="text-lg font-semibold">Would you recommend Returnly to others?</Label>
+              <Label className="text-lg font-semibold">Would you recommend Return It to others?</Label>
               <div className="flex gap-4 justify-center">
                 <Button
                   type="button"

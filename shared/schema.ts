@@ -611,7 +611,7 @@ export const orders = pgTable("orders", {
   // Simplified payment breakdown - DB has aggregate fields
   customerPaid: real("customer_paid"),
   driverEarning: real("driver_earning").default(0), // Aggregate driver earning
-  returnlyFee: real("returnly_fee").default(0), // Platform fee
+  returnitFee: real("returnit_fee").default(0), // Platform fee
   sizeBonusAmount: real("size_bonus_amount").default(0),
   peakSeasonBonus: real("peak_season_bonus").default(0),
   multiStopBonus: real("multi_stop_bonus").default(0),

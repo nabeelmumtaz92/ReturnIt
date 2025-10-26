@@ -587,7 +587,7 @@ Everything drivers need to know about working with Return It, from getting start
 ## Getting Started
 
 ### How do I apply to be a driver?
-1. **Download the Returnly Driver app** from App Store or Google Play
+1. **Download the Return It Driver app** from App Store or Google Play
 2. **Complete the application** with personal information
 3. **Upload required documents**: License, insurance, vehicle registration
 4. **Pass background check** (usually takes 2-3 business days)
@@ -913,10 +913,10 @@ Multiple ways to reach our 24/7 support team for fast, friendly assistance with 
 ## Social Media Support 📱
 
 ### Quick Updates
-- **Twitter**: @ReturnlySupport (fastest responses)
-- **Facebook**: Returnly Customer Service
-- **Instagram**: @ReturnlyHelp
-- **LinkedIn**: Returnly Business Support
+- **Twitter**: @Return ItSupport (fastest responses)
+- **Facebook**: Return It Customer Service
+- **Instagram**: @Return ItHelp
+- **LinkedIn**: Return It Business Support
 
 ### What We Post
 - **Service updates**: Real-time status information
@@ -1285,7 +1285,7 @@ Multiple secure payment options to make your return pickup convenient and safe.
 - **Tourist support**: Visitors to St. Louis area
 
 ### International Card Features
-- **No foreign fees**: By Returnly (bank fees may apply)
+- **No foreign fees**: By Return It (bank fees may apply)
 - **Real-time conversion**: Transparent exchange rates
 - **Multi-currency display**: See charges in home currency
 - **Travel-friendly**: Works for visitors
@@ -1401,7 +1401,7 @@ Multiple secure payment options to make your return pickup convenient and safe.
       category: "Policies",
       readTime: "5 min",
       lastUpdated: "2024-01-15",
-      author: "Returnly Legal Team",
+      author: "Return It Legal Team",
       popularity: 87,
       content: `
 # Return Policies & Guidelines
@@ -1625,7 +1625,7 @@ Complete guide to our return policies including accepted items, size restriction
       category: "Pricing & Payment",
       readTime: "2 min",
       lastUpdated: "2024-01-12",
-      author: "Returnly Marketing Team",
+      author: "Return It Marketing Team",
       popularity: 91,
       content: `
 # Promo Codes & Discounts
@@ -1674,7 +1674,7 @@ Current promotional codes, how to apply discounts, and ways to save money on you
 
 ## Loyalty Program 🌟
 
-### Returnly Rewards
+### Return It Rewards
 - **Points per dollar**: Earn 1 point per $1 spent
 - **Bonus points**: Extra points for reviews and referrals
 - **Redemption**: 100 points = $5 credit
