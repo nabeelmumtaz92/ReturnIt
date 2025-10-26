@@ -1,53 +1,6 @@
 # Overview
 
-Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations. It connects customers with drivers for pickup and return services, offering an enterprise-grade solution with a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and a strong valuation, supported by a comprehensive patent portfolio strategy. Key capabilities include a complete customer experience (booking, tracking, order management) and robust admin/driver management.
-
-# Recent Changes
-
-**October 26, 2025 - Homepage Optimization & Layout Update**
-- **Book Return CTA Priority**: Book Return button now appears at center of homepage immediately when page loads
-- **Side-by-Side Layout**: Professional Service image positioned to the right of Book Return button (stacks vertically on mobile)
-- **Enhanced Branding**: Added slogan "Return It. Give back, uplift others." and updated tagline to "The Leader in Returns Delivery and Reverse Logistics."
-- **Result**: Cleaner layout with CTA and trust-building image both visible above the fold
-
-**October 25, 2025 - Photo Verification Requirement for Returns**
-- **Mandatory Photo Upload**: Customers must now upload a photo of ONE of three proof-of-purchase options:
-  1. Receipt or order confirmation (paper receipt or email screenshot)
-  2. Original tags still attached (price tags, brand labels, store tags)  
-  3. Original packaging (item in box, bag, or manufacturer packaging - not just the item)
-- **Enhanced UI**: Replaced checkboxes with actual photo upload buttons with clear emoji-based instructions (📄, 🏷️, 📦)
-- **Validation**: Booking is blocked until at least one photo is uploaded, with friendly error messaging
-- **Backend Integration**: All three photo types upload to object storage and are stored in order records
-- **Result**: Ensures legal compliance, reduces fraud, and protects drivers from liability issues
-
-**October 25, 2025 - Admin Dashboard Comprehensive Stability Fixes**
-- **Routing Enhancement**: Added missing `/admin` route in App.tsx (previously only had `/admin-dashboard*`)
-- **Array Safety Guards**: Implemented comprehensive Array.isArray() checks before all .map() operations to prevent crashes:
-  - OrdersContent: Added safeOrders safety wrapper and .map() fallback `|| []`
-  - DriversContent: Array check on realDrivers API response before transformation
-  - DriverApplicationsContent: Array check on pending applications data
-  - CustomersContent: Array check on realCustomers API response before transformation
-- **Defensive Coding Pattern**: All content components now validate API responses are arrays before calling .map()
-- **Result**: Eliminated all ErrorBoundary crashes, no more ".map is not a function" errors, robust handling of unexpected API responses
-
-**October 25, 2025 - Admin Dashboard Critical Bug Fixes** 
-- **Navigation Fix**: Replaced `setLocation()` with `window.history.replaceState()` in changeSection() to prevent component remounting
-- **WebSocket Stability**: Converted state variables to refs (isManualDisconnect, connectionAttempts) in useAdminWebSocket to eliminate infinite dependency loops
-- **Database Schema Sync**: Added missing columns to orders table (receipt_photo_url, receipt_verified_at, driver_verified_total, total_discrepancy, discrepancy_flagged, discrepancy_notes)
-- **Variable Ordering Bug**: Fixed OrdersContent component crash by moving activeOrders/completedOrders definitions before functions that use them
-- **Result**: All navigation buttons now work correctly, no component crashes, smooth section switching
-
-**October 25, 2025 - Demo Login Privacy & Security**
-- Removed demo login button from public login page for privacy
-- Demo endpoint remains functional at `/api/auth/demo-login` for company presentations when needed
-- Demo admin access environment-gated: Only grants isAdmin in development (NODE_ENV check)
-
-**October 24, 2025 - Admin Dashboard Navigation Fixes**
-- Fixed critical JSX structure error in admin dashboard that prevented all navigation buttons from working (removed extra closing div tag in header section)
-- Enhanced demo login security: Admin access now environment-gated (development only) via NODE_ENV check
-- Added demo@returnit.demo to master admins allowlist for development testing
-- Verified all 30+ admin dashboard content components are properly wired and functional
-- All navigation buttons now properly call changeSection() and route to correct sections
+Return It is a reverse delivery service platform that streamlines returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution with a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and valuation through a strong patent portfolio. Key capabilities include a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
 # User Preferences
 
@@ -57,7 +10,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Frontend
 - **Framework**: React 18 with TypeScript (Vite).
-- **UI Components**: Shadcn/ui built on Radix UI, styled with Tailwind CSS (custom cardboard/shipping theme: cardboard brown #B8956A and masking tape #FAF8F4).
+- **UI Components**: Shadcn/ui (Radix UI, Tailwind CSS) with a custom cardboard/shipping theme (#B8956A and #FAF8F4).
 - **State Management**: Zustand (global), React Query (server).
 - **Design System**: Figma-based, mobile-first responsive design with a component library and design tokens, emphasizing a cardboard brown and masking tape aesthetic, sophisticated gradients, and Inter font.
 
@@ -86,124 +39,69 @@ Preferred communication style: Simple, everyday language.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.
 - Multi-package booking, special handling, donation options.
+- Mandatory photo upload for proof-of-purchase.
 
 ### Driver Features
-- **Native Mobile App** (React Native with Expo) - Complete production-ready app built.
-  - **Package**: com.returnit.app
-  - **Screens**: Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout
-  - **Components**: Button, Input, JobClusterMap (AI cluster visualization)
-  - **Services**: API integration, Push notifications
-- **Real-time Job Notifications** - expo-notifications with background/foreground handling, deep linking.
-- **GPS Navigation** - expo-location with Google Maps integration for turn-by-turn directions.
-- **Multi-Stop Batching** - AI-powered route optimization and cluster detection.
-- **Camera Package Verification** - expo-camera for pickup/dropoff photo capture.
-- **Digital Signature** - Store receipt signature capture for delivery confirmation.
-- **Earnings Dashboard** - Daily/weekly/monthly views with job history and stats.
-- **Instant/Weekly Payouts** - Stripe Connect integration with $1.50 instant fee or free standard.
-- **70/30 Split** - Driver earnings automatically calculated (PAYOUT_SPLIT constant).
-- **AI-Powered Nearby Order Detection** - Cluster visualization with recommended routes and multi-stop earnings aggregation.
+- **Native Mobile App**: React Native with Expo (com.returnit.app) featuring screens for Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout.
+- **Real-time Job Notifications**: Expo-notifications with background/foreground handling and deep linking.
+- **GPS Navigation**: Expo-location with Google Maps integration.
+- **Multi-Stop Batching**: AI-powered route optimization and cluster detection.
+- **Camera Package Verification**: Expo-camera for pickup/dropoff photo capture.
+- **Digital Signature**: Capture for delivery confirmation.
+- **Earnings Dashboard**: Daily/weekly/monthly views.
+- **Instant/Weekly Payouts**: Stripe Connect integration (70/30 split).
+- **AI-Powered Nearby Order Detection**: Cluster visualization with recommended routes.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
 - Manual order creation, payment processing, bulk payouts.
-- Advanced analytics, Excel export system.
-- **AI Knowledge Center**: Self-updating AI assistant tracking database models and API endpoints.
-  - **Draggable AI Button**: Floating button (bottom-right corner) that can be repositioned anywhere on screen, with 5px drag threshold to distinguish drag from click.
-  - **Contact Support**: Separate fixed button (bottom-left corner) for customer support at (636) 254-4821.
-- **Real-Time Driver Tracking**: Admin panel with interactive Mapbox map showing active driver locations, search capabilities, and detailed driver modals.
+- Advanced analytics, Excel export.
+- **AI Knowledge Center**: Self-updating AI assistant tracking database models and API endpoints with a draggable button.
+- **Real-Time Driver Tracking**: Interactive Mapbox map with active driver locations and detailed modals.
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
 - **Tier 2 (API & Integration System)**: RESTful API, API keys with permission scoping, webhook notification system.
 
 ### Exchange Feature Roadmap
-- Comprehensive two-way exchange logistics (Patent #25).
-- **Exchange Flow**: Driver collects original, takes to store for exchange, replacement delivered or returned.
+- Comprehensive two-way exchange logistics (Patent #25) including collection, in-store exchange, and delivery or return.
 
 ### Return Graph - Proprietary Routing Intelligence
-- A self-learning knowledge graph optimizing reverse logistics.
-- **Core Concept**: Graph database tracking optimal drop-off locations, store acceptance policies, and routing strategies.
-- **Intelligence System**: A* Pathfinding Algorithm with a Machine Learning layer for real-time updates and dynamic policy learning.
+- A self-learning knowledge graph optimizing reverse logistics using a graph database and an A* Pathfinding Algorithm with a Machine Learning layer for real-time updates.
 
 ## Security & Compliance
 
 ### Multi-Layer Security Architecture
-Return It implements a comprehensive 4-level security architecture to protect customer data and prevent unauthorized access:
-
-**Level 1: Public Access (No Authentication)**
-- Basic rate limiting on all endpoints
-- Public tracking page with ZIP code verification requirement
-- Input validation and sanitization
-
-**Level 2: Authenticated Access (Session Required)**
-- Secure session-based authentication with server-side storage
-- Bcrypt password hashing (10 rounds)
-- Role-based authorization (Customer, Driver, Admin)
-- OAuth integration (Google, Facebook, Apple)
-- Session cookies with sameSite and httpOnly flags
-
-**Level 3: Sensitive Documents (Signed URLs)**
-- HMAC-SHA256 signed URLs for receipts, invoices, and order details
-- Token expiration (24-72 hours configurable)
-- Resource-specific access tokens stored in database
-- Prevents tampering and unauthorized sharing
-- Automatic email delivery with secure links
-
-**Level 4: Real-Time Tracking (Multi-Factor Verification)**
-- Tracking number + ZIP code verification required
-- Enhanced rate limiting (30 requests per 5 minutes)
-- IP-based throttling for abuse prevention
-- WebSocket authentication for live updates
+- **Level 1 (Public Access)**: Rate limiting, input validation, public tracking with ZIP code verification.
+- **Level 2 (Authenticated Access)**: Session-based authentication, Bcrypt hashing, role-based authorization, OAuth, secure session cookies.
+- **Level 3 (Sensitive Documents)**: HMAC-SHA256 signed URLs with configurable expiration for receipts, invoices, and order details.
+- **Level 4 (Real-Time Tracking)**: Tracking number + ZIP code verification, enhanced rate limiting, IP-based throttling, WebSocket authentication.
 
 ### Enhanced Rate Limiting
-- **Authentication endpoints**: 5 requests per 15 minutes
-- **Registration**: 3 requests per hour
-- **Payments**: 10 requests per minute
-- **Tracking queries**: 30 requests per 5 minutes
-- **Sensitive documents**: 20 requests per hour
-- **IP throttling**: Automatic 1-hour block after 10 failed auth attempts
-- **Admin endpoints**: 100 requests per 15 minutes
+- Specific limits for authentication, registration, payments, tracking, sensitive documents, and admin endpoints.
+- IP-based throttling for abuse prevention.
 
 ### Signed URL System
-- **Implementation**: HMAC-SHA256 cryptographic signatures
-- **Token Format**: `{base64url-payload}.{base64url-signature}`
-- **Expiration**: Configurable (default 72 hours)
-- **Use Cases**: Order receipts, invoices, confirmation emails
-- **Security**: Tamper-proof, resource-specific, user-bound (optional)
-- **Endpoints**:
-  - `/api/orders/:id/view?token=...` - Full order details
-  - `/api/orders/:id/receipt?token=...` - Receipt information
-  - `/api/orders/:id/invoice?token=...` - Invoice with line items
+- HMAC-SHA256 cryptographic signatures with configurable expiration (default 72 hours) for tamper-proof, resource-specific access to order details, receipts, and invoices.
 
 ### Data Protection & Compliance
-- PCI-compliant payment processing via Stripe
-- Stripe Identity verification for drivers
-- Server-side session storage (PostgreSQL)
-- SQL injection prevention via Drizzle ORM
-- XSS protection with input sanitization
-- Security headers (Helmet middleware)
-- CORS protection with environment-specific origins
-- Data encryption in transit (HTTPS/TLS)
-- Secure API key storage in environment variables
+- PCI-compliant payment processing via Stripe.
+- Stripe Identity verification for drivers.
+- Server-side session storage (PostgreSQL).
+- SQL injection prevention (Drizzle ORM), XSS protection, security headers (Helmet), CORS protection.
+- Data encryption in transit (HTTPS/TLS).
+- Secure API key storage in environment variables.
 
-### Tracking Security
-- ZIP code verification required for all tracking queries
-- Prevents unauthorized order visibility
-- Rate limiting prevents enumeration attacks
-- WebSocket connections require tracking# + ZIP validation
-- Smart polling reduces server load (30s → 2min when WS connected)
-
-## Legal Compliance & Operating Model
+### Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.
 - **Requirements**: Proof of purchase upload, mandatory photo verification by drivers at drop-off.
-- **Driver Conduct**: Drivers interact with public return desks, present as customer's agent.
 
 ## Infrastructure & Deployment
 - Production deployment at returnit.online with Neon PostgreSQL.
 - Multi-environment support, automated workflow.
-- **Server Configuration**: Binds to 0.0.0.0:5000, includes a fast /health endpoint.
-- **Performance Optimizations**: AI Knowledge Base lazy loading, optimized server startup and health check response times.
-- **Map Provider System**: Multi-provider support (Mapbox, Google Maps, OpenStreetMap, Apple Maps).
+- Server configuration binds to 0.0.0.0:5000 with a fast /health endpoint.
+- Performance optimizations including AI Knowledge Base lazy loading.
+- Multi-provider map system (Mapbox, Google Maps, OpenStreetMap, Apple Maps).
 
 # External Dependencies
 
