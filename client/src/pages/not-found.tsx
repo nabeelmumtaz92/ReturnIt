@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, ArrowLeft, Home } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function NotFound() {
+  const [, setLocation] = useLocation();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
@@ -50,8 +52,9 @@ export default function NotFound() {
               
               <Button 
                 variant="outline" 
-                onClick={() => window.history.back()}
+                onClick={() => setLocation('/')}
                 className="flex-1 border-border text-muted-foreground hover:bg-accent/50"
+                data-testid="button-go-back"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Go Back

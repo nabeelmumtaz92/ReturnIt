@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'wouter';
 import { Screen } from '@/components/screen';
 import { 
   Button, 
@@ -17,6 +18,7 @@ import {
 import { Package, User, Settings } from 'lucide-react';
 
 export default function DesignSystemDemo() {
+  const [, setLocation] = useLocation();
   const { addToast } = useToast();
   const [selectedChip, setSelectedChip] = React.useState<string>('medium');
 
@@ -34,7 +36,7 @@ export default function DesignSystemDemo() {
         title="Design System Demo" 
         showBack 
         showAction
-        onBack={() => window.history.back()}
+        onBack={() => setLocation('/')}
         onAction={() => addToast({ variant: 'info', title: 'More actions', description: 'Additional options coming soon!' })}
       />
       
