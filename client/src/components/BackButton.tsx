@@ -25,13 +25,8 @@ export function BackButton({
   const [, setLocation] = useLocation();
 
   const handleBack = () => {
-    // Check if there's history to go back to
-    if (window.history.length > 1) {
-      window.history.back();
-    } else {
-      // Fallback to home or specified URL if no history
-      setLocation(fallbackUrl);
-    }
+    // Use client-side routing instead of browser history
+    setLocation(fallbackUrl);
   };
 
   const iconSizeClass = {
