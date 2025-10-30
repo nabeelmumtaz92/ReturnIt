@@ -3,10 +3,11 @@ import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth-simple";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation, Link } from "wouter";
-import { ArrowLeft, CreditCard, Shield, Clock, Copy, CheckCircle } from "lucide-react";
+import { ArrowLeft, CreditCard, Shield, Clock, Copy, CheckCircle, LogIn } from "lucide-react";
 import Footer from "@/components/Footer";
 
 // Import delivery images
@@ -174,12 +175,34 @@ export default function Checkout() {
   const [, setLocation] = useLocation();
   const [clientSecret, setClientSecret] = useState("");
   const { toast } = useToast();
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to complete your booking.",
+        variant: "destructive",
+      });
+      // Save the current checkout URL so we can return after login
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('checkoutReturnUrl', window.location.href);
+        setLocation('/login');
+      }
+    }
+  }, [isAuthenticated, isLoading, setLocation, toast]);
 
   // Random delivery image selection for this page
   const checkoutPageImages = [deliveryCarImg, deliveryHandoffImg, deliveryOutsideImg, deliveryReceivingImg];
   const selectedImage = checkoutPageImages[Math.floor(Math.random() * checkoutPageImages.length)];
 
   useEffect(() => {
+    // Only create payment intent if authenticated
+    if (!isAuthenticated || isLoading) {
+      return;
+    }
+
     // Create PaymentIntent as soon as the page loads
     const createPaymentIntent = async () => {
       try {
@@ -199,7 +222,56 @@ export default function Checkout() {
     };
 
     createPaymentIntent();
-  }, [amount, orderId, toast]);
+  }, [amount, orderId, toast, isAuthenticated, isLoading]);
+
+  // Show loading while checking authentication
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center relative">
+        <div className="absolute inset-0 z-0 opacity-10"
+          style={{
+            backgroundImage: `url(${selectedImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div className="relative z-10">
+          <div className="animate-spin w-8 h-8 border-4 border-border border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect handled by useEffect, show message
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center relative">
+        <div className="absolute inset-0 z-0 opacity-10"
+          style={{
+            backgroundImage: `url(${selectedImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <Card className="relative z-10 max-w-md">
+          <CardContent className="pt-6 text-center">
+            <LogIn className="w-12 h-12 text-primary mx-auto mb-4" />
+            <h2 className="text-xl font-bold mb-2">Authentication Required</h2>
+            <p className="text-muted-foreground mb-4">
+              Please sign in to complete your booking and payment.
+            </p>
+            <Link href="/login">
+              <Button className="w-full" data-testid="button-goto-login">
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!clientSecret) {
     return (

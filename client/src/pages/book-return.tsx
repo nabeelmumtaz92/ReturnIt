@@ -776,7 +776,34 @@ export default function BookReturn() {
       return;
     }
 
+    // SECURITY: Require authentication before proceeding to payment (page 3+)
+    if (page >= 2 && !isAuthenticated) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in before continuing with your booking.",
+        variant: "destructive",
+      });
+      // Save current form data to session storage so we can restore it after login
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('bookingFormData', JSON.stringify(formData));
+        sessionStorage.setItem('bookingReturnUrl', '/book-return');
+      }
+      setLocation('/login');
+      return;
+    }
+
     if (page === 3) {
+      // Double-check authentication before creating payment intent
+      if (!isAuthenticated) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to complete your booking.",
+          variant: "destructive",
+        });
+        setLocation('/login');
+        return;
+      }
+
       // Create payment intent before going to payment page (page 4)
       try {
         const response = await apiRequest('POST', '/api/create-payment-intent', {

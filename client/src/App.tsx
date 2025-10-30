@@ -215,6 +215,7 @@ function Router() {
       <Route path="/driver-identity-verification" component={DriverIdentityVerification} />
       <Route path="/driver-tax-documents" component={DriverTaxDocuments} />
       <Route path="/driver-payments" component={DriverPayments} />
+      <Route path="/driver-my-orders" component={DriverMyOrders} />
       <Route path="/driver-signup" component={DriverSignup} />
       <Route path="/driver-onboarding" component={DriverOnboarding} />
       <Route path="/customer-waitlist" component={CustomerWaitlist} />

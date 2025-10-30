@@ -35,7 +35,8 @@ Preferred communication style: Simple, everyday language.
 ## Key Features
 
 ### Customer Features
-- Account management, social login, guest checkout.
+- **Authentication-Required Checkout**: Customers must sign in before completing booking and payment for security and order tracking.
+- Account management, social login.
 - Store location autocomplete, real-time WebSocket GPS tracking.
 - Order history, multi-payment methods, promotional codes.
 - AI-powered support chat, in-app messaging, push notifications.
@@ -46,6 +47,7 @@ Preferred communication style: Simple, everyday language.
 - **Enhanced Tip Encouragement**: Pre-selected higher amounts ($3/$5/$8), prominent "100% to driver" messaging, round-up tip option, and post-delivery tip prompts to boost driver earnings without company subsidy.
 
 ### Driver Features
+- **My Orders Page**: Dedicated driver order management with Active, Available, and Completed tabs for both web and mobile.
 - **Native Mobile App**: React Native with Expo (com.returnit.app) featuring screens for Login, Available Jobs, Job Details, Active Job, Camera, Earnings, Payout.
 - **Real-time Job Notifications**: Expo-notifications with background/foreground handling and deep linking.
 - **GPS Navigation**: Expo-location with Google Maps integration.
@@ -82,7 +84,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Multi-Layer Security Architecture
 - **Level 1 (Public Access)**: Rate limiting, input validation, public tracking with ZIP code verification.
-- **Level 2 (Authenticated Access)**: Session-based authentication, Bcrypt hashing, role-based authorization, OAuth, secure session cookies.
+- **Level 2 (Authenticated Access)**: Session-based authentication, Bcrypt hashing, role-based authorization, OAuth, secure session cookies. **Checkout and payment pages require authentication** - unauthenticated users are redirected to login with session restore.
 - **Level 3 (Sensitive Documents)**: HMAC-SHA256 signed URLs with configurable expiration for receipts, invoices, and order details.
 - **Level 4 (Real-Time Tracking)**: Tracking number + ZIP code verification, enhanced rate limiting, IP-based throttling, WebSocket authentication.
 - **Level 5 (Tax Documents)**: Private object storage with ACL policies, driver/admin-only access control for 1099 forms.
