@@ -33,7 +33,12 @@ interface NavItem {
   badge?: string;
 }
 
-const navSections = [
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const navSections: NavSection[] = [
   {
     title: "Overview",
     items: [
