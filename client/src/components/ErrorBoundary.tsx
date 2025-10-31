@@ -1,7 +1,7 @@
 import { Component, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle, Home, Phone, MessageSquare } from 'lucide-react';
+import { AlertTriangle, Home, Phone, MessageSquare, LogOut } from 'lucide-react';
 import { handleError } from '@/lib/errorHandler';
 
 interface Props {
@@ -69,7 +69,23 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleGoHome = () => {
-    window.location.href = '/';
+    // Always go to welcome page, not homepage (which might redirect to admin/driver)
+    window.location.href = '/welcome';
+  };
+
+  handleSignOut = async () => {
+    try {
+      // Call logout endpoint
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      // Always redirect to welcome page after sign out
+      window.location.href = '/welcome';
+    }
   };
 
   render() {
@@ -94,15 +110,27 @@ export class ErrorBoundary extends Component<Props, State> {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button 
-                variant="outline"
-                onClick={this.handleGoHome}
-                className="w-full"
-                data-testid="button-go-home"
-              >
-                <Home className="h-4 w-4 mr-2" />
-                Go to Homepage
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button 
+                  variant="outline"
+                  onClick={this.handleGoHome}
+                  className="flex-1"
+                  data-testid="button-go-home"
+                >
+                  <Home className="h-4 w-4 mr-2" />
+                  Go to Homepage
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  onClick={this.handleSignOut}
+                  className="flex-1 border-red-200 text-red-600 hover:bg-red-50"
+                  data-testid="button-signout-error"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-2">
                 <Button 
