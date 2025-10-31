@@ -401,7 +401,7 @@ function Router() {
             }
           }
           if (typeof window !== 'undefined') {
-            window.location.replace('/admin-dashboard');
+            window.location.replace('/admin');
             return null;
           }
         }}
@@ -469,51 +469,48 @@ function Router() {
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <FeatureDocumentGenerator /> : <NotFound />}
       </Route>
 
-      {/* Admin Section Routes - Dynamic Content */}
+      {/* Old admin routes - redirect to new /admin routes */}
       <Route path="/admin-orders">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="order-management" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/orders'); return null; }}
       </Route>
       <Route path="/admin-drivers">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="driver-management" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/drivers'); return null; }}
       </Route>
       <Route path="/admin-tracking">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="real-time-tracking" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/driver-locations'); return null; }}
       </Route>
       <Route path="/admin-support">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-support" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/support'); return null; }}
       </Route>
       <Route path="/admin-analytics">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="analytics" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/analytics'); return null; }}
       </Route>
       <Route path="/admin-payments">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="payment-tracking" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/payment-tracking'); return null; }}
       </Route>
       <Route path="/admin-payouts">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="payment-tracking" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/payouts'); return null; }}
       </Route>
       <Route path="/admin-chat">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-support" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/chat'); return null; }}
       </Route>
       <Route path="/admin-support-analytics">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="analytics" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/analytics'); return null; }}
       </Route>
       <Route path="/admin-reviews">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-support" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/feedback'); return null; }}
       </Route>
       <Route path="/admin-customers">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="customer-management" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/customers'); return null; }}
       </Route>
       <Route path="/admin-driver-applications">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="driver-management" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/driver-applications'); return null; }}
       </Route>
       <Route path="/admin-access">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="admin-access" /> : <NotFound />}
-      </Route>
-      <Route path="/admin-settings">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="settings" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/settings'); return null; }}
       </Route>
       <Route path="/business-profile">
-        {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <AdminDashboard section="business-profile" /> : <NotFound />}
+        {() => { if (typeof window !== 'undefined') window.location.replace('/admin/settings'); return null; }}
       </Route>
       <Route path="/cost-monitoring">
         {() => user?.isAdmin && user?.email === "nabeelmumtaz92@gmail.com" ? <CostMonitoring /> : <NotFound />}

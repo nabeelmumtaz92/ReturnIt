@@ -64,7 +64,7 @@ export function RoleSwitcher() {
       color: 'bg-amber-100 text-amber-800',
       description: 'Manage operations and drivers',
       routes: [
-        { name: 'Admin Dashboard', path: '/admin-dashboard', icon: BarChart3 },
+        { name: 'Admin Dashboard', path: '/admin', icon: BarChart3 },
       ]
     }] : []),
   ];
@@ -80,7 +80,7 @@ export function RoleSwitcher() {
       const defaultRoutes = {
         customer: '/',
         driver: '/driver-portal',
-        admin: '/admin-dashboard'
+        admin: '/admin'
       };
       setLocation(defaultRoutes[roleId]);
     }
