@@ -1,17 +1,37 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, ArrowLeft, Home } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 export default function NotFound() {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+
+  // Security: Log suspicious path access attempts (only in production)
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      // Log to monitoring service or analytics
+      console.warn('[Security] 404 - Attempted access to undefined path:', location);
+      
+      // You can add more sophisticated logging here:
+      // - Track IP addresses
+      // - Detect path traversal attempts (../)
+      // - Identify common attack patterns (/admin, /wp-admin, /.env, etc.)
+      if (location.includes('..') || 
+          location.includes('wp-') || 
+          location.includes('.env') ||
+          location.includes('admin') && !location.startsWith('/admin')) {
+        console.error('[Security Alert] Potential attack pattern detected:', location);
+      }
+    }
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-transparent via-amber-50 to-yellow-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <Link href="/">
+          <Link href="/welcome">
             <div 
               className="text-foreground font-bold text-3xl mx-auto cursor-pointer"
             >
@@ -44,7 +64,7 @@ export default function NotFound() {
                 asChild 
                 className="flex-1 bg-primary hover:bg-primary/90 text-white"
               >
-                <Link href="/">
+                <Link href="/welcome">
                   <Home className="h-4 w-4 mr-2" />
                   Go Home
                 </Link>
@@ -52,7 +72,7 @@ export default function NotFound() {
               
               <Button 
                 variant="outline" 
-                onClick={() => setLocation('/')}
+                onClick={() => window.history.back()}
                 className="flex-1 border-border text-muted-foreground hover:bg-accent/50"
                 data-testid="button-go-back"
               >

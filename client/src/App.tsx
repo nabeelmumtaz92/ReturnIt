@@ -617,16 +617,38 @@ function Router() {
         }}
       </Route>
       
-      {/* Catch-all route - always keep this last */}
+      {/* Catch-all route - Security: Handles undefined paths */}
       <Route>
         {(params) => {
-          console.log('404 route accessed:', params, window.location);
-          // For mobile devices, redirect to booking instead of showing 404
-          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-          if (isMobile && window.location.pathname !== '/') {
-            window.location.replace('/');
-            return null;
+          // Security logging for undefined routes
+          const path = window.location.pathname;
+          
+          // Log suspicious patterns (only in production for security)
+          if (import.meta.env.PROD) {
+            // Common attack patterns to detect
+            const suspiciousPatterns = [
+              /\.\./,           // Path traversal
+              /wp-/,            // WordPress probing
+              /\.env/,          // Environment file access
+              /\.git/,          // Git directory access
+              /phpmyadmin/i,    // PHPMyAdmin
+              /\.sql/,          // SQL files
+              /backup/i,        // Backup files
+              /config/i,        // Config files
+              /\/api\/(?!auth|driver|admin|orders)/, // Unknown API endpoints
+            ];
+            
+            const isSuspicious = suspiciousPatterns.some(pattern => pattern.test(path));
+            if (isSuspicious) {
+              console.error('[Security Alert] Suspicious path access attempt:', {
+                path,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent,
+              });
+            }
           }
+          
+          // Always show 404 page for security (don't leak path info)
           return <NotFound />;
         }}
       </Route>
