@@ -404,38 +404,6 @@ async function escalateOrderToAdmin(
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Basic Auth for staging environment (returnly.tech)
-  app.use((req, res, next) => {
-    // Only apply basic auth to returnly.tech domain
-    if (req.hostname === 'returnly.tech') {
-      const auth = req.headers.authorization;
-      
-      if (!auth || !auth.startsWith('Basic ')) {
-        res.setHeader('WWW-Authenticate', 'Basic realm="Staging Environment"');
-        return res.status(401).send('Access to staging environment requires authentication');
-      }
-      
-      const credentials = Buffer.from(auth.slice(6), 'base64').toString('utf-8');
-      const [username, password] = credentials.split(':');
-      
-      // SECURITY: Require staging credentials to be set explicitly
-      const stagingUsername = process.env.STAGING_USERNAME;
-      const stagingPassword = process.env.STAGING_PASSWORD;
-      
-      if (!stagingUsername || !stagingPassword) {
-        console.error('SECURITY WARNING: STAGING_USERNAME and STAGING_PASSWORD must be set');
-        return res.status(500).send('Staging environment misconfigured');
-      }
-      
-      if (username !== stagingUsername || password !== stagingPassword) {
-        res.setHeader('WWW-Authenticate', 'Basic realm="Staging Environment"');
-        return res.status(401).send('Invalid credentials for staging environment');
-      }
-    }
-    
-    next();
-  });
-
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 

@@ -62,8 +62,6 @@ app.use(helmet({
 const allowedOrigins = [
   'https://returnit.online',
   'https://www.returnit.online',
-  'https://returnly.tech',
-  'https://www.returnly.tech',
   process.env.VITE_API_URL,
   // Explicitly whitelist the current Replit deployment URL (not wildcard)
   process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : null,

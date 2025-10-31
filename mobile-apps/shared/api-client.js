@@ -6,7 +6,6 @@
 // API Configuration
 const API_CONFIG = {
   development: 'http://localhost:5000',
-  staging: 'https://returnly.tech', 
   production: 'https://returnit.online'
 };
 
