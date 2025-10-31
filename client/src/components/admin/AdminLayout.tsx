@@ -29,25 +29,25 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     "demo@returnit.demo"
   ];
 
-  // Real-time admin notifications via WebSocket
-  useAdminWebSocket({
-    onMessage: (message) => {
-      if (message.type === 'admin_notification') {
-        const { title, description, variant } = message.data;
-        toast({
-          title: title || "Update",
-          description: description || "New system event",
-          variant: variant || "default",
-        });
-      }
-    },
-    onConnect: () => {
-      console.log('✅ Admin WebSocket connected');
-    },
-    onDisconnect: () => {
-      console.log('🔌 Admin WebSocket disconnected');
-    }
-  });
+  // Real-time admin notifications via WebSocket (disabled for now)
+  // useAdminWebSocket({
+  //   onMessage: (message) => {
+  //     if (message.type === 'admin_notification') {
+  //       const { title, description, variant } = message.data;
+  //       toast({
+  //         title: title || "Update",
+  //         description: description || "New system event",
+  //         variant: variant || "default",
+  //       });
+  //     }
+  //   },
+  //   onConnect: () => {
+  //     console.log('✅ Admin WebSocket connected');
+  //   },
+  //   onDisconnect: () => {
+  //     console.log('🔌 Admin WebSocket disconnected');
+  //   }
+  // });
 
   // Show loading while auth check is in progress
   if (isLoading) {
@@ -131,9 +131,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* Contact Support Button */}
-      <ContactSupportButton 
-        context={{ type: 'customer', id: 'ADMIN', name: 'Admin User' }}
-      />
+      <ContactSupportButton />
     </div>
   );
 }
