@@ -1,0 +1,75 @@
+import React from "react";
+
+interface Application {
+  id: number;
+  name: string;
+  email: string;
+  dateApplied: string;
+  status: "Pending" | "Approved" | "Rejected";
+}
+
+const mockApplications: Application[] = [
+  { id: 1, name: "Ethan Garcia", email: "ethan.g@email.com", dateApplied: "2025-09-12", status: "Pending" },
+  { id: 2, name: "Lily Patel", email: "lily.p@email.com", dateApplied: "2025-09-10", status: "Approved" },
+  { id: 3, name: "Noah Brown", email: "noah.b@email.com", dateApplied: "2025-09-05", status: "Rejected" },
+];
+
+const StatusBadge = ({ status }: { status: Application["status"] }) => {
+  const colors: Record<Application["status"], string> = {
+    Pending: "bg-yellow-100 text-yellow-700",
+    Approved: "bg-green-100 text-green-700",
+    Rejected: "bg-red-100 text-red-700",
+  };
+  return (
+    <span className={`px-3 py-1 rounded-full text-xs font-medium ${colors[status]}`}>
+      {status}
+    </span>
+  );
+};
+
+const DriverApplications: React.FC = () => {
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-semibold text-brown-700">Driver Applications</h1>
+      <p className="text-brown-500 mb-6">
+        Review, verify, and manage all driver onboarding requests
+      </p>
+
+      <div className="bg-white border border-brown-100 rounded-2xl shadow-sm">
+        <table className="min-w-full text-sm text-brown-700">
+          <thead className="bg-brown-50 text-brown-600">
+            <tr>
+              <th className="px-6 py-3 text-left font-medium">Name</th>
+              <th className="px-6 py-3 text-left font-medium">Email</th>
+              <th className="px-6 py-3 text-left font-medium">Applied On</th>
+              <th className="px-6 py-3 text-left font-medium">Status</th>
+              <th className="px-6 py-3 text-left font-medium">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {mockApplications.map((a) => (
+              <tr key={a.id} className="border-t border-brown-100 hover:bg-brown-50">
+                <td className="px-6 py-3 font-medium">{a.name}</td>
+                <td className="px-6 py-3">{a.email}</td>
+                <td className="px-6 py-3">{a.dateApplied}</td>
+                <td className="px-6 py-3">
+                  <StatusBadge status={a.status} />
+                </td>
+                <td className="px-6 py-3 flex gap-2">
+                  <button className="px-3 py-1 text-xs font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
+                    Approve
+                  </button>
+                  <button className="px-3 py-1 text-xs font-medium text-white bg-red-600 rounded-md hover:bg-red-700">
+                    Reject
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default DriverApplications;
