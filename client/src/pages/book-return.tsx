@@ -2083,7 +2083,7 @@ export default function BookReturn() {
                 </div>
 
                 <Button
-                  onClick={() => setLocation('/')}
+                  onClick={() => setLocation('/welcome')}
                   className="bg-[#B8956A] hover:bg-[#A0805A] text-white px-8 mt-6"
                   data-testid="button-go-home"
                 >
@@ -2097,7 +2097,7 @@ export default function BookReturn() {
               <div className="flex justify-between mt-8 pt-6 border-t">
                 <Button
                   variant="outline"
-                  onClick={() => page > 1 ? setPage(page - 1) : setLocation('/')}
+                  onClick={() => page > 1 ? setPage(page - 1) : setLocation('/welcome')}
                   className="px-6"
                   data-testid="button-back"
                 >
