@@ -21,7 +21,7 @@ import NotFound from "@/pages/not-found";
 
 // Lazy-loaded components for better performance
 const TrackingPage = lazy(() => import("@/pages/tracking"));
-const AdminDashboard = lazy(() => import("@/pages/admin-dashboard"));
+const AdminRoutes = lazy(() => import("@/pages/admin"));
 const SystemHealth = lazy(() => import("@/pages/system-health"));
 const AdminSettings = lazy(() => import("@/pages/admin-settings"));
 const CustomerDashboard = lazy(() => import("@/pages/customer-dashboard"));
@@ -137,7 +137,7 @@ function SmartRouteHandler() {
       if (user && isAuthenticated) {
         if (user.isAdmin && masterAdmins.includes(user.email)) {
           // Admins go to dashboard
-          setLocation('/admin-dashboard');
+          setLocation('/admin');
           return;
         } else if (user.isDriver) {
           // Drivers go to driver portal on desktop, stay on mobile driver app if on mobile
@@ -230,58 +230,29 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route path="/admin">
-        {() => {
-          // Show loading while auth is being checked
-          if (isLoading) {
-            return <PageLoader />;
-          }
-          
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
-          
-          // Check if user is authenticated and is admin
-          if (!user || !isAuthenticated) {
-            // Not logged in - redirect to login
-            if (typeof window !== 'undefined') {
-              window.location.replace('/login');
-            }
-            return null;
-          }
-          
-          // Check if user has admin privileges
-          if (user.isAdmin && masterAdmins.includes(user.email)) {
-            return <AdminDashboard />;
-          }
-          
-          // User is logged in but not an admin
-          return <NotFound />;
-        }}
+      {/* New Admin Routes System */}
+      <Route path="/admin/:rest*">
+        {() => (
+          <Suspense fallback={<PageLoader />}>
+            <AdminRoutes />
+          </Suspense>
+        )}
       </Route>
+      <Route path="/admin">
+        {() => (
+          <Suspense fallback={<PageLoader />}>
+            <AdminRoutes />
+          </Suspense>
+        )}
+      </Route>
+      
+      {/* Old admin-dashboard route - redirect to new /admin */}
       <Route path="/admin-dashboard*">
         {() => {
-          // Show loading while auth is being checked
-          if (isLoading) {
-            return <PageLoader />;
+          if (typeof window !== 'undefined') {
+            window.location.replace('/admin');
           }
-          
-          const masterAdmins = ["nabeelmumtaz92@gmail.com", "durremumtaz@gmail.com", "nabeelmumtaz4.2@gmail.com", "admin@returnit.com", "testadmin@returnit.test", "demo@returnit.demo"];
-          
-          // Check if user is authenticated and is admin
-          if (!user || !isAuthenticated) {
-            // Not logged in - redirect to login
-            if (typeof window !== 'undefined') {
-              window.location.replace('/login');
-            }
-            return null;
-          }
-          
-          // Check if user has admin privileges
-          if (user.isAdmin && masterAdmins.includes(user.email)) {
-            return <AdminDashboard />;
-          }
-          
-          // User is logged in but not an admin
-          return <NotFound />;
+          return null;
         }}
       </Route>
       <Route path="/system-health">
