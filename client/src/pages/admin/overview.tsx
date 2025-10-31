@@ -4,9 +4,16 @@ import { Users, Package, DollarSign, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 
+interface DashboardStats {
+  totalOrders: number;
+  activeDrivers: number;
+  todayRevenue: number;
+  completionRate: number;
+}
+
 export default function AdminOverview() {
   // Fetch dashboard stats
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading } = useQuery<DashboardStats>({
     queryKey: ['/api/admin/stats'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
