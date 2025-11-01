@@ -394,20 +394,20 @@ export default function DriverPortal() {
                   {/* Real-time Driver Status Indicators */}
                   <div className="flex items-center space-x-2 ml-3">
                     {/* Background Check Status */}
-                    {(driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) && 
-                     (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) !== 'approved' && (
+                    {driverStatus?.backgroundCheckStatus && 
+                     driverStatus.backgroundCheckStatus !== 'approved' && (
                       <div className="flex items-center">
-                        {(driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'pending' ? (
+                        {driverStatus.backgroundCheckStatus === 'pending' ? (
                           <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
                             <Clock className="h-3 w-3 mr-1" />
                             Background Check Pending
                           </Badge>
-                        ) : (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'in_progress' ? (
+                        ) : driverStatus.backgroundCheckStatus === 'in_progress' ? (
                           <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">
                             <Clock className="h-3 w-3 mr-1 animate-spin" />
                             Background Check In Progress
                           </Badge>
-                        ) : (driverStatus?.backgroundCheckStatus || user?.backgroundCheckStatus) === 'failed' ? (
+                        ) : driverStatus.backgroundCheckStatus === 'failed' ? (
                           <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-300">
                             <AlertCircle className="h-3 w-3 mr-1" />
                             Background Check Failed
@@ -422,26 +422,26 @@ export default function DriverPortal() {
                     )}
 
                     {/* Waitlist Status */}
-                    {(driverStatus?.applicationStatus || user?.applicationStatus) === 'waitlist' && (
+                    {driverStatus?.applicationStatus === 'waitlist' && (
                       <Badge variant="outline" className="border-green-300 text-green-700 bg-green-50">
                         <Users className="h-3 w-3 mr-1" />
                         On Waitlist
-                        {driverStatus?.waitlistPosition && (
+                        {driverStatus.waitlistPosition && (
                           <span className="ml-1">#{driverStatus.waitlistPosition}</span>
                         )}
                       </Badge>
                     )}
 
                     {/* Application Status for non-approved drivers */}
-                    {(driverStatus?.applicationStatus || user?.applicationStatus) && 
-                     !['approved', 'waitlist'].includes(driverStatus?.applicationStatus || user?.applicationStatus || '') && (
+                    {driverStatus?.applicationStatus && 
+                     !['approved', 'waitlist'].includes(driverStatus.applicationStatus) && (
                       <div className="flex items-center">
-                        {(driverStatus?.applicationStatus || user?.applicationStatus) === 'pending_review' ? (
+                        {driverStatus.applicationStatus === 'pending_review' ? (
                           <Badge variant="outline" className="border-blue-300 text-blue-700 bg-blue-50">
                             <Clock className="h-3 w-3 mr-1" />
                             Under Review
                           </Badge>
-                        ) : (driverStatus?.applicationStatus || user?.applicationStatus) === 'rejected' ? (
+                        ) : driverStatus.applicationStatus === 'rejected' ? (
                           <Badge variant="destructive" className="bg-red-100 text-red-700 border-red-300">
                             <AlertCircle className="h-3 w-3 mr-1" />
                             Application Rejected
@@ -870,7 +870,7 @@ export default function DriverPortal() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => window.open(`tel:${order.phone || '+1234567890'}`)}
+                              onClick={() => window.open(`tel:+1234567890`)}
                               data-testid={`button-call-${order.id}`}
                             >
                               <Phone className="h-4 w-4 mr-1" />
@@ -890,7 +890,7 @@ export default function DriverPortal() {
                             : (order.returnAddress || `${order.retailer} Store`),
                         }}
                         orderId={order.id}
-                        customerPhone={order.phone || ''}
+                        customerPhone={''}
                         onNavigationStart={() => {
                           // Optional: Track navigation start event
                         }}
@@ -954,19 +954,19 @@ export default function DriverPortal() {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Weekly Deliveries</span>
-                    <span className="font-semibold">{driverPerformance?.weeklyDeliveries || 0}</span>
+                    <span className="font-semibold">{(driverPerformance as any)?.weeklyDeliveries || 0}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Weekly Earnings</span>
-                    <span className="font-semibold">${driverPerformance?.weeklyEarnings?.toFixed(2) || '0.00'}</span>
+                    <span className="font-semibold">${((driverPerformance as any)?.weeklyEarnings?.toFixed(2)) || '0.00'}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">On-Time Delivery Rate</span>
-                    <span className="font-semibold text-green-600">{driverPerformance?.onTimeRate || 100}%</span>
+                    <span className="font-semibold text-green-600">{(driverPerformance as any)?.onTimeRate || 100}%</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Customer Satisfaction</span>
-                    <span className="font-semibold">{driverPerformance?.customerSatisfaction || 98}%</span>
+                    <span className="font-semibold">{(driverPerformance as any)?.customerSatisfaction || 98}%</span>
                   </div>
                 </CardContent>
               </Card>

@@ -59,7 +59,8 @@ import {
   userNotificationPreferences,
   messages,
   systemSettings,
-  driverPaymentMethods
+  driverPaymentMethods,
+  indeedApplications
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -184,6 +185,11 @@ export interface IStorage {
   getUserDriverApplication(userId: number): Promise<DriverApplication | undefined>;
   updateDriverApplication(id: string, updates: Partial<DriverApplication>): Promise<DriverApplication | undefined>;
   getAllDriverApplications(): Promise<DriverApplication[]>;
+  
+  // Indeed Job Applications
+  createIndeedApplication(application: any): Promise<any>;
+  getIndeedApplications(status?: string): Promise<any[]>;
+  getIndeedApplicationById(id: number): Promise<any | undefined>;
 
   // Customer waitlist operations
   createCustomerWaitlist(waitlist: InsertCustomerWaitlist): Promise<CustomerWaitlist>;
@@ -1860,6 +1866,19 @@ export class MemStorage implements IStorage {
 
   async getAllDriverApplications(): Promise<DriverApplication[]> {
     return Array.from(this.driverApplications.values());
+  }
+
+  // Indeed Job Applications (stub for MemStorage - use DatabaseStorage for real implementation)
+  async createIndeedApplication(application: any): Promise<any> {
+    return application; // Stub
+  }
+
+  async getIndeedApplications(status?: string): Promise<any[]> {
+    return []; // Stub
+  }
+
+  async getIndeedApplicationById(id: number): Promise<any | undefined> {
+    return undefined; // Stub
   }
 
   // Tracking operations

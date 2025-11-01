@@ -2728,6 +2728,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({received: true});
   });
 
+  // Indeed webhook endpoint - Receives driver job applications
+  app.post('/api/webhooks/indeed', express.json(), async (req, res) => {
+    try {
+      console.log('📨 Received Indeed application webhook:', JSON.stringify(req.body, null, 2));
+      
+      const {
+        apply_id,
+        jobUrl,
+        email,
+        firstName,
+        lastName,
+        phoneNumber,
+        resume,
+        screenerAnswers = [],
+        coverLetter = null
+      } = req.body;
+
+      // Validate required fields
+      if (!apply_id || !email || !firstName || !lastName) {
+        console.error('Missing required fields in Indeed application');
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // Extract resume data (Indeed sends Base64-encoded or HTML format)
+      let resumeText = '';
+      if (resume?.data) {
+        // Decode Base64 if present
+        resumeText = Buffer.from(resume.data, 'base64').toString('utf-8');
+      } else if (resume?.html) {
+        resumeText = resume.html;
+      }
+
+      // Store in Indeed applications table
+      const application = await storage.createIndeedApplication({
+        indeedApplyId: apply_id,
+        jobId: 'driver-stlouis-001', // Your job posting ID
+        jobTitle: 'Delivery Driver - St. Louis',
+        candidateName: `${firstName} ${lastName}`,
+        candidateEmail: email,
+        candidatePhone: phoneNumber || null,
+        resume: resumeText,
+        coverLetter: coverLetter,
+        screeningAnswers: screenerAnswers,
+        status: 'new',
+        disposition: 'RECEIVED',
+        rawData: req.body,
+      });
+
+      console.log(`✅ Stored Indeed application: ${application.id} (${email})`);
+
+      // Create user account as driver applicant
+      try {
+        // Check if user already exists
+        const existingUser = await storage.getUserByEmail(email);
+        
+        if (!existingUser) {
+          // Generate temporary password (user will reset on first login)
+          const tempPassword = `Driver${Date.now()}!`;
+          const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+          // Create driver account
+          const newUser = await storage.createUser({
+            email,
+            password: hashedPassword,
+            firstName,
+            lastName,
+            phone: phoneNumber || null,
+            isDriver: true,
+            isAdmin: false,
+            applicationStatus: 'pending_review',
+            stripeAccountId: null,
+          });
+
+          console.log(`✅ Created driver user account: ${newUser.id} (${email})`);
+
+          // Update Indeed application with user link
+          await db.update(indeedApplications)
+            .set({ reviewedBy: newUser.id })
+            .where(sql`indeed_apply_id = ${apply_id}`);
+
+          // Send welcome email to driver
+          try {
+            const resend = getUncachableResendClient();
+            await resend.emails.send({
+              from: 'Return It <noreply@returnit.online>',
+              to: email,
+              subject: 'Welcome to Return It - Driver Application Received',
+              html: `
+                <h2>Welcome to Return It, ${firstName}!</h2>
+                <p>Thank you for applying to become a delivery driver with Return It.</p>
+                <p>Your application is now under review by our team. We'll notify you within 1-2 business days about the next steps.</p>
+                <p><strong>What happens next:</strong></p>
+                <ul>
+                  <li>Application review (1-2 business days)</li>
+                  <li>Background check</li>
+                  <li>Driver onboarding & training</li>
+                  <li>Start earning!</li>
+                </ul>
+                <p>Questions? Reply to this email or visit our <a href="https://returnit.online/help-center">Help Center</a>.</p>
+                <p>Best regards,<br>The Return It Team</p>
+              `
+            });
+            console.log(`📧 Welcome email sent to ${email}`);
+          } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+          }
+        } else {
+          console.log(`ℹ️  User already exists: ${email}`);
+        }
+      } catch (userError) {
+        console.error('Error creating user from Indeed application:', userError);
+      }
+
+      // Send notification to admin
+      try {
+        const masterAdminEmail = process.env.MASTER_ADMIN_EMAIL || 'nabeelmumtaz92@gmail.com';
+        const masterAdmin = await storage.getUserByEmail(masterAdminEmail);
+        
+        if (masterAdmin) {
+          await storage.createNotification({
+            userId: masterAdmin.id,
+            type: 'driver_application_received',
+            title: 'New Driver Application from Indeed',
+            message: `${firstName} ${lastName} (${email}) applied via Indeed. Review their application in the admin portal.`,
+            data: {
+              indeedApplyId: apply_id,
+              candidateName: `${firstName} ${lastName}`,
+              candidateEmail: email,
+              source: 'indeed'
+            }
+          });
+          console.log(`🔔 Admin notification sent`);
+        }
+      } catch (notifError) {
+        console.error('Error sending admin notification:', notifError);
+      }
+
+      // Send successful response to Indeed
+      res.status(200).json({
+        status: 'success',
+        message: 'Application received',
+        applicationId: application.id
+      });
+
+    } catch (error: any) {
+      console.error('Indeed webhook error:', error);
+      res.status(500).json({ error: 'Internal server error', details: error.message });
+    }
+  });
+
   // Process PayPal payment (mobile and web)
   app.post('/api/payments/paypal/create-order', isAuthenticated, async (req, res) => {
     const { createPaypalOrder } = await import('./paypal');
