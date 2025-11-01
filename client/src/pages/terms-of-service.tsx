@@ -158,20 +158,163 @@ export default function TermsOfService() {
                   driver availability, performance, or conduct.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">10. Termination</h2>
+                <div className="bg-red-50 border-l-4 border-red-600 p-4 rounded mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <Shield className="h-5 w-5 mr-2 text-red-600" />
+                    10. PROHIBITED ACTIVITIES & CYBERSECURITY
+                  </h2>
+                  <div className="space-y-2 text-gray-800 text-sm">
+                    <p className="font-bold">
+                      YOU EXPRESSLY AGREE NOT TO ENGAGE IN ANY OF THE FOLLOWING PROHIBITED ACTIVITIES:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li><strong>Hacking & Unauthorized Access:</strong> Attempting to gain unauthorized access to any portion of the Service, our servers, databases, or any systems connected to the Service</li>
+                      <li><strong>Reverse Engineering:</strong> Reverse engineering, decompiling, disassembling, or attempting to derive source code from the Service or any proprietary algorithms</li>
+                      <li><strong>Data Mining:</strong> Using automated tools (bots, scrapers, crawlers) to extract data from the Service without express written permission</li>
+                      <li><strong>Security Breaches:</strong> Circumventing, disabling, or interfering with security features, authentication measures, or access controls</li>
+                      <li><strong>System Interference:</strong> Introducing viruses, malware, ransomware, trojans, worms, or any malicious code</li>
+                      <li><strong>DDoS Attacks:</strong> Conducting denial-of-service attacks or attempting to overload our infrastructure</li>
+                      <li><strong>SQL Injection:</strong> Attempting SQL injection, XSS attacks, CSRF attacks, or any code injection techniques</li>
+                      <li><strong>API Abuse:</strong> Exceeding rate limits, making excessive API calls, or abusing webhooks</li>
+                      <li><strong>Account Compromise:</strong> Accessing another user's account without authorization or sharing credentials</li>
+                      <li><strong>Data Theft:</strong> Stealing, copying, or exfiltrating user data, payment information, or proprietary business data</li>
+                    </ul>
+                    <p className="font-bold mt-4 text-red-900">
+                      VIOLATIONS WILL RESULT IN IMMEDIATE ACCOUNT TERMINATION, CRIMINAL PROSECUTION UNDER THE COMPUTER 
+                      FRAUD AND ABUSE ACT (CFAA) 18 U.S.C. § 1030, AND CIVIL LIABILITY FOR ALL DAMAGES.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 border-l-4 border-purple-600 p-4 rounded mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3">
+                    11. INTELLECTUAL PROPERTY & LICENSE
+                  </h2>
+                  <div className="space-y-3 text-gray-800 text-sm">
+                    <p className="font-bold text-gray-900">
+                      © 2025 Return It, LLC. ALL RIGHTS RESERVED.
+                    </p>
+                    
+                    <h3 className="font-bold text-gray-900 mt-3">Proprietary Rights</h3>
+                    <p>
+                      All content, features, functionality, software, algorithms, user interfaces, designs, graphics, 
+                      logos, trademarks, service marks, and proprietary technology (including but not limited to the 
+                      "Return Graph" routing system, AI-powered order matching, and real-time tracking algorithms) 
+                      are the exclusive property of Return It, LLC and are protected by:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>United States and international copyright laws</li>
+                      <li>Trademark and service mark laws</li>
+                      <li>Patent laws (pending and granted)</li>
+                      <li>Trade secret laws</li>
+                      <li>Other intellectual property rights and unfair competition laws</li>
+                    </ul>
+
+                    <h3 className="font-bold text-gray-900 mt-3">Patent Protection</h3>
+                    <p>
+                      The following proprietary systems are protected by pending or granted U.S. patents:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1 text-xs">
+                      <li>Return Graph™ - Self-learning reverse logistics knowledge graph routing system</li>
+                      <li>Multi-stop batch optimization with cluster detection algorithm</li>
+                      <li>Real-time driver-customer matching using AI and geographic proximity</li>
+                      <li>Two-way exchange logistics system with in-store coordination</li>
+                      <li>Photo verification and proof-of-purchase validation system</li>
+                    </ul>
+
+                    <h3 className="font-bold text-gray-900 mt-3">Limited License Grant</h3>
+                    <p>
+                      Subject to your compliance with these Terms, ReturnIt grants you a limited, non-exclusive, 
+                      non-transferable, revocable license to:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Access and use the Service for personal, non-commercial purposes (customers)</li>
+                      <li>Access and use the driver application to provide delivery services (drivers)</li>
+                      <li>View and download materials solely for your own use</li>
+                    </ul>
+
+                    <h3 className="font-bold text-gray-900 mt-3">Open Source Components</h3>
+                    <p>
+                      Portions of the Service may include open-source software licensed under the MIT License 
+                      and other permissive licenses. Such components remain subject to their original licenses. 
+                      Attribution and license notices are available upon request.
+                    </p>
+
+                    <p className="font-bold mt-4 text-purple-900">
+                      You may NOT: copy, modify, distribute, sell, lease, sublicense, reverse engineer, create 
+                      derivative works, or use the Service for competitive purposes.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-orange-50 border-l-4 border-orange-600 p-4 rounded mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3">
+                    12. VIOLATIONS & LEGAL REPERCUSSIONS
+                  </h2>
+                  <div className="space-y-3 text-gray-800 text-sm">
+                    <p className="font-bold">
+                      Violations of these Terms may result in the following consequences:
+                    </p>
+
+                    <h3 className="font-semibold text-gray-900">Civil Penalties</h3>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li><strong>Immediate Account Termination:</strong> Permanent ban from the platform</li>
+                      <li><strong>Monetary Damages:</strong> Liability for actual damages, lost profits, and business interruption costs</li>
+                      <li><strong>Injunctive Relief:</strong> Court orders prohibiting further violations</li>
+                      <li><strong>Attorneys' Fees:</strong> Full reimbursement of ReturnIt's legal costs</li>
+                      <li><strong>Statutory Damages:</strong> Up to $150,000 per copyright violation under 17 U.S.C. § 504(c)</li>
+                    </ul>
+
+                    <h3 className="font-semibold text-gray-900 mt-3">Criminal Prosecution</h3>
+                    <p>Cybersecurity violations may result in federal criminal prosecution under:</p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li><strong>Computer Fraud and Abuse Act (CFAA):</strong> 18 U.S.C. § 1030 - Up to 10 years imprisonment and $250,000 fines</li>
+                      <li><strong>Wire Fraud:</strong> 18 U.S.C. § 1343 - Up to 20 years imprisonment</li>
+                      <li><strong>Identity Theft:</strong> 18 U.S.C. § 1028 - Up to 15 years imprisonment</li>
+                      <li><strong>Economic Espionage Act:</strong> 18 U.S.C. § 1831 - Up to 15 years imprisonment and $5 million fines</li>
+                    </ul>
+
+                    <h3 className="font-semibold text-gray-900 mt-3">Intellectual Property Violations</h3>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li><strong>Patent Infringement:</strong> Treble damages (3x actual damages) under 35 U.S.C. § 284</li>
+                      <li><strong>Copyright Infringement:</strong> Statutory damages and criminal prosecution under 18 U.S.C. § 2319</li>
+                      <li><strong>Trademark Infringement:</strong> Damages, profits disgorgement, and injunctions under 15 U.S.C. § 1117</li>
+                      <li><strong>Trade Secret Theft:</strong> Criminal prosecution under 18 U.S.C. § 1832</li>
+                    </ul>
+
+                    <h3 className="font-semibold text-gray-900 mt-3">Reporting to Authorities</h3>
+                    <p>
+                      ReturnIt reserves the right to report suspected criminal activity to:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>Federal Bureau of Investigation (FBI) Cyber Crimes Division</li>
+                      <li>U.S. Secret Service (payment fraud)</li>
+                      <li>Department of Justice Computer Crime and Intellectual Property Section</li>
+                      <li>State and local law enforcement agencies</li>
+                    </ul>
+
+                    <p className="font-bold mt-4 bg-orange-100 p-3 rounded border border-orange-300">
+                      ⚠️ WARNING: We actively monitor for suspicious activity, maintain detailed logs, and prosecute 
+                      violations to the fullest extent of the law. Attempting to hack, exploit, or steal from 
+                      ReturnIt will result in criminal charges and civil lawsuits.
+                    </p>
+                  </div>
+                </div>
+
+                <h2 className="text-xl font-semibold text-foreground mt-6">13. Termination</h2>
                 <p className="text-gray-700">
                   We may suspend or terminate accounts for violations without notice or liability. You may close your 
                   account at any time. All provisions which should survive termination shall survive.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">11. Dispute Resolution & Arbitration</h2>
+                <h2 className="text-xl font-semibold text-foreground">14. Dispute Resolution & Arbitration</h2>
                 <p className="text-gray-700 font-medium">
                   ANY DISPUTE ARISING OUT OF THESE TERMS SHALL BE RESOLVED BY BINDING ARBITRATION, rather than in 
                   court. Arbitration conducted by American Arbitration Association (AAA) under Commercial Arbitration 
                   Rules. You waive the right to jury trial and class actions. Governing law: State of Delaware.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">12. Changes to Terms</h2>
+                <h2 className="text-xl font-semibold text-foreground">15. Changes to Terms</h2>
                 <p className="text-gray-700">
                   We may update these Terms at any time. Continued use constitutes acceptance. Material changes will 
                   be posted with updated effective date.
