@@ -141,6 +141,19 @@ Preferred communication style: Simple, everyday language.
 - `POST /api/driver/payment-methods/:id/set-default` - Set default payment method (with driverActionRateLimit)
 - `POST /api/driver/instant-payout` - Execute instant payout (with driverActionRateLimit)
 
+### W-9 Tax Form Collection (In Development)
+**⚠️ CRITICAL SECURITY REQUIREMENT**: The current W-9 implementation stores SSN/EIN in plaintext for development only. **Production deployment absolutely requires** implementing proper encryption using AES-256-GCM or similar before launch. This is documented in the code with security warnings.
+
+**Status**: Development complete, pending encryption implementation for production
+- Database schema: w9Forms table
+- Storage methods: createW9Form, getW9FormByUserId, hasCompletedW9
+- API routes with Zod validation:
+  - `GET /api/driver/w9` - Get current user's W-9 status
+  - `POST /api/driver/w9` - Submit W-9 form (with Zod validation)
+  - `GET /api/admin/driver-applications/:id/w9` - Admin view W-9 status
+- Frontend: W9Form component (client/src/components/W9Form.tsx)
+- **Next Steps**: Integrate into driver onboarding flow, require W-9 completion before `approved_active` status, implement production-grade encryption
+
 ### Legal Compliance & Operating Model
 - **Agency Model**: ReturnIt acts as the customer's agent for transport.
 - **Requirements**: Proof of purchase upload, mandatory photo verification by drivers at drop-off.

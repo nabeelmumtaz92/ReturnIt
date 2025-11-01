@@ -168,7 +168,6 @@ export interface IStorage {
   // W-9 Tax Forms
   createW9Form(w9Form: InsertW9Form): Promise<SelectW9Form>;
   getW9FormByUserId(userId: number): Promise<SelectW9Form | undefined>;
-  updateW9Form(userId: number, data: Partial<InsertW9Form>): Promise<SelectW9Form | undefined>;
   hasCompletedW9(userId: number): Promise<boolean>;
   
   // Driver incentives and bonuses
@@ -1709,6 +1708,31 @@ export class MemStorage implements IStorage {
       ))
       .limit(1);
     return result;
+  }
+
+  // W-9 Tax Forms - Database implementation
+  async createW9Form(w9Form: InsertW9Form): Promise<SelectW9Form> {
+    const [result] = await db.insert(w9Forms)
+      .values({
+        ...w9Form,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+    return result;
+  }
+
+  async getW9FormByUserId(userId: number): Promise<SelectW9Form | undefined> {
+    const [result] = await db.select()
+      .from(w9Forms)
+      .where(eq(w9Forms.userId, userId))
+      .limit(1);
+    return result;
+  }
+
+  async hasCompletedW9(userId: number): Promise<boolean> {
+    const w9 = await this.getW9FormByUserId(userId);
+    return !!w9;
   }
 
   // Driver incentives and bonuses methods

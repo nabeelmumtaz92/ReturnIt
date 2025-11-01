@@ -51,7 +51,7 @@ import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { ObjectPermission } from "./objectAcl";
 import { dailyStatsScheduler } from "./daily-stats-scheduler";
 import * as stripePaymentMethods from "./services/stripePaymentMethods";
-import { insertDriverPaymentMethodSchema } from "@shared/schema";
+import { insertDriverPaymentMethodSchema, insertW9FormSchema } from "@shared/schema";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -5106,6 +5106,150 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         message: error.message || "Failed to process instant payout. Please try again later." 
       });
+    }
+  });
+
+  // ========================================
+  // W-9 TAX FORMS
+  // ========================================
+
+  // Get current user's W-9 status
+  app.get("/api/driver/w9", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const w9 = await storage.getW9FormByUserId(userId);
+      
+      if (!w9) {
+        return res.json({ completed: false });
+      }
+      
+      // Return limited info (don't send encrypted SSN to frontend)
+      res.json({
+        completed: true,
+        taxIdLast4: w9.taxIdLast4,
+        fullName: w9.fullName,
+        signedAt: w9.signedAt,
+      });
+    } catch (error: any) {
+      console.error('Error fetching W-9 status:', error);
+      res.status(500).json({ message: "Failed to fetch W-9 status" });
+    }
+  });
+
+  // Submit W-9 form (driver only)
+  app.post("/api/driver/w9", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.session as any).user.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if W-9 already exists
+      const existingW9 = await storage.getW9FormByUserId(userId);
+      if (existingW9) {
+        return res.status(400).json({ message: "W-9 already submitted. Contact support if you need to update your information." });
+      }
+
+      // Validate request body using Zod schema
+      const validationResult = insertW9FormSchema.omit({ 
+        userId: true, 
+        taxIdEncrypted: true,
+        taxIdLast4: true,
+        signedAt: true,
+        ipAddress: true
+      }).extend({
+        taxId: z.string().min(9, "Tax ID must be at least 9 digits").max(11, "Tax ID must be at most 11 characters")
+      }).safeParse(req.body);
+
+      if (!validationResult.success) {
+        return res.status(400).json({ 
+          message: "Validation failed", 
+          errors: validationResult.error.errors 
+        });
+      }
+
+      const { taxId, ...validatedData } = validationResult.data;
+
+      // SECURITY GUARD: Prevent production deployment without encryption
+      if (process.env.NODE_ENV === 'production') {
+        console.error('[SECURITY ERROR] W-9 submission blocked in production - SSN/EIN encryption not implemented');
+        return res.status(503).json({ 
+          message: "W-9 submission is temporarily unavailable. Please contact support.",
+          error: "Production deployment requires proper SSN/EIN encryption implementation"
+        });
+      }
+
+      // DEVELOPMENT ONLY: In production, taxId MUST be encrypted using AES-256-GCM before storage
+      const taxIdLast4 = taxId.slice(-4);
+
+      const w9Data: InsertW9Form = {
+        userId,
+        taxIdEncrypted: taxId, // CRITICAL: Must implement encryption before production
+        taxIdLast4,
+        ...validatedData,
+        signedAt: new Date(),
+        ipAddress: req.ip || 'unknown',
+      };
+
+      const w9 = await storage.createW9Form(w9Data);
+
+      console.log(`[W-9] Driver ${userId} submitted W-9 form (last 4: ${taxIdLast4})`);
+
+      res.json({
+        success: true,
+        message: "W-9 form submitted successfully",
+        taxIdLast4: w9.taxIdLast4,
+      });
+    } catch (error: any) {
+      console.error('Error submitting W-9 form:', error);
+      res.status(500).json({ message: error.message || "Failed to submit W-9 form" });
+    }
+  });
+
+  // Admin: Get driver's W-9 status
+  app.get("/api/admin/driver-applications/:id/w9", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      
+      // Check admin access
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const applicationId = req.params.id;
+      
+      // Get driver application
+      const application = await storage.getDriverApplication(applicationId);
+      if (!application) {
+        return res.status(404).json({ message: "Driver application not found" });
+      }
+
+      // Get W-9 status
+      const w9 = await storage.getW9FormByUserId(application.userId);
+      
+      if (!w9) {
+        return res.json({ completed: false });
+      }
+
+      // Return W-9 info for admin (still don't send full encrypted SSN)
+      res.json({
+        completed: true,
+        taxIdLast4: w9.taxIdLast4,
+        taxIdType: w9.taxIdType,
+        businessClassification: w9.businessClassification,
+        fullName: w9.fullName,
+        address: w9.address,
+        city: w9.city,
+        state: w9.state,
+        zipCode: w9.zipCode,
+        signedAt: w9.signedAt,
+        ipAddress: w9.ipAddress,
+      });
+    } catch (error: any) {
+      console.error('Error fetching driver W-9:', error);
+      res.status(500).json({ message: "Failed to fetch W-9 information" });
     }
   });
 
