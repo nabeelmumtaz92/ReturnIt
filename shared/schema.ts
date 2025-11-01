@@ -409,6 +409,63 @@ export const driverPaymentMethods = pgTable("driver_payment_methods", {
   instantPayEligibleIdx: index("driver_payment_methods_instant_pay_eligible_idx").on(table.instantPayEligible),
 }));
 
+// W-9 Tax Forms table - Driver tax information collection
+export const w9Forms = pgTable("w9_forms", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull().unique(),
+  
+  // Personal Information
+  fullName: text("full_name").notNull(),
+  businessName: text("business_name"), // Optional for sole proprietors
+  taxClassification: text("tax_classification").notNull(), // "individual", "c_corp", "s_corp", "partnership", "llc", "other"
+  llcTaxClassification: text("llc_tax_classification"), // For LLC: "c", "s", or "p"
+  
+  // Tax Identification
+  taxIdType: text("tax_id_type").notNull(), // "ssn" or "ein"
+  taxIdLast4: text("tax_id_last4").notNull(), // Last 4 digits for display (encrypted full number stored separately)
+  taxIdEncrypted: text("tax_id_encrypted").notNull(), // Full encrypted SSN/EIN
+  
+  // Address Information
+  address: text("address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  
+  // Backup Withholding & Certifications
+  exemptFromBackupWithholding: boolean("exempt_from_backup_withholding").default(false).notNull(),
+  exemptionCode: text("exemption_code"), // FATCA exemption code if applicable
+  
+  // Electronic Signature
+  signature: text("signature").notNull(), // Typed name or digital signature data
+  signatureMethod: text("signature_method").notNull().default("typed"), // "typed" or "drawn"
+  signatureData: text("signature_data"), // Base64 signature image if drawn
+  signedAt: timestamp("signed_at").notNull(),
+  ipAddress: text("ip_address").notNull(), // IP address when signed for audit trail
+  
+  // Compliance & Audit
+  certifiedCorrect: boolean("certified_correct").default(true).notNull(),
+  certificationText: text("certification_text").notNull(), // The certification statement they agreed to
+  
+  // W-9 specific fields
+  accountNumbers: text("account_numbers"), // Optional list account numbers (if required by requester)
+  
+  // Status
+  status: text("status").notNull().default("completed"), // "completed", "expired", "superseded"
+  expiresAt: timestamp("expires_at"), // W-9s don't technically expire but good to track
+  supersededBy: integer("superseded_by"), // Reference to newer W-9 if updated
+  
+  // Metadata
+  formVersion: text("form_version").notNull().default("2024"), // IRS W-9 form version year
+  metadata: jsonb("metadata").default({}),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("w9_forms_user_id_idx").on(table.userId),
+  statusIdx: index("w9_forms_status_idx").on(table.status),
+  signedAtIdx: index("w9_forms_signed_at_idx").on(table.signedAt),
+}));
+
 // SMS Notifications table
 export const smsNotifications = pgTable("sms_notifications", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -1703,6 +1760,28 @@ export const insertDriverPaymentMethodSchema = createInsertSchema(driverPaymentM
   type: z.enum(["card", "bank_account"]),
   status: z.enum(["active", "pending_verification", "verification_failed", "expired", "removed"]).optional(),
 });
+
+// W-9 Forms
+export const insertW9FormSchema = createInsertSchema(w9Forms).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  taxIdEncrypted: z.string().min(9).max(11), // SSN (9) or EIN (10-11 with hyphen)
+  taxIdLast4: z.string().length(4),
+  fullName: z.string().min(1),
+  address: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().length(2),
+  zipCode: z.string().min(5).max(10),
+  signature: z.string().min(1),
+  signedAt: z.date(),
+  ipAddress: z.string().min(1),
+  certificationText: z.string().min(1),
+});
+
+export type InsertW9Form = z.infer<typeof insertW9FormSchema>;
+export type SelectW9Form = typeof w9Forms.$inferSelect;
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,

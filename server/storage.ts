@@ -164,6 +164,12 @@ export interface IStorage {
   deleteDriverPaymentMethod(id: number): Promise<boolean>;
   setDefaultDriverPaymentMethod(driverId: number, paymentMethodId: number): Promise<DriverPaymentMethod | undefined>;
   getDefaultDriverPaymentMethod(driverId: number): Promise<DriverPaymentMethod | undefined>;
+
+  // W-9 Tax Forms
+  createW9Form(w9Form: InsertW9Form): Promise<SelectW9Form>;
+  getW9FormByUserId(userId: number): Promise<SelectW9Form | undefined>;
+  updateW9Form(userId: number, data: Partial<InsertW9Form>): Promise<SelectW9Form | undefined>;
+  hasCompletedW9(userId: number): Promise<boolean>;
   
   // Driver incentives and bonuses
   createDriverIncentive(incentive: InsertDriverIncentive): Promise<DriverIncentive>;
