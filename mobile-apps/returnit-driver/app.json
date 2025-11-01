@@ -7,7 +7,6 @@
     "icon": "./assets/icon-driver.png",
     "userInterfaceStyle": "light",
     "description": "ReturnIt Driver App - Manage pickups, deliveries, route optimization, and earnings with real-time job tracking",
-    "privacy": "public",
     "platforms": [
       "ios",
       "android"
