@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCheck, Mail, Calendar, Car, MapPin, Phone, FileCheck } from "lucide-react";
+import { UserCheck, Mail, Calendar, Car, MapPin, Phone, FileCheck, CheckCircle, XCircle, AlertCircle } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,8 +16,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { useState } from "react";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 interface DriverApplication {
   id: number;
@@ -44,12 +48,75 @@ interface DriverApplication {
 }
 
 export default function DriverApplications() {
+  const { toast } = useToast();
   const [selectedApplication, setSelectedApplication] = useState<DriverApplication | null>(null);
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    action: 'approve' | 'reject' | null;
+    driver: DriverApplication | null;
+  }>({ open: false, action: null, driver: null });
 
   // Fetch driver applications
-  const { data: applications, isLoading } = useQuery<DriverApplication[]>({
+  const { data: applications, isLoading, isError } = useQuery<DriverApplication[]>({
     queryKey: ['/api/admin/driver-applications/pending'],
     refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  // Approve driver mutation
+  const approveMutation = useMutation({
+    mutationFn: async (driverId: number) => {
+      return apiRequest(`/api/admin/driver-applications/${driverId}/approve`, {
+        method: 'POST',
+        body: JSON.stringify({
+          approvalNotes: 'Manually approved by admin',
+          adminId: 'admin'
+        })
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Driver Activated",
+        description: "Driver has been approved and can now use the driver app.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/driver-applications/pending'] });
+      setActionDialog({ open: false, action: null, driver: null });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to approve driver application.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Reject driver mutation
+  const rejectMutation = useMutation({
+    mutationFn: async (driverId: number) => {
+      return apiRequest(`/api/admin/driver-applications/${driverId}/reject`, {
+        method: 'POST',
+        body: JSON.stringify({
+          rejectionReason: 'Application rejected by admin',
+          rejectionNotes: 'Manually rejected',
+          adminId: 'admin'
+        })
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Driver Rejected",
+        description: "Driver application has been rejected.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/driver-applications/pending'] });
+      setActionDialog({ open: false, action: null, driver: null });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reject driver application.",
+        variant: "destructive",
+      });
+    }
   });
 
   // Calculate stats
@@ -158,10 +225,18 @@ export default function DriverApplications() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
+            <div className="flex items-center justify-center py-8" data-testid="loading-applications">
               <div className="text-center">
                 <UserCheck className="h-12 w-12 mx-auto mb-4 text-muted-foreground animate-pulse" />
                 <p className="text-muted-foreground">Loading applications...</p>
+              </div>
+            </div>
+          ) : isError ? (
+            <div className="flex items-center justify-center py-8" data-testid="error-applications">
+              <div className="text-center">
+                <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
+                <p className="text-red-600 font-medium mb-2">Failed to load driver applications</p>
+                <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
               </div>
             </div>
           ) : !applications || applications.length === 0 ? (
@@ -240,14 +315,38 @@ export default function DriverApplications() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setSelectedApplication(app)}
-                            data-testid={`button-view-${app.id}`}
-                          >
-                            View Details
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setSelectedApplication(app)}
+                              data-testid={`button-view-${app.id}`}
+                            >
+                              View Details
+                            </Button>
+                            {app.applicationStatus !== 'approved_active' && app.applicationStatus !== 'approved' && (
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                                onClick={() => setActionDialog({ open: true, action: 'approve', driver: app })}
+                                data-testid={`button-approve-${app.id}`}
+                              >
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Make Active Now
+                              </Button>
+                            )}
+                            {app.applicationStatus !== 'rejected' && app.applicationStatus !== 'approved_active' && (
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => setActionDialog({ open: true, action: 'reject', driver: app })}
+                                data-testid={`button-reject-${app.id}`}
+                              >
+                                <XCircle className="h-4 w-4 mr-1" />
+                                Reject
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     );
@@ -368,9 +467,111 @@ export default function DriverApplications() {
                 >
                   Close
                 </Button>
+                {selectedApplication.applicationStatus !== 'approved_active' && (
+                  <>
+                    <Button 
+                      onClick={() => {
+                        setActionDialog({ open: true, action: 'approve', driver: selectedApplication });
+                        setSelectedApplication(null);
+                      }}
+                      className="flex-1 bg-green-600 hover:bg-green-700"
+                      data-testid="button-approve-modal"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Make Active Now
+                    </Button>
+                    {selectedApplication.applicationStatus !== 'rejected' && (
+                      <Button 
+                        onClick={() => {
+                          setActionDialog({ open: true, action: 'reject', driver: selectedApplication });
+                          setSelectedApplication(null);
+                        }}
+                        variant="destructive"
+                        className="flex-1"
+                        data-testid="button-reject-modal"
+                      >
+                        <XCircle className="h-4 w-4 mr-2" />
+                        Reject
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Action Confirmation Dialog */}
+      <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ open: false, action: null, driver: null })}>
+        <DialogContent data-testid="dialog-confirm-action">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {actionDialog.action === 'approve' ? (
+                <>
+                  <CheckCircle className="h-5 w-5 text-green-600" />
+                  Approve Driver Application
+                </>
+              ) : (
+                <>
+                  <XCircle className="h-5 w-5 text-red-600" />
+                  Reject Driver Application
+                </>
+              )}
+            </DialogTitle>
+            <DialogDescription>
+              {actionDialog.action === 'approve' ? (
+                <>
+                  Are you sure you want to approve and activate <strong>{actionDialog.driver?.firstName} {actionDialog.driver?.lastName}</strong>?
+                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <p className="text-sm font-medium text-green-900 mb-2">This will:</p>
+                    <ul className="list-disc list-inside space-y-1 text-sm text-green-800">
+                      <li>Set their application status to "Active"</li>
+                      <li>Mark background check as "Passed"</li>
+                      <li>Allow them to use the driver mobile app</li>
+                      <li>Send them an approval email notification</li>
+                    </ul>
+                  </div>
+                </>
+              ) : (
+                <>
+                  Are you sure you want to reject <strong>{actionDialog.driver?.firstName} {actionDialog.driver?.lastName}</strong>'s application?
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-sm text-red-900">
+                      This will notify them via email and they will not be able to use the driver app.
+                    </p>
+                  </div>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setActionDialog({ open: false, action: null, driver: null })}
+              data-testid="button-cancel-action"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant={actionDialog.action === 'approve' ? 'default' : 'destructive'}
+              onClick={() => {
+                if (actionDialog.driver) {
+                  if (actionDialog.action === 'approve') {
+                    approveMutation.mutate(actionDialog.driver.id);
+                  } else {
+                    rejectMutation.mutate(actionDialog.driver.id);
+                  }
+                }
+              }}
+              disabled={approveMutation.isPending || rejectMutation.isPending}
+              className={actionDialog.action === 'approve' ? 'bg-green-600 hover:bg-green-700' : ''}
+              data-testid="button-confirm-action"
+            >
+              {approveMutation.isPending || rejectMutation.isPending ? 'Processing...' : 
+                actionDialog.action === 'approve' ? 'Approve & Activate' : 'Reject Application'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

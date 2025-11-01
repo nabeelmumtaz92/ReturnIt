@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users, Menu, ArrowLeft, Home, Settings, Zap, TrendingUp, BarChart3, AlertCircle, User as UserIcon, ChevronDown, Calendar, X } from "lucide-react";
+import { MapPin, Clock, DollarSign, Star, Package, Truck, Navigation, Phone, CreditCard, FileText, Users, Menu, ArrowLeft, Home, Settings, Zap, TrendingUp, BarChart3, AlertCircle, User as UserIcon, ChevronDown, Calendar, X, RefreshCw, CheckCircle } from "lucide-react";
 import { Order, User } from "@shared/schema";
 import { RoleSwitcher } from '@/components/RoleSwitcher';
 import DriverOnlineToggle from "@/components/DriverOnlineToggle";
@@ -44,6 +44,10 @@ export default function DriverPortal() {
     refetchInterval: 5000, // Poll every 5 seconds for real-time updates
     enabled: isAuthenticated && user?.isDriver
   });
+
+  // Check if driver is approved and active (admins bypass this check)
+  const isDriverActive = user?.isAdmin || 
+    (driverStatus?.applicationStatus === 'approved_active' && driverStatus?.backgroundCheckStatus === 'passed');
 
   // Check if new driver needs tutorial (skip for admins viewing driver portal)
   useEffect(() => {
@@ -221,6 +225,107 @@ export default function DriverPortal() {
               <Link href="/login" className="text-primary hover:text-foreground underline">
                 Sign in to continue
               </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Block non-active drivers from using the app (admins can bypass)
+  if (!statusLoading && !isDriverActive && user?.isDriver) {
+    const appStatus = driverStatus?.applicationStatus;
+    const bgStatus = driverStatus?.backgroundCheckStatus;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-transparent to-accent flex items-center justify-center p-4">
+        <Card className="max-w-2xl w-full">
+          <CardHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-3 bg-yellow-100 rounded-full">
+                <Clock className="h-8 w-8 text-yellow-600" />
+              </div>
+              <div>
+                <CardTitle className="text-foreground text-2xl">Application Pending</CardTitle>
+                <CardDescription className="text-base">Your driver application is being reviewed</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="font-semibold text-blue-900 mb-2">Current Status</h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-blue-800">Application Status:</span>
+                  <Badge className={
+                    appStatus === 'rejected' ? 'bg-red-100 text-red-700' :
+                    appStatus === 'pending_review' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-blue-100 text-blue-700'
+                  }>
+                    {appStatus === 'pending_review' ? 'Under Review' :
+                     appStatus === 'rejected' ? 'Rejected' :
+                     appStatus || 'Pending'}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-blue-800">Background Check:</span>
+                  <Badge className={
+                    bgStatus === 'failed' ? 'bg-red-100 text-red-700' :
+                    bgStatus === 'in_progress' ? 'bg-yellow-100 text-yellow-700' :
+                    bgStatus === 'passed' ? 'bg-green-100 text-green-700' :
+                    'bg-gray-100 text-gray-700'
+                  }>
+                    {bgStatus === 'in_progress' ? 'In Progress' :
+                     bgStatus === 'failed' ? 'Failed' :
+                     bgStatus === 'passed' ? 'Passed' :
+                     bgStatus || 'Not Started'}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {appStatus === 'rejected' || bgStatus === 'failed' ? (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-red-600 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-red-900 mb-1">Application Not Approved</h3>
+                    <p className="text-sm text-red-800">
+                      Your application was not approved at this time. If you believe this is an error, please contact support.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                  <div>
+                    <h3 className="font-semibold text-green-900 mb-1">What's Next?</h3>
+                    <p className="text-sm text-green-800 mb-2">
+                      Our team is reviewing your application. Once approved, you'll receive an email notification and full access to the driver app.
+                    </p>
+                    <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
+                      <li>Review typically takes 1-3 business days</li>
+                      <li>You'll receive email updates on your application status</li>
+                      <li>Once approved, you can start accepting delivery orders</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Link href="/welcome" className="flex-1">
+                <Button variant="outline" className="w-full">
+                  <Home className="h-4 w-4 mr-2" />
+                  Return Home
+                </Button>
+              </Link>
+              <Button variant="outline" onClick={() => window.location.reload()} className="flex-1">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Refresh Status
+              </Button>
             </div>
           </CardContent>
         </Card>
