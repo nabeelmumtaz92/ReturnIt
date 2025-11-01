@@ -177,7 +177,7 @@ export default function Welcome() {
               
               {/* H3 - Tagline */}
               <h3 className="text-base sm:text-lg md:text-xl lg:text-2xl font-semibold text-amber-800">
-                The Leader in Returns Delivery and Reverse Logistics.
+                The Leader in Returns Delivery and Exchanges.
               </h3>
               
               {/* Book Return Button - Centered under headers */}
@@ -233,7 +233,7 @@ export default function Welcome() {
                   Drive with Return It
                 </h3>
                 <p className="text-amber-800 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-                  Join St. Louis's premier reverse logistics network. Earn competitive pay helping customers with returns, exchanges, and donations.
+                  Join St. Louis's premier return delivery network. Earn competitive pay helping customers with returns, exchanges, and donations.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 text-sm">
                   <div className="flex items-center justify-center gap-2 text-amber-700">
