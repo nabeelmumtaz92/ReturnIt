@@ -21,7 +21,10 @@ import {
   Building2,
   PieChart,
   CreditCard,
-  TrendingUp
+  TrendingUp,
+  Shield,
+  FileSearch,
+  Activity
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -88,6 +91,15 @@ const navSections: NavSection[] = [
       { label: "Employees", href: "/admin/employees", icon: <Users2 className="h-5 w-5" /> },
       { label: "Operations", href: "/admin/operations", icon: <Building2 className="h-5 w-5" /> },
       { label: "Settings", href: "/admin/settings", icon: <Settings className="h-5 w-5" /> },
+    ]
+  },
+  {
+    title: "Governance",
+    items: [
+      { label: "Driver Management", href: "/admin/driver-management", icon: <UserCheck className="h-5 w-5" /> },
+      { label: "Platform Policies", href: "/admin/policies", icon: <Shield className="h-5 w-5" /> },
+      { label: "Audit Log", href: "/admin/audit-log", icon: <FileSearch className="h-5 w-5" /> },
+      { label: "Admin Reports", href: "/admin/reports", icon: <Activity className="h-5 w-5" /> },
     ]
   }
 ];
