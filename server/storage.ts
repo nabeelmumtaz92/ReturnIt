@@ -69,6 +69,7 @@ export interface IStorage {
   // User operations
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByVerificationToken(token: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   getDrivers(isOnline?: boolean): Promise<User[]>;
@@ -719,6 +720,12 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.emailVerificationToken === token,
+    );
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.nextUserId++;
     const user: User = { 
@@ -758,6 +765,41 @@ export class MemStorage implements IStorage {
       serviceZones: insertUser.serviceZones || [],
       emergencyContacts: insertUser.emergencyContacts || [],
       lastSafetyCheck: insertUser.lastSafetyCheck || null,
+      // Email verification fields
+      isEmailVerified: insertUser.isEmailVerified ?? false,
+      emailVerificationToken: insertUser.emailVerificationToken || null,
+      emailVerificationExpiry: insertUser.emailVerificationExpiry || null,
+      emailVerifiedAt: insertUser.emailVerifiedAt || null,
+      // Terms acceptance
+      termsAcceptedAt: insertUser.termsAcceptedAt || null,
+      // Driver fields
+      vehicleMake: insertUser.vehicleMake || null,
+      vehicleModel: insertUser.vehicleModel || null,
+      vehicleYear: insertUser.vehicleYear || null,
+      vehicleColor: insertUser.vehicleColor || null,
+      vehicleType: insertUser.vehicleType || null,
+      licensePlate: insertUser.licensePlate || null,
+      vehicleInsurance: insertUser.vehicleInsurance || null,
+      stripeIdentitySessionId: insertUser.stripeIdentitySessionId || null,
+      stripeIdentityVerificationId: insertUser.stripeIdentityVerificationId || null,
+      stripeIdentityStatus: insertUser.stripeIdentityStatus || 'not_started',
+      stripeIdentityVerifiedAt: insertUser.stripeIdentityVerifiedAt || null,
+      stripeIdentityVerificationData: insertUser.stripeIdentityVerificationData || null,
+      applicationStatus: insertUser.applicationStatus || 'pending_review',
+      onboardingStep: insertUser.onboardingStep || 'signup',
+      backgroundCheckConsent: insertUser.backgroundCheckConsent ?? false,
+      backgroundCheckStatus: insertUser.backgroundCheckStatus || 'not_started',
+      backgroundCheckId: insertUser.backgroundCheckId || null,
+      backgroundCheckCompletedAt: insertUser.backgroundCheckCompletedAt || null,
+      backgroundCheckResults: insertUser.backgroundCheckResults || null,
+      projectedHireDate: insertUser.projectedHireDate || null,
+      approvedAt: insertUser.approvedAt || null,
+      rejectedAt: insertUser.rejectedAt || null,
+      rejectionReason: insertUser.rejectionReason || null,
+      otpVerified: insertUser.otpVerified ?? false,
+      availableHours: insertUser.availableHours || {},
+      preferredRoutes: insertUser.preferredRoutes || [],
+      serviceRadius: insertUser.serviceRadius ?? 25.0,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -2553,6 +2595,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.emailVerificationToken, token));
     return user;
   }
 

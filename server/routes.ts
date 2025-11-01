@@ -1273,6 +1273,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash password with enhanced security
       const hashedPassword = await AuthService.hashPassword(validatedData.password);
       
+      // Generate email verification code
+      const { generateVerificationCode, sendVerificationEmail } = await import('./services/emailVerification');
+      const verificationCode = generateVerificationCode();
+      const verificationExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+      
       const user = await storage.createUser({
         email: validatedData.email,
         phone: validatedData.phone,
@@ -1281,32 +1286,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword,
         dateOfBirth: validatedData.dateOfBirth,
         isDriver: shouldAutoAssignAdmin(validatedData.email), // Only master admin gets driver access
-        isAdmin: shouldAutoAssignAdmin(validatedData.email)   // SECURITY: Only master admin gets admin access
+        isAdmin: shouldAutoAssignAdmin(validatedData.email),   // SECURITY: Only master admin gets admin access
+        isEmailVerified: false,
+        emailVerificationToken: verificationCode,
+        emailVerificationExpiry: verificationExpiry,
+        termsAcceptedAt: new Date() // User accepted terms during registration
       });
       
-      // Log user in with secure session
-      (req.session as any).user = AuthService.sanitizeUserData({ 
-        id: user.id, 
-        email: user.email, 
-        phone: user.phone, 
-        isDriver: user.isDriver || false, 
-        isAdmin: user.isAdmin || false,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        dateOfBirth: user.dateOfBirth
-      });
+      // Send verification email
+      try {
+        await sendVerificationEmail(
+          validatedData.email,
+          verificationCode,
+          validatedData.firstName || 'there'
+        );
+      } catch (emailError) {
+        console.error('[Registration] Failed to send verification email:', emailError);
+        // Continue with registration even if email fails - user can resend later
+      }
       
       res.status(201).json({ 
-        message: "Registration successful",
-        user: AuthService.sanitizeUserData({
-          id: user.id, 
-          email: user.email, 
-          phone: user.phone, 
-          isDriver: user.isDriver || false, 
-          isAdmin: user.isAdmin || false,
-          firstName: user.firstName,
-          lastName: user.lastName
-        })
+        message: "Registration successful! Please check your email for a verification code.",
+        requiresVerification: true,
+        email: validatedData.email,
+        userId: user.id
       });
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -1324,6 +1327,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.status(400).json({ message: "Registration failed. Please try again." });
+    }
+  });
+
+  // Email verification endpoint
+  app.post("/api/auth/verify-email", authRateLimit, async (req, res) => {
+    try {
+      const { email, code } = req.body;
+      
+      if (!email || !code) {
+        return res.status(400).json({ message: "Email and verification code are required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.isEmailVerified) {
+        return res.status(400).json({ message: "Email already verified" });
+      }
+      
+      if (!user.emailVerificationToken) {
+        return res.status(400).json({ message: "No verification code found. Please request a new one." });
+      }
+      
+      if (user.emailVerificationExpiry && new Date() > new Date(user.emailVerificationExpiry)) {
+        return res.status(400).json({ message: "Verification code has expired. Please request a new one." });
+      }
+      
+      if (user.emailVerificationToken !== code) {
+        return res.status(400).json({ message: "Invalid verification code" });
+      }
+      
+      // Update user as verified
+      const { sendWelcomeEmail } = await import('./services/emailVerification');
+      await storage.updateUser(user.id, {
+        isEmailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationExpiry: null,
+        emailVerifiedAt: new Date()
+      });
+      
+      // Send welcome email
+      try {
+        await sendWelcomeEmail(email, user.firstName || 'there');
+      } catch (emailError) {
+        console.error('[Verification] Failed to send welcome email:', emailError);
+      }
+      
+      // Log user in
+      (req.session as any).user = AuthService.sanitizeUserData({ 
+        id: user.id, 
+        email: user.email, 
+        phone: user.phone, 
+        isDriver: user.isDriver || false, 
+        isAdmin: user.isAdmin || false,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        dateOfBirth: user.dateOfBirth
+      });
+      
+      res.json({ 
+        message: "Email verified successfully!",
+        user: AuthService.sanitizeUserData({
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone, 
+          isDriver: user.isDriver || false, 
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName,
+          lastName: user.lastName
+        })
+      });
+    } catch (error) {
+      console.error('Email verification error:', error);
+      res.status(500).json({ message: "Verification failed. Please try again." });
+    }
+  });
+
+  // Resend verification code endpoint
+  app.post("/api/auth/resend-verification", authRateLimit, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.isEmailVerified) {
+        return res.status(400).json({ message: "Email already verified" });
+      }
+      
+      // Generate new verification code
+      const { generateVerificationCode, sendVerificationEmail } = await import('./services/emailVerification');
+      const verificationCode = generateVerificationCode();
+      const verificationExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+      
+      await storage.updateUser(user.id, {
+        emailVerificationToken: verificationCode,
+        emailVerificationExpiry: verificationExpiry
+      });
+      
+      await sendVerificationEmail(
+        email,
+        verificationCode,
+        user.firstName || 'there'
+      );
+      
+      res.json({ message: "Verification code sent successfully!" });
+    } catch (error) {
+      console.error('Resend verification error:', error);
+      res.status(500).json({ message: "Failed to resend verification code. Please try again." });
     }
   });
 

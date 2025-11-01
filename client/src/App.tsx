@@ -13,6 +13,7 @@ import { MapProviderProvider } from "@/contexts/MapProviderContext";
 // Core pages (loaded immediately)
 import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
+import VerifyEmail from "@/pages/verify-email";
 import BookReturn from "@/pages/book-return";
 import OrderStatus from "@/pages/order-status";
 import Checkout from "@/pages/checkout";
@@ -199,6 +200,7 @@ function Router() {
         {() => <SmartRouteHandler />}
       </Route>
       <Route path="/login" component={Login} />
+      <Route path="/verify-email" component={VerifyEmail} />
       <Route path="/book-pickup" component={BookReturn} />
       <Route path="/book-return" component={BookReturn} />
       <Route path="/checkout" component={Checkout} />

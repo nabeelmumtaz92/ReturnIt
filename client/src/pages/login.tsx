@@ -60,7 +60,8 @@ export default function Login() {
     firstName: '',
     lastName: '',
     phone: '',
-    dateOfBirth: ''
+    dateOfBirth: '',
+    acceptedTerms: false
   });
 
   // Use the clearest, most professional background image
@@ -174,12 +175,21 @@ export default function Login() {
       return await apiRequest("POST", "/api/auth/register", userData);
     },
     onSuccess: async (data) => {
-      toast({
-        title: "Account Created Successfully!",
-        description: "Welcome to Return It! You're now ready to start using our service.",
-      });
-      setActiveTab("login");
-      setLoginData({ email: registerData.email, password: '' });
+      if (data.requiresVerification) {
+        toast({
+          title: "Account Created!",
+          description: "Please check your email for a verification code.",
+        });
+        // Redirect to verification page with email in URL
+        setLocation(`/verify-email?email=${encodeURIComponent(data.email)}`);
+      } else {
+        toast({
+          title: "Account Created Successfully!",
+          description: "Welcome to Return It! You're now ready to start using our service.",
+        });
+        setActiveTab("login");
+        setLoginData({ email: registerData.email, password: '' });
+      }
       queryClient.invalidateQueries({ queryKey: ['/api/auth/user'] });
     },
     onError: (error) => {
@@ -562,12 +572,38 @@ export default function Login() {
                     <p className="text-red-600 text-xs mt-1">{validationErrors.confirmPassword}</p>
                   )}
                 </div>
+                {/* Terms of Service Checkbox */}
+                <div className="flex items-start space-x-2">
+                  <input
+                    id="acceptedTerms"
+                    data-testid="checkbox-accept-terms"
+                    type="checkbox"
+                    checked={registerData.acceptedTerms}
+                    onChange={(e) => setRegisterData(prev => ({...prev, acceptedTerms: e.target.checked}))}
+                    className="mt-1 h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                  <label htmlFor="acceptedTerms" className="text-sm text-muted-foreground">
+                    I agree to the{' '}
+                    <a 
+                      href="/privacy-policy.html" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline font-medium"
+                      data-testid="link-privacy-policy"
+                    >
+                      Terms of Service and Privacy Policy
+                    </a>
+                  </label>
+                </div>
+                {validationErrors.acceptedTerms && (
+                  <p className="text-red-600 text-xs mt-1">{validationErrors.acceptedTerms}</p>
+                )}
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
                 <Button 
                   type="submit" 
                   className="w-full h-12 bg-[#B8956A] hover:bg-[#A0805A] text-white"
-                  disabled={registerMutation.isPending}
+                  disabled={registerMutation.isPending || !registerData.acceptedTerms}
                   data-testid="button-register-submit"
                 >
                   <User className="h-4 w-4 mr-2" />
