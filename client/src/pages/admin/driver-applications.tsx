@@ -19,6 +19,13 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -108,6 +115,29 @@ export default function DriverApplications() {
       toast({
         title: "Error",
         description: "Failed to reject driver application.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Update status mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ driverId, newStatus }: { driverId: number; newStatus: string }) => {
+      return apiRequest('PATCH', `/api/admin/driver-applications/${driverId}/status`, {
+        applicationStatus: newStatus
+      });
+    },
+    onSuccess: (_, variables) => {
+      toast({
+        title: "Status Updated",
+        description: `Application status changed to ${variables.newStatus.replace('_', ' ')}`,
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/driver-applications/pending'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update application status.",
         variant: "destructive",
       });
     }
@@ -299,9 +329,52 @@ export default function DriverApplications() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={appStatus.variant} className={appStatus.className}>
-                            {appStatus.label}
-                          </Badge>
+                          <Select
+                            value={app.applicationStatus}
+                            onValueChange={(newStatus) => {
+                              updateStatusMutation.mutate({ 
+                                driverId: app.id, 
+                                newStatus 
+                              });
+                            }}
+                            disabled={updateStatusMutation.isPending}
+                          >
+                            <SelectTrigger className="w-[160px]" data-testid={`select-status-${app.id}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending_review">
+                                <span className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-yellow-500"></span>
+                                  Pending Review
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="approved">
+                                <span className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-blue-500"></span>
+                                  Approved
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="approved_active">
+                                <span className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                                  Active (Can Drive)
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="on_hold">
+                                <span className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-orange-500"></span>
+                                  On Hold
+                                </span>
+                              </SelectItem>
+                              <SelectItem value="rejected">
+                                <span className="flex items-center gap-2">
+                                  <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                                  Rejected
+                                </span>
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
                         </TableCell>
                         <TableCell>
                           <Badge variant={bgStatus.variant} className={bgStatus.className}>

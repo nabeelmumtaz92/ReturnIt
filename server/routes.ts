@@ -6037,6 +6037,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update driver application status
+  app.patch("/api/admin/driver-applications/:id/status", requireSecureAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { applicationStatus } = req.body;
+
+      // Validate status
+      const validStatuses = ['pending_review', 'approved', 'approved_active', 'rejected', 'on_hold'];
+      if (!validStatuses.includes(applicationStatus)) {
+        return res.status(400).json({ error: 'Invalid application status' });
+      }
+
+      // Update application status
+      const updatedUser = await storage.updateUser(driverId, {
+        applicationStatus,
+        // If setting to approved_active, also set isDriver to true
+        ...(applicationStatus === 'approved_active' && { 
+          isDriver: true,
+          onboardingStep: 'completed'
+        })
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'Driver application not found' });
+      }
+
+      res.json({
+        success: true,
+        message: `Application status updated to ${applicationStatus}`,
+        driver: {
+          id: updatedUser.id,
+          email: updatedUser.email,
+          firstName: updatedUser.firstName,
+          lastName: updatedUser.lastName,
+          applicationStatus: updatedUser.applicationStatus
+        }
+      });
+    } catch (error: any) {
+      console.error('Error updating driver application status:', error);
+      res.status(500).json({ error: 'Failed to update application status' });
+    }
+  });
+
   // Manually approve driver application
   app.post("/api/admin/driver-applications/:id/approve", requireSecureAdmin, async (req, res) => {
     try {
