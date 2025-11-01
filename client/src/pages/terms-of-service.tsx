@@ -75,54 +75,106 @@ export default function TermsOfService() {
                 <h2 className="text-xl font-semibold text-foreground">2. Services</h2>
                 <p className="text-gray-700">
                   Return It provides return delivery services by connecting customers with independent drivers. Drivers 
-                  operate as independent contractors and not employees of Return It.
+                  operate as independent contractors and not employees of Return It. ReturnIt acts solely as the 
+                  customer's agent for transportation purposes.
                 </p>
 
                 <h2 className="text-xl font-semibold text-foreground">3. Accounts</h2>
                 <p className="text-gray-700">
-                  You must register with accurate information and maintain account confidentiality. Admins may use 
-                  "impersonation mode" for troubleshooting, with all activity logged.
+                  You must register with accurate information and maintain account confidentiality. You are responsible 
+                  for all activity under your account. Admins may use "impersonation mode" for troubleshooting, with 
+                  all activity logged.
                 </p>
 
                 <h2 className="text-xl font-semibold text-foreground">4. Payments</h2>
                 <p className="text-gray-700">
-                  Customers agree to pay service fees and applicable charges. Drivers agree to payout terms, including 
-                  instant payout fees, as displayed in the dashboard. All payments are logged in the Payment Records 
-                  and Driver Payouts systems.
+                  All service fees are due at booking. Customers agree to pay all fees and charges. Drivers agree to 
+                  payout terms, including instant payout fees ($0.50 per transaction). All payments processed through 
+                  Stripe. Refunds provided solely at ReturnIt's discretion for service failures directly attributable 
+                  to ReturnIt (not drivers or retailers).
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">5. Cancellations & Refunds</h2>
+                <h2 className="text-xl font-semibold text-foreground">5. Prohibited Conduct & Items</h2>
+                <p className="text-gray-700 mb-2">
+                  Fraud, harassment, unsafe conduct, or misuse of the Services is prohibited. You may not use the 
+                  Services to return:
+                </p>
+                <ul className="list-disc pl-6 space-y-1 text-gray-700 text-sm">
+                  <li>Hazardous materials, explosives, or flammable items</li>
+                  <li>Illegal drugs, paraphernalia, or weapons</li>
+                  <li>Stolen or counterfeit goods</li>
+                  <li>Items that violate any law or regulation</li>
+                </ul>
+
+                <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3 flex items-center">
+                    <Shield className="h-5 w-5 mr-2 text-red-600" />
+                    6. LIMITATION OF LIABILITY
+                  </h2>
+                  <div className="space-y-2 text-gray-800 font-medium text-sm">
+                    <p className="uppercase">
+                      TO THE MAXIMUM EXTENT PERMITTED BY LAW, RETURNIT SHALL NOT BE LIABLE FOR ANY:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-1">
+                      <li>INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES</li>
+                      <li>LOSS OF PROFITS, REVENUE, DATA, OR USE</li>
+                      <li>DAMAGE TO OR LOSS OF PROPERTY DURING PICKUP, TRANSPORT, OR DELIVERY</li>
+                      <li>ACTS OR OMISSIONS OF INDEPENDENT CONTRACTOR DRIVERS</li>
+                      <li>DELAYED, FAILED, OR INCOMPLETE DELIVERIES</li>
+                      <li>RETAILER REFUSAL TO ACCEPT RETURNS OR PROCESS REFUNDS</li>
+                    </ul>
+                    <p className="font-bold mt-3">
+                      IN NO EVENT SHALL RETURNIT'S TOTAL LIABILITY EXCEED THE AMOUNT YOU PAID FOR THE SPECIFIC 
+                      SERVICE, OR ONE HUNDRED DOLLARS ($100), WHICHEVER IS LESS.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded mt-6">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3">7. INDEMNIFICATION</h2>
+                  <p className="text-gray-800 text-sm">
+                    You agree to indemnify, defend, and hold harmless ReturnIt, its officers, directors, employees, and 
+                    agents from all losses, expenses, damages, and costs, including attorneys' fees, resulting from:
+                  </p>
+                  <ul className="list-disc pl-6 space-y-1 text-gray-800 text-sm mt-2">
+                    <li>Your violation of these Terms or any law</li>
+                    <li>Items you ship or have delivered through the Services</li>
+                    <li>Claims arising from driver services performed on your behalf</li>
+                    <li>False or misleading information provided by you</li>
+                  </ul>
+                </div>
+
+                <h2 className="text-xl font-semibold text-foreground mt-6">8. Disclaimer of Warranties</h2>
                 <p className="text-gray-700">
-                  Customers may cancel orders in line with policies displayed in the app/dashboard. Refunds, if 
-                  applicable, are processed according to our policy.
+                  THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND. ReturnIt 
+                  does not warrant that the Services will be uninterrupted, secure, or error-free, or that defects 
+                  will be corrected.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">6. Prohibited Conduct</h2>
+                <h2 className="text-xl font-semibold text-foreground">9. Driver Relationship</h2>
                 <p className="text-gray-700">
-                  Fraud, harassment, unsafe conduct, or misuse of the Services is prohibited. Violations may lead to 
-                  suspension or termination of accounts.
+                  All drivers are independent contractors, not employees of ReturnIt. Drivers are solely responsible 
+                  for their own actions, vehicles, insurance, and compliance with laws. ReturnIt does not guarantee 
+                  driver availability, performance, or conduct.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">7. Limitation of Liability</h2>
+                <h2 className="text-xl font-semibold text-foreground">10. Termination</h2>
                 <p className="text-gray-700">
-                  Services are provided "as is." Return It is not liable for indirect damages, lost items, or failures caused 
-                  by third parties.
+                  We may suspend or terminate accounts for violations without notice or liability. You may close your 
+                  account at any time. All provisions which should survive termination shall survive.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">8. Termination</h2>
-                <p className="text-gray-700">
-                  We may suspend or terminate accounts for violations. You may close your account at any time.
+                <h2 className="text-xl font-semibold text-foreground">11. Dispute Resolution & Arbitration</h2>
+                <p className="text-gray-700 font-medium">
+                  ANY DISPUTE ARISING OUT OF THESE TERMS SHALL BE RESOLVED BY BINDING ARBITRATION, rather than in 
+                  court. Arbitration conducted by American Arbitration Association (AAA) under Commercial Arbitration 
+                  Rules. You waive the right to jury trial and class actions. Governing law: State of Delaware.
                 </p>
 
-                <h2 className="text-xl font-semibold text-foreground">9. Dispute Resolution</h2>
+                <h2 className="text-xl font-semibold text-foreground">12. Changes to Terms</h2>
                 <p className="text-gray-700">
-                  Disputes should first be addressed internally. Unresolved disputes will be settled by binding arbitration 
-                  in Missouri, unless prohibited by law.
-                </p>
-
-                <h2 className="text-xl font-semibold text-foreground">10. Changes</h2>
-                <p className="text-gray-700">
-                  We may update these Terms at any time. Continued use of the Services means you accept the updates.
+                  We may update these Terms at any time. Continued use constitutes acceptance. Material changes will 
+                  be posted with updated effective date.
                 </p>
               </div>
 

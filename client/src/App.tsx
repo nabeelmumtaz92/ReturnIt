@@ -98,6 +98,7 @@ const FailedReturnDemo = lazy(() => import("@/pages/failed-return-demo"));
 const ComprehensivePricingExamples = lazy(() => import("@/pages/comprehensive-pricing-examples"));
 const ComprehensiveGuidebook = lazy(() => import("@/pages/comprehensive-guidebook"));
 const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
+const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
 const CostMonitoring = lazy(() => import("@/pages/cost-monitoring"));
 const MonitoringDashboard = lazy(() => import("@/pages/monitoring-dashboard"));
 const AIKnowledgeCenter = lazy(() => import("@/pages/ai-knowledge-center"));
@@ -230,6 +231,7 @@ function Router() {
       </Route>
       <Route path="/faq" component={FAQ} />
       <Route path="/terms-of-service" component={TermsOfService} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
       {/* New Admin Routes System */}
       <Route path="/admin/:rest*">
         {() => (
