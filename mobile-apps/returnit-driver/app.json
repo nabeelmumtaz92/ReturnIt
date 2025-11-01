@@ -29,9 +29,7 @@
         "NSLocationAlwaysUsageDescription": "Allow ReturnIt Driver to access location for background job tracking and route optimization.",
         "NSCameraUsageDescription": "Allow ReturnIt Driver to take photos for package verification and proof of delivery.",
         "UIBackgroundModes": [
-          "location",
-          "background-processing",
-          "background-fetch"
+          "location"
         ],
         "CFBundleDisplayName": "ReturnIt Driver",
         "CFBundleName": "ReturnIt Driver"

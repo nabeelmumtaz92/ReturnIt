@@ -1,0 +1,56 @@
+× Something went wrong when submitting your app to Apple App Store Connect.
+
+Fastlane pilot failed
+We couldn't figure out what went wrong. See logs to learn more.
+
+[logs] Start phase: SPIN_UP_SUBMISSION_WORKER
+[logs] Creating new worker instance
+[logs] End phase: SPIN_UP_SUBMISSION_WORKER
+
+[logs] Start phase: SUBMIT_TO_APP_STORE
+[logs] Starting the submit process
+[logs] Downloading archive
+[logs] Preparing artifact
+[logs] Verifying archive
+[logs] Creating ascApiJsonKey.json file with ASC credentials
+[logs] Submitting iOS app to TestFlight...
+[logs] Submitting the app with fastlane pilot
+[logs] -------------------
+[logs] --- Step: pilot ---
+[logs] -------------------
+[logs] Creating authorization token for App Store Connect API
+[logs] Ready to upload new build to TestFlight (App: 6754807633)...
+[logs] Going to upload updated app to App Store Connect
+[logs] This might take a few minutes. Please don't interrupt the script.
+[logs] [altool] 2025-11-01 13:47:19.347 *** Error: Validation failed Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786) (409)
+[logs] [altool]  {
+[logs]
+[logs] [altool]     NSLocalizedDescription = "Validation failed";
+[logs]
+[logs] [altool]     NSLocalizedFailureReason = "Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786)";
+[logs]
+[logs] [altool]     NSUnderlyingError = "Error Domain=IrisAPI Code=-19241 \"Validation failed\" UserInfo={status=409, detail=Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference., id=c6b44d3e-d274-42e8-b10f-38b73bdfe786, code=STATE_ERROR.VALIDATION_ERROR, title=Validation failed, NSLocalizedFailureReason=Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference., NSLocalizedDescription=Validation failed}";
+[logs]
+[logs] [altool]     "iris-code" = "STATE_ERROR.VALIDATION_ERROR";
+[logs]
+[logs] [altool] }
+[logs]
+[logs] Application Loader output above ^
+[logs] [ContentDelivery.Uploader.6000024E4180] Validation failed (409) Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-processing'. For more information, refer to the Information Property List Key Reference. (ID: bb0c6c52-d18e-48a6-814d-38a1d53294b1)
+[logs] [ContentDelivery.Uploader.6000024E4180] Validation failed (409) Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786)
+[logs] Error uploading '/var/folders/m1/8_w9962s3b79dqm00nnlm85m0000gn/T/2cf099c9-d6ae-4eab-b575-577232f2e1c3.ipa'.
+[logs] Validation failed Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-processing'. For more information, refer to the Information Property List Key Reference. (ID: bb0c6c52-d18e-48a6-814d-38a1d53294b1) (409)
+[logs] Validation failed Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786) (409)
+[logs] The call to the altool completed with a non-zero exit status: 1. This indicates a failure.
+[logs] Could not download/upload from App Store Connect!
+[logs] [!] Error uploading ipa file:
+[logs]  [Application Loader Error Output]: [ContentDelivery.Uploader.6000024E4180] Validation failed (409) Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-processing'. For more information, refer to the Information Property List Key Reference. (ID: bb0c6c52-d18e-48a6-814d-38a1d53294b1)
+[logs] [Application Loader Error Output]: [ContentDelivery.Uploader.6000024E4180] Validation failed (409) Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786)
+[logs] [Application Loader Error Output]: Error uploading '/var/folders/m1/8_w9962s3b79dqm00nnlm85m0000gn/T/2cf099c9-d6ae-4eab-b575-577232f2e1c3.ipa'.
+[logs] [Application Loader Error Output]: Validation failed Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-processing'. For more information, refer to the Information Property List Key Reference. (ID: bb0c6c52-d18e-48a6-814d-38a1d53294b1) (409)
+[logs] [Application Loader Error Output]: Validation failed Invalid Info.plist value. The Info.plist key UIBackgroundModes contains an invalid value: 'background-fetch'. For more information, refer to the Information Property List Key Reference. (ID: c6b44d3e-d274-42e8-b10f-38b73bdfe786) (409)
+[logs] [Application Loader Error Output]: The call to the altool completed with a non-zero exit status: 1. This indicates a failure.
+[logs] Fastlane pilot failed
+[logs] Failed to submit the app to the store
+[logs] End phase: SUBMIT_TO_APP_STORE
+PS C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver>
