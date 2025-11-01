@@ -65,12 +65,9 @@ export default function DriverApplications() {
   // Approve driver mutation
   const approveMutation = useMutation({
     mutationFn: async (driverId: number) => {
-      return apiRequest(`/api/admin/driver-applications/${driverId}/approve`, {
-        method: 'POST',
-        body: JSON.stringify({
-          approvalNotes: 'Manually approved by admin',
-          adminId: 'admin'
-        })
+      return apiRequest('POST', `/api/admin/driver-applications/${driverId}/approve`, {
+        approvalNotes: 'Manually approved by admin',
+        adminId: 'admin'
       });
     },
     onSuccess: () => {
@@ -93,13 +90,10 @@ export default function DriverApplications() {
   // Reject driver mutation
   const rejectMutation = useMutation({
     mutationFn: async (driverId: number) => {
-      return apiRequest(`/api/admin/driver-applications/${driverId}/reject`, {
-        method: 'POST',
-        body: JSON.stringify({
-          rejectionReason: 'Application rejected by admin',
-          rejectionNotes: 'Manually rejected',
-          adminId: 'admin'
-        })
+      return apiRequest('POST', `/api/admin/driver-applications/${driverId}/reject`, {
+        rejectionReason: 'Application rejected by admin',
+        rejectionNotes: 'Manually rejected',
+        adminId: 'admin'
       });
     },
     onSuccess: () => {
