@@ -16,7 +16,7 @@ interface AnalyticsData {
 }
 
 export default function Analytics() {
-  const { data: analytics, isLoading } = useQuery<AnalyticsData>({
+  const { data: analytics, isLoading, isError } = useQuery<AnalyticsData>({
     queryKey: ['/api/admin/analytics'],
     refetchInterval: 60000,
   });
@@ -33,40 +33,50 @@ export default function Analytics() {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <PerformanceCard
-          title="Total Revenue"
-          value={isLoading ? "..." : formatCurrency(analytics?.totalRevenue || 0)}
-          icon={DollarSign}
-          iconColor="text-green-600"
-          iconBgColor="bg-green-100"
-          testId="metric-total-revenue"
-        />
-        <PerformanceCard
-          title="Orders This Week"
-          value={isLoading ? "..." : analytics?.ordersThisWeek || 0}
-          icon={Package}
-          iconColor="text-blue-600"
-          iconBgColor="bg-blue-100"
-          testId="metric-orders-week"
-        />
-        <PerformanceCard
-          title="Avg Tip %"
-          value={isLoading ? "..." : `${analytics?.avgTipPercentage || 0}%`}
-          icon={Percent}
-          iconColor="text-purple-600"
-          iconBgColor="bg-purple-100"
-          testId="metric-avg-tip"
-        />
-        <PerformanceCard
-          title="Customer Retention"
-          value={isLoading ? "..." : `${analytics?.customerRetention || 0}%`}
-          icon={TrendingUp}
-          iconColor="text-orange-600"
-          iconBgColor="bg-orange-100"
-          testId="metric-retention"
-        />
-      </div>
+      {isError ? (
+        <Card className="border-red-200" data-testid="error-metrics">
+          <CardContent className="text-center py-8">
+            <BarChart3 className="h-12 w-12 mx-auto mb-4 text-red-500" />
+            <p className="text-red-600 font-medium mb-2">Failed to load analytics metrics</p>
+            <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <PerformanceCard
+            title="Total Revenue"
+            value={isLoading ? "..." : analytics ? formatCurrency(analytics.totalRevenue) : "N/A"}
+            icon={DollarSign}
+            iconColor="text-green-600"
+            iconBgColor="bg-green-100"
+            testId="metric-total-revenue"
+          />
+          <PerformanceCard
+            title="Orders This Week"
+            value={isLoading ? "..." : analytics ? analytics.ordersThisWeek : "N/A"}
+            icon={Package}
+            iconColor="text-blue-600"
+            iconBgColor="bg-blue-100"
+            testId="metric-orders-week"
+          />
+          <PerformanceCard
+            title="Avg Tip %"
+            value={isLoading ? "..." : analytics ? `${analytics.avgTipPercentage}%` : "N/A"}
+            icon={Percent}
+            iconColor="text-purple-600"
+            iconBgColor="bg-purple-100"
+            testId="metric-avg-tip"
+          />
+          <PerformanceCard
+            title="Customer Retention"
+            value={isLoading ? "..." : analytics ? `${analytics.customerRetention}%` : "N/A"}
+            icon={TrendingUp}
+            iconColor="text-orange-600"
+            iconBgColor="bg-orange-100"
+            testId="metric-retention"
+          />
+        </div>
+      )}
 
       {/* Monthly Revenue Trend Chart */}
       <Card>
@@ -78,11 +88,17 @@ export default function Analytics() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8" data-testid="loading-revenue-chart">
               <p className="text-muted-foreground">Loading analytics data...</p>
             </div>
+          ) : isError ? (
+            <div className="text-center py-8" data-testid="error-revenue-chart">
+              <BarChart3 className="h-12 w-12 mx-auto mb-4 text-red-500" />
+              <p className="text-red-600 font-medium mb-2">Failed to load revenue data</p>
+              <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
+            </div>
           ) : !analytics?.monthlyRevenue || analytics.monthlyRevenue.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8" data-testid="empty-revenue-chart">
               <p className="text-muted-foreground">No revenue data available</p>
             </div>
           ) : (

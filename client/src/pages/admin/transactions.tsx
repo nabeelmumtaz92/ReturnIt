@@ -26,7 +26,7 @@ interface Transaction {
 }
 
 export default function Transactions() {
-  const { data: transactions, isLoading, refetch } = useQuery<Transaction[]>({
+  const { data: transactions, isLoading, isError, refetch } = useQuery<Transaction[]>({
     queryKey: ['/api/admin/transactions'],
     refetchInterval: 30000,
   });
@@ -108,11 +108,17 @@ export default function Transactions() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8" data-testid="loading-transactions">
               <p className="text-muted-foreground">Loading transactions...</p>
             </div>
+          ) : isError ? (
+            <div className="text-center py-8" data-testid="error-transactions">
+              <CreditCard className="h-12 w-12 mx-auto mb-4 text-red-500" />
+              <p className="text-red-600 font-medium mb-2">Failed to load transactions</p>
+              <p className="text-sm text-muted-foreground">Please try refreshing the page</p>
+            </div>
           ) : !transactions || transactions.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8" data-testid="empty-transactions">
               <CreditCard className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground">No transactions found</p>
             </div>
