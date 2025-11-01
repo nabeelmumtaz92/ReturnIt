@@ -31,7 +31,7 @@ export default function NotFound() {
       <div className="max-w-md w-full space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <Link href="/welcome">
+          <Link href="/">
             <div 
               className="text-foreground font-bold text-3xl mx-auto cursor-pointer"
             >
@@ -63,8 +63,9 @@ export default function NotFound() {
               <Button 
                 asChild 
                 className="flex-1 bg-primary hover:bg-primary/90 text-white"
+                data-testid="button-go-home-404"
               >
-                <Link href="/welcome">
+                <Link href="/">
                   <Home className="h-4 w-4 mr-2" />
                   Go Home
                 </Link>

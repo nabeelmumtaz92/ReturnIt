@@ -69,8 +69,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   handleGoHome = () => {
-    // Always go to welcome page, not homepage (which might redirect to admin/driver)
-    window.location.href = '/welcome';
+    // Always go to root homepage
+    window.location.href = '/';
   };
 
   handleSignOut = async () => {
@@ -83,8 +83,8 @@ export class ErrorBoundary extends Component<Props, State> {
     } catch (error) {
       console.error('Error signing out:', error);
     } finally {
-      // Always redirect to welcome page after sign out
-      window.location.href = '/welcome';
+      // Always redirect to root homepage after sign out
+      window.location.href = '/';
     }
   };
 
