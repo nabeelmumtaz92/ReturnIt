@@ -21,6 +21,10 @@ import Notifications from "./notifications";
 import Employees from "./employees";
 import Operations from "./operations";
 import Settings from "./settings";
+import DriverManagement from "./driver-management";
+import Policies from "./policies";
+import AuditLog from "./audit-log";
+import Reports from "./reports";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function AdminRoutes() {
@@ -48,6 +52,10 @@ export default function AdminRoutes() {
         <Route path="/admin/employees" component={Employees} />
         <Route path="/admin/operations" component={Operations} />
         <Route path="/admin/settings" component={Settings} />
+        <Route path="/admin/driver-management" component={DriverManagement} />
+        <Route path="/admin/policies" component={Policies} />
+        <Route path="/admin/audit-log" component={AuditLog} />
+        <Route path="/admin/reports" component={Reports} />
         
         {/* Fallback for unknown routes */}
         <Route>
