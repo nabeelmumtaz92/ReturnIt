@@ -32,6 +32,7 @@ export default function AdminRoutes() {
     <AdminLayout>
       <Switch>
         <Route path="/admin" component={AdminOverview} />
+        <Route path="/admin/overview" component={AdminOverview} />
         <Route path="/admin/orders" component={AdminOrders} />
         <Route path="/admin/drivers" component={AdminDrivers} />
         <Route path="/admin/driver-applications" component={DriverApplications} />

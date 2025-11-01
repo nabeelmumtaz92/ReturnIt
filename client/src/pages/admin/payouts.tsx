@@ -41,7 +41,7 @@ export default function Payouts() {
   const { toast } = useToast();
   const [bulkPayoutDialogOpen, setBulkPayoutDialogOpen] = useState(false);
 
-  const { data: payouts, isLoading } = useQuery<Payout[]>({
+  const { data: payouts = [], isLoading } = useQuery<Payout[]>({
     queryKey: ['/api/admin/all-payouts'],
     refetchInterval: 30000,
   });

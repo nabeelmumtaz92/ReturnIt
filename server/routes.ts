@@ -8599,38 +8599,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       for (let i = 0; i < parseInt(limit as string); i++) {
         const randomDriver = driverNames[Math.floor(Math.random() * driverNames.length)];
-        const randomAmount = Math.floor(Math.random() * 200) + 50; // $50-$250
+        const totalAmount = Math.floor(Math.random() * 200) + 50; // $50-$250
+        const feeAmount = Math.random() > 0.7 ? 0.50 : 0; // instant payout fee
+        const netAmount = totalAmount - feeAmount;
         const randomDate = new Date(targetYear, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
         
         payouts.push({
-          id: `payout_${i + 1}`,
-          driverId: `driver_${Math.floor(Math.random() * 20) + 1}`,
+          id: i + 1,
+          driverId: Math.floor(Math.random() * 20) + 1,
           driverName: randomDriver,
-          amount: randomAmount,
+          totalAmount,
+          feeAmount,
+          netAmount,
           payoutType: Math.random() > 0.7 ? 'instant' : 'weekly',
-          status: 'completed',
+          status: Math.random() > 0.8 ? 'pending' : 'completed',
           taxYear: targetYear,
-          createdAt: randomDate,
-          stripePayoutId: `po_${Math.random().toString(36).substr(2, 9)}`,
+          createdAt: randomDate.toISOString(),
+          completedAt: Math.random() > 0.8 ? null : randomDate.toISOString(),
+          stripeTransferId: `po_${Math.random().toString(36).substr(2, 9)}`,
           ordersCount: Math.floor(Math.random() * 10) + 1
         });
       }
       
       // Filter by month if specified
       const filteredPayouts = month ? 
-        payouts.filter(p => p.createdAt.getMonth() + 1 === parseInt(month as string)) : 
+        payouts.filter(p => new Date(p.createdAt).getMonth() + 1 === parseInt(month as string)) : 
         payouts;
       
       // Sort by date descending
-      filteredPayouts.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      filteredPayouts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       
-      res.json({
-        payouts: filteredPayouts,
-        totalAmount: filteredPayouts.reduce((sum, p) => sum + p.amount, 0),
-        totalCount: filteredPayouts.length,
-        year: targetYear,
-        month: month ? parseInt(month as string) : null
-      });
+      // Return flat array to match component expectations
+      res.json(filteredPayouts);
     } catch (error) {
       console.error("Get admin payouts error:", error);
       res.status(500).json({ error: "Failed to fetch payouts" });

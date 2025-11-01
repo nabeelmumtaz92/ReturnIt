@@ -77,7 +77,7 @@ export default function DriverPayments() {
     queryKey: ["/api/driver/payment-methods"],
   });
 
-  const { data: payouts, isLoading: payoutsLoading } = useQuery({
+  const { data: payouts = [], isLoading: payoutsLoading } = useQuery<any[]>({
     queryKey: ["/api/driver/payouts"],
   });
 

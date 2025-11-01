@@ -71,12 +71,12 @@ export function ObjectUploader({
   // Detect mobile device
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   
-  const [uppy] = useState(() =>
-    new Uppy({
+  const [uppy] = useState(() => {
+    const uppyInstance = new Uppy({
       restrictions: {
         maxNumberOfFiles,
         maxFileSize,
-        allowedFileTypes: ['image/*'], // Only images for mobile camera
+        allowedFileTypes: ['image/*'],
       },
       autoProceed: false,
     })
@@ -88,8 +88,18 @@ export function ObjectUploader({
         onComplete?.(result);
         setShowModal(false);
         setIsUploading(false);
+        uppyInstance.cancelAll();
       })
-  );
+      .on("upload", () => {
+        setIsUploading(true);
+      })
+      .on("error", (error) => {
+        console.error('Uppy error:', error);
+        setIsUploading(false);
+      });
+    
+    return uppyInstance;
+  });
 
   // Handle native file input for mobile
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -116,12 +126,14 @@ export function ObjectUploader({
     }
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (isMobile && fileInputRef.current) {
-      // On mobile, trigger native file input (opens camera/photos)
       fileInputRef.current.click();
     } else {
-      // On desktop, show Uppy modal
+      uppy.cancelAll();
       setShowModal(true);
     }
   };
