@@ -1,0 +1,1 @@
+export default function PolicyPage(){return <div>Policy Page Placeholder</div>}
