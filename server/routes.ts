@@ -5756,6 +5756,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Process order refund
+  app.post("/api/admin/orders/:orderId/refund", requireSecureAdmin, async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { amount, reason } = req.body;
+
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid refund amount" });
+      }
+
+      // Get the order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Check if order can be refunded
+      if (order.paymentStatus === 'refunded') {
+        return res.status(400).json({ message: "Order already refunded" });
+      }
+
+      if (!order.stripePaymentIntentId) {
+        return res.status(400).json({ message: "No payment found for this order" });
+      }
+
+      // Process Stripe refund
+      try {
+        const refund = await stripe.refunds.create({
+          payment_intent: order.stripePaymentIntentId,
+          amount: Math.round(amount * 100), // Convert to cents
+          reason: 'requested_by_customer',
+          metadata: {
+            orderId: order.id,
+                adminReason: reason || 'Admin refund',
+            processedBy: 'admin'
+          }
+        });
+
+        // Update order status
+        await storage.updateOrder(orderId, {
+          paymentStatus: 'refunded',
+          status: 'refunded'
+        });
+
+        console.log(`✅ Refund processed for order ${orderId}: ${refund.id}`);
+
+        res.json({
+          success: true,
+          refundId: refund.id,
+          amount: amount,
+          message: "Refund processed successfully"
+        });
+      } catch (stripeError: any) {
+        console.error("Stripe refund error:", stripeError);
+        
+        // Still update order status to reflect refund attempt
+        await storage.updateOrder(orderId, {
+          paymentStatus: 'refund_failed'
+        });
+
+        return res.status(500).json({
+          message: "Failed to process Stripe refund",
+          error: stripeError.message
+        });
+      }
+    } catch (error) {
+      console.error("Error processing refund:", error);
+      res.status(500).json({ message: "Failed to process refund" });
+    }
+  });
+
   // Manual Driver Approval API Endpoints
   
   // Get all driver applications for admin management (includes pending, waitlist, approved, etc.)

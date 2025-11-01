@@ -69,6 +69,7 @@ Preferred communication style: Simple, everyday language.
 - **Real-Time Driver Tracking**: Interactive Mapbox map with active driver locations and detailed modals.
 - **Driver Identity Verification Management**: Review Stripe Identity verification results and status.
 - **1099 Tax Form System**: Annual tax form generation, bulk processing, email distribution, and compliance tracking for IRS 1099-NEC requirements.
+- **Comprehensive Orders Dashboard** (`/admin/orders`): Complete order lifecycle management with real-time data, stats overview (total/pending/completed/refunded/revenue), status filtering, bulk actions for status updates, Stripe refund processing with full or partial refunds, order details modal with payment breakdown, and 30-second auto-refresh.
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management, usage analytics.
