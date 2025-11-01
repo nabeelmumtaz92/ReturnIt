@@ -7,7 +7,6 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "description": "Professional reverse delivery service - Book returns, exchanges, and donations with real-time tracking",
-    "privacy": "public",
     "platforms": [
       "ios",
       "android"
