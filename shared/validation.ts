@@ -1,8 +1,12 @@
 import { z } from "zod";
 
-// Simple password validation
+// Enhanced password validation with strength requirements
 export const passwordSchema = z.string()
-  .min(1, "Password is required");
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/\d/, "Password must contain at least one number")
+  .regex(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/, "Password must contain at least one special character");
 
 // Simple email validation
 export const emailSchema = z.string()
@@ -25,6 +29,10 @@ export const registrationSchema = z.object({
   firstName: z.string().min(1, "First name is required").max(50, "First name must be less than 50 characters"),
   lastName: z.string().min(1, "Last name is required").max(50, "Last name must be less than 50 characters"),
   dateOfBirth: z.string().optional(),
+  acceptedTerms: z.boolean().refine((val) => val === true, {
+    message: "You must accept the Terms of Service",
+  }),
+  recaptchaToken: z.string().optional(), // Optional for now, will be required when reCAPTCHA is enabled
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],

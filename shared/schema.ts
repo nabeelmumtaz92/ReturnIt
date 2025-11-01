@@ -300,6 +300,12 @@ export const users = pgTable("users", {
   otpVerified: boolean("otp_verified").default(false),
   termsAcceptedAt: timestamp("terms_accepted_at"),
   
+  // Email verification fields
+  isEmailVerified: boolean("is_email_verified").default(false),
+  emailVerificationToken: text("email_verification_token"),
+  emailVerificationExpiry: timestamp("email_verification_expiry"),
+  emailVerifiedAt: timestamp("email_verified_at"),
+  
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),
   hireDate: timestamp("hire_date"),
