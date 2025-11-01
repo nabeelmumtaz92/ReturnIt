@@ -2728,7 +2728,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({received: true});
   });
 
-  // Indeed webhook endpoint - Receives driver job applications
+  // Indeed webhook endpoint - Receives driver job applications (TEMPORARILY DISABLED - needs DatabaseStorage implementation)
+  /*
   app.post('/api/webhooks/indeed', express.json(), async (req, res) => {
     try {
       console.log('📨 Received Indeed application webhook:', JSON.stringify(req.body, null, 2));
@@ -2877,6 +2878,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ error: 'Internal server error', details: error.message });
     }
   });
+  */
 
   // Process PayPal payment (mobile and web)
   app.post('/api/payments/paypal/create-order', isAuthenticated, async (req, res) => {
