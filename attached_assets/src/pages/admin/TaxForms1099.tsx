@@ -1,0 +1,1 @@
+export default function TaxForms1099(){return <div>1099 Tax Forms Page</div>}

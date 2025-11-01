@@ -1,0 +1,1 @@
+export default function RetailerManagement(){return <div>Retailer Management Page</div>}

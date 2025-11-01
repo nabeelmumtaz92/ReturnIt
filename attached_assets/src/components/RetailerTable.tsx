@@ -1,0 +1,1 @@
+export default function RetailerTable(){return <div>Retailer Table</div>}

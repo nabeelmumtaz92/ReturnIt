@@ -1,0 +1,1 @@
+export default function DriverPayouts(){return <div>Driver Payouts Page</div>}

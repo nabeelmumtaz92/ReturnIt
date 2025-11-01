@@ -1,0 +1,1 @@
+export default function PayoutTable(){return <div>Payout Table Component</div>}
