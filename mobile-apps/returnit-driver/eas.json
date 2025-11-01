@@ -29,11 +29,13 @@
     "production": {
       "android": {
         "buildType": "app-bundle",
-        "gradleCommand": ":app:bundleRelease"
+        "gradleCommand": ":app:bundleRelease",
+        "image": "latest"
       },
       "ios": {
         "simulator": false,
-        "autoIncrement": "buildNumber"
+        "autoIncrement": "buildNumber",
+        "image": "latest"
       },
       "env": {
         "NODE_ENV": "production"
