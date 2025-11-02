@@ -11,6 +11,12 @@
       "ios",
       "android"
     ],
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/6dc97462-a28e-4563-adeb-5de73d87e0ce"
+    },
     "splash": {
       "image": "./assets/splash-driver.png",
       "resizeMode": "contain",
