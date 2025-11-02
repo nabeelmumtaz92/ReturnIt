@@ -23,6 +23,7 @@ import {
   type Company, type InsertCompany,
   type ReturnPolicy, type InsertReturnPolicy,
   type CompanyLocation, type InsertCompanyLocation,
+  type StoreLocation, type InsertStoreLocation,
   type OrderAuditLog, type InsertOrderAuditLog,
   type RetailerAccount, type InsertRetailerAccount,
   type RetailerSubscription, type InsertRetailerSubscription,
@@ -51,7 +52,7 @@ import {
   driverOrderAssignments, orderStatusHistory, driverLocationPings,
   orderCancellations, webhookEndpoints, webhookEvents, webhookDeliveries,
   merchantPolicies, supportTicketsEnhanced, supportMessages,
-  companies, returnPolicies, companyLocations, orderAuditLogs,
+  companies, returnPolicies, companyLocations, storeLocations, orderAuditLogs,
   retailerAccounts, retailerSubscriptions, retailerApiKeys, retailerInvoices, retailerUsageMetrics,
   retailerWebhooks, retailerWebhookDeliveries,
   reviews, driverReviews, appReviews, companyRatings,
@@ -140,6 +141,15 @@ export interface IStorage {
   createCompanyLocation(location: InsertCompanyLocation): Promise<CompanyLocation>;
   updateCompanyLocation(id: number, updates: Partial<CompanyLocation>): Promise<CompanyLocation | undefined>;
   deleteCompanyLocation(id: number): Promise<boolean>;
+  
+  // Store Locations (Google Places Integration)
+  searchStoreLocations(query: string, city?: string, limit?: number): Promise<StoreLocation[]>;
+  getStoreLocation(id: number): Promise<StoreLocation | undefined>;
+  getStoreLocationByGooglePlaceId(googlePlaceId: string): Promise<StoreLocation | undefined>;
+  createStoreLocation(location: InsertStoreLocation): Promise<StoreLocation>;
+  upsertStoreLocation(location: InsertStoreLocation): Promise<StoreLocation>;
+  updateStoreLocation(id: number, updates: Partial<StoreLocation>): Promise<StoreLocation | undefined>;
+  getStoreLocationsCount(city?: string): Promise<number>;
   
   // Payment methods
   getPaymentRecords(): Promise<any[]>;
@@ -1610,6 +1620,114 @@ export class MemStorage implements IStorage {
 
   async deleteCompanyLocation(id: number): Promise<boolean> {
     return this.companyLocations.delete(id);
+  }
+
+  // Store Location Methods (Google Places Integration)
+  private nextStoreLocationId = 1;
+  private storeLocationsByGooglePlaceId = new Map<string, StoreLocation>();
+  
+  async searchStoreLocations(query: string, city?: string, limit: number = 20): Promise<StoreLocation[]> {
+    let locations = Array.from(this.storeLocations.values()).filter(loc => loc.isActive);
+    
+    const lowerQuery = query.toLowerCase();
+    locations = locations.filter(loc => 
+      loc.retailerName.toLowerCase().includes(lowerQuery) ||
+      loc.storeName.toLowerCase().includes(lowerQuery) ||
+      loc.streetAddress.toLowerCase().includes(lowerQuery)
+    );
+    
+    if (city) {
+      locations = locations.filter(loc => loc.city.toLowerCase() === city.toLowerCase());
+    }
+    
+    return locations.slice(0, limit);
+  }
+
+  async getStoreLocation(id: number): Promise<StoreLocation | undefined> {
+    return this.storeLocations.get(id);
+  }
+
+  async getStoreLocationByGooglePlaceId(googlePlaceId: string): Promise<StoreLocation | undefined> {
+    return this.storeLocationsByGooglePlaceId.get(googlePlaceId);
+  }
+
+  async createStoreLocation(insertLocation: InsertStoreLocation): Promise<StoreLocation> {
+    const location: StoreLocation = {
+      id: this.nextStoreLocationId++,
+      googlePlaceId: insertLocation.googlePlaceId || null,
+      retailerName: insertLocation.retailerName,
+      storeName: insertLocation.storeName,
+      displayName: insertLocation.displayName || null,
+      storeNumber: insertLocation.storeNumber || null,
+      streetAddress: insertLocation.streetAddress,
+      city: insertLocation.city,
+      state: insertLocation.state,
+      zipCode: insertLocation.zipCode,
+      formattedAddress: insertLocation.formattedAddress || null,
+      phoneNumber: insertLocation.phoneNumber || null,
+      website: insertLocation.website || null,
+      coordinates: insertLocation.coordinates,
+      latitude: insertLocation.latitude || null,
+      longitude: insertLocation.longitude || null,
+      category: insertLocation.category || null,
+      types: insertLocation.types || [],
+      storeHours: insertLocation.storeHours || {},
+      services: insertLocation.services || [],
+      returnPolicy: insertLocation.returnPolicy || {},
+      isActive: insertLocation.isActive ?? true,
+      acceptsReturns: insertLocation.acceptsReturns ?? true,
+      hasPickupService: insertLocation.hasPickupService ?? false,
+      maxReturnValue: insertLocation.maxReturnValue || null,
+      specialInstructions: insertLocation.specialInstructions || null,
+      lastVerified: new Date(),
+      lastSyncedAt: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    this.storeLocations.set(location.id, location);
+    if (location.googlePlaceId) {
+      this.storeLocationsByGooglePlaceId.set(location.googlePlaceId, location);
+    }
+    return location;
+  }
+
+  async upsertStoreLocation(insertLocation: InsertStoreLocation): Promise<StoreLocation> {
+    if (insertLocation.googlePlaceId) {
+      const existing = await this.getStoreLocationByGooglePlaceId(insertLocation.googlePlaceId);
+      if (existing) {
+        return await this.updateStoreLocation(existing.id, {
+          ...insertLocation,
+          lastSyncedAt: new Date(),
+          updatedAt: new Date()
+        }) as StoreLocation;
+      }
+    }
+    return await this.createStoreLocation(insertLocation);
+  }
+
+  async updateStoreLocation(id: number, updates: Partial<StoreLocation>): Promise<StoreLocation | undefined> {
+    const location = this.storeLocations.get(id);
+    if (!location) return undefined;
+    
+    const updatedLocation = {
+      ...location,
+      ...updates,
+      updatedAt: new Date()
+    };
+    this.storeLocations.set(id, updatedLocation);
+    if (updatedLocation.googlePlaceId) {
+      this.storeLocationsByGooglePlaceId.set(updatedLocation.googlePlaceId, updatedLocation);
+    }
+    return updatedLocation;
+  }
+
+  async getStoreLocationsCount(city?: string): Promise<number> {
+    let locations = Array.from(this.storeLocations.values()).filter(loc => loc.isActive);
+    if (city) {
+      locations = locations.filter(loc => loc.city.toLowerCase() === city.toLowerCase());
+    }
+    return locations.length;
   }
 
   // Analytics
@@ -4353,6 +4471,103 @@ export class DatabaseStorage implements IStorage {
   async deleteCompanyLocation(id: number): Promise<boolean> {
     const result = await db.delete(companyLocations).where(eq(companyLocations.id, id));
     return result.rowCount > 0;
+  }
+
+  // Store Location Methods - Database implementation (Google Places Integration)
+  async searchStoreLocations(query: string, city?: string, limit: number = 20): Promise<StoreLocation[]> {
+    const lowerQuery = `%${query.toLowerCase()}%`;
+    
+    let queryBuilder = db
+      .select()
+      .from(storeLocations)
+      .where(
+        and(
+          eq(storeLocations.isActive, true),
+          or(
+            sql`LOWER(${storeLocations.retailerName}) LIKE ${lowerQuery}`,
+            sql`LOWER(${storeLocations.storeName}) LIKE ${lowerQuery}`,
+            sql`LOWER(${storeLocations.streetAddress}) LIKE ${lowerQuery}`
+          )
+        )
+      );
+    
+    if (city) {
+      queryBuilder = queryBuilder.where(
+        and(
+          eq(storeLocations.isActive, true),
+          sql`LOWER(${storeLocations.city}) = ${city.toLowerCase()}`,
+          or(
+            sql`LOWER(${storeLocations.retailerName}) LIKE ${lowerQuery}`,
+            sql`LOWER(${storeLocations.storeName}) LIKE ${lowerQuery}`,
+            sql`LOWER(${storeLocations.streetAddress}) LIKE ${lowerQuery}`
+          )
+        )
+      );
+    }
+    
+    return await queryBuilder.limit(limit);
+  }
+
+  async getStoreLocation(id: number): Promise<StoreLocation | undefined> {
+    const [location] = await db.select().from(storeLocations).where(eq(storeLocations.id, id));
+    return location;
+  }
+
+  async getStoreLocationByGooglePlaceId(googlePlaceId: string): Promise<StoreLocation | undefined> {
+    const [location] = await db.select().from(storeLocations).where(eq(storeLocations.googlePlaceId, googlePlaceId));
+    return location;
+  }
+
+  async createStoreLocation(locationData: InsertStoreLocation): Promise<StoreLocation> {
+    const [location] = await db.insert(storeLocations).values(locationData).returning();
+    return location;
+  }
+
+  async upsertStoreLocation(locationData: InsertStoreLocation): Promise<StoreLocation> {
+    if (locationData.googlePlaceId) {
+      const existing = await this.getStoreLocationByGooglePlaceId(locationData.googlePlaceId);
+      if (existing) {
+        const [updated] = await db
+          .update(storeLocations)
+          .set({ 
+            ...locationData, 
+            lastSyncedAt: new Date(),
+            updatedAt: new Date() 
+          })
+          .where(eq(storeLocations.id, existing.id))
+          .returning();
+        return updated;
+      }
+    }
+    return await this.createStoreLocation(locationData);
+  }
+
+  async updateStoreLocation(id: number, updates: Partial<StoreLocation>): Promise<StoreLocation | undefined> {
+    const [location] = await db
+      .update(storeLocations)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(storeLocations.id, id))
+      .returning();
+    return location;
+  }
+
+  async getStoreLocationsCount(city?: string): Promise<number> {
+    let query = db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(storeLocations)
+      .where(eq(storeLocations.isActive, true));
+    
+    if (city) {
+      query = query.where(
+        and(
+          eq(storeLocations.isActive, true),
+          sql`LOWER(${storeLocations.city}) = ${city.toLowerCase()}`
+        )
+      );
+    }
+    
+    const [result] = await query;
+    return Number(result.count) || 0;
   }
 
   // === RETAILER SELF-SERVICE PORTAL IMPLEMENTATIONS ===
