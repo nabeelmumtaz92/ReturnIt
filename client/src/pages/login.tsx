@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { PasswordStrengthIndicator } from "@/components/PasswordStrengthIndicator";
 import { registrationSchema, loginSchema, type RegistrationData, type LoginData } from "@shared/validation";
-import { Mail, Lock, User, Phone, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, Phone, Eye, EyeOff, Calendar } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import { handleError } from "@/lib/errorHandler";
 import { BackButton } from "@/components/BackButton";
@@ -509,6 +509,47 @@ export default function Login() {
                   </div>
                   {validationErrors.email && (
                     <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-phone" className="text-foreground font-medium">Phone Number <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                  <div className="bg-accent p-4 rounded-lg border border-border">
+                    <div className="flex items-center space-x-3">
+                      <Phone className="h-5 w-5 text-primary" />
+                      <Input
+                        id="register-phone"
+                        data-testid="input-register-phone"
+                        type="tel"
+                        value={registerData.phone}
+                        onChange={(e) => setRegisterData(prev => ({...prev, phone: e.target.value}))}
+                        placeholder="(123) 456-7890"
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                  {validationErrors.phone && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.phone}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-dateOfBirth" className="text-foreground font-medium">Date of Birth <span className="text-muted-foreground text-xs">(Optional)</span></Label>
+                  <div className="bg-accent p-4 rounded-lg border border-border">
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="h-5 w-5 text-primary" />
+                      <Input
+                        id="register-dateOfBirth"
+                        data-testid="input-register-dateOfBirth"
+                        type="date"
+                        value={registerData.dateOfBirth}
+                        onChange={(e) => setRegisterData(prev => ({...prev, dateOfBirth: e.target.value}))}
+                        className="border-0 bg-transparent focus:ring-0 focus:ring-offset-0 text-foreground placeholder:text-muted-foreground"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                  {validationErrors.dateOfBirth && (
+                    <p className="text-red-600 text-xs mt-1">{validationErrors.dateOfBirth}</p>
                   )}
                 </div>
                 <div className="space-y-2">
