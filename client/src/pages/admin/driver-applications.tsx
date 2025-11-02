@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCheck, Mail, Calendar, Car, MapPin, Phone, FileCheck, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { UserCheck, Mail, Calendar, Car, MapPin, Phone, FileCheck, CheckCircle, XCircle, AlertCircle, Edit, Save, X as CloseIcon } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -57,6 +59,8 @@ interface DriverApplication {
 export default function DriverApplications() {
   const { toast } = useToast();
   const [selectedApplication, setSelectedApplication] = useState<DriverApplication | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedData, setEditedData] = useState<Partial<DriverApplication>>({});
   const [actionDialog, setActionDialog] = useState<{
     open: boolean;
     action: 'approve' | 'reject' | null;
@@ -142,6 +146,89 @@ export default function DriverApplications() {
       });
     }
   });
+
+  // Update driver details mutation
+  const updateDetailsMutation = useMutation({
+    mutationFn: async (data: { driverId: number; updates: Partial<DriverApplication> }) => {
+      return apiRequest('PATCH', `/api/admin/driver-applications/${data.driverId}/details`, {
+        firstName: data.updates.firstName,
+        lastName: data.updates.lastName,
+        email: data.updates.email,
+        phone: data.updates.phone,
+        dateOfBirth: data.updates.dateOfBirth,
+        address: data.updates.address,
+        city: data.updates.city,
+        state: data.updates.state,
+        zipCode: data.updates.zipCode,
+        vehicleInfo: data.updates.vehicleInfo
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "Details Updated",
+        description: "Driver application details have been updated successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/driver-applications/pending'] });
+      setIsEditing(false);
+      setEditedData({});
+      setSelectedApplication(null);
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update driver application details.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Handle edit mode
+  const handleStartEdit = (application: DriverApplication) => {
+    setIsEditing(true);
+    setEditedData({
+      firstName: application.firstName,
+      lastName: application.lastName,
+      email: application.email,
+      phone: application.phone,
+      dateOfBirth: application.dateOfBirth,
+      address: application.address,
+      city: application.city,
+      state: application.state,
+      zipCode: application.zipCode,
+      vehicleInfo: application.vehicleInfo
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedData({});
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedApplication) {
+      updateDetailsMutation.mutate({
+        driverId: selectedApplication.id,
+        updates: editedData
+      });
+    }
+  };
+
+  const handleFieldChange = (field: keyof DriverApplication, value: any) => {
+    setEditedData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleVehicleFieldChange = (field: string, value: string) => {
+    setEditedData(prev => ({
+      ...prev,
+      vehicleInfo: {
+        ...(prev.vehicleInfo || selectedApplication?.vehicleInfo || { make: '', model: '', year: '', color: '', licensePlate: '' }),
+        [field]: value
+      }
+    }));
+  };
 
   // Calculate stats
   const totalApplications = applications?.length || 0;
@@ -441,22 +528,72 @@ export default function DriverApplications() {
                 <h3 className="font-semibold mb-3">Driver Information</h3>
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <p className="text-muted-foreground">Name</p>
-                    <p className="font-medium">
-                      {selectedApplication.firstName} {selectedApplication.lastName}
-                    </p>
+                    <Label className="text-muted-foreground">First Name</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.firstName ?? selectedApplication.firstName}
+                        onChange={(e) => handleFieldChange('firstName', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-first-name"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.firstName}</p>
+                    )}
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Date of Birth</p>
-                    <p className="font-medium">{formatDate(selectedApplication.dateOfBirth)}</p>
+                    <Label className="text-muted-foreground">Last Name</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.lastName ?? selectedApplication.lastName}
+                        onChange={(e) => handleFieldChange('lastName', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-last-name"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.lastName}</p>
+                    )}
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Email</p>
-                    <p className="font-medium">{selectedApplication.email}</p>
+                    <Label className="text-muted-foreground">Email</Label>
+                    {isEditing ? (
+                      <Input
+                        type="email"
+                        value={editedData.email ?? selectedApplication.email}
+                        onChange={(e) => handleFieldChange('email', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-email"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.email}</p>
+                    )}
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Phone</p>
-                    <p className="font-medium">{selectedApplication.phone || 'N/A'}</p>
+                    <Label className="text-muted-foreground">Phone</Label>
+                    {isEditing ? (
+                      <Input
+                        type="tel"
+                        value={editedData.phone ?? selectedApplication.phone ?? ''}
+                        onChange={(e) => handleFieldChange('phone', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-phone"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.phone || 'N/A'}</p>
+                    )}
+                  </div>
+                  <div className="col-span-2">
+                    <Label className="text-muted-foreground">Date of Birth</Label>
+                    {isEditing ? (
+                      <Input
+                        type="date"
+                        value={editedData.dateOfBirth ?? selectedApplication.dateOfBirth}
+                        onChange={(e) => handleFieldChange('dateOfBirth', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-date-of-birth"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{formatDate(selectedApplication.dateOfBirth)}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -464,11 +601,60 @@ export default function DriverApplications() {
               {/* Address */}
               <div className="p-4 bg-muted/30 rounded-lg">
                 <h3 className="font-semibold mb-3">Address</h3>
-                <div className="text-sm space-y-1">
-                  <p>{selectedApplication.address}</p>
-                  <p>
-                    {selectedApplication.city}, {selectedApplication.state} {selectedApplication.zipCode}
-                  </p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="col-span-2">
+                    <Label className="text-muted-foreground">Street Address</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.address ?? selectedApplication.address}
+                        onChange={(e) => handleFieldChange('address', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-address"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.address}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">City</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.city ?? selectedApplication.city}
+                        onChange={(e) => handleFieldChange('city', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-city"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.city}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">State</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.state ?? selectedApplication.state}
+                        onChange={(e) => handleFieldChange('state', e.target.value)}
+                        className="mt-1"
+                        maxLength={2}
+                        data-testid="input-state"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.state}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">ZIP Code</Label>
+                    {isEditing ? (
+                      <Input
+                        value={editedData.zipCode ?? selectedApplication.zipCode}
+                        onChange={(e) => handleFieldChange('zipCode', e.target.value)}
+                        className="mt-1"
+                        data-testid="input-zip-code"
+                      />
+                    ) : (
+                      <p className="font-medium mt-1">{selectedApplication.zipCode}</p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -481,18 +667,69 @@ export default function DriverApplications() {
                   </h3>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Make & Model</p>
-                      <p className="font-medium">
-                        {selectedApplication.vehicleInfo.year} {selectedApplication.vehicleInfo.make} {selectedApplication.vehicleInfo.model}
-                      </p>
+                      <Label className="text-muted-foreground">Make</Label>
+                      {isEditing ? (
+                        <Input
+                          value={(editedData.vehicleInfo?.make ?? selectedApplication.vehicleInfo.make) || ''}
+                          onChange={(e) => handleVehicleFieldChange('make', e.target.value)}
+                          className="mt-1"
+                          data-testid="input-vehicle-make"
+                        />
+                      ) : (
+                        <p className="font-medium mt-1">{selectedApplication.vehicleInfo.make}</p>
+                      )}
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Color</p>
-                      <p className="font-medium">{selectedApplication.vehicleInfo.color}</p>
+                      <Label className="text-muted-foreground">Model</Label>
+                      {isEditing ? (
+                        <Input
+                          value={(editedData.vehicleInfo?.model ?? selectedApplication.vehicleInfo.model) || ''}
+                          onChange={(e) => handleVehicleFieldChange('model', e.target.value)}
+                          className="mt-1"
+                          data-testid="input-vehicle-model"
+                        />
+                      ) : (
+                        <p className="font-medium mt-1">{selectedApplication.vehicleInfo.model}</p>
+                      )}
                     </div>
                     <div>
-                      <p className="text-muted-foreground">License Plate</p>
-                      <p className="font-medium font-mono">{selectedApplication.vehicleInfo.licensePlate}</p>
+                      <Label className="text-muted-foreground">Year</Label>
+                      {isEditing ? (
+                        <Input
+                          value={(editedData.vehicleInfo?.year ?? selectedApplication.vehicleInfo.year) || ''}
+                          onChange={(e) => handleVehicleFieldChange('year', e.target.value)}
+                          className="mt-1"
+                          data-testid="input-vehicle-year"
+                        />
+                      ) : (
+                        <p className="font-medium mt-1">{selectedApplication.vehicleInfo.year}</p>
+                      )}
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">Color</Label>
+                      {isEditing ? (
+                        <Input
+                          value={(editedData.vehicleInfo?.color ?? selectedApplication.vehicleInfo.color) || ''}
+                          onChange={(e) => handleVehicleFieldChange('color', e.target.value)}
+                          className="mt-1"
+                          data-testid="input-vehicle-color"
+                        />
+                      ) : (
+                        <p className="font-medium mt-1">{selectedApplication.vehicleInfo.color}</p>
+                      )}
+                    </div>
+                    <div className="col-span-2">
+                      <Label className="text-muted-foreground">License Plate</Label>
+                      {isEditing ? (
+                        <Input
+                          value={(editedData.vehicleInfo?.licensePlate ?? selectedApplication.vehicleInfo.licensePlate) || ''}
+                          onChange={(e) => handleVehicleFieldChange('licensePlate', e.target.value)}
+                          className="mt-1"
+                          data-testid="input-vehicle-license-plate"
+                        />
+                      ) : (
+                        <p className="font-medium mt-1 font-mono">{selectedApplication.vehicleInfo.licensePlate}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -526,40 +763,78 @@ export default function DriverApplications() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button 
-                  onClick={() => setSelectedApplication(null)}
-                  variant="outline"
-                  className="flex-1"
-                  data-testid="button-close-details"
-                >
-                  Close
-                </Button>
-                {selectedApplication.applicationStatus !== 'approved_active' && (
+                {isEditing ? (
+                  <>
+                    <Button 
+                      onClick={handleCancelEdit}
+                      variant="outline"
+                      className="flex-1"
+                      data-testid="button-cancel-edit"
+                    >
+                      <CloseIcon className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={handleSaveEdit}
+                      className="flex-1 bg-[#B8956A] hover:bg-[#A07D55]"
+                      disabled={updateDetailsMutation.isPending}
+                      data-testid="button-save-edit"
+                    >
+                      <Save className="h-4 w-4 mr-2" />
+                      {updateDetailsMutation.isPending ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                  </>
+                ) : (
                   <>
                     <Button 
                       onClick={() => {
-                        setActionDialog({ open: true, action: 'approve', driver: selectedApplication });
                         setSelectedApplication(null);
+                        setIsEditing(false);
+                        setEditedData({});
                       }}
-                      className="flex-1 bg-green-600 hover:bg-green-700"
-                      data-testid="button-approve-modal"
+                      variant="outline"
+                      className="flex-1"
+                      data-testid="button-close-details"
                     >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Make Active Now
+                      Close
                     </Button>
-                    {selectedApplication.applicationStatus !== 'rejected' && (
-                      <Button 
-                        onClick={() => {
-                          setActionDialog({ open: true, action: 'reject', driver: selectedApplication });
-                          setSelectedApplication(null);
-                        }}
-                        variant="destructive"
-                        className="flex-1"
-                        data-testid="button-reject-modal"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
+                    <Button 
+                      onClick={() => handleStartEdit(selectedApplication)}
+                      variant="outline"
+                      className="flex-1"
+                      data-testid="button-edit-details"
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Details
+                    </Button>
+                    {selectedApplication.applicationStatus !== 'approved_active' && (
+                      <>
+                        <Button 
+                          onClick={() => {
+                            setActionDialog({ open: true, action: 'approve', driver: selectedApplication });
+                            setSelectedApplication(null);
+                          }}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                          data-testid="button-approve-modal"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Make Active Now
+                        </Button>
+                        {selectedApplication.applicationStatus !== 'rejected' && (
+                          <Button 
+                            onClick={() => {
+                              setActionDialog({ open: true, action: 'reject', driver: selectedApplication });
+                              setSelectedApplication(null);
+                            }}
+                            variant="destructive"
+                            className="flex-1"
+                            data-testid="button-reject-modal"
+                          >
+                            <XCircle className="h-4 w-4 mr-2" />
+                            Reject
+                          </Button>
+                        )}
+                      </>
                     )}
                   </>
                 )}
