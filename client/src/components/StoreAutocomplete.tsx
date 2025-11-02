@@ -7,15 +7,22 @@ import { useQuery } from '@tanstack/react-query';
 
 interface StoreLocation {
   id: number;
-  merchantId: string;
+  googlePlaceId: string | null;
+  retailerName: string;
   storeName: string;
   displayName: string;
   streetAddress: string;
   city: string;
   state: string;
   zipCode: string;
-  phone?: string;
-  website?: string;
+  formattedAddress: string | null;
+  phoneNumber: string | null;
+  website: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  category: string | null;
+  isActive: boolean;
+  acceptsReturns: boolean;
   isAnyLocation?: boolean; // Flag for "any location" option
 }
 
@@ -48,6 +55,12 @@ export default function StoreAutocomplete({
   // Fetch store locations when user types (debounced)
   const { data: storeLocations = [], isLoading } = useQuery<StoreLocation[]>({
     queryKey: ['/api/stores/search', value],
+    queryFn: async () => {
+      if (value.length < 2) return [];
+      const response = await fetch(`/api/stores/search?query=${encodeURIComponent(value)}&limit=20`);
+      if (!response.ok) throw new Error('Failed to search stores');
+      return response.json();
+    },
     enabled: value.length >= 2, // Only search when 2+ characters typed
     staleTime: 1000 * 60 * 15, // Cache for 15 minutes
   });
@@ -214,9 +227,7 @@ export default function StoreAutocomplete({
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm">{store.displayName}</div>
                     <div className="text-xs text-muted-foreground mt-0.5">
-                      {store.streetAddress}
-                      {store.city && store.state && `, ${store.city}, ${store.state}`}
-                      {store.zipCode && ` ${store.zipCode}`}
+                      {store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`}
                     </div>
                   </div>
                 </div>

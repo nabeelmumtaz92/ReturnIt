@@ -150,26 +150,71 @@ export class PlacesSyncService {
   }
 
   /**
-   * Search Google Places API for stores
+   * Search Google Places API for stores with pagination and bounding box
    */
   private async searchPlaces(query: string): Promise<GooglePlaceResult[]> {
-    const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
-    url.searchParams.append('query', query);
-    url.searchParams.append('key', this.apiKey);
+    const allResults: GooglePlaceResult[] = [];
+    let nextPageToken: string | undefined;
+    let pageCount = 0;
+    const maxPages = 3; // Google allows up to 3 pages (60 results max)
+
+    do {
+      const url = new URL('https://maps.googleapis.com/maps/api/place/textsearch/json');
+      url.searchParams.append('query', query);
+      url.searchParams.append('key', this.apiKey);
+      
+      // Apply St. Louis bounding box to restrict results
+      url.searchParams.append('location', '38.6270,-90.1994'); // St. Louis center
+      url.searchParams.append('radius', '50000'); // 50km radius covers metro area
+      
+      if (nextPageToken) {
+        url.searchParams.append('pagetoken', nextPageToken);
+        // Google requires a short delay between paginated requests
+        await this.sleep(2000);
+      }
+      
+      const response = await fetch(url.toString());
+      
+      if (!response.ok) {
+        throw new Error(`Google Places API error: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.status === 'INVALID_REQUEST' && nextPageToken) {
+        // Sometimes the next_page_token takes time to become valid
+        console.warn('Invalid page token, waiting 3s and retrying...');
+        await this.sleep(3000);
+        continue;
+      }
+      
+      if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+        throw new Error(`Google Places API status: ${data.status}`);
+      }
+      
+      if (data.results && data.results.length > 0) {
+        // Filter results to St. Louis bounding box
+        const filteredResults = data.results.filter((place: GooglePlaceResult) => {
+          if (!place.geometry?.location) return false;
+          const lat = place.geometry.location.lat;
+          const lng = place.geometry.location.lng;
+          return (
+            lat >= this.ST_LOUIS_BOUNDS.south &&
+            lat <= this.ST_LOUIS_BOUNDS.north &&
+            lng >= this.ST_LOUIS_BOUNDS.west &&
+            lng <= this.ST_LOUIS_BOUNDS.east
+          );
+        });
+        
+        allResults.push(...filteredResults);
+      }
+      
+      nextPageToken = data.next_page_token;
+      pageCount++;
+      
+    } while (nextPageToken && pageCount < maxPages);
     
-    const response = await fetch(url.toString());
-    
-    if (!response.ok) {
-      throw new Error(`Google Places API error: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
-    
-    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
-      throw new Error(`Google Places API status: ${data.status}`);
-    }
-    
-    return data.results || [];
+    return allResults;
   }
 
   /**

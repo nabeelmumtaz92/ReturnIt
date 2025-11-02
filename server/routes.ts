@@ -14418,7 +14418,11 @@ Always think strategically, explain your reasoning, and provide value beyond bas
 
   // ===== STORE LOCATIONS (GOOGLE PLACES INTEGRATION) =====
   
-  // Search store locations (autocomplete for booking form)
+  // In-memory cache for store search results (5 minute TTL)
+  const storeSearchCache = new Map<string, { data: any; timestamp: number }>();
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  
+  // Search store locations (autocomplete for booking form) with caching
   app.get("/api/stores/search", async (req, res) => {
     try {
       const { query, city, limit } = req.query;
@@ -14430,11 +14434,31 @@ Always think strategically, explain your reasoning, and provide value beyond bas
       const searchLimit = limit ? parseInt(limit as string) : 20;
       const searchCity = city && typeof city === 'string' ? city : 'St. Louis';
       
+      // Check cache first
+      const cacheKey = `${query.toLowerCase()}:${searchCity}:${searchLimit}`;
+      const cached = storeSearchCache.get(cacheKey);
+      
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return res.json(cached.data);
+      }
+      
       const stores = await storage.searchStoreLocations(
         query,
         searchCity,
         searchLimit
       );
+      
+      // Cache the results
+      storeSearchCache.set(cacheKey, {
+        data: stores,
+        timestamp: Date.now()
+      });
+      
+      // Clean up old cache entries (simple LRU: keep max 1000 entries)
+      if (storeSearchCache.size > 1000) {
+        const firstKey = storeSearchCache.keys().next().value;
+        if (firstKey) storeSearchCache.delete(firstKey);
+      }
       
       res.json(stores);
     } catch (error) {
