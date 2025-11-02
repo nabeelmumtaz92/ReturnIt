@@ -133,7 +133,8 @@
     "xlsx": "^0.18.5",
     "zod": "^3.24.2",
     "zod-validation-error": "^3.4.0",
-    "zustand": "^5.0.7"
+    "zustand": "^5.0.7",
+    "expo-updates": "~0.18.19"
   },
   "devDependencies": {
     "@replit/vite-plugin-cartographer": "^0.2.8",
