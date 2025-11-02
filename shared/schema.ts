@@ -572,18 +572,38 @@ export const driverSafety = pgTable("driver_safety", {
   metadata: jsonb("metadata").default({}),
 });
 
-// Store Locations Database for comprehensive retailer-specific store locations
+// Store Locations Database - Google Places API integration for 600+ St. Louis stores
 export const storeLocations = pgTable("store_locations", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Google Places integration
+  googlePlaceId: text("google_place_id").unique(), // Google's unique place ID for deduplication
+  
+  // Store information
   retailerName: text("retailer_name").notNull(), // Target, Walmart, Best Buy, etc.
   storeName: text("store_name").notNull(), // Target Store T-2841, Walmart Supercenter #123
+  displayName: text("display_name"), // Full display name from Google Places
   storeNumber: text("store_number"), // Internal store identifier: T-2841, #123, etc.
+  
+  // Address components
   streetAddress: text("street_address").notNull(),
   city: text("city").notNull(),
   state: text("state").notNull(),
   zipCode: text("zip_code").notNull(),
+  formattedAddress: text("formatted_address"), // Full address from Google Places
+  
+  // Contact & Location
   phoneNumber: text("phone_number"),
+  website: text("website"),
   coordinates: jsonb("coordinates").notNull(), // {lat: number, lng: number}
+  latitude: numeric("latitude"), // Separate fields for easier querying
+  longitude: numeric("longitude"),
+  
+  // Store categorization
+  category: text("category"), // Google Places category
+  types: jsonb("types").default([]), // Array of Google Places types
+  
+  // Operational data
   storeHours: jsonb("store_hours").default({}), // Weekly hours: {monday: {open: "09:00", close: "21:00"}, ...}
   services: jsonb("services").default([]), // Available services: ["returns", "pickup", "customer-service"]
   returnPolicy: jsonb("return_policy").default({}), // Store-specific return policies
@@ -592,10 +612,20 @@ export const storeLocations = pgTable("store_locations", {
   hasPickupService: boolean("has_pickup_service").default(false).notNull(),
   maxReturnValue: real("max_return_value"), // Maximum return value accepted
   specialInstructions: text("special_instructions"), // Special pickup/return instructions
+  
+  // Sync tracking
   lastVerified: timestamp("last_verified").defaultNow().notNull(),
+  lastSyncedAt: timestamp("last_synced_at").defaultNow().notNull(),
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  googlePlaceIdIdx: index("store_locations_google_place_id_idx").on(table.googlePlaceId),
+  retailerNameIdx: index("store_locations_retailer_name_idx").on(table.retailerName),
+  cityIdx: index("store_locations_city_idx").on(table.city),
+  zipCodeIdx: index("store_locations_zip_code_idx").on(table.zipCode),
+  isActiveIdx: index("store_locations_is_active_idx").on(table.isActive),
+}));
 
 // Return Label Generation (Design Only - Not Implemented)
 export const returnLabels = pgTable("return_labels", {
