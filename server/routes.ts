@@ -6519,6 +6519,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update driver application details (admin only)
+  app.patch("/api/admin/driver-applications/:id/details", requireSecureAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const {
+        firstName,
+        lastName,
+        email,
+        phone,
+        dateOfBirth,
+        address,
+        city,
+        state,
+        zipCode,
+        vehicleInfo
+      } = req.body;
+
+      // Get current driver data
+      const driver = await storage.getUser(driverId);
+      if (!driver) {
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+
+      // Prepare update data
+      const updateData: any = {};
+      
+      // Personal information
+      if (firstName !== undefined) updateData.firstName = firstName;
+      if (lastName !== undefined) updateData.lastName = lastName;
+      if (email !== undefined) updateData.email = email;
+      if (phone !== undefined) updateData.phone = phone;
+      if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+
+      // Address information
+      if (address !== undefined || city !== undefined || state !== undefined || zipCode !== undefined) {
+        const currentAddresses = driver.addresses ? JSON.parse(driver.addresses as string) : [];
+        const updatedAddress = {
+          ...(currentAddresses[0] || {}),
+          address: address !== undefined ? address : currentAddresses[0]?.address,
+          city: city !== undefined ? city : currentAddresses[0]?.city,
+          state: state !== undefined ? state : currentAddresses[0]?.state,
+          zipCode: zipCode !== undefined ? zipCode : currentAddresses[0]?.zipCode,
+          isDefault: true
+        };
+        updateData.addresses = JSON.stringify([updatedAddress]);
+      }
+
+      // Vehicle information
+      if (vehicleInfo !== undefined) {
+        const currentVehicleInfo = driver.vehicleInfo ? JSON.parse(driver.vehicleInfo as string) : {};
+        const updatedVehicleInfo = {
+          ...currentVehicleInfo,
+          ...vehicleInfo
+        };
+        updateData.vehicleInfo = JSON.stringify(updatedVehicleInfo);
+      }
+
+      // Update driver
+      const updatedDriver = await storage.updateUser(driverId, updateData);
+
+      if (!updatedDriver) {
+        return res.status(500).json({ message: 'Failed to update driver application' });
+      }
+
+      console.log(`✏️ Driver application ${driverId} details updated by admin`);
+
+      res.json({
+        success: true,
+        message: 'Driver application details updated successfully',
+        driver: updatedDriver
+      });
+    } catch (error) {
+      console.error('Error updating driver application details:', error);
+      res.status(500).json({ message: 'Failed to update driver application details' });
+    }
+  });
+
   // Driver Document Verification API Endpoints
   
   // Get driver documents for verification
