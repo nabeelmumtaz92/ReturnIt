@@ -40,14 +40,24 @@ export default function PackageVerificationScreen({ route, navigation }) {
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.7,
-        base64: true,
+        base64: false, // Disable base64 for better performance
+        skipProcessing: false,
       });
       
-      setPhotos(prev => [...prev, {
+      console.log('Photo captured:', photo.uri);
+      
+      const newPhoto = {
         uri: photo.uri,
-        base64: photo.base64,
+        width: photo.width,
+        height: photo.height,
         timestamp: new Date().toISOString()
-      }]);
+      };
+      
+      setPhotos(prev => {
+        const updated = [...prev, newPhoto];
+        console.log('Photos state updated, total:', updated.length);
+        return updated;
+      });
       
       setCameraActive(false);
       
@@ -204,8 +214,18 @@ export default function PackageVerificationScreen({ route, navigation }) {
 
           <View style={styles.photosGrid}>
             {photos.map((photo, index) => (
-              <View key={index} style={styles.photoContainer}>
-                <Image source={{ uri: photo.uri }} style={styles.photo} />
+              <View key={`photo-${index}-${photo.timestamp}`} style={styles.photoContainer}>
+                <Image 
+                  source={{ uri: photo.uri }} 
+                  style={styles.photo}
+                  resizeMode="cover"
+                  onError={(error) => {
+                    console.error('Image load error:', error);
+                  }}
+                  onLoad={() => {
+                    console.log('Image loaded successfully:', photo.uri);
+                  }}
+                />
                 <TouchableOpacity
                   style={styles.removePhotoButton}
                   onPress={() => removePhoto(index)}

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { StatusBar } from 'expo-status-bar';
+import * as FileSystem from 'expo-file-system';
 import apiClient from '../services/api-client';
 
 export default function CompleteDeliveryScreen({ route, navigation }) {
@@ -87,14 +88,24 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.7,
-        base64: true,
+        base64: false, // Disable base64 for better performance
+        skipProcessing: false,
       });
       
-      setCompletionPhotos(prev => [...prev, {
+      console.log('Completion photo captured:', photo.uri);
+      
+      const newPhoto = {
         uri: photo.uri,
-        base64: photo.base64,
+        width: photo.width,
+        height: photo.height,
         timestamp: new Date().toISOString()
-      }]);
+      };
+      
+      setCompletionPhotos(prev => {
+        const updated = [...prev, newPhoto];
+        console.log('Completion photos state updated, total:', updated.length);
+        return updated;
+      });
       
       setCameraActive(false);
       
@@ -216,9 +227,35 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
     setLoading(true);
 
     try {
-      const photoDataUrls = completionPhotos.map(photo => 
-        `data:image/jpeg;base64,${photo.base64}`
-      );
+      // Convert photo URIs to base64 data URLs
+      const photoDataUrls = await Promise.all(
+        completionPhotos.map(async (photo) => {
+          try {
+            const base64 = await FileSystem.readAsStringAsync(photo.uri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            return `data:image/jpeg;base64,${base64}`;
+          } catch (error) {
+            console.error('Error converting photo to base64:', error);
+            return null;
+          }
+        })
+      ).then(urls => urls.filter(url => url !== null));
+      
+      // Convert verification photos to base64 data URLs
+      const verificationPhotoUrls = await Promise.all(
+        (verificationPhotos || []).map(async (photo) => {
+          try {
+            const base64 = await FileSystem.readAsStringAsync(photo.uri, {
+              encoding: FileSystem.EncodingType.Base64,
+            });
+            return `data:image/jpeg;base64,${base64}`;
+          } catch (error) {
+            console.error('Error converting verification photo to base64:', error);
+            return null;
+          }
+        })
+      ).then(urls => urls.filter(url => url !== null));
       
       const completionData = {
         actualReturnOutcome: selectedOutcome,
@@ -228,7 +265,7 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         driverCompletionPhotos: photoDataUrls,
         
         // Include verification evidence from PackageVerificationScreen
-        verificationPhotos: verificationPhotos?.map(p => `data:image/jpeg;base64,${p.base64}`) || [],
+        verificationPhotos: verificationPhotoUrls,
         customerSignature: customerSignature || undefined,
         deliveryNotes: deliveryNotes || undefined,
         
@@ -565,8 +602,18 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
 
           <View style={styles.photoGrid}>
             {completionPhotos.map((photo, index) => (
-              <View key={index} style={styles.photoContainer}>
-                <Image source={{ uri: photo.uri }} style={styles.photo} />
+              <View key={`completion-photo-${index}-${photo.timestamp}`} style={styles.photoContainer}>
+                <Image 
+                  source={{ uri: photo.uri }} 
+                  style={styles.photo}
+                  resizeMode="cover"
+                  onError={(error) => {
+                    console.error('Completion image load error:', error);
+                  }}
+                  onLoad={() => {
+                    console.log('Completion image loaded successfully:', photo.uri);
+                  }}
+                />
                 <TouchableOpacity
                   style={styles.removePhotoButton}
                   onPress={() => removePhoto(index)}
