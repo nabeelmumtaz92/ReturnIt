@@ -79,6 +79,7 @@ export interface IStorage {
   
   // Order operations
   getOrder(id: string): Promise<Order | undefined>;
+  getOrderByToken(token: string): Promise<Order | undefined>;
   getUserOrders(userId: number, limit?: number, offset?: number): Promise<Order[]>;
   getUserOrdersCount(userId: number): Promise<number>;
   getAllOrders(): Promise<Order[]>;
@@ -849,6 +850,10 @@ export class MemStorage implements IStorage {
   // Order operations
   async getOrder(id: string): Promise<Order | undefined> {
     return this.orders.get(id);
+  }
+
+  async getOrderByToken(token: string): Promise<Order | undefined> {
+    return Array.from(this.orders.values()).find(order => order.accessToken === token);
   }
 
   async getUserOrders(userId: number, limit?: number, offset?: number): Promise<Order[]> {
@@ -2783,6 +2788,11 @@ export class DatabaseStorage implements IStorage {
 
   async getOrder(id: string): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order;
+  }
+
+  async getOrderByToken(token: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.accessToken, token));
     return order;
   }
 

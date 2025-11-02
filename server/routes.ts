@@ -3267,6 +3267,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific order by secure token (protected - requires authentication)
+  app.get("/api/orders/token/:token", isAuthenticated, async (req, res) => {
+    try {
+      const order = await storage.getOrderByToken(req.params.token);
+      const userId = (req.session as any).user.id;
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Users can only view their own orders (unless they're a driver)
+      if (order.userId !== userId && !(req.session as any).user.isDriver) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      res.json(order);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch order" });
+    }
+  });
+
   // Get order via signed URL (public with token verification)
   app.get("/api/orders/:id/view", sensitiveDocRateLimit, requireSignedUrlForResource('id'), async (req, res) => {
     try {
