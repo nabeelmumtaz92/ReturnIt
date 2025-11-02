@@ -61,6 +61,10 @@ export default function DriverApplications() {
   const [selectedApplication, setSelectedApplication] = useState<DriverApplication | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState<Partial<DriverApplication>>({});
+  const [verificationMethod, setVerificationMethod] = useState<'email' | 'phone' | null>(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [codeSent, setCodeSent] = useState(false);
+  const [maskedDestination, setMaskedDestination] = useState('');
   const [actionDialog, setActionDialog] = useState<{
     open: boolean;
     action: 'approve' | 'reject' | null;
@@ -147,9 +151,33 @@ export default function DriverApplications() {
     }
   });
 
+  // Request verification code mutation
+  const requestVerificationMutation = useMutation({
+    mutationFn: async (data: { driverId: number; method: 'email' | 'phone' }) => {
+      return apiRequest('POST', `/api/admin/driver-applications/${data.driverId}/request-verification`, {
+        method: data.method
+      });
+    },
+    onSuccess: (response: any) => {
+      setCodeSent(true);
+      setMaskedDestination(response.maskedDestination);
+      toast({
+        title: "Verification Code Sent",
+        description: `A 6-digit code has been sent to ${response.maskedDestination}`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to send verification code.",
+        variant: "destructive",
+      });
+    }
+  });
+
   // Update driver details mutation
   const updateDetailsMutation = useMutation({
-    mutationFn: async (data: { driverId: number; updates: Partial<DriverApplication> }) => {
+    mutationFn: async (data: { driverId: number; updates: Partial<DriverApplication>; code: string }) => {
       return apiRequest('PATCH', `/api/admin/driver-applications/${data.driverId}/details`, {
         firstName: data.updates.firstName,
         lastName: data.updates.lastName,
@@ -160,7 +188,8 @@ export default function DriverApplications() {
         city: data.updates.city,
         state: data.updates.state,
         zipCode: data.updates.zipCode,
-        vehicleInfo: data.updates.vehicleInfo
+        vehicleInfo: data.updates.vehicleInfo,
+        verificationCode: data.code
       });
     },
     onSuccess: () => {
@@ -171,12 +200,17 @@ export default function DriverApplications() {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/driver-applications/pending'] });
       setIsEditing(false);
       setEditedData({});
+      setVerificationMethod(null);
+      setVerificationCode('');
+      setCodeSent(false);
+      setMaskedDestination('');
       setSelectedApplication(null);
     },
-    onError: () => {
+    onError: (error: any) => {
+      const errorMessage = error?.message || 'Failed to update driver application details.';
       toast({
         title: "Error",
-        description: "Failed to update driver application details.",
+        description: errorMessage,
         variant: "destructive",
       });
     }
@@ -199,16 +233,39 @@ export default function DriverApplications() {
     });
   };
 
+  const handleRequestVerification = () => {
+    if (selectedApplication && verificationMethod) {
+      requestVerificationMutation.mutate({
+        driverId: selectedApplication.id,
+        method: verificationMethod
+      });
+    }
+  };
+
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditedData({});
+    setVerificationMethod(null);
+    setVerificationCode('');
+    setCodeSent(false);
+    setMaskedDestination('');
   };
 
   const handleSaveEdit = () => {
+    if (!verificationCode || verificationCode.length !== 6) {
+      toast({
+        title: "Verification Required",
+        description: "Please enter the 6-digit verification code.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (selectedApplication) {
       updateDetailsMutation.mutate({
         driverId: selectedApplication.id,
-        updates: editedData
+        updates: editedData,
+        code: verificationCode
       });
     }
   };
@@ -523,6 +580,77 @@ export default function DriverApplications() {
           </DialogHeader>
           {selectedApplication && (
             <div className="space-y-4">
+              {/* Verification Section - shown when editing */}
+              {isEditing && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="font-semibold mb-3 text-blue-900">Security Verification Required</h3>
+                  
+                  {!codeSent ? (
+                    <div className="space-y-3">
+                      <p className="text-sm text-blue-800">
+                        For security, we need to verify this edit. Choose how to receive your verification code:
+                      </p>
+                      <div className="flex gap-2">
+                        <Button
+                          variant={verificationMethod === 'email' ? 'default' : 'outline'}
+                          onClick={() => setVerificationMethod('email')}
+                          className={verificationMethod === 'email' ? 'bg-[#B8956A] hover:bg-[#A07D55]' : ''}
+                          data-testid="button-verify-email"
+                        >
+                          <Mail className="h-4 w-4 mr-2" />
+                          Email
+                        </Button>
+                        <Button
+                          variant={verificationMethod === 'phone' ? 'default' : 'outline'}
+                          onClick={() => setVerificationMethod('phone')}
+                          className={verificationMethod === 'phone' ? 'bg-[#B8956A] hover:bg-[#A07D55]' : ''}
+                          data-testid="button-verify-phone"
+                        >
+                          <Phone className="h-4 w-4 mr-2" />
+                          Phone (SMS)
+                        </Button>
+                        <Button
+                          onClick={handleRequestVerification}
+                          disabled={!verificationMethod || requestVerificationMutation.isPending}
+                          className="bg-blue-600 hover:bg-blue-700"
+                          data-testid="button-send-code"
+                        >
+                          {requestVerificationMutation.isPending ? 'Sending...' : 'Send Code'}
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <p className="text-sm text-blue-800">
+                        Code sent to <strong>{maskedDestination}</strong>. Enter it below:
+                      </p>
+                      <div className="flex gap-2 items-center">
+                        <Input
+                          placeholder="000000"
+                          value={verificationCode}
+                          onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          maxLength={6}
+                          className="max-w-[150px] text-center text-lg font-mono tracking-widest"
+                          data-testid="input-verification-code"
+                        />
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setCodeSent(false);
+                            setVerificationCode('');
+                          }}
+                          size="sm"
+                          data-testid="button-resend-code"
+                        >
+                          Request New Code
+                        </Button>
+                      </div>
+                      <p className="text-xs text-blue-600">Code expires in 10 minutes</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Driver Info */}
               <div className="p-4 bg-muted/30 rounded-lg">
                 <h3 className="font-semibold mb-3">Driver Information</h3>

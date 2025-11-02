@@ -6519,7 +6519,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update driver application details (admin only)
+  // Request verification code for driver application edit
+  app.post("/api/admin/driver-applications/:id/request-verification", requireSecureAdmin, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.id);
+      const { method } = req.body; // 'email' or 'phone'
+
+      // Get driver data
+      const driver = await storage.getUser(driverId);
+      if (!driver) {
+        return res.status(404).json({ message: 'Driver not found' });
+      }
+
+      // Generate 6-digit verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      // Store verification code in session with 10-minute expiration
+      if (!req.session.verificationCodes) {
+        req.session.verificationCodes = {};
+      }
+      req.session.verificationCodes[`driver-edit-${driverId}`] = {
+        code: verificationCode,
+        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
+        method
+      };
+
+      if (method === 'email') {
+        // Send verification code via email
+        try {
+          const { client: resend, fromEmail } = await getUncachableResendClient();
+          await resend.emails.send({
+            from: fromEmail,
+            to: driver.email,
+            subject: 'Verification Code - Driver Application Edit',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h1 style="color: #B8956A;">Verification Code</h1>
+                <p>An admin is attempting to edit your driver application details.</p>
+                
+                <div style="background-color: #FEF3C7; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                  <p style="font-size: 14px; color: #78350F; margin-bottom: 10px;">Your verification code is:</p>
+                  <h2 style="color: #92400E; font-size: 32px; letter-spacing: 8px; margin: 0;">${verificationCode}</h2>
+                </div>
+                
+                <p style="color: #6B7280; font-size: 14px;">This code will expire in 10 minutes.</p>
+                <p style="color: #6B7280; font-size: 14px;">If you did not request this, please contact support immediately.</p>
+              </div>
+            `
+          });
+          console.log(`📧 Verification code sent to ${driver.email}`);
+        } catch (emailError) {
+          console.error('Failed to send verification email:', emailError);
+          return res.status(500).json({ message: 'Failed to send verification code' });
+        }
+      } else if (method === 'phone') {
+        // For now, log the code (in production, use Twilio or similar)
+        console.log(`📱 Verification code for ${driver.phone}: ${verificationCode}`);
+        // TODO: Implement SMS via Twilio integration
+      }
+
+      res.json({
+        success: true,
+        message: `Verification code sent to ${method}`,
+        maskedDestination: method === 'email' 
+          ? driver.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
+          : driver.phone?.replace(/(\d{3})(\d{3})(\d{4})/, '($1) ***-$3')
+      });
+    } catch (error) {
+      console.error('Error requesting verification code:', error);
+      res.status(500).json({ message: 'Failed to request verification code' });
+    }
+  });
+
+  // Update driver application details (admin only) - with verification
   app.patch("/api/admin/driver-applications/:id/details", requireSecureAdmin, async (req, res) => {
     try {
       const driverId = parseInt(req.params.id);
@@ -6533,8 +6605,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
         city,
         state,
         zipCode,
-        vehicleInfo
+        vehicleInfo,
+        verificationCode
       } = req.body;
+
+      console.log('📝 Update request body:', { driverId, hasVerificationCode: !!verificationCode, fields: Object.keys(req.body) });
+
+      // Verify the verification code
+      const storedVerification = req.session.verificationCodes?.[`driver-edit-${driverId}`];
+      if (!storedVerification) {
+        return res.status(400).json({ message: 'Verification code required. Please request a code first.' });
+      }
+
+      if (Date.now() > storedVerification.expiresAt) {
+        delete req.session.verificationCodes[`driver-edit-${driverId}`];
+        return res.status(400).json({ message: 'Verification code expired. Please request a new code.' });
+      }
+
+      if (storedVerification.code !== verificationCode) {
+        return res.status(400).json({ message: 'Invalid verification code.' });
+      }
+
+      // Clear the verification code after successful verification
+      delete req.session.verificationCodes[`driver-edit-${driverId}`];
 
       // Get current driver data
       const driver = await storage.getUser(driverId);
@@ -6554,26 +6647,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Address information
       if (address !== undefined || city !== undefined || state !== undefined || zipCode !== undefined) {
-        const currentAddresses = driver.addresses ? JSON.parse(driver.addresses as string) : [];
-        const updatedAddress = {
-          ...(currentAddresses[0] || {}),
-          address: address !== undefined ? address : currentAddresses[0]?.address,
-          city: city !== undefined ? city : currentAddresses[0]?.city,
-          state: state !== undefined ? state : currentAddresses[0]?.state,
-          zipCode: zipCode !== undefined ? zipCode : currentAddresses[0]?.zipCode,
-          isDefault: true
-        };
-        updateData.addresses = JSON.stringify([updatedAddress]);
+        try {
+          const currentAddresses = driver.addresses ? JSON.parse(driver.addresses as string) : [];
+          const updatedAddress = {
+            ...(currentAddresses[0] || {}),
+            address: address !== undefined ? address : currentAddresses[0]?.address,
+            city: city !== undefined ? city : currentAddresses[0]?.city,
+            state: state !== undefined ? state : currentAddresses[0]?.state,
+            zipCode: zipCode !== undefined ? zipCode : currentAddresses[0]?.zipCode,
+            isDefault: true
+          };
+          updateData.addresses = JSON.stringify([updatedAddress]);
+        } catch (parseError) {
+          console.error('Error parsing addresses:', parseError);
+          return res.status(400).json({ message: 'Invalid address data' });
+        }
       }
 
       // Vehicle information
       if (vehicleInfo !== undefined) {
-        const currentVehicleInfo = driver.vehicleInfo ? JSON.parse(driver.vehicleInfo as string) : {};
-        const updatedVehicleInfo = {
-          ...currentVehicleInfo,
-          ...vehicleInfo
-        };
-        updateData.vehicleInfo = JSON.stringify(updatedVehicleInfo);
+        try {
+          const currentVehicleInfo = driver.vehicleInfo ? JSON.parse(driver.vehicleInfo as string) : {};
+          const updatedVehicleInfo = {
+            ...currentVehicleInfo,
+            ...vehicleInfo
+          };
+          updateData.vehicleInfo = JSON.stringify(updatedVehicleInfo);
+        } catch (parseError) {
+          console.error('Error parsing vehicle info:', parseError);
+          return res.status(400).json({ message: 'Invalid vehicle data' });
+        }
       }
 
       // Update driver
@@ -6583,7 +6686,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: 'Failed to update driver application' });
       }
 
-      console.log(`✏️ Driver application ${driverId} details updated by admin`);
+      console.log(`✏️ Driver application ${driverId} details updated by admin with verification`);
 
       res.json({
         success: true,
