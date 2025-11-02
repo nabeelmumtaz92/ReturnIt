@@ -85,7 +85,8 @@ export default function BookReturnScreen({ navigation, route }) {
     const discount = calculateDiscount(baseCost);
     const finalCost = Math.max(0, baseCost - discount);
 
-    navigation.navigate('PaymentCheckout', {
+    // Navigate to photo verification screen BEFORE payment
+    navigation.navigate('PhotoVerification', {
       orderDetails: {
         pickupAddress: formData.pickupAddress,
         returnAddress: formData.returnAddress || 'Store Return Center',

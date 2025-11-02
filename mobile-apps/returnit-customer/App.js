@@ -10,6 +10,7 @@ import SocialLoginScreen from './screens/SocialLoginScreen';
 import WelcomeOnboardingScreen from './screens/WelcomeOnboardingScreen';
 import HomeScreen from './screens/HomeScreen';
 import BookReturnScreen from './screens/BookReturnScreen';
+import PhotoVerificationScreen from './screens/PhotoVerificationScreen';
 import PaymentCheckoutScreen from './screens/PaymentCheckoutScreen';
 import PayPalCheckoutScreen from './screens/PayPalCheckoutScreen';
 import TrackPackageScreen from './screens/TrackPackageScreen';
@@ -112,6 +113,7 @@ export default function App() {
       >
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="BookReturn" component={BookReturnScreen} />
+        <Stack.Screen name="PhotoVerification" component={PhotoVerificationScreen} />
         <Stack.Screen name="PaymentCheckout" component={PaymentCheckoutScreen} />
         <Stack.Screen name="PayPalCheckout" component={PayPalCheckoutScreen} />
         <Stack.Screen name="TrackPackage" component={TrackPackageScreen} />

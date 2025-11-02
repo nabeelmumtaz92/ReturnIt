@@ -180,71 +180,116 @@ export default function PhotoVerificationScreen({ route, navigation }) {
 
       // Upload receipt photo if provided
       if (receiptPhoto) {
-        const base64 = await FileSystem.readAsStringAsync(receiptPhoto.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        
-        const uploadResponse = await apiClient.request('/api/objects/upload', {
-          method: 'POST',
-        });
+        try {
+          // Step 1: Get presigned upload URL
+          const uploadResponse = await apiClient.request('/api/objects/upload', {
+            method: 'POST',
+          });
 
-        await fetch(uploadResponse.uploadURL, {
-          method: 'PUT',
-          body: await fetch(`data:image/jpeg;base64,${base64}`).then(r => r.blob()),
-        });
+          // Step 2: Read file as base64
+          const base64 = await FileSystem.readAsStringAsync(receiptPhoto.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
 
-        const finalizeResponse = await apiClient.request('/api/orders/temp/receipt', {
-          method: 'PUT',
-          body: { receiptUrl: uploadResponse.uploadURL },
-        });
+          // Step 3: Upload file to S3 using presigned URL
+          const fileBlob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+          await fetch(uploadResponse.uploadURL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'image/jpeg',
+            },
+            body: fileBlob,
+          });
 
-        uploadedPhotos.receiptPhotoUrl = finalizeResponse.objectPath;
+          // Step 4: Finalize upload and get durable object path
+          const finalizeResponse = await apiClient.put('/api/orders/temp/receipt', {
+            receiptUrl: uploadResponse.uploadURL,
+          });
+
+          if (!finalizeResponse.objectPath) {
+            throw new Error('No objectPath returned from finalize endpoint');
+          }
+
+          uploadedPhotos.receiptPhotoUrl = finalizeResponse.objectPath;
+          console.log('Receipt uploaded:', finalizeResponse.objectPath);
+        } catch (error) {
+          console.error('Receipt upload failed:', error);
+          throw new Error('Failed to upload receipt photo');
+        }
       }
 
       // Upload tags photo if provided
       if (tagsPhoto) {
-        const base64 = await FileSystem.readAsStringAsync(tagsPhoto.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        
-        const uploadResponse = await apiClient.request('/api/objects/upload', {
-          method: 'POST',
-        });
+        try {
+          const uploadResponse = await apiClient.request('/api/objects/upload', {
+            method: 'POST',
+          });
 
-        await fetch(uploadResponse.uploadURL, {
-          method: 'PUT',
-          body: await fetch(`data:image/jpeg;base64,${base64}`).then(r => r.blob()),
-        });
+          const base64 = await FileSystem.readAsStringAsync(tagsPhoto.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
 
-        const finalizeResponse = await apiClient.request('/api/orders/temp/receipt', {
-          method: 'PUT',
-          body: { receiptUrl: uploadResponse.uploadURL },
-        });
+          const fileBlob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+          await fetch(uploadResponse.uploadURL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'image/jpeg',
+            },
+            body: fileBlob,
+          });
 
-        uploadedPhotos.tagsPhotoUrl = finalizeResponse.objectPath;
+          const finalizeResponse = await apiClient.put('/api/orders/temp/receipt', {
+            receiptUrl: uploadResponse.uploadURL,
+          });
+
+          if (!finalizeResponse.objectPath) {
+            throw new Error('No objectPath returned from finalize endpoint');
+          }
+
+          uploadedPhotos.tagsPhotoUrl = finalizeResponse.objectPath;
+          uploadedPhotos.hasOriginalTags = true;
+          console.log('Tags uploaded:', finalizeResponse.objectPath);
+        } catch (error) {
+          console.error('Tags upload failed:', error);
+          throw new Error('Failed to upload tags photo');
+        }
       }
 
       // Upload packaging photo if provided
       if (packagingPhoto) {
-        const base64 = await FileSystem.readAsStringAsync(packagingPhoto.uri, {
-          encoding: FileSystem.EncodingType.Base64,
-        });
-        
-        const uploadResponse = await apiClient.request('/api/objects/upload', {
-          method: 'POST',
-        });
+        try {
+          const uploadResponse = await apiClient.request('/api/objects/upload', {
+            method: 'POST',
+          });
 
-        await fetch(uploadResponse.uploadURL, {
-          method: 'PUT',
-          body: await fetch(`data:image/jpeg;base64,${base64}`).then(r => r.blob()),
-        });
+          const base64 = await FileSystem.readAsStringAsync(packagingPhoto.uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
 
-        const finalizeResponse = await apiClient.request('/api/orders/temp/receipt', {
-          method: 'PUT',
-          body: { receiptUrl: uploadResponse.uploadURL },
-        });
+          const fileBlob = await (await fetch(`data:image/jpeg;base64,${base64}`)).blob();
+          await fetch(uploadResponse.uploadURL, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'image/jpeg',
+            },
+            body: fileBlob,
+          });
 
-        uploadedPhotos.packagingPhotoUrl = finalizeResponse.objectPath;
+          const finalizeResponse = await apiClient.put('/api/orders/temp/receipt', {
+            receiptUrl: uploadResponse.uploadURL,
+          });
+
+          if (!finalizeResponse.objectPath) {
+            throw new Error('No objectPath returned from finalize endpoint');
+          }
+
+          uploadedPhotos.packagingPhotoUrl = finalizeResponse.objectPath;
+          uploadedPhotos.hasOriginalPackaging = true;
+          console.log('Packaging uploaded:', finalizeResponse.objectPath);
+        } catch (error) {
+          console.error('Packaging upload failed:', error);
+          throw new Error('Failed to upload packaging photo');
+        }
       }
 
       // Navigate to payment with uploaded photos
@@ -258,7 +303,7 @@ export default function PhotoVerificationScreen({ route, navigation }) {
       console.error('Upload error:', error);
       Alert.alert(
         'Upload Failed',
-        'Failed to upload photos. Please check your connection and try again.'
+        error.message || 'Failed to upload photos. Please check your connection and try again.'
       );
     } finally {
       setUploading(false);
