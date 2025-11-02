@@ -224,11 +224,86 @@ export default function BookPickup() {
   
   // Fallback popular retailers for autocomplete if database fetch fails
   const popularRetailers = [
-    "Amazon", "Target", "Walmart", "Best Buy", "Macy's", "Nordstrom", "REI", "Nike", 
-    "Adidas", "Gap", "Old Navy", "H&M", "Zara", "Anthropologie", "Urban Outfitters",
-    "ASOS", "Wayfair", "Home Depot", "Lowe's", "Bed Bath & Beyond", "Williams Sonoma",
-    "Pottery Barn", "West Elm", "Crate & Barrel", "Costco", "Sam's Club", "TJ Maxx",
-    "Marshall's", "DSW", "Foot Locker", "Dick's Sporting Goods", "Barnes & Noble"
+    // Major Department Stores & Marketplaces
+    "Amazon", "Target", "Walmart", "Costco", "Sam's Club", "Macy's", "Nordstrom", "Nordstrom Rack",
+    "Bloomingdale's", "Neiman Marcus", "Saks Fifth Avenue", "Dillard's", "JCPenney", "Kohl's",
+    "Sears", "Belk", "Von Maur", "Lord & Taylor",
+    
+    // Electronics & Tech
+    "Best Buy", "Apple Store", "Microsoft Store", "B&H Photo", "Micro Center", "Fry's Electronics",
+    "GameStop", "Radio Shack", "Newegg",
+    
+    // Fashion & Apparel
+    "Nike", "Adidas", "Under Armour", "Lululemon", "Athleta", "Patagonia", "The North Face",
+    "Gap", "Old Navy", "Banana Republic", "J.Crew", "Abercrombie & Fitch", "Hollister",
+    "American Eagle", "Aeropostale", "H&M", "Zara", "Forever 21", "Uniqlo", "Urban Outfitters",
+    "Anthropologie", "Free People", "Express", "Ann Taylor", "LOFT", "Talbots", "Chico's",
+    "White House Black Market", "Lands' End", "L.L.Bean", "Eddie Bauer", "Columbia Sportswear",
+    
+    // Luxury Fashion
+    "Gucci", "Louis Vuitton", "Prada", "Burberry", "Versace", "Tory Burch", "Kate Spade",
+    "Michael Kors", "Coach", "Ralph Lauren", "Tommy Hilfiger", "Calvin Klein",
+    
+    // Shoes & Accessories
+    "DSW", "Foot Locker", "Finish Line", "Champs Sports", "Famous Footwear", "Zappos",
+    "Steve Madden", "Aldo", "Nine West", "Vans", "Converse", "Skechers", "Clarks",
+    
+    // Home & Furniture
+    "Wayfair", "IKEA", "Ashley Furniture", "Rooms To Go", "Bob's Discount Furniture",
+    "West Elm", "Pottery Barn", "Pottery Barn Teen", "Pottery Barn Kids", "Williams Sonoma",
+    "Crate & Barrel", "CB2", "Pier 1 Imports", "HomeGoods", "HomeSense", "At Home",
+    "Bed Bath & Beyond", "Container Store", "The Home Depot", "Lowe's", "Ace Hardware",
+    "Menards", "True Value", "Restoration Hardware", "Ethan Allen",
+    
+    // Beauty & Personal Care
+    "Sephora", "Ulta Beauty", "Sally Beauty", "Bath & Body Works", "The Body Shop",
+    "Lush", "MAC Cosmetics", "Blue Mercury", "Kiehl's", "L'Occitane",
+    
+    // Sporting Goods & Outdoor
+    "Dick's Sporting Goods", "REI", "Bass Pro Shops", "Cabela's", "Academy Sports + Outdoors",
+    "Sports Authority", "Modell's", "Big 5 Sporting Goods", "Scheels",
+    
+    // Discount & Off-Price
+    "TJ Maxx", "Marshall's", "HomeGoods", "Ross Dress for Less", "Burlington", "Nordstrom Rack",
+    "Saks OFF 5TH", "Century 21", "T.J.Maxx", "Winners", "Sierra Trading Post",
+    
+    // Specialty Retail
+    "Barnes & Noble", "Books-A-Million", "Half Price Books", "Staples", "Office Depot",
+    "Office Max", "The Container Store", "Bed Bath & Beyond", "Party City", "Spencer's",
+    "Build-A-Bear Workshop", "American Girl", "The Lego Store",
+    
+    // Baby & Kids
+    "Buy Buy Baby", "Babies R Us", "Carter's", "OshKosh B'gosh", "The Children's Place",
+    "Gymboree", "Janie and Jack", "Baby Gap", "buybuy BABY",
+    
+    // Toys & Games
+    "Toys R Us", "FAO Schwarz", "Toys R Us Canada", "Learning Express",
+    
+    // Jewelry & Watches
+    "Tiffany & Co.", "Kay Jewelers", "Jared", "Zales", "Pandora", "Swarovski",
+    "James Allen", "Blue Nile",
+    
+    // Pet Supplies
+    "Petco", "PetSmart", "Chewy", "Pet Supplies Plus",
+    
+    // Craft & Hobby
+    "Michaels", "Jo-Ann Fabrics", "Hobby Lobby", "A.C. Moore", "Blick Art Materials",
+    
+    // Grocery & Food
+    "Whole Foods Market", "Trader Joe's", "Wegmans", "Publix", "Kroger", "Safeway",
+    
+    // Online Retailers
+    "ASOS", "Shein", "Boohoo", "PrettyLittleThing", "Revolve", "Shopbop", "Net-a-Porter",
+    "Farfetch", "Ssense", "eBay", "Etsy", "Overstock", "QVC", "HSN",
+    
+    // Automotive & Parts
+    "AutoZone", "O'Reilly Auto Parts", "Advance Auto Parts", "NAPA Auto Parts", "Pep Boys",
+    
+    // Pharmacy & Health
+    "CVS", "Walgreens", "Rite Aid", "GNC", "Vitamin Shoppe",
+    
+    // Other Major Retailers
+    "Dollar General", "Dollar Tree", "Five Below", "Big Lots", "99 Cents Only Stores"
   ];
 
   // Step 1: Customer Information & Address
