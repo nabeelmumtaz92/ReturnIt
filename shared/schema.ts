@@ -627,6 +627,9 @@ export const storeLocations = pgTable("store_locations", {
   isActiveIdx: index("store_locations_is_active_idx").on(table.isActive),
 }));
 
+export type StoreLocation = typeof storeLocations.$inferSelect;
+export type InsertStoreLocation = typeof storeLocations.$inferInsert;
+
 // Return Label Generation (Design Only - Not Implemented)
 export const returnLabels = pgTable("return_labels", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),

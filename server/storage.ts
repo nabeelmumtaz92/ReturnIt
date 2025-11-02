@@ -488,6 +488,7 @@ export class MemStorage implements IStorage {
   private companies: Map<number, Company>;
   private returnPolicies: Map<number, ReturnPolicy>;
   private companyLocations: Map<number, CompanyLocation>;
+  private storeLocations: Map<number, StoreLocation>;
   private nextUserId: number = 1;
   private nextNotificationId: number = 1;
   private nextDocumentId: number = 1;
@@ -529,6 +530,7 @@ export class MemStorage implements IStorage {
     this.companies = new Map();
     this.returnPolicies = new Map();
     this.companyLocations = new Map();
+    this.storeLocations = new Map();
     
     // Master Administrator account (real data only)
     const masterAdmin: User = {

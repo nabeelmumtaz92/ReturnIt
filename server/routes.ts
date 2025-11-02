@@ -14416,6 +14416,77 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // ===== STORE LOCATIONS (GOOGLE PLACES INTEGRATION) =====
+  
+  // Search store locations (autocomplete for booking form)
+  app.get("/api/stores/search", async (req, res) => {
+    try {
+      const { query, city, limit } = req.query;
+      
+      if (!query || typeof query !== 'string' || query.length < 2) {
+        return res.json([]);
+      }
+      
+      const searchLimit = limit ? parseInt(limit as string) : 20;
+      const searchCity = city && typeof city === 'string' ? city : 'St. Louis';
+      
+      const stores = await storage.searchStoreLocations(
+        query,
+        searchCity,
+        searchLimit
+      );
+      
+      res.json(stores);
+    } catch (error) {
+      console.error('Error searching stores:', error);
+      res.status(500).json({ message: "Failed to search stores" });
+    }
+  });
+  
+  // Get store location count (for admin dashboard)
+  app.get("/api/stores/count", async (req, res) => {
+    try {
+      const { city } = req.query;
+      const searchCity = city && typeof city === 'string' ? city : undefined;
+      
+      const count = await storage.getStoreLocationsCount(searchCity);
+      res.json({ count });
+    } catch (error) {
+      console.error('Error getting store count:', error);
+      res.status(500).json({ message: "Failed to get store count" });
+    }
+  });
+  
+  // Admin: Sync stores from Google Places API
+  app.post("/api/admin/stores/sync", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+      
+      if (!apiKey) {
+        return res.status(500).json({ 
+          message: "Google Maps API key not configured. Please add GOOGLE_MAPS_API_KEY to environment variables." 
+        });
+      }
+      
+      const { PlacesSyncService } = await import("./services/placesSync");
+      const syncService = new PlacesSyncService(apiKey, storage);
+      
+      console.log('🔄 Starting store locations sync...');
+      const result = await syncService.syncStLouisStores();
+      
+      res.json({
+        success: true,
+        ...result
+      });
+    } catch (error) {
+      console.error('Error syncing stores:', error);
+      res.status(500).json({ 
+        message: "Failed to sync stores from Google Places",
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // Start daily stats scheduler
