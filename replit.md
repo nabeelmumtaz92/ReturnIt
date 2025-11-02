@@ -6,6 +6,8 @@ Return It is a reverse delivery service platform that streamlines returns, excha
 
 Preferred communication style: Simple, everyday language.
 
+**Code Sync Workflow**: Use GitHub for syncing code between Replit and local Windows machine (C:\Users\nsm21\Desktop\ReturnIt\). Do NOT use VS Code SSH. Workflow: Agent commits/pushes changes in Replit → User runs `git pull` locally → User runs mobile app commands (`npm install`, `eas update`) on local machine.
+
 # System Architecture
 
 ## Frontend
