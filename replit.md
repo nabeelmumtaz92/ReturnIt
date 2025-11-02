@@ -31,10 +31,12 @@ Preferred communication style: Simple, everyday language.
 - **Driver Payouts**: Tracking, Stripe transfers, 1099 generation.
 - **Driver Payment Methods**: PCI-compliant storage of Stripe references for bank accounts and debit cards (no raw PAN/ABA data).
 - **Retailer Accounts**: Multi-admin access, role management, API keys, webhooks.
+- **Store Locations**: Google Places-powered database of 600+ St. Louis retail locations with verified addresses, coordinates, and metadata.
 
 ## Key Features
 
 ### Customer Features
+- **Google Places Store Location Integration**: Smart autocomplete with 600+ verified St. Louis store addresses from Google Places API. Requires typing (min 2 chars) before showing results. Server-side caching (5-min TTL) for performance.
 - **Authentication-Required Checkout**: Customers must sign in before completing booking and payment for security and order tracking.
 - Account management, social login.
 - Store location autocomplete, real-time WebSocket GPS tracking.
