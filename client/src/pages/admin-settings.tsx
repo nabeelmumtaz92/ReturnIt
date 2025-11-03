@@ -16,7 +16,11 @@ import {
   Bell,
   Package,
   Save,
-  RotateCcw
+  RotateCcw,
+  MapPin,
+  Download,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -40,10 +44,29 @@ export default function AdminSettings() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [editedValues, setEditedValues] = useState<Record<string, string>>({});
+  const [syncResult, setSyncResult] = useState<{ synced: number; errors: string[]; retailers: Record<string, number> } | null>(null);
 
   const { data: settings, isLoading } = useQuery<SystemSetting[]>({
     queryKey: ['/api/admin/settings'],
     enabled: isAuthenticated && user?.isAdmin,
+  });
+
+  const syncStoresMutation = useMutation({
+    mutationFn: () => apiRequest('POST', '/api/admin/stores/sync'),
+    onSuccess: (data) => {
+      setSyncResult(data);
+      toast({
+        title: "Store Sync Complete! 🎉",
+        description: `Successfully synced ${data.synced} store locations from Google Places API`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Sync Failed",
+        description: error.message || "Failed to sync stores from Google Places API",
+        variant: "destructive",
+      });
+    },
   });
 
   const updateSettingMutation = useMutation({
@@ -197,6 +220,101 @@ export default function AdminSettings() {
             </div>
           </div>
         </div>
+
+        {/* Store Locations Sync Section */}
+        <Card className="bg-white border-[#D4C4A8] mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-[#B8956A]" />
+              Store Locations Database Sync
+            </CardTitle>
+            <CardDescription>
+              Sync 600+ verified St. Louis store locations from Google Places API
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="flex-1">
+                <p className="text-sm text-gray-600 mb-3">
+                  This will search Google Places for 80+ major retailers (Target, Walmart, Best Buy, etc.) 
+                  in the St. Louis metro area and populate the store_locations database with verified addresses, 
+                  coordinates, phone numbers, and metadata.
+                </p>
+                <ul className="text-xs text-gray-500 space-y-1 mb-4">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    Covers 80+ major retailers across all categories
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    Automatic deduplication using Google Place IDs
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle2 className="h-3 w-3 text-green-600" />
+                    Stores coordinates for GPS navigation
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <AlertCircle className="h-3 w-3 text-amber-600" />
+                    Takes ~10-15 minutes to complete (rate limited)
+                  </li>
+                </ul>
+
+                <Button
+                  onClick={() => syncStoresMutation.mutate()}
+                  disabled={syncStoresMutation.isPending}
+                  className="bg-[#B8956A] hover:bg-[#A0805A] text-white"
+                  data-testid="button-sync-stores"
+                >
+                  {syncStoresMutation.isPending ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2" />
+                      Syncing Store Locations...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Sync Store Locations from Google Places
+                    </>
+                  )}
+                </Button>
+              </div>
+
+              {syncResult && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex-1">
+                  <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    Sync Complete!
+                  </h4>
+                  <div className="space-y-1 text-sm text-green-800">
+                    <p><strong>{syncResult.synced}</strong> total locations synced</p>
+                    <p><strong>{Object.keys(syncResult.retailers).length}</strong> retailers found</p>
+                    {syncResult.errors.length > 0 && (
+                      <p className="text-red-600 text-xs mt-2">
+                        {syncResult.errors.length} errors occurred (check console)
+                      </p>
+                    )}
+                  </div>
+                  
+                  <details className="mt-3">
+                    <summary className="text-xs text-green-700 cursor-pointer hover:text-green-900">
+                      View breakdown by retailer
+                    </summary>
+                    <div className="mt-2 max-h-40 overflow-y-auto text-xs space-y-0.5">
+                      {Object.entries(syncResult.retailers)
+                        .sort((a, b) => b[1] - a[1])
+                        .map(([retailer, count]) => (
+                          <div key={retailer} className="flex justify-between">
+                            <span>{retailer}</span>
+                            <span className="font-medium">{count} locations</span>
+                          </div>
+                        ))}
+                    </div>
+                  </details>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Settings Tabs */}
         <Tabs defaultValue={categories[0]} className="space-y-6">
