@@ -174,7 +174,7 @@ Preferred communication style: Simple, everyday language.
 - Multi-environment support, automated workflow.
 - Server configuration binds to 0.0.0.0:5000 with a fast /health endpoint.
 - Performance optimizations including AI Knowledge Base lazy loading.
-- Multi-provider map system (Google Maps, OpenStreetMap, Apple Maps).
+- Multi-provider map system (Apple Maps, Google Maps).
 
 # External Dependencies
 
@@ -195,6 +195,6 @@ Preferred communication style: Simple, everyday language.
 - **OpenAI**: AI assistant integration (GPT-4o).
 - **Tawk.to**: Live chat widget.
 - **ImprovMX**: Email forwarding.
-- **Google Maps**: GPS tracking and mapping.
-- **OpenStreetMap**: Free and open-source mapping.
+- **Apple Maps**: Primary mapping solution with turn-by-turn navigation.
+- **Google Maps**: Secondary mapping option for GPS tracking.
 - **Replit App Storage**: Object storage for uploads.

@@ -1,9 +1,8 @@
 // Map Provider Types for ReturnIt
 
 export const MapProviderType = {
-  GOOGLE_MAPS: 'google_maps',
-  OPENSTREETMAP: 'openstreetmap',
   APPLE_MAPS: 'apple_maps',
+  GOOGLE_MAPS: 'google_maps',
 } as const;
 
 export type MapProvider = typeof MapProviderType[keyof typeof MapProviderType];
@@ -23,32 +22,6 @@ export interface MapProviderConfig {
 }
 
 export const MAP_PROVIDERS: Record<MapProvider, MapProviderConfig> = {
-  [MapProviderType.GOOGLE_MAPS]: {
-    id: MapProviderType.GOOGLE_MAPS,
-    name: 'Google Maps',
-    description: 'The most comprehensive map data with excellent POI information',
-    requiresApiKey: true,
-    features: {
-      realTimeTracking: true,
-      turnByTurnNavigation: true,
-      satelliteView: true,
-      trafficData: true,
-    },
-    pricing: 'paid',
-  },
-  [MapProviderType.OPENSTREETMAP]: {
-    id: MapProviderType.OPENSTREETMAP,
-    name: 'OpenStreetMap',
-    description: 'Free and open-source maps with community-driven data',
-    requiresApiKey: false,
-    features: {
-      realTimeTracking: true,
-      turnByTurnNavigation: false,
-      satelliteView: false,
-      trafficData: false,
-    },
-    pricing: 'free',
-  },
   [MapProviderType.APPLE_MAPS]: {
     id: MapProviderType.APPLE_MAPS,
     name: 'Apple Maps',
@@ -62,6 +35,19 @@ export const MAP_PROVIDERS: Record<MapProvider, MapProviderConfig> = {
     },
     pricing: 'free',
   },
+  [MapProviderType.GOOGLE_MAPS]: {
+    id: MapProviderType.GOOGLE_MAPS,
+    name: 'Google Maps',
+    description: 'The most comprehensive map data with excellent POI information',
+    requiresApiKey: true,
+    features: {
+      realTimeTracking: true,
+      turnByTurnNavigation: true,
+      satelliteView: true,
+      trafficData: true,
+    },
+    pricing: 'paid',
+  },
 };
 
 export interface UserMapPreferences {
@@ -73,7 +59,7 @@ export interface UserMapPreferences {
 }
 
 export const defaultMapPreferences: UserMapPreferences = {
-  preferredProvider: MapProviderType.OPENSTREETMAP,
+  preferredProvider: MapProviderType.APPLE_MAPS,
   showTraffic: true,
   showSatelliteView: false,
   auto3D: false,

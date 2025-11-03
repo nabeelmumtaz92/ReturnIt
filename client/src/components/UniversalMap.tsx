@@ -96,62 +96,6 @@ export default function UniversalMap({
   }, [markers]);
 
 
-  // Render OpenStreetMap (using Leaflet via react-map-gl's raster tiles)
-  const renderOpenStreetMap = () => {
-    return (
-      <div className={className}>
-        <Map
-          ref={mapRef}
-          {...viewport}
-          onMove={evt => setViewport(evt.viewState)}
-          onClick={handleMapClick}
-          mapStyle={{
-            version: 8,
-            sources: {
-              'raster-tiles': {
-                type: 'raster',
-                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                tileSize: 256,
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-              },
-            },
-            layers: [
-              {
-                id: 'simple-tiles',
-                type: 'raster',
-                source: 'raster-tiles',
-                minzoom: 0,
-                maxzoom: 22,
-              },
-            ],
-          }}
-          style={{ width: '100%', height: '100%', ...style }}
-        >
-          {/* Render markers */}
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              latitude={marker.latitude}
-              longitude={marker.longitude}
-              onClick={(e) => {
-                e.originalEvent.stopPropagation();
-                marker.onClick?.();
-              }}
-            >
-              <div className="cursor-pointer" style={{ color: marker.color || '#f99806' }}>
-                {marker.icon || <MapPin className="h-8 w-8" fill="currentColor" />}
-              </div>
-            </Marker>
-          ))}
-
-          {/* Map controls */}
-          {showControls && <NavigationControl position="top-right" />}
-          {showGeolocate && <GeolocateControl position="top-right" />}
-        </Map>
-      </div>
-    );
-  };
-
   // Render Google Maps (placeholder - requires @react-google-maps/api package)
   const renderGoogleMaps = () => {
     if (!GOOGLE_MAPS_API_KEY) {
@@ -161,7 +105,7 @@ export default function UniversalMap({
     return (
       <MapUnavailableMessage 
         provider="Google Maps" 
-        reason="Google Maps rendering is coming soon. For now, please use OpenStreetMap or Apple Maps."
+        reason="Google Maps rendering is coming soon. For now, please use Apple Maps on iOS devices."
       />
     );
   };
@@ -171,7 +115,7 @@ export default function UniversalMap({
     return (
       <MapUnavailableMessage 
         provider="Apple Maps" 
-        reason="Apple Maps is available on iOS devices through the native driver app."
+        reason="Apple Maps is available on iOS devices through the native driver and customer apps."
       />
     );
   };
@@ -179,14 +123,12 @@ export default function UniversalMap({
   // Select the appropriate map renderer
   const renderMap = () => {
     switch (currentProvider) {
-      case MapProviderType.GOOGLE_MAPS:
-        return renderGoogleMaps();
-      case MapProviderType.OPENSTREETMAP:
-        return renderOpenStreetMap();
       case MapProviderType.APPLE_MAPS:
         return renderAppleMaps();
+      case MapProviderType.GOOGLE_MAPS:
+        return renderGoogleMaps();
       default:
-        return renderOpenStreetMap();
+        return renderAppleMaps();
     }
   };
 
