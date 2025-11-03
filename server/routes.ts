@@ -4077,59 +4077,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Search store locations by name (for autocomplete dropdown)
-  // MUST be before :retailer wildcard route
-  app.get("/api/stores/search", async (req, res) => {
-    try {
-      const { q: query } = req.query;
-      
-      if (!query || typeof query !== 'string') {
-        return res.status(400).json({ message: 'Search query is required' });
-      }
-
-      // Cache store search results for 15 minutes
-      const cacheKey = `stores_search_${query.toLowerCase()}`;
-      
-      const storeLocations = await PerformanceService.withCache(
-        cacheKey,
-        async () => {
-          // Search merchant_policies table by store name
-          const allPolicies = await storage.getMerchantPolicies();
-          
-          // Filter by search query (case-insensitive) and only return stores with addresses
-          const matchingStores = allPolicies
-            .filter(policy => 
-              policy.isActive && 
-              policy.streetAddress && // Must have address data
-              policy.storeName.toLowerCase().includes(query.toLowerCase())
-            )
-            .map(policy => ({
-              id: policy.id,
-              merchantId: policy.merchantId,
-              storeName: policy.storeName,
-              displayName: `${policy.storeName}${policy.city ? ` - ${policy.city}` : ''}`,
-              streetAddress: policy.streetAddress,
-              city: policy.city,
-              state: policy.state,
-              zipCode: policy.zipCode,
-              phone: policy.phone,
-              website: policy.website
-            }));
-
-          // Sort by store name
-          matchingStores.sort((a, b) => a.storeName.localeCompare(b.storeName));
-          
-          return matchingStores;
-        },
-        1000 * 60 * 15 // 15 minutes TTL
-      );
-
-      res.json(storeLocations);
-    } catch (error) {
-      console.error('Error searching store locations:', error);
-      res.status(500).json({ message: 'Failed to search store locations' });
-    }
-  });
+  // Note: Store search endpoint moved to line ~14627 (Google Places integration section)
 
   // GET /api/stores/:retailer - Get stores for specific retailer
   app.get("/api/stores/:retailer", async (req, res) => {
@@ -14628,26 +14576,32 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     try {
       const { query, city, limit } = req.query;
       
+      console.log('[/api/stores/search] Request:', { query, city, limit });
+      
       if (!query || typeof query !== 'string' || query.length < 2) {
+        console.log('[/api/stores/search] Query too short, returning empty');
         return res.json([]);
       }
       
       const searchLimit = limit ? parseInt(limit as string) : 20;
-      const searchCity = city && typeof city === 'string' ? city : 'St. Louis';
+      const searchCity = city && typeof city === 'string' ? city : undefined; // No default city filter
       
       // Check cache first
-      const cacheKey = `${query.toLowerCase()}:${searchCity}:${searchLimit}`;
+      const cacheKey = `${query.toLowerCase()}:${searchCity || 'all'}:${searchLimit}`;
       const cached = storeSearchCache.get(cacheKey);
       
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log('[/api/stores/search] Cache hit, returning cached results:', cached.data.length, 'items');
         return res.json(cached.data);
       }
       
+      console.log('[/api/stores/search] Cache miss, calling storage.searchStoreLocations');
       const stores = await storage.searchStoreLocations(
         query,
         searchCity,
         searchLimit
       );
+      console.log('[/api/stores/search] Storage returned:', stores.length, 'items');
       
       // Cache the results
       storeSearchCache.set(cacheKey, {

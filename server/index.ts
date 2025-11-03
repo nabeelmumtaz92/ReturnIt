@@ -4,7 +4,7 @@ import helmet from "helmet";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
-import { registerRoutes } from "./routes";
+import { registerRoutes } from "./routes.js";
 import { validateSecurityConfig, logSecurityStatus } from "./security-startup";
 import { setupVite, serveStatic, log } from "./vite";
 import { PerformanceService, performanceMiddleware } from "./performance";

@@ -4489,35 +4489,36 @@ export class DatabaseStorage implements IStorage {
   async searchStoreLocations(query: string, city?: string, limit: number = 20): Promise<StoreLocation[]> {
     const lowerQuery = `%${query.toLowerCase()}%`;
     
-    let queryBuilder = db
-      .select()
-      .from(storeLocations)
-      .where(
-        and(
-          eq(storeLocations.isActive, true),
-          or(
-            sql`LOWER(${storeLocations.retailerName}) LIKE ${lowerQuery}`,
-            sql`LOWER(${storeLocations.storeName}) LIKE ${lowerQuery}`,
-            sql`LOWER(${storeLocations.streetAddress}) LIKE ${lowerQuery}`
-          )
-        )
-      );
+    console.log('[searchStoreLocations] Searching with:', { query, city, limit, lowerQuery });
     
-    if (city) {
-      queryBuilder = queryBuilder.where(
-        and(
+    // Build WHERE conditions
+    const searchConditions = or(
+      sql`LOWER(${storeLocations.retailerName}) LIKE ${lowerQuery}`,
+      sql`LOWER(${storeLocations.storeName}) LIKE ${lowerQuery}`,
+      sql`LOWER(${storeLocations.streetAddress}) LIKE ${lowerQuery}`
+    );
+    
+    // Combine with city filter if provided
+    const whereConditions = city
+      ? and(
           eq(storeLocations.isActive, true),
           sql`LOWER(${storeLocations.city}) = ${city.toLowerCase()}`,
-          or(
-            sql`LOWER(${storeLocations.retailerName}) LIKE ${lowerQuery}`,
-            sql`LOWER(${storeLocations.storeName}) LIKE ${lowerQuery}`,
-            sql`LOWER(${storeLocations.streetAddress}) LIKE ${lowerQuery}`
-          )
+          searchConditions
         )
-      );
-    }
+      : and(
+          eq(storeLocations.isActive, true),
+          searchConditions
+        );
     
-    return await queryBuilder.limit(limit);
+    const results = await db
+      .select()
+      .from(storeLocations)
+      .where(whereConditions)
+      .limit(limit);
+    
+    console.log('[searchStoreLocations] Found', results.length, 'results');
+    
+    return results;
   }
 
   async getStoreLocation(id: number): Promise<StoreLocation | undefined> {
