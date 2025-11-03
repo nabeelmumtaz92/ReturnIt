@@ -99,6 +99,7 @@ const ComprehensivePricingExamples = lazy(() => import("@/pages/comprehensive-pr
 const ComprehensiveGuidebook = lazy(() => import("@/pages/comprehensive-guidebook"));
 const TermsOfService = lazy(() => import("@/pages/terms-of-service"));
 const PrivacyPolicy = lazy(() => import("@/pages/privacy-policy"));
+const Support = lazy(() => import("@/pages/support"));
 const CostMonitoring = lazy(() => import("@/pages/cost-monitoring"));
 const MonitoringDashboard = lazy(() => import("@/pages/monitoring-dashboard"));
 const AIKnowledgeCenter = lazy(() => import("@/pages/ai-knowledge-center"));
@@ -232,6 +233,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/terms-of-service" component={TermsOfService} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
+      <Route path="/support" component={Support} />
       {/* New Admin Routes System */}
       <Route path="/admin/:rest*">
         {() => (
