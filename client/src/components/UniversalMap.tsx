@@ -95,139 +95,60 @@ export default function UniversalMap({
     }
   }, [markers]);
 
-  // Determine map style based on preferences
-  const getMapStyle = () => {
-    if (currentProvider === MapProviderType.MAPBOX) {
-      if (preferences.showSatelliteView) {
-        return 'mapbox://styles/mapbox/satellite-streets-v12';
-      }
-      if (preferences.darkModeMap) {
-        return 'mapbox://styles/mapbox/dark-v11';
-      }
-      return 'mapbox://styles/mapbox/streets-v12';
-    }
-    return 'mapbox://styles/mapbox/streets-v12';
-  };
-
-  // Render Mapbox Map
-  const renderMapboxMap = () => {
-    if (!MAPBOX_TOKEN) {
-      return <MapUnavailableMessage provider="Mapbox" reason="VITE_MAPBOX_ACCESS_TOKEN not configured" />;
-    }
-
-    return (
-      <Map
-        ref={mapRef}
-        {...viewport}
-        onMove={evt => setViewport(evt.viewState)}
-        onClick={handleMapClick}
-        mapStyle={getMapStyle()}
-        mapboxAccessToken={MAPBOX_TOKEN}
-        style={{ width: '100%', height: '100%', ...style }}
-        className={className}
-      >
-        {/* Render markers */}
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            latitude={marker.latitude}
-            longitude={marker.longitude}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              marker.onClick?.();
-            }}
-          >
-            <div className="cursor-pointer" style={{ color: marker.color || '#f99806' }}>
-              {marker.icon || <MapPin className="h-8 w-8" fill="currentColor" />}
-            </div>
-          </Marker>
-        ))}
-
-        {/* Render routes */}
-        {routes.map((route, index) => {
-          const routeGeoJSON = {
-            type: 'Feature' as const,
-            properties: {},
-            geometry: {
-              type: 'LineString' as const,
-              coordinates: route.coordinates,
-            },
-          };
-
-          return (
-            <Source key={`route-${index}`} id={`route-${index}`} type="geojson" data={routeGeoJSON}>
-              <Layer
-                id={`route-layer-${index}`}
-                type="line"
-                paint={{
-                  'line-color': route.color || '#f99806',
-                  'line-width': route.width || 4,
-                  'line-opacity': 0.8,
-                }}
-              />
-            </Source>
-          );
-        })}
-
-        {/* Map controls */}
-        {showControls && <NavigationControl position="top-right" />}
-        {showGeolocate && <GeolocateControl position="top-right" />}
-      </Map>
-    );
-  };
 
   // Render OpenStreetMap (using Leaflet via react-map-gl's raster tiles)
   const renderOpenStreetMap = () => {
     return (
-      <Map
-        ref={mapRef}
-        {...viewport}
-        onMove={evt => setViewport(evt.viewState)}
-        onClick={handleMapClick}
-        mapStyle={{
-          version: 8,
-          sources: {
-            'raster-tiles': {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      <div className={className}>
+        <Map
+          ref={mapRef}
+          {...viewport}
+          onMove={evt => setViewport(evt.viewState)}
+          onClick={handleMapClick}
+          mapStyle={{
+            version: 8,
+            sources: {
+              'raster-tiles': {
+                type: 'raster',
+                tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                tileSize: 256,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              },
             },
-          },
-          layers: [
-            {
-              id: 'simple-tiles',
-              type: 'raster',
-              source: 'raster-tiles',
-              minzoom: 0,
-              maxzoom: 22,
-            },
-          ],
-        }}
-        style={{ width: '100%', height: '100%', ...style }}
-        className={className}
-      >
-        {/* Render markers */}
-        {markers.map((marker) => (
-          <Marker
-            key={marker.id}
-            latitude={marker.latitude}
-            longitude={marker.longitude}
-            onClick={(e) => {
-              e.originalEvent.stopPropagation();
-              marker.onClick?.();
-            }}
-          >
-            <div className="cursor-pointer" style={{ color: marker.color || '#f99806' }}>
-              {marker.icon || <MapPin className="h-8 w-8" fill="currentColor" />}
-            </div>
-          </Marker>
-        ))}
+            layers: [
+              {
+                id: 'simple-tiles',
+                type: 'raster',
+                source: 'raster-tiles',
+                minzoom: 0,
+                maxzoom: 22,
+              },
+            ],
+          }}
+          style={{ width: '100%', height: '100%', ...style }}
+        >
+          {/* Render markers */}
+          {markers.map((marker) => (
+            <Marker
+              key={marker.id}
+              latitude={marker.latitude}
+              longitude={marker.longitude}
+              onClick={(e) => {
+                e.originalEvent.stopPropagation();
+                marker.onClick?.();
+              }}
+            >
+              <div className="cursor-pointer" style={{ color: marker.color || '#f99806' }}>
+                {marker.icon || <MapPin className="h-8 w-8" fill="currentColor" />}
+              </div>
+            </Marker>
+          ))}
 
-        {/* Map controls */}
-        {showControls && <NavigationControl position="top-right" />}
-        {showGeolocate && <GeolocateControl position="top-right" />}
-      </Map>
+          {/* Map controls */}
+          {showControls && <NavigationControl position="top-right" />}
+          {showGeolocate && <GeolocateControl position="top-right" />}
+        </Map>
+      </div>
     );
   };
 
@@ -240,7 +161,7 @@ export default function UniversalMap({
     return (
       <MapUnavailableMessage 
         provider="Google Maps" 
-        reason="Google Maps rendering is coming soon. For now, please use Mapbox or OpenStreetMap."
+        reason="Google Maps rendering is coming soon. For now, please use OpenStreetMap or Apple Maps."
       />
     );
   };
@@ -258,8 +179,6 @@ export default function UniversalMap({
   // Select the appropriate map renderer
   const renderMap = () => {
     switch (currentProvider) {
-      case MapProviderType.MAPBOX:
-        return renderMapboxMap();
       case MapProviderType.GOOGLE_MAPS:
         return renderGoogleMaps();
       case MapProviderType.OPENSTREETMAP:
@@ -267,7 +186,7 @@ export default function UniversalMap({
       case MapProviderType.APPLE_MAPS:
         return renderAppleMaps();
       default:
-        return renderMapboxMap();
+        return renderOpenStreetMap();
     }
   };
 
