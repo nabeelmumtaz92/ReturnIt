@@ -2,6 +2,13 @@
 
 Return It is a reverse delivery service platform that streamlines returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution with a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and valuation through a strong patent portfolio. Key capabilities include a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
+## Current Status (November 2025)
+**🚀 iOS App Store Submission in Progress**
+- Google Places store locations integration complete (600+ St. Louis stores)
+- EAS build configuration ready for production
+- Both customer and driver apps configured for App Store submission
+- See `IOS_BUILD_GUIDE.md` for complete submission steps
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

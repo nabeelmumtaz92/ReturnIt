@@ -109,6 +109,8 @@
     ],
     "scheme": "returnit-driver",
     "extra": {
+      "apiUrl": "https://returnit.online",
+      "stripePublishableKey": "pk_live_51QnggfGqTEOZPKe7XDuSWfJHUUE3Wz1d9V2l4sJpDI3RAwF3yjZ9cYH1JqNqxGOO4BmJmW9JYlUZLjRyP3vQRxd300NtX3b9Hm",
       "eas": {
         "projectId": "6dc97462-a28e-4563-adeb-5de73d87e0ce"
       }
