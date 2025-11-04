@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import BrandLogo from "@/components/BrandLogo";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export default function ResetPasswordPage() {
   const [, setLocation] = useLocation();
