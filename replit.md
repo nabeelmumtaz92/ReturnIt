@@ -2,6 +2,13 @@
 
 Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution featuring a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and valuation through a strong patent portfolio, providing a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
+# Recent Changes (November 4, 2025)
+
+## Store Autocomplete - Now Fully Functional ✅
+- **Fixed Express route ordering bug**: Moved `/api/stores/search` and `/api/stores/count` routes BEFORE the parameterized `/api/stores/:retailer` route in server/routes.ts (line ~4090). Previously, Express was matching `/api/stores/search` to the `:retailer` route, preventing the search endpoint from executing.
+- **Fixed StoreAutocomplete crash**: Removed undefined `store.displayName` field reference in book-return.tsx. Now constructs display value from available API fields: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`.
+- **Verified end-to-end**: Store autocomplete in booking form (Step 2) now works perfectly - typing "tar" shows 3 Target locations, clicking a store auto-populates all destination fields (name, address, city, state).
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.

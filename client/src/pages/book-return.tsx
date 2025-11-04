@@ -981,7 +981,7 @@ export default function BookReturn() {
                     setFormData(prev => ({
                       ...prev,
                       retailerName: store.retailerName, // For validation (line 552)
-                      retailer: store.displayName, // Display value
+                      retailer: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`, // Display value
                       retailerLocation: store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`, // For validation (line 553)
                       storeDestinationName: store.storeName,
                       storeDestinationAddress: store.streetAddress,

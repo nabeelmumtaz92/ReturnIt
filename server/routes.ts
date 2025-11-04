@@ -4077,7 +4077,77 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Note: Store search endpoint moved to line ~14627 (Google Places integration section)
+  // ===== STORE SEARCH (moved before :retailer route for proper Express matching) =====
+  
+  // In-memory cache for store search results (5 minute TTL)
+  const storeSearchCache = new Map<string, { data: any; timestamp: number }>();
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  
+  // Search store locations (autocomplete for booking form) with caching
+  app.get("/api/stores/search", async (req, res) => {
+    try {
+      const { query, city, limit } = req.query;
+      
+      console.log('[STORE SEARCH API] ===== NEW REQUEST =====');
+      console.log('[STORE SEARCH API] Query params:', { query, city, limit });
+      
+      if (!query || typeof query !== 'string' || query.length < 2) {
+        console.log('[STORE SEARCH API] Query too short or invalid, returning empty');
+        return res.json([]);
+      }
+      
+      const searchLimit = limit ? parseInt(limit as string) : 20;
+      const searchCity = city && typeof city === 'string' ? city : undefined;
+      
+      // Check cache first
+      const cacheKey = `${query.toLowerCase()}:${searchCity || 'all'}:${searchLimit}`;
+      const cached = storeSearchCache.get(cacheKey);
+      
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log('[/api/stores/search] Cache hit, returning cached results:', cached.data.length, 'items');
+        return res.json(cached.data);
+      }
+      
+      console.log('[/api/stores/search] Cache miss, calling storage.searchStoreLocations');
+      const stores = await storage.searchStoreLocations(
+        query,
+        searchCity,
+        searchLimit
+      );
+      console.log('[/api/stores/search] Storage returned:', stores.length, 'items');
+      
+      // Cache the results
+      storeSearchCache.set(cacheKey, {
+        data: stores,
+        timestamp: Date.now()
+      });
+      
+      // Clean up old cache entries (simple LRU: keep max 1000 entries)
+      if (storeSearchCache.size > 1000) {
+        const firstKey = storeSearchCache.keys().next().value;
+        if (firstKey) storeSearchCache.delete(firstKey);
+      }
+      
+      res.json(stores);
+    } catch (error) {
+      console.error('Error searching stores:', error);
+      res.status(500).json({ message: "Failed to search stores" });
+    }
+  });
+  
+  // Get store location count (for admin dashboard)
+  app.get("/api/stores/count", async (req, res) => {
+    try {
+      const { city } = req.query;
+      const searchCity = city && typeof city === 'string' ? city : undefined;
+      
+      const count = await storage.getStoreLocationsCount(searchCity);
+      res.json({ count });
+    } catch (error) {
+      console.error('Error getting store count:', error);
+      res.status(500).json({ message: "Failed to get store count" });
+    }
+  });
 
   // GET /api/stores/:retailer - Get stores for specific retailer
   app.get("/api/stores/:retailer", async (req, res) => {
@@ -14565,77 +14635,6 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  // ===== STORE LOCATIONS (GOOGLE PLACES INTEGRATION) =====
-  
-  // In-memory cache for store search results (5 minute TTL)
-  const storeSearchCache = new Map<string, { data: any; timestamp: number }>();
-  const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-  
-  // Search store locations (autocomplete for booking form) with caching
-  app.get("/api/stores/search", async (req, res) => {
-    try {
-      const { query, city, limit } = req.query;
-      
-      console.log('[/api/stores/search] Request:', { query, city, limit });
-      
-      if (!query || typeof query !== 'string' || query.length < 2) {
-        console.log('[/api/stores/search] Query too short, returning empty');
-        return res.json([]);
-      }
-      
-      const searchLimit = limit ? parseInt(limit as string) : 20;
-      const searchCity = city && typeof city === 'string' ? city : undefined; // No default city filter
-      
-      // Check cache first
-      const cacheKey = `${query.toLowerCase()}:${searchCity || 'all'}:${searchLimit}`;
-      const cached = storeSearchCache.get(cacheKey);
-      
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-        console.log('[/api/stores/search] Cache hit, returning cached results:', cached.data.length, 'items');
-        return res.json(cached.data);
-      }
-      
-      console.log('[/api/stores/search] Cache miss, calling storage.searchStoreLocations');
-      const stores = await storage.searchStoreLocations(
-        query,
-        searchCity,
-        searchLimit
-      );
-      console.log('[/api/stores/search] Storage returned:', stores.length, 'items');
-      
-      // Cache the results
-      storeSearchCache.set(cacheKey, {
-        data: stores,
-        timestamp: Date.now()
-      });
-      
-      // Clean up old cache entries (simple LRU: keep max 1000 entries)
-      if (storeSearchCache.size > 1000) {
-        const firstKey = storeSearchCache.keys().next().value;
-        if (firstKey) storeSearchCache.delete(firstKey);
-      }
-      
-      res.json(stores);
-    } catch (error) {
-      console.error('Error searching stores:', error);
-      res.status(500).json({ message: "Failed to search stores" });
-    }
-  });
-  
-  // Get store location count (for admin dashboard)
-  app.get("/api/stores/count", async (req, res) => {
-    try {
-      const { city } = req.query;
-      const searchCity = city && typeof city === 'string' ? city : undefined;
-      
-      const count = await storage.getStoreLocationsCount(searchCity);
-      res.json({ count });
-    } catch (error) {
-      console.error('Error getting store count:', error);
-      res.status(500).json({ message: "Failed to get store count" });
-    }
-  });
-  
   // Admin: Sync stores from Google Places API
   app.post("/api/admin/stores/sync", isAuthenticated, requireSecureAdmin, async (req, res) => {
     try {
