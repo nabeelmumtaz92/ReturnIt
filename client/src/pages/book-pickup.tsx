@@ -81,6 +81,8 @@ export default function BookPickup() {
     // Package sizing (per-item)
     boxSize: 'medium' as 'small' | 'medium' | 'large' | 'extra-large',
     numberOfBoxes: 1,
+    // Service tier (pricing)
+    serviceType: 'standard' as 'standard' | 'priority' | 'instant',
     // Preferred time slot
     preferredTimeSlot: '',
     // Pickup location preference
@@ -1517,6 +1519,92 @@ export default function BookPickup() {
             onChange={(e) => handleInputChange('itemDescription', e.target.value)}
             className="bg-white/80 border-border focus:border-primary"
             data-testid="textarea-item-description" />
+        </div>
+      </div>
+
+      {/* Service Tier - Premium Pricing */}
+      <div className="space-y-4">
+        <div className="flex items-center space-x-2 mb-3">
+          <Clock className="h-5 w-5 text-primary" />
+          <Label className="text-foreground font-semibold text-lg">Service Speed</Label>
+        </div>
+        
+        <div className="grid gap-3">
+          {/* Standard Tier */}
+          <button
+            type="button"
+            onClick={() => handleInputChange('serviceType', 'standard')}
+            className={`p-4 rounded-lg border-2 transition-all text-left ${
+              formData.serviceType === 'standard'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
+            }`}
+            data-testid="button-tier-standard"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-bold text-lg text-foreground">Standard</div>
+                <div className="text-sm text-muted-foreground">3-5 business days</div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-2xl text-primary">$6.99</div>
+                <div className="text-xs text-muted-foreground">Most affordable</div>
+              </div>
+            </div>
+          </button>
+
+          {/* Priority Tier */}
+          <button
+            type="button"
+            onClick={() => handleInputChange('serviceType', 'priority')}
+            className={`p-4 rounded-lg border-2 transition-all text-left ${
+              formData.serviceType === 'priority'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
+            }`}
+            data-testid="button-tier-priority"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-bold text-lg text-foreground">Priority</div>
+                <div className="text-sm text-muted-foreground">1-2 business days</div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-2xl text-primary">$9.99</div>
+                <div className="text-xs text-muted-foreground">Faster service</div>
+              </div>
+            </div>
+          </button>
+
+          {/* Instant Tier */}
+          <button
+            type="button"
+            onClick={() => handleInputChange('serviceType', 'instant')}
+            className={`p-4 rounded-lg border-2 transition-all text-left ${
+              formData.serviceType === 'instant'
+                ? 'border-primary bg-primary/10'
+                : 'border-border hover:border-primary/50'
+            }`}
+            data-testid="button-tier-instant"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-bold text-lg text-foreground flex items-center gap-2">
+                  <span>Instant</span>
+                  <span className="text-xs bg-primary text-white px-2 py-1 rounded">FASTEST</span>
+                </div>
+                <div className="text-sm text-muted-foreground">Same-day pickup</div>
+              </div>
+              <div className="text-right">
+                <div className="font-bold text-2xl text-primary">$12.99</div>
+                <div className="text-xs text-muted-foreground">Today!</div>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div className="text-xs text-muted-foreground text-center p-2 bg-accent/50 rounded">
+          💡 70% of service fee goes to your driver + they keep 100% of tips!
         </div>
       </div>
 

@@ -1824,8 +1824,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Object Storage Routes (Replit App Storage)
-  // Get presigned upload URL for file uploads
-  app.post("/api/objects/upload", isAuthenticated, async (req, res) => {
+  // Get presigned upload URL for file uploads (allow guest users for booking flow)
+  app.post("/api/objects/upload", async (req, res) => {
     try {
       const objectStorageService = new ObjectStorageService();
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
