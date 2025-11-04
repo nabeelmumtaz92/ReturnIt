@@ -1240,15 +1240,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = registrationSchema.parse(req.body);
       
       // Import secure admin control
-      const { MASTER_ADMIN_EMAIL, shouldAutoAssignAdmin } = await import('./auth/adminControl');
-      
-      // SECURITY: In development, allow public registration. In production, restrict to master admin
-      if (process.env.NODE_ENV === 'production' && validatedData.email !== MASTER_ADMIN_EMAIL) {
-        return res.status(403).json({ 
-          message: "Registration is restricted to authorized accounts only",
-          field: "email"
-        });
-      }
+      const { shouldAutoAssignAdmin } = await import('./auth/adminControl');
       
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);
