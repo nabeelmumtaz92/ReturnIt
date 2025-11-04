@@ -1451,6 +1451,131 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Forgot Password endpoint - Send reset token to email
+  app.post("/api/auth/forgot-password", authRateLimit, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      // Don't reveal whether user exists (security best practice)
+      if (!user) {
+        return res.json({ 
+          message: "If an account exists with this email, you will receive a password reset link shortly." 
+        });
+      }
+      
+      // Generate reset token
+      const { generateVerificationToken, sendPasswordResetEmail } = await import('./services/emailVerification');
+      const resetToken = generateVerificationToken();
+      const resetExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+      
+      await storage.updateUser(user.id, {
+        passwordResetToken: resetToken,
+        passwordResetExpiry: resetExpiry
+      });
+      
+      await sendPasswordResetEmail(
+        email,
+        resetToken,
+        user.firstName || 'there'
+      );
+      
+      res.json({ 
+        message: "If an account exists with this email, you will receive a password reset link shortly." 
+      });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ message: "Failed to process password reset request. Please try again." });
+    }
+  });
+
+  // Reset Password endpoint - Verify token and update password
+  app.post("/api/auth/reset-password", authRateLimit, async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      
+      if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+      }
+      
+      // Find user by reset token
+      const allUsers = await storage.getAllUsers();
+      const user = allUsers.find(u => u.passwordResetToken === token);
+      
+      if (!user) {
+        return res.status(400).json({ message: "Invalid or expired reset token" });
+      }
+      
+      // Check if token is expired
+      if (user.passwordResetExpiry && new Date() > new Date(user.passwordResetExpiry)) {
+        return res.status(400).json({ message: "Reset token has expired. Please request a new one." });
+      }
+      
+      // Validate new password strength
+      const passwordValidation = AuthService.validatePassword(newPassword);
+      if (!passwordValidation.isValid) {
+        return res.status(400).json({ 
+          message: "Password does not meet security requirements",
+          errors: passwordValidation.errors
+        });
+      }
+      
+      // Hash new password
+      const hashedPassword = await AuthService.hashPassword(newPassword);
+      
+      // Update user password and clear reset token
+      await storage.updateUser(user.id, {
+        password: hashedPassword,
+        passwordResetToken: null,
+        passwordResetExpiry: null
+      });
+      
+      res.json({ message: "Password reset successfully! You can now log in with your new password." });
+    } catch (error) {
+      console.error('Reset password error:', error);
+      res.status(500).json({ message: "Failed to reset password. Please try again." });
+    }
+  });
+
+  // Forgot Username endpoint - Send username reminder to email
+  app.post("/api/auth/forgot-username", authRateLimit, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      // Don't reveal whether user exists (security best practice)
+      if (!user) {
+        return res.json({ 
+          message: "If an account exists with this email, you will receive a username reminder shortly." 
+        });
+      }
+      
+      // Send username reminder email
+      const { sendUsernameReminderEmail } = await import('./services/emailVerification');
+      await sendUsernameReminderEmail(
+        email,
+        user.firstName || 'there'
+      );
+      
+      res.json({ 
+        message: "If an account exists with this email, you will receive a username reminder shortly." 
+      });
+    } catch (error) {
+      console.error('Forgot username error:', error);
+      res.status(500).json({ message: "Failed to process username reminder request. Please try again." });
+    }
+  });
+
   app.post("/api/auth/login", authRateLimit, async (req, res) => {
     try {
       // Enhanced validation

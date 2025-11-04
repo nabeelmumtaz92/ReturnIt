@@ -14,6 +14,9 @@ import { MapProviderProvider } from "@/contexts/MapProviderContext";
 import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import VerifyEmail from "@/pages/verify-email";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
+import ForgotUsername from "@/pages/forgot-username";
 import BookReturn from "@/pages/book-return";
 import OrderStatus from "@/pages/order-status";
 import Checkout from "@/pages/checkout";
@@ -203,6 +206,9 @@ function Router() {
       </Route>
       <Route path="/login" component={Login} />
       <Route path="/verify-email" component={VerifyEmail} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/reset-password" component={ResetPassword} />
+      <Route path="/forgot-username" component={ForgotUsername} />
       <Route path="/book-pickup" component={BookReturn} />
       <Route path="/book-return" component={BookReturn} />
       <Route path="/checkout" component={Checkout} />

@@ -397,7 +397,17 @@ export default function Login() {
                   </div>
                 )}
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-xs sm:text-sm font-medium">Email Address</Label>
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="login-email" className="text-xs sm:text-sm font-medium">Email Address</Label>
+                    <button
+                      type="button"
+                      onClick={() => setLocation('/forgot-username')}
+                      className="text-xs text-[#B8956A] hover:text-[#A0805A] hover:underline"
+                      data-testid="link-forgot-username"
+                    >
+                      Forgot Username?
+                    </button>
+                  </div>
                   <div className="relative">
                     <Input
                       id="login-email"
@@ -416,7 +426,17 @@ export default function Login() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-xs sm:text-sm font-medium">Password</Label>
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="login-password" className="text-xs sm:text-sm font-medium">Password</Label>
+                    <button
+                      type="button"
+                      onClick={() => setLocation('/forgot-password')}
+                      className="text-xs text-[#B8956A] hover:text-[#A0805A] hover:underline"
+                      data-testid="link-forgot-password"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
                   <div className="relative">
                     <Input
                       id="login-password"
