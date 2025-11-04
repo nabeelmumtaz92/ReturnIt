@@ -306,6 +306,10 @@ export const users = pgTable("users", {
   emailVerificationExpiry: timestamp("email_verification_expiry"),
   emailVerifiedAt: timestamp("email_verified_at"),
   
+  // Password reset fields
+  passwordResetToken: text("password_reset_token"),
+  passwordResetExpiry: timestamp("password_reset_expiry"),
+  
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),
   hireDate: timestamp("hire_date"),
