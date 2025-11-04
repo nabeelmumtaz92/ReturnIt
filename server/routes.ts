@@ -1313,6 +1313,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error('Registration error:', error);
+      console.error('Registration error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       
       if (error.issues) {
         // Zod validation errors
@@ -1326,7 +1331,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      res.status(400).json({ message: "Registration failed. Please try again." });
+      // Return specific error message if available
+      const errorMessage = error.message || "Registration failed. Please try again.";
+      res.status(400).json({ 
+        message: errorMessage,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      });
     }
   });
 

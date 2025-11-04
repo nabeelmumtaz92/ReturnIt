@@ -199,25 +199,38 @@ export default function Login() {
         userMessage: "Error"
       });
       
-      const errorMessage = error instanceof Error ? error.message : "Registration failed. Please try again.";
-      
-      // Parse field-specific errors if available (preserve validation logic)
-      if (errorMessage.includes('validation')) {
-        try {
-          const validationError = JSON.parse(errorMessage);
-          setValidationErrors(validationError.fieldErrors || {});
-        } catch {
-          setValidationErrors({ 
-            general: "Please check your information and try again."
-          });
+      // Parse the error message - format is "statusCode: {json}"
+      let errorData: any = {};
+      try {
+        const errorMessage = error instanceof Error ? error.message : "";
+        // Extract JSON part after the status code
+        const jsonMatch = errorMessage.match(/\d+:\s*({.*})/);
+        if (jsonMatch) {
+          errorData = JSON.parse(jsonMatch[1]);
         }
-      } else if (errorMessage.includes('already exists') || errorMessage.includes('Email already registered')) {
+      } catch (e) {
+        console.error('Failed to parse error:', e);
+      }
+      
+      // Handle field-specific errors
+      if (errorData.errors && Array.isArray(errorData.errors)) {
+        const fieldErrors: Record<string, string> = {};
+        errorData.errors.forEach((err: any) => {
+          if (err.field) {
+            fieldErrors[err.field] = err.message;
+          }
+        });
+        setValidationErrors(fieldErrors);
+      } else if (errorData.field) {
+        // Single field error
         setValidationErrors({ 
-          email: "An account with this email already exists. Please sign in instead."
+          [errorData.field]: errorData.message
         });
       } else {
+        // General error message
+        const message = errorData.message || "Registration failed. Please check your information and try again.";
         setValidationErrors({ 
-          general: "Registration failed. Please check your information and try again."
+          general: message
         });
       }
     },
