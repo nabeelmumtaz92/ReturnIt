@@ -78,6 +78,9 @@ export default function BookPickup() {
     itemSize: 'M',
     numberOfItems: 1,
     itemValue: '',
+    // Package sizing (per-item)
+    boxSize: 'medium' as 'small' | 'medium' | 'large' | 'extra-large',
+    numberOfBoxes: 1,
     // Preferred time slot
     preferredTimeSlot: '',
     // Pickup location preference
