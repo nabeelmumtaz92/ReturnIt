@@ -38,7 +38,12 @@ const driverSignupSchema = z.object({
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().min(10, 'Please enter a valid phone number'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
   confirmPassword: z.string(),
   dateOfBirth: z.string().min(1, 'Date of birth is required'),
   address: z.string().min(5, 'Please enter your full address'),
@@ -113,6 +118,18 @@ export default function DriverSignup() {
       referralCode: '',
     },
   });
+
+  // Watch password for real-time validation
+  const password = form.watch('password');
+
+  // Password requirement checks
+  const passwordRequirements = {
+    minLength: password.length >= 8,
+    hasUppercase: /[A-Z]/.test(password),
+    hasLowercase: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+  };
 
   // Remove driver count information per user request
   useEffect(() => {
@@ -437,10 +454,24 @@ export default function DriverSignup() {
                           className="border-border focus:border-border"
                           data-testid="input-password"
                         />
-                        {form.formState.errors.password && (
-                          <p className="text-red-500 text-sm mt-1">
-                            {form.formState.errors.password.message}
-                          </p>
+                        {password && password.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            <p className={`text-xs ${passwordRequirements.minLength ? 'text-green-600' : 'text-red-500'}`}>
+                              {passwordRequirements.minLength ? '✓' : '✗'} At least 8 characters
+                            </p>
+                            <p className={`text-xs ${passwordRequirements.hasUppercase ? 'text-green-600' : 'text-red-500'}`}>
+                              {passwordRequirements.hasUppercase ? '✓' : '✗'} One uppercase letter
+                            </p>
+                            <p className={`text-xs ${passwordRequirements.hasLowercase ? 'text-green-600' : 'text-red-500'}`}>
+                              {passwordRequirements.hasLowercase ? '✓' : '✗'} One lowercase letter
+                            </p>
+                            <p className={`text-xs ${passwordRequirements.hasNumber ? 'text-green-600' : 'text-red-500'}`}>
+                              {passwordRequirements.hasNumber ? '✓' : '✗'} One number
+                            </p>
+                            <p className={`text-xs ${passwordRequirements.hasSpecialChar ? 'text-green-600' : 'text-red-500'}`}>
+                              {passwordRequirements.hasSpecialChar ? '✓' : '✗'} One special character (!@#$%^&*...)
+                            </p>
+                          </div>
                         )}
                       </div>
                       
