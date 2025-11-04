@@ -30,6 +30,8 @@ interface ReturnItem {
   orderName: string;
   itemDescription: string;
   itemValue: string;
+  boxSize: string;
+  numberOfBoxes: number;
 }
 
 interface FormData {
@@ -52,8 +54,6 @@ interface FormData {
   storeDestinationState: string; // Editable state
   items: ReturnItem[]; // Multiple items in one return order
   notes: string;
-  boxSize: string;
-  numberOfBoxes: number;
   // Photo verification (MANDATORY - at least one required)
   receiptPhotoUrl?: string;
   tagsPhotoUrl?: string;
@@ -189,8 +189,14 @@ function calculatePricing(formData: FormData & { tip?: number }) {
     'xlarge': 6.00
   };
   
-  const sizeUpcharge = sizeUpcharges[formData.boxSize] || 0;
-  const multiBoxFee = formData.numberOfBoxes > 1 ? (formData.numberOfBoxes - 1) * 3.00 : 0;
+  // Calculate size upcharges and multi-box fees from ALL items
+  const sizeUpcharge = formData.items.reduce((sum, item) => {
+    return sum + (sizeUpcharges[item.boxSize] || 0);
+  }, 0);
+  
+  const multiBoxFee = formData.items.reduce((sum, item) => {
+    return sum + (item.numberOfBoxes > 1 ? (item.numberOfBoxes - 1) * 3.00 : 0);
+  }, 0);
   
   // Calculate total item values
   const totalItemValue = formData.items.reduce((sum, item) => {
@@ -352,11 +358,11 @@ export default function BookReturn() {
       id: crypto.randomUUID(),
       orderName: '',
       itemDescription: '',
-      itemValue: ''
+      itemValue: '',
+      boxSize: 'small',
+      numberOfBoxes: 1
     }],
     notes: '',
-    boxSize: 'small',
-    numberOfBoxes: 1,
     serviceTier: 'standard',
     tip: 0,
     paymentMethod: 'card'
@@ -374,7 +380,9 @@ export default function BookReturn() {
           id: crypto.randomUUID(),
           orderName: '',
           itemDescription: '',
-          itemValue: ''
+          itemValue: '',
+          boxSize: 'small',
+          numberOfBoxes: 1
         }
       ]
     }));
@@ -395,12 +403,19 @@ export default function BookReturn() {
     }));
   };
 
-  const updateItem = (itemId: string, field: keyof ReturnItem, value: string) => {
+  const updateItem = (itemId: string, field: keyof ReturnItem, value: string | number) => {
     setFormData(prev => ({
       ...prev,
-      items: prev.items.map(item =>
-        item.id === itemId ? { ...item, [field]: value } : item
-      )
+      items: prev.items.map(item => {
+        if (item.id === itemId) {
+          // Handle numberOfBoxes as number
+          if (field === 'numberOfBoxes') {
+            return { ...item, [field]: typeof value === 'string' ? parseInt(value) || 1 : value };
+          }
+          return { ...item, [field]: value };
+        }
+        return item;
+      })
     }));
   };
 
@@ -712,8 +727,17 @@ export default function BookReturn() {
       // Combine all items into order name and description
       const orderName = data.items.map(item => item.orderName).join(', ');
       const itemDescription = data.items.map((item, index) => 
-        `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue})`
+        `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue}) - ${item.boxSize} package, ${item.numberOfBoxes} ${item.numberOfBoxes === 1 ? 'box' : 'boxes'}`
       ).join('\n');
+      
+      // Aggregate box details from all items for backend compatibility
+      const sizeRanking = { small: 1, medium: 2, large: 3, xlarge: 4 };
+      const largestBoxSize = data.items.reduce((largest, item) => {
+        return sizeRanking[item.boxSize as keyof typeof sizeRanking] > sizeRanking[largest as keyof typeof sizeRanking] 
+          ? item.boxSize 
+          : largest;
+      }, 'small');
+      const totalBoxes = data.items.reduce((sum, item) => sum + item.numberOfBoxes, 0);
       
       return apiRequest('POST', '/api/orders', {
         // User info (optional for guests)
@@ -734,13 +758,13 @@ export default function BookReturn() {
         itemDescription: itemDescription,
         orderName: orderName,
         
-        // Box details
-        boxSize: data.boxSize,
-        numberOfBoxes: data.numberOfBoxes,
+        // Box details - aggregated from per-item data
+        boxSize: largestBoxSize,
+        numberOfBoxes: totalBoxes,
         
         // Required fields with defaults
         purchaseType: 'online',
-        itemSize: data.boxSize,
+        itemSize: largestBoxSize,
         numberOfItems: data.items.length,
         hasOriginalTags: false,
         receiptUploaded: !!(data.receiptPhotoUrl || data.tagsPhotoUrl || data.packagingPhotoUrl),
@@ -1148,6 +1172,59 @@ export default function BookReturn() {
                           />
                         </div>
                       </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label htmlFor={`boxSize-${item.id}`} className="text-sm font-semibold">Package Size *</Label>
+                          <Select value={item.boxSize} onValueChange={(value) => updateItem(item.id, 'boxSize', value)}>
+                            <SelectTrigger className="mt-1.5" data-testid={`select-box-size-${index}`}>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="small">Small (Shoebox/Bag)</SelectItem>
+                              <SelectItem value="medium">Medium (+ $2.00)</SelectItem>
+                              <SelectItem value="large">Large (+ $4.00)</SelectItem>
+                              <SelectItem value="xlarge">Extra Large (+ $6.00)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label htmlFor={`numberOfBoxes-${item.id}`} className="text-sm font-semibold">Number of Boxes/Bags</Label>
+                          <Input
+                            id={`numberOfBoxes-${item.id}`}
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={item.numberOfBoxes}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '') {
+                                updateItem(item.id, 'numberOfBoxes', '');
+                              } else {
+                                const numValue = parseInt(value);
+                                if (!isNaN(numValue) && numValue >= 1 && numValue <= 5) {
+                                  updateItem(item.id, 'numberOfBoxes', numValue.toString());
+                                } else if (!isNaN(numValue) && numValue > 5) {
+                                  updateItem(item.id, 'numberOfBoxes', '5');
+                                }
+                              }
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value === '') {
+                                updateItem(item.id, 'numberOfBoxes', '1');
+                              }
+                            }}
+                            placeholder="1"
+                            className="mt-1.5"
+                            data-testid={`input-number-of-boxes-${index}`}
+                          />
+                          {item.numberOfBoxes > 1 && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              +${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   ))}
 
@@ -1172,64 +1249,6 @@ export default function BookReturn() {
                       </div>
                     </div>
                   )}
-                </div>
-
-                <Separator className="my-6" />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="boxSize" className="text-sm font-semibold">Package Size *</Label>
-                    <Select value={formData.boxSize} onValueChange={(value) => updateField('boxSize', value)}>
-                      <SelectTrigger className="mt-1.5" data-testid="select-box-size">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="small">Small (Shoebox/Bag)</SelectItem>
-                        <SelectItem value="medium">Medium (+ $2.00)</SelectItem>
-                        <SelectItem value="large">Large (+ $4.00)</SelectItem>
-                        <SelectItem value="xlarge">Extra Large (+ $6.00)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="numberOfBoxes" className="text-sm font-semibold">Number of Boxes/Bags</Label>
-                    <Input
-                      id="numberOfBoxes"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={formData.numberOfBoxes}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        // Allow empty string for deletion, or validate numeric input
-                        if (value === '') {
-                          updateField('numberOfBoxes', '');
-                        } else {
-                          const numValue = parseInt(value);
-                          if (!isNaN(numValue) && numValue >= 1 && numValue <= 5) {
-                            updateField('numberOfBoxes', numValue);
-                          } else if (!isNaN(numValue) && numValue > 5) {
-                            // Cap at 5
-                            updateField('numberOfBoxes', 5);
-                          }
-                        }
-                      }}
-                      onBlur={(e) => {
-                        // If empty on blur, reset to 1
-                        if (e.target.value === '') {
-                          updateField('numberOfBoxes', 1);
-                        }
-                      }}
-                      placeholder="1"
-                      className="mt-1.5"
-                      data-testid="input-number-of-boxes"
-                    />
-                    {formData.numberOfBoxes > 1 && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        +${((formData.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee
-                      </p>
-                    )}
-                  </div>
                 </div>
 
                 <div>
@@ -1488,6 +1507,11 @@ export default function BookReturn() {
                           <div className="text-sm text-muted-foreground">
                             <p className="font-medium text-foreground">{item.orderName}</p>
                             <p className="mt-1">{item.itemDescription}</p>
+                            <div className="mt-2 flex gap-3 text-xs">
+                              <span className="capitalize">{item.boxSize} package</span>
+                              <span>•</span>
+                              <span>{item.numberOfBoxes} {item.numberOfBoxes === 1 ? 'box' : 'boxes'}</span>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -1501,15 +1525,6 @@ export default function BookReturn() {
                     </div>
                     
                     <Separator className="my-2" />
-                    
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Package Size:</span>
-                      <span className="font-medium capitalize">{formData.boxSize}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Number of Packages:</span>
-                      <span className="font-medium">{formData.numberOfBoxes}</span>
-                    </div>
                     {formData.notes && (
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Notes:</span>
