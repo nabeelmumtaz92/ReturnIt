@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle, X, Plus } from "lucide-react";
+import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle, X, Plus, User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -797,7 +797,7 @@ export default function BookReturn() {
           <div className="mb-10">
             <div className="flex items-start justify-between gap-2">
               {[
-                { num: 1, label: 'Pickup Info' },
+                { num: 1, label: 'Personal Info' },
                 { num: 2, label: 'Return Details' },
                 { num: 3, label: 'Review' }
               ].map((step, index) => (
@@ -831,7 +831,7 @@ export default function BookReturn() {
         <Card className="shadow-lg border-border/50">
           <CardHeader className="border-b bg-muted/30">
             <CardTitle className="flex items-center gap-3 text-2xl">
-              {page === 1 && <><MapPin className="h-6 w-6 text-[#B8956A]" /> Pickup Information</>}
+              {page === 1 && <><User className="h-6 w-6 text-[#B8956A]" /> Personal Information</>}
               {page === 2 && <><Package className="h-6 w-6 text-[#B8956A]" /> Return Details</>}
               {page === 3 && <><Check className="h-6 w-6 text-[#B8956A]" /> Review</>}
               {page === 4 && <><CreditCard className="h-6 w-6 text-[#B8956A]" /> Payment</>}

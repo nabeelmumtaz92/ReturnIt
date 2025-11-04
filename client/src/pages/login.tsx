@@ -297,24 +297,40 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#f8f7f5] dark:bg-[#231b0f] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="mb-6 flex justify-center">
-          <BrandLogo size="lg" linkToHome={true} />
+        {/* Modern Back Button */}
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation('/')}
+            className="text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-colors"
+            data-testid="button-back-home"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-2"
+            >
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
+            Back
+          </Button>
         </div>
         
-        {/* Back Button - Instagram Style */}
-        <div className="mb-4">
-          <BackButton fallbackUrl="/" />
-        </div>
-        
-        {/* Header - Stitch Pattern */}
+        {/* Logo and Header */}
         <div className="text-center mb-8">
-          <Link href="/">
-            <div className="text-3xl font-bold mb-2 cursor-pointer">
-              Return It
-            </div>
-          </Link>
-          <p className="text-muted-foreground">Professional return service</p>
+          <div className="mb-4 flex justify-center">
+            <BrandLogo size="lg" linkToHome={true} />
+          </div>
+          <p className="text-muted-foreground text-sm">Professional return service</p>
         </div>
 
         {/* Tab Navigation - Stitch Pattern */}
