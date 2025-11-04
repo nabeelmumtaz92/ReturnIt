@@ -441,6 +441,12 @@ export default function Login() {
                     onClick={handleGoogleAuth}
                     color="bg-red-50"
                   />
+                  <SocialButton 
+                    provider="Apple" 
+                    icon={SiApple} 
+                    onClick={handleAppleAuth}
+                    color="bg-gray-900 text-white hover:bg-gray-800"
+                  />
                 </div>
                 
                 <Button 
@@ -681,6 +687,12 @@ export default function Login() {
                     icon={SiGoogle} 
                     onClick={handleGoogleAuth}
                     color="bg-red-50"
+                  />
+                  <SocialButton 
+                    provider="Apple" 
+                    icon={SiApple} 
+                    onClick={handleAppleAuth}
+                    color="bg-gray-900 text-white hover:bg-gray-800"
                   />
                 </div>
                 

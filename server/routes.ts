@@ -2675,29 +2675,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   );
 
-  // Apple Auth (Web-based)
-  app.get('/api/auth/apple', (req, res) => {
-    // For web-based Apple Sign-In, redirect to Apple's authorization URL
-    const appleAuthUrl = `https://appleid.apple.com/auth/authorize?client_id=com.returnly.web&redirect_uri=${encodeURIComponent('http://localhost:5000/api/auth/apple/callback')}&response_type=code&scope=email%20name&response_mode=form_post`;
-    res.redirect(appleAuthUrl);
-  });
+  // Apple OAuth
+  app.get('/api/auth/apple', 
+    passport.authenticate('apple', { scope: ['email', 'name'] })
+  );
 
-  app.post('/api/auth/apple/callback', async (req, res) => {
-    // Handle Apple Sign-In callback
-    try {
-      const { code, id_token, user } = req.body;
-      
-      if (!code && !id_token) {
-        return res.redirect('/login?error=apple_auth_failed');
+  app.post('/api/auth/apple/callback',
+    passport.authenticate('apple', { 
+      failureRedirect: '/login?error=apple_auth_failed',
+      session: true
+    }),
+    async (req, res) => {
+      try {
+        const user = req.user as any;
+        if (!user) {
+          return res.redirect('/login?error=apple_auth_failed');
+        }
+        
+        console.log('Apple auth successful for user:', user.email);
+        
+        // Store user in session
+        const userData = {
+          id: user.id, 
+          email: user.email, 
+          phone: user.phone || '', 
+          isDriver: user.isDriver || false,
+          isAdmin: user.isAdmin || false,
+          firstName: user.firstName || '',
+          lastName: user.lastName || ''
+        };
+        
+        (req.session as any).user = userData;
+        
+        // Redirect based on user role
+        if (userData.isAdmin) {
+          res.redirect('/admin-dashboard');
+        } else if (userData.isDriver) {
+          res.redirect('/driver-portal');
+        } else {
+          res.redirect('/customer-dashboard');
+        }
+      } catch (error: any) {
+        console.error('Apple auth callback error:', error);
+        
+        // Handle the case where user needs to sign up first
+        if (error.message === 'OAUTH_SIGNUP_REQUIRED') {
+          return res.redirect('/login?signup_required=true&provider=apple');
+        }
+        
+        res.redirect('/login?error=apple_auth_failed');
       }
-
-      // In a full implementation, you would verify the id_token with Apple's public key
-      res.redirect('/?apple_auth=success');
-    } catch (error) {
-      console.error('Apple auth error:', error);
-      res.redirect('/login?error=apple_auth_failed');
     }
-  });
+  );
 
   // Payment Processing Routes
   

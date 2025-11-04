@@ -1,7 +1,8 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
-// import { Strategy as AppleStrategy } from 'passport-apple'; // Apple strategy requires custom setup
+// @ts-ignore - passport-apple doesn't have TypeScript definitions
+import AppleStrategy from 'passport-apple';
 import { storage } from '../storage';
 
 // Google OAuth Strategy - Support production domain
@@ -137,7 +138,79 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
   }));
 }
 
-// Apple OAuth Strategy would be configured here when Apple credentials are provided
-// Apple Sign-In requires specialized setup with JWT tokens and certificates
+// Apple OAuth Strategy
+if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPLE_KEY_ID && process.env.APPLE_PRIVATE_KEY) {
+  const appleCallbackURL = process.env.NODE_ENV === 'production'
+    ? 'https://returnit.online/api/auth/apple/callback'
+    : process.env.REPLIT_DEV_DOMAIN
+    ? `https://${process.env.REPLIT_DEV_DOMAIN}/api/auth/apple/callback`
+    : `https://${process.env.REPL_ID}.${process.env.REPLIT_CLUSTER || 'id'}.replit.dev/api/auth/apple/callback`;
+  
+  console.log('Apple OAuth Configuration:', {
+    hasClientId: !!process.env.APPLE_CLIENT_ID,
+    hasTeamId: !!process.env.APPLE_TEAM_ID,
+    hasKeyId: !!process.env.APPLE_KEY_ID,
+    hasPrivateKey: !!process.env.APPLE_PRIVATE_KEY,
+    callbackURL: appleCallbackURL
+  });
+  
+  passport.use(new AppleStrategy({
+    clientID: process.env.APPLE_CLIENT_ID,
+    teamID: process.env.APPLE_TEAM_ID,
+    keyID: process.env.APPLE_KEY_ID,
+    privateKeyString: process.env.APPLE_PRIVATE_KEY,
+    callbackURL: appleCallbackURL,
+    scope: ['email', 'name'],
+    passReqToCallback: false
+  }, async (accessToken: any, refreshToken: any, idToken: any, profile: any, done: any) => {
+    try {
+      console.log('Apple OAuth callback triggered');
+      const email = profile.email || idToken?.email;
+      
+      if (!email) {
+        return done(new Error('No email provided by Apple'), null);
+      }
+
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(email);
+      
+      if (existingUser) {
+        return done(null, existingUser);
+      }
+
+      // SECURITY FIX: Don't auto-create users - redirect to signup instead
+      console.log('Apple user not found, denying auto-creation:', email);
+      
+      // Check if this is the master admin - only they can auto-create
+      const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
+      const isMasterAdmin = email === MASTER_ADMIN_EMAIL;
+      
+      if (isMasterAdmin) {
+        // Only master admin gets auto-created
+        const newUser = await storage.createUser({
+          email: email,
+          phone: '6362544821', // Master admin phone
+          password: 'APPLE_AUTH_USER', // Social auth placeholder
+          firstName: profile.name?.firstName || '',
+          lastName: profile.name?.lastName || '',
+          isDriver: true, // Master admin is driver
+          isAdmin: true // Master admin gets admin access
+        });
+        
+        console.log('Master admin auto-created via Apple:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
+        return done(null, newUser);
+      }
+
+      // All other users must sign up first - return error to redirect to signup
+      console.log('Non-admin Apple user attempted auto-creation - blocking:', email);
+      return done(new Error('OAUTH_SIGNUP_REQUIRED'), null);
+    } catch (error) {
+      console.error('Apple auth error:', error);
+      return done(error);
+    }
+  }));
+} else {
+  console.log('Apple OAuth not configured - missing required environment variables');
+}
 
 export default passport;
