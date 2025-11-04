@@ -174,13 +174,29 @@ export function ObjectUploader({
       )}
 
       {/* Uppy modal for desktop */}
-      {!isMobile && (
-        <DashboardModal
-          uppy={uppy}
-          open={showModal}
-          onRequestClose={() => setShowModal(false)}
-          proudlyDisplayPoweredByUppy={false}
-        />
+      {!isMobile && showModal && (
+        <>
+          <style>{`
+            .uppy-Dashboard--modal .uppy-Dashboard-inner {
+              position: fixed !important;
+              top: 50% !important;
+              left: 50% !important;
+              transform: translate(-50%, -50%) !important;
+              max-height: 90vh !important;
+              max-width: 90vw !important;
+              margin: 0 !important;
+            }
+            .uppy-Dashboard--modal {
+              z-index: 9999 !important;
+            }
+          `}</style>
+          <DashboardModal
+            uppy={uppy}
+            open={showModal}
+            onRequestClose={() => setShowModal(false)}
+            proudlyDisplayPoweredByUppy={false}
+          />
+        </>
       )}
     </div>
   );
