@@ -52,6 +52,7 @@ import { ObjectPermission } from "./objectAcl";
 import { dailyStatsScheduler } from "./daily-stats-scheduler";
 import * as stripePaymentMethods from "./services/stripePaymentMethods";
 import { insertDriverPaymentMethodSchema, insertW9FormSchema } from "@shared/schema";
+import helmet from "helmet";
 // Removed environment restrictions - authentication always enabled
 
 // Extend session type to include user property
@@ -65,6 +66,7 @@ declare module 'express-session' {
       firstName?: string;
       lastName?: string;
       phone?: string;
+      tokenVersion?: number; // For session invalidation on password change
     };
   }
 }
@@ -75,6 +77,41 @@ const isAuthenticated = (req: any, res: any, next: any) => {
     next();
   } else {
     res.status(401).json({ message: "Unauthorized" });
+  }
+};
+
+// Enhanced authentication middleware with token version validation
+// This prevents old sessions from being used after password changes
+const isAuthenticatedWithTokenCheck = async (req: any, res: any, next: any) => {
+  if (!req.session?.user) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  try {
+    // Fetch current user from database to verify token version
+    const currentUser = await storage.getUser(req.session.user.id);
+    
+    if (!currentUser) {
+      // User no longer exists
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: "Session expired. Please log in again." });
+    }
+    
+    // Check if token versions match
+    const sessionTokenVersion = req.session.user.tokenVersion || 1;
+    const dbTokenVersion = currentUser.tokenVersion || 1;
+    
+    if (sessionTokenVersion !== dbTokenVersion) {
+      // Token version mismatch - password was changed, invalidate session
+      req.session.destroy(() => {});
+      return res.status(401).json({ message: "Your session has been invalidated due to a password change. Please log in again." });
+    }
+    
+    // Session is valid
+    next();
+  } catch (error) {
+    console.error('Token validation error:', error);
+    return res.status(500).json({ message: "Authentication error" });
   }
 };
 
@@ -407,6 +444,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 
+  // Security headers middleware (helmet)
+  app.use(helmet({
+    contentSecurityPolicy: false, // Disabled for Vite development server
+    crossOriginEmbedderPolicy: false, // Disabled for embedded content
+  }));
+
   // Serve PWA manifest files with correct MIME type
   app.get('/site.webmanifest', (req, res) => {
     res.setHeader('Content-Type', 'application/manifest+json');
@@ -699,7 +742,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             isAdmin: updatedUser.isAdmin,
             firstName: updatedUser.firstName,
             lastName: updatedUser.lastName,
-            dateOfBirth: updatedUser.dateOfBirth
+            dateOfBirth: updatedUser.dateOfBirth,
+            tokenVersion: updatedUser.tokenVersion || 1 // Include for session validation
           });
           
           return res.status(201).json({ 
@@ -808,7 +852,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isAdmin: false,
         firstName: user.firstName,
         lastName: user.lastName,
-        dateOfBirth: user.dateOfBirth
+        dateOfBirth: user.dateOfBirth,
+        tokenVersion: user.tokenVersion || 1 // Include for session validation
       });
       
       res.status(201).json({ 
@@ -1388,7 +1433,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isAdmin: user.isAdmin || false,
         firstName: user.firstName,
         lastName: user.lastName,
-        dateOfBirth: user.dateOfBirth
+        dateOfBirth: user.dateOfBirth,
+        tokenVersion: user.tokenVersion || 1 // Include for session validation
       });
       
       res.json({ 
@@ -1528,11 +1574,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash new password
       const hashedPassword = await AuthService.hashPassword(newPassword);
       
-      // Update user password and clear reset token
+      // Update user password, clear reset token, and increment token version to invalidate old sessions
+      const currentTokenVersion = user.tokenVersion || 1;
       await storage.updateUser(user.id, {
         password: hashedPassword,
         passwordResetToken: null,
-        passwordResetExpiry: null
+        passwordResetExpiry: null,
+        tokenVersion: currentTokenVersion + 1 // Invalidate all existing sessions
       });
       
       res.json({ message: "Password reset successfully! You can now log in with your new password." });
@@ -1598,6 +1646,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.getUserByEmail(email);
       
+      // SECURITY: Generic error message to prevent user enumeration attacks
+      const genericErrorMessage = "Invalid email or password. Please try again.";
+      const lockoutMessage = "Too many failed attempts. Your account has been temporarily locked for security.";
+      
       // First check: User must exist (have signed up)
       if (!user) {
         // Record failed attempt
@@ -1605,18 +1657,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const isNowLocked = AuthService.isUserLockedOut(email);
         return res.status(401).json({ 
-          message: isNowLocked 
-            ? "Too many failed attempts. Your account has been temporarily locked for security."
-            : "No account found with this email address. Please sign up first to create an account.",
-          requiresSignup: true // Flag to help frontend show signup option
+          message: isNowLocked ? lockoutMessage : genericErrorMessage
         });
       }
       
       // Second check: User must have a password (complete account)
       if (!user.password) {
+        AuthService.recordFailedAttempt(email);
         return res.status(401).json({ 
-          message: "Your account setup is incomplete. Please contact support or sign up again.",
-          requiresSignup: true
+          message: genericErrorMessage
         });
       }
       
@@ -1629,10 +1678,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         const isNowLocked = AuthService.isUserLockedOut(email);
         return res.status(401).json({ 
-          message: isNowLocked 
-            ? "Too many failed attempts. Your account has been temporarily locked for security."
-            : "The password you entered is incorrect. Please try again.",
-          wrongPassword: true // Different from no account
+          message: isNowLocked ? lockoutMessage : genericErrorMessage
         });
       }
 
@@ -1646,7 +1692,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(500).json({ message: "Login failed due to session error" });
         }
         
-        // Create secure session after regeneration
+        // Create secure session after regeneration (including tokenVersion for session validation)
         req.session.user = AuthService.sanitizeUserData({ 
           id: user.id, 
           email: user.email, 
@@ -1654,7 +1700,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           isDriver: user.isDriver || false, 
           isAdmin: user.isAdmin || false,
           firstName: user.firstName,
-          lastName: user.lastName
+          lastName: user.lastName,
+          tokenVersion: user.tokenVersion || 1 // Store token version for session invalidation
         });
       
       const responseUser = { 
@@ -2654,8 +2701,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return res.redirect('/login?error=session_error');
           }
           
-          // Store user in session after regeneration
-          req.session.user = user;
+          // Store user in session after regeneration (including tokenVersion)
+          req.session.user = {
+            ...user,
+            tokenVersion: user.tokenVersion || 1 // Include token version for session validation
+          };
         
         // Redirect admin users to admin dashboard
         if (user.isAdmin) {
@@ -2734,6 +2784,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         isAdmin: existingUser.isAdmin || false,
         firstName: existingUser.firstName || '',
         lastName: existingUser.lastName || '',
+        tokenVersion: existingUser.tokenVersion || 1, // Include for session validation
       };
 
       // Set session for mobile (though mobile typically uses token-based auth)
@@ -2828,6 +2879,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           phone: user.phone || '', 
           isDriver: user.isDriver || false,
           isAdmin: user.isAdmin || false,
+          tokenVersion: user.tokenVersion || 1, // Include for session validation
           firstName: user.firstName || '',
           lastName: user.lastName || ''
         };

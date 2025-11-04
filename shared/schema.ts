@@ -310,6 +310,9 @@ export const users = pgTable("users", {
   passwordResetToken: text("password_reset_token"),
   passwordResetExpiry: timestamp("password_reset_expiry"),
   
+  // Token versioning for session invalidation on password change
+  tokenVersion: integer("token_version").default(1).notNull(),
+  
   // Tutorial and onboarding tracking
   tutorialCompleted: boolean("tutorial_completed").default(false),
   hireDate: timestamp("hire_date"),
