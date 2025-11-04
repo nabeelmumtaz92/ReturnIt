@@ -329,3 +329,281 @@ export async function sendWelcomeEmail(
     // Don't throw error for welcome email - it's not critical
   }
 }
+
+export async function sendPasswordResetEmail(
+  email: string,
+  resetToken: string,
+  firstName: string
+): Promise<void> {
+  try {
+    const { client, fromEmail: from } = await getResendClient();
+    const resetUrl = `https://returnit.online/reset-password?token=${resetToken}`;
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Your Password - Return It</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #FAF8F4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border: 2px solid #B8956A;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #B8956A 0%, #9B7A54 100%);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .content {
+      padding: 40px 30px;
+      color: #333;
+    }
+    .greeting {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .instructions {
+      margin: 20px 0;
+      line-height: 1.6;
+      color: #555;
+    }
+    .reset-button {
+      display: inline-block;
+      background: #B8956A;
+      color: white;
+      padding: 15px 40px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 30px 0;
+    }
+    .reset-button:hover {
+      background: #A0805A;
+    }
+    .expiry {
+      color: #999;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    .security-note {
+      background: #FFF8E6;
+      border-left: 4px solid #F59E0B;
+      padding: 15px;
+      margin: 20px 0;
+      color: #7C2D12;
+    }
+    .footer {
+      padding: 20px 30px;
+      background: #FAF8F4;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 Password Reset Request</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">
+        Hi ${firstName || 'there'},
+      </div>
+      <p class="instructions">
+        We received a request to reset your password for your Return It account. 
+        Click the button below to create a new password:
+      </p>
+      <center>
+        <a href="${resetUrl}" class="reset-button">Reset Password</a>
+      </center>
+      <p class="expiry">This link will expire in 1 hour for security purposes.</p>
+      
+      <div class="security-note">
+        <strong>⚠️ Security Tip:</strong> If you didn't request this password reset, 
+        please ignore this email. Your password will remain unchanged.
+      </div>
+      
+      <p class="instructions" style="font-size: 12px; color: #999;">
+        If the button doesn't work, copy and paste this link into your browser:<br>
+        <a href="${resetUrl}" style="color: #B8956A; word-break: break-all;">${resetUrl}</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>Return It - Reverse Delivery Service</p>
+      <p>St. Louis, MO | returnit.online</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    await client.emails.send({
+      from: from,
+      to: email,
+      subject: 'Reset Your Password - Return It',
+      html: htmlContent,
+    });
+
+    console.log(`[Password Reset] Reset email sent to ${email}`);
+  } catch (error) {
+    console.error('[Password Reset] Failed to send password reset email:', error);
+    throw new Error('Failed to send password reset email');
+  }
+}
+
+export async function sendUsernameReminderEmail(
+  email: string,
+  firstName: string
+): Promise<void> {
+  try {
+    const { client, fromEmail: from } = await getResendClient();
+
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Username - Return It</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #FAF8F4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border: 2px solid #B8956A;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #B8956A 0%, #9B7A54 100%);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .content {
+      padding: 40px 30px;
+      color: #333;
+    }
+    .greeting {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .email-box {
+      background: #FAF8F4;
+      border: 2px solid #B8956A;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin: 30px 0;
+    }
+    .email-label {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .email-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #B8956A;
+    }
+    .login-button {
+      display: inline-block;
+      background: #B8956A;
+      color: white;
+      padding: 15px 40px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      margin: 20px 0;
+    }
+    .footer {
+      padding: 20px 30px;
+      background: #FAF8F4;
+      border-top: 1px solid #e0e0e0;
+      text-align: center;
+      font-size: 14px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📧 Username Reminder</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">
+        Hi ${firstName || 'there'},
+      </div>
+      <p>
+        You requested a reminder of your username for your Return It account. 
+        Here's the email address associated with your account:
+      </p>
+      <div class="email-box">
+        <div class="email-label">Your Username (Email)</div>
+        <div class="email-value">${email}</div>
+      </div>
+      <p>
+        Use this email address to sign in to your Return It account.
+      </p>
+      <center>
+        <a href="https://returnit.online/login" class="login-button">Go to Login</a>
+      </center>
+    </div>
+    <div class="footer">
+      <p>Return It - Reverse Delivery Service</p>
+      <p>St. Louis, MO | returnit.online</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+
+    await client.emails.send({
+      from: from,
+      to: email,
+      subject: 'Your Username - Return It',
+      html: htmlContent,
+    });
+
+    console.log(`[Username Reminder] Email sent to ${email}`);
+  } catch (error) {
+    console.error('[Username Reminder] Failed to send username reminder email:', error);
+    throw new Error('Failed to send username reminder email');
+  }
+}
