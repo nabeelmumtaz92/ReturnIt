@@ -277,6 +277,12 @@ export default function Login() {
     registerMutation.mutate(registerData);
   };
 
+  // Tab switching handler - clears errors when switching
+  const handleTabSwitch = (tab: string) => {
+    setActiveTab(tab);
+    setValidationErrors({}); // Clear all validation errors when switching tabs
+  };
+
   // Social authentication handlers
   const handleGoogleAuth = () => {
     // Redirect to actual Google OAuth endpoint
@@ -354,7 +360,7 @@ export default function Login() {
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-transparent hover:bg-accent'
             }`}
-            onClick={() => setActiveTab('login')}
+            onClick={() => handleTabSwitch('login')}
             data-testid="tab-sign-in"
           >
             Sign In
@@ -365,7 +371,7 @@ export default function Login() {
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-transparent hover:bg-accent'
             }`}
-            onClick={() => setActiveTab('register')}
+            onClick={() => handleTabSwitch('register')}
             data-testid="tab-sign-up"
           >
             Sign Up
