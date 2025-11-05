@@ -88,11 +88,21 @@ interface Location {
   lng: number;
 }
 
+interface AddressComponents {
+  streetNumber?: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
+  country?: string;
+}
+
 interface PlaceResult {
   placeId: string;
   formattedAddress: string;
   name: string;
   location: Location;
+  addressComponents?: AddressComponents;
 }
 
 interface RouteInfo {
@@ -232,10 +242,38 @@ class LocationService {
       this.placesService!.getDetails(
         {
           placeId,
-          fields: ['name', 'formatted_address', 'geometry']
+          fields: ['name', 'formatted_address', 'geometry', 'address_components']
         },
         (place, status) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+            // Parse address components
+            const addressComponents: AddressComponents = {};
+            
+            if (place.address_components) {
+              place.address_components.forEach((component: any) => {
+                const types = component.types;
+                
+                if (types.includes('street_number')) {
+                  addressComponents.streetNumber = component.long_name;
+                }
+                if (types.includes('route')) {
+                  addressComponents.street = component.long_name;
+                }
+                if (types.includes('locality')) {
+                  addressComponents.city = component.long_name;
+                }
+                if (types.includes('administrative_area_level_1')) {
+                  addressComponents.state = component.short_name;
+                }
+                if (types.includes('postal_code')) {
+                  addressComponents.zipCode = component.long_name;
+                }
+                if (types.includes('country')) {
+                  addressComponents.country = component.short_name;
+                }
+              });
+            }
+            
             resolve({
               placeId,
               formattedAddress: place.formatted_address || '',
@@ -243,7 +281,8 @@ class LocationService {
               location: {
                 lat: place.geometry?.location?.lat() || 0,
                 lng: place.geometry?.location?.lng() || 0
-              }
+              },
+              addressComponents
             });
           } else {
             reject(new Error('Place details not found'));
@@ -451,4 +490,4 @@ export const useCurrentLocation = () => {
 };
 
 export const locationService = LocationService.getInstance();
-export type { Location, PlaceResult, RouteInfo, NearbyStore };
+export type { Location, PlaceResult, RouteInfo, NearbyStore, AddressComponents };

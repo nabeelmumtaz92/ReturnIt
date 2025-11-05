@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ObjectUploader } from "@/components/ObjectUploader";
 import { BrandLogo } from "@/components/BrandLogo";
 import StoreAutocomplete from "@/components/StoreAutocomplete";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 // Load Stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -930,20 +931,52 @@ export default function BookReturn() {
 
                 <Separator className="my-6" />
 
-                <div>
-                  <Label htmlFor="streetAddress" className="text-sm font-semibold">Street Address *</Label>
-                  <Input
-                    id="streetAddress"
-                    value={formData.streetAddress}
-                    onChange={(e) => updateField('streetAddress', e.target.value)}
-                    placeholder="Street address"
-                    className={`mt-1.5 ${validationErrors.has('streetAddress') ? 'border-red-500 border-2' : ''}`}
-                    required
-                    data-testid="input-street-address"
-                  />
-                </div>
+                <AddressAutocomplete
+                  label="Pickup Address"
+                  placeholder="Start typing your address..."
+                  value={formData.streetAddress}
+                  onChange={(address, placeResult) => {
+                    // Update street address as user types
+                    setFormData(prev => ({
+                      ...prev,
+                      streetAddress: address
+                    }));
 
-                <div className="space-y-4">
+                    // When a place is selected, use structured address components
+                    if (placeResult?.addressComponents) {
+                      const components = placeResult.addressComponents;
+                      
+                      // Build full street address from components
+                      const streetAddress = [
+                        components.streetNumber,
+                        components.street
+                      ].filter(Boolean).join(' ') || address;
+
+                      setFormData(prev => ({
+                        ...prev,
+                        streetAddress: streetAddress,
+                        city: components.city || prev.city,
+                        state: components.state || prev.state,
+                        zipCode: components.zipCode || prev.zipCode
+                      }));
+
+                      // Clear validation errors for auto-filled fields
+                      setValidationErrors(prev => {
+                        const newErrors = new Set(prev);
+                        newErrors.delete('streetAddress');
+                        if (components.city) newErrors.delete('city');
+                        if (components.state) newErrors.delete('state');
+                        if (components.zipCode) newErrors.delete('zipCode');
+                        return newErrors;
+                      });
+                    }
+                  }}
+                  required
+                  className={validationErrors.has('streetAddress') ? 'border-red-500 border-2' : ''}
+                  data-testid="autocomplete-pickup-address"
+                />
+
+                <div className="space-y-4 mt-4">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="col-span-2">
                       <Label htmlFor="city" className="text-sm font-semibold">City *</Label>
