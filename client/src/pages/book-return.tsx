@@ -52,6 +52,7 @@ interface FormData {
   storeDestinationAddress: string; // Editable store address
   storeDestinationCity: string; // Editable city
   storeDestinationState: string; // Editable state
+  storeDestinationZip: string; // Editable ZIP code
   items: ReturnItem[]; // Multiple items in one return order
   notes: string;
   // Photo verification (MANDATORY - at least one required)
@@ -354,6 +355,7 @@ export default function BookReturn() {
     storeDestinationAddress: '',
     storeDestinationCity: '',
     storeDestinationState: '',
+    storeDestinationZip: '',
     items: [{
       id: crypto.randomUUID(),
       orderName: '',
@@ -1010,7 +1012,8 @@ export default function BookReturn() {
                       storeDestinationName: store.storeName,
                       storeDestinationAddress: store.streetAddress,
                       storeDestinationCity: store.city,
-                      storeDestinationState: store.state
+                      storeDestinationState: store.state,
+                      storeDestinationZip: store.zipCode
                     }));
                     
                     // Clear ALL validation errors for store-related fields
@@ -1094,6 +1097,19 @@ export default function BookReturn() {
                           data-testid="input-store-state"
                         />
                       </div>
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="storeDestinationZip" className="text-sm font-semibold">ZIP Code *</Label>
+                      <Input
+                        id="storeDestinationZip"
+                        value={formData.storeDestinationZip}
+                        onChange={(e) => updateField('storeDestinationZip', e.target.value)}
+                        placeholder="ZIP code"
+                        className="mt-1.5 bg-white"
+                        required
+                        data-testid="input-store-zip"
+                      />
                     </div>
                   </div>
                 )}
