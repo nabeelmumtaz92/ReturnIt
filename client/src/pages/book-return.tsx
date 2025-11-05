@@ -198,7 +198,8 @@ function calculatePricing(formData: FormData & { tip?: number }) {
   }, 0);
   
   const multiBoxFee = formData.items.reduce((sum, item) => {
-    return sum + (item.numberOfBoxes > 1 ? (item.numberOfBoxes - 1) * 3.00 : 0);
+    const totalPackages = (item.numberOfBoxes || 0) + (item.numberOfBags || 0);
+    return sum + (totalPackages > 1 ? (totalPackages - 1) * 3.00 : 0);
   }, 0);
   
   // Calculate total item values
@@ -707,9 +708,14 @@ export default function BookReturn() {
       
       // Combine all items into order name and description
       const orderName = data.items.map(item => item.orderName).join(', ');
-      const itemDescription = data.items.map((item, index) => 
-        `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue}) - ${item.boxSize} package, ${item.numberOfBoxes} ${item.numberOfBoxes === 1 ? 'box' : 'boxes'}`
-      ).join('\n');
+      const itemDescription = data.items.map((item, index) => {
+        const boxes = item.numberOfBoxes || 0;
+        const bags = item.numberOfBags || 0;
+        const packageInfo = [];
+        if (boxes > 0) packageInfo.push(`${boxes} ${boxes === 1 ? 'box' : 'boxes'}`);
+        if (bags > 0) packageInfo.push(`${bags} ${bags === 1 ? 'bag' : 'bags'}`);
+        return `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue}) - ${item.boxSize} package, ${packageInfo.join(' + ')}`;
+      }).join('\n');
       
       // Aggregate box details from all items for backend compatibility
       const sizeRanking = { small: 1, medium: 2, large: 3, xlarge: 4 };
@@ -718,7 +724,8 @@ export default function BookReturn() {
           ? item.boxSize 
           : largest;
       }, 'small');
-      const totalBoxes = data.items.reduce((sum, item) => sum + item.numberOfBoxes, 0);
+      const totalBoxes = data.items.reduce((sum, item) => sum + (item.numberOfBoxes || 0), 0);
+      const totalBags = data.items.reduce((sum, item) => sum + (item.numberOfBags || 0), 0);
       
       return apiRequest('POST', '/api/orders', {
         // User info (optional for guests)
@@ -742,6 +749,7 @@ export default function BookReturn() {
         // Box details - aggregated from per-item data
         boxSize: largestBoxSize,
         numberOfBoxes: totalBoxes,
+        numberOfBags: totalBags,
         
         // Required fields with defaults
         purchaseType: 'online',
