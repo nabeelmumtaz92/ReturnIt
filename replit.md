@@ -4,6 +4,15 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (November 5, 2025)
 
+## SMS Verification System - Twilio Integration ✅
+- **Twilio SMS Service**: Created `server/services/smsVerification.ts` module for sending verification codes via SMS.
+- **Backend API Endpoint**: Added `POST /api/auth/send-sms-verification` route to send SMS codes to users' phone numbers.
+- **Enhanced Verify Email Page**: Updated verify-email.tsx with "Get Code via Text Message" button as alternative to email verification.
+- **Graceful Degradation**: System checks if Twilio is configured; falls back to email-only if SMS unavailable.
+- **Configuration**: Requires three Replit secrets: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`.
+- **User Experience**: Users can request SMS verification if they haven't received email, uses same verification code for both channels.
+- **Error Handling**: Clear error messages for missing phone numbers, SMS service unavailable, or delivery failures.
+
 ## Separate Boxes & Bags Input System with Corrected Pricing ✅
 - **Independent Package Inputs**: Each item now has separate "Boxes (0-3)" and "Bags (0-5)" inputs, both starting at 0 (no longer required to select 1 box minimum).
 - **Database Schema Update**: Added `numberOfBags` column to orders table with default 0; changed `numberOfBoxes` default from 1 to 0.
