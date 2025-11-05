@@ -197,10 +197,14 @@ function calculatePricing(formData: FormData & { tip?: number }) {
     return sum + (sizeUpcharges[item.boxSize] || 0);
   }, 0);
   
-  const multiBoxFee = formData.items.reduce((sum, item) => {
-    const totalPackages = (item.numberOfBoxes || 0) + (item.numberOfBags || 0);
-    return sum + (totalPackages > 1 ? (totalPackages - 1) * 3.00 : 0);
+  // Calculate total packages across ALL items (only first package is free for entire order)
+  // Explicitly convert to numbers to handle empty strings during editing
+  const totalPackagesAllItems = formData.items.reduce((sum, item) => {
+    const boxes = typeof item.numberOfBoxes === 'number' ? item.numberOfBoxes : parseInt(item.numberOfBoxes as any) || 0;
+    const bags = typeof item.numberOfBags === 'number' ? item.numberOfBags : parseInt(item.numberOfBags as any) || 0;
+    return sum + boxes + bags;
   }, 0);
+  const multiBoxFee = totalPackagesAllItems > 1 ? (totalPackagesAllItems - 1) * 3.00 : 0;
   
   // Calculate total item values
   const totalItemValue = formData.items.reduce((sum, item) => {
