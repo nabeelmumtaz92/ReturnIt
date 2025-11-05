@@ -433,33 +433,18 @@ export default function BookReturn() {
 
   const handleReceiptUploadComplete = useCallback(async (result: any) => {
     if (result.successful && result.successful.length > 0) {
-      try {
-        const uploadedFile = result.successful[0];
-        const tempUploadUrl = uploadedFile.uploadURL;
-        
-        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
-          receiptUrl: tempUploadUrl,
-        });
-        
-        const durableObjectPath = response.objectPath;
-        
-        setFormData(prev => ({ 
-          ...prev, 
-          receiptPhotoUrl: durableObjectPath,
-        }));
-        
-        toast({
-          title: "Receipt uploaded",
-          description: "Your receipt has been uploaded successfully",
-        });
-      } catch (error) {
-        console.error("Error finalizing receipt upload:", error);
-        toast({
-          title: "Upload failed",
-          description: "Failed to save receipt. Please try again.",
-          variant: "destructive",
-        });
-      }
+      const uploadedFile = result.successful[0];
+      const fileUrl = uploadedFile.uploadURL;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        receiptPhotoUrl: fileUrl,
+      }));
+      
+      toast({
+        title: "Receipt uploaded",
+        description: "Your receipt has been uploaded successfully",
+      });
     }
   }, [toast]);
 
@@ -473,33 +458,18 @@ export default function BookReturn() {
 
   const handleTagsUploadComplete = useCallback(async (result: any) => {
     if (result.successful && result.successful.length > 0) {
-      try {
-        const uploadedFile = result.successful[0];
-        const tempUploadUrl = uploadedFile.uploadURL;
-        
-        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
-          receiptUrl: tempUploadUrl,
-        });
-        
-        const durableObjectPath = response.objectPath;
-        
-        setFormData(prev => ({ 
-          ...prev, 
-          tagsPhotoUrl: durableObjectPath,
-        }));
-        
-        toast({
-          title: "Tags photo uploaded",
-          description: "Photo of original tags uploaded successfully",
-        });
-      } catch (error) {
-        console.error("Error finalizing tags photo upload:", error);
-        toast({
-          title: "Upload failed",
-          description: "Failed to upload tags photo. Please try again.",
-          variant: "destructive",
-        });
-      }
+      const uploadedFile = result.successful[0];
+      const fileUrl = uploadedFile.uploadURL;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        tagsPhotoUrl: fileUrl,
+      }));
+      
+      toast({
+        title: "Tags photo uploaded",
+        description: "Photo of original tags uploaded successfully",
+      });
     }
   }, [toast]);
 
@@ -513,33 +483,18 @@ export default function BookReturn() {
 
   const handlePackagingUploadComplete = useCallback(async (result: any) => {
     if (result.successful && result.successful.length > 0) {
-      try {
-        const uploadedFile = result.successful[0];
-        const tempUploadUrl = uploadedFile.uploadURL;
-        
-        const response: any = await apiRequest("PUT", `/api/orders/temp/receipt`, {
-          receiptUrl: tempUploadUrl,
-        });
-        
-        const durableObjectPath = response.objectPath;
-        
-        setFormData(prev => ({ 
-          ...prev, 
-          packagingPhotoUrl: durableObjectPath,
-        }));
-        
-        toast({
-          title: "Packaging photo uploaded",
-          description: "Photo of original packaging uploaded successfully",
-        });
-      } catch (error) {
-        console.error("Error finalizing packaging photo upload:", error);
-        toast({
-          title: "Upload failed",
-          description: "Failed to upload packaging photo. Please try again.",
-          variant: "destructive",
-        });
-      }
+      const uploadedFile = result.successful[0];
+      const fileUrl = uploadedFile.uploadURL;
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        packagingPhotoUrl: fileUrl,
+      }));
+      
+      toast({
+        title: "Packaging photo uploaded",
+        description: "Photo of original packaging uploaded successfully",
+      });
     }
   }, [toast]);
 
