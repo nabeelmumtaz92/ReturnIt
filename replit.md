@@ -4,6 +4,12 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (November 5, 2025)
 
+## Upload Modal & Store Autocomplete Fixes ✅
+- **Upload Modal Click-Outside Fix**: Enhanced ObjectUploader with proper event listener on `.uppy-Dashboard-overlay` that closes modal when clicking dark background outside modal content.
+- **Store Autocomplete Display Fallback**: Added `displayName || storeName` fallback in StoreAutocomplete to prevent blank labels when displayName is null in database.
+- **Improved UX**: Modal now closes intuitively by clicking outside or pressing ESC key, matching standard modal behavior.
+- **Robust Error Handling**: Store autocomplete gracefully handles null displayName values without crashes.
+
 ## Address Autocomplete Dropdown for Pickup Location ✅
 - **Google Places Autocomplete Integration**: Replaced manual street address input with AddressAutocomplete component featuring dropdown suggestions.
 - **Structured Address Parsing**: Enhanced locationServices.ts to fetch and parse address_components from Google Places API, providing reliable extraction of street number, street, city, state, and ZIP code.
