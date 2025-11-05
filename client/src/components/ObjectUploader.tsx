@@ -1,4 +1,4 @@
-import { useState, ReactNode, useRef } from "react";
+import { useState, ReactNode, useRef, useEffect } from "react";
 import Uppy from "@uppy/core";
 import { DashboardModal } from "@uppy/react";
 import "@uppy/core/dist/style.min.css";
@@ -100,6 +100,23 @@ export function ObjectUploader({
     
     return uppyInstance;
   });
+
+  // Add click listener to overlay when modal opens
+  useEffect(() => {
+    if (showModal && !isMobile) {
+      const timer = setTimeout(() => {
+        const overlay = document.querySelector('.uppy-Dashboard--modal .uppy-Dashboard-overlay');
+        if (overlay) {
+          const handleClick = () => {
+            setShowModal(false);
+          };
+          overlay.addEventListener('click', handleClick);
+          return () => overlay.removeEventListener('click', handleClick);
+        }
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [showModal, isMobile]);
 
   // Handle native file input for mobile
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
