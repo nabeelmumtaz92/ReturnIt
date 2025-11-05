@@ -1194,32 +1194,37 @@ export default function BookReturn() {
                             id={`numberOfBoxes-${item.id}`}
                             type="number"
                             min="1"
+                            max={item.boxSize === 'xlarge' ? 3 : 5}
                             value={item.numberOfBoxes}
                             onChange={(e) => {
                               const value = e.target.value;
+                              const maxAllowed = item.boxSize === 'xlarge' ? 3 : 5;
                               if (value === '') {
                                 updateItem(item.id, 'numberOfBoxes', '');
                               } else {
                                 const numValue = parseInt(value);
-                                if (!isNaN(numValue) && numValue >= 1) {
+                                if (!isNaN(numValue) && numValue >= 1 && numValue <= maxAllowed) {
                                   updateItem(item.id, 'numberOfBoxes', numValue.toString());
                                 }
                               }
                             }}
                             onBlur={(e) => {
-                              if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                              const maxAllowed = item.boxSize === 'xlarge' ? 3 : 5;
+                              const currentValue = parseInt(e.target.value);
+                              if (e.target.value === '' || currentValue < 1) {
                                 updateItem(item.id, 'numberOfBoxes', '1');
+                              } else if (currentValue > maxAllowed) {
+                                updateItem(item.id, 'numberOfBoxes', maxAllowed.toString());
                               }
                             }}
                             placeholder="Enter number"
                             className="mt-1.5"
                             data-testid={`input-number-of-boxes-${index}`}
                           />
-                          {item.numberOfBoxes > 1 && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              +${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee
-                            </p>
-                          )}
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {item.boxSize === 'xlarge' ? 'Max 3 large bags per order' : 'Max 5 boxes per order'}
+                            {item.numberOfBoxes > 1 && ` • +$${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee`}
+                          </p>
                         </div>
                       </div>
                     </div>
