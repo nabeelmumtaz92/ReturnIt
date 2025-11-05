@@ -1208,11 +1208,11 @@ export default function BookReturn() {
                             id={`numberOfBoxes-${item.id}`}
                             type="number"
                             min="1"
-                            max={item.boxSize === 'xlarge' ? 3 : 5}
+                            max={item.boxSize === 'xlarge' ? 5 : 3}
                             value={item.numberOfBoxes}
                             onChange={(e) => {
                               const value = e.target.value;
-                              const maxAllowed = item.boxSize === 'xlarge' ? 3 : 5;
+                              const maxAllowed = item.boxSize === 'xlarge' ? 5 : 3;
                               if (value === '') {
                                 updateItem(item.id, 'numberOfBoxes', '');
                               } else {
@@ -1223,7 +1223,7 @@ export default function BookReturn() {
                               }
                             }}
                             onBlur={(e) => {
-                              const maxAllowed = item.boxSize === 'xlarge' ? 3 : 5;
+                              const maxAllowed = item.boxSize === 'xlarge' ? 5 : 3;
                               const currentValue = parseInt(e.target.value);
                               if (e.target.value === '' || currentValue < 1) {
                                 updateItem(item.id, 'numberOfBoxes', '1');
@@ -1236,7 +1236,7 @@ export default function BookReturn() {
                             data-testid={`input-number-of-boxes-${index}`}
                           />
                           <p className="text-xs text-muted-foreground mt-1">
-                            {item.boxSize === 'xlarge' ? 'max 3 bags' : 'max 5 boxes'}
+                            {item.boxSize === 'xlarge' ? 'max 5 bags' : 'max 3 boxes'}
                             {item.numberOfBoxes > 1 && ` • +$${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee`}
                           </p>
                         </div>
