@@ -411,9 +411,12 @@ export default function BookReturn() {
       ...prev,
       items: prev.items.map(item => {
         if (item.id === itemId) {
-          // Handle numberOfBoxes as number
+          // Handle numberOfBoxes - allow empty string temporarily, will be normalized on blur
           if (field === 'numberOfBoxes') {
-            return { ...item, [field]: typeof value === 'string' ? parseInt(value) || 1 : value };
+            if (value === '') {
+              return { ...item, [field]: value as any };
+            }
+            return { ...item, [field]: typeof value === 'string' ? parseInt(value) : value };
           }
           return { ...item, [field]: value };
         }
@@ -1197,29 +1200,28 @@ export default function BookReturn() {
                             type="number"
                             min="1"
                             max={item.boxSize === 'xlarge' ? 5 : 3}
-                            value={item.numberOfBoxes}
+                            value={item.numberOfBoxes || ''}
                             onChange={(e) => {
                               const value = e.target.value;
-                              const maxAllowed = item.boxSize === 'xlarge' ? 5 : 3;
                               if (value === '') {
-                                updateItem(item.id, 'numberOfBoxes', '');
+                                updateItem(item.id, 'numberOfBoxes', '' as any);
                               } else {
                                 const numValue = parseInt(value);
-                                if (!isNaN(numValue) && numValue >= 1 && numValue <= maxAllowed) {
-                                  updateItem(item.id, 'numberOfBoxes', numValue.toString());
+                                if (!isNaN(numValue)) {
+                                  updateItem(item.id, 'numberOfBoxes', numValue);
                                 }
                               }
                             }}
                             onBlur={(e) => {
                               const maxAllowed = item.boxSize === 'xlarge' ? 5 : 3;
                               const currentValue = parseInt(e.target.value);
-                              if (e.target.value === '' || currentValue < 1) {
-                                updateItem(item.id, 'numberOfBoxes', '1');
+                              if (isNaN(currentValue) || currentValue < 1) {
+                                updateItem(item.id, 'numberOfBoxes', 1);
                               } else if (currentValue > maxAllowed) {
-                                updateItem(item.id, 'numberOfBoxes', maxAllowed.toString());
+                                updateItem(item.id, 'numberOfBoxes', maxAllowed);
                               }
                             }}
-                            placeholder="Enter number"
+                            placeholder="1"
                             className="mt-1.5"
                             data-testid={`input-number-of-boxes-${index}`}
                           />
