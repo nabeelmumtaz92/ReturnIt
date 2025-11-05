@@ -85,6 +85,9 @@ export default function StoreAutocomplete({
   };
 
   const handleStoreSelect = (store: StoreLocation) => {
+    console.log('🔵 StoreAutocomplete handleStoreSelect called with:', store);
+    console.log('🔵 onStoreSelect callback exists?', !!onStoreSelect);
+    
     if (store.isAnyLocation) {
       onChange(store.storeName + ' (Any Location)');
     } else {
@@ -92,7 +95,10 @@ export default function StoreAutocomplete({
     }
     
     if (onStoreSelect) {
+      console.log('🔵 Calling onStoreSelect callback with store data');
       onStoreSelect(store);
+    } else {
+      console.warn('⚠️ onStoreSelect callback is not defined!');
     }
     
     setShowSuggestions(false);
@@ -172,10 +178,14 @@ export default function StoreAutocomplete({
           value={value}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => setShowSuggestions(true)}
+          onFocus={() => {
+            console.log('🔵 Input focused, showing suggestions');
+            setShowSuggestions(true);
+          }}
           onBlur={() => {
             // Delay to allow click on suggestion
-            setTimeout(() => setShowSuggestions(false), 200);
+            console.log('🔵 Input blurred, hiding suggestions in 300ms');
+            setTimeout(() => setShowSuggestions(false), 300);
           }}
           className="pl-10 pr-10"
           required={required}
@@ -195,7 +205,11 @@ export default function StoreAutocomplete({
             {/* Any Location Option */}
             <button
               type="button"
-              onClick={handleAnyLocationSelect}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                console.log('🔵 Any Location clicked');
+                handleAnyLocationSelect();
+              }}
               className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors border-b border-border ${
                 selectedIndex === 0 ? 'bg-accent' : ''
               }`}
@@ -219,7 +233,15 @@ export default function StoreAutocomplete({
               <button
                 key={store.id}
                 type="button"
-                onClick={() => handleStoreSelect(store)}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  console.log('🔵 Store clicked (mouseDown):', store.storeName);
+                  handleStoreSelect(store);
+                }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('🔵 Store clicked (onClick):', store.storeName);
+                }}
                 className={`w-full text-left px-4 py-3 hover:bg-accent transition-colors ${
                   index + 1 === selectedIndex ? 'bg-accent' : ''
                 }`}
