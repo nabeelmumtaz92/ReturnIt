@@ -1,4 +1,7 @@
 // SMS Notification service for order alerts
+import twilio from 'twilio';
+import nodemailer from 'nodemailer';
+
 export interface SMSService {
   sendOrderNotification(orderData: any): Promise<boolean>;
 }
@@ -51,20 +54,22 @@ export class FreeEmailSMSService implements SMSService {
 
   private async sendPushNotification(message: string): Promise<void> {
     // Send push notification to admin via WebSocket
-    const { webSocketService } = require('./websocket-service');
-    if (webSocketService) {
-      webSocketService.broadcastAdminNotification({
-        type: 'new_order',
-        title: 'New Return Order',
-        message: message,
-        timestamp: new Date().toISOString()
-      });
+    try {
+      const { webSocketService } = await import('./websocket-service.js');
+      if (webSocketService) {
+        webSocketService.broadcastAdminNotification({
+          type: 'new_order',
+          title: 'New Return Order',
+          message: message,
+          timestamp: new Date().toISOString()
+        });
+      }
+    } catch (error) {
+      // WebSocket service not available
     }
   }
 
   private async sendViaSMSGateway(phoneNumber: string, message: string): Promise<boolean> {
-    const nodemailer = require('nodemailer');
-    
     // Use Gmail SMTP (free) - requires app password
     const transporter = nodemailer.createTransporter({
       service: 'gmail',
@@ -105,7 +110,6 @@ export class TwilioSMSService implements SMSService {
 
   constructor() {
     if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      const twilio = require('twilio');
       this.client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
     }
   }

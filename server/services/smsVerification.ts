@@ -45,8 +45,16 @@ export async function sendVerificationSms(
       success: true,
       message: 'Verification code sent via SMS',
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to send SMS:', error);
+    
+    // Check for Twilio trial account restriction (error code 21608)
+    if (error?.code === 21608 || error?.message?.includes('unverified')) {
+      return {
+        success: false,
+        error: 'SMS verification is currently unavailable. Please verify your phone number in your Twilio account or use email verification instead.',
+      };
+    }
     
     if (error instanceof Error) {
       return {
