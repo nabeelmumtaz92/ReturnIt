@@ -606,12 +606,15 @@ export default function BookReturn() {
   };
 
   const handleNextPage = async () => {
+    console.log('🔐 handleNextPage - Current page:', page, 'isAuthenticated:', isAuthenticated, 'user:', user);
+    
     if (!validatePage(page)) {
       return;
     }
 
-    // SECURITY: Require authentication before proceeding to payment (page 3+)
-    if (page >= 2 && !isAuthenticated) {
+    // SECURITY: Require authentication BEFORE proceeding from page 1 to page 2
+    if (page === 1 && !isAuthenticated) {
+      console.warn('🚫 Blocking navigation from page 1 - not authenticated');
       toast({
         title: "Sign In Required",
         description: "Please sign in before continuing with your booking.",
