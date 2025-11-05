@@ -4,6 +4,16 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (November 5, 2025)
 
+## Photo Upload System Rebuilt & Store Dropdown Enhanced ✅
+- **SimplePhotoUploader Component**: Completely rebuilt photo upload system from scratch, replacing complex Uppy modal with native file input and XMLHttpRequest.
+- **Fixed Gray-Out Issue**: Upload buttons no longer become disabled or grayed out - users can click to open file picker/camera reliably.
+- **Mobile Camera Support**: Native file input with `capture="environment"` automatically opens rear camera on mobile devices.
+- **Upload Progress**: Shows real-time "Uploading X%" feedback in button during transfer.
+- **Removed Auth Dependency**: Upload completion handlers now use S3 URLs directly without calling auth-protected endpoints, allowing guest users to upload photos.
+- **Store Autocomplete - Full Catalog**: Enhanced to show ALL 600+ stores immediately when clicking empty field (limit=1000 for empty query, limit=100 when filtering).
+- **Dynamic Limits**: Empty field loads full store catalog, typed queries use smaller limit for performance.
+- **Number of Boxes/Bags Input Fixed**: Corrected validation logic to allow users to clear field and retype values without snap-to-1 interference - empty values stored temporarily, normalized to valid range (1 to max) only on blur.
+
 ## Upload Modal & Store Autocomplete Fixes ✅
 - **Upload Modal Click-Outside Fix**: Enhanced ObjectUploader with proper event listener on `.uppy-Dashboard-overlay` that closes modal when clicking dark background outside modal content.
 - **Store Autocomplete Display Fallback**: Added `displayName || storeName` fallback in StoreAutocomplete to prevent blank labels when displayName is null in database.
