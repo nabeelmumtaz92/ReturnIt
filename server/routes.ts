@@ -1497,6 +1497,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send SMS verification code endpoint
+  app.post("/api/auth/send-sms-verification", authRateLimit, async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+      
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      if (user.isEmailVerified) {
+        return res.status(400).json({ message: "Account already verified" });
+      }
+
+      if (!user.phone) {
+        return res.status(400).json({ message: "No phone number associated with this account" });
+      }
+      
+      // Generate new verification code
+      const { generateVerificationCode } = await import('./services/emailVerification');
+      const { sendVerificationSms, isTwilioConfigured } = await import('./services/smsVerification');
+      
+      if (!isTwilioConfigured()) {
+        return res.status(503).json({ message: "SMS service is currently unavailable. Please try email verification." });
+      }
+
+      const verificationCode = generateVerificationCode();
+      const verificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours from now
+      
+      await storage.updateUser(user.id, {
+        emailVerificationToken: verificationCode,
+        emailVerificationExpiry: verificationExpiry
+      });
+      
+      const smsResult = await sendVerificationSms(user.phone, verificationCode);
+      
+      if (!smsResult.success) {
+        return res.status(500).json({ message: smsResult.error || "Failed to send SMS" });
+      }
+      
+      res.json({ message: "Verification code sent via SMS!" });
+    } catch (error) {
+      console.error('SMS verification send error:', error);
+      res.status(500).json({ message: "Failed to send SMS verification code. Please try again." });
+    }
+  });
+
   // Forgot Password endpoint - Send reset token to email
   app.post("/api/auth/forgot-password", authRateLimit, async (req, res) => {
     try {

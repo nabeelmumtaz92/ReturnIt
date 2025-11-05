@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth-simple";
-import { Mail, ArrowLeft } from "lucide-react";
+import { Mail, ArrowLeft, MessageSquare } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 
 export default function VerifyEmail() {
@@ -88,6 +88,31 @@ export default function VerifyEmail() {
     },
   });
 
+  // Send SMS verification code mutation
+  const sendSmsMutation = useMutation({
+    mutationFn: async (email: string) => {
+      return await apiRequest("POST", "/api/auth/send-sms-verification", { email });
+    },
+    onSuccess: () => {
+      toast({
+        title: "SMS Sent!",
+        description: "A verification code has been sent to your phone via text message.",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage = error instanceof Error ? error.message : "Failed to send SMS";
+      toast({
+        title: "SMS Failed",
+        description: errorMessage.includes('phone') 
+          ? "No phone number associated with this account." 
+          : errorMessage.includes('unavailable')
+          ? "SMS service is currently unavailable. Please try email verification."
+          : "Failed to send SMS. Please try again later.",
+        variant: "destructive"
+      });
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !verificationCode) {
@@ -104,6 +129,11 @@ export default function VerifyEmail() {
   const handleResendCode = () => {
     if (!email) return;
     resendCodeMutation.mutate(email);
+  };
+
+  const handleSendSms = () => {
+    if (!email) return;
+    sendSmsMutation.mutate(email);
   };
 
   return (
@@ -180,17 +210,37 @@ export default function VerifyEmail() {
                 {verifyEmailMutation.isPending ? "Verifying..." : "Verify Email"}
               </Button>
               
-              <div className="text-center text-sm text-muted-foreground">
-                Didn't receive the code?{' '}
-                <button
+              <div className="text-center space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  Didn't receive the code?{' '}
+                  <button
+                    type="button"
+                    onClick={handleResendCode}
+                    disabled={resendCodeMutation.isPending}
+                    className="text-primary hover:underline font-medium"
+                    data-testid="button-resend-code"
+                  >
+                    {resendCodeMutation.isPending ? "Sending..." : "Resend Email"}
+                  </button>
+                </div>
+                
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-px flex-1 bg-border"></div>
+                  <span className="text-xs text-muted-foreground">OR</span>
+                  <div className="h-px flex-1 bg-border"></div>
+                </div>
+
+                <Button
                   type="button"
-                  onClick={handleResendCode}
-                  disabled={resendCodeMutation.isPending}
-                  className="text-primary hover:underline font-medium"
-                  data-testid="button-resend-code"
+                  variant="outline"
+                  onClick={handleSendSms}
+                  disabled={sendSmsMutation.isPending}
+                  className="w-full"
+                  data-testid="button-send-sms"
                 >
-                  {resendCodeMutation.isPending ? "Sending..." : "Resend Code"}
-                </button>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  {sendSmsMutation.isPending ? "Sending..." : "Get Code via Text Message"}
+                </Button>
               </div>
             </CardFooter>
           </form>
