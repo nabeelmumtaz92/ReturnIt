@@ -4,6 +4,16 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (November 5, 2025)
 
+## Separate Boxes & Bags Input System with Corrected Pricing ✅
+- **Independent Package Inputs**: Each item now has separate "Boxes (0-3)" and "Bags (0-5)" inputs, both starting at 0 (no longer required to select 1 box minimum).
+- **Database Schema Update**: Added `numberOfBags` column to orders table with default 0; changed `numberOfBoxes` default from 1 to 0.
+- **8-Item Total Limit**: Maximum 8 total items (boxes + bags combined) enforced across entire order, with real-time counter showing "Total items: X/8 boxes & bags".
+- **Fixed Multi-Package Pricing Bug**: Corrected calculation to charge $3 per package beyond first package **order-wide** (not per-item). Previously gave each item its own "first package free" allowance, resulting in undercharges for multi-item orders.
+- **Robust Number Handling**: Explicit type coercion with `parseInt` and `|| 0` fallback prevents pricing errors from empty string values during form editing.
+- **Smart Validation**: Prevents adding new items or increasing package counts when at 8-item limit; shows helpful error toasts.
+- **UX Improvement**: Users can now clear inputs and retype values without premature snap-to-minimum; empty values normalized only on blur event.
+- **Backend Integration**: API routes correctly extract and persist both `numberOfBoxes` and `numberOfBags` to database.
+
 ## Photo Upload System Rebuilt & Store Dropdown Enhanced ✅
 - **SimplePhotoUploader Component**: Completely rebuilt photo upload system from scratch, replacing complex Uppy modal with native file input and XMLHttpRequest.
 - **Fixed Gray-Out Issue**: Upload buttons no longer become disabled or grayed out - users can click to open file picker/camera reliably.

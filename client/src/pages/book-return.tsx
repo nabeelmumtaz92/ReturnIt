@@ -1026,18 +1026,31 @@ export default function BookReturn() {
                     }));
                   }}
                   onStoreSelect={(store) => {
+                    console.log('🏪 Store selected:', store);
+                    console.log('🏪 Store fields:', {
+                      storeName: store.storeName,
+                      streetAddress: store.streetAddress,
+                      city: store.city,
+                      state: store.state,
+                      zipCode: store.zipCode
+                    });
+                    
                     // Auto-fill ALL store details when user selects a location from dropdown
-                    setFormData(prev => ({
-                      ...prev,
-                      retailerName: store.retailerName, // For validation (line 552)
-                      retailer: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`, // Display value
-                      retailerLocation: store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`, // For validation (line 553)
-                      storeDestinationName: store.storeName,
-                      storeDestinationAddress: store.streetAddress,
-                      storeDestinationCity: store.city,
-                      storeDestinationState: store.state,
-                      storeDestinationZip: store.zipCode
-                    }));
+                    setFormData(prev => {
+                      const updated = {
+                        ...prev,
+                        retailerName: store.retailerName, // For validation (line 552)
+                        retailer: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`, // Display value
+                        retailerLocation: store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`, // For validation (line 553)
+                        storeDestinationName: store.storeName,
+                        storeDestinationAddress: store.streetAddress,
+                        storeDestinationCity: store.city,
+                        storeDestinationState: store.state,
+                        storeDestinationZip: store.zipCode
+                      };
+                      console.log('🏪 Updated form data:', updated);
+                      return updated;
+                    });
                     
                     // Clear ALL validation errors for store-related fields
                     setValidationErrors(prev => {
