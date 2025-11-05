@@ -1603,13 +1603,13 @@ export default function BookReturn() {
                     </div>
                     {pricing.sizeUpcharge > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Size Upcharge ({formData.boxSize})</span>
+                        <span className="text-muted-foreground">Size Upcharge</span>
                         <span className="font-medium">${pricing.sizeUpcharge.toFixed(2)}</span>
                       </div>
                     )}
                     {pricing.multiBoxFee > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-muted-foreground">Multi-Package Fee ({formData.numberOfBoxes} boxes/bags)</span>
+                        <span className="text-muted-foreground">Multi-Package Fee</span>
                         <span className="font-medium">${pricing.multiBoxFee.toFixed(2)}</span>
                       </div>
                     )}
