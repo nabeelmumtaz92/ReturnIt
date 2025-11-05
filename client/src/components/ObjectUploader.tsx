@@ -104,17 +104,29 @@ export function ObjectUploader({
   // Add click listener to overlay when modal opens
   useEffect(() => {
     if (showModal && !isMobile) {
+      const handleOverlayClick = (e: Event) => {
+        const target = e.target as HTMLElement;
+        // Check if click was on the overlay itself (not on modal content)
+        if (target.classList.contains('uppy-Dashboard-overlay')) {
+          setShowModal(false);
+        }
+      };
+
+      // Wait for modal to render
       const timer = setTimeout(() => {
         const overlay = document.querySelector('.uppy-Dashboard--modal .uppy-Dashboard-overlay');
         if (overlay) {
-          const handleClick = () => {
-            setShowModal(false);
-          };
-          overlay.addEventListener('click', handleClick);
-          return () => overlay.removeEventListener('click', handleClick);
+          overlay.addEventListener('click', handleOverlayClick);
         }
-      }, 200);
-      return () => clearTimeout(timer);
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+        const overlay = document.querySelector('.uppy-Dashboard--modal .uppy-Dashboard-overlay');
+        if (overlay) {
+          overlay.removeEventListener('click', handleOverlayClick);
+        }
+      };
     }
   }, [showModal, isMobile]);
 
