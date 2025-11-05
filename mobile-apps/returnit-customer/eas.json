@@ -49,7 +49,9 @@
         "releaseStatus": "draft"
       },
       "ios": {
-        "appleId": "nabeelmumtaz92@gmail.com"
+        "appleId": "nabeelmumtaz92@gmail.com",
+        "ascAppId": "6754804804",
+        "appleTeamId": "5Z5CXL8GJR"
       }
     },
     "preview": {
@@ -57,7 +59,8 @@
         "track": "internal"
       },
       "ios": {
-        "appleId": "nabeelmumtaz92@gmail.com"
+        "appleId": "nabeelmumtaz92@gmail.com",
+        "appleTeamId": "5Z5CXL8GJR"
       }
     }
   }
