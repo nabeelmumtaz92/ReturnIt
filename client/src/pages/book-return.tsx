@@ -1039,12 +1039,11 @@ export default function BookReturn() {
                   data-testid="autocomplete-store"
                 />
 
-                {formData.retailerLocation && (
-                  <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
-                    <h3 className="text-sm font-semibold text-amber-900 flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Return Destination (Editable)
-                    </h3>
+                <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
+                  <h3 className="text-sm font-semibold text-amber-900 flex items-center">
+                    <MapPin className="h-4 w-4 mr-2" />
+                    Return Destination (Editable)
+                  </h3>
                     
                     <div>
                       <Label htmlFor="storeDestinationName" className="text-sm font-semibold">Store Name *</Label>
@@ -1111,8 +1110,7 @@ export default function BookReturn() {
                         data-testid="input-store-zip"
                       />
                     </div>
-                  </div>
-                )}
+                </div>
 
                 {/* Multiple Items Section */}
                 <div className="space-y-4">
