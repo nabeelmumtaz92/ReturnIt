@@ -1,5 +1,8 @@
 {
   "expo": {
+    "name": "Return It",
+    "slug": "return-it",
+    "version": "1.0.0",
     "extra": {
       "eas": {
         "projectId": "e7f4d8a3-407d-4245-96ae-093d77636fdf"
@@ -14,6 +17,9 @@
     "updates": {
       "url": "https://u.expo.dev/e7f4d8a3-407d-4245-96ae-093d77636fdf"
     },
-    "ios": {}
+    "ios": {
+      "bundleIdentifier": "com.returnit.app",
+      "buildNumber": "1"
+    }
   }
 }
