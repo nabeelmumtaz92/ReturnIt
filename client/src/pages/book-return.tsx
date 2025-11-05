@@ -33,6 +33,7 @@ interface ReturnItem {
   itemValue: string;
   boxSize: string;
   numberOfBoxes: number;
+  numberOfBags: number;
 }
 
 interface FormData {
@@ -363,7 +364,8 @@ export default function BookReturn() {
       itemDescription: '',
       itemValue: '',
       boxSize: 'small',
-      numberOfBoxes: 1
+      numberOfBoxes: 0,
+      numberOfBags: 0
     }],
     notes: '',
     serviceTier: 'standard',
@@ -373,8 +375,25 @@ export default function BookReturn() {
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
 
+  // Calculate total boxes and bags across all items
+  const getTotalItems = () => {
+    return formData.items.reduce((total, item) => {
+      return total + (item.numberOfBoxes || 0) + (item.numberOfBags || 0);
+    }, 0);
+  };
+
   // Item management functions
   const addItem = () => {
+    const totalItems = getTotalItems();
+    if (totalItems >= 8) {
+      toast({
+        title: "Maximum items reached",
+        description: "You can have a maximum of 8 boxes/bags total across all items in one order.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       items: [
@@ -385,7 +404,8 @@ export default function BookReturn() {
           itemDescription: '',
           itemValue: '',
           boxSize: 'small',
-          numberOfBoxes: 1
+          numberOfBoxes: 0,
+          numberOfBags: 0
         }
       ]
     }));
@@ -411,8 +431,8 @@ export default function BookReturn() {
       ...prev,
       items: prev.items.map(item => {
         if (item.id === itemId) {
-          // Handle numberOfBoxes - allow empty string temporarily, will be normalized on blur
-          if (field === 'numberOfBoxes') {
+          // Handle numberOfBoxes and numberOfBags - allow empty string temporarily, will be normalized on blur
+          if (field === 'numberOfBoxes' || field === 'numberOfBags') {
             if (value === '') {
               return { ...item, [field]: value as any };
             }
@@ -1178,29 +1198,30 @@ export default function BookReturn() {
                         </div>
                       </div>
 
+                      <div>
+                        <Label htmlFor={`boxSize-${item.id}`} className="text-sm font-semibold">Package Size *</Label>
+                        <Select value={item.boxSize} onValueChange={(value) => updateItem(item.id, 'boxSize', value)}>
+                          <SelectTrigger className="mt-1.5" data-testid={`select-box-size-${index}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="small">Small (Shoebox/Bag)</SelectItem>
+                            <SelectItem value="medium">Medium (+ $2.00)</SelectItem>
+                            <SelectItem value="large">Large (+ $4.00)</SelectItem>
+                            <SelectItem value="xlarge">Extra Large (+ $6.00)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <Label htmlFor={`boxSize-${item.id}`} className="text-sm font-semibold">Package Size *</Label>
-                          <Select value={item.boxSize} onValueChange={(value) => updateItem(item.id, 'boxSize', value)}>
-                            <SelectTrigger className="mt-1.5" data-testid={`select-box-size-${index}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="small">Small (Shoebox/Bag)</SelectItem>
-                              <SelectItem value="medium">Medium (+ $2.00)</SelectItem>
-                              <SelectItem value="large">Large (+ $4.00)</SelectItem>
-                              <SelectItem value="xlarge">Extra Large (+ $6.00)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label htmlFor={`numberOfBoxes-${item.id}`} className="text-sm font-semibold">Number of Boxes/Bags</Label>
+                          <Label htmlFor={`numberOfBoxes-${item.id}`} className="text-sm font-semibold">Boxes (0-3)</Label>
                           <Input
                             id={`numberOfBoxes-${item.id}`}
                             type="number"
-                            min="1"
-                            max={item.boxSize === 'xlarge' ? 5 : 3}
-                            value={item.numberOfBoxes || ''}
+                            min="0"
+                            max="3"
+                            value={item.numberOfBoxes === 0 ? '0' : (item.numberOfBoxes || '')}
                             onChange={(e) => {
                               const value = e.target.value;
                               if (value === '') {
@@ -1208,29 +1229,73 @@ export default function BookReturn() {
                               } else {
                                 const numValue = parseInt(value);
                                 if (!isNaN(numValue)) {
-                                  updateItem(item.id, 'numberOfBoxes', numValue);
+                                  const otherItemsTotal = formData.items
+                                    .filter(i => i.id !== item.id)
+                                    .reduce((sum, i) => sum + (i.numberOfBoxes || 0) + (i.numberOfBags || 0), 0);
+                                  const proposedTotal = otherItemsTotal + numValue + (item.numberOfBags || 0);
+                                  if (proposedTotal <= 8) {
+                                    updateItem(item.id, 'numberOfBoxes', numValue);
+                                  }
                                 }
                               }
                             }}
                             onBlur={(e) => {
-                              const maxAllowed = item.boxSize === 'xlarge' ? 5 : 3;
                               const currentValue = parseInt(e.target.value);
-                              if (isNaN(currentValue) || currentValue < 1) {
-                                updateItem(item.id, 'numberOfBoxes', 1);
-                              } else if (currentValue > maxAllowed) {
-                                updateItem(item.id, 'numberOfBoxes', maxAllowed);
+                              if (isNaN(currentValue) || currentValue < 0) {
+                                updateItem(item.id, 'numberOfBoxes', 0);
+                              } else if (currentValue > 3) {
+                                updateItem(item.id, 'numberOfBoxes', 3);
                               }
                             }}
-                            placeholder="1"
+                            placeholder="0"
                             className="mt-1.5"
                             data-testid={`input-number-of-boxes-${index}`}
                           />
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {item.boxSize === 'xlarge' ? 'max 5 bags' : 'max 3 boxes'}
-                            {item.numberOfBoxes > 1 && ` • +$${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee`}
-                          </p>
+                        </div>
+                        <div>
+                          <Label htmlFor={`numberOfBags-${item.id}`} className="text-sm font-semibold">Bags (0-5)</Label>
+                          <Input
+                            id={`numberOfBags-${item.id}`}
+                            type="number"
+                            min="0"
+                            max="5"
+                            value={item.numberOfBags === 0 ? '0' : (item.numberOfBags || '')}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === '') {
+                                updateItem(item.id, 'numberOfBags', '' as any);
+                              } else {
+                                const numValue = parseInt(value);
+                                if (!isNaN(numValue)) {
+                                  const otherItemsTotal = formData.items
+                                    .filter(i => i.id !== item.id)
+                                    .reduce((sum, i) => sum + (i.numberOfBoxes || 0) + (i.numberOfBags || 0), 0);
+                                  const proposedTotal = otherItemsTotal + (item.numberOfBoxes || 0) + numValue;
+                                  if (proposedTotal <= 8) {
+                                    updateItem(item.id, 'numberOfBags', numValue);
+                                  }
+                                }
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const currentValue = parseInt(e.target.value);
+                              if (isNaN(currentValue) || currentValue < 0) {
+                                updateItem(item.id, 'numberOfBags', 0);
+                              } else if (currentValue > 5) {
+                                updateItem(item.id, 'numberOfBags', 5);
+                              }
+                            }}
+                            placeholder="0"
+                            className="mt-1.5"
+                            data-testid={`input-number-of-bags-${index}`}
+                          />
                         </div>
                       </div>
+                      {getTotalItems() > 0 && (
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Total items: {getTotalItems()}/8 boxes & bags
+                        </p>
+                      )}
                     </div>
                   ))}
 

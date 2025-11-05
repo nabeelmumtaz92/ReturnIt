@@ -4607,6 +4607,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         estimatedWeight,
         boxSize,
         numberOfBoxes,
+        numberOfBags,
         notes,
         totalAmount
       } = req.body;
@@ -4650,6 +4651,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Box details
         boxSize,
         numberOfBoxes,
+        numberOfBags,
         
         // Route and time tracking
         ...(routeEstimate && {
