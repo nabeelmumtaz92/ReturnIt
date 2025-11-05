@@ -4,6 +4,14 @@ Return It is a reverse delivery service platform designed to streamline returns,
 
 # Recent Changes (November 5, 2025)
 
+## Address Autocomplete Dropdown for Pickup Location ✅
+- **Google Places Autocomplete Integration**: Replaced manual street address input with AddressAutocomplete component featuring dropdown suggestions.
+- **Structured Address Parsing**: Enhanced locationServices.ts to fetch and parse address_components from Google Places API, providing reliable extraction of street number, street, city, state, and ZIP code.
+- **Auto-Fill Functionality**: Selecting an address from dropdown automatically populates all related fields (street, city, state, ZIP) with structured data.
+- **Initialization Guards**: Added isInitialized state to prevent autocomplete searches before Google Maps API loads, avoiding runtime errors.
+- **Graceful Fallback**: Fields remain editable after auto-fill, allowing users to manually correct any values.
+- **User Experience**: Includes "Use current location" button for quick address entry via geolocation.
+
 ## Google Maps Integration - Production Ready ✅
 - **Complete Google Maps Rendering**: Integrated @react-google-maps/api with LoadScript, GoogleMap, Marker, Polyline, and InfoWindow components for full-featured mapping.
 - **Runtime Safety Guards**: All `google.maps.*` API references protected with `window.google?.maps` checks to prevent ReferenceError before API loads.

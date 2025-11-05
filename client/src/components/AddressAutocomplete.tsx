@@ -32,22 +32,34 @@ export default function AddressAutocomplete({
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { getCurrentLocation, isLoading: locationLoading } = useCurrentLocation();
   const { toast } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimer = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    locationService.initializeGoogleMaps().catch(err => {
-      console.warn('Google Maps not configured - address autocomplete will use basic input');
-      // Silently degrade - don't show error to users, just log for developers
-    });
-  }, [toast]);
+    locationService.initializeGoogleMaps()
+      .then(() => {
+        setIsInitialized(true);
+      })
+      .catch(err => {
+        console.warn('Google Maps not configured - address autocomplete will use basic input');
+        setIsInitialized(false);
+        // Silently degrade - don't show error to users, just log for developers
+      });
+  }, []);
 
   const searchPlaces = async (query: string) => {
     if (query.length < 3) {
       setSuggestions([]);
       setShowSuggestions(false);
+      return;
+    }
+
+    // Don't search if Google Maps isn't initialized yet
+    if (!isInitialized) {
+      console.warn('Google Maps not yet initialized, skipping autocomplete search');
       return;
     }
 
@@ -103,6 +115,15 @@ export default function AddressAutocomplete({
   };
 
   const handleCurrentLocation = async () => {
+    if (!isInitialized) {
+      toast({
+        title: "Maps not ready",
+        description: "Please wait for Maps to load, then try again",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const location = await getCurrentLocation();
       
