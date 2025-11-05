@@ -1236,7 +1236,7 @@ export default function BookReturn() {
                             data-testid={`input-number-of-boxes-${index}`}
                           />
                           <p className="text-xs text-muted-foreground mt-1">
-                            {item.boxSize === 'xlarge' ? 'Max 3 large bags per order' : 'Max 5 boxes per order'}
+                            {item.boxSize === 'xlarge' ? 'max 3 bags' : 'max 5 boxes'}
                             {item.numberOfBoxes > 1 && ` • +$${((item.numberOfBoxes - 1) * 3).toFixed(2)} multi-package fee`}
                           </p>
                         </div>
