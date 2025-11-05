@@ -4487,9 +4487,29 @@ export class DatabaseStorage implements IStorage {
 
   // Store Location Methods - Database implementation (Google Places Integration)
   async searchStoreLocations(query: string, city?: string, limit: number = 20): Promise<StoreLocation[]> {
-    const lowerQuery = `%${query.toLowerCase()}%`;
+    console.log('[searchStoreLocations] Searching with:', { query, city, limit });
     
-    console.log('[searchStoreLocations] Searching with:', { query, city, limit, lowerQuery });
+    // If query is empty, return all active stores (for dropdown on focus)
+    if (!query || query.trim() === '') {
+      const whereConditions = city
+        ? and(
+            eq(storeLocations.isActive, true),
+            sql`LOWER(${storeLocations.city}) = ${city.toLowerCase()}`
+          )
+        : eq(storeLocations.isActive, true);
+      
+      const results = await db
+        .select()
+        .from(storeLocations)
+        .where(whereConditions)
+        .limit(limit);
+      
+      console.log('[searchStoreLocations] Empty query - returning all stores:', results.length, 'results');
+      return results;
+    }
+    
+    // Otherwise, filter by query
+    const lowerQuery = `%${query.toLowerCase()}%`;
     
     // Build WHERE conditions
     const searchConditions = or(

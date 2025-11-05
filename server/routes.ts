@@ -4299,16 +4299,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('[STORE SEARCH API] ===== NEW REQUEST =====');
       console.log('[STORE SEARCH API] Query params:', { query, city, limit });
       
-      if (!query || typeof query !== 'string' || query.length < 2) {
-        console.log('[STORE SEARCH API] Query too short or invalid, returning empty');
+      // Allow empty query (returns all stores), but query must be a string
+      if (query !== undefined && typeof query !== 'string') {
+        console.log('[STORE SEARCH API] Query invalid type, returning empty');
         return res.json([]);
       }
       
+      const searchQuery = typeof query === 'string' ? query : '';
       const searchLimit = limit ? parseInt(limit as string) : 20;
       const searchCity = city && typeof city === 'string' ? city : undefined;
       
       // Check cache first
-      const cacheKey = `${query.toLowerCase()}:${searchCity || 'all'}:${searchLimit}`;
+      const cacheKey = `${searchQuery.toLowerCase()}:${searchCity || 'all'}:${searchLimit}`;
       const cached = storeSearchCache.get(cacheKey);
       
       if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
@@ -4318,7 +4320,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('[/api/stores/search] Cache miss, calling storage.searchStoreLocations');
       const stores = await storage.searchStoreLocations(
-        query,
+        searchQuery,
         searchCity,
         searchLimit
       );

@@ -52,16 +52,19 @@ export default function StoreAutocomplete({
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimer = useRef<NodeJS.Timeout>();
 
-  // Fetch store locations when user types (debounced)
+  // Fetch store locations - shows all stores when empty, filters when typing
   const { data: storeLocations = [], isLoading } = useQuery<StoreLocation[]>({
     queryKey: ['/api/stores/search', value],
     queryFn: async () => {
-      if (value.length < 2) return [];
-      const response = await fetch(`/api/stores/search?query=${encodeURIComponent(value)}&limit=20`);
+      // Pass empty string when value is empty to get all stores, otherwise filter
+      const query = value.trim() === '' ? '' : value;
+      // When empty, fetch ALL stores (limit 1000), when filtering use smaller limit
+      const limit = query === '' ? 1000 : 100;
+      const response = await fetch(`/api/stores/search?query=${encodeURIComponent(query)}&limit=${limit}`);
       if (!response.ok) throw new Error('Failed to search stores');
       return response.json();
     },
-    enabled: value.length >= 2, // Only search when 2+ characters typed
+    enabled: true, // Always enabled so dropdown can show on focus
     staleTime: 1000 * 60 * 15, // Cache for 15 minutes
   });
 
@@ -74,9 +77,9 @@ export default function StoreAutocomplete({
       clearTimeout(debounceTimer.current);
     }
 
-    // Debounce showing suggestions
+    // Show suggestions immediately when typing (or when empty for dropdown behavior)
     debounceTimer.current = setTimeout(() => {
-      setShowSuggestions(query.length >= 2);
+      setShowSuggestions(true);
       setSelectedIndex(-1);
     }, 300);
   };
@@ -169,7 +172,7 @@ export default function StoreAutocomplete({
           value={value}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          onFocus={() => value.length >= 2 && setShowSuggestions(true)}
+          onFocus={() => setShowSuggestions(true)}
           onBlur={() => {
             // Delay to allow click on suggestion
             setTimeout(() => setShowSuggestions(false), 200);
