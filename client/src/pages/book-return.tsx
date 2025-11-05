@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ObjectUploader } from "@/components/ObjectUploader";
+import { ObjectUploader } from "@/components/SimplePhotoUploader";
 import { BrandLogo } from "@/components/BrandLogo";
 import StoreAutocomplete from "@/components/StoreAutocomplete";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
