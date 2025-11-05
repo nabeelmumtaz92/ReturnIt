@@ -878,7 +878,7 @@ export default function BookReturn() {
                       id="firstName"
                       value={formData.firstName}
                       onChange={(e) => updateField('firstName', e.target.value)}
-                      placeholder="John"
+                      placeholder="First name"
                       className={`mt-1.5 ${validationErrors.has('firstName') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-first-name"
@@ -890,7 +890,7 @@ export default function BookReturn() {
                       id="lastName"
                       value={formData.lastName}
                       onChange={(e) => updateField('lastName', e.target.value)}
-                      placeholder="Doe"
+                      placeholder="Last name"
                       className={`mt-1.5 ${validationErrors.has('lastName') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-last-name"
@@ -905,7 +905,7 @@ export default function BookReturn() {
                     type="email"
                     value={formData.email}
                     onChange={(e) => updateField('email', e.target.value)}
-                    placeholder="your@email.com"
+                    placeholder="Email address"
                     className={`mt-1.5 ${validationErrors.has('email') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-email"
@@ -919,7 +919,7 @@ export default function BookReturn() {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => updateField('phone', e.target.value)}
-                    placeholder="(314) 555-1234"
+                    placeholder="Phone number"
                     className={`mt-1.5 ${validationErrors.has('phone') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-phone"
@@ -934,7 +934,7 @@ export default function BookReturn() {
                     id="streetAddress"
                     value={formData.streetAddress}
                     onChange={(e) => updateField('streetAddress', e.target.value)}
-                    placeholder="123 Main St, Apt 4B"
+                    placeholder="Street address"
                     className={`mt-1.5 ${validationErrors.has('streetAddress') ? 'border-red-500 border-2' : ''}`}
                     required
                     data-testid="input-street-address"
@@ -949,7 +949,7 @@ export default function BookReturn() {
                         id="city"
                         value={formData.city}
                         onChange={(e) => updateField('city', e.target.value)}
-                        placeholder="St. Louis"
+                        placeholder="City"
                         className={`mt-1.5 ${validationErrors.has('city') ? 'border-red-500 border-2' : ''}`}
                         required
                         data-testid="input-city"
@@ -961,7 +961,7 @@ export default function BookReturn() {
                         id="state"
                         value={formData.state}
                         onChange={(e) => updateField('state', e.target.value)}
-                        placeholder="MO"
+                        placeholder="State"
                         maxLength={2}
                         className={`mt-1.5 ${validationErrors.has('state') ? 'border-red-500 border-2' : ''}`}
                         required
@@ -975,7 +975,7 @@ export default function BookReturn() {
                       id="zipCode"
                       value={formData.zipCode}
                       onChange={(e) => updateField('zipCode', e.target.value)}
-                      placeholder="63101"
+                      placeholder="ZIP code"
                       className={`mt-1.5 ${validationErrors.has('zipCode') ? 'border-red-500 border-2' : ''}`}
                       required
                       data-testid="input-zip-code"
@@ -990,7 +990,7 @@ export default function BookReturn() {
               <div className="space-y-5">
                 <StoreAutocomplete
                   label="Store Location"
-                  placeholder="Type to search... (e.g., Target, Walmart, Best Buy)"
+                  placeholder="Type to search stores..."
                   value={formData.retailer}
                   onChange={(value) => {
                     // Update retailer text as user types
@@ -1088,7 +1088,7 @@ export default function BookReturn() {
                           id="storeDestinationState"
                           value={formData.storeDestinationState}
                           onChange={(e) => updateField('storeDestinationState', e.target.value)}
-                          placeholder="MO"
+                          placeholder="State"
                           className="mt-1.5 bg-white"
                           required
                           data-testid="input-store-state"
@@ -1134,7 +1134,7 @@ export default function BookReturn() {
                           id={`orderName-${item.id}`}
                           value={item.orderName}
                           onChange={(e) => updateItem(item.id, 'orderName', e.target.value)}
-                          placeholder="Black Purse, Running Shoes, etc."
+                          placeholder="Item name"
                           className={`mt-1.5 ${validationErrors.has(`item-${index}-orderName`) ? 'border-red-500 border-2' : ''}`}
                           required
                           data-testid={`input-order-name-${index}`}
@@ -1147,7 +1147,7 @@ export default function BookReturn() {
                           id={`itemDescription-${item.id}`}
                           value={item.itemDescription}
                           onChange={(e) => updateItem(item.id, 'itemDescription', e.target.value)}
-                          placeholder="Describe the item you're returning..."
+                          placeholder="Item description"
                           rows={2}
                           className={`mt-1.5 ${validationErrors.has(`item-${index}-itemDescription`) ? 'border-red-500 border-2' : ''}`}
                           required
@@ -1164,7 +1164,7 @@ export default function BookReturn() {
                             type="number"
                             value={item.itemValue}
                             onChange={(e) => updateItem(item.id, 'itemValue', e.target.value)}
-                            placeholder="50.00"
+                            placeholder="0.00"
                             step="0.01"
                             className={`pl-7 ${validationErrors.has(`item-${index}-itemValue`) ? 'border-red-500 border-2' : ''}`}
                             required
@@ -1192,9 +1192,8 @@ export default function BookReturn() {
                           <Label htmlFor={`numberOfBoxes-${item.id}`} className="text-sm font-semibold">Number of Boxes/Bags</Label>
                           <Input
                             id={`numberOfBoxes-${item.id}`}
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
+                            type="number"
+                            min="1"
                             value={item.numberOfBoxes}
                             onChange={(e) => {
                               const value = e.target.value;
@@ -1202,19 +1201,17 @@ export default function BookReturn() {
                                 updateItem(item.id, 'numberOfBoxes', '');
                               } else {
                                 const numValue = parseInt(value);
-                                if (!isNaN(numValue) && numValue >= 1 && numValue <= 5) {
+                                if (!isNaN(numValue) && numValue >= 1) {
                                   updateItem(item.id, 'numberOfBoxes', numValue.toString());
-                                } else if (!isNaN(numValue) && numValue > 5) {
-                                  updateItem(item.id, 'numberOfBoxes', '5');
                                 }
                               }
                             }}
                             onBlur={(e) => {
-                              if (e.target.value === '') {
+                              if (e.target.value === '' || parseInt(e.target.value) < 1) {
                                 updateItem(item.id, 'numberOfBoxes', '1');
                               }
                             }}
-                            placeholder="1"
+                            placeholder="Enter number"
                             className="mt-1.5"
                             data-testid={`input-number-of-boxes-${index}`}
                           />
@@ -1257,7 +1254,7 @@ export default function BookReturn() {
                     id="notes"
                     value={formData.notes}
                     onChange={(e) => updateField('notes', e.target.value)}
-                    placeholder="Any special pickup instructions..."
+                    placeholder="Special instructions (optional)"
                     rows={2}
                     className="mt-1.5"
                     data-testid="input-notes"
@@ -1696,7 +1693,7 @@ export default function BookReturn() {
                         type="number"
                         value={formData.tip || ''}
                         onChange={(e) => updateField('tip', parseFloat(e.target.value) || 0)}
-                        placeholder="0.00"
+                        placeholder="Enter amount"
                         step="0.01"
                         min="0"
                         className="pl-7"
