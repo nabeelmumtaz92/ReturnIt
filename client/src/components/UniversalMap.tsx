@@ -1,10 +1,9 @@
-import { useRef, useEffect, useState } from 'react';
-import Map, { Marker, NavigationControl, GeolocateControl, Layer, Source } from 'react-map-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { GoogleMap, LoadScript, Marker as GoogleMarker, Polyline, InfoWindow } from '@react-google-maps/api';
 import { useMapProvider } from '@/contexts/MapProviderContext';
 import { MapProviderType } from '@/../../shared/types/mapProvider';
 import { Card, CardContent } from '@/components/ui/card';
-import { MapPin, AlertCircle } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 
 export interface MapMarker {
   id: string;
@@ -50,63 +49,184 @@ export default function UniversalMap({
   style = {},
 }: UniversalMapProps) {
   const { currentProvider, preferences } = useMapProvider();
-  const mapRef = useRef<any>(null);
-  const [viewport, setViewport] = useState({
-    latitude: initialLatitude,
-    longitude: initialLongitude,
-    zoom: initialZoom,
-  });
-
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
   const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-  // Handle map click
-  const handleMapClick = (event: any) => {
-    if (onMapClick && event.lngLat) {
-      onMapClick(event.lngLat.lat, event.lngLat.lng);
-    }
-  };
+  // Google Maps state
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+  const googleMapRef = useRef<google.maps.Map | null>(null);
 
-  // Handle map load
+  // Auto-fit bounds when markers change (for Google Maps)
   useEffect(() => {
-    if (mapRef.current && onMapLoad) {
+    if (googleMapRef.current && markers.length > 0 && currentProvider === MapProviderType.GOOGLE_MAPS) {
+      const bounds = new google.maps.LatLngBounds();
+      markers.forEach(marker => {
+        bounds.extend({ lat: marker.latitude, lng: marker.longitude });
+      });
+      googleMapRef.current.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+    }
+  }, [markers, currentProvider]);
+
+  // Handle Google Map load
+  const onGoogleMapLoad = useCallback((map: google.maps.Map) => {
+    googleMapRef.current = map;
+    
+    // Fit bounds if markers exist
+    if (markers.length > 0) {
+      const bounds = new google.maps.LatLngBounds();
+      markers.forEach(marker => {
+        bounds.extend({ lat: marker.latitude, lng: marker.longitude });
+      });
+      map.fitBounds(bounds, { top: 50, bottom: 50, left: 50, right: 50 });
+    }
+    
+    if (onMapLoad) {
       onMapLoad();
     }
-  }, [mapRef.current]);
+  }, [markers, onMapLoad]);
 
-  // Auto-fit bounds when markers change
-  useEffect(() => {
-    if (mapRef.current && markers.length > 0) {
-      const bounds: [[number, number], [number, number]] = [
-        [
-          Math.min(...markers.map(m => m.longitude)),
-          Math.min(...markers.map(m => m.latitude)),
-        ],
-        [
-          Math.max(...markers.map(m => m.longitude)),
-          Math.max(...markers.map(m => m.latitude)),
-        ],
-      ];
-
-      mapRef.current.fitBounds(bounds, {
-        padding: { top: 50, bottom: 50, left: 50, right: 50 },
-        duration: 1000,
-      });
+  // Handle Google Map click
+  const onGoogleMapClick = useCallback((e: google.maps.MapMouseEvent) => {
+    if (onMapClick && e.latLng) {
+      onMapClick(e.latLng.lat(), e.latLng.lng());
     }
-  }, [markers]);
+    setSelectedMarker(null);
+  }, [onMapClick]);
 
+  // Handle geolocation for Google Maps
+  const handleGeolocate = useCallback(() => {
+    if (!navigator.geolocation) {
+      console.error('Geolocation is not supported by this browser');
+      return;
+    }
 
-  // Render Google Maps (placeholder - requires @react-google-maps/api package)
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        if (googleMapRef.current) {
+          googleMapRef.current.panTo({ lat: latitude, lng: longitude });
+          googleMapRef.current.setZoom(15);
+        }
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+      }
+    );
+  }, []);
+
+  // Render Google Maps
   const renderGoogleMaps = () => {
     if (!GOOGLE_MAPS_API_KEY) {
       return <MapUnavailableMessage provider="Google Maps" reason="VITE_GOOGLE_MAPS_API_KEY not configured" />;
     }
 
+    const mapContainerStyle = {
+      width: '100%',
+      height: '100%',
+      minHeight: '400px',
+    };
+
+    const center = {
+      lat: initialLatitude,
+      lng: initialLongitude,
+    };
+
+    const options: google.maps.MapOptions = {
+      zoom: initialZoom,
+      disableDefaultUI: !showControls,
+      zoomControl: showControls,
+      mapTypeControl: showControls,
+      streetViewControl: showControls,
+      fullscreenControl: showControls,
+      clickableIcons: true,
+    };
+
     return (
-      <MapUnavailableMessage 
-        provider="Google Maps" 
-        reason="Google Maps rendering is coming soon. For now, please use Apple Maps on iOS devices."
-      />
+      <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={center}
+          zoom={initialZoom}
+          options={options}
+          onLoad={onGoogleMapLoad}
+          onClick={onGoogleMapClick}
+        >
+          {/* Render markers */}
+          {markers.map((marker) => {
+            // Only define custom icon if google is loaded and marker has color
+            const customIcon = marker.color && window.google?.maps ? {
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: marker.color,
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+              scale: 8,
+            } : undefined;
+
+            return (
+              <GoogleMarker
+                key={marker.id}
+                position={{ lat: marker.latitude, lng: marker.longitude }}
+                onClick={() => {
+                  setSelectedMarker(marker.id);
+                  if (marker.onClick) {
+                    marker.onClick();
+                  }
+                }}
+                icon={customIcon}
+              >
+                {selectedMarker === marker.id && marker.label && (
+                  <InfoWindow onCloseClick={() => setSelectedMarker(null)}>
+                    <div className="p-2">
+                      <p className="font-semibold text-sm">{marker.label}</p>
+                    </div>
+                  </InfoWindow>
+                )}
+              </GoogleMarker>
+            );
+          })}
+
+          {/* Render routes */}
+          {routes.map((route, index) => (
+            <Polyline
+              key={`route-${index}`}
+              path={route.coordinates.map(([lng, lat]) => ({ lat, lng }))}
+              options={{
+                strokeColor: route.color || '#3b82f6',
+                strokeWeight: route.width || 4,
+                strokeOpacity: 0.8,
+              }}
+            />
+          ))}
+
+          {/* Geolocation button */}
+          {showGeolocate && (
+            <button
+              onClick={handleGeolocate}
+              style={{
+                position: 'absolute',
+                right: '10px',
+                top: '60px',
+                backgroundColor: 'white',
+                border: 'none',
+                borderRadius: '2px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+                cursor: 'pointer',
+                padding: '10px',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '20px',
+                zIndex: 1000,
+              }}
+              title="Go to my location"
+            >
+              📍
+            </button>
+          )}
+        </GoogleMap>
+      </LoadScript>
     );
   };
 
@@ -128,7 +248,8 @@ export default function UniversalMap({
       case MapProviderType.GOOGLE_MAPS:
         return renderGoogleMaps();
       default:
-        return renderAppleMaps();
+        // Default to Google Maps for web, Apple Maps for native
+        return renderGoogleMaps();
     }
   };
 
