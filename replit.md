@@ -2,6 +2,17 @@
 
 Return It is a reverse delivery service platform designed to streamline returns, exchanges, and donations by connecting customers with drivers for pickup and return services. It offers an enterprise-grade solution featuring a distinctive cardboard/shipping theme, a comprehensive admin dashboard, and AI-powered support. The platform aims for significant market penetration and valuation through a strong patent portfolio, providing a complete customer experience (booking, tracking, order management) and robust admin/driver management.
 
+# Recent Changes (November 6, 2025)
+
+## Secure Admin Password System ✅
+- **Database Schema**: Added `admin_passwords` and `reset_nonces` tables to shared/schema.ts for secure password storage with bcrypt hashing.
+- **AdminPasswordService**: Created server/services/adminPasswordService.ts with bcrypt encryption (cost factor 12), token versioning, and offline recovery.
+- **API Routes**: Added three endpoints at /api/admin/password (verify, change, reset-signed) with rate limiting (5 attempts/minute).
+- **Initialization Script**: Created server/scripts/initAdminPassword.ts with placeholder for user to enter secure password.
+- **Documentation**: Comprehensive setup guide in ADMIN_PASSWORD_SETUP.md with step-by-step instructions.
+- **Rate Limiting**: Integrated rate-limiter-flexible package to prevent brute force attacks.
+- **Token Versioning**: Password changes automatically invalidate old sessions to enhance security.
+
 # Recent Changes (November 5, 2025)
 
 ## SMS Verification System - Twilio Integration ✅
