@@ -33,6 +33,7 @@
         "NSLocationWhenInUseUsageDescription": "Allow ReturnIt to use your location for accurate pickup scheduling and delivery tracking.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt to track deliveries and provide real-time updates.",
         "NSCameraUsageDescription": "Allow ReturnIt to take photos of your receipt, tags, or packaging for return verification.",
+        "NSMicrophoneUsageDescription": "Allow ReturnIt to access the microphone for video recording features.",
         "NSPhotoLibraryUsageDescription": "Allow ReturnIt to select photos from your library for return verification.",
         "CFBundleDisplayName": "ReturnIt",
         "CFBundleName": "ReturnIt"

@@ -34,6 +34,7 @@
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt Driver to track your location for pickup and delivery assignments, even when the app is in the background.",
         "NSLocationAlwaysUsageDescription": "Allow ReturnIt Driver to access location for background job tracking and route optimization.",
         "NSCameraUsageDescription": "Allow ReturnIt Driver to take photos for package verification and proof of delivery.",
+        "NSMicrophoneUsageDescription": "Allow ReturnIt Driver to access the microphone for video recording features.",
         "UIBackgroundModes": [
           "location"
         ],
