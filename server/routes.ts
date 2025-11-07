@@ -4483,11 +4483,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Allow both logged-in users and guests
       const userId = (req.session as any)?.user?.id || null;
       
-      // Check if this is a donation (donations are FREE - no payment required)
-      const isDonation = req.body.isDonation === true;
+      // SECURITY: Server-side validation for donations
+      // NEVER trust client-supplied isDonation flag without validation
+      const clientClaimsDonation = req.body.isDonation === true;
+      const tip = parseFloat(req.body.tip || '0');
+      
+      // CRITICAL: Validate donation against destination
+      // Donations MUST go to charity locations, not regular stores
+      const isValidDonationDestination = clientClaimsDonation && (
+        req.body.retailerName?.includes('Goodwill') ||
+        req.body.retailerName?.includes('Salvation Army') ||
+        req.body.retailerName?.includes('St. Vincent')
+      );
+      
+      if (clientClaimsDonation && !isValidDonationDestination) {
+        console.error(`🚨 SECURITY: Donation bypass attempt detected - Invalid destination: ${req.body.retailerName}`);
+        return res.status(400).json({
+          message: "Invalid donation destination. Donations must go to registered charities.",
+          code: 'INVALID_DONATION_DESTINATION'
+        });
+      }
+      
+      // Determine if this is a legitimate donation
+      const isDonation = clientClaimsDonation && isValidDonationDestination;
       
       if (isDonation) {
-        console.log('♻️ DONATION ORDER: Bypassing payment verification (donations are FREE)');
+        console.log(`♻️ DONATION ORDER: Destination ${req.body.retailerName}, Tip: $${tip}`);
       }
       
       // SECURITY: Validate service tier (skip for donations)
@@ -4500,17 +4521,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // CRITICAL SECURITY: Payment intent is REQUIRED for all orders (EXCEPT donations)
-      if (!isDonation && !req.body.stripePaymentIntentId) {
-        console.error(`🚨 SECURITY: Order creation attempted without payment`);
+      // CRITICAL SECURITY: Payment handling for donations vs returns
+      // - Donations with NO tip: Skip payment verification (100% free)
+      // - Donations WITH tip: REQUIRE Stripe payment for tip amount
+      // - Returns: ALWAYS require full Stripe payment
+      const requiresPayment = !isDonation || tip > 0;
+      
+      if (requiresPayment && !req.body.stripePaymentIntentId) {
+        console.error(`🚨 SECURITY: Order creation attempted without payment. IsDonation: ${isDonation}, Tip: $${tip}`);
         return res.status(400).json({
-          message: "Payment required to create order",
+          message: isDonation 
+            ? "Payment required for donation tip. Please complete payment before booking."
+            : "Payment required to create order",
           code: 'PAYMENT_REQUIRED'
         });
       }
 
-      // PAYMENT VERIFICATION (skip for donations since they're FREE)
-      if (!isDonation) {
+      // PAYMENT VERIFICATION
+      // - Skip for FREE donations (no tip)
+      // - Verify for returns (full amount)
+      // - Verify for donations WITH tip (tip amount only)
+      if (requiresPayment) {
         try {
           // 1. CHECK FOR PAYMENT REPLAY ATTACK: Ensure payment intent hasn't been used before
           const existingOrder = await db.select()

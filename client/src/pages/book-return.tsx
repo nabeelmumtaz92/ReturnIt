@@ -1093,70 +1093,71 @@ export default function BookReturn() {
 
                 {/* Show different UI based on donation mode */}
                 {!formData.isDonation ? (
-                  // RETURN MODE: Show store autocomplete
-                  <StoreAutocomplete
-                  label="Store Location"
-                  placeholder="Type to search stores..."
-                  value={formData.retailer}
-                  onChange={(value) => {
-                    // Update retailer text as user types
-                    setFormData(prev => ({
-                      ...prev,
-                      retailer: value,
-                      retailerName: value // Also update retailerName for validation
-                    }));
-                  }}
-                  onStoreSelect={(store) => {
-                    console.log('🏪 Store selected:', store);
-                    console.log('🏪 Store fields:', {
-                      storeName: store.storeName,
-                      streetAddress: store.streetAddress,
-                      city: store.city,
-                      state: store.state,
-                      zipCode: store.zipCode
-                    });
-                    
-                    // Auto-fill ALL store details when user selects a location from dropdown
-                    setFormData(prev => {
-                      const updated = {
-                        ...prev,
-                        retailerName: store.retailerName, // For validation (line 552)
-                        retailer: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`, // Display value
-                        retailerLocation: store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`, // For validation (line 553)
-                        storeDestinationName: store.storeName,
-                        storeDestinationAddress: store.streetAddress,
-                        storeDestinationCity: store.city,
-                        storeDestinationState: store.state,
-                        storeDestinationZip: store.zipCode
-                      };
-                      console.log('🏪 Updated form data:', updated);
-                      return updated;
-                    });
-                    
-                    // Clear ALL validation errors for store-related fields
-                    setValidationErrors(prev => {
-                      const newErrors = new Set(prev);
-                      newErrors.delete('retailerName');
-                      newErrors.delete('retailerLocation');
-                      newErrors.delete('storeDestinationName');
-                      newErrors.delete('storeDestinationAddress');
-                      newErrors.delete('storeDestinationCity');
-                      newErrors.delete('storeDestinationState');
-                      return newErrors;
-                    });
-                    
-                    // Show success toast
-                    toast({
-                      title: "Store selected",
-                      description: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`,
-                    });
-                  }}
-                  required
-                  className="mb-4"
-                  data-testid="autocomplete-store"
-                />
+                  // RETURN MODE: Show store autocomplete and destination fields
+                  <>
+                    <StoreAutocomplete
+                      label="Store Location"
+                      placeholder="Type to search stores..."
+                      value={formData.retailer}
+                      onChange={(value) => {
+                        // Update retailer text as user types
+                        setFormData(prev => ({
+                          ...prev,
+                          retailer: value,
+                          retailerName: value // Also update retailerName for validation
+                        }));
+                      }}
+                      onStoreSelect={(store) => {
+                        console.log('🏪 Store selected:', store);
+                        console.log('🏪 Store fields:', {
+                          storeName: store.storeName,
+                          streetAddress: store.streetAddress,
+                          city: store.city,
+                          state: store.state,
+                          zipCode: store.zipCode
+                        });
+                        
+                        // Auto-fill ALL store details when user selects a location from dropdown
+                        setFormData(prev => {
+                          const updated = {
+                            ...prev,
+                            retailerName: store.retailerName, // For validation (line 552)
+                            retailer: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`, // Display value
+                            retailerLocation: store.formattedAddress || `${store.streetAddress}, ${store.city}, ${store.state} ${store.zipCode}`, // For validation (line 553)
+                            storeDestinationName: store.storeName,
+                            storeDestinationAddress: store.streetAddress,
+                            storeDestinationCity: store.city,
+                            storeDestinationState: store.state,
+                            storeDestinationZip: store.zipCode
+                          };
+                          console.log('🏪 Updated form data:', updated);
+                          return updated;
+                        });
+                        
+                        // Clear ALL validation errors for store-related fields
+                        setValidationErrors(prev => {
+                          const newErrors = new Set(prev);
+                          newErrors.delete('retailerName');
+                          newErrors.delete('retailerLocation');
+                          newErrors.delete('storeDestinationName');
+                          newErrors.delete('storeDestinationAddress');
+                          newErrors.delete('storeDestinationCity');
+                          newErrors.delete('storeDestinationState');
+                          return newErrors;
+                        });
+                        
+                        // Show success toast
+                        toast({
+                          title: "Store selected",
+                          description: `${store.storeName} - ${store.streetAddress}, ${store.city}, ${store.state}`,
+                        });
+                      }}
+                      required
+                      className="mb-4"
+                      data-testid="autocomplete-store"
+                    />
 
-                <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
+                    <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
                   <h3 className="text-sm font-semibold text-amber-900 flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
                     Return Destination (Editable)
@@ -1228,6 +1229,7 @@ export default function BookReturn() {
                       />
                     </div>
                 </div>
+                  </>
                 ) : (
                   // DONATION MODE: Show donation location selector
                   <div className="space-y-4 p-4 bg-green-50/30 border border-green-200 rounded-lg">
