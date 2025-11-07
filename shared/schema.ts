@@ -637,6 +637,58 @@ export const storeLocations = pgTable("store_locations", {
 export type StoreLocation = typeof storeLocations.$inferSelect;
 export type InsertStoreLocation = typeof storeLocations.$inferInsert;
 
+// Donation Locations Database - Preset charity/nonprofit drop-off points
+export const donationLocations = pgTable("donation_locations", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Organization information
+  organizationName: text("organization_name").notNull(), // Goodwill, Salvation Army, St. Vincent de Paul, etc.
+  locationName: text("location_name").notNull(), // Goodwill South County, Salvation Army Downtown, etc.
+  type: text("type").notNull(), // nonprofit, charity, shelter, donation_bin, recycling_center
+  
+  // Address components
+  streetAddress: text("street_address").notNull(),
+  city: text("city").notNull(),
+  state: text("state").notNull(),
+  zipCode: text("zip_code").notNull(),
+  formattedAddress: text("formatted_address"),
+  
+  // Contact & Location
+  phoneNumber: text("phone_number"),
+  website: text("website"),
+  coordinates: jsonb("coordinates").notNull(), // {lat: number, lng: number}
+  latitude: numeric("latitude"),
+  longitude: numeric("longitude"),
+  
+  // Operational data
+  operatingHours: jsonb("operating_hours").default({}), // Weekly hours: {monday: {open: "09:00", close: "17:00"}, ...}
+  acceptedItems: jsonb("accepted_items").default([]), // Array of accepted categories: ["clothing", "electronics", "furniture", "books"]
+  restrictions: text("restrictions"), // E.g., "No mattresses or large appliances"
+  isActive: boolean("is_active").default(true).notNull(),
+  requiresAppointment: boolean("requires_appointment").default(false).notNull(),
+  providesReceipt: boolean("provides_receipt").default(false).notNull(), // For tax deduction purposes
+  
+  // Driver instructions
+  dropoffInstructions: text("dropoff_instructions"), // Where to leave items, who to contact, etc.
+  parkingInstructions: text("parking_instructions"),
+  contactPerson: text("contact_person"), // Name of contact at donation center
+  
+  // Tracking
+  totalDonations: integer("total_donations").default(0).notNull(), // Count of donations made to this location
+  lastDonationAt: timestamp("last_donation_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  organizationNameIdx: index("donation_locations_organization_name_idx").on(table.organizationName),
+  cityIdx: index("donation_locations_city_idx").on(table.city),
+  zipCodeIdx: index("donation_locations_zip_code_idx").on(table.zipCode),
+  isActiveIdx: index("donation_locations_is_active_idx").on(table.isActive),
+}));
+
+export type DonationLocation = typeof donationLocations.$inferSelect;
+export type InsertDonationLocation = typeof donationLocations.$inferInsert;
+
 // Return Label Generation (Design Only - Not Implemented)
 export const returnLabels = pgTable("return_labels", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
@@ -723,11 +775,15 @@ export const orders = pgTable("orders", {
   scheduledPickupTime: timestamp("scheduled_pickup_time"),
   actualPickupTime: timestamp("actual_pickup_time"),
   
-  // Return details (single store per order)
-  retailer: text("retailer").notNull(), // Store name where ALL items will be returned
+  // Donation vs Return flag
+  isDonation: boolean("is_donation").default(false).notNull(), // true for donation pickups, false for returns/exchanges
+  
+  // Return details (single store per order) - for returns/exchanges
+  // For donations, retailer will be the donation organization name
+  retailer: text("retailer").notNull(), // Store name where ALL items will be returned OR donation organization name
   retailerLocation: jsonb("retailer_location"), // Store location data
-  returnAddress: text("return_address"), // Physical store address
-  returnCoordinates: jsonb("return_coordinates"), // Store GPS coordinates
+  returnAddress: text("return_address"), // Physical store address OR donation center address
+  returnCoordinates: jsonb("return_coordinates"), // Store GPS coordinates OR donation center coordinates
   itemCategory: text("item_category").notNull(), // Electronics, Clothing, Home & Garden, Beauty & Health, Books & Media, Other
   itemDescription: text("item_description"),
   estimatedWeight: text("estimated_weight"), // Optional weight estimate for logistics
