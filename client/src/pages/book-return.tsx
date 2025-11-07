@@ -48,6 +48,7 @@ interface FormData {
   zipCode: string;
   // Page 2
   isDonation: boolean; // NEW: true for donation pickups, false for returns/exchanges
+  donationLocationId: number | null; // NEW: ID of selected charity (for server validation)
   retailerName: string; // Changed: First select retailer name (or donation org name if isDonation)
   retailerLocation: string; // New: Then select specific store location (or donation location if isDonation)
   retailer: string; // Combined value for backend
@@ -375,6 +376,7 @@ export default function BookReturn() {
     state: 'MO',
     zipCode: '',
     isDonation: false, // NEW: donation toggle
+    donationLocationId: null, // NEW: ID of selected charity location (for server validation)
     retailerName: '',
     retailerLocation: '',
     retailer: '',
@@ -396,6 +398,12 @@ export default function BookReturn() {
     serviceTier: 'standard',
     tip: 0,
     paymentMethod: 'card'
+  });
+  
+  // Fetch donation locations from API
+  const { data: donationLocations, isLoading: isLoadingDonations } = useQuery({
+    queryKey: ['/api/donation-locations'],
+    enabled: formData.isDonation // Only fetch when in donation mode
   });
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
@@ -1240,39 +1248,46 @@ export default function BookReturn() {
                     <div>
                       <Label htmlFor="donationLocation" className="text-sm font-semibold">Charity Organization *</Label>
                       <Select
-                        value={formData.retailer}
+                        value={formData.donationLocationId?.toString() || ''}
                         onValueChange={(value) => {
-                          // Parse the selected value to extract location details
-                          // Format: "Goodwill South County|4177 S Lindbergh Blvd|St. Louis|MO|63127"
-                          const parts = value.split('|');
-                          if (parts.length === 5) {
+                          // Find the selected donation location by ID
+                          const locationId = parseInt(value);
+                          const selectedLocation = donationLocations?.find((loc: any) => loc.id === locationId);
+                          
+                          if (selectedLocation) {
                             setFormData(prev => ({
                               ...prev,
+                              donationLocationId: selectedLocation.id,
                               retailer: value,
-                              retailerName: parts[0],
-                              retailerLocation: `${parts[1]}, ${parts[2]}, ${parts[3]} ${parts[4]}`,
-                              storeDestinationName: parts[0],
-                              storeDestinationAddress: parts[1],
-                              storeDestinationCity: parts[2],
-                              storeDestinationState: parts[3],
-                              storeDestinationZip: parts[4]
+                              retailerName: selectedLocation.name,
+                              retailerLocation: `${selectedLocation.streetAddress}, ${selectedLocation.city}, ${selectedLocation.state} ${selectedLocation.zipCode}`,
+                              storeDestinationName: selectedLocation.name,
+                              storeDestinationAddress: selectedLocation.streetAddress,
+                              storeDestinationCity: selectedLocation.city,
+                              storeDestinationState: selectedLocation.state,
+                              storeDestinationZip: selectedLocation.zipCode
                             }));
                           }
                         }}
+                        disabled={isLoadingDonations}
                       >
                         <SelectTrigger className="mt-1.5 bg-white" data-testid="select-donation-location">
-                          <SelectValue placeholder="Choose a charity..." />
+                          <SelectValue placeholder={isLoadingDonations ? "Loading charities..." : "Choose a charity..."} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="Goodwill South County|4177 S Lindbergh Blvd|St. Louis|MO|63127" data-testid="option-goodwill">
-                            Goodwill South County - 4177 S Lindbergh Blvd, St. Louis, MO
-                          </SelectItem>
-                          <SelectItem value="Salvation Army St. Louis|3740 Marine Ave|St. Louis|MO|63118" data-testid="option-salvation-army">
-                            Salvation Army - 3740 Marine Ave, St. Louis, MO
-                          </SelectItem>
-                          <SelectItem value="St. Vincent de Paul Thrift Store|1310 Papin St|St. Louis|MO|63103" data-testid="option-st-vincent">
-                            St. Vincent de Paul - 1310 Papin St, St. Louis, MO
-                          </SelectItem>
+                          {donationLocations && donationLocations.length > 0 ? (
+                            donationLocations.map((location: any) => (
+                              <SelectItem 
+                                key={location.id} 
+                                value={location.id.toString()}
+                                data-testid={`option-${location.name.toLowerCase().replace(/\s+/g, '-')}`}
+                              >
+                                {location.name} - {location.streetAddress}, {location.city}, {location.state}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <SelectItem value="none" disabled>No charities available</SelectItem>
+                          )}
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-green-700 mt-2">

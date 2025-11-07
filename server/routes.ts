@@ -7422,6 +7422,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ══════════════════════════════════════════════════════════════
+  // Donation Locations API - Public endpoint for charity locations
+  // ══════════════════════════════════════════════════════════════
+  app.get("/api/donation-locations", async (req, res) => {
+    try {
+      // Fetch all active donation locations
+      const locations = await db.select()
+        .from(schema.donationLocations)
+        .where(eq(schema.donationLocations.isActive, true))
+        .orderBy(schema.donationLocations.name);
+      
+      console.log(`📍 Fetched ${locations.length} active donation locations`);
+      res.json(locations);
+    } catch (error) {
+      console.error('❌ Error fetching donation locations:', error);
+      res.status(500).json({ message: 'Failed to fetch donation locations' });
+    }
+  });
+
   // Admin endpoint to populate St. Louis companies data
   app.post("/api/admin/populate-companies", requireSecureAdmin, async (req, res) => {
     try {
