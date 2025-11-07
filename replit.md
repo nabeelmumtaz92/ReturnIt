@@ -73,6 +73,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Security & Compliance
 - **Multi-Layer Security Architecture**: Rate limiting, input validation, authentication (session-based, Bcrypt hashing, OAuth), role-based authorization, signed URLs, WebSocket authentication, private object storage.
+- **Donation Security System**: Comprehensive multi-layer validation to prevent payment bypass attacks:
+  - Database-backed validation against `donationLocations` table (verified charity addresses)
+  - Full address validation (street, city, state, ZIP) to prevent location spoofing
+  - Server-side price recalculation using `paymentCalculator.ts` (never trust client amounts)
+  - Stripe PaymentIntent amount validation against server-calculated totals
+  - Payment replay attack prevention (check for duplicate payment intent IDs)
+  - Active location verification (inactive charities rejected)
 - **PCI-compliant payment processing via Stripe**.
 - **IRS-compliant 1099-NEC tax form generation**.
 - **W-9 Tax Form Collection**: Database schema and API routes for W-9 submission.
