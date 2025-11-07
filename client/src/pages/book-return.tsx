@@ -47,11 +47,12 @@ interface FormData {
   state: string;
   zipCode: string;
   // Page 2
-  retailerName: string; // Changed: First select retailer name
-  retailerLocation: string; // New: Then select specific store location
+  isDonation: boolean; // NEW: true for donation pickups, false for returns/exchanges
+  retailerName: string; // Changed: First select retailer name (or donation org name if isDonation)
+  retailerLocation: string; // New: Then select specific store location (or donation location if isDonation)
   retailer: string; // Combined value for backend
-  storeDestinationName: string; // Editable store name
-  storeDestinationAddress: string; // Editable store address
+  storeDestinationName: string; // Editable store name (or donation org name)
+  storeDestinationAddress: string; // Editable store address (or donation location address)
   storeDestinationCity: string; // Editable city
   storeDestinationState: string; // Editable state
   storeDestinationZip: string; // Editable ZIP code
@@ -181,6 +182,24 @@ const SERVICE_TIERS = {
 
 // Pricing calculation based on business rules
 function calculatePricing(formData: FormData & { tip?: number }) {
+  // DONATIONS ARE FREE - only optional tip to driver
+  if (formData.isDonation) {
+    const tip = formData.tip || 0;
+    return {
+      basePrice: 0,
+      sizeUpcharge: 0,
+      multiBoxFee: 0,
+      totalItemValue: 0,
+      distance: 0,
+      subtotal: 0,
+      serviceFee: 0,
+      fuelFee: 0,
+      tax: 0,
+      tip,
+      total: tip // Donations are FREE - customer only pays optional tip
+    };
+  }
+  
   const tier = SERVICE_TIERS[formData.serviceTier || 'standard'];
   const basePrice = tier.price; // Base pickup fee from selected tier
   
@@ -355,6 +374,7 @@ export default function BookReturn() {
     city: 'St. Louis',
     state: 'MO',
     zipCode: '',
+    isDonation: false, // NEW: donation toggle
     retailerName: '',
     retailerLocation: '',
     retailer: '',
@@ -1016,7 +1036,65 @@ export default function BookReturn() {
             {/* PAGE 2: Return Details */}
             {page === 2 && (
               <div className="space-y-5">
-                <StoreAutocomplete
+                {/* DONATION TOGGLE */}
+                <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-sm">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-green-900 mb-2 flex items-center">
+                        ♻️ Donate Instead?
+                      </h3>
+                      <p className="text-sm text-green-800">
+                        {formData.isDonation
+                          ? "Your items will be donated to a local charity - completely FREE!"
+                          : "Switch to donation mode for FREE pickup to charity. Only optional tip to driver."}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          isDonation: !prev.isDonation,
+                          // Clear destination fields when switching modes
+                          retailerName: '',
+                          retailerLocation: '',
+                          retailer: '',
+                          storeDestinationName: '',
+                          storeDestinationAddress: '',
+                          storeDestinationCity: '',
+                          storeDestinationState: '',
+                          storeDestinationZip: ''
+                        }));
+                        toast({
+                          title: formData.isDonation ? "Switched to Return Mode" : "Switched to Donation Mode",
+                          description: formData.isDonation
+                            ? "Your items will be returned to the store"
+                            : "Your items will be donated - FREE pickup!",
+                        });
+                      }}
+                      variant={formData.isDonation ? "default" : "outline"}
+                      className={formData.isDonation
+                        ? "bg-green-600 hover:bg-green-700 text-white"
+                        : "border-green-600 text-green-700 hover:bg-green-100"}
+                      data-testid="button-toggle-donation"
+                    >
+                      {formData.isDonation ? "Return Mode" : "Donation Mode"}
+                    </Button>
+                  </div>
+                  {formData.isDonation && (
+                    <div className="flex items-center p-3 bg-white rounded-lg border border-green-200">
+                      <Check className="h-5 w-5 text-green-600 mr-2" />
+                      <span className="text-sm font-semibold text-green-900">
+                        Donation Mode Active - 100% FREE pickup (optional tip appreciated!)
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Show different UI based on donation mode */}
+                {!formData.isDonation ? (
+                  // RETURN MODE: Show store autocomplete
+                  <StoreAutocomplete
                   label="Store Location"
                   placeholder="Type to search stores..."
                   value={formData.retailer}
@@ -1150,6 +1228,71 @@ export default function BookReturn() {
                       />
                     </div>
                 </div>
+                ) : (
+                  // DONATION MODE: Show donation location selector
+                  <div className="space-y-4 p-4 bg-green-50/30 border border-green-200 rounded-lg">
+                    <h3 className="text-sm font-semibold text-green-900 flex items-center">
+                      ♻️ Select Donation Drop-off Location
+                    </h3>
+                    
+                    <div>
+                      <Label htmlFor="donationLocation" className="text-sm font-semibold">Charity Organization *</Label>
+                      <Select
+                        value={formData.retailer}
+                        onValueChange={(value) => {
+                          // Parse the selected value to extract location details
+                          // Format: "Goodwill South County|4177 S Lindbergh Blvd|St. Louis|MO|63127"
+                          const parts = value.split('|');
+                          if (parts.length === 5) {
+                            setFormData(prev => ({
+                              ...prev,
+                              retailer: value,
+                              retailerName: parts[0],
+                              retailerLocation: `${parts[1]}, ${parts[2]}, ${parts[3]} ${parts[4]}`,
+                              storeDestinationName: parts[0],
+                              storeDestinationAddress: parts[1],
+                              storeDestinationCity: parts[2],
+                              storeDestinationState: parts[3],
+                              storeDestinationZip: parts[4]
+                            }));
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="mt-1.5 bg-white" data-testid="select-donation-location">
+                          <SelectValue placeholder="Choose a charity..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Goodwill South County|4177 S Lindbergh Blvd|St. Louis|MO|63127" data-testid="option-goodwill">
+                            Goodwill South County - 4177 S Lindbergh Blvd, St. Louis, MO
+                          </SelectItem>
+                          <SelectItem value="Salvation Army St. Louis|3740 Marine Ave|St. Louis|MO|63118" data-testid="option-salvation-army">
+                            Salvation Army - 3740 Marine Ave, St. Louis, MO
+                          </SelectItem>
+                          <SelectItem value="St. Vincent de Paul Thrift Store|1310 Papin St|St. Louis|MO|63103" data-testid="option-st-vincent">
+                            St. Vincent de Paul - 1310 Papin St, St. Louis, MO
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-green-700 mt-2">
+                        💡 Your items will be picked up and delivered to this charity location
+                      </p>
+                    </div>
+
+                    {formData.retailer && (
+                      <div className="p-3 bg-white rounded-lg border border-green-200">
+                        <p className="text-sm font-semibold text-green-900 mb-1">
+                          Drop-off Location:
+                        </p>
+                        <p className="text-sm text-green-800">
+                          {formData.storeDestinationName}
+                        </p>
+                        <p className="text-xs text-green-700">
+                          {formData.storeDestinationAddress}, {formData.storeDestinationCity}, {formData.storeDestinationState} {formData.storeDestinationZip}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Multiple Items Section */}
                 <div className="space-y-4">
