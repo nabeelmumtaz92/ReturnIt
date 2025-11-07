@@ -638,49 +638,38 @@ export type StoreLocation = typeof storeLocations.$inferSelect;
 export type InsertStoreLocation = typeof storeLocations.$inferInsert;
 
 // Donation Locations Database - Preset charity/nonprofit drop-off points
+// Schema matches actual database structure created during manual migration
 export const donationLocations = pgTable("donation_locations", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   
   // Organization information
-  organizationName: text("organization_name").notNull(), // Goodwill, Salvation Army, St. Vincent de Paul, etc.
-  locationName: text("location_name").notNull(), // Goodwill South County, Salvation Army Downtown, etc.
-  type: text("type").notNull(), // nonprofit, charity, shelter, donation_bin, recycling_center
+  name: text("name").notNull(), // Display name: "Goodwill South County", "Salvation Army Downtown"
+  organizationType: text("organization_type").notNull(), // "nonprofit", "charity", "shelter"
   
   // Address components
   streetAddress: text("street_address").notNull(),
   city: text("city").notNull(),
   state: text("state").notNull(),
   zipCode: text("zip_code").notNull(),
-  formattedAddress: text("formatted_address"),
   
-  // Contact & Location
-  phoneNumber: text("phone_number"),
+  // Contact information
+  phone: text("phone"),
+  email: text("email"),
   website: text("website"),
-  coordinates: jsonb("coordinates").notNull(), // {lat: number, lng: number}
-  latitude: numeric("latitude"),
-  longitude: numeric("longitude"),
   
-  // Operational data
-  operatingHours: jsonb("operating_hours").default({}), // Weekly hours: {monday: {open: "09:00", close: "17:00"}, ...}
-  acceptedItems: jsonb("accepted_items").default([]), // Array of accepted categories: ["clothing", "electronics", "furniture", "books"]
-  restrictions: text("restrictions"), // E.g., "No mattresses or large appliances"
+  // Operational data (stored as text, not JSON)
+  hoursOfOperation: text("hours_of_operation"), // Text description of hours
+  acceptedItems: text("accepted_items"), // Comma-separated or text description
+  specialInstructions: text("special_instructions"), // Driver/dropoff instructions
+  
+  // Status
   isActive: boolean("is_active").default(true).notNull(),
-  requiresAppointment: boolean("requires_appointment").default(false).notNull(),
-  providesReceipt: boolean("provides_receipt").default(false).notNull(), // For tax deduction purposes
   
-  // Driver instructions
-  dropoffInstructions: text("dropoff_instructions"), // Where to leave items, who to contact, etc.
-  parkingInstructions: text("parking_instructions"),
-  contactPerson: text("contact_person"), // Name of contact at donation center
-  
-  // Tracking
-  totalDonations: integer("total_donations").default(0).notNull(), // Count of donations made to this location
-  lastDonationAt: timestamp("last_donation_at"),
-  
+  // Timestamps
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  organizationNameIdx: index("donation_locations_organization_name_idx").on(table.organizationName),
+  nameIdx: index("donation_locations_name_idx").on(table.name),
   cityIdx: index("donation_locations_city_idx").on(table.city),
   zipCodeIdx: index("donation_locations_zip_code_idx").on(table.zipCode),
   isActiveIdx: index("donation_locations_is_active_idx").on(table.isActive),
