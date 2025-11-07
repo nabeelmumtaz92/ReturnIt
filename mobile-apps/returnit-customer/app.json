@@ -105,7 +105,8 @@
         {
           "photosPermission": "Allow ReturnIt to select photos from your library for return verification."
         }
-      ]
+      ],
+      "@stripe/stripe-react-native"
     ],
     "scheme": "returnit-customer",
     "extra": {
