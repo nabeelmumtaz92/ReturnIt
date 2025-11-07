@@ -57,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - **Instant Pay System**: Add bank accounts or debit cards.
 - **Stripe Identity Verification**: KYC flow for driver onboarding.
 - **Tax Documents Portal**: Access annual 1099-NEC forms.
+- **Extra Fees System**: Drivers can charge customers for supplies (boxes, tape, packing materials) purchased during delivery. Features preset buttons for common items and custom fee input. Charges are processed automatically via Stripe using customer's saved payment method.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
