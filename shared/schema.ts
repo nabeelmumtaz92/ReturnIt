@@ -827,6 +827,13 @@ export const orders = pgTable("orders", {
   stripeChargeId: text("stripe_charge_id"),
   paymentStatus: text("payment_status").default("pending"), // pending, completed, failed, refunded, refund_processing, refund_failed
   
+  // Driver Extra Fees (boxes, tape, supplies purchased during delivery)
+  extraFeesAmount: real("extra_fees_amount").default(0), // Total extra fees charged to customer
+  extraFeesDescription: text("extra_fees_description"), // Human-readable description (e.g., "Box $5, Tape $3")
+  extraFeesItemized: jsonb("extra_fees_itemized").default([]), // Array of {item: "Box", amount: 5.00}
+  extraFeesChargedAt: timestamp("extra_fees_charged_at"), // When extra fees were charged
+  extraFeesStripeChargeId: text("extra_fees_stripe_charge_id"), // Separate Stripe charge for extra fees
+  
   driverPayoutStatus: text("driver_payout_status").default("pending"), // pending, instant_paid, weekly_paid
   
   // Driver assignment
