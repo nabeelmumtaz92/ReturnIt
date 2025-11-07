@@ -8554,7 +8554,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Return refused
         returnRefused,
         returnRefusedReason,
-        returnRefusedPhotos
+        returnRefusedPhotos,
+        // Extra fees for supplies
+        extraFees,
+        extraFeesTotal
       } = req.body;
 
       // 1. Verify driver is assigned to this order
@@ -8616,6 +8619,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // 3. Update order with completion data
       const updatedOrder = await storage.updateOrder(orderId, completionData);
 
+      // 3.5. Process extra fees if any
+      let extraFeesResult: any = null;
+      if (extraFees && Array.isArray(extraFees) && extraFees.length > 0 && extraFeesTotal && extraFeesTotal > 0) {
+        try {
+          // Validate extra fees total matches sum of items
+          const calculatedTotal = extraFees.reduce((sum: number, fee: any) => sum + (fee.amount || 0), 0);
+          if (Math.abs(calculatedTotal - extraFeesTotal) > 0.01) {
+            console.error(`Extra fees total mismatch: calculated ${calculatedTotal}, received ${extraFeesTotal}`);
+            throw new Error('Extra fees total does not match itemized amounts');
+          }
+
+          // Verify customer has a payment method from original order
+          if (!order.stripePaymentIntentId) {
+            throw new Error('No payment method found for customer - cannot charge extra fees');
+          }
+
+          // Get the payment intent to retrieve the payment method
+          const originalPaymentIntent = await stripe.paymentIntents.retrieve(order.stripePaymentIntentId);
+          const paymentMethod = originalPaymentIntent.payment_method;
+
+          if (!paymentMethod) {
+            throw new Error('No payment method available - cannot charge extra fees');
+          }
+
+          // Create description of itemized fees
+          const feesDescription = extraFees.map((fee: any) => `${fee.item}: $${fee.amount.toFixed(2)}`).join(', ');
+
+          // Create a new payment intent for extra fees
+          const extraFeesPaymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(extraFeesTotal * 100), // Convert to cents
+            currency: 'usd',
+            customer: originalPaymentIntent.customer as string,
+            payment_method: paymentMethod as string,
+            off_session: true, // Charge without customer present
+            confirm: true, // Automatically confirm
+            description: `Extra supplies for order ${orderId}: ${feesDescription}`,
+            metadata: {
+              orderId: orderId,
+              type: 'extra_fees',
+              driverId: driverId.toString(),
+              itemizedFees: JSON.stringify(extraFees)
+            }
+          });
+
+          // Update order with extra fees information
+          await storage.updateOrder(orderId, {
+            extraFeesAmount: extraFeesTotal,
+            extraFeesDescription: feesDescription,
+            extraFeesItemized: extraFees,
+            extraFeesChargedAt: new Date(),
+            extraFeesStripeChargeId: extraFeesPaymentIntent.id
+          });
+
+          extraFeesResult = {
+            success: true,
+            amount: extraFeesTotal,
+            description: feesDescription,
+            chargeId: extraFeesPaymentIntent.id
+          };
+
+          console.log(`✅ Extra fees of $${extraFeesTotal} charged for order ${orderId}: ${feesDescription}`);
+
+        } catch (error: any) {
+          console.error(`Failed to charge extra fees for order ${orderId}:`, error);
+          
+          // Create admin notification for failed charge
+          await storage.createNotification({
+            userId: order.userId,
+            type: 'admin_action_required',
+            title: 'Extra Fees Charge Failed',
+            message: `Failed to charge $${extraFeesTotal} in extra fees for order #${orderId}. Manual charge required.`,
+            orderId: orderId,
+            data: {
+              error: error.message,
+              extraFees: extraFees,
+              extraFeesTotal: extraFeesTotal,
+              requiresManualCharge: true
+            }
+          });
+
+          extraFeesResult = {
+            success: false,
+            error: error.message,
+            amount: extraFeesTotal,
+            requiresManualCharge: true
+          };
+        }
+      }
+
       // 4. Send customer notification based on outcome
       let notificationTitle = '';
       let notificationMessage = '';
@@ -8669,6 +8761,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
 
+      // 4.5. Send separate notification for extra fees if charged successfully
+      if (extraFeesResult && extraFeesResult.success) {
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'extra_fees_charged',
+          title: '💳 Supplies Charge - Order Complete',
+          message: `Your driver purchased supplies during delivery:\n\n${extraFeesResult.description}\n\nTotal: $${extraFeesResult.amount.toFixed(2)}\n\nThis has been charged to your payment method on file.`,
+          orderId: orderId,
+          data: {
+            extraFeesAmount: extraFeesResult.amount,
+            extraFeesDescription: extraFeesResult.description,
+            chargeId: extraFeesResult.chargeId,
+            chargedAt: new Date().toISOString()
+          }
+        });
+      }
+
       // 5. Fire webhook for completion
       await webhookService.fireReturnDelivered(updatedOrder);
 
@@ -8678,7 +8787,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: true, 
         message: "Delivery completion confirmed successfully",
         order: updatedOrder,
-        outcome: actualReturnOutcome
+        outcome: actualReturnOutcome,
+        extraFees: extraFeesResult
       });
 
     } catch (error: any) {
