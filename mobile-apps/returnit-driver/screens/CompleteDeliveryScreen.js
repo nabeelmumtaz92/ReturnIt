@@ -44,6 +44,11 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
   // Return refused details
   const [refusalReason, setRefusalReason] = useState('');
   
+  // Extra Fees (supplies purchased by driver)
+  const [extraFees, setExtraFees] = useState([]);
+  const [customFeeItem, setCustomFeeItem] = useState('');
+  const [customFeeAmount, setCustomFeeAmount] = useState('');
+  
   // Evidence
   const [completionPhotos, setCompletionPhotos] = useState([]);
   const [driverNotes, setDriverNotes] = useState('');
@@ -81,6 +86,46 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
     { id: 'policy_violation', label: 'Policy Violation' },
     { id: 'other', label: 'Other' }
   ];
+
+  const supplyPresets = [
+    { item: 'Box (Small)', amount: 3.00 },
+    { item: 'Box (Medium)', amount: 5.00 },
+    { item: 'Box (Large)', amount: 7.00 },
+    { item: 'Packing Tape', amount: 3.00 },
+    { item: 'Bubble Wrap', amount: 4.00 },
+    { item: 'Packing Peanuts', amount: 5.00 }
+  ];
+
+  const addExtraFee = (item, amount) => {
+    setExtraFees(prev => [...prev, { item, amount }]);
+  };
+
+  const removeExtraFee = (index) => {
+    setExtraFees(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const addCustomFee = () => {
+    const trimmedItem = customFeeItem.trim();
+    const parsedAmount = parseFloat(customFeeAmount);
+    
+    if (!trimmedItem) {
+      Alert.alert('Item Required', 'Please enter a description for the fee.');
+      return;
+    }
+    
+    if (!customFeeAmount || isNaN(parsedAmount) || parsedAmount <= 0) {
+      Alert.alert('Amount Required', 'Please enter a valid amount greater than $0.');
+      return;
+    }
+    
+    addExtraFee(trimmedItem, parsedAmount);
+    setCustomFeeItem('');
+    setCustomFeeAmount('');
+  };
+
+  const getTotalExtraFees = () => {
+    return extraFees.reduce((sum, fee) => sum + fee.amount, 0);
+  };
 
   const takePhoto = async () => {
     if (!cameraRef.current) return;
@@ -291,6 +336,10 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         returnRefused: selectedOutcome === 'return_refused',
         returnRefusedReason: selectedOutcome === 'return_refused' ? refusalReason : undefined,
         returnRefusedPhotos: selectedOutcome === 'return_refused' ? photoDataUrls : undefined,
+        
+        // Extra fees for supplies purchased by driver
+        extraFees: extraFees.length > 0 ? extraFees : undefined,
+        extraFeesTotal: extraFees.length > 0 ? getTotalExtraFees() : undefined
       };
 
       const response = await apiClient.request(`/api/driver/complete-delivery/${orderId}`, {
@@ -579,6 +628,83 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
           </View>
         )}
 
+        {/* Extra Fees Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>💰 Extra Fees (Optional)</Text>
+          <Text style={styles.sectionSubtitle}>
+            Charge customer for supplies purchased during delivery
+          </Text>
+
+          {/* Preset Supply Buttons */}
+          <View style={styles.presetsGrid}>
+            {supplyPresets.map((preset, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.presetButton}
+                onPress={() => addExtraFee(preset.item, preset.amount)}
+              >
+                <Text style={styles.presetButtonText}>{preset.item}</Text>
+                <Text style={styles.presetAmount}>${preset.amount.toFixed(2)}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Custom Fee Input */}
+          <View style={styles.customFeeContainer}>
+            <Text style={styles.inputLabel}>Custom Item</Text>
+            <View style={styles.customFeeRow}>
+              <TextInput
+                style={[styles.input, styles.customFeeInput]}
+                value={customFeeItem}
+                onChangeText={setCustomFeeItem}
+                placeholder="Item description"
+              />
+              <TextInput
+                style={[styles.input, styles.customFeeAmountInput]}
+                value={customFeeAmount}
+                onChangeText={setCustomFeeAmount}
+                placeholder="0.00"
+                keyboardType="decimal-pad"
+              />
+              <TouchableOpacity
+                style={styles.addCustomButton}
+                onPress={addCustomFee}
+              >
+                <Text style={styles.addCustomButtonText}>+ Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Added Fees List */}
+          {extraFees.length > 0 && (
+            <View style={styles.addedFeesContainer}>
+              <Text style={styles.addedFeesTitle}>Added Fees:</Text>
+              {extraFees.map((fee, index) => (
+                <View key={index} style={styles.feeRow}>
+                  <Text style={styles.feeItem}>{fee.item}</Text>
+                  <Text style={styles.feeAmount}>${fee.amount.toFixed(2)}</Text>
+                  <TouchableOpacity
+                    style={styles.removeFeeButton}
+                    onPress={() => removeExtraFee(index)}
+                  >
+                    <Text style={styles.removeFeeText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLabel}>Total Extra Fees:</Text>
+                <Text style={styles.totalAmount}>${getTotalExtraFees().toFixed(2)}</Text>
+              </View>
+            </View>
+          )}
+
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              💡 Customer will be charged separately for these supplies
+            </Text>
+          </View>
+        </View>
+
         {/* Driver Notes */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Driver Notes</Text>
@@ -850,6 +976,135 @@ const styles = StyleSheet.create({
   warningText: {
     fontSize: 14,
     color: '#92400E',
+  },
+  infoBox: {
+    backgroundColor: '#E0F2FE',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  infoText: {
+    fontSize: 14,
+    color: '#0C4A6E',
+  },
+  presetsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 12,
+    marginBottom: 16,
+    gap: 8,
+  },
+  presetButton: {
+    backgroundColor: '#FFF7ED',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 2,
+    borderColor: '#FB923C',
+    alignItems: 'center',
+    minWidth: '30%',
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  presetButtonText: {
+    fontSize: 13,
+    color: '#78350F',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  presetAmount: {
+    fontSize: 16,
+    color: '#EA580C',
+    fontWeight: 'bold',
+  },
+  customFeeContainer: {
+    marginTop: 8,
+    marginBottom: 16,
+  },
+  customFeeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  customFeeInput: {
+    flex: 2,
+    marginBottom: 0,
+  },
+  customFeeAmountInput: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  addCustomButton: {
+    backgroundColor: '#EA580C',
+    borderRadius: 8,
+    padding: 12,
+    paddingHorizontal: 16,
+  },
+  addCustomButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  addedFeesContainer: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+  },
+  addedFeesTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#78350F',
+    marginBottom: 8,
+  },
+  feeRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#FDE68A',
+  },
+  feeItem: {
+    fontSize: 14,
+    color: '#78350F',
+    flex: 1,
+  },
+  feeAmount: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#92400E',
+    marginRight: 12,
+  },
+  removeFeeButton: {
+    backgroundColor: '#EF4444',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeFeeText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 12,
+    marginTop: 8,
+    borderTopWidth: 2,
+    borderTopColor: '#D97706',
+  },
+  totalLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#78350F',
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#EA580C',
   },
   photoGrid: {
     flexDirection: 'row',
