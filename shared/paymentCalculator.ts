@@ -299,3 +299,96 @@ export function validatePaymentBreakdown(breakdown: PaymentBreakdown): {
       : `Payment mismatch: Customer pays $${totalIn.toFixed(2)}, but driver + company = $${totalOut.toFixed(2)} (difference: $${difference.toFixed(2)})`
   };
 }
+
+// ══════════════════════════════════════════════════════════════
+// DONATION PRICING - FREE with optional tip only
+// ══════════════════════════════════════════════════════════════
+export interface DonationPricingResult {
+  basePrice: number;        // Always $0 for donations
+  distanceFee: number;      // Always $0 for donations
+  timeFee: number;          // Always $0 for donations
+  packageFee: number;       // Always $0 for donations
+  serviceTier: string;      // Always 'donation'
+  tip: number;              // Optional customer tip (100% to driver)
+  totalPrice: number;       // Tip amount only (or $0 if no tip)
+}
+
+export function calculateDonationPricing(tip: number = 0): DonationPricingResult {
+  return {
+    basePrice: 0,
+    distanceFee: 0,
+    timeFee: 0,
+    packageFee: 0,
+    serviceTier: 'donation',
+    tip: tip,
+    totalPrice: tip  // Only charge the tip amount (or $0 for completely free donations)
+  };
+}
+
+// ══════════════════════════════════════════════════════════════
+// UNIFIED PRICING FUNCTION - Handles both returns and donations
+// ══════════════════════════════════════════════════════════════
+export interface UnifiedPricingInput {
+  isDonation: boolean;
+  tip: number;
+  // For returns only (ignored for donations):
+  routeDistance?: number;
+  routeTime?: number;
+  packageCount?: number;
+  serviceTier?: 'standard' | 'priority' | 'instant';
+}
+
+export interface UnifiedPricingResult {
+  basePrice: number;
+  distanceFee: number;
+  timeFee: number;
+  packageFee: number;
+  serviceTier: string;
+  tip: number;
+  totalPrice: number;
+  isDonation: boolean;
+}
+
+export function calculatePricing(input: UnifiedPricingInput): UnifiedPricingResult {
+  if (input.isDonation) {
+    // DONATIONS: All fees are $0, only optional tip is charged
+    const donationResult = calculateDonationPricing(input.tip);
+    return {
+      ...donationResult,
+      isDonation: true
+    };
+  }
+  
+  // RETURNS: Use existing payment calculator logic
+  // Calculate tier-based pricing
+  const TIER_PRICING = {
+    standard: 6.99,
+    priority: 9.99,
+    instant: 12.99
+  };
+  
+  const serviceTier = input.serviceTier || 'standard';
+  const basePrice = TIER_PRICING[serviceTier];
+  
+  // Distance fee: $0.50/mile
+  const distanceFee = (input.routeDistance || 0) * 0.50;
+  
+  // Time fee: $12/hour = $0.20/minute
+  const timeFee = ((input.routeTime || 0) / 60) * 12.00;
+  
+  // Package fee: $1/box after first box
+  const packageFee = Math.max(0, (input.packageCount || 1) - 1) * 1.00;
+  
+  const totalPrice = basePrice + distanceFee + timeFee + packageFee + input.tip;
+  
+  return {
+    basePrice,
+    distanceFee,
+    timeFee,
+    packageFee,
+    serviceTier,
+    tip: input.tip,
+    totalPrice,
+    isDonation: false
+  };
+}

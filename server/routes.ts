@@ -4483,32 +4483,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Allow both logged-in users and guests
       const userId = (req.session as any)?.user?.id || null;
       
-      // SECURITY: Server-side validation for donations
+      // ══════════════════════════════════════════════════════════════
+      // CRITICAL SECURITY: Donation Validation Against Database
+      // ══════════════════════════════════════════════════════════════
       // NEVER trust client-supplied isDonation flag without validation
       const clientClaimsDonation = req.body.isDonation === true;
       const tip = parseFloat(req.body.tip || '0');
+      let isDonation = false;
+      let validatedDonationLocation = null;
       
-      // CRITICAL: Validate donation against destination
-      // Donations MUST go to charity locations, not regular stores
-      const isValidDonationDestination = clientClaimsDonation && (
-        req.body.retailerName?.includes('Goodwill') ||
-        req.body.retailerName?.includes('Salvation Army') ||
-        req.body.retailerName?.includes('St. Vincent')
-      );
-      
-      if (clientClaimsDonation && !isValidDonationDestination) {
-        console.error(`🚨 SECURITY: Donation bypass attempt detected - Invalid destination: ${req.body.retailerName}`);
-        return res.status(400).json({
-          message: "Invalid donation destination. Donations must go to registered charities.",
-          code: 'INVALID_DONATION_DESTINATION'
-        });
-      }
-      
-      // Determine if this is a legitimate donation
-      const isDonation = clientClaimsDonation && isValidDonationDestination;
-      
-      if (isDonation) {
-        console.log(`♻️ DONATION ORDER: Destination ${req.body.retailerName}, Tip: $${tip}`);
+      if (clientClaimsDonation) {
+        // Client claims this is a donation - VALIDATE against database
+        const donationLocationId = parseInt(req.body.donationLocationId);
+        
+        if (!donationLocationId) {
+          console.error(`🚨 SECURITY: Donation claimed but no donationLocationId provided`);
+          return res.status(400).json({
+            message: "Invalid donation - location ID required",
+            code: 'DONATION_LOCATION_ID_REQUIRED'
+          });
+        }
+        
+        // Query donationLocations table to verify this is a real charity
+        const donationLocationResult = await db.select()
+          .from(schema.donationLocations)
+          .where(eq(schema.donationLocations.id, donationLocationId))
+          .limit(1);
+        
+        if (donationLocationResult.length === 0) {
+          console.error(`🚨 SECURITY: Donation bypass attempt - Invalid location ID: ${donationLocationId}`);
+          return res.status(400).json({
+            message: "Invalid donation location. Please select a valid charity.",
+            code: 'INVALID_DONATION_LOCATION'
+          });
+        }
+        
+        validatedDonationLocation = donationLocationResult[0];
+        
+        // Verify the donation location is active
+        if (!validatedDonationLocation.isActive) {
+          console.error(`🚨 SECURITY: Inactive donation location: ${validatedDonationLocation.name}`);
+          return res.status(400).json({
+            message: "This donation location is temporarily unavailable. Please select another charity.",
+            code: 'DONATION_LOCATION_INACTIVE'
+          });
+        }
+        
+        // CRITICAL: Validate full address matches the database
+        // This prevents attackers from using charity IDs but pointing to different addresses
+        const addressMatches = (
+          req.body.retailerAddress === validatedDonationLocation.streetAddress &&
+          req.body.retailerCity === validatedDonationLocation.city &&
+          req.body.retailerState === validatedDonationLocation.state &&
+          req.body.retailerZip === validatedDonationLocation.zipCode
+        );
+        
+        if (!addressMatches) {
+          console.error(`🚨 SECURITY: Donation address mismatch!
+            Claimed Location ID: ${donationLocationId} (${validatedDonationLocation.name})
+            Expected Address: ${validatedDonationLocation.streetAddress}, ${validatedDonationLocation.city}, ${validatedDonationLocation.state} ${validatedDonationLocation.zipCode}
+            Submitted Address: ${req.body.retailerAddress}, ${req.body.retailerCity}, ${req.body.retailerState} ${req.body.retailerZip}`);
+          return res.status(400).json({
+            message: "Donation address does not match selected charity location. Possible security violation.",
+            code: 'DONATION_ADDRESS_MISMATCH'
+          });
+        }
+        
+        // ALL VALIDATIONS PASSED - This is a legitimate donation
+        isDonation = true;
+        console.log(`✅ VALIDATED DONATION: ${validatedDonationLocation.name} (ID: ${donationLocationId}), Tip: $${tip.toFixed(2)}`);
       }
       
       // SECURITY: Validate service tier (skip for donations)
@@ -4520,6 +4563,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
           code: 'INVALID_SERVICE_TIER'
         });
       }
+      
+      // ══════════════════════════════════════════════════════════════
+      // SERVER-SIDE PRICE RECALCULATION (NEVER trust client amounts!)
+      // ══════════════════════════════════════════════════════════════
+      const { calculatePricing } = await import('@shared/paymentCalculator');
+      
+      const serverCalculatedPricing = calculatePricing({
+        isDonation,
+        tip,
+        routeDistance: req.body.routeDistance ? parseFloat(req.body.routeDistance) : 0,
+        routeTime: req.body.routeTime ? parseFloat(req.body.routeTime) : 0,
+        packageCount: req.body.items?.length || 1,
+        serviceTier: serviceTier as 'standard' | 'priority' | 'instant'
+      });
+      
+      // Expected amount in Stripe format (cents)
+      const expectedStripeAmount = Math.round(serverCalculatedPricing.totalPrice * 100);
+      
+      console.log(`💰 SERVER-SIDE PRICING CALCULATION:
+        Donation: ${isDonation}
+        Service Tier: ${serviceTier}
+        Base: $${serverCalculatedPricing.basePrice.toFixed(2)}
+        Distance: $${serverCalculatedPricing.distanceFee.toFixed(2)}
+        Time: $${serverCalculatedPricing.timeFee.toFixed(2)}
+        Packages: $${serverCalculatedPricing.packageFee.toFixed(2)}
+        Tip: $${serverCalculatedPricing.tip.toFixed(2)}
+        TOTAL: $${serverCalculatedPricing.totalPrice.toFixed(2)} (${expectedStripeAmount} cents)`);
       
       // CRITICAL SECURITY: Payment handling for donations vs returns
       // - Donations with NO tip: Skip payment verification (100% free)
@@ -4537,7 +4607,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // PAYMENT VERIFICATION
+      // ══════════════════════════════════════════════════════════════
+      // PAYMENT VERIFICATION WITH SERVER-SIDE AMOUNT VALIDATION
+      // ══════════════════════════════════════════════════════════════
       // - Skip for FREE donations (no tip)
       // - Verify for returns (full amount)
       // - Verify for donations WITH tip (tip amount only)
@@ -4568,28 +4640,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
           
-          // 3. VERIFY AGAINST SERVER-STORED METADATA (REQUIRED for security)
-          const metadata = paymentIntent.metadata;
-          
-          // CRITICAL: Reject payments without server metadata to prevent bypass attacks
-          if (!metadata.serverCalculatedAmount || !metadata.routeDistance || !metadata.routeTime) {
-            console.error(`🚨 SECURITY: Payment intent missing required metadata - Intent: ${req.body.stripePaymentIntentId}, Metadata: ${JSON.stringify(metadata)}`);
+          // 3. CRITICAL: Verify Stripe amount matches SERVER-CALCULATED amount
+          // This is the PRIMARY security check - we NEVER trust client amounts
+          if (paymentIntent.amount !== expectedStripeAmount) {
+            console.error(`🚨 SECURITY: Payment amount mismatch!
+              PaymentIntent Amount: $${(paymentIntent.amount/100).toFixed(2)} (${paymentIntent.amount} cents)
+              Server Calculated: $${serverCalculatedPricing.totalPrice.toFixed(2)} (${expectedStripeAmount} cents)
+              Difference: $${Math.abs(paymentIntent.amount - expectedStripeAmount)/100} 
+              IsDonation: ${isDonation}
+              Tip: $${tip.toFixed(2)}`);
             return res.status(400).json({
-              message: "Invalid payment - please create a new booking",
-              code: 'PAYMENT_METADATA_MISSING'
+              message: "Payment verification failed. Amount does not match server calculation. Please create a new booking.",
+              code: 'PAYMENT_AMOUNT_MISMATCH'
             });
           }
           
-          // Verify against server-calculated amount stored in metadata
-          const serverAmount = parseInt(metadata.serverCalculatedAmount);
-          
-          if (paymentIntent.amount !== serverAmount) {
-            console.error(`🚨 SECURITY: Payment intent amount mismatch - Intent: $${paymentIntent.amount/100}, Metadata: $${serverAmount/100}`);
-            return res.status(400).json({
-              message: "Payment verification failed - amount mismatch",
-              code: 'PAYMENT_VERIFICATION_FAILED'
-            });
-          }
+          console.log(`✅ PAYMENT VERIFIED: $${(paymentIntent.amount/100).toFixed(2)} matches server calculation`);
           
           // Additional validation: verify route info hasn't been tampered with
           if (req.body.routeInfo) {
