@@ -1,0 +1,79 @@
+Perfect — that’s the right way to do this.
+To make the **Return It Driver Training Manual v1.1** fully accurate for *your* app (and not just modeled after others), I’ll need specific in-app details so I can describe exactly how your drivers will see and use it.
+
+Here’s the full list — divided into short sections you can fill in or screenshot from your app / admin dashboard 👇
+
+---
+
+## 🧭 **A. App Structure**
+
+1. What are the **main tabs or screens** in your Driver app?
+   (Example: *Home, Active Orders, Earnings, Profile, Support*, etc.)
+2. When drivers tap an order — what details are shown?
+   (Pickup time, customer name, distance, payout, barcode, etc.)
+3. Are there **different order types or tiers** (Standard, Priority, Instant)?
+
+   * If yes, what do they mean in your system?
+
+---
+
+## 📦 **B. Order Flow**
+
+1. How does a driver **receive** a new order?
+
+   * Push notification? Auto-accept radius?
+2. What steps do they complete during pickup?
+
+   * Scan label? Take photo? Signature?
+3. How do they mark an order as **complete**?
+
+   * Drop-off receipt upload? Photo proof? Button label?
+4. Are **returns, donations, and exchanges** handled differently in the UI?
+
+   * If yes, describe or show screenshots of each type.
+
+---
+
+## 💵 **C. Payouts**
+
+1. What’s the **default payout split** (still 70/30)?
+2. What options exist for payouts?
+
+   * Instant / weekly / daily?
+3. What’s the **payout provider** (Stripe Connect, PayPal, etc.)?
+4. Do drivers see **tips or bonuses** in the app?
+
+---
+
+## 🧰 **D. Tools & Features**
+
+1. Is there **in-app navigation** or do they open Google/Apple Maps?
+2. Is there a **chat** or **call** feature with customers?
+3. What do you use for **support** (chat bot, email, ticket form)?
+4. Are there any **unique features** (e.g., “return locker mode,” “scan receipt,” “QR drop,” “upload label,” etc.)?
+
+---
+
+## 🧑‍💼 **E. Driver Requirements & Conduct**
+
+1. Any **vehicle rules** (car size, condition, uniforms, etc.)?
+2. Do you have a **specific pickup radius or service area** (St. Louis zones)?
+3. Are there **bonuses or promotions** (e.g., “Complete 10 orders = +$20”)?
+
+---
+
+## 🆘 **F. Communications & Support**
+
+1. Confirm your **driver support email** and **emergency number**.
+2. Do you plan a **broadcast message system** for driver alerts (e.g., weather updates, high-demand zones)?
+
+---
+
+Once you send me those details (you can just number them in order or paste screenshots),
+I’ll build the **Return It Driver Manual v1.1 — App-Specific Edition**, ready for:
+
+* Print (PDF)
+* In-app “Help” section
+* Web onboarding (Notion or portal)
+
+Would you like me to create a short **fillable template** you can type into for these answers? (that way you can fill it once and use it again later for version updates).
