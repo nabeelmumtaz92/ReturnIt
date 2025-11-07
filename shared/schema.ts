@@ -3526,3 +3526,34 @@ export const insertSystemSettingSchema = createInsertSchema(systemSettings).omit
   updatedAt: true,
 });
 export type InsertSystemSetting = z.infer<typeof insertSystemSettingSchema>;
+
+// Secure Admin Password System
+export const adminPasswords = pgTable("admin_passwords", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Password hash using bcrypt with cost factor 12
+  passwordHash: text("password_hash").notNull(),
+  
+  // Token versioning for session invalidation on password change
+  tokenVersion: integer("token_version").default(1).notNull(),
+  
+  // Admin user reference
+  userId: integer("user_id").notNull().references(() => users.id),
+  
+  // Metadata
+  lastChangedAt: timestamp("last_changed_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("admin_passwords_user_id_idx").on(table.userId),
+}));
+
+// Reset nonces for offline password reset
+export const resetNonces = pgTable("reset_nonces", {
+  nonce: text("nonce").primaryKey(),
+  used: boolean("used").default(false).notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type AdminPassword = typeof adminPasswords.$inferSelect;
+export type ResetNonce = typeof resetNonces.$inferSelect;

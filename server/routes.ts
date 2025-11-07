@@ -14929,6 +14929,10 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
+  // Admin password management routes
+  const adminPasswordRoutes = (await import("./routes/adminPasswordRoutes")).default;
+  app.use("/api/admin/password", adminPasswordRoutes);
+
   const httpServer = createServer(app);
   
   // Start daily stats scheduler
