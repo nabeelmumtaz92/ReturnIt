@@ -1876,6 +1876,13 @@ export default function BookReturn() {
                       <span className="text-lg font-bold">Total</span>
                       <span className="text-2xl font-bold text-[#B8956A]">${pricing.total.toFixed(2)}</span>
                     </div>
+                    
+                    {/* Extra Fees Disclaimer */}
+                    <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-xs text-blue-900">
+                        <span className="font-semibold">ℹ️ Note:</span> Your driver may charge extra fees for supplies (boxes, tape, etc.) purchased during delivery. Any additional charges will be billed separately to your payment method.
+                      </p>
+                    </div>
                   </div>
                 </div>
 
