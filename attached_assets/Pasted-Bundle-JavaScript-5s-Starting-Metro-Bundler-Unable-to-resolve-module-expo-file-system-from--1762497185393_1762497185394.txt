@@ -1,0 +1,58 @@
+Bundle JavaScript
+
+5s
+
+
+Starting Metro Bundler
+Unable to resolve module expo-file-system from /Users/expo/workingdir/build/mobile-apps/returnit-driver/screens/CompleteDeliveryScreen.js: expo-file-system could not be found within the project or in these directories:
+  node_modules
+  13 | import { CameraView, useCameraPermissions } from 'expo-camera';
+  14 | import { StatusBar } from 'expo-status-bar';
+> 15 | import * as FileSystem from 'expo-file-system';
+     |                              ^
+  16 | import apiClient from '../services/api-client';
+  17 |
+  18 | export default function CompleteDeliveryScreen({ route, navigation }) {
+Error: Unable to resolve module expo-file-system from /Users/expo/workingdir/build/mobile-apps/returnit-driver/screens/CompleteDeliveryScreen.js: expo-file-system could not be found within the project or in these directories:
+  node_modules
+  13 | import { CameraView, useCameraPermissions } from 'expo-camera';
+  14 | import { StatusBar } from 'expo-status-bar';
+> 15 | import * as FileSystem from 'expo-file-system';
+     |                              ^
+  16 | import apiClient from '../services/api-client';
+  17 |
+  18 | export default function CompleteDeliveryScreen({ route, navigation }) {
+Error: Unable to resolve module expo-file-system from /Users/expo/workingdir/build/mobile-apps/returnit-driver/screens/CompleteDeliveryScreen.js: expo-file-system could not be found within the project or in these directories:
+  node_modules
+  13 | import { CameraView, useCameraPermissions } from 'expo-camera';
+  14 | import { StatusBar } from 'expo-status-bar';
+> 15 | import * as FileSystem from 'expo-file-system';
+     |                              ^
+  16 | import apiClient from '../services/api-client';
+  17 |
+  18 | export default function CompleteDeliveryScreen({ route, navigation }) {
+    at ModuleResolver.resolveDependency (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/node-haste/DependencyGraph/ModuleResolution.js:150:15)
+    at DependencyGraph.resolveDependency (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/node-haste/DependencyGraph.js:248:43)
+    at /Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/lib/transformHelpers.js:165:21
+    at resolveDependencies (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/DeltaBundler/buildSubgraph.js:42:25)
+    at visit (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/DeltaBundler/buildSubgraph.js:83:30)
+    at processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Promise.all (index 20)
+    at visit (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/DeltaBundler/buildSubgraph.js:92:5)
+    at async Promise.all (index 0)
+    at buildSubgraph (/Users/expo/workingdir/build/mobile-apps/returnit-driver/node_modules/metro/src/DeltaBundler/buildSubgraph.js:103:3)
+npx expo export:embed --eager --platform ios --dev false exited with non-zero code: 1
+
+Clean up credentials
+
+1s
+
+
+Fail job
+
+1s
+
+
+Build failed
+
+npx expo export:embed --eager --platform ios --dev false exited with non-zero code: 1
