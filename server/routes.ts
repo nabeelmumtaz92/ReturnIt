@@ -4483,9 +4483,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Allow both logged-in users and guests
       const userId = (req.session as any)?.user?.id || null;
       
-      // SECURITY: Validate service tier
+      // Check if this is a donation (donations are FREE - no payment required)
+      const isDonation = req.body.isDonation === true;
+      
+      if (isDonation) {
+        console.log('♻️ DONATION ORDER: Bypassing payment verification (donations are FREE)');
+      }
+      
+      // SECURITY: Validate service tier (skip for donations)
       const serviceTier = req.body.serviceTier || 'standard';
-      if (!['standard', 'priority', 'instant'].includes(serviceTier)) {
+      if (!isDonation && !['standard', 'priority', 'instant'].includes(serviceTier)) {
         console.error(`🚨 SECURITY: Invalid service tier: ${serviceTier}`);
         return res.status(400).json({
           message: "Invalid service tier",
@@ -4493,8 +4500,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // CRITICAL SECURITY: Payment intent is REQUIRED for all orders
-      if (!req.body.stripePaymentIntentId) {
+      // CRITICAL SECURITY: Payment intent is REQUIRED for all orders (EXCEPT donations)
+      if (!isDonation && !req.body.stripePaymentIntentId) {
         console.error(`🚨 SECURITY: Order creation attempted without payment`);
         return res.status(400).json({
           message: "Payment required to create order",
@@ -4502,87 +4509,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      try {
-        // 1. CHECK FOR PAYMENT REPLAY ATTACK: Ensure payment intent hasn't been used before
-        const existingOrder = await db.select()
-          .from(schema.orders)
-          .where(eq(schema.orders.stripePaymentIntentId, req.body.stripePaymentIntentId))
-          .limit(1);
-        
-        if (existingOrder.length > 0) {
-          console.error(`🚨 SECURITY: Payment replay attack detected - Intent ${req.body.stripePaymentIntentId} already used for order ${existingOrder[0].id}`);
+      // PAYMENT VERIFICATION (skip for donations since they're FREE)
+      if (!isDonation) {
+        try {
+          // 1. CHECK FOR PAYMENT REPLAY ATTACK: Ensure payment intent hasn't been used before
+          const existingOrder = await db.select()
+            .from(schema.orders)
+            .where(eq(schema.orders.stripePaymentIntentId, req.body.stripePaymentIntentId))
+            .limit(1);
+          
+          if (existingOrder.length > 0) {
+            console.error(`🚨 SECURITY: Payment replay attack detected - Intent ${req.body.stripePaymentIntentId} already used for order ${existingOrder[0].id}`);
+            return res.status(400).json({
+              message: "This payment has already been used for another order",
+              code: 'PAYMENT_ALREADY_USED'
+            });
+          }
+          
+          // 2. RETRIEVE AND VERIFY PAYMENT FROM STRIPE
+          const paymentIntent = await stripe.paymentIntents.retrieve(req.body.stripePaymentIntentId);
+          
+          if (paymentIntent.status !== 'succeeded') {
+            console.error(`🚨 SECURITY: Payment not confirmed - Intent ${req.body.stripePaymentIntentId} status: ${paymentIntent.status}`);
+            return res.status(400).json({
+              message: "Payment has not been confirmed. Please complete payment before booking.",
+              code: 'PAYMENT_NOT_CONFIRMED'
+            });
+          }
+          
+          // 3. VERIFY AGAINST SERVER-STORED METADATA (REQUIRED for security)
+          const metadata = paymentIntent.metadata;
+          
+          // CRITICAL: Reject payments without server metadata to prevent bypass attacks
+          if (!metadata.serverCalculatedAmount || !metadata.routeDistance || !metadata.routeTime) {
+            console.error(`🚨 SECURITY: Payment intent missing required metadata - Intent: ${req.body.stripePaymentIntentId}, Metadata: ${JSON.stringify(metadata)}`);
+            return res.status(400).json({
+              message: "Invalid payment - please create a new booking",
+              code: 'PAYMENT_METADATA_MISSING'
+            });
+          }
+          
+          // Verify against server-calculated amount stored in metadata
+          const serverAmount = parseInt(metadata.serverCalculatedAmount);
+          
+          if (paymentIntent.amount !== serverAmount) {
+            console.error(`🚨 SECURITY: Payment intent amount mismatch - Intent: $${paymentIntent.amount/100}, Metadata: $${serverAmount/100}`);
+            return res.status(400).json({
+              message: "Payment verification failed - amount mismatch",
+              code: 'PAYMENT_VERIFICATION_FAILED'
+            });
+          }
+          
+          // Additional validation: verify route info hasn't been tampered with
+          if (req.body.routeInfo) {
+            const clientDistance = parseFloat(req.body.routeInfo.distance.replace(' miles', ''));
+            const clientTime = parseFloat(req.body.routeInfo.duration.replace(' mins', ''));
+            const serverDistance = parseFloat(metadata.routeDistance);
+            const serverTime = parseFloat(metadata.routeTime);
+            
+            // Allow 10% tolerance for route recalculation differences
+            const distanceTolerance = serverDistance * 0.1;
+            const timeTolerance = serverTime * 0.1;
+            
+            if (Math.abs(clientDistance - serverDistance) > distanceTolerance ||
+                Math.abs(clientTime - serverTime) > timeTolerance) {
+              console.error(`🚨 SECURITY: Route info tampering detected - Client: ${clientDistance}mi/${clientTime}min, Server: ${serverDistance}mi/${serverTime}min`);
+              return res.status(400).json({
+                message: "Route information has changed since payment. Please create a new booking.",
+                code: 'ROUTE_INFO_MISMATCH'
+              });
+            }
+          }
+          
+          console.log(`✅ Payment verified - Intent: ${req.body.stripePaymentIntentId}, Amount: $${paymentIntent.amount/100}`);
+          
+          // ✅ ALL CHECKS PASSED - Force payment status to completed
+          req.body.paymentStatus = 'completed';
+          
+        } catch (error: any) {
+          console.error(`🚨 SECURITY: Payment verification failed - ${error.message}`, error);
           return res.status(400).json({
-            message: "This payment has already been used for another order",
-            code: 'PAYMENT_ALREADY_USED'
-          });
-        }
-        
-        // 2. RETRIEVE AND VERIFY PAYMENT FROM STRIPE
-        const paymentIntent = await stripe.paymentIntents.retrieve(req.body.stripePaymentIntentId);
-        
-        if (paymentIntent.status !== 'succeeded') {
-          console.error(`🚨 SECURITY: Payment not confirmed - Intent ${req.body.stripePaymentIntentId} status: ${paymentIntent.status}`);
-          return res.status(400).json({
-            message: "Payment has not been confirmed. Please complete payment before booking.",
-            code: 'PAYMENT_NOT_CONFIRMED'
-          });
-        }
-        
-        // 3. VERIFY AGAINST SERVER-STORED METADATA (REQUIRED for security)
-        const metadata = paymentIntent.metadata;
-        
-        // CRITICAL: Reject payments without server metadata to prevent bypass attacks
-        if (!metadata.serverCalculatedAmount || !metadata.routeDistance || !metadata.routeTime) {
-          console.error(`🚨 SECURITY: Payment intent missing required metadata - Intent: ${req.body.stripePaymentIntentId}, Metadata: ${JSON.stringify(metadata)}`);
-          return res.status(400).json({
-            message: "Invalid payment - please create a new booking",
-            code: 'PAYMENT_METADATA_MISSING'
-          });
-        }
-        
-        // Verify against server-calculated amount stored in metadata
-        const serverAmount = parseInt(metadata.serverCalculatedAmount);
-        
-        if (paymentIntent.amount !== serverAmount) {
-          console.error(`🚨 SECURITY: Payment intent amount mismatch - Intent: $${paymentIntent.amount/100}, Metadata: $${serverAmount/100}`);
-          return res.status(400).json({
-            message: "Payment verification failed - amount mismatch",
+            message: "Failed to verify payment. Please contact support.",
             code: 'PAYMENT_VERIFICATION_FAILED'
           });
         }
-        
-        // Additional validation: verify route info hasn't been tampered with
-        if (req.body.routeInfo) {
-          const clientDistance = parseFloat(req.body.routeInfo.distance.replace(' miles', ''));
-          const clientTime = parseFloat(req.body.routeInfo.duration.replace(' mins', ''));
-          const serverDistance = parseFloat(metadata.routeDistance);
-          const serverTime = parseFloat(metadata.routeTime);
-          
-          // Allow 10% tolerance for route recalculation differences
-          const distanceTolerance = serverDistance * 0.1;
-          const timeTolerance = serverTime * 0.1;
-          
-          if (Math.abs(clientDistance - serverDistance) > distanceTolerance ||
-              Math.abs(clientTime - serverTime) > timeTolerance) {
-            console.error(`🚨 SECURITY: Route info tampering detected - Client: ${clientDistance}mi/${clientTime}min, Server: ${serverDistance}mi/${serverTime}min`);
-            return res.status(400).json({
-              message: "Route information has changed since payment. Please create a new booking.",
-              code: 'ROUTE_INFO_MISMATCH'
-            });
-          }
-        }
-        
-        console.log(`✅ Payment verified - Intent: ${req.body.stripePaymentIntentId}, Amount: $${paymentIntent.amount/100}`);
-        
-        // ✅ ALL CHECKS PASSED - Force payment status to completed
+      } else {
+        // For donations, set payment status to completed (no actual payment required)
         req.body.paymentStatus = 'completed';
-        
-      } catch (error: any) {
-        console.error(`🚨 SECURITY: Payment verification failed - ${error.message}`, error);
-        return res.status(400).json({
-          message: "Failed to verify payment. Please contact support.",
-          code: 'PAYMENT_VERIFICATION_FAILED'
-        });
+        console.log('♻️ DONATION: Payment status set to completed (FREE donation pickup)');
       }
       
       // Import policy validator
@@ -4684,6 +4698,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       orderData = {
         ...orderData,
         status: 'created',
+        isDonation: isDonation, // Explicitly set donation flag
         
         // Enhanced pickup address
         pickupStreetAddress: streetAddress,
