@@ -20,6 +20,8 @@ import { ObjectUploader } from "@/components/SimplePhotoUploader";
 import { BrandLogo } from "@/components/BrandLogo";
 import StoreAutocomplete from "@/components/StoreAutocomplete";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 // Load Stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -829,6 +831,43 @@ export default function BookReturn() {
     createOrderMutation.mutate({ ...formData, paymentIntentId: paymentIntent.id });
   };
 
+  // Keyboard navigation for tabs with focus management
+  const handleTabKeyDown = (e: React.KeyboardEvent, type: 'return' | 'exchange' | 'donation') => {
+    const tabs: Array<'return' | 'exchange' | 'donation'> = ['return', 'exchange', 'donation'];
+    const currentIndex = tabs.indexOf(type);
+    
+    let nextIndex = currentIndex;
+    
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      nextIndex = 0;
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      nextIndex = tabs.length - 1;
+    }
+    
+    if (nextIndex !== currentIndex) {
+      const newType = tabs[nextIndex];
+      setBookingType(newType);
+      setFormData(prev => ({ ...prev, isDonation: newType === 'donation' }));
+      setPage(1);
+      
+      // Move focus to the newly selected tab
+      setTimeout(() => {
+        const newTab = document.getElementById(`tab-${newType}`);
+        if (newTab) {
+          newTab.focus();
+        }
+      }, 0);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container max-w-3xl mx-auto px-4">
@@ -837,70 +876,136 @@ export default function BookReturn() {
           <BrandLogo size="lg" linkToHome={true} className="justify-center" />
         </div>
 
-        {/* Tabs for booking type */}
+        {/* Modern Segmented Control Tabs */}
         <div className="mb-8">
-          <Tabs 
-            value={bookingType} 
-            onValueChange={(value) => {
-              const newType = value as 'return' | 'exchange' | 'donation';
-              setBookingType(newType);
-              // Update form data based on tab selection
-              updateField('isDonation', newType === 'donation');
-              // Reset to page 1 when switching tabs
-              setPage(1);
-            }}
-            className="w-full"
+          <div 
+            role="tablist" 
+            aria-label="Booking type selection"
+            className="relative flex sm:flex-row flex-col w-full rounded-2xl bg-gradient-to-br from-[#FAF8F4] to-[#F5F0E8] p-1.5 shadow-lg ring-1 ring-black/5 mb-6 gap-2 sm:gap-0"
           >
-            <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
-              <TabsTrigger 
-                value="return" 
-                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
-                data-testid="tab-return"
-              >
-                📦 Book Return
-              </TabsTrigger>
-              <TabsTrigger 
-                value="exchange" 
-                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
-                data-testid="tab-exchange"
-              >
-                🔄 Exchange
-              </TabsTrigger>
-              <TabsTrigger 
-                value="donation" 
-                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
-                data-testid="tab-donation"
-              >
-                ❤️ Donation
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-          {page <= 3 && <p className="text-muted-foreground text-lg text-center">Step {page} of 3</p>}
+            {/* Animated Active Indicator - Desktop only */}
+            <motion.div
+              layoutId="bookingTab"
+              className="absolute inset-y-1.5 rounded-xl bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-xl hidden sm:block"
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              style={{
+                left: bookingType === 'return' ? '0.375rem' : bookingType === 'exchange' ? 'calc(33.333% + 0.125rem)' : 'calc(66.666% + 0.125rem)',
+                width: 'calc(33.333% - 0.25rem)'
+              }}
+            />
+            
+            {/* Return Tab */}
+            <button
+              id="tab-return"
+              type="button"
+              onClick={() => {
+                setBookingType('return');
+                setFormData(prev => ({ ...prev, isDonation: false }));
+                setPage(1);
+              }}
+              onKeyDown={(e) => handleTabKeyDown(e, 'return')}
+              tabIndex={bookingType === 'return' ? 0 : -1}
+              className={cn(
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                bookingType === 'return' 
+                  ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
+                  : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
+              )}
+              role="tab"
+              aria-selected={bookingType === 'return'}
+              aria-controls="booking-content"
+              data-testid="tab-return"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xl">📦</span>
+                <span className="font-semibold">Book Return</span>
+              </div>
+            </button>
+
+            {/* Exchange Tab */}
+            <button
+              id="tab-exchange"
+              type="button"
+              onClick={() => {
+                setBookingType('exchange');
+                setFormData(prev => ({ ...prev, isDonation: false }));
+                setPage(1);
+              }}
+              onKeyDown={(e) => handleTabKeyDown(e, 'exchange')}
+              tabIndex={bookingType === 'exchange' ? 0 : -1}
+              className={cn(
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                bookingType === 'exchange' 
+                  ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
+                  : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
+              )}
+              role="tab"
+              aria-selected={bookingType === 'exchange'}
+              aria-controls="booking-content"
+              data-testid="tab-exchange"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xl">🔄</span>
+                <span className="font-semibold">Exchange</span>
+              </div>
+            </button>
+
+            {/* Donation Tab */}
+            <button
+              id="tab-donation"
+              type="button"
+              onClick={() => {
+                setBookingType('donation');
+                setFormData(prev => ({ ...prev, isDonation: true }));
+                setPage(1);
+              }}
+              onKeyDown={(e) => handleTabKeyDown(e, 'donation')}
+              tabIndex={bookingType === 'donation' ? 0 : -1}
+              className={cn(
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                bookingType === 'donation' 
+                  ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
+                  : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
+              )}
+              role="tab"
+              aria-selected={bookingType === 'donation'}
+              aria-controls="booking-content"
+              data-testid="tab-donation"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xl">❤️</span>
+                <span className="font-semibold">Donation</span>
+              </div>
+            </button>
+          </div>
+          {page <= 3 && <p className="text-muted-foreground text-lg text-center font-medium">Step {page} of 3</p>}
         </div>
 
-        {/* Show Coming Soon for Exchange */}
-        {bookingType === 'exchange' ? (
-          <Card className="shadow-lg border-border/50">
-            <CardContent className="py-16">
-              <div className="text-center space-y-6">
-                <div className="text-6xl">🔄</div>
-                <h2 className="text-3xl font-bold text-foreground">Exchange Feature Coming Soon!</h2>
-                <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                  We're working hard to bring you the ability to exchange items. Stay tuned!
-                </p>
-                <div className="pt-4">
-                  <Button
-                    onClick={() => setBookingType('return')}
-                    className="bg-[#B8956A] hover:bg-[#A07A4F] text-white"
-                  >
-                    Book a Return Instead
-                  </Button>
+        {/* Tab Content Panel */}
+        <div id="booking-content" role="tabpanel" aria-labelledby={`tab-${bookingType}`}>
+          {/* Show Coming Soon for Exchange */}
+          {bookingType === 'exchange' ? (
+            <Card className="shadow-lg border-border/50">
+              <CardContent className="py-16">
+                <div className="text-center space-y-6">
+                  <div className="text-6xl">🔄</div>
+                  <h2 className="text-3xl font-bold text-foreground">Exchange Feature Coming Soon!</h2>
+                  <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                    We're working hard to bring you the ability to exchange items. Stay tuned!
+                  </p>
+                  <div className="pt-4">
+                    <Button
+                      onClick={() => setBookingType('return')}
+                      className="bg-[#B8956A] hover:bg-[#A07A4F] text-white"
+                    >
+                      Book a Return Instead
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
             {/* Professional progress bar */}
             {page <= 3 && (
               <div className="mb-10">
@@ -2261,6 +2366,7 @@ export default function BookReturn() {
         </Card>
           </>
         )}
+        </div>
       </div>
     </div>
   );
