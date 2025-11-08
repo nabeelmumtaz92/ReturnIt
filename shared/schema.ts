@@ -912,6 +912,13 @@ export const orders = pgTable("orders", {
   discrepancyFlagged: boolean("discrepancy_flagged").default(false), // Auto-flag if >10% difference
   discrepancyNotes: text("discrepancy_notes"), // Why totals don't match
   
+  // Physical Refund Tracking (Cash/Check Returns)
+  refundReceivedMethod: text("refund_received_method"), // How driver received refund from store: "original_payment", "cash", "check", "store_credit"
+  refundNeedsPhysicalReturn: boolean("refund_needs_physical_return").default(false), // true if driver has cash/check to return to customer
+  refundReturnedToCustomer: boolean("refund_returned_to_customer").default(false), // true when physical refund given to customer
+  refundReturnedAt: timestamp("refund_returned_at"), // When physical refund was returned to customer
+  refundReturnNotes: text("refund_return_notes"), // Notes about physical refund return
+  
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
