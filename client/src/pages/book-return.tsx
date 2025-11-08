@@ -1105,61 +1105,6 @@ export default function BookReturn() {
             {/* PAGE 2: Return Details */}
             {page === 2 && (
               <div className="space-y-5">
-                {/* DONATION TOGGLE */}
-                <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl shadow-sm">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-green-900 mb-2 flex items-center">
-                        ♻️ Donate Instead?
-                      </h3>
-                      <p className="text-sm text-green-800">
-                        {formData.isDonation
-                          ? "Your items will be donated to a local charity - completely FREE!"
-                          : "Switch to donation mode for FREE pickup to charity. Only optional tip to driver."}
-                      </p>
-                    </div>
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setFormData(prev => ({
-                          ...prev,
-                          isDonation: !prev.isDonation,
-                          // Clear destination fields when switching modes
-                          retailerName: '',
-                          retailerLocation: '',
-                          retailer: '',
-                          storeDestinationName: '',
-                          storeDestinationAddress: '',
-                          storeDestinationCity: '',
-                          storeDestinationState: '',
-                          storeDestinationZip: ''
-                        }));
-                        toast({
-                          title: formData.isDonation ? "Switched to Return Mode" : "Switched to Donation Mode",
-                          description: formData.isDonation
-                            ? "Your items will be returned to the store"
-                            : "Your items will be donated - FREE pickup!",
-                        });
-                      }}
-                      variant={formData.isDonation ? "default" : "outline"}
-                      className={formData.isDonation
-                        ? "bg-green-600 hover:bg-green-700 text-white"
-                        : "border-green-600 text-green-700 hover:bg-green-100"}
-                      data-testid="button-toggle-donation"
-                    >
-                      {formData.isDonation ? "Return Mode" : "Donation Mode"}
-                    </Button>
-                  </div>
-                  {formData.isDonation && (
-                    <div className="flex items-center p-3 bg-white rounded-lg border border-green-200">
-                      <Check className="h-5 w-5 text-green-600 mr-2" />
-                      <span className="text-sm font-semibold text-green-900">
-                        Donation Mode Active - 100% FREE pickup (optional tip appreciated!)
-                      </span>
-                    </div>
-                  )}
-                </div>
-
                 {/* Show different UI based on donation mode */}
                 {!formData.isDonation ? (
                   // RETURN MODE: Show store autocomplete and destination fields
@@ -1600,12 +1545,16 @@ export default function BookReturn() {
                     <div className="flex items-start space-x-2 p-3 bg-red-50 border-2 border-red-400 rounded-lg">
                       <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-red-900">Photo Verification Required</h4>
+                        <h4 className="font-semibold text-red-900">
+                          {formData.isDonation ? "Take Photos for Confirmation" : "Photo Verification Required"}
+                        </h4>
                         <p className="text-sm text-red-700 mt-1 font-medium">
-                          Upload at least 1 of the 3 options below (preferably all 3)
+                          {formData.isDonation 
+                            ? "Upload at least 1 photo of your items"
+                            : "Upload at least 1 of the 3 options below (preferably all 3)"}
                         </p>
                         <p className="text-xs text-red-600 mt-2">
-                          This protects you, our drivers, and ensures a smooth return process.
+                          This protects you, our drivers, and ensures a smooth {formData.isDonation ? "donation" : "return"} process.
                         </p>
                       </div>
                     </div>
