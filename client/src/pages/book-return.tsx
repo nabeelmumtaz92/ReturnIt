@@ -16,12 +16,13 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ObjectUploader } from "@/components/SimplePhotoUploader";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import { BrandLogo } from "@/components/BrandLogo";
 import StoreAutocomplete from "@/components/StoreAutocomplete";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import type { DonationLocation } from "@shared/schema";
 
 // Load Stripe
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
@@ -66,6 +67,7 @@ interface FormData {
   receiptPhotoUrl?: string;
   tagsPhotoUrl?: string;
   packagingPhotoUrl?: string;
+  donationPhotoUrls?: string[]; // NEW: Multiple photo URLs for donations (up to 12)
   // Page 3
   serviceTier: 'standard' | 'priority' | 'instant'; // Service tier selection
   tip: number;
@@ -405,7 +407,7 @@ export default function BookReturn() {
   });
   
   // Fetch donation locations from API
-  const { data: donationLocations, isLoading: isLoadingDonations } = useQuery({
+  const { data: donationLocations, isLoading: isLoadingDonations } = useQuery<DonationLocation[]>({
     queryKey: ['/api/donation-locations'],
     enabled: formData.isDonation // Only fetch when in donation mode
   });
@@ -493,20 +495,26 @@ export default function BookReturn() {
 
   const handleReceiptUploadComplete = useCallback(async (result: any) => {
     if (result.successful && result.successful.length > 0) {
-      const uploadedFile = result.successful[0];
-      const fileUrl = uploadedFile.uploadURL;
+      // For donations: collect all uploaded photo URLs
+      // For returns: use only the first photo URL
+      const photoUrls = result.successful.map((file: any) => file.uploadURL);
+      const firstUrl = photoUrls[0];
       
       setFormData(prev => ({ 
         ...prev, 
-        receiptPhotoUrl: fileUrl,
+        receiptPhotoUrl: firstUrl, // Store first URL for backward compatibility
+        donationPhotoUrls: prev.isDonation ? photoUrls : undefined, // Store all URLs for donations
       }));
       
+      const count = photoUrls.length;
       toast({
-        title: "Receipt uploaded",
-        description: "Your receipt has been uploaded successfully",
+        title: formData.isDonation ? `${count} photo${count > 1 ? 's' : ''} uploaded` : "Receipt uploaded",
+        description: formData.isDonation 
+          ? `${count} item photo${count > 1 ? 's' : ''} uploaded successfully`
+          : "Your receipt has been uploaded successfully",
       });
     }
-  }, [toast]);
+  }, [toast, formData.isDonation]);
 
   const handleTagsGetUploadUrl = async () => {
     const response: any = await apiRequest("POST", "/api/objects/upload");
@@ -1655,7 +1663,7 @@ export default function BookReturn() {
                         </h4>
                         <p className="text-sm text-red-700 mt-1 font-medium">
                           {formData.isDonation 
-                            ? "Upload at least 1 photo of your items"
+                            ? "Upload at least 1 photo of your items (up to 12 photos allowed)"
                             : "Upload at least 1 of the 3 options below (preferably all 3)"}
                         </p>
                         <p className="text-xs text-red-600 mt-2">
@@ -1668,22 +1676,32 @@ export default function BookReturn() {
                   <div className="space-y-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <Shield className="h-5 w-5 text-amber-600" />
-                      <Label className="text-foreground font-semibold text-base">Upload at least 1 (preferably all 3) *</Label>
+                      <Label className="text-foreground font-semibold text-base">
+                        {formData.isDonation ? "Upload at least 1 photo (up to 12) *" : "Upload at least 1 (preferably all 3) *"}
+                      </Label>
                     </div>
-                    <p className="text-sm text-muted-foreground font-medium">Upload at least 1 of the 3 options (preferably all 3):</p>
+                    <p className="text-sm text-muted-foreground font-medium">
+                      {formData.isDonation 
+                        ? "Upload at least 1 photo of your items (maximum 12 photos):" 
+                        : "Upload at least 1 of the 3 options (preferably all 3):"}
+                    </p>
                     
-                    {/* Option 1: Receipt Photo */}
+                    {/* Option 1: Receipt Photo (or Item Photos for donations) */}
                     <div className="space-y-2 p-3 bg-white rounded border border-border">
                       <div className="flex items-start space-x-2">
                         <div className="flex-1">
-                          <Label className="text-foreground font-semibold">1. Receipt or Order Confirmation</Label>
+                          <Label className="text-foreground font-semibold">
+                            {formData.isDonation ? "Item Photos" : "1. Receipt or Order Confirmation"}
+                          </Label>
                           <p className="text-xs text-muted-foreground mt-1">
-                            📄 Take a clear photo of your paper receipt or screenshot your email confirmation
+                            {formData.isDonation 
+                              ? "📸 Take clear photos of your items (1-12 photos)"
+                              : "📄 Take a clear photo of your paper receipt or screenshot your email confirmation"}
                           </p>
                         </div>
                       </div>
                       <ObjectUploader
-                        maxNumberOfFiles={1}
+                        maxNumberOfFiles={formData.isDonation ? 12 : 1}
                         maxFileSize={10485760}
                         onGetUploadParameters={handleReceiptGetUploadUrl}
                         onComplete={handleReceiptUploadComplete}
@@ -1691,73 +1709,83 @@ export default function BookReturn() {
                         size="sm"
                         testId="button-upload-receipt"
                       >
-                        {formData.receiptPhotoUrl ? 'Change Receipt Photo' : 'Upload Receipt Photo'}
+                        {formData.receiptPhotoUrl 
+                          ? (formData.isDonation ? 'Change Item Photos' : 'Change Receipt Photo')
+                          : (formData.isDonation ? 'Upload Item Photos' : 'Upload Receipt Photo')}
                       </ObjectUploader>
                       {formData.receiptPhotoUrl && (
                         <div className="flex items-center space-x-2 text-green-600 text-sm">
                           <Check className="h-4 w-4" />
-                          <span className="font-medium">Receipt photo uploaded ✓</span>
+                          <span className="font-medium">
+                            {formData.isDonation 
+                              ? `${formData.donationPhotoUrls?.length || 1} item photo${(formData.donationPhotoUrls?.length || 1) > 1 ? 's' : ''} uploaded ✓` 
+                              : "Receipt photo uploaded ✓"}
+                          </span>
                         </div>
                       )}
                     </div>
 
-                    {/* Option 2: Tags Photo */}
-                    <div className="space-y-2 p-3 bg-white rounded border border-border">
-                      <div className="flex items-start space-x-2">
-                        <div className="flex-1">
-                          <Label className="text-foreground font-semibold">2. Original Tags</Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            🏷️ Take a photo showing the item with original tags still attached
-                          </p>
+                    {/* Option 2: Tags Photo - Hide for donations */}
+                    {!formData.isDonation && (
+                      <div className="space-y-2 p-3 bg-white rounded border border-border">
+                        <div className="flex items-start space-x-2">
+                          <div className="flex-1">
+                            <Label className="text-foreground font-semibold">2. Original Tags</Label>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              🏷️ Take a photo showing the item with original tags still attached
+                            </p>
+                          </div>
                         </div>
+                        <ObjectUploader
+                          maxNumberOfFiles={1}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={handleTagsGetUploadUrl}
+                          onComplete={handleTagsUploadComplete}
+                          variant="outline"
+                          size="sm"
+                          testId="button-upload-tags"
+                        >
+                          {formData.tagsPhotoUrl ? 'Change Tags Photo' : 'Upload Tags Photo'}
+                        </ObjectUploader>
+                        {formData.tagsPhotoUrl && (
+                          <div className="flex items-center space-x-2 text-green-600 text-sm">
+                            <Check className="h-4 w-4" />
+                            <span className="font-medium">Tags photo uploaded ✓</span>
+                          </div>
+                        )}
                       </div>
-                      <ObjectUploader
-                        maxNumberOfFiles={1}
-                        maxFileSize={10485760}
-                        onGetUploadParameters={handleTagsGetUploadUrl}
-                        onComplete={handleTagsUploadComplete}
-                        variant="outline"
-                        size="sm"
-                        testId="button-upload-tags"
-                      >
-                        {formData.tagsPhotoUrl ? 'Change Tags Photo' : 'Upload Tags Photo'}
-                      </ObjectUploader>
-                      {formData.tagsPhotoUrl && (
-                        <div className="flex items-center space-x-2 text-green-600 text-sm">
-                          <Check className="h-4 w-4" />
-                          <span className="font-medium">Tags photo uploaded ✓</span>
-                        </div>
-                      )}
-                    </div>
+                    )}
 
-                    {/* Option 3: Packaging Photo */}
-                    <div className="space-y-2 p-3 bg-white rounded border border-border">
-                      <div className="flex items-start space-x-2">
-                        <div className="flex-1">
-                          <Label className="text-foreground font-semibold">3. Original Packaging</Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            📦 Take a photo showing the item in its original packaging
-                          </p>
+                    {/* Option 3: Packaging Photo - Hide for donations */}
+                    {!formData.isDonation && (
+                      <div className="space-y-2 p-3 bg-white rounded border border-border">
+                        <div className="flex items-start space-x-2">
+                          <div className="flex-1">
+                            <Label className="text-foreground font-semibold">3. Original Packaging</Label>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              📦 Take a photo showing the item in its original packaging
+                            </p>
+                          </div>
                         </div>
+                        <ObjectUploader
+                          maxNumberOfFiles={1}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={handlePackagingGetUploadUrl}
+                          onComplete={handlePackagingUploadComplete}
+                          variant="outline"
+                          size="sm"
+                          testId="button-upload-packaging"
+                        >
+                          {formData.packagingPhotoUrl ? 'Change Packaging Photo' : 'Upload Packaging Photo'}
+                        </ObjectUploader>
+                        {formData.packagingPhotoUrl && (
+                          <div className="flex items-center space-x-2 text-green-600 text-sm">
+                            <Check className="h-4 w-4" />
+                            <span className="font-medium">Packaging photo uploaded ✓</span>
+                          </div>
+                        )}
                       </div>
-                      <ObjectUploader
-                        maxNumberOfFiles={1}
-                        maxFileSize={10485760}
-                        onGetUploadParameters={handlePackagingGetUploadUrl}
-                        onComplete={handlePackagingUploadComplete}
-                        variant="outline"
-                        size="sm"
-                        testId="button-upload-packaging"
-                      >
-                        {formData.packagingPhotoUrl ? 'Change Packaging Photo' : 'Upload Packaging Photo'}
-                      </ObjectUploader>
-                      {formData.packagingPhotoUrl && (
-                        <div className="flex items-center space-x-2 text-green-600 text-sm">
-                          <Check className="h-4 w-4" />
-                          <span className="font-medium">Packaging photo uploaded ✓</span>
-                        </div>
-                      )}
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
