@@ -8785,6 +8785,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // 4.6. Send notification for physical refund return (cash/check)
+      if (refundNeedsPhysicalReturn && (refundReceivedMethod === 'cash' || refundReceivedMethod === 'check')) {
+        const refundTypeText = refundReceivedMethod === 'cash' ? 'Cash' : 'Check';
+        await storage.createNotification({
+          userId: order.userId,
+          type: 'physical_refund_pending',
+          title: `💵 ${refundTypeText} Refund Ready for Pickup`,
+          message: `Great news! The store gave your driver a ${refundReceivedMethod} refund for $${retailerRefundAmount?.toFixed(2) || '0.00'}.\n\nYour driver will return this ${refundReceivedMethod} to you within 24 hours. You'll be notified when they're on the way.\n\nNo additional delivery fee for returning your refund!`,
+          orderId: orderId,
+          data: {
+            refundReceivedMethod: refundReceivedMethod,
+            refundAmount: retailerRefundAmount,
+            needsPhysicalReturn: true,
+            driverId: driverId
+          }
+        });
+      }
+
       // 5. Fire webhook for completion
       await webhookService.fireReturnDelivered(updatedOrder);
 
