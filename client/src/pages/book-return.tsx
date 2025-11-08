@@ -878,43 +878,66 @@ export default function BookReturn() {
           {page <= 3 && <p className="text-muted-foreground text-lg text-center">Step {page} of 3</p>}
         </div>
 
-        {/* Professional progress bar */}
-        {page <= 3 && (
-          <div className="mb-10">
-            <div className="flex items-start justify-between gap-2">
-              {[
-                { num: 1, label: 'Personal Info' },
-                { num: 2, label: 'Return Details' },
-                { num: 3, label: 'Review' }
-              ].map((step, index) => (
-                <div key={step.num} className="flex flex-col items-center flex-1 min-w-0">
-                  <div className="flex items-center w-full">
-                    {index > 0 && (
-                      <div className={`flex-1 h-0.5 ${
-                        page > step.num - 1 ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
-                      }`} />
-                    )}
-                    <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 flex-shrink-0 ${
-                      page >= step.num 
-                        ? 'bg-[#B8956A] border-[#B8956A] text-white' 
-                        : 'bg-background border-muted-foreground/20 text-muted-foreground'
-                    }`}>
-                      {page > step.num ? <Check className="h-5 w-5" /> : step.num}
-                    </div>
-                    {index < 2 && (
-                      <div className={`flex-1 h-0.5 ${
-                        page > step.num ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
-                      }`} />
-                    )}
-                  </div>
-                  <span className="text-xs sm:text-sm font-medium mt-2 text-center w-full">{step.label}</span>
+        {/* Show Coming Soon for Exchange */}
+        {bookingType === 'exchange' ? (
+          <Card className="shadow-lg border-border/50">
+            <CardContent className="py-16">
+              <div className="text-center space-y-6">
+                <div className="text-6xl">🔄</div>
+                <h2 className="text-3xl font-bold text-foreground">Exchange Feature Coming Soon!</h2>
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                  We're working hard to bring you the ability to exchange items. Stay tuned!
+                </p>
+                <div className="pt-4">
+                  <Button
+                    onClick={() => setBookingType('return')}
+                    className="bg-[#B8956A] hover:bg-[#A07A4F] text-white"
+                  >
+                    Book a Return Instead
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Professional progress bar */}
+            {page <= 3 && (
+              <div className="mb-10">
+                <div className="flex items-start justify-between gap-2">
+                  {[
+                    { num: 1, label: 'Personal Info' },
+                    { num: 2, label: bookingType === 'donation' ? 'Donation Details' : 'Return Details' },
+                    { num: 3, label: 'Review' }
+                  ].map((step, index) => (
+                    <div key={step.num} className="flex flex-col items-center flex-1 min-w-0">
+                      <div className="flex items-center w-full">
+                        {index > 0 && (
+                          <div className={`flex-1 h-0.5 ${
+                            page > step.num - 1 ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
+                          }`} />
+                        )}
+                        <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 flex-shrink-0 ${
+                          page >= step.num 
+                            ? 'bg-[#B8956A] border-[#B8956A] text-white' 
+                            : 'bg-background border-muted-foreground/20 text-muted-foreground'
+                        }`}>
+                          {page > step.num ? <Check className="h-5 w-5" /> : step.num}
+                        </div>
+                        {index < 2 && (
+                          <div className={`flex-1 h-0.5 ${
+                            page > step.num ? 'bg-[#B8956A]' : 'bg-muted-foreground/20'
+                          }`} />
+                        )}
+                      </div>
+                      <span className="text-xs sm:text-sm font-medium mt-2 text-center w-full">{step.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
-        <Card className="shadow-lg border-border/50">
+            <Card className="shadow-lg border-border/50">
           <CardHeader className="border-b bg-muted/30">
             <CardTitle className="flex items-center gap-3 text-2xl">
               {page === 1 && <><User className="h-6 w-6 text-[#B8956A]" /> Personal Information</>}
@@ -2287,6 +2310,8 @@ export default function BookReturn() {
             )}
           </CardContent>
         </Card>
+          </>
+        )}
       </div>
     </div>
   );
