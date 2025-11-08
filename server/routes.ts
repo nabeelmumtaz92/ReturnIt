@@ -8542,6 +8542,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         retailerRefundMethod,
         retailerRefundAmount,
         retailerRefundTimeline,
+        // Physical refund tracking
+        refundReceivedMethod,
+        refundNeedsPhysicalReturn,
         // Store credit details
         storeCreditIssued,
         storeCreditAmount,
@@ -8595,6 +8598,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         completionData.retailerRefundMethod = retailerRefundMethod;
         completionData.retailerRefundAmount = retailerRefundAmount;
         completionData.retailerRefundTimeline = retailerRefundTimeline;
+        // Physical refund tracking
+        completionData.refundReceivedMethod = refundReceivedMethod;
+        completionData.refundNeedsPhysicalReturn = refundNeedsPhysicalReturn || false;
+        completionData.refundReturnedToCustomer = false; // Initialize as not returned yet
       }
 
       if (actualReturnOutcome === 'store_credit_issued') {
