@@ -918,13 +918,13 @@ export default function BookReturn() {
           <CardHeader className="border-b bg-muted/30">
             <CardTitle className="flex items-center gap-3 text-2xl">
               {page === 1 && <><User className="h-6 w-6 text-[#B8956A]" /> Personal Information</>}
-              {page === 2 && <><Package className="h-6 w-6 text-[#B8956A]" /> Return Details</>}
+              {page === 2 && <><Package className="h-6 w-6 text-[#B8956A]" /> {bookingType === 'return' ? 'Return Details' : bookingType === 'exchange' ? 'Exchange Details' : 'Donation Details'}</>}
               {page === 3 && <><Check className="h-6 w-6 text-[#B8956A]" /> Review</>}
               {page === 4 && <><CreditCard className="h-6 w-6 text-[#B8956A]" /> Payment</>}
             </CardTitle>
             <CardDescription className="text-base">
-              {page === 1 && "Where should we pick up your return?"}
-              {page === 2 && "Tell us about the item you're returning"}
+              {page === 1 && (bookingType === 'return' ? "Where should we pick up your return?" : bookingType === 'exchange' ? "Where should we pick up your exchange?" : "Where should we pick up your donation?")}
+              {page === 2 && (bookingType === 'return' ? "Tell us about the item you're returning" : bookingType === 'exchange' ? "Tell us about the item you're exchanging" : "Tell us about the item you're donating")}
               {page === 3 && "Review your information before payment"}
               {page === 4 && "Complete your booking"}
             </CardDescription>
@@ -1206,7 +1206,7 @@ export default function BookReturn() {
                     <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
                   <h3 className="text-sm font-semibold text-amber-900 flex items-center">
                     <MapPin className="h-4 w-4 mr-2" />
-                    Return Destination (Editable)
+                    {bookingType === 'return' ? 'Return Destination (Editable)' : bookingType === 'exchange' ? 'Exchange Destination (Editable)' : 'Donation Destination (Editable)'}
                   </h3>
                     
                     <div>
@@ -1352,7 +1352,9 @@ export default function BookReturn() {
                 {/* Multiple Items Section */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold">Items to Return *</Label>
+                    <Label className="text-base font-semibold">
+                      {bookingType === 'return' ? 'Items to Return *' : bookingType === 'exchange' ? 'Items to Exchange *' : 'Items to Donate *'}
+                    </Label>
                     <span className="text-sm text-muted-foreground">
                       {formData.items.length} item{formData.items.length !== 1 ? 's' : ''}
                     </span>
@@ -1723,7 +1725,9 @@ export default function BookReturn() {
                     {/* Return Destination */}
                     <div className="bg-white p-4 rounded-lg border border-blue-200">
                       <div className="flex justify-between items-start mb-3">
-                        <h4 className="font-semibold text-blue-900">🏪 Return Destination</h4>
+                        <h4 className="font-semibold text-blue-900">
+                          {bookingType === 'return' ? '🏪 Return Destination' : bookingType === 'exchange' ? '🏪 Exchange Destination' : '❤️ Donation Destination'}
+                        </h4>
                         <Button 
                           variant="outline" 
                           size="sm"
@@ -1767,7 +1771,7 @@ export default function BookReturn() {
                 <div className="bg-muted/30 p-5 rounded-lg">
                   <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
                     <Package className="h-5 w-5 text-[#B8956A]" />
-                    Return Details
+                    {bookingType === 'return' ? 'Return Details' : bookingType === 'exchange' ? 'Exchange Details' : 'Donation Details'}
                   </h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
