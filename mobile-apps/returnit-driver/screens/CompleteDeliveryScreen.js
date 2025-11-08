@@ -30,6 +30,7 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
   const [refundMethod, setRefundMethod] = useState('');
   const [refundAmount, setRefundAmount] = useState(orderDetails?.totalOrderValue?.toString() || '');
   const [refundTimeline, setRefundTimeline] = useState('');
+  const [refundReceivedMethod, setRefundReceivedMethod] = useState(''); // How driver received refund from store
   
   // Store credit details
   const [storeCreditIssued, setStoreCreditIssued] = useState(false);
@@ -70,6 +71,13 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
     { id: 'store_credit', label: 'Store Credit/Gift Card' },
     { id: 'cash', label: 'Cash Refund' },
     { id: 'check', label: 'Check by Mail' }
+  ];
+
+  const refundReceivedMethods = [
+    { id: 'original_payment', label: 'Refunded to Original Payment', icon: '💳', needsReturn: false },
+    { id: 'cash', label: 'Cash (I have it to return)', icon: '💵', needsReturn: true },
+    { id: 'check', label: 'Check (I have it to return)', icon: '📝', needsReturn: true },
+    { id: 'store_credit', label: 'Store Credit/Gift Card', icon: '🎁', needsReturn: false }
   ];
 
   const refundTimelines = [
@@ -222,6 +230,10 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         Alert.alert('Refund Method Required', 'Please select the refund method.');
         return false;
       }
+      if (!refundReceivedMethod) {
+        Alert.alert('Refund Received Method Required', 'Please indicate how you received the refund from the store.');
+        return false;
+      }
       if (!refundTimeline) {
         Alert.alert('Timeline Required', 'Please select the refund timeline.');
         return false;
@@ -320,6 +332,10 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
         retailerRefundMethod: selectedOutcome === 'refund_processed' ? refundMethod : undefined,
         retailerRefundAmount: selectedOutcome === 'refund_processed' ? parseFloat(refundAmount) : undefined,
         retailerRefundTimeline: selectedOutcome === 'refund_processed' ? refundTimeline : undefined,
+        
+        // Physical refund tracking
+        refundReceivedMethod: selectedOutcome === 'refund_processed' ? refundReceivedMethod : undefined,
+        refundNeedsPhysicalReturn: selectedOutcome === 'refund_processed' && (refundReceivedMethod === 'cash' || refundReceivedMethod === 'check') ? true : false,
         
         // Store credit details
         storeCreditIssued: selectedOutcome === 'store_credit_issued' ? storeCreditIssued : undefined,
@@ -519,6 +535,35 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
                 <Text style={styles.radioLabel}>{timeline.label}</Text>
               </TouchableOpacity>
             ))}
+
+            <Text style={[styles.inputLabel, { marginTop: 20 }]}>How did you receive this refund? *</Text>
+            <Text style={styles.helperText}>This helps us track physical refunds you need to return to the customer</Text>
+            {refundReceivedMethods.map((method) => (
+              <TouchableOpacity
+                key={method.id}
+                style={[
+                  styles.radioButton,
+                  refundReceivedMethod === method.id && styles.radioButtonSelected,
+                  method.needsReturn && refundReceivedMethod === method.id && styles.physicalRefundButton
+                ]}
+                onPress={() => setRefundReceivedMethod(method.id)}
+              >
+                <View style={[styles.radio, refundReceivedMethod === method.id && styles.radioSelected]}>
+                  {refundReceivedMethod === method.id && <View style={styles.radioDot} />}
+                </View>
+                <Text style={styles.radioLabel}>
+                  {method.icon} {method.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+
+            {(refundReceivedMethod === 'cash' || refundReceivedMethod === 'check') && (
+              <View style={styles.warningBox}>
+                <Text style={styles.warningText}>
+                  ⚠️ You'll need to return this {refundReceivedMethod} to the customer! Customer will be notified.
+                </Text>
+              </View>
+            )}
           </View>
         )}
 
@@ -1216,5 +1261,28 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  helperText: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  warningBox: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F59E0B',
+  },
+  warningText: {
+    fontSize: 14,
+    color: '#92400E',
+    fontWeight: '600',
+  },
+  physicalRefundButton: {
+    backgroundColor: '#FEF3C7',
+    borderColor: '#F59E0B',
   },
 });
