@@ -221,6 +221,16 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
       return false;
     }
 
+    // MANDATORY: At least one completion photo required
+    if (completionPhotos.length === 0) {
+      Alert.alert(
+        'Completion Photo Required', 
+        'Please take at least one photo to confirm completion of the delivery.',
+        [{ text: 'OK' }]
+      );
+      return false;
+    }
+
     if (selectedOutcome === 'refund_processed') {
       if (!retailerAccepted) {
         Alert.alert('Confirmation Required', 'Please confirm retailer accepted the return.');
@@ -766,9 +776,9 @@ export default function CompleteDeliveryScreen({ route, navigation }) {
 
         {/* Completion Photos */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Evidence Photos (Optional)</Text>
+          <Text style={styles.sectionTitle}>Completion Photos (Required) *</Text>
           <Text style={styles.sectionSubtitle}>
-            Add photos of receipts, gift cards, or donation confirmations
+            Take at least 1 photo to confirm completion (receipts, gift cards, donation confirmations, etc.)
           </Text>
 
           <View style={styles.photoGrid}>
