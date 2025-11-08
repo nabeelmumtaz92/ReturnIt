@@ -58,6 +58,7 @@ Preferred communication style: Simple, everyday language.
 - **Stripe Identity Verification**: KYC flow for driver onboarding.
 - **Tax Documents Portal**: Access annual 1099-NEC forms.
 - **Extra Fees System**: Drivers can charge customers for supplies (boxes, tape, packing materials) purchased during delivery. Features preset buttons for common items and custom fee input. Charges are processed automatically via Stripe using customer's saved payment method.
+- **Refund Tracking System**: Drivers indicate how customer refunds were received (original payment method, cash, or check). For cash/check refunds, system tracks when driver needs to physically return money to customer. Includes completion tracking when driver confirms money was returned.
 
 ### Admin Features
 - Live operations dashboard, driver/customer management.
@@ -66,6 +67,7 @@ Preferred communication style: Simple, everyday language.
 - **Driver Identity Verification Management**: Review Stripe Identity verification results.
 - **1099 Tax Form System**: Annual tax form generation and distribution.
 - **Comprehensive Orders Dashboard**: Full order lifecycle management with real-time data and Stripe refund processing.
+- **Physical Refund Management**: "Cash/Check Pending" stat card and filter for tracking orders where drivers received cash/check refunds and need to physically return money to customers.
 - **Secure Admin Password System**: Bcrypt hashing, token versioning, and offline recovery.
 
 ### Retailer Enterprise Platform
