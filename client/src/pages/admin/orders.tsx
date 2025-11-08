@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, DollarSign, CheckCircle, XCircle, RefreshCw, Eye, MapPin, User } from "lucide-react";
+import { Package, DollarSign, CheckCircle, XCircle, RefreshCw, Eye, MapPin, User, Banknote } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -54,6 +54,10 @@ interface Order {
   customerPaid: number;
   driverEarning: number;
   returnitFee: number;
+  refundReceivedMethod: string | null;
+  refundNeedsPhysicalReturn: boolean;
+  refundReturnedToCustomer: boolean;
+  retailerRefundAmount: number | null;
 }
 
 export default function AdminOrders() {
@@ -73,9 +77,13 @@ export default function AdminOrders() {
   });
 
   // Filter orders based on status
-  const filteredOrders = orders?.filter(order => 
-    statusFilter === "all" || order.status === statusFilter
-  ) || [];
+  const filteredOrders = orders?.filter(order => {
+    if (statusFilter === "all") return true;
+    if (statusFilter === "physical_refund_pending") {
+      return order.refundNeedsPhysicalReturn && !order.refundReturnedToCustomer;
+    }
+    return order.status === statusFilter;
+  }) || [];
 
   // Calculate stats
   const totalOrders = orders?.length || 0;
@@ -87,6 +95,9 @@ export default function AdminOrders() {
   ).length || 0;
   const refundedOrders = orders?.filter(o => 
     o.paymentStatus === 'refunded' || o.status === 'refunded'
+  ).length || 0;
+  const physicalRefundsPending = orders?.filter(o => 
+    o.refundNeedsPhysicalReturn && !o.refundReturnedToCustomer
   ).length || 0;
   const totalRevenue = orders?.reduce((sum, o) => sum + (o.customerPaid || 0), 0) || 0;
 
@@ -253,7 +264,7 @@ export default function AdminOrders() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -333,6 +344,26 @@ export default function AdminOrders() {
             </div>
           </CardContent>
         </Card>
+
+        <Card 
+          className={physicalRefundsPending > 0 ? "border-2 border-orange-400" : ""}
+          onClick={() => physicalRefundsPending > 0 && setStatusFilter("physical_refund_pending")}
+          style={physicalRefundsPending > 0 ? { cursor: 'pointer' } : {}}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-orange-100 p-3 rounded-full">
+                <Banknote className="h-5 w-5 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Cash/Check Pending</p>
+                <p className="text-2xl font-bold text-foreground" data-testid="stat-physical-refunds">
+                  {isLoading ? "..." : physicalRefundsPending}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Bulk Actions */}
@@ -388,6 +419,7 @@ export default function AdminOrders() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Orders</SelectItem>
+                <SelectItem value="physical_refund_pending">💵 Cash/Check Pending Return</SelectItem>
                 <SelectItem value="created">Created</SelectItem>
                 <SelectItem value="confirmed">Confirmed</SelectItem>
                 <SelectItem value="assigned">Assigned</SelectItem>
