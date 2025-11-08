@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth-simple";
 import { Package, MapPin, CreditCard, ArrowLeft, ArrowRight, Check, Loader2, Shield, AlertCircle, FileText, HelpCircle, X, Plus, User } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -362,6 +363,7 @@ export default function BookReturn() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   
+  const [bookingType, setBookingType] = useState<'return' | 'exchange' | 'donation'>('return');
   const [page, setPage] = useState(1);
   const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
@@ -835,9 +837,45 @@ export default function BookReturn() {
           <BrandLogo size="lg" linkToHome={true} className="justify-center" />
         </div>
 
+        {/* Tabs for booking type */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Book a Return</h1>
-          {page <= 3 && <p className="text-muted-foreground text-lg">Step {page} of 3</p>}
+          <Tabs 
+            value={bookingType} 
+            onValueChange={(value) => {
+              const newType = value as 'return' | 'exchange' | 'donation';
+              setBookingType(newType);
+              // Update form data based on tab selection
+              updateField('isDonation', newType === 'donation');
+              // Reset to page 1 when switching tabs
+              setPage(1);
+            }}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-3 mb-6 h-auto">
+              <TabsTrigger 
+                value="return" 
+                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
+                data-testid="tab-return"
+              >
+                📦 Book Return
+              </TabsTrigger>
+              <TabsTrigger 
+                value="exchange" 
+                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
+                data-testid="tab-exchange"
+              >
+                🔄 Exchange
+              </TabsTrigger>
+              <TabsTrigger 
+                value="donation" 
+                className="text-base py-3 data-[state=active]:bg-[#B8956A] data-[state=active]:text-white"
+                data-testid="tab-donation"
+              >
+                ❤️ Donation
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+          {page <= 3 && <p className="text-muted-foreground text-lg text-center">Step {page} of 3</p>}
         </div>
 
         {/* Professional progress bar */}
