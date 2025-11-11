@@ -1,0 +1,44 @@
+npm install --legacy-peer-deps 2>&1 | grep -i error
+zsh: command not found: #
+drwxr-xr-x   27 nabeelmumtaz  staff     864 Nov 11 07:14 @expo
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 @react-native
+drwxr-xr-x    3 nabeelmumtaz  staff      96 Nov 11 07:14 @react-native-async-storage
+drwxr-xr-x    7 nabeelmumtaz  staff     224 Nov 11 07:14 babel-plugin-react-native-web
+drwxr-xr-x    6 nabeelmumtaz  staff     192 Nov 11 07:14 babel-preset-expo
+drwxr-xr-x   34 nabeelmumtaz  staff    1088 Nov 11 07:14 expo
+drwxr-xr-x   12 nabeelmumtaz  staff     384 Nov 11 07:14 expo-application
+drwxr-xr-x   17 nabeelmumtaz  staff     544 Nov 11 07:14 expo-asset
+drwxr-xr-x   10 nabeelmumtaz  staff     320 Nov 11 07:14 expo-auth-session
+drwxr-xr-x   12 nabeelmumtaz  staff     384 Nov 11 07:14 expo-build-properties
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 expo-camera
+drwxr-xr-x   15 nabeelmumtaz  staff     480 Nov 11 07:14 expo-constants
+drwxr-xr-x   13 nabeelmumtaz  staff     416 Nov 11 07:14 expo-crypto
+drwxr-xr-x   20 nabeelmumtaz  staff     640 Nov 11 07:14 expo-dev-client
+drwxr-xr-x   24 nabeelmumtaz  staff     768 Nov 11 07:14 expo-dev-launcher
+drwxr-xr-x   28 nabeelmumtaz  staff     896 Nov 11 07:14 expo-dev-menu
+drwxr-xr-x    8 nabeelmumtaz  staff     256 Nov 11 07:14 expo-dev-menu-interface
+drwxr-xr-x   15 nabeelmumtaz  staff     480 Nov 11 07:14 expo-file-system
+drwxr-xr-x   17 nabeelmumtaz  staff     544 Nov 11 07:14 expo-font
+drwxr-xr-x    9 nabeelmumtaz  staff     288 Nov 11 07:14 expo-image-loader
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 expo-image-picker
+drwxr-xr-x    9 nabeelmumtaz  staff     288 Nov 11 07:14 expo-json-utils
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 expo-keep-awake
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 expo-linking
+drwxr-xr-x   14 nabeelmumtaz  staff     448 Nov 11 07:14 expo-location
+drwxr-xr-x   13 nabeelmumtaz  staff     416 Nov 11 07:14 expo-manifests
+drwxr-xr-x   18 nabeelmumtaz  staff     576 Nov 11 07:14 expo-modules-autolinking
+drwxr-xr-x   19 nabeelmumtaz  staff     608 Nov 11 07:14 expo-modules-core
+drwxr-xr-x    5 nabeelmumtaz  staff     160 Nov 11 07:14 expo-server
+drwxr-xr-x    9 nabeelmumtaz  staff     288 Nov 11 07:14 expo-status-bar
+drwxr-xr-x    9 nabeelmumtaz  staff     288 Nov 11 07:14 expo-updates-interface
+drwxr-xr-x   12 nabeelmumtaz  staff     384 Nov 11 07:14 expo-web-browser
+drwxr-xr-x    7 nabeelmumtaz  staff     224 Nov 11 07:14 exponential-backoff
+drwxr-xr-x   31 nabeelmumtaz  staff     992 Nov 11 07:14 react-native
+drwxr-xr-x   15 nabeelmumtaz  staff     480 Nov 11 07:14 react-native-gesture-handler
+drwxr-xr-x   15 nabeelmumtaz  staff     480 Nov 11 07:14 react-native-reanimated
+drwxr-xr-x   13 nabeelmumtaz  staff     416 Nov 11 07:14 react-native-safe-area-context
+drwxr-xr-x   17 nabeelmumtaz  staff     544 Nov 11 07:14 react-native-screens
+drwxr-xr-x   55 nabeelmumtaz  staff    1760 Nov 11 07:14 react-native-vector-icons
+drwxr-xr-x@   7 nabeelmumtaz  staff     224 Nov 11 07:14 resolve.exports
+zsh: command not found: #
+nabeelmumtaz@Nabeels-Mac-mini returnit-customer % 
