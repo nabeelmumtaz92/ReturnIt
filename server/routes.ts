@@ -4477,6 +4477,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   } as const;
 
+  // Helper: Validate Exchange orders
+  function validateExchangeOrder(body: any, isDonation: boolean): { isExchange: boolean } {
+    const clientClaimsExchange = body.isExchange === true;
+    
+    if (!clientClaimsExchange) {
+      // SECURITY: Reject Exchange-specific fields when not an Exchange
+      if (body.itemIHaveDescription || body.itemIWantDescription || 
+          body.itemIHavePhotoUrls || body.itemIWantPhotoUrls) {
+        throw {
+          status: 400,
+          message: "Invalid request: Exchange fields provided for non-Exchange order",
+          code: 'EXCHANGE_FIELDS_WITHOUT_FLAG'
+        };
+      }
+      return { isExchange: false };
+    }
+    
+    // SECURITY: Exchanges and Donations are mutually exclusive
+    if (isDonation) {
+      console.error(`🚨 SECURITY: Order cannot be both Exchange and Donation`);
+      throw {
+        status: 400,
+        message: "Invalid request: Order cannot be both an Exchange and a Donation",
+        code: 'EXCHANGE_DONATION_CONFLICT'
+      };
+    }
+    
+    // Validate required Exchange fields
+    const itemIHaveDescription = (body.itemIHaveDescription || '').trim();
+    const itemIHavePhotoUrls = Array.isArray(body.itemIHavePhotoUrls) 
+      ? body.itemIHavePhotoUrls 
+      : [];
+    
+    if (!itemIHaveDescription) {
+      console.error(`🚨 SECURITY: Exchange order missing itemIHaveDescription`);
+      throw {
+        status: 400,
+        message: "Exchange requires a description of the item you have",
+        code: 'EXCHANGE_MISSING_ITEM_DESCRIPTION'
+      };
+    }
+    
+    if (itemIHavePhotoUrls.length === 0) {
+      console.error(`🚨 SECURITY: Exchange order missing itemIHavePhotoUrls`);
+      throw {
+        status: 400,
+        message: "Exchange requires at least one photo of the item you have",
+        code: 'EXCHANGE_MISSING_ITEM_PHOTO'
+      };
+    }
+    
+    // Normalize optional fields (prevent null mishandling)
+    body.itemIWantDescription = (body.itemIWantDescription || '').trim() || null;
+    body.itemIWantPhotoUrls = Array.isArray(body.itemIWantPhotoUrls) 
+      ? body.itemIWantPhotoUrls 
+      : [];
+    
+    // ALL VALIDATIONS PASSED - This is a legitimate Exchange
+    console.log(`✅ VALIDATED EXCHANGE: Item I Have: "${itemIHaveDescription.substring(0, 50)}...", Photos: ${itemIHavePhotoUrls.length}`);
+    return { isExchange: true };
+  }
+
   // Create new order (supports both authenticated and guest users)
   app.post("/api/orders", async (req, res) => {
     try {
@@ -4552,6 +4614,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // ALL VALIDATIONS PASSED - This is a legitimate donation
         isDonation = true;
         console.log(`✅ VALIDATED DONATION: ${validatedDonationLocation.name} (ID: ${donationLocationId}), Tip: $${tip.toFixed(2)}`);
+      }
+      
+      // ══════════════════════════════════════════════════════════════
+      // EXCHANGE VALIDATION: Ensure Exchange requests are coherent
+      // ══════════════════════════════════════════════════════════════
+      let isExchange = false;
+      try {
+        const exchangeValidation = validateExchangeOrder(req.body, isDonation);
+        isExchange = exchangeValidation.isExchange;
+      } catch (validationError: any) {
+        console.error(`🚨 Exchange validation failed:`, validationError);
+        return res.status(validationError.status || 400).json({
+          message: validationError.message,
+          code: validationError.code
+        });
       }
       
       // SECURITY: Validate service tier (skip for donations)
