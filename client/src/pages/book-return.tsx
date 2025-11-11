@@ -914,7 +914,7 @@ export default function BookReturn() {
               onKeyDown={(e) => handleTabKeyDown(e, 'return')}
               tabIndex={bookingType === 'return' ? 0 : -1}
               className={cn(
-                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-medium transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
                 bookingType === 'return' 
                   ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
                   : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
@@ -926,7 +926,7 @@ export default function BookReturn() {
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="text-xl">📦</span>
-                <span className="font-semibold">Book Return</span>
+                <span>Book Return</span>
               </div>
             </button>
 
@@ -942,7 +942,7 @@ export default function BookReturn() {
               onKeyDown={(e) => handleTabKeyDown(e, 'exchange')}
               tabIndex={bookingType === 'exchange' ? 0 : -1}
               className={cn(
-                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-medium transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
                 bookingType === 'exchange' 
                   ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
                   : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
@@ -954,7 +954,7 @@ export default function BookReturn() {
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="text-xl">🔄</span>
-                <span className="font-semibold">Exchange</span>
+                <span>Book Exchange</span>
               </div>
             </button>
 
@@ -970,7 +970,7 @@ export default function BookReturn() {
               onKeyDown={(e) => handleTabKeyDown(e, 'donation')}
               tabIndex={bookingType === 'donation' ? 0 : -1}
               className={cn(
-                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-bold transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
+                "relative z-10 flex-1 rounded-xl py-4 px-4 text-sm font-medium transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B8956A]",
                 bookingType === 'donation' 
                   ? "text-white sm:text-white text-[#2F2A23] sm:bg-transparent bg-gradient-to-r from-[#C8A676] to-[#B8956A] shadow-lg sm:shadow-none" 
                   : "text-[#8C7654] hover:text-[#2F2A23] hover:bg-white/40 active:scale-95"
@@ -982,7 +982,7 @@ export default function BookReturn() {
             >
               <div className="flex items-center justify-center gap-2">
                 <span className="text-xl">❤️</span>
-                <span className="font-semibold">Donation</span>
+                <span>Book Donation</span>
               </div>
             </button>
           </div>
