@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Truck, Package, User, Search, LogOut, Settings, ChevronDown, MapPin } from 'lucide-react';
+import { Truck, Package, User, Search, LogOut, Settings, ChevronDown, MapPin, Info } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -152,6 +152,18 @@ export default function Welcome() {
               </DropdownMenu>
             )}
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Early Access Notice Banner */}
+      <div className="w-full bg-gradient-to-r from-amber-100 to-amber-50 border-b border-amber-200">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-center gap-2 text-center">
+            <Info className="h-4 w-4 text-amber-700 flex-shrink-0" />
+            <p className="text-sm font-medium text-amber-900">
+              <span className="font-bold">Early Access Notice:</span> Return It is currently in its MVP stage. Some features are still rolling out as we continue improving the platform. Thank you for being part of our early community.
+            </p>
           </div>
         </div>
       </div>

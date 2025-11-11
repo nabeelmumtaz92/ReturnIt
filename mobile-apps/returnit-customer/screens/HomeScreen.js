@@ -14,6 +14,16 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.headerSubtitle}>Professional Return Service</Text>
         </View>
 
+        {/* Early Access Notice */}
+        <View style={styles.earlyAccessNotice}>
+          <Text style={styles.earlyAccessIcon}>ℹ️</Text>
+          <View style={styles.earlyAccessTextContainer}>
+            <Text style={styles.earlyAccessText}>
+              Return It is in early access. Some features may be limited while we keep building and improving your experience.
+            </Text>
+          </View>
+        </View>
+
         {/* Main Actions */}
         <View style={styles.actionContainer}>
           <TouchableOpacity 
@@ -120,6 +130,30 @@ const styles = StyleSheet.create({
     color: '#78716C',
     letterSpacing: 0.2,
     lineHeight: 22,
+  },
+  earlyAccessNotice: {
+    flexDirection: 'row',
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 24,
+    alignItems: 'flex-start',
+  },
+  earlyAccessIcon: {
+    fontSize: 18,
+    marginRight: 10,
+    marginTop: 1,
+  },
+  earlyAccessTextContainer: {
+    flex: 1,
+  },
+  earlyAccessText: {
+    fontSize: 13,
+    color: '#92400E',
+    lineHeight: 19,
+    letterSpacing: 0.1,
   },
   actionContainer: {
     marginBottom: 30,
