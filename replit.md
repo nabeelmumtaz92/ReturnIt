@@ -23,6 +23,9 @@ Preferred communication style: Simple, everyday language.
 - **Database ORM**: Drizzle ORM.
 - **API Design**: RESTful.
 - **Authentication**: Email/Password, Google, Apple, Facebook via Passport.js; role-based authorization.
+  - **OAuth Account Linking**: Users can link multiple OAuth providers (Google, Facebook, Apple) to single account.
+  - **Security Features**: Email verification required, provider ID conflict detection, no password for OAuth-only accounts.
+  - **Apple OAuth Handling**: Checks appleId first before requiring email (Apple only sends email on first authorization).
 
 ## Data Storage
 - **Database**: PostgreSQL (Neon).
