@@ -40,6 +40,13 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       const userEmail = profile.emails?.[0]?.value || '';
       const googleId = profile.id;
       
+      // SECURITY: Verify email is confirmed by Google before proceeding
+      const emailVerified = profile._json?.email_verified;
+      if (!emailVerified) {
+        console.log('Google email not verified, blocking login:', userEmail);
+        return done(new Error('EMAIL_NOT_VERIFIED'), null);
+      }
+      
       // First check if user exists with this Google ID (already linked account)
       let existingUser = await storage.getUserByGoogleId(googleId);
       
@@ -53,9 +60,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       
       if (existingUser) {
         console.log('Linking Google account to existing email:', existingUser.id);
-        // Link Google account to existing user
-        await storage.updateUser(existingUser.id, { googleId });
-        const updatedUser = await storage.getUserById(existingUser.id);
+        // Use secure linkUserProvider method with conflict detection
+        const updatedUser = await storage.linkUserProvider(existingUser.id, 'google', googleId);
         return done(null, updatedUser);
       }
 
@@ -67,11 +73,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       const isMasterAdmin = userEmail === MASTER_ADMIN_EMAIL;
       
       if (isMasterAdmin) {
-        // Only master admin gets auto-created
+        // Only master admin gets auto-created (no password for OAuth-only account)
         const newUser = await storage.createUser({
           email: userEmail,
           phone: '6362544821', // Master admin phone
-          password: 'GOOGLE_AUTH_USER', // Social auth placeholder
           googleId: googleId,
           firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
           lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
@@ -112,15 +117,34 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
     profileFields: ['id', 'emails', 'name', 'picture']
   }, async (accessToken: any, refreshToken: any, profile: any, done: any) => {
     try {
-      // Check if user exists
-      const existingUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
+      const userEmail = profile.emails?.[0]?.value || '';
+      const facebookId = profile.id;
+      
+      // NOTE: Facebook email verification would require Graph API call with extra scope
+      // For now, we trust Facebook's OAuth flow. To add verification:
+      // 1. Add scope: ['email', 'public_profile']
+      // 2. Call Graph API: /me?fields=email,is_email_verified
+      // 3. Check is_email_verified flag before proceeding
+      
+      // First check if user exists with this Facebook ID (already linked account)
+      let existingUser = await storage.getUserByFacebookId(facebookId);
       
       if (existingUser) {
+        console.log('User found by Facebook ID:', existingUser.id);
         return done(null, existingUser);
+      }
+      
+      // Check if user exists by email (account linking scenario)
+      existingUser = await storage.getUserByEmail(userEmail);
+      
+      if (existingUser) {
+        console.log('Linking Facebook account to existing email:', existingUser.id);
+        // Use secure linkUserProvider method with conflict detection
+        const updatedUser = await storage.linkUserProvider(existingUser.id, 'facebook', facebookId);
+        return done(null, updatedUser);
       }
 
       // SECURITY FIX: Don't auto-create users - redirect to signup instead
-      const userEmail = profile.emails?.[0]?.value || `${profile.id}@facebook.temp`;
       console.log('Facebook user not found, denying auto-creation:', userEmail);
       
       // Check if this is the master admin - only they can auto-create
@@ -128,11 +152,11 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
       const isMasterAdmin = userEmail === MASTER_ADMIN_EMAIL;
       
       if (isMasterAdmin) {
-        // Only master admin gets auto-created
+        // Only master admin gets auto-created (no password for OAuth-only account)
         const newUser = await storage.createUser({
           email: userEmail,
           phone: '6362544821', // Master admin phone
-          password: 'FACEBOOK_AUTH_USER', // Social auth placeholder
+          facebookId: facebookId,
           firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
           lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
           isDriver: true, // Master admin is driver
@@ -181,50 +205,70 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
     try {
       console.log('Apple OAuth callback triggered');
       const email = profile.email || idToken?.email;
+      const appleId = profile.id || profile.sub;
       
       if (!email) {
         return done(new Error('No email provided by Apple'), null);
       }
 
-      // Check if user exists
-      const existingUser = await storage.getUserByEmail(email);
-      
-      if (existingUser) {
-        console.log('Apple user found, logging in:', email);
-        return done(null, existingUser);
+      // SECURITY: Verify email is confirmed by Apple before proceeding
+      // Apple provides email_verified in the idToken JWT
+      const emailVerified = profile.email_verified ?? true; // Apple emails are pre-verified
+      if (!emailVerified) {
+        console.log('Apple email not verified, blocking login:', email);
+        return done(new Error('EMAIL_NOT_VERIFIED'), null);
       }
 
-      // Auto-create new user from Apple Sign-In
-      console.log('Apple user not found, creating new account:', email);
+      // First check if user exists with this Apple ID (already linked account)
+      let existingUser = await storage.getUserByAppleId(appleId);
+      
+      if (existingUser) {
+        console.log('User found by Apple ID:', existingUser.id);
+        return done(null, existingUser);
+      }
+      
+      // Check if user exists by email (account linking scenario)
+      existingUser = await storage.getUserByEmail(email);
+      
+      if (existingUser) {
+        console.log('Linking Apple account to existing email:', existingUser.id);
+        // Use secure linkUserProvider method with conflict detection
+        const updatedUser = await storage.linkUserProvider(existingUser.id, 'apple', appleId);
+        return done(null, updatedUser);
+      }
+
+      // SECURITY FIX: Don't auto-create users - redirect to signup instead
+      console.log('Apple user not found, denying auto-creation:', email);
       
       // Check if this is the master admin for special privileges
       const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
       const isMasterAdmin = email === MASTER_ADMIN_EMAIL;
       
-      // Generate cryptographically secure random password for OAuth users
-      // This prevents email/password login - users MUST use Apple Sign-In
-      const crypto = await import('crypto');
-      const randomPassword = crypto.randomBytes(32).toString('hex'); // 64 character random string
-      
-      // Create new user account with Apple profile data
-      const newUser = await storage.createUser({
-        email: email,
-        phone: isMasterAdmin ? '6362544821' : '', // Master admin phone, others can add later
-        password: randomPassword, // Secure random password - user can't login with email/password
-        firstName: profile.name?.firstName || 'Apple',
-        lastName: profile.name?.lastName || 'User',
-        isDriver: isMasterAdmin, // Only master admin is driver by default
-        isAdmin: isMasterAdmin // Only master admin gets admin access
-      });
-      
-      console.log('New user created via Apple Sign-In:', { 
-        id: newUser.id, 
-        email: newUser.email, 
-        isAdmin: newUser.isAdmin,
-        isDriver: newUser.isDriver 
-      });
-      
-      return done(null, newUser);
+      if (isMasterAdmin) {
+        // Only master admin gets auto-created (no password for OAuth-only account)
+        const newUser = await storage.createUser({
+          email: email,
+          phone: '6362544821', // Master admin phone
+          appleId: appleId,
+          firstName: profile.name?.firstName || 'Apple',
+          lastName: profile.name?.lastName || 'User',
+          isDriver: true, // Master admin is driver by default
+          isAdmin: true // Master admin gets admin access
+        });
+        
+        console.log('Master admin auto-created via Apple Sign-In:', { 
+          id: newUser.id, 
+          email: newUser.email, 
+          isAdmin: newUser.isAdmin,
+          isDriver: newUser.isDriver 
+        });
+        
+        return done(null, newUser);
+      }
+
+      // All other users must sign up first - return error to redirect to signup
+      console.log('Non-admin Apple user attempted auto-creation - blocking:', email);
+      return done(new Error('OAUTH_SIGNUP_REQUIRED'), null);
     } catch (error) {
       console.error('Apple auth error:', error);
       return done(error);

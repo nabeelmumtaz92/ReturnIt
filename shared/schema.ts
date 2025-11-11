@@ -1855,7 +1855,7 @@ export const insertUserSchema = createInsertSchema(users).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters").optional(),
   email: z.string().email("Invalid email format"),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
