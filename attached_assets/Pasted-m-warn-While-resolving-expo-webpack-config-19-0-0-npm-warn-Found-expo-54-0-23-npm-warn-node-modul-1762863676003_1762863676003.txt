@@ -1,0 +1,117 @@
+m warn While resolving: @expo/webpack-config@19.0.0
+npm warn Found: expo@54.0.23
+npm warn node_modules/expo
+npm warn   expo@"~54.0.0" from the root project
+npm warn   13 more (@expo/metro-config, babel-preset-expo, expo-asset, ...)
+npm warn
+npm warn Could not resolve dependency:
+npm warn peer expo@"^49.0.7" from @expo/webpack-config@19.0.0
+npm warn node_modules/@expo/webpack-config
+npm warn   @expo/webpack-config@"19.0.0" from xdl@60.0.12
+npm warn   node_modules/xdl
+npm warn
+npm warn Conflicting peer dependency: expo@49.0.23
+npm warn node_modules/expo
+npm warn   peer expo@"^49.0.7" from @expo/webpack-config@19.0.0
+npm warn   node_modules/@expo/webpack-config
+npm warn     @expo/webpack-config@"19.0.0" from xdl@60.0.12
+npm warn     node_modules/xdl
+npm error code ERESOLVE
+npm error ERESOLVE could not resolve
+npm error
+npm error While resolving: framer-motion@11.13.1
+npm error Found: react@19.1.0
+npm error node_modules/react
+npm error   peer react@"^19.1.1" from react-native@0.82.1
+npm error   node_modules/react-native
+npm error     peerOptional react-native@"*" from @expo/devtools@0.1.7
+npm error     node_modules/@expo/devtools
+npm error       @expo/devtools@"0.1.7" from expo@54.0.23
+npm error       node_modules/expo
+npm error         expo@"~54.0.0" from the root project
+npm error         13 more (@expo/metro-config, babel-preset-expo, expo-asset, ...)
+npm error     peer react-native@"*" from @expo/vector-icons@15.0.3
+npm error     node_modules/@expo/vector-icons
+npm error       @expo/vector-icons@"^15.0.3" from expo@54.0.23
+npm error     8 more (expo, @expo/cli, expo-asset, expo-constants, ...)
+npm error
+npm error Could not resolve dependency:
+npm error peerOptional react@"^18.0.0" from framer-motion@11.13.1
+npm error node_modules/framer-motion
+npm error   framer-motion@"^11.13.1" from the root project
+npm error
+npm error Conflicting peer dependency: react@18.3.1
+npm error node_modules/react
+npm error   peerOptional react@"^18.0.0" from framer-motion@11.13.1
+npm error   node_modules/framer-motion
+npm error     framer-motion@"^11.13.1" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry
+npm error this command with --force or --legacy-peer-deps
+npm error to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /Users/nabeelmumtaz/.npm/_logs/2025-11-11T12_20_46_621Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /Users/nabeelmumtaz/.npm/_logs/2025-11-11T12_20_46_621Z-debug-0.log
+Error: npm install exited with non-zero code: 1
+Error: npm install exited with non-zero code: 1
+    at ChildProcess.completionListener (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/spawn-async/build/spawnAsync.js:42:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
+    ...
+    at spawnAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/spawn-async/build/spawnAsync.js:7:23)
+    at NpmPackageManager.runAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/node/BasePackageManager.js:41:42)
+    at /Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/node/NpmPackageManager.js:45:20
+    at /Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/utils/spawn.js:14:34
+
+changed 3 packages, and audited 2637 packages in 2s
+
+273 packages are looking for funding
+  run `npm fund` for details
+
+40 vulnerabilities (6 low, 16 moderate, 18 high)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+zsh: number expected
+⚠️  Requested prebuild for "ios", but only "web" is present in app config ("expo.platforms" entry). Continuing with "ios".
+! Git branch has uncommitted file changes
+› It's recommended to commit all changes before proceeding in case you want to revert generated changes.
+
+✔ Continue with uncommitted changes? … yes
+
+✔ Cleared ios code
+✔ Created native directory
+✔ Updated package.json
+Dependencies in the package.json changed:
+  react-native
+✔ Install the updated dependencies? … yes
+› Installing using npm
+> npm install
+Error: npm install exited with non-zero code: 1
+Error: npm install exited with non-zero code: 1
+    at ChildProcess.completionListener (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/spawn-async/build/spawnAsync.js:42:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at maybeClose (node:internal/child_process:1101:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:305:5)
+    ...
+    at spawnAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/spawn-async/build/spawnAsync.js:7:23)
+    at NpmPackageManager.runAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/node/BasePackageManager.js:41:42)
+    at NpmPackageManager.installAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/node/BasePackageManager.js:61:21)
+    at NpmPackageManager.addAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/@expo/package-manager/build/node/NpmPackageManager.js:32:25)
+    at installPackagesAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/expo/node_modules/@expo/cli/build/src/install/installAsync.js:189:30)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async prebuildAsync (/Users/nabeelmumtaz/Desktop/Return-It/ReturnIt/node_modules/expo/node_modules/@expo/cli/build/src/prebuild/prebuildAsync.js:144:17)
+nabeelmumtaz@Nabeels-Mac-mini ReturnIt % 
