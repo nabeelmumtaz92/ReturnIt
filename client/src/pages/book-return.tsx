@@ -604,51 +604,81 @@ export default function BookReturn() {
       if (!formData.retailerName) errors.add('retailerName');
       if (!formData.retailerLocation) errors.add('retailerLocation');
       
-      // Validate all items
-      let hasEmptyItems = false;
-      formData.items.forEach((item, index) => {
-        if (!item.orderName) {
-          errors.add(`item-${index}-orderName`);
-          hasEmptyItems = true;
+      // EXCHANGE MODE: Different validation rules
+      if (formData.isExchange) {
+        // Require "Item I Have" description
+        if (!formData.itemIHaveDescription) {
+          errors.add('itemIHaveDescription');
         }
-        if (!item.itemDescription) {
-          errors.add(`item-${index}-itemDescription`);
-          hasEmptyItems = true;
+        
+        // Require at least one "Item I Have" photo
+        if (!formData.itemIHavePhotoUrls || formData.itemIHavePhotoUrls.length === 0) {
+          errors.add('itemIHavePhotos');
+          toast({
+            title: "Photo Required",
+            description: "Please upload at least one photo of the item you want to exchange",
+            variant: "destructive",
+          });
+          return false;
         }
-        if (!item.itemValue) {
-          errors.add(`item-${index}-itemValue`);
-          hasEmptyItems = true;
+        
+        if (errors.size > 0) {
+          setValidationErrors(errors);
+          toast({
+            title: "Missing Information",
+            description: "Please fill in all required Exchange fields",
+            variant: "destructive",
+          });
+          return false;
         }
-      });
-      
-      if (hasEmptyItems) {
-        toast({
-          title: "Missing Item Information",
-          description: "Please fill in all item details (name, description, and value)",
-          variant: "destructive",
+      } else {
+        // RETURN/DONATION MODE: Standard validation
+        // Validate all items
+        let hasEmptyItems = false;
+        formData.items.forEach((item, index) => {
+          if (!item.orderName) {
+            errors.add(`item-${index}-orderName`);
+            hasEmptyItems = true;
+          }
+          if (!item.itemDescription) {
+            errors.add(`item-${index}-itemDescription`);
+            hasEmptyItems = true;
+          }
+          if (!item.itemValue) {
+            errors.add(`item-${index}-itemValue`);
+            hasEmptyItems = true;
+          }
         });
-        return false;
-      }
-      
-      // MANDATORY: At least one photo required
-      if (!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl) {
-        errors.add('photoRequired');
-        toast({
-          title: "Photo Verification Required",
-          description: "You must upload at least one photo: receipt, tags, or packaging",
-          variant: "destructive",
-        });
-        return false;
-      }
-      
-      if (errors.size > 0) {
-        setValidationErrors(errors);
-        toast({
-          title: "Missing Information",
-          description: "Please fill in all required fields",
-          variant: "destructive",
-        });
-        return false;
+        
+        if (hasEmptyItems) {
+          toast({
+            title: "Missing Item Information",
+            description: "Please fill in all item details (name, description, and value)",
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        // MANDATORY: At least one photo required
+        if (!formData.receiptPhotoUrl && !formData.tagsPhotoUrl && !formData.packagingPhotoUrl) {
+          errors.add('photoRequired');
+          toast({
+            title: "Photo Verification Required",
+            description: "You must upload at least one photo: receipt, tags, or packaging",
+            variant: "destructive",
+          });
+          return false;
+        }
+        
+        if (errors.size > 0) {
+          setValidationErrors(errors);
+          toast({
+            title: "Missing Information",
+            description: "Please fill in all required fields",
+            variant: "destructive",
+          });
+          return false;
+        }
       }
     }
     
