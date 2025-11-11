@@ -794,26 +794,40 @@ export default function BookReturn() {
     mutationFn: async (data: FormData & { paymentIntentId?: string }) => {
       const pricing = calculatePricing(data);
       
-      // Combine all items into order name and description
-      const orderName = data.items.map(item => item.orderName).join(', ');
-      const itemDescription = data.items.map((item, index) => {
-        const boxes = item.numberOfBoxes || 0;
-        const bags = item.numberOfBags || 0;
-        const packageInfo = [];
-        if (boxes > 0) packageInfo.push(`${boxes} ${boxes === 1 ? 'box' : 'boxes'}`);
-        if (bags > 0) packageInfo.push(`${bags} ${bags === 1 ? 'bag' : 'bags'}`);
-        return `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue}) - ${item.boxSize} package, ${packageInfo.join(' + ')}`;
-      }).join('\n');
+      // EXCHANGE MODE: Use Exchange-specific fields
+      let orderName, itemDescription, largestBoxSize, totalBoxes, totalBags;
       
-      // Aggregate box details from all items for backend compatibility
-      const sizeRanking = { small: 1, medium: 2, large: 3, xlarge: 4 };
-      const largestBoxSize = data.items.reduce((largest, item) => {
-        return sizeRanking[item.boxSize as keyof typeof sizeRanking] > sizeRanking[largest as keyof typeof sizeRanking] 
-          ? item.boxSize 
-          : largest;
-      }, 'small');
-      const totalBoxes = data.items.reduce((sum, item) => sum + (item.numberOfBoxes || 0), 0);
-      const totalBags = data.items.reduce((sum, item) => sum + (item.numberOfBags || 0), 0);
+      if (data.isExchange) {
+        // For Exchanges: Use "Item I Have" description as order name and item description
+        orderName = data.itemIHaveDescription || 'Exchange Order';
+        itemDescription = `Exchange Request:\n\nItem I Have: ${data.itemIHaveDescription || 'Not specified'}\n\nItem I Want: ${data.itemIWantDescription || 'Not specified'}`;
+        
+        // Exchanges default to small package (can be updated by driver)
+        largestBoxSize = 'small';
+        totalBoxes = 0;
+        totalBags = 0;
+      } else {
+        // RETURN/DONATION MODE: Combine all items into order name and description
+        orderName = data.items.map(item => item.orderName).join(', ');
+        itemDescription = data.items.map((item, index) => {
+          const boxes = item.numberOfBoxes || 0;
+          const bags = item.numberOfBags || 0;
+          const packageInfo = [];
+          if (boxes > 0) packageInfo.push(`${boxes} ${boxes === 1 ? 'box' : 'boxes'}`);
+          if (bags > 0) packageInfo.push(`${bags} ${bags === 1 ? 'bag' : 'bags'}`);
+          return `Item ${index + 1}: ${item.orderName} - ${item.itemDescription} ($${item.itemValue}) - ${item.boxSize} package, ${packageInfo.join(' + ')}`;
+        }).join('\n');
+        
+        // Aggregate box details from all items for backend compatibility
+        const sizeRanking = { small: 1, medium: 2, large: 3, xlarge: 4 };
+        largestBoxSize = data.items.reduce((largest, item) => {
+          return sizeRanking[item.boxSize as keyof typeof sizeRanking] > sizeRanking[largest as keyof typeof sizeRanking] 
+            ? item.boxSize 
+            : largest;
+        }, 'small');
+        totalBoxes = data.items.reduce((sum, item) => sum + (item.numberOfBoxes || 0), 0);
+        totalBags = data.items.reduce((sum, item) => sum + (item.numberOfBags || 0), 0);
+      }
       
       return apiRequest('POST', '/api/orders', {
         // User info (optional for guests)
@@ -828,13 +842,25 @@ export default function BookReturn() {
         zipCode: data.zipCode,
         notes: data.notes,
         
+        // Booking type flags
+        isDonation: data.isDonation || false,
+        isExchange: data.isExchange || false,
+        
+        // Exchange-specific fields (only sent if isExchange=true)
+        ...(data.isExchange && {
+          itemIHaveDescription: data.itemIHaveDescription,
+          itemIWantDescription: data.itemIWantDescription,
+          itemIHavePhotoUrls: data.itemIHavePhotoUrls || [],
+          itemIWantPhotoUrls: data.itemIWantPhotoUrls || [],
+        }),
+        
         // Return details
         retailer: data.retailer,
         itemCategory: 'Other',
         itemDescription: itemDescription,
         orderName: orderName,
         
-        // Box details - aggregated from per-item data
+        // Box details - aggregated from per-item data (or defaults for Exchange)
         boxSize: largestBoxSize,
         numberOfBoxes: totalBoxes,
         numberOfBags: totalBags,
@@ -842,9 +868,11 @@ export default function BookReturn() {
         // Required fields with defaults
         purchaseType: 'online',
         itemSize: largestBoxSize,
-        numberOfItems: data.items.length,
+        numberOfItems: data.isExchange ? 1 : data.items.length,
         hasOriginalTags: false,
-        receiptUploaded: !!(data.receiptPhotoUrl || data.tagsPhotoUrl || data.packagingPhotoUrl),
+        receiptUploaded: data.isExchange 
+          ? !!(data.itemIHavePhotoUrls && data.itemIHavePhotoUrls.length > 0)
+          : !!(data.receiptPhotoUrl || data.tagsPhotoUrl || data.packagingPhotoUrl),
         acceptsLiabilityTerms: true,
         
         // Pricing (send essential values - service fee and tax are included in total)
