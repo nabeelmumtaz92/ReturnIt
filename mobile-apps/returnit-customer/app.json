@@ -29,6 +29,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.customer",
       "buildNumber": "1",
+      "jsEngine": "jsc",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Allow ReturnIt to use your location for accurate pickup scheduling and delivery tracking.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt to track deliveries and provide real-time updates.",
@@ -46,6 +47,7 @@
     "android": {
       "package": "com.returnit.customer",
       "versionCode": 1,
+      "jsEngine": "jsc",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#F8F7F4"
