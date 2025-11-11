@@ -409,7 +409,7 @@ export default function BookReturn() {
   // Fetch donation locations from API
   const { data: donationLocations, isLoading: isLoadingDonations } = useQuery<DonationLocation[]>({
     queryKey: ['/api/donation-locations'],
-    enabled: formData.isDonation // Only fetch when in donation mode
+    enabled: bookingType === 'donation' // Only fetch when on donation tab
   });
 
   const pricing = useMemo(() => calculatePricing(formData), [formData]);
@@ -991,28 +991,9 @@ export default function BookReturn() {
 
         {/* Tab Content Panel */}
         <div id="booking-content" role="tabpanel" aria-labelledby={`tab-${bookingType}`}>
-          {/* Show Coming Soon for Exchange */}
-          {bookingType === 'exchange' ? (
-            <Card className="shadow-lg border-border/50">
-              <CardContent className="py-16">
-                <div className="text-center space-y-6">
-                  <div className="text-6xl">🔄</div>
-                  <h2 className="text-3xl font-bold text-foreground">Exchange Feature Coming Soon!</h2>
-                  <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                    We're working hard to bring you the ability to exchange items. Stay tuned!
-                  </p>
-                  <div className="pt-4">
-                    <Button
-                      onClick={() => setBookingType('return')}
-                      className="bg-[#B8956A] hover:bg-[#A07A4F] text-white"
-                    >
-                      Book a Return Instead
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ) : (
+          {/* Exchange uses same form flow as Returns/Donations */}
+          {/* All three booking types use the same form structure */}
+          {(
             <>
             {/* Professional progress bar */}
             {page <= 3 && (
@@ -1046,6 +1027,24 @@ export default function BookReturn() {
                       <span className="text-xs sm:text-sm font-medium mt-2 text-center w-full">{step.label}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Exchange Notice Banner */}
+            {bookingType === 'exchange' && page === 1 && (
+              <div className="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <div className="text-2xl">🔄</div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-blue-900 mb-2">How Exchanges Work</h4>
+                    <p className="text-sm text-blue-800 mb-2">
+                      Our driver will pick up your original item, return it to the store, get your exchange item, and deliver it to you.
+                    </p>
+                    <p className="text-xs text-blue-700 italic">
+                      Note: Exchange pricing and availability may vary by retailer. Contact support for details.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
