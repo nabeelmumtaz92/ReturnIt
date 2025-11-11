@@ -1,0 +1,27 @@
+Logs for your project will appear below. Press Ctrl+C to exit.
+iOS Bundling failed 1171ms index.js (1 module)
+ ERROR  index.js: [BABEL]: Cannot find module 'react-native-worklets/plugin'
+Require stack:
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\react-native-reanimated\plugin\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\module-types.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\configuration.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@expo\metro-config\build\transform-worker\transform-worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\metro\src\DeltaBundler\Worker.flow.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\metro\src\DeltaBundler\Worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\jest-worker\build\workers\processChild.js (While processing: C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\react-native-reanimated\plugin\index.js)
+iOS Bundling failed 12ms index.js (1 module)
+ ERROR  index.js: [BABEL]: Cannot find module 'react-native-worklets/plugin'
+Require stack:
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\react-native-reanimated\plugin\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\module-types.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\configuration.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\config\files\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@babel\core\lib\index.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@expo\metro-config\build\transform-worker\metro-transform-worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@expo\metro-config\build\transform-worker\transform-worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\metro\src\DeltaBundler\Worker.flow.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\metro\src\DeltaBundler\Worker.js
+- C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\jest-worker\build\workers\processChild.js (While processing: C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\react-native-reanimated\plugin\index.js)
