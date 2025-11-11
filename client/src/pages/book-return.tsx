@@ -51,10 +51,11 @@ interface FormData {
   state: string;
   zipCode: string;
   // Page 2
-  isDonation: boolean; // NEW: true for donation pickups, false for returns/exchanges
-  donationLocationId: number | null; // NEW: ID of selected charity (for server validation)
-  retailerName: string; // Changed: First select retailer name (or donation org name if isDonation)
-  retailerLocation: string; // New: Then select specific store location (or donation location if isDonation)
+  isDonation: boolean; // true for donation pickups, false for returns/exchanges
+  isExchange: boolean; // true for exchanges, false for returns/donations
+  donationLocationId: number | null; // ID of selected charity (for server validation)
+  retailerName: string; // First select retailer name (or donation org name if isDonation)
+  retailerLocation: string; // Then select specific store location (or donation location if isDonation)
   retailer: string; // Combined value for backend
   storeDestinationName: string; // Editable store name (or donation org name)
   storeDestinationAddress: string; // Editable store address (or donation location address)
@@ -67,7 +68,12 @@ interface FormData {
   receiptPhotoUrl?: string;
   tagsPhotoUrl?: string;
   packagingPhotoUrl?: string;
-  donationPhotoUrls?: string[]; // NEW: Multiple photo URLs for donations (up to 12)
+  donationPhotoUrls?: string[]; // Multiple photo URLs for donations (up to 12)
+  // Exchange-specific fields
+  itemIHaveDescription?: string; // Required for exchanges - what customer wants to exchange
+  itemIWantDescription?: string; // Required for exchanges - what customer wants to receive
+  itemIHavePhotoUrls?: string[]; // Required for exchanges - photos of item to exchange
+  itemIWantPhotoUrls?: string[]; // Optional for exchanges - photos of desired item
   // Page 3
   serviceTier: 'standard' | 'priority' | 'instant'; // Service tier selection
   tip: number;
@@ -381,8 +387,9 @@ export default function BookReturn() {
     city: 'St. Louis',
     state: 'MO',
     zipCode: '',
-    isDonation: false, // NEW: donation toggle
-    donationLocationId: null, // NEW: ID of selected charity location (for server validation)
+    isDonation: false, // donation toggle
+    isExchange: false, // exchange toggle
+    donationLocationId: null, // ID of selected charity location (for server validation)
     retailerName: '',
     retailerLocation: '',
     retailer: '',
@@ -401,6 +408,10 @@ export default function BookReturn() {
       numberOfBags: 0
     }],
     notes: '',
+    itemIHaveDescription: '',
+    itemIWantDescription: '',
+    itemIHavePhotoUrls: [],
+    itemIWantPhotoUrls: [],
     serviceTier: 'standard',
     tip: 0,
     paymentMethod: 'card'
@@ -863,7 +874,11 @@ export default function BookReturn() {
     if (nextIndex !== currentIndex) {
       const newType = tabs[nextIndex];
       setBookingType(newType);
-      setFormData(prev => ({ ...prev, isDonation: newType === 'donation' }));
+      setFormData(prev => ({ 
+        ...prev, 
+        isDonation: newType === 'donation',
+        isExchange: newType === 'exchange'
+      }));
       setPage(1);
       
       // Move focus to the newly selected tab
@@ -908,7 +923,7 @@ export default function BookReturn() {
               type="button"
               onClick={() => {
                 setBookingType('return');
-                setFormData(prev => ({ ...prev, isDonation: false }));
+                setFormData(prev => ({ ...prev, isDonation: false, isExchange: false }));
                 setPage(1);
               }}
               onKeyDown={(e) => handleTabKeyDown(e, 'return')}
@@ -936,7 +951,7 @@ export default function BookReturn() {
               type="button"
               onClick={() => {
                 setBookingType('exchange');
-                setFormData(prev => ({ ...prev, isDonation: false }));
+                setFormData(prev => ({ ...prev, isDonation: false, isExchange: true }));
                 setPage(1);
               }}
               onKeyDown={(e) => handleTabKeyDown(e, 'exchange')}
@@ -964,7 +979,7 @@ export default function BookReturn() {
               type="button"
               onClick={() => {
                 setBookingType('donation');
-                setFormData(prev => ({ ...prev, isDonation: true }));
+                setFormData(prev => ({ ...prev, isDonation: true, isExchange: false }));
                 setPage(1);
               }}
               onKeyDown={(e) => handleTabKeyDown(e, 'donation')}
@@ -1429,7 +1444,128 @@ export default function BookReturn() {
                   </div>
                 )}
 
-                {/* Multiple Items Section */}
+                {/* EXCHANGE MODE: Show Item I Have & Item I Want sections */}
+                {formData.isExchange && (
+                  <div className="space-y-5">
+                    {/* Item I Have Section */}
+                    <div className="space-y-4 p-5 bg-blue-50/50 border-2 border-blue-300 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Package className="h-5 w-5 text-blue-600" />
+                        <Label className="text-foreground font-semibold text-lg">Item I Have (Required) *</Label>
+                      </div>
+                      <p className="text-sm text-blue-700 font-medium">
+                        📦 Tell us about the item you want to exchange
+                      </p>
+                      
+                      <div>
+                        <Label htmlFor="itemIHaveDescription" className="text-sm font-semibold">Description *</Label>
+                        <Textarea
+                          id="itemIHaveDescription"
+                          value={formData.itemIHaveDescription}
+                          onChange={(e) => updateField('itemIHaveDescription', e.target.value)}
+                          placeholder="Describe the item you want to exchange (e.g., 'Black Nike Air Max Size 10' or 'iPhone 13 Pro 128GB Silver')"
+                          rows={3}
+                          className="mt-1.5 bg-white"
+                          required
+                          data-testid="input-item-i-have-description"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-foreground font-semibold">Photos of Item I Have *</Label>
+                        <p className="text-xs text-muted-foreground">
+                          📸 Upload clear photos of the item you're exchanging (up to 5 photos)
+                        </p>
+                        <ObjectUploader
+                          maxNumberOfFiles={5}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={handleReceiptGetUploadUrl}
+                          onComplete={(urls) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              itemIHavePhotoUrls: urls
+                            }));
+                          }}
+                          variant="outline"
+                          size="sm"
+                          testId="button-upload-item-i-have"
+                        >
+                          {formData.itemIHavePhotoUrls && formData.itemIHavePhotoUrls.length > 0
+                            ? 'Change Photos'
+                            : 'Upload Photos'}
+                        </ObjectUploader>
+                        {formData.itemIHavePhotoUrls && formData.itemIHavePhotoUrls.length > 0 && (
+                          <div className="flex items-center space-x-2 text-green-600 text-sm">
+                            <Check className="h-4 w-4" />
+                            <span className="font-medium">
+                              {formData.itemIHavePhotoUrls.length} photo{formData.itemIHavePhotoUrls.length !== 1 ? 's' : ''} uploaded ✓
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Item I Want Section */}
+                    <div className="space-y-4 p-5 bg-green-50/50 border-2 border-green-300 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Package className="h-5 w-5 text-green-600" />
+                        <Label className="text-foreground font-semibold text-lg">Item I Want (Optional)</Label>
+                      </div>
+                      <p className="text-sm text-green-700 font-medium">
+                        🎁 Tell us about the item you want to receive in exchange
+                      </p>
+                      
+                      <div>
+                        <Label htmlFor="itemIWantDescription" className="text-sm font-semibold">Description</Label>
+                        <Textarea
+                          id="itemIWantDescription"
+                          value={formData.itemIWantDescription}
+                          onChange={(e) => updateField('itemIWantDescription', e.target.value)}
+                          placeholder="Describe what you want to exchange for (e.g., 'Same shoe in Size 11' or 'iPhone 14 Pro in any color')"
+                          rows={3}
+                          className="mt-1.5 bg-white"
+                          data-testid="input-item-i-want-description"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-foreground font-semibold">Photos of Item I Want (Optional)</Label>
+                        <p className="text-xs text-muted-foreground">
+                          📸 Upload reference photos of what you want (up to 3 photos)
+                        </p>
+                        <ObjectUploader
+                          maxNumberOfFiles={3}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={handleReceiptGetUploadUrl}
+                          onComplete={(urls) => {
+                            setFormData(prev => ({
+                              ...prev,
+                              itemIWantPhotoUrls: urls
+                            }));
+                          }}
+                          variant="outline"
+                          size="sm"
+                          testId="button-upload-item-i-want"
+                        >
+                          {formData.itemIWantPhotoUrls && formData.itemIWantPhotoUrls.length > 0
+                            ? 'Change Photos'
+                            : 'Upload Reference Photos'}
+                        </ObjectUploader>
+                        {formData.itemIWantPhotoUrls && formData.itemIWantPhotoUrls.length > 0 && (
+                          <div className="flex items-center space-x-2 text-green-600 text-sm">
+                            <Check className="h-4 w-4" />
+                            <span className="font-medium">
+                              {formData.itemIWantPhotoUrls.length} photo{formData.itemIWantPhotoUrls.length !== 1 ? 's' : ''} uploaded ✓
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Multiple Items Section - Only show for Returns and Donations */}
+                {!formData.isExchange && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <Label className="text-base font-semibold">
@@ -1629,7 +1765,9 @@ export default function BookReturn() {
                     </div>
                   )}
                 </div>
+                )}
 
+                {/* Notes Section - Show for all booking types */}
                 <div>
                   <Label htmlFor="notes" className="text-sm font-semibold">Special Instructions (Optional)</Label>
                   <Textarea
@@ -1643,9 +1781,11 @@ export default function BookReturn() {
                   />
                 </div>
 
+                {/* Photo Verification - MANDATORY - Only show for Returns and Donations */}
+                {!formData.isExchange && (
+                <>
                 <Separator className="my-6" />
 
-                {/* Photo Verification - MANDATORY */}
                 <div className="space-y-4">
                   <div className="flex items-center space-x-2 mb-3">
                     <Shield className="h-5 w-5 text-red-600" />
@@ -1787,6 +1927,8 @@ export default function BookReturn() {
                     )}
                   </div>
                 </div>
+                </>
+                )}
               </div>
             )}
 
