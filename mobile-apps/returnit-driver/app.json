@@ -29,6 +29,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.returnit.driver",
       "buildNumber": "4",
+      "jsEngine": "jsc",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Allow ReturnIt Driver to use your location for navigation and job completion verification.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Allow ReturnIt Driver to track your location for pickup and delivery assignments, even when the app is in the background.",
@@ -48,6 +49,7 @@
     "android": {
       "package": "com.returnit.driver",
       "versionCode": 1,
+      "jsEngine": "jsc",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-driver.png",
         "backgroundColor": "#F8F7F4"
