@@ -8,6 +8,8 @@ Preferred communication style: Simple, everyday language.
 
 **Code Sync Workflow**: Use GitHub for syncing code between Replit and local Windows machine (C:\Users\nsm21\Desktop\ReturnIt\). Do NOT use VS Code SSH. Workflow: Agent commits/pushes changes in Replit → User runs `git pull` locally → User runs mobile app commands (`npm install`, `eas update`) on local machine.
 
+**Mobile App Testing Workflow**: Customer app uses bare React Native workflow for Xcode building. Workflow: Pull changes on Windows → Transfer to Mac via GitHub → Run `npm install --legacy-peer-deps` on Mac → Run `npx expo prebuild --platform ios --clean` on Mac → Open `ios/ReturnItCustomer.xcworkspace` in Xcode → Build to iPhone. See `mobile-apps/returnit-customer/XCODE_SETUP.md` for complete guide.
+
 # System Architecture
 
 ## Frontend
@@ -47,8 +49,9 @@ Preferred communication style: Simple, everyday language.
 - **SMS Verification**: Alternative to email verification via Twilio.
 - **Google Maps Integration**: For pickup location selection and display.
 
-### Driver Features
-- **Native Mobile App**: React Native with Expo for job management, navigation, and earnings.
+### Mobile Apps
+- **Customer App**: React Native with Expo SDK 54 (bare workflow) for booking returns, exchanges, and donations. Built with Xcode for iOS testing.
+- **Driver App**: React Native with Expo SDK 52 for job management, navigation, and earnings.
 - **Real-time Job Notifications**: Expo-notifications with deep linking.
 - **GPS Navigation**: Expo-location with Google Maps integration.
 - **Multi-Stop Batching**: AI-powered route optimization.

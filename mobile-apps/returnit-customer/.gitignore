@@ -10,3 +10,7 @@ npm-debug.*
 *.orig.*
 web-build/
 .DS_Store
+
+# Bare workflow - native folders
+ios/
+android/
