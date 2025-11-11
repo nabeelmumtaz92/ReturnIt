@@ -237,7 +237,13 @@ export type RouteOptimization = z.infer<typeof RouteOptimizationSchema>;
 export const users = pgTable("users", {
   id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
+  
+  // OAuth provider IDs for account linking (UNIQUE to prevent duplicate links)
+  googleId: text("google_id").unique(),
+  facebookId: text("facebook_id").unique(),
+  appleId: text("apple_id").unique(),
+  
   firstName: text("first_name"),
   lastName: text("last_name"),
   phone: text("phone"),
@@ -339,6 +345,9 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   emailIdx: index("users_email_idx").on(table.email),
+  googleIdIdx: index("users_google_id_idx").on(table.googleId),
+  facebookIdIdx: index("users_facebook_id_idx").on(table.facebookId),
+  appleIdIdx: index("users_apple_id_idx").on(table.appleId),
   isDriverIdx: index("users_is_driver_idx").on(table.isDriver),
   isOnlineIdx: index("users_is_online_idx").on(table.isOnline),
   roleIdx: index("users_role_idx").on(table.role),

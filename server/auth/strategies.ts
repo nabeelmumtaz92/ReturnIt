@@ -37,15 +37,29 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       name: profile.displayName
     });
     try {
-      // Check if user exists
-      const existingUser = await storage.getUserByEmail(profile.emails?.[0]?.value || '');
+      const userEmail = profile.emails?.[0]?.value || '';
+      const googleId = profile.id;
+      
+      // First check if user exists with this Google ID (already linked account)
+      let existingUser = await storage.getUserByGoogleId(googleId);
       
       if (existingUser) {
+        console.log('User found by Google ID:', existingUser.id);
         return done(null, existingUser);
+      }
+      
+      // Check if user exists by email (account linking scenario)
+      existingUser = await storage.getUserByEmail(userEmail);
+      
+      if (existingUser) {
+        console.log('Linking Google account to existing email:', existingUser.id);
+        // Link Google account to existing user
+        await storage.updateUser(existingUser.id, { googleId });
+        const updatedUser = await storage.getUserById(existingUser.id);
+        return done(null, updatedUser);
       }
 
       // SECURITY FIX: Don't auto-create users - redirect to signup instead
-      const userEmail = profile.emails?.[0]?.value || `${profile.id}@google.temp`;
       console.log('Google user not found, denying auto-creation:', userEmail);
       
       // Check if this is the master admin - only they can auto-create
@@ -58,6 +72,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           email: userEmail,
           phone: '6362544821', // Master admin phone
           password: 'GOOGLE_AUTH_USER', // Social auth placeholder
+          googleId: googleId,
           firstName: profile.name?.givenName || profile.displayName?.split(' ')[0] || '',
           lastName: profile.name?.familyName || profile.displayName?.split(' ')[1] || '',
           isDriver: true, // Master admin is driver
