@@ -161,7 +161,6 @@ export function NativePhotoUploader({
               ref={fileInputRef}
               type="file"
               accept="image/*"
-              capture={isMobile ? "environment" : undefined}
               multiple={maxFiles > 1}
               onChange={handleFileSelect}
               className="hidden"
