@@ -764,8 +764,15 @@ export const orders = pgTable("orders", {
   scheduledPickupTime: timestamp("scheduled_pickup_time"),
   actualPickupTime: timestamp("actual_pickup_time"),
   
-  // Donation vs Return flag
+  // Donation vs Return vs Exchange flags
   isDonation: boolean("is_donation").default(false).notNull(), // true for donation pickups, false for returns/exchanges
+  isExchange: boolean("is_exchange").default(false).notNull(), // true for exchanges, false for returns/donations
+  
+  // Exchange-specific fields (MVP)
+  itemIHaveDescription: text("item_i_have_description"), // Customer description of item they want to exchange
+  itemIWantDescription: text("item_i_want_description"), // Customer description of item they want to receive
+  itemIHavePhotoUrls: jsonb("item_i_have_photo_urls").default([]), // Photos of "Item I Have" (required for exchanges)
+  itemIWantPhotoUrls: jsonb("item_i_want_photo_urls").default([]), // Photos of "Item I Want" (optional for exchanges)
   
   // Return details (single store per order) - for returns/exchanges
   // For donations, retailer will be the donation organization name
