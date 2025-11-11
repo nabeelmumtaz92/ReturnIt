@@ -204,10 +204,23 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
   }, async (accessToken: any, refreshToken: any, idToken: any, profile: any, done: any) => {
     try {
       console.log('Apple OAuth callback triggered');
-      const email = profile.email || idToken?.email;
       const appleId = profile.id || profile.sub;
+      const email = profile.email || idToken?.email;
       
+      // CRITICAL: Apple only sends email on FIRST authorization
+      // Returning users won't have email in profile, so check appleId FIRST
+      
+      // First check if user exists with this Apple ID (already linked account)
+      let existingUser = await storage.getUserByAppleId(appleId);
+      
+      if (existingUser) {
+        console.log('User found by Apple ID:', existingUser.id);
+        return done(null, existingUser);
+      }
+      
+      // If no existing user by appleId, we need email for linking/creation
       if (!email) {
+        console.log('Apple user not found by appleId and no email provided (subsequent login issue)');
         return done(new Error('No email provided by Apple'), null);
       }
 
@@ -217,14 +230,6 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
       if (!emailVerified) {
         console.log('Apple email not verified, blocking login:', email);
         return done(new Error('EMAIL_NOT_VERIFIED'), null);
-      }
-
-      // First check if user exists with this Apple ID (already linked account)
-      let existingUser = await storage.getUserByAppleId(appleId);
-      
-      if (existingUser) {
-        console.log('User found by Apple ID:', existingUser.id);
-        return done(null, existingUser);
       }
       
       // Check if user exists by email (account linking scenario)
