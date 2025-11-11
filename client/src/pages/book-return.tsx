@@ -16,7 +16,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ObjectUploader } from "@/components/ObjectUploader";
+import { NativePhotoUploader } from "@/components/NativePhotoUploader";
 import { BrandLogo } from "@/components/BrandLogo";
 import StoreAutocomplete from "@/components/StoreAutocomplete";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
@@ -495,87 +495,42 @@ export default function BookReturn() {
     }));
   };
 
-  // Photo upload handlers
-  const handleReceiptGetUploadUrl = async () => {
-    const response: any = await apiRequest("POST", "/api/objects/upload");
-    return {
-      method: "PUT" as const,
-      url: response.uploadURL,
-    };
+  // Photo upload handlers - simplified with NativePhotoUploader
+  const handleReceiptPhotosChange = (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      receiptPhotoUrl: urls[0] || undefined, // First URL for backward compatibility
+      donationPhotoUrls: prev.isDonation ? urls : undefined, // All URLs for donations
+    }));
   };
 
-  const handleReceiptUploadComplete = useCallback(async (result: any) => {
-    if (result.successful && result.successful.length > 0) {
-      // For donations: collect all uploaded photo URLs
-      // For returns: use only the first photo URL
-      const photoUrls = result.successful.map((file: any) => file.uploadURL);
-      const firstUrl = photoUrls[0];
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        receiptPhotoUrl: firstUrl, // Store first URL for backward compatibility
-        donationPhotoUrls: prev.isDonation ? photoUrls : undefined, // Store all URLs for donations
-      }));
-      
-      const count = photoUrls.length;
-      toast({
-        title: formData.isDonation ? `${count} photo${count > 1 ? 's' : ''} uploaded` : "Receipt uploaded",
-        description: formData.isDonation 
-          ? `${count} item photo${count > 1 ? 's' : ''} uploaded successfully`
-          : "Your receipt has been uploaded successfully",
-      });
-    }
-  }, [toast, formData.isDonation]);
-
-  const handleTagsGetUploadUrl = async () => {
-    const response: any = await apiRequest("POST", "/api/objects/upload");
-    return {
-      method: "PUT" as const,
-      url: response.uploadURL,
-    };
+  const handleTagsPhotoChange = (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      tagsPhotoUrl: urls[0] || undefined,
+    }));
   };
 
-  const handleTagsUploadComplete = useCallback(async (result: any) => {
-    if (result.successful && result.successful.length > 0) {
-      const uploadedFile = result.successful[0];
-      const fileUrl = uploadedFile.uploadURL;
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        tagsPhotoUrl: fileUrl,
-      }));
-      
-      toast({
-        title: "Tags photo uploaded",
-        description: "Photo of original tags uploaded successfully",
-      });
-    }
-  }, [toast]);
-
-  const handlePackagingGetUploadUrl = async () => {
-    const response: any = await apiRequest("POST", "/api/objects/upload");
-    return {
-      method: "PUT" as const,
-      url: response.uploadURL,
-    };
+  const handlePackagingPhotoChange = (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      packagingPhotoUrl: urls[0] || undefined,
+    }));
   };
 
-  const handlePackagingUploadComplete = useCallback(async (result: any) => {
-    if (result.successful && result.successful.length > 0) {
-      const uploadedFile = result.successful[0];
-      const fileUrl = uploadedFile.uploadURL;
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        packagingPhotoUrl: fileUrl,
-      }));
-      
-      toast({
-        title: "Packaging photo uploaded",
-        description: "Photo of original packaging uploaded successfully",
-      });
-    }
-  }, [toast]);
+  const handleItemIHavePhotosChange = (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      itemIHavePhotoUrls: urls,
+    }));
+  };
+
+  const handleItemIWantPhotosChange = (urls: string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      itemIWantPhotoUrls: urls,
+    }));
+  };
 
   // Validate current page before proceeding
   const validatePage = (pageNum: number): boolean => {
@@ -1530,36 +1485,20 @@ export default function BookReturn() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-foreground font-semibold">Photos of Item I Have *</Label>
-                        <p className="text-xs text-muted-foreground">
-                          📸 Upload clear photos of the item you're exchanging (up to 5 photos)
-                        </p>
-                        <ObjectUploader
-                          maxNumberOfFiles={5}
+                        <NativePhotoUploader
+                          maxFiles={5}
                           maxFileSize={10485760}
-                          onGetUploadParameters={handleReceiptGetUploadUrl}
-                          onComplete={(urls) => {
-                            setFormData(prev => ({
-                              ...prev,
-                              itemIHavePhotoUrls: urls
-                            }));
-                          }}
+                          onUploadComplete={handleItemIHavePhotosChange}
+                          currentUrls={formData.itemIHavePhotoUrls || []}
+                          buttonText="Add"
                           variant="outline"
                           size="sm"
                           testId="button-upload-item-i-have"
-                        >
-                          {formData.itemIHavePhotoUrls && formData.itemIHavePhotoUrls.length > 0
-                            ? 'Change Photos'
-                            : 'Upload Photos'}
-                        </ObjectUploader>
-                        {formData.itemIHavePhotoUrls && formData.itemIHavePhotoUrls.length > 0 && (
-                          <div className="flex items-center space-x-2 text-green-600 text-sm">
-                            <Check className="h-4 w-4" />
-                            <span className="font-medium">
-                              {formData.itemIHavePhotoUrls.length} photo{formData.itemIHavePhotoUrls.length !== 1 ? 's' : ''} uploaded ✓
-                            </span>
-                          </div>
-                        )}
+                          label="Photos of Item I Have *"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          📸 Upload clear photos of the item you're exchanging (up to 5 photos)
+                        </p>
                       </div>
                     </div>
 
@@ -1587,36 +1526,20 @@ export default function BookReturn() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-foreground font-semibold">Photos of Item I Want (Optional)</Label>
-                        <p className="text-xs text-muted-foreground">
-                          📸 Upload reference photos of what you want (up to 3 photos)
-                        </p>
-                        <ObjectUploader
-                          maxNumberOfFiles={3}
+                        <NativePhotoUploader
+                          maxFiles={3}
                           maxFileSize={10485760}
-                          onGetUploadParameters={handleReceiptGetUploadUrl}
-                          onComplete={(urls) => {
-                            setFormData(prev => ({
-                              ...prev,
-                              itemIWantPhotoUrls: urls
-                            }));
-                          }}
+                          onUploadComplete={handleItemIWantPhotosChange}
+                          currentUrls={formData.itemIWantPhotoUrls || []}
+                          buttonText="Add"
                           variant="outline"
                           size="sm"
                           testId="button-upload-item-i-want"
-                        >
-                          {formData.itemIWantPhotoUrls && formData.itemIWantPhotoUrls.length > 0
-                            ? 'Change Photos'
-                            : 'Upload Reference Photos'}
-                        </ObjectUploader>
-                        {formData.itemIWantPhotoUrls && formData.itemIWantPhotoUrls.length > 0 && (
-                          <div className="flex items-center space-x-2 text-green-600 text-sm">
-                            <Check className="h-4 w-4" />
-                            <span className="font-medium">
-                              {formData.itemIWantPhotoUrls.length} photo{formData.itemIWantPhotoUrls.length !== 1 ? 's' : ''} uploaded ✓
-                            </span>
-                          </div>
-                        )}
+                          label="Photos of Item I Want (Optional)"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          📸 Upload reference photos of what you want (up to 3 photos)
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -1885,102 +1808,61 @@ export default function BookReturn() {
                     
                     {/* Option 1: Receipt Photo (or Item Photos for donations) */}
                     <div className="space-y-2 p-3 bg-white rounded border border-border">
-                      <div className="flex items-start space-x-2">
-                        <div className="flex-1">
-                          <Label className="text-foreground font-semibold">
-                            {formData.isDonation ? "Item Photos" : "1. Receipt or Order Confirmation"}
-                          </Label>
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {formData.isDonation 
-                              ? "📸 Take clear photos of your items (1-12 photos)"
-                              : "📄 Take a clear photo of your paper receipt or screenshot your email confirmation"}
-                          </p>
-                        </div>
-                      </div>
-                      <ObjectUploader
-                        maxNumberOfFiles={formData.isDonation ? 12 : 1}
+                      <NativePhotoUploader
+                        maxFiles={formData.isDonation ? 12 : 1}
                         maxFileSize={10485760}
-                        onGetUploadParameters={handleReceiptGetUploadUrl}
-                        onComplete={handleReceiptUploadComplete}
+                        onUploadComplete={handleReceiptPhotosChange}
+                        currentUrls={formData.isDonation ? (formData.donationPhotoUrls || []) : (formData.receiptPhotoUrl ? [formData.receiptPhotoUrl] : [])}
+                        buttonText="Add"
                         variant="outline"
                         size="sm"
                         testId="button-upload-receipt"
-                      >
-                        {formData.receiptPhotoUrl 
-                          ? (formData.isDonation ? 'Change Item Photos' : 'Change Receipt Photo')
-                          : (formData.isDonation ? 'Upload Item Photos' : 'Upload Receipt Photo')}
-                      </ObjectUploader>
-                      {formData.receiptPhotoUrl && (
-                        <div className="flex items-center space-x-2 text-green-600 text-sm">
-                          <Check className="h-4 w-4" />
-                          <span className="font-medium">
-                            {formData.isDonation 
-                              ? `${formData.donationPhotoUrls?.length || 1} item photo${(formData.donationPhotoUrls?.length || 1) > 1 ? 's' : ''} uploaded ✓` 
-                              : "Receipt photo uploaded ✓"}
-                          </span>
-                        </div>
-                      )}
+                        label={formData.isDonation ? "Item Photos" : "1. Receipt or Order Confirmation"}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {formData.isDonation 
+                          ? "📸 Take clear photos of your items (1-12 photos)"
+                          : "📄 Take a clear photo of your paper receipt or screenshot your email confirmation"}
+                      </p>
                     </div>
 
                     {/* Option 2: Tags Photo - Hide for donations */}
                     {!formData.isDonation && (
                       <div className="space-y-2 p-3 bg-white rounded border border-border">
-                        <div className="flex items-start space-x-2">
-                          <div className="flex-1">
-                            <Label className="text-foreground font-semibold">2. Original Tags</Label>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              🏷️ Take a photo showing the item with original tags still attached
-                            </p>
-                          </div>
-                        </div>
-                        <ObjectUploader
-                          maxNumberOfFiles={1}
+                        <NativePhotoUploader
+                          maxFiles={1}
                           maxFileSize={10485760}
-                          onGetUploadParameters={handleTagsGetUploadUrl}
-                          onComplete={handleTagsUploadComplete}
+                          onUploadComplete={handleTagsPhotoChange}
+                          currentUrls={formData.tagsPhotoUrl ? [formData.tagsPhotoUrl] : []}
+                          buttonText="Add"
                           variant="outline"
                           size="sm"
                           testId="button-upload-tags"
-                        >
-                          {formData.tagsPhotoUrl ? 'Change Tags Photo' : 'Upload Tags Photo'}
-                        </ObjectUploader>
-                        {formData.tagsPhotoUrl && (
-                          <div className="flex items-center space-x-2 text-green-600 text-sm">
-                            <Check className="h-4 w-4" />
-                            <span className="font-medium">Tags photo uploaded ✓</span>
-                          </div>
-                        )}
+                          label="2. Original Tags"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          🏷️ Take a photo showing the item with original tags still attached
+                        </p>
                       </div>
                     )}
 
                     {/* Option 3: Packaging Photo - Hide for donations */}
                     {!formData.isDonation && (
                       <div className="space-y-2 p-3 bg-white rounded border border-border">
-                        <div className="flex items-start space-x-2">
-                          <div className="flex-1">
-                            <Label className="text-foreground font-semibold">3. Original Packaging</Label>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              📦 Take a photo showing the item in its original packaging
-                            </p>
-                          </div>
-                        </div>
-                        <ObjectUploader
-                          maxNumberOfFiles={1}
+                        <NativePhotoUploader
+                          maxFiles={1}
                           maxFileSize={10485760}
-                          onGetUploadParameters={handlePackagingGetUploadUrl}
-                          onComplete={handlePackagingUploadComplete}
+                          onUploadComplete={handlePackagingPhotoChange}
+                          currentUrls={formData.packagingPhotoUrl ? [formData.packagingPhotoUrl] : []}
+                          buttonText="Add"
                           variant="outline"
                           size="sm"
                           testId="button-upload-packaging"
-                        >
-                          {formData.packagingPhotoUrl ? 'Change Packaging Photo' : 'Upload Packaging Photo'}
-                        </ObjectUploader>
-                        {formData.packagingPhotoUrl && (
-                          <div className="flex items-center space-x-2 text-green-600 text-sm">
-                            <Check className="h-4 w-4" />
-                            <span className="font-medium">Packaging photo uploaded ✓</span>
-                          </div>
-                        )}
+                          label="3. Original Packaging"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          📦 Take a photo showing the item in its original packaging
+                        </p>
                       </div>
                     )}
                   </div>

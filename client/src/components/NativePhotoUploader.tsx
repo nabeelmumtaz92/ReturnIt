@@ -92,8 +92,9 @@ export function NativePhotoUploader({
         setProgress(Math.round(((i + 1) / totalFiles) * 100));
       }
 
-      // Call completion handler with all uploaded URLs
-      onUploadComplete(uploadedUrls);
+      // Merge new uploads with existing URLs (important for multi-photo uploads)
+      const allUrls = [...currentUrls, ...uploadedUrls];
+      onUploadComplete(allUrls);
       
       toast({
         title: "Upload successful",
