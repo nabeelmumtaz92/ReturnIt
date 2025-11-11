@@ -8,4 +8,6 @@ config.resolver.blockList = [
   /__tests__\/.*/
 ];
 
+config.resolver.unstable_enablePackageExports = false;
+
 module.exports = config;
