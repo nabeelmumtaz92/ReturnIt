@@ -175,35 +175,41 @@ if (process.env.APPLE_CLIENT_ID && process.env.APPLE_TEAM_ID && process.env.APPL
       const existingUser = await storage.getUserByEmail(email);
       
       if (existingUser) {
+        console.log('Apple user found, logging in:', email);
         return done(null, existingUser);
       }
 
-      // SECURITY FIX: Don't auto-create users - redirect to signup instead
-      console.log('Apple user not found, denying auto-creation:', email);
+      // Auto-create new user from Apple Sign-In
+      console.log('Apple user not found, creating new account:', email);
       
-      // Check if this is the master admin - only they can auto-create
+      // Check if this is the master admin for special privileges
       const { shouldAutoAssignAdmin, MASTER_ADMIN_EMAIL } = await import('../auth/adminControl');
       const isMasterAdmin = email === MASTER_ADMIN_EMAIL;
       
-      if (isMasterAdmin) {
-        // Only master admin gets auto-created
-        const newUser = await storage.createUser({
-          email: email,
-          phone: '6362544821', // Master admin phone
-          password: 'APPLE_AUTH_USER', // Social auth placeholder
-          firstName: profile.name?.firstName || '',
-          lastName: profile.name?.lastName || '',
-          isDriver: true, // Master admin is driver
-          isAdmin: true // Master admin gets admin access
-        });
-        
-        console.log('Master admin auto-created via Apple:', { id: newUser.id, email: newUser.email, isAdmin: newUser.isAdmin });
-        return done(null, newUser);
-      }
-
-      // All other users must sign up first - return error to redirect to signup
-      console.log('Non-admin Apple user attempted auto-creation - blocking:', email);
-      return done(new Error('OAUTH_SIGNUP_REQUIRED'), null);
+      // Generate cryptographically secure random password for OAuth users
+      // This prevents email/password login - users MUST use Apple Sign-In
+      const crypto = await import('crypto');
+      const randomPassword = crypto.randomBytes(32).toString('hex'); // 64 character random string
+      
+      // Create new user account with Apple profile data
+      const newUser = await storage.createUser({
+        email: email,
+        phone: isMasterAdmin ? '6362544821' : '', // Master admin phone, others can add later
+        password: randomPassword, // Secure random password - user can't login with email/password
+        firstName: profile.name?.firstName || 'Apple',
+        lastName: profile.name?.lastName || 'User',
+        isDriver: isMasterAdmin, // Only master admin is driver by default
+        isAdmin: isMasterAdmin // Only master admin gets admin access
+      });
+      
+      console.log('New user created via Apple Sign-In:', { 
+        id: newUser.id, 
+        email: newUser.email, 
+        isAdmin: newUser.isAdmin,
+        isDriver: newUser.isDriver 
+      });
+      
+      return done(null, newUser);
     } catch (error) {
       console.error('Apple auth error:', error);
       return done(error);
