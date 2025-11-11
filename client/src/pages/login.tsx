@@ -417,7 +417,7 @@ export default function Login() {
                       onChange={(e) => setLoginData(prev => ({...prev, email: e.target.value}))}
                       placeholder="Enter your email address"
                       className="pl-10 h-11"
-                      autoComplete="off"
+                      autoComplete="username"
                     />
                     <Mail className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
                   </div>
@@ -446,7 +446,7 @@ export default function Login() {
                       onChange={(e) => setLoginData(prev => ({...prev, password: e.target.value}))}
                       placeholder="Enter your password"
                       className="pl-10 h-11"
-                      autoComplete="off"
+                      autoComplete="current-password"
                     />
                     <Lock className="h-4 w-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
                   </div>
