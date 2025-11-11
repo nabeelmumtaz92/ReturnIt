@@ -71,6 +71,10 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByVerificationToken(token: string): Promise<User | undefined>;
+  getUserByGoogleId(googleId: string): Promise<User | undefined>;
+  getUserByFacebookId(facebookId: string): Promise<User | undefined>;
+  getUserByAppleId(appleId: string): Promise<User | undefined>;
+  linkUserProvider(userId: number, provider: 'google' | 'facebook' | 'apple', providerId: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<User>): Promise<User | undefined>;
   getDrivers(isOnline?: boolean): Promise<User[]>;
@@ -737,6 +741,51 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(
       (user) => user.emailVerificationToken === token,
     );
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.googleId === googleId,
+    );
+  }
+
+  async getUserByFacebookId(facebookId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.facebookId === facebookId,
+    );
+  }
+
+  async getUserByAppleId(appleId: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.appleId === appleId,
+    );
+  }
+
+  async linkUserProvider(userId: number, provider: 'google' | 'facebook' | 'apple', providerId: string): Promise<User | undefined> {
+    // Get the user
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if this providerId is already linked to another user
+    const existingUser = provider === 'google' 
+      ? await this.getUserByGoogleId(providerId)
+      : provider === 'facebook'
+      ? await this.getUserByFacebookId(providerId)
+      : await this.getUserByAppleId(providerId);
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error(`This ${provider} account is already linked to another user`);
+    }
+
+    // Link the provider ID
+    const updates: Partial<User> = {};
+    if (provider === 'google') updates.googleId = providerId;
+    if (provider === 'facebook') updates.facebookId = providerId;
+    if (provider === 'apple') updates.appleId = providerId;
+
+    return this.updateUser(userId, updates);
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -2726,6 +2775,48 @@ export class DatabaseStorage implements IStorage {
   async getUserByVerificationToken(token: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.emailVerificationToken, token));
     return user;
+  }
+
+  async getUserByGoogleId(googleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
+    return user;
+  }
+
+  async getUserByFacebookId(facebookId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.facebookId, facebookId));
+    return user;
+  }
+
+  async getUserByAppleId(appleId: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.appleId, appleId));
+    return user;
+  }
+
+  async linkUserProvider(userId: number, provider: 'google' | 'facebook' | 'apple', providerId: string): Promise<User | undefined> {
+    // Get the user
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if this providerId is already linked to another user
+    const existingUser = provider === 'google' 
+      ? await this.getUserByGoogleId(providerId)
+      : provider === 'facebook'
+      ? await this.getUserByFacebookId(providerId)
+      : await this.getUserByAppleId(providerId);
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new Error(`This ${provider} account is already linked to another user`);
+    }
+
+    // Link the provider ID
+    const updates: Partial<User> = {};
+    if (provider === 'google') updates.googleId = providerId;
+    if (provider === 'facebook') updates.facebookId = providerId;
+    if (provider === 'apple') updates.appleId = providerId;
+
+    return this.updateUser(userId, updates);
   }
 
   async createUser(userData: InsertUser): Promise<User> {
