@@ -1,0 +1,53 @@
+The following packages should be updated for best compatibility with the installed expo version:
+  @react-native-async-storage/async-storage@2.2.0 - expected version: 1.23.1
+  @stripe/stripe-react-native@0.39.0 - expected version: 0.38.6
+  expo-build-properties@0.12.5 - expected version: ~0.13.3
+  react@18.2.0 - expected version: 18.3.1
+  react-native@0.76.5 - expected version: 0.76.9
+  react-native-screens@4.1.0 - expected version: ~4.4.0
+Your project may not work correctly until you install the expected versions of the packages.
+▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+█ ▄▄▄▄▄ █▀▀ ██ █  █ ▄▄▄▄▄ █
+█ █   █ █▄▀██▀██  █ █   █ █
+█ █▄▄▄█ █ ▄ █ ▀▀ ██ █▄▄▄█ █
+█▄▄▄▄▄▄▄█ █ ▀▄█▄█▄█▄▄▄▄▄▄▄█
+█  █▄██▄▄█▀█   ▀▄▄▀  ▄▀▄▄▀█
+█▀ ▄▄▄▄▄  ▀▀    ▀█▄▀ ▀▀█▄▄█
+███▄ ▄▀▄█▄█▄ █  █▀█ ▄█ ██▀█
+█▄▀█▄ ▄▄▀ ▄▄ █▀█▀█  ▄▄▀██▄█
+█▄▄▄███▄▄▀▀██ ▀▄█ ▄▄▄ █ ▄ █
+█ ▄▄▄▄▄ █▄▄▄▄ █   █▄█  ▀  █
+█ █   █ █▀ ▀▀███▀  ▄▄ █▀█▄█
+█ █▄▄▄█ █▀█▀███▀  ▄█▄  ▄█▄█
+█▄▄▄▄▄▄▄█▄▄▄█▄███▄█▄█▄▄█▄▄█
+
+› Metro waiting on exp://172.20.10.2:8081
+› Scan the QR code above with Expo Go (Android) or the Camera app (iOS)
+
+› Using Expo Go
+› Press s │ switch to development build
+
+› Press a │ open Android
+› Press w │ open web
+
+› Press j │ open debugger
+› Press r │ reload app
+› Press m │ toggle menu
+› shift+m │ more tools
+› Press o │ open project code in your editor
+
+› Press ? │ show all commands
+
+Logs for your project will appear below. Press Ctrl+C to exit.
+ ERROR  Project is incompatible with this version of Expo Go
+
+• The installed version of Expo Go is for SDK 54.0.0.
+• The project you opened uses SDK 52.
+
+How to fix this error:
+
+Either upgrade this project to SDK 54.0.0, or launch it in an iOS simulator. It is not possible to install an older version of Expo Go for iOS devices, only the latest version is supported.
+
+[Learn how to upgrade to SDK 54.](https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/)
+
+[https://expo.dev/go?sdkVersion=52&platform=ios&device=false](Learn how to install Expo Go for SDK 52 in an iOS Simulator.)
