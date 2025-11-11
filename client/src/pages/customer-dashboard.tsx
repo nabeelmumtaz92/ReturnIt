@@ -34,7 +34,9 @@ import {
   Navigation,
   Settings,
   LogOut,
-  Bell
+  Bell,
+  Repeat,
+  Heart
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -419,7 +421,9 @@ export default function CustomerDashboard() {
         {/* Quick Actions */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          {/* Booking Options Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <Button
               onClick={() => setLocation('/book-return')}
               className="bg-primary hover:bg-primary/90 text-white h-auto p-6 flex flex-col items-center gap-3"
@@ -427,11 +431,38 @@ export default function CustomerDashboard() {
             >
               <Plus className="h-8 w-8" />
               <div className="text-center">
-                <div className="font-semibold">Book New Return</div>
+                <div className="font-semibold">Book Return</div>
                 <div className="text-sm font-medium">Schedule a return pickup</div>
               </div>
             </Button>
 
+            <Button
+              onClick={() => setLocation('/book-exchange')}
+              className="bg-primary hover:bg-primary/90 text-white h-auto p-6 flex flex-col items-center gap-3"
+              data-testid="button-book-exchange"
+            >
+              <Repeat className="h-8 w-8" />
+              <div className="text-center">
+                <div className="font-semibold">Book Exchange</div>
+                <div className="text-sm font-medium">Exchange an item</div>
+              </div>
+            </Button>
+
+            <Button
+              onClick={() => setLocation('/book-donation')}
+              className="bg-primary hover:bg-primary/90 text-white h-auto p-6 flex flex-col items-center gap-3"
+              data-testid="button-book-donation"
+            >
+              <Heart className="h-8 w-8" />
+              <div className="text-center">
+                <div className="font-semibold">Book Donation</div>
+                <div className="text-sm font-medium">Donate items for free</div>
+              </div>
+            </Button>
+          </div>
+
+          {/* Other Actions Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl">
             <Button
               variant="outline"
               onClick={() => setLocation('/track')}
