@@ -1,0 +1,46 @@
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (third-party:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native
+\community-cli-plugin\node_modules\@react-native\debugger-frontend\dist: The directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (dist:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native
+\community-cli-plugin\node_modules\@react-native\debugger-frontend: The directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (debugger-frontend:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native
+\community-cli-plugin\node_modules\@react-native: The directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (@react-native:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native
+\community-cli-plugin\node_modules: The directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (node_modules:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item
+C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native\community-cli-plugin: The
+directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (community-cli-plugin:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
+Remove-Item : Cannot remove item
+C:\Users\nsm21\Desktop\ReturnIt\mobile-apps\returnit-driver\node_modules\@react-native: The directory is not empty.
+At line:1 char:1
++ Remove-Item -Recurse -Force node_modules
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (@react-native:DirectoryInfo) [Remove-Item], IOException
+    + FullyQualifiedErrorId : RemoveFileSystemItemIOError,Microsoft.PowerShell.Commands.RemoveItemCommand
