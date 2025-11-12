@@ -8,6 +8,10 @@ interface PaymentBreakdownProps {
   routeInfo?: RouteInfo;
   isRush?: boolean;
   tip?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxJurisdictionName?: string;
+  isDonation?: boolean;
 }
 
 export function PaymentBreakdown({ 
@@ -15,7 +19,11 @@ export function PaymentBreakdown({
   numberOfItems = 1, 
   routeInfo,
   isRush = false,
-  tip = 0
+  tip = 0,
+  taxAmount = 0,
+  taxRate = 0,
+  taxJurisdictionName,
+  isDonation = false
 }: PaymentBreakdownProps) {
   // Use mock route info if not provided for static pricing
   const defaultRouteInfo: RouteInfo = {
@@ -32,7 +40,9 @@ export function PaymentBreakdown({
     tip
   );
 
-  const customerNetCost = breakdown.totalPrice - itemValue;
+  // Calculate grand total including tax
+  const grandTotal = breakdown.totalPrice + taxAmount;
+  const customerNetCost = grandTotal - itemValue;
 
   return (
     <div className="space-y-4">
@@ -50,9 +60,15 @@ export function PaymentBreakdown({
               <span className="float-right font-medium text-green-600">+${itemValue.toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-gray-600">ReturnIt service fee:</span>
+              <span className="text-gray-600">Service fee (before tax):</span>
               <span className="float-right font-medium text-red-600">-${breakdown.totalPrice.toFixed(2)}</span>
             </div>
+            {taxAmount && taxAmount > 0.01 && (
+              <div>
+                <span className="text-gray-600">Tax:</span>
+                <span className="float-right font-medium text-red-600">-${taxAmount.toFixed(2)}</span>
+              </div>
+            )}
             <Separator className="col-span-2" />
             <div className="col-span-2">
               <span className="font-semibold text-gray-800">Net customer cost:</span>
@@ -212,6 +228,19 @@ export function PaymentBreakdown({
               <span className="text-gray-600">Service fee (15%):</span>
               <span className="font-medium">${breakdown.serviceFee.toFixed(2)}</span>
             </div>
+            {taxAmount && taxAmount > 0.01 ? (
+              <div className="flex justify-between">
+                <span className="text-gray-600">
+                  Tax{taxRate ? ` (${(taxRate * 100).toFixed(2)}%)` : ''}{taxJurisdictionName ? ` - ${taxJurisdictionName}` : ''}:
+                </span>
+                <span className="font-medium">${taxAmount.toFixed(2)}</span>
+              </div>
+            ) : isDonation ? (
+              <div className="flex justify-between text-green-600">
+                <span>Tax (Donation - Tax Exempt):</span>
+                <span className="font-medium">$0.00</span>
+              </div>
+            ) : null}
             {breakdown.tip > 0 && (
               <div className="flex justify-between">
                 <span className="text-gray-600">Tip:</span>
@@ -220,8 +249,8 @@ export function PaymentBreakdown({
             )}
             <Separator />
             <div className="flex justify-between font-semibold text-gray-800">
-              <span>Total charged:</span>
-              <span className="text-lg">${breakdown.totalPrice.toFixed(2)}</span>
+              <span>Grand Total (incl. tax):</span>
+              <span className="text-lg">${grandTotal.toFixed(2)}</span>
             </div>
           </div>
         </CardContent>
