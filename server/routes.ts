@@ -442,7 +442,7 @@ async function escalateOrderToAdmin(
   }
 }
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app: Express, server?: Server): Promise<void> {
   // Performance monitoring middleware
   app.use(performanceMiddleware);
 
@@ -15638,10 +15638,6 @@ Always think strategically, explain your reasoning, and provide value beyond bas
     }
   });
 
-  const httpServer = createServer(app);
-  
   // Start daily stats scheduler
   dailyStatsScheduler.start();
-  
-  return httpServer;
 }

@@ -165,6 +165,34 @@ app.use((req, res, next) => {
   next();
 });
 
+// CRITICAL: Create HTTP server IMMEDIATELY for fast cold start health checks
+import { createServer } from 'http';
+const server = createServer(app);
+
+// CRITICAL: Start listening IMMEDIATELY before any async initialization
+// This ensures health checks pass during production cold starts
+const port = parseInt(process.env.PORT || '5000', 10);
+
+server.on('error', (error: any) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${port} is already in use`);
+  } else if (error.code === 'EACCES') {
+    console.error(`❌ Permission denied to bind to port ${port}`);
+  } else {
+    console.error('❌ Server error:', error);
+  }
+  process.exit(1);
+});
+
+server.listen({
+  port,
+  host: "0.0.0.0",
+  reusePort: true,
+}, () => {
+  log(`⚡ Server listening on port ${port} (ready for health checks)`);
+});
+
+// ASYNC INITIALIZATION: Background services initialize AFTER server is listening
 (async () => {
   // Setup global error handling before anything else
   setupUnhandledRejectionHandler();
@@ -183,9 +211,8 @@ app.use((req, res, next) => {
   }
   
   // Register routes with error handling
-  let server;
   try {
-    server = await registerRoutes(app);
+    await registerRoutes(app, server);
   } catch (error) {
     console.error('❌ Failed to register routes:', error);
     process.exit(1);
@@ -250,38 +277,15 @@ app.use((req, res, next) => {
     process.exit(1);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || '5000', 10);
+  // Log completion of background initialization
+  log(`✅ Background services initialized`);
+  log(`📡 WebSocket tracking available at ws://localhost:${port}/ws/tracking`);
   
-  // Add error handling for server startup
-  server.on('error', (error: any) => {
-    if (error.code === 'EADDRINUSE') {
-      console.error(`❌ Port ${port} is already in use`);
-    } else if (error.code === 'EACCES') {
-      console.error(`❌ Permission denied to bind to port ${port}`);
-    } else {
-      console.error('❌ Server error:', error);
-    }
-    process.exit(1);
-  });
-  
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-    log(`WebSocket tracking available at ws://localhost:${port}/ws/tracking`);
-    
-    // Log environment for debugging deployments
-    if (process.env.NODE_ENV === 'production') {
-      console.log('🚀 Production deployment ready');
-      console.log('📊 Session store:', process.env.DATABASE_URL ? 'PostgreSQL' : 'MemoryStore (fallback)');
-    }
-  });
+  // Log environment for debugging deployments
+  if (process.env.NODE_ENV === 'production') {
+    console.log('🚀 Production deployment ready');
+    console.log('📊 Session store:', process.env.DATABASE_URL ? 'PostgreSQL' : 'MemoryStore (fallback)');
+  }
 
   // Graceful shutdown handling
   process.on('SIGINT', async () => {
