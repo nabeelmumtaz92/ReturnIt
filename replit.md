@@ -38,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 - **Driver Payouts**: Tracking, Stripe transfers, 1099 generation.
 - **Store Locations**: Google Places-powered database of 600+ St. Louis retail locations.
 - **Donation Locations**: Stores information for charities (name, address, hours, accepted items).
+- **St. Louis Compliance** (7 tables): MVR checks, insurance policies, contractor agreements, partner agreements, prohibited items, incidents, custody ledger (append-only audit trail).
 
 ## Key Features
 
@@ -75,6 +76,7 @@ Preferred communication style: Simple, everyday language.
 - **Comprehensive Orders Dashboard**: Full order lifecycle management with real-time data and Stripe refund processing.
 - **Physical Refund Management**: "Cash/Check Pending" stat card and filter for tracking orders where drivers received cash/check refunds and need to physically return money to customers.
 - **Secure Admin Password System**: Bcrypt hashing, token versioning, and offline recovery.
+- **St. Louis Compliance Module**: MVR tracking, insurance verification, contractor/partner agreements, prohibited items database, incident reporting, chain-of-custody logging (29 API routes with multi-layer security).
 
 ### Retailer Enterprise Platform
 - **Tier 1 (Self-Service Portal)**: Company registration, multi-admin access, subscription management.
@@ -92,6 +94,7 @@ Preferred communication style: Simple, everyday language.
 - **PCI-compliant payment processing via Stripe**.
 - **IRS-compliant 1099-NEC tax form generation**.
 - **W-9 Tax Form Collection**: Database schema and API routes for W-9 submission.
+- **St. Louis Compliance System**: Driver vetting (MVR checks, insurance tracking), contractor agreements, store partner agreements, prohibited items validation, incident reporting, append-only chain-of-custody ledger with 6-layer security (authentication, user hydration, resource-level authz, order-level authz, input validation, admin-only mutations).
 
 ## Infrastructure & Deployment
 - Production deployment at returnit.online with Neon PostgreSQL.
