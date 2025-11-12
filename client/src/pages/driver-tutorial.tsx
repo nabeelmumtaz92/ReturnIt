@@ -23,6 +23,15 @@ export default function DriverTutorial() {
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
   const queryClient = useQueryClient();
 
+  const completeTutorialMutation = useMutation({
+    mutationFn: () => apiRequest("POST", "/api/driver/complete-tutorial"),
+    onSuccess: () => {
+      // Refresh user data to reflect tutorial completion and driver access
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      console.log("Tutorial completed successfully - driver access granted");
+    }
+  });
+
   const tutorialSteps: TutorialStep[] = [
     {
       id: 0,
@@ -496,17 +505,8 @@ export default function DriverTutorial() {
     }
   ];
 
-  const completeTutorialMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/driver/complete-tutorial"),
-    onSuccess: () => {
-      // Refresh user data to reflect tutorial completion and driver access
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      console.log("Tutorial completed successfully - driver access granted");
-    }
-  });
-
   const handleNext = () => {
-    setCompletedSteps(prev => new Set([...prev, currentStep]));
+    setCompletedSteps(prev => new Set(Array.from(prev).concat(currentStep)));
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
