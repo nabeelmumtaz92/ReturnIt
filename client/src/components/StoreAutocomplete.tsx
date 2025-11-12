@@ -23,6 +23,8 @@ interface StoreLocation {
   category: string | null;
   isActive: boolean;
   acceptsReturns: boolean;
+  acceptsThirdPartyReturns: boolean; // Critical: Can non-purchaser return items?
+  thirdPartyReturnNotes: string | null; // Special requirements
   isAnyLocation?: boolean; // Flag for "any location" option
 }
 

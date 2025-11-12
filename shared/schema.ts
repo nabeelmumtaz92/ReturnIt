@@ -625,6 +625,8 @@ export const storeLocations = pgTable("store_locations", {
   returnPolicy: jsonb("return_policy").default({}), // Store-specific return policies
   isActive: boolean("is_active").default(true).notNull(),
   acceptsReturns: boolean("accepts_returns").default(true).notNull(),
+  acceptsThirdPartyReturns: boolean("accepts_third_party_returns").default(false).notNull(), // Critical: Can non-purchaser return items?
+  thirdPartyReturnNotes: text("third_party_return_notes"), // Special requirements for third-party returns
   hasPickupService: boolean("has_pickup_service").default(false).notNull(),
   maxReturnValue: real("max_return_value"), // Maximum return value accepted
   specialInstructions: text("special_instructions"), // Special pickup/return instructions

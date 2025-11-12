@@ -45,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 ### Customer Features
 - **Booking Flow**: Supports returns, exchanges, and free charitable donations.
 - **Google Places Store Location Integration**: Smart autocomplete for 600+ verified St. Louis store addresses.
+- **Third-Party Return Warning System**: Real-time alerts when customers select stores that may reject returns from non-purchasers. Database tracks acceptsThirdPartyReturns and thirdPartyReturnNotes for 59+ stores. Red warning banner displays policy details and suggests alternative stores (Target, Kohl's, JCPenney, Macy's, Nordstrom, Home Depot, Lowe's).
 - **Authentication-Required Checkout**: Customers must sign in before completing booking.
 - **Multiple Items Per Return/Donation**: Users can add unlimited items, with a combined limit of 8 boxes/bags per order.
 - **Mandatory Photo Verification**: Requires at least one photo (receipt, tags, or packaging).

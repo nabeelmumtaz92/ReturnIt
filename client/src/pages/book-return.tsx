@@ -378,6 +378,7 @@ export default function BookReturn() {
   const [confirmedOrder, setConfirmedOrder] = useState<any>(null);
   const [clientSecret, setClientSecret] = useState<string>("");
   const [validationErrors, setValidationErrors] = useState<Set<string>>(new Set());
+  const [selectedStore, setSelectedStore] = useState<any | null>(null); // Track selected store for third-party warning
   const [formData, setFormData] = useState<FormData>({
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
@@ -1254,6 +1255,9 @@ export default function BookReturn() {
                       placeholder="Type to search stores..."
                       value={formData.retailer}
                       onChange={(value) => {
+                        // Clear selected store when user types (reset warning)
+                        setSelectedStore(null);
+                        
                         // Update retailer text as user types
                         setFormData(prev => ({
                           ...prev,
@@ -1268,8 +1272,12 @@ export default function BookReturn() {
                           streetAddress: store.streetAddress,
                           city: store.city,
                           state: store.state,
-                          zipCode: store.zipCode
+                          zipCode: store.zipCode,
+                          acceptsThirdPartyReturns: store.acceptsThirdPartyReturns
                         });
+                        
+                        // Save the full store object for warning display
+                        setSelectedStore(store);
                         
                         // Auto-fill ALL store details when user selects a location from dropdown
                         setFormData(prev => {
@@ -1310,6 +1318,31 @@ export default function BookReturn() {
                       className="mb-4"
                       data-testid="autocomplete-store"
                     />
+
+                    {/* Third-Party Return Warning */}
+                    {selectedStore && !selectedStore.acceptsThirdPartyReturns && (
+                      <div className="p-4 bg-red-50 border-2 border-red-400 rounded-lg" data-testid="alert-third-party-warning">
+                        <div className="flex items-start">
+                          <AlertCircle className="h-5 w-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h4 className="text-sm font-bold text-red-900 mb-1">
+                              ⚠️ Third-Party Return Warning
+                            </h4>
+                            <p className="text-sm text-red-800 mb-2">
+                              <strong>{selectedStore.retailerName}</strong> may not accept returns from someone other than the original purchaser.
+                            </p>
+                            {selectedStore.thirdPartyReturnNotes && (
+                              <p className="text-xs text-red-700 bg-red-100 p-2 rounded border border-red-300 mb-2">
+                                <strong>Store Policy:</strong> {selectedStore.thirdPartyReturnNotes}
+                              </p>
+                            )}
+                            <p className="text-xs text-red-700 font-medium">
+                              📋 This return may be rejected at the store. Consider choosing a store that accepts third-party returns (Target, Kohl's, JCPenney, Macy's, Nordstrom, Home Depot, Lowe's).
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="space-y-4 p-4 bg-amber-50/30 border border-amber-200 rounded-lg">
                   <h3 className="text-sm font-semibold text-amber-900 flex items-center">
