@@ -51,6 +51,7 @@ Preferred communication style: Simple, everyday language.
 - **Mandatory Photo Verification**: Requires at least one photo (receipt, tags, or packaging).
 - **Customer-Paid Premium Pricing Tiers**: Standard, Priority, Instant options.
 - **Enhanced Tip Encouragement**: Pre-selected higher amounts, prominent messaging.
+- **Location-Based Sales Tax Calculation**: Automatic sales tax calculation using Stripe Tax API based on pickup address (county-level jurisdiction). Tax rates vary by location (e.g., 7-9% in St. Louis County vs 6-7% in Franklin County). Donations are tax-exempt (0% tax on delivery fees). Tax is calculated server-side before PaymentIntent creation and includes subtotal + service fee (tip excluded from tax calculation). Implementation includes dual-path calculation (routeInfo and amount fallback) with comprehensive error handling.
 - **SMS Verification**: Alternative to email verification via Twilio.
 - **Google Maps Integration**: For pickup location selection and display.
 

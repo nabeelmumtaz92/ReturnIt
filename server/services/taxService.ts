@@ -34,7 +34,7 @@ export class TaxService {
     try {
       // Handle tax-exempt donations
       if (input.isDonation) {
-        return this.calculateDonationTax();
+        return this.calculateDonationTax(input.amount);
       }
       
       // Convert amount to cents for Stripe
@@ -69,11 +69,41 @@ export class TaxService {
       // Calculate effective tax rate
       const effectiveTaxRate = input.amount > 0 ? taxAmount / input.amount : 0;
       
-      // Get jurisdiction name from tax breakdown
-      let taxJurisdictionName = 'Unknown';
+      // Get jurisdiction name from Stripe tax breakdown (prefer county-level)
+      // Stripe returns multiple jurisdictions: state, county, city, district
+      // We prefer county > city > state for accurate location-based reporting
+      let taxJurisdictionName = `${input.address.city}, ${input.address.state}`; // Default fallback
+      
       if (calculation.tax_breakdown && calculation.tax_breakdown.length > 0) {
-        // Use city and state from input address for jurisdiction name
-        taxJurisdictionName = `${input.address.city}, ${input.address.state}`;
+        // Search for county-level jurisdiction first
+        let countyJurisdiction = null;
+        let cityJurisdiction = null;
+        let stateJurisdiction = null;
+        
+        for (const breakdown of calculation.tax_breakdown) {
+          const jurisdiction = (breakdown as any).jurisdiction;
+          if (!jurisdiction) continue;
+          
+          const level = jurisdiction.level?.toLowerCase();
+          if (level === 'county') {
+            countyJurisdiction = jurisdiction;
+            break; // Prefer county, stop searching
+          } else if (level === 'city') {
+            cityJurisdiction = jurisdiction;
+          } else if (level === 'state') {
+            stateJurisdiction = jurisdiction;
+          }
+        }
+        
+        // Use the most specific jurisdiction available
+        const selectedJurisdiction = countyJurisdiction || cityJurisdiction || stateJurisdiction;
+        if (selectedJurisdiction) {
+          const name = selectedJurisdiction.display_name || selectedJurisdiction.name || '';
+          const state = selectedJurisdiction.state || input.address.state;
+          if (name) {
+            taxJurisdictionName = `${name}, ${state}`;
+          }
+        }
       }
       
       const grandTotal = input.amount + taxAmount;
@@ -101,13 +131,15 @@ export class TaxService {
 
   /**
    * Calculate tax for donations (should always be 0 - donations are tax-exempt)
+   * Note: Donations still have delivery fees, just no sales tax
+   * @param subtotal - The taxable subtotal (delivery fees) - NOT 0
    */
-  async calculateDonationTax(): Promise<TaxCalculationResult> {
+  async calculateDonationTax(subtotal: number = 0): Promise<TaxCalculationResult> {
     return {
       taxAmount: 0,
       effectiveTaxRate: 0,
       taxJurisdictionName: 'Tax-exempt (donation)',
-      grandTotal: 0, // Donations are free
+      grandTotal: subtotal, // Preserve subtotal - donations still charge delivery fees, just no tax
     };
   }
 }

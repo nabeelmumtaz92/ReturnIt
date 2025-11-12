@@ -9987,8 +9987,9 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
           }
         }
         
-        // Add tax to the base amount
-        const grandTotal = baseAmount + taxAmount;
+        // Calculate grand total: base amount + tax + tip
+        const tipAmount = parseFloat(tip || 0);
+        const grandTotal = baseAmount + taxAmount + tipAmount;
         amountInCents = Math.round(grandTotal * 100);
         
         paymentMetadata = {
@@ -9998,6 +9999,7 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
           taxAmount: taxAmount.toString(),
           taxRate: effectiveTaxRate.toString(),
           taxJurisdiction: taxJurisdictionName,
+          tip: tipAmount.toString(),
           grandTotal: grandTotal.toString()
         };
       } else {
