@@ -20,12 +20,22 @@ import { crashRecovery } from "./middleware/crashRecovery";
 
 const app = express();
 
-// DEPLOYMENT: Health check endpoint MUST be absolute first - before ANY middleware or Vite
+// DEPLOYMENT: Health check endpoints MUST be absolute first - before ANY middleware or Vite
 // Responds instantly for deployment health checks
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'healthy',
     service: 'ReturnIt API',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Root endpoint for deployment health checks (required by Replit deployment)
+app.get('/', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    service: 'ReturnIt API',
+    version: '1.0.0',
     timestamp: new Date().toISOString()
   });
 });

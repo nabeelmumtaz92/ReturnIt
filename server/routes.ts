@@ -74,6 +74,8 @@ declare module 'express-session' {
 // Simple session-based authentication middleware
 const isAuthenticated = (req: any, res: any, next: any) => {
   if (req.session?.user) {
+    // CRITICAL: Hydrate req.user from session for compliance routes
+    req.user = req.session.user;
     next();
   } else {
     res.status(401).json({ message: "Unauthorized" });
