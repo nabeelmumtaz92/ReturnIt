@@ -41,7 +41,14 @@ import {
   type SystemSetting, type InsertSystemSetting,
   type DriverPaymentMethod, type InsertDriverPaymentMethod,
   OrderStatus, type OrderStatus as OrderStatusType,
-  type Location, LocationSchema, AssignmentStatus
+  type Location, LocationSchema, AssignmentStatus,
+  type MvrCheck, type InsertMvrCheck,
+  type InsurancePolicy, type InsertInsurancePolicy,
+  type ContractorAgreement, type InsertContractorAgreement,
+  type PartnerAgreement, type InsertPartnerAgreement,
+  type ProhibitedItem, type InsertProhibitedItem,
+  type Incident, type InsertIncident,
+  type CustodyLedgerEntry, type InsertCustodyLedgerEntry
 } from "@shared/schema";
 import { generateUniqueTrackingNumber } from "@shared/utils/trackingNumberGenerator";
 import { generateAccessToken } from "@shared/utils/urlSigner";
@@ -61,7 +68,14 @@ import {
   messages,
   systemSettings,
   driverPaymentMethods,
-  indeedApplications
+  indeedApplications,
+  mvrChecks,
+  insurancePolicies,
+  contractorAgreements,
+  partnerAgreements,
+  prohibitedItems,
+  incidents,
+  custodyLedger
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, or, desc, asc, isNull, not, lt, sql, isNotNull, inArray, gte, notInArray } from "drizzle-orm";
@@ -467,6 +481,50 @@ export interface IStorage {
   getSystemSettingsByCategory(category: string): Promise<SystemSetting[]>;
   updateSystemSetting(key: string, value: string, userId?: number): Promise<SystemSetting | undefined>;
   createSystemSetting(setting: InsertSystemSetting): Promise<SystemSetting>;
+  
+  // === ST. LOUIS COMPLIANCE ===
+  // MVR Checks
+  getDriverMvrChecks(driverId: number): Promise<MvrCheck[]>;
+  getLatestMvrCheck(driverId: number): Promise<MvrCheck | undefined>;
+  createMvrCheck(check: InsertMvrCheck): Promise<MvrCheck>;
+  updateMvrCheck(id: number, updates: Partial<MvrCheck>): Promise<MvrCheck | undefined>;
+  getExpiringMvrChecks(daysThreshold: number): Promise<MvrCheck[]>;
+  
+  // Insurance Policies
+  getDriverInsurancePolicies(driverId: number): Promise<InsurancePolicy[]>;
+  getActiveInsurancePolicy(driverId: number, policyType: string): Promise<InsurancePolicy | undefined>;
+  createInsurancePolicy(policy: InsertInsurancePolicy): Promise<InsurancePolicy>;
+  updateInsurancePolicy(id: number, updates: Partial<InsurancePolicy>): Promise<InsurancePolicy | undefined>;
+  getExpiringInsurancePolicies(daysThreshold: number): Promise<InsurancePolicy[]>;
+  
+  // Contractor Agreements
+  getDriverAgreements(driverId: number): Promise<ContractorAgreement[]>;
+  getActiveAgreement(driverId: number): Promise<ContractorAgreement | undefined>;
+  createContractorAgreement(agreement: InsertContractorAgreement): Promise<ContractorAgreement>;
+  
+  // Partner Agreements
+  getPartnerAgreements(): Promise<PartnerAgreement[]>;
+  getPartnerAgreementById(id: number): Promise<PartnerAgreement | undefined>;
+  getStorePartnerAgreements(storeId: number): Promise<PartnerAgreement[]>;
+  createPartnerAgreement(agreement: InsertPartnerAgreement): Promise<PartnerAgreement>;
+  updatePartnerAgreement(id: number, updates: Partial<PartnerAgreement>): Promise<PartnerAgreement | undefined>;
+  
+  // Prohibited Items
+  getProhibitedItems(): Promise<ProhibitedItem[]>;
+  getProhibitedItemsByCategory(category: string): Promise<ProhibitedItem[]>;
+  checkItemProhibited(itemDescription: string): Promise<{ prohibited: boolean; item?: ProhibitedItem }>;
+  createProhibitedItem(item: InsertProhibitedItem): Promise<ProhibitedItem>;
+  updateProhibitedItem(id: number, updates: Partial<ProhibitedItem>): Promise<ProhibitedItem | undefined>;
+  
+  // Incidents
+  getOrderIncidents(orderId: string): Promise<Incident[]>;
+  getDriverIncidents(driverId: number): Promise<Incident[]>;
+  createIncident(incident: InsertIncident): Promise<Incident>;
+  updateIncident(id: number, updates: Partial<Incident>): Promise<Incident | undefined>;
+  
+  // Custody Ledger (append-only)
+  getOrderCustodyLog(orderId: string): Promise<CustodyLedgerEntry[]>;
+  createCustodyEntry(entry: InsertCustodyLedgerEntry): Promise<CustodyLedgerEntry>;
 }
 
 export class MemStorage implements IStorage {
@@ -5262,6 +5320,235 @@ export class DatabaseStorage implements IStorage {
   async getReviewByOrderId(orderId: string): Promise<Review | undefined> {
     const result = await db.select().from(reviews).where(eq(reviews.orderId, orderId));
     return result[0];
+  }
+  
+  // === ST. LOUIS COMPLIANCE IMPLEMENTATION ===
+  
+  // MVR Checks
+  async getDriverMvrChecks(driverId: number): Promise<MvrCheck[]> {
+    return await db.select().from(mvrChecks).where(eq(mvrChecks.userId, driverId)).orderBy(desc(mvrChecks.checkDate));
+  }
+  
+  async getLatestMvrCheck(driverId: number): Promise<MvrCheck | undefined> {
+    const result = await db.select().from(mvrChecks)
+      .where(eq(mvrChecks.userId, driverId))
+      .orderBy(desc(mvrChecks.checkDate))
+      .limit(1);
+    return result[0];
+  }
+  
+  async createMvrCheck(check: InsertMvrCheck): Promise<MvrCheck> {
+    const [newCheck] = await db.insert(mvrChecks).values(check).returning();
+    return newCheck;
+  }
+  
+  async updateMvrCheck(id: number, updates: Partial<MvrCheck>): Promise<MvrCheck | undefined> {
+    const [updated] = await db.update(mvrChecks)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(mvrChecks.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async getExpiringMvrChecks(daysThreshold: number): Promise<MvrCheck[]> {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() + daysThreshold);
+    
+    return await db.select().from(mvrChecks)
+      .where(
+        and(
+          eq(mvrChecks.status, 'active'),
+          lt(mvrChecks.expirationDate, thresholdDate),
+          isNull(mvrChecks.reminderSentAt)
+        )
+      );
+  }
+  
+  // Insurance Policies
+  async getDriverInsurancePolicies(driverId: number): Promise<InsurancePolicy[]> {
+    return await db.select().from(insurancePolicies)
+      .where(eq(insurancePolicies.userId, driverId))
+      .orderBy(desc(insurancePolicies.createdAt));
+  }
+  
+  async getActiveInsurancePolicy(driverId: number, policyType: string): Promise<InsurancePolicy | undefined> {
+    const result = await db.select().from(insurancePolicies)
+      .where(
+        and(
+          eq(insurancePolicies.userId, driverId),
+          eq(insurancePolicies.policyType, policyType),
+          eq(insurancePolicies.status, 'active')
+        )
+      )
+      .orderBy(desc(insurancePolicies.expirationDate))
+      .limit(1);
+    return result[0];
+  }
+  
+  async createInsurancePolicy(policy: InsertInsurancePolicy): Promise<InsurancePolicy> {
+    const [newPolicy] = await db.insert(insurancePolicies).values(policy).returning();
+    return newPolicy;
+  }
+  
+  async updateInsurancePolicy(id: number, updates: Partial<InsurancePolicy>): Promise<InsurancePolicy | undefined> {
+    const [updated] = await db.update(insurancePolicies)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(insurancePolicies.id, id))
+      .returning();
+    return updated;
+  }
+  
+  async getExpiringInsurancePolicies(daysThreshold: number): Promise<InsurancePolicy[]> {
+    const thresholdDate = new Date();
+    thresholdDate.setDate(thresholdDate.getDate() + daysThreshold);
+    
+    return await db.select().from(insurancePolicies)
+      .where(
+        and(
+          eq(insurancePolicies.status, 'active'),
+          lt(insurancePolicies.expirationDate, thresholdDate),
+          isNull(insurancePolicies.reminderSentAt)
+        )
+      );
+  }
+  
+  // Contractor Agreements
+  async getDriverAgreements(driverId: number): Promise<ContractorAgreement[]> {
+    return await db.select().from(contractorAgreements)
+      .where(eq(contractorAgreements.userId, driverId))
+      .orderBy(desc(contractorAgreements.signedAt));
+  }
+  
+  async getActiveAgreement(driverId: number): Promise<ContractorAgreement | undefined> {
+    const result = await db.select().from(contractorAgreements)
+      .where(
+        and(
+          eq(contractorAgreements.userId, driverId),
+          eq(contractorAgreements.status, 'active')
+        )
+      )
+      .orderBy(desc(contractorAgreements.version))
+      .limit(1);
+    return result[0];
+  }
+  
+  async createContractorAgreement(agreement: InsertContractorAgreement): Promise<ContractorAgreement> {
+    const [newAgreement] = await db.insert(contractorAgreements).values(agreement).returning();
+    return newAgreement;
+  }
+  
+  // Partner Agreements
+  async getPartnerAgreements(): Promise<PartnerAgreement[]> {
+    return await db.select().from(partnerAgreements).orderBy(desc(partnerAgreements.createdAt));
+  }
+  
+  async getPartnerAgreementById(id: number): Promise<PartnerAgreement | undefined> {
+    const result = await db.select().from(partnerAgreements).where(eq(partnerAgreements.id, id));
+    return result[0];
+  }
+  
+  async getStorePartnerAgreements(storeId: number): Promise<PartnerAgreement[]> {
+    return await db.select().from(partnerAgreements)
+      .where(sql`${partnerAgreements.linkedStoreIds} @> ARRAY[${storeId}]::integer[]`)
+      .orderBy(desc(partnerAgreements.createdAt));
+  }
+  
+  async createPartnerAgreement(agreement: InsertPartnerAgreement): Promise<PartnerAgreement> {
+    const [newAgreement] = await db.insert(partnerAgreements).values(agreement).returning();
+    return newAgreement;
+  }
+  
+  async updatePartnerAgreement(id: number, updates: Partial<PartnerAgreement>): Promise<PartnerAgreement | undefined> {
+    const [updated] = await db.update(partnerAgreements)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(partnerAgreements.id, id))
+      .returning();
+    return updated;
+  }
+  
+  // Prohibited Items
+  async getProhibitedItems(): Promise<ProhibitedItem[]> {
+    return await db.select().from(prohibitedItems)
+      .where(eq(prohibitedItems.isActive, true))
+      .orderBy(prohibitedItems.category);
+  }
+  
+  async getProhibitedItemsByCategory(category: string): Promise<ProhibitedItem[]> {
+    return await db.select().from(prohibitedItems)
+      .where(
+        and(
+          eq(prohibitedItems.category, category),
+          eq(prohibitedItems.isActive, true)
+        )
+      );
+  }
+  
+  async checkItemProhibited(itemDescription: string): Promise<{ prohibited: boolean; item?: ProhibitedItem }> {
+    const items = await this.getProhibitedItems();
+    const itemLower = itemDescription.toLowerCase();
+    
+    for (const item of items) {
+      const keywords = item.keywords || [];
+      for (const keyword of keywords) {
+        if (itemLower.includes(keyword.toLowerCase())) {
+          return { prohibited: true, item };
+        }
+      }
+    }
+    
+    return { prohibited: false };
+  }
+  
+  async createProhibitedItem(item: InsertProhibitedItem): Promise<ProhibitedItem> {
+    const [newItem] = await db.insert(prohibitedItems).values(item).returning();
+    return newItem;
+  }
+  
+  async updateProhibitedItem(id: number, updates: Partial<ProhibitedItem>): Promise<ProhibitedItem | undefined> {
+    const [updated] = await db.update(prohibitedItems)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(prohibitedItems.id, id))
+      .returning();
+    return updated;
+  }
+  
+  // Incidents
+  async getOrderIncidents(orderId: string): Promise<Incident[]> {
+    return await db.select().from(incidents)
+      .where(eq(incidents.orderId, orderId))
+      .orderBy(desc(incidents.createdAt));
+  }
+  
+  async getDriverIncidents(driverId: number): Promise<Incident[]> {
+    return await db.select().from(incidents)
+      .where(eq(incidents.reportedBy, driverId))
+      .orderBy(desc(incidents.createdAt));
+  }
+  
+  async createIncident(incident: InsertIncident): Promise<Incident> {
+    const [newIncident] = await db.insert(incidents).values(incident).returning();
+    return newIncident;
+  }
+  
+  async updateIncident(id: number, updates: Partial<Incident>): Promise<Incident | undefined> {
+    const [updated] = await db.update(incidents)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(incidents.id, id))
+      .returning();
+    return updated;
+  }
+  
+  // Custody Ledger (append-only)
+  async getOrderCustodyLog(orderId: string): Promise<CustodyLedgerEntry[]> {
+    return await db.select().from(custodyLedger)
+      .where(eq(custodyLedger.orderId, orderId))
+      .orderBy(custodyLedger.timestamp);
+  }
+  
+  async createCustodyEntry(entry: InsertCustodyLedgerEntry): Promise<CustodyLedgerEntry> {
+    // NOTE: This is an append-only log - never update or delete entries
+    const [newEntry] = await db.insert(custodyLedger).values(entry).returning();
+    return newEntry;
   }
   
   async updateDriverRating(driverId: number): Promise<void> {
