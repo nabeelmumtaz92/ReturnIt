@@ -72,6 +72,17 @@ export default function CustomerDashboard() {
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [downloadingReceipt, setDownloadingReceipt] = useState<string | null>(null);
 
+  // HTML escape utility to prevent XSS
+  const escapeHtml = (unsafe: string | null | undefined): string => {
+    if (!unsafe) return '';
+    return String(unsafe)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
   // Handle receipt download
   const handleDownloadReceipt = async (orderId: string) => {
     try {
@@ -93,7 +104,7 @@ export default function CustomerDashboard() {
           <!DOCTYPE html>
           <html>
           <head>
-            <title>Receipt - Order ${receiptData.trackingNumber}</title>
+            <title>Receipt - Order ${escapeHtml(receiptData.trackingNumber)}</title>
             <style>
               body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
               .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #B8956A; padding-bottom: 20px; }
@@ -111,20 +122,20 @@ export default function CustomerDashboard() {
           <body>
             <div class="header">
               <h1>Return It Receipt</h1>
-              <p>Order #${receiptData.trackingNumber}</p>
+              <p>Order #${escapeHtml(receiptData.trackingNumber)}</p>
             </div>
             
             <div class="section">
               <h2>Order Information</h2>
               <div class="info-grid">
                 <div class="info-label">Order ID:</div>
-                <div>${receiptData.orderId}</div>
+                <div>${escapeHtml(receiptData.orderId)}</div>
                 <div class="info-label">Tracking Number:</div>
-                <div>${receiptData.trackingNumber}</div>
+                <div>${escapeHtml(receiptData.trackingNumber)}</div>
                 <div class="info-label">Order Date:</div>
-                <div>${new Date(receiptData.createdAt).toLocaleString()}</div>
+                <div>${escapeHtml(new Date(receiptData.createdAt).toLocaleString())}</div>
                 <div class="info-label">Customer Email:</div>
-                <div>${receiptData.customerEmail || 'N/A'}</div>
+                <div>${escapeHtml(receiptData.customerEmail || 'N/A')}</div>
               </div>
             </div>
 
@@ -132,7 +143,7 @@ export default function CustomerDashboard() {
               <h2>Pickup Information</h2>
               <div class="info-grid">
                 <div class="info-label">Pickup Address:</div>
-                <div>${receiptData.pickupAddress.street}, ${receiptData.pickupAddress.city}, ${receiptData.pickupAddress.state} ${receiptData.pickupAddress.zipCode}</div>
+                <div>${escapeHtml(receiptData.pickupAddress.street)}, ${escapeHtml(receiptData.pickupAddress.city)}, ${escapeHtml(receiptData.pickupAddress.state)} ${escapeHtml(receiptData.pickupAddress.zipCode)}</div>
               </div>
             </div>
 
@@ -140,9 +151,9 @@ export default function CustomerDashboard() {
               <h2>Return Information</h2>
               <div class="info-grid">
                 <div class="info-label">Return To:</div>
-                <div>${receiptData.returnAddress || 'N/A'}</div>
+                <div>${escapeHtml(receiptData.returnAddress || 'N/A')}</div>
                 <div class="info-label">Service Tier:</div>
-                <div>${receiptData.serviceTier || 'Standard'}</div>
+                <div>${escapeHtml(receiptData.serviceTier || 'Standard')}</div>
               </div>
             </div>
 
