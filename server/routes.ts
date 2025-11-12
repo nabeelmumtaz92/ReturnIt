@@ -15276,6 +15276,366 @@ Always think strategically, explain your reasoning, and provide value beyond bas
   const adminPasswordRoutes = (await import("./routes/adminPasswordRoutes")).default;
   app.use("/api/admin/password", adminPasswordRoutes);
 
+  // ==================== ST. LOUIS COMPLIANCE ROUTES ====================
+  
+  // MVR Checks
+  app.get("/api/compliance/mvr/:driverId", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      
+      // SECURITY: Only allow access to own records or admin
+      if (req.user.id !== driverId && req.user.role !== 'admin' && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access your own MVR records" });
+      }
+      
+      const checks = await storage.getDriverMvrChecks(driverId);
+      res.json(checks);
+    } catch (error) {
+      console.error('Error fetching MVR checks:', error);
+      res.status(500).json({ message: "Failed to fetch MVR checks" });
+    }
+  });
+  
+  app.post("/api/compliance/mvr", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const { insertMvrCheckSchema } = await import("@shared/schema");
+      const validated = insertMvrCheckSchema.parse(req.body);
+      const check = await storage.createMvrCheck(validated);
+      res.json(check);
+    } catch (error) {
+      console.error('Error creating MVR check:', error);
+      res.status(500).json({ message: "Failed to create MVR check" });
+    }
+  });
+  
+  app.patch("/api/compliance/mvr/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { insertMvrCheckSchema } = await import("@shared/schema");
+      const validated = insertMvrCheckSchema.partial().parse(req.body);
+      const check = await storage.updateMvrCheck(id, validated);
+      res.json(check);
+    } catch (error: any) {
+      console.error('Error updating MVR check:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update MVR check" });
+    }
+  });
+  
+  app.get("/api/compliance/mvr/expiring/:days", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const days = parseInt(req.params.days);
+      const checks = await storage.getExpiringMvrChecks(days);
+      res.json(checks);
+    } catch (error) {
+      console.error('Error fetching expiring MVR checks:', error);
+      res.status(500).json({ message: "Failed to fetch expiring MVR checks" });
+    }
+  });
+  
+  // Insurance Policies
+  app.get("/api/compliance/insurance/:driverId", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      
+      // SECURITY: Only allow access to own records or admin
+      if (req.user.id !== driverId && req.user.role !== 'admin' && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access your own insurance records" });
+      }
+      
+      const policies = await storage.getDriverInsurancePolicies(driverId);
+      res.json(policies);
+    } catch (error) {
+      console.error('Error fetching insurance policies:', error);
+      res.status(500).json({ message: "Failed to fetch insurance policies" });
+    }
+  });
+  
+  app.post("/api/compliance/insurance", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const { insertInsurancePolicySchema } = await import("@shared/schema");
+      const validated = insertInsurancePolicySchema.parse(req.body);
+      const policy = await storage.createInsurancePolicy(validated);
+      res.json(policy);
+    } catch (error) {
+      console.error('Error creating insurance policy:', error);
+      res.status(500).json({ message: "Failed to create insurance policy" });
+    }
+  });
+  
+  app.patch("/api/compliance/insurance/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { insertInsurancePolicySchema } = await import("@shared/schema");
+      const validated = insertInsurancePolicySchema.partial().parse(req.body);
+      const policy = await storage.updateInsurancePolicy(id, validated);
+      res.json(policy);
+    } catch (error: any) {
+      console.error('Error updating insurance policy:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update insurance policy" });
+    }
+  });
+  
+  app.get("/api/compliance/insurance/expiring/:days", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const days = parseInt(req.params.days);
+      const policies = await storage.getExpiringInsurancePolicies(days);
+      res.json(policies);
+    } catch (error) {
+      console.error('Error fetching expiring insurance policies:', error);
+      res.status(500).json({ message: "Failed to fetch expiring insurance policies" });
+    }
+  });
+  
+  // Contractor Agreements
+  app.get("/api/compliance/agreements/:driverId", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      
+      // SECURITY: Only allow access to own records or admin
+      if (req.user.id !== driverId && req.user.role !== 'admin' && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access your own contractor agreements" });
+      }
+      
+      const agreements = await storage.getDriverAgreements(driverId);
+      res.json(agreements);
+    } catch (error) {
+      console.error('Error fetching contractor agreements:', error);
+      res.status(500).json({ message: "Failed to fetch contractor agreements" });
+    }
+  });
+  
+  app.post("/api/compliance/agreements", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const { insertContractorAgreementSchema } = await import("@shared/schema");
+      const validated = insertContractorAgreementSchema.parse(req.body);
+      const agreement = await storage.createContractorAgreement(validated);
+      res.json(agreement);
+    } catch (error) {
+      console.error('Error creating contractor agreement:', error);
+      res.status(500).json({ message: "Failed to create contractor agreement" });
+    }
+  });
+  
+  // Partner Agreements
+  app.get("/api/compliance/partners", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const agreements = await storage.getPartnerAgreements();
+      res.json(agreements);
+    } catch (error) {
+      console.error('Error fetching partner agreements:', error);
+      res.status(500).json({ message: "Failed to fetch partner agreements" });
+    }
+  });
+  
+  app.get("/api/compliance/partners/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const agreement = await storage.getPartnerAgreementById(id);
+      res.json(agreement);
+    } catch (error) {
+      console.error('Error fetching partner agreement:', error);
+      res.status(500).json({ message: "Failed to fetch partner agreement" });
+    }
+  });
+  
+  app.post("/api/compliance/partners", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const { insertPartnerAgreementSchema } = await import("@shared/schema");
+      const validated = insertPartnerAgreementSchema.parse(req.body);
+      const agreement = await storage.createPartnerAgreement(validated);
+      res.json(agreement);
+    } catch (error) {
+      console.error('Error creating partner agreement:', error);
+      res.status(500).json({ message: "Failed to create partner agreement" });
+    }
+  });
+  
+  app.patch("/api/compliance/partners/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { insertPartnerAgreementSchema } = await import("@shared/schema");
+      const validated = insertPartnerAgreementSchema.partial().parse(req.body);
+      const agreement = await storage.updatePartnerAgreement(id, validated);
+      res.json(agreement);
+    } catch (error: any) {
+      console.error('Error updating partner agreement:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update partner agreement" });
+    }
+  });
+  
+  // Prohibited Items
+  app.get("/api/compliance/prohibited-items", isAuthenticated, async (req, res) => {
+    try {
+      const category = req.query.category as string | undefined;
+      const items = category 
+        ? await storage.getProhibitedItemsByCategory(category)
+        : await storage.getProhibitedItems();
+      res.json(items);
+    } catch (error) {
+      console.error('Error fetching prohibited items:', error);
+      res.status(500).json({ message: "Failed to fetch prohibited items" });
+    }
+  });
+  
+  app.post("/api/compliance/prohibited-items/check", async (req, res) => {
+    try {
+      const { itemDescription } = req.body;
+      const result = await storage.checkItemProhibited(itemDescription);
+      res.json(result);
+    } catch (error) {
+      console.error('Error checking prohibited item:', error);
+      res.status(500).json({ message: "Failed to check prohibited item" });
+    }
+  });
+  
+  app.post("/api/compliance/prohibited-items", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const { insertProhibitedItemSchema } = await import("@shared/schema");
+      const validated = insertProhibitedItemSchema.parse(req.body);
+      const item = await storage.createProhibitedItem(validated);
+      res.json(item);
+    } catch (error) {
+      console.error('Error creating prohibited item:', error);
+      res.status(500).json({ message: "Failed to create prohibited item" });
+    }
+  });
+  
+  app.patch("/api/compliance/prohibited-items/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { insertProhibitedItemSchema } = await import("@shared/schema");
+      const validated = insertProhibitedItemSchema.partial().parse(req.body);
+      const item = await storage.updateProhibitedItem(id, validated);
+      res.json(item);
+    } catch (error: any) {
+      console.error('Error updating prohibited item:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update prohibited item" });
+    }
+  });
+  
+  // Incidents
+  app.get("/api/compliance/incidents/order/:orderId", isAuthenticated, async (req, res) => {
+    try {
+      const orderId = req.params.orderId;
+      
+      // SECURITY: Verify user is associated with this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const isCustomer = order.userId === req.user.id;
+      const isDriver = order.driverId === req.user.id;
+      const isAdmin = req.user.role === 'admin' || req.user.isAdmin;
+      
+      if (!isCustomer && !isDriver && !isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access incidents for your own orders" });
+      }
+      
+      const incidents = await storage.getOrderIncidents(orderId);
+      res.json(incidents);
+    } catch (error) {
+      console.error('Error fetching order incidents:', error);
+      res.status(500).json({ message: "Failed to fetch order incidents" });
+    }
+  });
+  
+  app.get("/api/compliance/incidents/driver/:driverId", isAuthenticated, async (req, res) => {
+    try {
+      const driverId = parseInt(req.params.driverId);
+      
+      // SECURITY: Only allow access to own records or admin
+      if (req.user.id !== driverId && req.user.role !== 'admin' && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access your own incident records" });
+      }
+      
+      const incidents = await storage.getDriverIncidents(driverId);
+      res.json(incidents);
+    } catch (error) {
+      console.error('Error fetching driver incidents:', error);
+      res.status(500).json({ message: "Failed to fetch driver incidents" });
+    }
+  });
+  
+  app.post("/api/compliance/incidents", isAuthenticated, async (req, res) => {
+    try {
+      const { insertIncidentSchema } = await import("@shared/schema");
+      const validated = insertIncidentSchema.parse(req.body);
+      const incident = await storage.createIncident(validated);
+      res.json(incident);
+    } catch (error) {
+      console.error('Error creating incident:', error);
+      res.status(500).json({ message: "Failed to create incident" });
+    }
+  });
+  
+  app.patch("/api/compliance/incidents/:id", isAuthenticated, requireSecureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { insertIncidentSchema } = await import("@shared/schema");
+      const validated = insertIncidentSchema.partial().parse(req.body);
+      const incident = await storage.updateIncident(id, validated);
+      res.json(incident);
+    } catch (error: any) {
+      console.error('Error updating incident:', error);
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update incident" });
+    }
+  });
+  
+  // Custody Ledger (append-only)
+  app.get("/api/compliance/custody/:orderId", isAuthenticated, async (req, res) => {
+    try {
+      const orderId = req.params.orderId;
+      
+      // SECURITY: Verify user is associated with this order
+      const order = await storage.getOrder(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      const isCustomer = order.userId === req.user.id;
+      const isDriver = order.driverId === req.user.id;
+      const isAdmin = req.user.role === 'admin' || req.user.isAdmin;
+      
+      if (!isCustomer && !isDriver && !isAdmin) {
+        return res.status(403).json({ message: "Forbidden: You can only access custody logs for your own orders" });
+      }
+      
+      const log = await storage.getOrderCustodyLog(orderId);
+      res.json(log);
+    } catch (error) {
+      console.error('Error fetching custody log:', error);
+      res.status(500).json({ message: "Failed to fetch custody log" });
+    }
+  });
+  
+  app.post("/api/compliance/custody", isAuthenticated, async (req, res) => {
+    try {
+      const { insertCustodyLedgerEntrySchema } = await import("@shared/schema");
+      const validated = insertCustodyLedgerEntrySchema.parse(req.body);
+      const entry = await storage.createCustodyEntry(validated);
+      res.json(entry);
+    } catch (error) {
+      console.error('Error creating custody entry:', error);
+      res.status(500).json({ message: "Failed to create custody entry" });
+    }
+  });
+
   const httpServer = createServer(app);
   
   // Start daily stats scheduler
