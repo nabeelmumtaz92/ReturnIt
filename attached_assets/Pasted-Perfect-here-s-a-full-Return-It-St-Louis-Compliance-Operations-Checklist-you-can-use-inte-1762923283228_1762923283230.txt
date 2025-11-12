@@ -1,0 +1,119 @@
+Perfect — here’s a full **Return It – St. Louis Compliance & Operations Checklist** you can use internally and with your drivers, stores, and insurance providers.
+Everything is structured so it’s ready to copy into your company folder, Replit docs, or PDF.
+
+---
+
+# 🧾 **RETURN IT – ST. LOUIS COMPLIANCE CHECKLIST (v1.0)**
+
+*(For local operations, independent drivers, and store-partner pickups)*
+
+---
+
+## ⚙️ 1. BUSINESS REGISTRATION
+
+| Requirement                  | Description                                                                                                                                                                                                                         | Completed | Notes |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
+| **Business License (GBL)**   | Apply for a **Graduated Business License** through the **City of St. Louis License Collector**. <br>🔗 [stlouis-mo.gov/business-license](https://www.stlouis-mo.gov/government/departments/license/business-license-info/index.cfm) | ☐         |       |
+| **State Registration (SOS)** | Register “Return It LLC” (or DBA) with the **Missouri Secretary of State**. <br>🔗 [sos.mo.gov/business](https://sos.mo.gov/business)                                                                                               | ☐         |       |
+| **Tax Registration**         | Register for **Missouri Business Tax ID** (Sales/Use if applicable). <br>🔗 [dor.mo.gov/taxation](https://dor.mo.gov/taxation/business/)                                                                                            | ☐         |       |
+| **EIN (Federal)**            | Obtain an Employer Identification Number from the IRS. <br>🔗 [irs.gov/ein](https://irs.gov/ein)                                                                                                                                    | ☐         |       |
+| **Zoning Verification**      | Verify your address or driver operations comply with local zoning if dispatching from home.                                                                                                                                         | ☐         |       |
+
+---
+
+## 🚗 2. DRIVER COMPLIANCE
+
+| Requirement                          | Description                                                                                                                                                             | Completed | Notes |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----- |
+| **Driver’s License Verification**    | Each driver must hold a valid Missouri driver’s license (Class F).                                                                                                      | ☐         |       |
+| **Motor Vehicle Record (MVR)**       | Perform annual MVR checks for safety and insurance purposes.                                                                                                            | ☐         |       |
+| **Vehicle Registration**             | Vehicle must be registered and meet Missouri inspection standards.                                                                                                      | ☐         |       |
+| **Insurance**                        | Driver must provide proof of: <br> • Personal Auto Insurance <br> • Commercial/Delivery Coverage (if required) <br> • Goods-in-Transit or Cargo Insurance (recommended) | ☐         |       |
+| **Independent Contractor Agreement** | Signed agreement outlining pay, duties, insurance responsibility, and Return It code of conduct.                                                                        | ☐         |       |
+| **Background Check**                 | Completed and cleared before driver onboarding.                                                                                                                         | ☐         |       |
+
+---
+
+## 📦 3. PICKUP & DELIVERY OPERATIONS
+
+| Requirement                   | Description                                                                             | Completed | Notes |
+| ----------------------------- | --------------------------------------------------------------------------------------- | --------- | ----- |
+| **Customer Authorization**    | Digital or in-app confirmation showing the item, address, and consent for pickup.       | ☐         |       |
+| **Proof of Pickup**           | Driver must upload photos and/or scan barcode before leaving address.                   | ☐         |       |
+| **Proof of Delivery**         | Photo and signature at drop-off (store or donation site).                               | ☐         |       |
+| **Chain-of-Custody Record**   | Digital timestamp log (auto-generated in app) for every leg: customer → driver → store. | ☐         |       |
+| **Item Restrictions**         | No hazardous, illegal, or oversized items per company policy.                           | ☐         |       |
+| **Privacy Policy Compliance** | No sharing of customer data (names, addresses, etc.) outside of Return It systems.      | ☐         |       |
+
+---
+
+## 🏪 4. STORE / PARTNER COMPLIANCE
+
+| Requirement                  | Description                                                                                  | Completed | Notes |
+| ---------------------------- | -------------------------------------------------------------------------------------------- | --------- | ----- |
+| **Retailer Consent**         | Written or email confirmation that the store accepts 3rd-party drop-offs.                    | ☐         |       |
+| **Store Agreement Addendum** | Basic MOU (Memorandum of Understanding) specifying liability hand-off when item is received. | ☐         |       |
+| **Drop-off Verification**    | Staff signature, photo, or digital scan confirming item accepted.                            | ☐         |       |
+| **Receipt Upload**           | Driver must upload store receipt or proof of transaction (for returns/exchanges).            | ☐         |       |
+
+---
+
+## 🛡️ 5. INSURANCE & LIABILITY
+
+| Coverage Type                        | Who Provides                    | Notes                                 |
+| ------------------------------------ | ------------------------------- | ------------------------------------- |
+| **Auto Liability**                   | Driver                          | Required for all active drivers       |
+| **Cargo / Goods-in-Transit**         | Company or driver (recommended) | Protects items in vehicle             |
+| **General Business Liability**       | Company                         | Covers property damage, bodily injury |
+| **Cyber / Data Security**            | Company                         | Covers customer data breaches         |
+| **Occupational Accident (optional)** | Company                         | Provides limited driver protection    |
+
+---
+
+## 💼 6. INTERNAL RECORD-KEEPING
+
+| Record                  | Retention       | Notes                         |
+| ----------------------- | --------------- | ----------------------------- |
+| Pickup & Delivery Logs  | 2 years         | Timestamped via app backend   |
+| Driver MVR / License    | 1 year          | Renew annually                |
+| Insurance Proofs        | Active + 1 year | Maintain updated copies       |
+| Customer Authorizations | 2 years         | Stored securely (encrypted)   |
+| Store Receipts          | 1 year          | Digitally uploaded and stored |
+| Tax & Licensing Docs    | 7 years         | Required for audits           |
+
+---
+
+## 🔒 7. PRIVACY & DATA SECURITY
+
+| Policy                   | Description                                                                        | Completed | Notes |
+| ------------------------ | ---------------------------------------------------------------------------------- | --------- | ----- |
+| **Data Handling Policy** | Describes how Return It stores and processes addresses, photos, and delivery data. | ☐         |       |
+| **Access Control**       | Only authorized staff can view customer data.                                      | ☐         |       |
+| **Encryption Standards** | All driver-customer communications via HTTPS/TLS.                                  | ☐         |       |
+| **Deletion Protocol**    | Users can request deletion of their stored data.                                   | ☐         |       |
+
+---
+
+## 🧰 8. OPTIONAL ADD-ONS FOR PROFESSIONALIZATION
+
+| Add-On                                 | Description                                                          |
+| -------------------------------------- | -------------------------------------------------------------------- |
+| **Return It ID Badges**                | For driver legitimacy and customer trust.                            |
+| **Branded delivery bags / boxes**      | Helps standardize image and prevent tampering.                       |
+| **Vehicle decals or magnet signs**     | May be required if city expands regulation to identifiable vehicles. |
+| **Incident reporting form**            | For lost/damaged items or customer disputes.                         |
+| **Safety & etiquette training module** | Professional driver presentation and conduct guidelines.             |
+
+---
+
+## 📑 9. SIGN-OFF SECTION
+
+| Role               | Name | Signature | Date |
+| ------------------ | ---- | --------- | ---- |
+| Compliance Manager |      |           |      |
+| Driver             |      |           |      |
+| Store Partner      |      |           |      |
+
+---
+
+Would you like me to format this into a **fillable PDF** and a **Word (.docx)** version (with checkboxes and signature lines), so you can give it to drivers and stores directly?

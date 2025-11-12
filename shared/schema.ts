@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, real, jsonb, index, numeric, unique } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, real, jsonb, index, numeric, unique, foreignKey } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -3632,3 +3632,354 @@ export const resetNonces = pgTable("reset_nonces", {
 
 export type AdminPassword = typeof adminPasswords.$inferSelect;
 export type ResetNonce = typeof resetNonces.$inferSelect;
+
+// ==========================================
+// COMPLIANCE MODULE (St. Louis Requirements)
+// ==========================================
+
+// MVR (Motor Vehicle Record) Checks
+export const mvrChecks = pgTable("mvr_checks", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  
+  // Check details
+  checkDate: timestamp("check_date").notNull(),
+  expirationDate: timestamp("expiration_date").notNull(),
+  status: text("status").notNull().default("pending"), // pending, in_progress, passed, failed, expired
+  provider: text("provider"), // External provider (e.g., Checkr, HireRight)
+  providerId: text("provider_id"), // External reference ID
+  
+  // Results
+  violations: jsonb("violations").default([]), // Array of violations found
+  accidentHistory: jsonb("accident_history").default([]),
+  licenseSuspensions: integer("license_suspensions").default(0),
+  points: integer("points").default(0),
+  
+  // Documents
+  reportUrl: text("report_url"), // URL to full MVR report
+  documentId: text("document_id"), // Reference to uploaded document
+  
+  // Reminders
+  reminderSent: boolean("reminder_sent").default(false),
+  reminderSentAt: timestamp("reminder_sent_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("mvr_checks_user_id_idx").on(table.userId),
+  statusIdx: index("mvr_checks_status_idx").on(table.status),
+  expirationIdx: index("mvr_checks_expiration_idx").on(table.expirationDate),
+  // Ensure only one MVR check record per user per check date (prevents duplicate reminders)
+  uniqueUserCheckDate: unique("unique_user_check_date").on(table.userId, table.checkDate),
+}));
+
+export type MvrCheck = typeof mvrChecks.$inferSelect;
+export const insertMvrCheckSchema = createInsertSchema(mvrChecks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertMvrCheck = z.infer<typeof insertMvrCheckSchema>;
+
+// Insurance Policies (Auto, Commercial, Cargo)
+export const insurancePolicies = pgTable("insurance_policies", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  
+  // Policy details
+  policyType: text("policy_type").notNull(), // auto_liability, commercial, cargo, goods_in_transit
+  policyNumber: text("policy_number").notNull(),
+  provider: text("provider").notNull(), // Insurance company name
+  
+  // Coverage details
+  coverageAmount: real("coverage_amount"), // Coverage limit in dollars
+  deductible: real("deductible"),
+  
+  // Dates
+  effectiveDate: timestamp("effective_date").notNull(),
+  expirationDate: timestamp("expiration_date").notNull(),
+  
+  // Verification
+  status: text("status").notNull().default("pending"), // pending, active, expired, cancelled
+  verified: boolean("verified").default(false),
+  verifiedAt: timestamp("verified_at"),
+  verifiedBy: integer("verified_by").references(() => users.id),
+  
+  // Documents
+  documentUrl: text("document_url"),
+  certificateUrl: text("certificate_url"),
+  
+  // Reminders
+  reminderSent: boolean("reminder_sent").default(false),
+  reminderSentAt: timestamp("reminder_sent_at"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("insurance_policies_user_id_idx").on(table.userId),
+  statusIdx: index("insurance_policies_status_idx").on(table.status),
+  expirationIdx: index("insurance_policies_expiration_idx").on(table.expirationDate),
+  policyNumberIdx: index("insurance_policies_policy_number_idx").on(table.policyNumber),
+  // Ensure unique policy numbers per user and prevent duplicate policies
+  uniqueUserPolicy: unique("unique_user_policy").on(table.userId, table.policyNumber),
+}));
+
+export type InsurancePolicy = typeof insurancePolicies.$inferSelect;
+export const insertInsurancePolicySchema = createInsertSchema(insurancePolicies).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertInsurancePolicy = z.infer<typeof insertInsurancePolicySchema>;
+
+// Independent Contractor Agreements
+export const contractorAgreements = pgTable("contractor_agreements", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  
+  // Agreement details
+  version: text("version").notNull(), // e.g., "v1.0", "v2.0"
+  agreementType: text("agreement_type").notNull().default("independent_contractor"), // independent_contractor, nda, code_of_conduct
+  
+  // Signing
+  signedAt: timestamp("signed_at").notNull(),
+  signatureData: text("signature_data"), // Base64 encoded signature image
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  
+  // Document
+  documentUrl: text("document_url").notNull(), // URL to signed PDF
+  documentHash: text("document_hash"), // SHA-256 hash for verification
+  
+  // Status
+  status: text("status").notNull().default("active"), // active, superseded, terminated
+  supersededBy: integer("superseded_by"),
+  terminatedAt: timestamp("terminated_at"),
+  terminationReason: text("termination_reason"),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdIdx: index("contractor_agreements_user_id_idx").on(table.userId),
+  statusIdx: index("contractor_agreements_status_idx").on(table.status),
+  versionIdx: index("contractor_agreements_version_idx").on(table.version),
+  supersededByFk: foreignKey({
+    columns: [table.supersededBy],
+    foreignColumns: [table.id],
+  }).onDelete("set null"),
+}));
+
+export type ContractorAgreement = typeof contractorAgreements.$inferSelect;
+export const insertContractorAgreementSchema = createInsertSchema(contractorAgreements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertContractorAgreement = z.infer<typeof insertContractorAgreementSchema>;
+
+// Retailer/Store Partner Agreements
+export const partnerAgreements = pgTable("partner_agreements", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Partner identification
+  companyName: text("company_name").notNull(),
+  companyType: text("company_type").notNull(), // retailer, donation_center, enterprise
+  contactName: text("contact_name"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  
+  // Agreement details
+  agreementType: text("agreement_type").notNull(), // consent, mou, service_agreement
+  version: text("version").notNull(),
+  
+  // Terms
+  acceptsThirdPartyDropoffs: boolean("accepts_third_party_dropoffs").default(true),
+  liabilityHandoff: text("liability_handoff"), // Terms of liability transfer at drop-off
+  verificationRequired: text("verification_required"), // staff_signature, photo, scan
+  
+  // Dates
+  effectiveDate: timestamp("effective_date").notNull(),
+  expirationDate: timestamp("expiration_date"),
+  
+  // Documents
+  documentUrl: text("document_url"),
+  documentHash: text("document_hash"),
+  
+  // Status
+  status: text("status").notNull().default("active"), // active, expired, terminated
+  
+  // Linked stores (many-to-many via storeLocations)
+  storeIds: jsonb("store_ids").default([]), // Array of linked store IDs
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  companyNameIdx: index("partner_agreements_company_name_idx").on(table.companyName),
+  statusIdx: index("partner_agreements_status_idx").on(table.status),
+  companyTypeIdx: index("partner_agreements_company_type_idx").on(table.companyType),
+}));
+
+export type PartnerAgreement = typeof partnerAgreements.$inferSelect;
+export const insertPartnerAgreementSchema = createInsertSchema(partnerAgreements).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertPartnerAgreement = z.infer<typeof insertPartnerAgreementSchema>;
+
+// Prohibited Items (Hazardous, Illegal, Oversized)
+export const prohibitedItems = pgTable("prohibited_items", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Item classification
+  category: text("category").notNull(), // hazardous, illegal, oversized, restricted
+  itemName: text("item_name").notNull(),
+  description: text("description"),
+  
+  // Restrictions
+  reason: text("reason").notNull(), // Safety, legal, capacity
+  keywords: jsonb("keywords").default([]), // Array of keywords for detection
+  
+  // Override capability
+  allowOverride: boolean("allow_override").default(false),
+  overrideRequiresApproval: boolean("override_requires_approval").default(true),
+  
+  // Status
+  isActive: boolean("is_active").default(true).notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  categoryIdx: index("prohibited_items_category_idx").on(table.category),
+  isActiveIdx: index("prohibited_items_is_active_idx").on(table.isActive),
+}));
+
+export type ProhibitedItem = typeof prohibitedItems.$inferSelect;
+export const insertProhibitedItemSchema = createInsertSchema(prohibitedItems).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertProhibitedItem = z.infer<typeof insertProhibitedItemSchema>;
+
+// Incident Reporting System
+export const incidents = pgTable("incidents", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Related entities
+  orderId: text("order_id").references(() => orders.id, { onDelete: "set null" }),
+  userId: integer("user_id").references(() => users.id, { onDelete: "set null" }),
+  driverId: integer("driver_id").references(() => users.id, { onDelete: "set null" }),
+  
+  // Incident details
+  type: text("type").notNull(), // lost_item, damaged_item, customer_dispute, safety_issue, policy_violation
+  severity: text("severity").notNull(), // low, medium, high, critical
+  category: text("category").notNull(), // operational, safety, customer_service, compliance
+  
+  // Description
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  location: text("location"),
+  
+  // Evidence
+  photoUrls: jsonb("photo_urls").default([]),
+  documentUrls: jsonb("document_urls").default([]),
+  witnessStatements: jsonb("witness_statements").default([]),
+  
+  // Resolution
+  status: text("status").notNull().default("open"), // open, investigating, resolved, closed
+  priority: text("priority").notNull().default("normal"), // low, normal, high, urgent
+  assignedTo: integer("assigned_to").references(() => users.id),
+  resolution: text("resolution"),
+  resolvedAt: timestamp("resolved_at"),
+  resolvedBy: integer("resolved_by").references(() => users.id),
+  
+  // Financial impact
+  estimatedCost: real("estimated_cost"),
+  actualCost: real("actual_cost"),
+  
+  // Audit trail
+  reportedBy: integer("reported_by").references(() => users.id),
+  reportedAt: timestamp("reported_at").defaultNow().notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  orderIdIdx: index("incidents_order_id_idx").on(table.orderId),
+  userIdIdx: index("incidents_user_id_idx").on(table.userId),
+  driverIdIdx: index("incidents_driver_id_idx").on(table.driverId),
+  statusIdx: index("incidents_status_idx").on(table.status),
+  severityIdx: index("incidents_severity_idx").on(table.severity),
+  typeIdx: index("incidents_type_idx").on(table.type),
+}));
+
+export type Incident = typeof incidents.$inferSelect;
+export const insertIncidentSchema = createInsertSchema(incidents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+export type InsertIncident = z.infer<typeof insertIncidentSchema>;
+
+// Chain-of-Custody Ledger (Append-Only)
+// 
+// ⚠️ COMPLIANCE WARNING:
+// This table requires database-level UPDATE/DELETE triggers for TRUE immutability.
+// Current Drizzle ORM setup does not support custom triggers via npm run db:push.
+// 
+// For full St. Louis compliance, a DBA must manually add these triggers:
+//   CREATE TRIGGER prevent_custody_update BEFORE UPDATE ON custody_ledger
+//     FOR EACH ROW EXECUTE FUNCTION raise_error('Custody ledger is immutable');
+//   CREATE TRIGGER prevent_custody_delete BEFORE DELETE ON custody_ledger
+//     FOR EACH ROW EXECUTE FUNCTION raise_error('Custody ledger is immutable');
+//
+// Application layer enforces immutability but cannot guarantee it without DB triggers.
+export const custodyLedger = pgTable("custody_ledger", {
+  id: integer("id").primaryKey().generatedByDefaultAsIdentity(),
+  
+  // Related order
+  orderId: text("order_id").notNull().references(() => orders.id, { onDelete: "restrict" }),
+  
+  // Event details
+  eventType: text("event_type").notNull(), // picked_up, in_transit, dropped_off, scanned, photo_taken
+  actor: integer("actor").references(() => users.id), // Who performed this action
+  actorType: text("actor_type"), // driver, customer, store_staff, system
+  
+  // Location data
+  location: jsonb("location"), // {lat, lng, address}
+  facility: text("facility"), // Store name, warehouse, etc.
+  
+  // Payload integrity
+  itemCount: integer("item_count"),
+  photoUrls: jsonb("photo_urls").default([]),
+  checksumHash: text("checksum_hash"), // SHA-256 of payload data
+  
+  // Digital signature/QR reference
+  qrCodeData: text("qr_code_data"), // QR code content (driver badge ID, etc.)
+  signatureData: text("signature_data"), // Digital signature or staff signature
+  
+  // Metadata
+  deviceInfo: jsonb("device_info"), // Device used to create entry
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+  
+  // Immutable flag (append-only)
+  isImmutable: boolean("is_immutable").default(true).notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  orderIdIdx: index("custody_ledger_order_id_idx").on(table.orderId),
+  actorIdx: index("custody_ledger_actor_idx").on(table.actor),
+  eventTypeIdx: index("custody_ledger_event_type_idx").on(table.eventType),
+  timestampIdx: index("custody_ledger_timestamp_idx").on(table.timestamp),
+  // Composite unique constraint to prevent duplicate events
+  uniqueOrderEvent: unique("unique_order_event").on(table.orderId, table.eventType, table.timestamp),
+}));
+// NOTE: This is an APPEND-ONLY audit log for compliance. Application layer MUST enforce immutability.
+// TODO: Add database-level triggers to prevent UPDATE/DELETE operations for full compliance guarantee.
+
+export type CustodyLedgerEntry = typeof custodyLedger.$inferSelect;
+export const insertCustodyLedgerEntrySchema = createInsertSchema(custodyLedger).omit({
+  id: true,
+  createdAt: true,
+});
+export type InsertCustodyLedgerEntry = z.infer<typeof insertCustodyLedgerEntrySchema>;
