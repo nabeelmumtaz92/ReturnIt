@@ -832,6 +832,13 @@ export const orders = pgTable("orders", {
   tip: real("tip").default(0),
   totalPrice: real("total_price"),
   
+  // Sales tax fields (location-based via Stripe Tax)
+  taxableSubtotal: real("taxable_subtotal"), // Amount before tax (subtotal without tip)
+  taxAmount: real("tax_amount").default(0), // Calculated sales tax
+  taxRate: real("tax_rate"), // Effective tax rate (e.g., 0.0899 for 8.99%)
+  taxJurisdictionName: text("tax_jurisdiction_name"), // "St. Louis County, MO" or "Franklin County, MO"
+  grandTotal: real("grand_total"), // Total with tax: subtotal + tax + tip
+  
   // Simplified payment breakdown - DB has aggregate fields
   customerPaid: real("customer_paid"),
   driverEarning: real("driver_earning").default(0), // Aggregate driver earning

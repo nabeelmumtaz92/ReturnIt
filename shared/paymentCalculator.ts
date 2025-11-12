@@ -22,6 +22,13 @@ export interface PaymentBreakdown {
   tip: number;
   totalPrice: number;
   
+  // Sales tax (location-based)
+  taxableSubtotal: number; // Amount before tax (subtotal without tip)
+  taxAmount: number; // Calculated sales tax
+  effectiveTaxRate: number; // Effective tax rate (e.g., 0.0899 for 8.99%)
+  taxJurisdictionName?: string; // "St. Louis County, MO" or "Franklin County, MO"
+  grandTotal: number; // Total with tax: subtotal + tax + tip
+  
   // Driver earnings
   driverBasePay: number;
   driverDistancePay: number;
@@ -215,6 +222,12 @@ export function calculatePayment(
   const companyTimeFeeShare = (billableTime / 60) * config.companyTimeRate; // Use billableTime
   const companyTotalRevenue = companyServiceFee + companyBaseFeeShare + companyDistanceFeeShare + companyTimeFeeShare;
   
+  // Tax fields (placeholder - will be calculated by TaxService)
+  const taxableSubtotal = subtotal; // Subtotal is taxable (tip is not)
+  const taxAmount = 0; // Will be calculated by TaxService based on pickup address
+  const effectiveTaxRate = 0; // Will be populated by TaxService
+  const grandTotal = subtotal + serviceFee + taxAmount + tip; // subtotal + service fee + tax + tip
+  
   return {
     // Customer charges
     basePrice,
@@ -228,6 +241,12 @@ export function calculatePayment(
     subtotal,
     tip,
     totalPrice,
+    
+    // Sales tax (location-based - populated by TaxService)
+    taxableSubtotal,
+    taxAmount,
+    effectiveTaxRate,
+    grandTotal,
     
     // Driver earnings
     driverBasePay,
