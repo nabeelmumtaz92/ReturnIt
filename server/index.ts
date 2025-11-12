@@ -20,7 +20,7 @@ import { crashRecovery } from "./middleware/crashRecovery";
 
 const app = express();
 
-// DEPLOYMENT: Health check endpoints MUST be absolute first - before ANY middleware or Vite
+// DEPLOYMENT: Health check endpoint MUST be absolute first - before ANY middleware or Vite
 // Responds instantly for deployment health checks
 app.get('/health', (req, res) => {
   res.status(200).json({ 
@@ -30,15 +30,7 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Root endpoint for deployment health checks (required by Replit deployment)
-app.get('/', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok',
-    service: 'ReturnIt API',
-    version: '1.0.0',
-    timestamp: new Date().toISOString()
-  });
-});
+// NOTE: Root path '/' is handled by serveStatic() later - serves the built frontend HTML
 
 // Trust proxy for HTTPS cookies behind Replit proxy
 app.set('trust proxy', 1);
