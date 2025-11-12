@@ -1,0 +1,72 @@
+2025-11-12 11:37:37.01
+4688070f
+User
+⚠️ MEDIUM SEVERITY ERROR: {
+2025-11-12 11:37:37.01
+4688070f
+User
+"errorId": "ERR_1762969057018_yss9njare",
+2025-11-12 11:37:37.01
+4688070f
+User
+"message": "Dynamic require of \"path\" is not supported",
+2025-11-12 11:37:37.01
+4688070f
+User
+"statusCode": 500,
+2025-11-12 11:37:37.01
+4688070f
+User
+"category": "system",
+2025-11-12 11:37:37.01
+4688070f
+User
+"severity": "medium",
+2025-11-12 11:37:37.01
+4688070f
+User
+"stack": "Error: Dynamic require of \"path\" is not supported\n at createStructuredError (file:///home/runner/workspace/dist/index.js:19632:17)\n at globalErrorHandler (file:///home/runner/workspace/dist/index.js:19730:23)\n at Layer.handle_error (/home/runner/workspace/node_modules/express/lib/router/layer.js:71:5)\n at trim_prefix (/home/runner/workspace/node_modules/express/lib/router/index.js:326:13)\n at /home/runner/workspace/node_modules/express/lib/router/index.js:286:9\n at Function.process_params (/home/runner/workspace/node_modules/express/lib/router/index.js:346:12)\n at next (/home/runner/workspace/node_modules/express/lib/router/index.js:280:10)\n at next (/home/runner/workspace/node_modules/express/lib/router/route.js:141:14)\n at Layer.handle [as handle_request] (/home/runner/workspace/node_modules/express/lib/router/layer.js:97:5)\n at next (/home/runner/workspace/node_modules/express/lib/router/route.js:149:13)",
+2025-11-12 11:37:37.01
+4688070f
+User
+"context": {
+2025-11-12 11:37:37.01
+4688070f
+User
+"originalError": "Error"
+2025-11-12 11:37:37.01
+4688070f
+User
+},
+2025-11-12 11:37:37.01
+4688070f
+User
+"request": {
+2025-11-12 11:37:37.01
+4688070f
+User
+"method": "GET",
+2025-11-12 11:37:37.01
+4688070f
+User
+"url": "/privacy-policy",
+2025-11-12 11:37:37.01
+4688070f
+User
+"userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 11_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.0 Safari/605.1.15",
+2025-11-12 11:37:37.01
+4688070f
+User
+"ip": "104.154.182.220"
+2025-11-12 11:37:37.01
+4688070f
+User
+},
+2025-11-12 11:37:37.01
+4688070f
+User
+"timestamp": "2025-11-12T17:37:37.019Z"
+2025-11-12 11:37:37.01
+4688070f
+User
+}
