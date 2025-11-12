@@ -3571,6 +3571,35 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
     }
   });
 
+  // Helper function to build receipt payload (shared by signed URL and customer endpoints)
+  const buildReceiptPayload = (order: any) => {
+    return {
+      orderId: order.id,
+      trackingNumber: order.trackingNumber,
+      createdAt: order.createdAt,
+      customerEmail: order.customerEmail,
+      pickupAddress: {
+        street: order.pickupStreetAddress,
+        city: order.pickupCity,
+        state: order.pickupState,
+        zipCode: order.pickupZipCode
+      },
+      returnAddress: order.returnAddress,
+      retailer: order.retailer,
+      serviceTier: order.serviceTier || 'Standard',
+      pricing: {
+        basePrice: order.basePrice || 0,
+        sizeUpcharge: order.sizeUpcharge || 0,
+        multiBoxFee: order.multiBoxFee || 0,
+        tip: order.tip || 0,
+        tax: order.stripeFee || 0,
+        totalAmount: order.totalPrice || 0
+      },
+      receiptUrl: order.receiptUrl,
+      paymentStatus: order.paymentStatus
+    };
+  };
+
   // Get order receipt via signed URL (public with token verification)
   app.get("/api/orders/:id/receipt", sensitiveDocRateLimit, requireSignedUrlForResource('id'), async (req, res) => {
     try {
@@ -3580,29 +3609,9 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
         return res.status(404).json({ message: "Order not found" });
       }
       
-      // Return receipt-specific information
+      // Return receipt using shared payload builder
       res.json({
-        orderId: order.id,
-        trackingNumber: order.trackingNumber,
-        createdAt: order.createdAt,
-        customerEmail: order.customerEmail,
-        pickupAddress: {
-          street: order.pickupStreetAddress,
-          city: order.pickupCity,
-          state: order.pickupState,
-          zipCode: order.pickupZipCode
-        },
-        returnAddress: order.returnAddress,
-        retailer: order.retailer,
-        pricing: {
-          basePrice: order.basePrice,
-          sizeUpcharge: order.sizeUpcharge,
-          multiBoxFee: order.multiBoxFee,
-          tip: order.tip,
-          totalPrice: order.totalPrice
-        },
-        receiptUrl: order.receiptUrl,
-        paymentStatus: order.paymentStatus,
+        ...buildReceiptPayload(order),
         _access: 'signed_url'
       });
     } catch (error) {
@@ -3734,6 +3743,35 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
     } catch (error) {
       console.error('Customer stats error:', error);
       res.status(500).json({ message: "Failed to fetch customer statistics" });
+    }
+  });
+
+  // Get customer receipt for a specific order (session-authenticated)
+  app.get("/api/customers/orders/:orderId/receipt", isAuthenticated, async (req, res) => {
+    try {
+      const user = (req.session as any).user;
+      const { orderId } = req.params;
+      
+      // Get the order
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Verify order ownership (customers can only access their own orders)
+      if (order.userId !== user.id) {
+        return res.status(403).json({ message: "Access denied - not your order" });
+      }
+      
+      // Return receipt using shared payload builder
+      res.json({
+        ...buildReceiptPayload(order),
+        _access: 'authenticated'
+      });
+    } catch (error) {
+      console.error('Customer receipt error:', error);
+      res.status(500).json({ message: "Failed to fetch receipt" });
     }
   });
 

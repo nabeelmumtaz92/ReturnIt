@@ -36,7 +36,8 @@ import {
   LogOut,
   Bell,
   Repeat,
-  Heart
+  Heart,
+  FileText
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -69,6 +70,149 @@ export default function CustomerDashboard() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [downloadingReceipt, setDownloadingReceipt] = useState<string | null>(null);
+
+  // Handle receipt download
+  const handleDownloadReceipt = async (orderId: string) => {
+    try {
+      setDownloadingReceipt(orderId);
+      const response = await fetch(`/api/customers/orders/${orderId}/receipt`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to download receipt');
+      }
+
+      const receiptData = await response.json();
+      
+      // Open receipt in new window for viewing/printing
+      const receiptWindow = window.open('', '_blank');
+      if (receiptWindow) {
+        receiptWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Receipt - Order ${receiptData.trackingNumber}</title>
+            <style>
+              body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+              .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #B8956A; padding-bottom: 20px; }
+              .header h1 { color: #8B6F47; margin: 0; }
+              .section { margin: 20px 0; }
+              .section h2 { color: #8B6F47; font-size: 18px; margin-bottom: 10px; }
+              .info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px; }
+              .info-label { font-weight: bold; color: #666; }
+              .pricing { margin-top: 30px; border-top: 2px solid #ddd; padding-top: 20px; }
+              .pricing-row { display: flex; justify-content: space-between; padding: 8px 0; }
+              .pricing-total { font-size: 20px; font-weight: bold; border-top: 2px solid #B8956A; margin-top: 10px; padding-top: 10px; }
+              @media print { button { display: none; } }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Return It Receipt</h1>
+              <p>Order #${receiptData.trackingNumber}</p>
+            </div>
+            
+            <div class="section">
+              <h2>Order Information</h2>
+              <div class="info-grid">
+                <div class="info-label">Order ID:</div>
+                <div>${receiptData.orderId}</div>
+                <div class="info-label">Tracking Number:</div>
+                <div>${receiptData.trackingNumber}</div>
+                <div class="info-label">Order Date:</div>
+                <div>${new Date(receiptData.createdAt).toLocaleString()}</div>
+                <div class="info-label">Customer Email:</div>
+                <div>${receiptData.customerEmail || 'N/A'}</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Pickup Information</h2>
+              <div class="info-grid">
+                <div class="info-label">Pickup Address:</div>
+                <div>${receiptData.pickupAddress.street}, ${receiptData.pickupAddress.city}, ${receiptData.pickupAddress.state} ${receiptData.pickupAddress.zipCode}</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h2>Return Information</h2>
+              <div class="info-grid">
+                <div class="info-label">Return To:</div>
+                <div>${receiptData.returnAddress || 'N/A'}</div>
+                <div class="info-label">Service Tier:</div>
+                <div>${receiptData.serviceTier || 'Standard'}</div>
+              </div>
+            </div>
+
+            <div class="pricing">
+              <h2>Payment Details</h2>
+              <div class="pricing-row">
+                <span>Base Price:</span>
+                <span>$${receiptData.pricing.basePrice.toFixed(2)}</span>
+              </div>
+              ${receiptData.pricing.sizeUpcharge > 0 ? `
+              <div class="pricing-row">
+                <span>Size Upcharge:</span>
+                <span>$${receiptData.pricing.sizeUpcharge.toFixed(2)}</span>
+              </div>
+              ` : ''}
+              ${receiptData.pricing.multiBoxFee > 0 ? `
+              <div class="pricing-row">
+                <span>Multi-Box Fee:</span>
+                <span>$${receiptData.pricing.multiBoxFee.toFixed(2)}</span>
+              </div>
+              ` : ''}
+              ${receiptData.pricing.tip > 0 ? `
+              <div class="pricing-row">
+                <span>Driver Tip:</span>
+                <span>$${receiptData.pricing.tip.toFixed(2)}</span>
+              </div>
+              ` : ''}
+              <div class="pricing-row">
+                <span>Tax:</span>
+                <span>$${receiptData.pricing.tax.toFixed(2)}</span>
+              </div>
+              <div class="pricing-row pricing-total">
+                <span>Total:</span>
+                <span>$${receiptData.pricing.totalAmount.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center;">
+              <button onclick="window.print()" style="background: #B8956A; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px;">
+                Print Receipt
+              </button>
+              <button onclick="window.close()" style="background: #666; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; margin-left: 10px;">
+                Close
+              </button>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center; color: #666; font-size: 12px;">
+              <p>Thank you for using Return It!</p>
+            </div>
+          </body>
+          </html>
+        `);
+        receiptWindow.document.close();
+      }
+
+      toast({
+        title: "Receipt loaded",
+        description: "Your receipt is ready for viewing and printing",
+      });
+    } catch (error) {
+      console.error('Error downloading receipt:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load receipt. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setDownloadingReceipt(null);
+    }
+  };
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -537,6 +681,17 @@ export default function CustomerDashboard() {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => handleDownloadReceipt(order.id)}
+                          disabled={downloadingReceipt === order.id}
+                          className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                          data-testid={`button-receipt-${order.id}`}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          {downloadingReceipt === order.id ? 'Loading...' : 'Receipt'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => setLocation(`/order-status/${order.id}`)}
                           data-testid={`button-view-order-${order.id}`}
                         >
@@ -741,6 +896,17 @@ export default function CustomerDashboard() {
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             View
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDownloadReceipt(order.id)}
+                            disabled={downloadingReceipt === order.id}
+                            className="border-amber-300 text-amber-700 hover:bg-amber-50"
+                            data-testid={`button-table-receipt-${order.id}`}
+                          >
+                            <FileText className="h-3 w-3 mr-1" />
+                            {downloadingReceipt === order.id ? 'Loading...' : 'Receipt'}
                           </Button>
                           {order.trackingNumber && order.trackingEnabled && !['delivered', 'completed', 'refunded', 'cancelled', 'dropped_off'].includes(order.status) && (
                             <Button
