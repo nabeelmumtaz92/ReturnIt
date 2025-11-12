@@ -9870,7 +9870,7 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
   // Stripe payment route for customer bookings (supports both web and mobile)
   app.post("/api/create-payment-intent", async (req, res) => {
     try {
-      const { currency = 'usd', description, orderId, mobile, routeInfo, boxSize, numberOfBoxes, tip } = req.body;
+      const { currency = 'usd', description, orderId, mobile, routeInfo, boxSize, numberOfBoxes, tip, pickupAddress, isDonation } = req.body;
       
       // SECURITY: Server-side price calculation (don't trust client amount)
       let amountInCents: number;
@@ -9892,7 +9892,46 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
           parseFloat(tip || 0)
         );
         
-        amountInCents = Math.round(paymentBreakdown.totalPrice * 100);
+        // Calculate sales tax using Stripe Tax (if pickup address provided)
+        let taxAmount = 0;
+        let effectiveTaxRate = 0;
+        let taxJurisdictionName = '';
+        
+        if (pickupAddress && pickupAddress.line1 && pickupAddress.city && pickupAddress.state && pickupAddress.postalCode) {
+          try {
+            const { taxService } = await import('./services/taxService');
+            const taxResult = await taxService.calculateTax({
+              address: {
+                line1: pickupAddress.line1,
+                line2: pickupAddress.line2,
+                city: pickupAddress.city,
+                state: pickupAddress.state,
+                postalCode: pickupAddress.postalCode,
+                country: pickupAddress.country || 'US'
+              },
+              amount: paymentBreakdown.taxableSubtotal, // Use taxable subtotal (excludes tip)
+              isDonation: isDonation || false
+            });
+            
+            taxAmount = taxResult.taxAmount;
+            effectiveTaxRate = taxResult.effectiveTaxRate;
+            taxJurisdictionName = taxResult.taxJurisdictionName;
+            
+            console.log(`💵 Tax calculated: $${taxAmount.toFixed(2)} (${(effectiveTaxRate * 100).toFixed(2)}%) for ${taxJurisdictionName}`);
+          } catch (taxError) {
+            console.error('Tax calculation failed:', taxError);
+            // Continue without tax on error (fallback to no tax)
+          }
+        } else {
+          console.warn('⚠️  Pickup address not provided - skipping tax calculation');
+        }
+        
+        // Calculate grand total: subtotal + service fee + tax + tip
+        // Note: paymentBreakdown.subtotal already includes all base fees
+        // paymentBreakdown.serviceFee is the platform service fee
+        const grandTotal = paymentBreakdown.subtotal + paymentBreakdown.serviceFee + taxAmount + parseFloat(tip || 0);
+        
+        amountInCents = Math.round(grandTotal * 100); // Charge customer: subtotal + service fee + tax + tip
         
         // Store route info and pricing in metadata for verification
         paymentMetadata = {
@@ -9902,15 +9941,65 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
           boxSize: boxSize || 'small',
           numberOfBoxes: (numberOfBoxes || 1).toString(),
           tip: (parseFloat(tip || 0)).toString(),
+          taxAmount: taxAmount.toString(),
+          taxRate: effectiveTaxRate.toString(),
+          taxJurisdiction: taxJurisdictionName,
+          taxableSubtotal: paymentBreakdown.taxableSubtotal.toString(),
+          grandTotal: grandTotal.toString(),
           serverCalculatedAmount: amountInCents.toString()
         };
       } else if (req.body.amount) {
         // Fallback for mobile/legacy: use provided amount
         const amount = req.body.amount;
-        amountInCents = mobile === true 
-          ? Math.round(amount)
-          : (amount > 100 ? Math.round(amount) : Math.round(amount * 100));
-        paymentMetadata.legacyAmount = 'true';
+        let baseAmount = mobile === true 
+          ? amount
+          : (amount > 100 ? amount : amount * 100);
+        baseAmount = baseAmount / 100; // Convert to dollars for tax calculation
+        
+        // Calculate tax if pickup address provided (even in fallback mode)
+        let taxAmount = 0;
+        let effectiveTaxRate = 0;
+        let taxJurisdictionName = '';
+        
+        if (pickupAddress && pickupAddress.line1 && pickupAddress.city && pickupAddress.state && pickupAddress.postalCode) {
+          try {
+            const { taxService } = await import('./services/taxService');
+            const taxResult = await taxService.calculateTax({
+              address: {
+                line1: pickupAddress.line1,
+                line2: pickupAddress.line2,
+                city: pickupAddress.city,
+                state: pickupAddress.state,
+                postalCode: pickupAddress.postalCode,
+                country: pickupAddress.country || 'US'
+              },
+              amount: baseAmount, // Use client amount as taxable base
+              isDonation: isDonation || false
+            });
+            
+            taxAmount = taxResult.taxAmount;
+            effectiveTaxRate = taxResult.effectiveTaxRate;
+            taxJurisdictionName = taxResult.taxJurisdictionName;
+            
+            console.log(`💵 Tax calculated (fallback): $${taxAmount.toFixed(2)} (${(effectiveTaxRate * 100).toFixed(2)}%) for ${taxJurisdictionName}`);
+          } catch (taxError) {
+            console.error('Tax calculation failed (fallback):', taxError);
+          }
+        }
+        
+        // Add tax to the base amount
+        const grandTotal = baseAmount + taxAmount;
+        amountInCents = Math.round(grandTotal * 100);
+        
+        paymentMetadata = {
+          ...paymentMetadata,
+          legacyAmount: 'true',
+          baseAmount: baseAmount.toString(),
+          taxAmount: taxAmount.toString(),
+          taxRate: effectiveTaxRate.toString(),
+          taxJurisdiction: taxJurisdictionName,
+          grandTotal: grandTotal.toString()
+        };
       } else {
         return res.status(400).json({ message: "Route info or amount required" });
       }
@@ -9959,11 +10048,19 @@ export async function registerRoutes(app: Express, server?: Server): Promise<voi
       console.log(`✅ Payment intent created - Amount: $${amountInCents/100}, Intent: ${paymentIntent.id}`);
       
       // Return both formats for compatibility with web and mobile
+      // Include tax details in metadata for frontend display
       res.json({ 
         clientSecret: paymentIntent.client_secret,
         paymentIntent: paymentIntent.client_secret,
         ephemeralKey: ephemeralKey.secret,
-        customer: customer.id
+        customer: customer.id,
+        taxDetails: paymentMetadata.taxAmount ? {
+          taxAmount: parseFloat(paymentMetadata.taxAmount),
+          taxRate: parseFloat(paymentMetadata.taxRate),
+          taxJurisdiction: paymentMetadata.taxJurisdiction,
+          taxableSubtotal: parseFloat(paymentMetadata.taxableSubtotal),
+          grandTotal: parseFloat(paymentMetadata.grandTotal)
+        } : undefined
       });
     } catch (error: any) {
       console.error("Payment intent creation error:", error);

@@ -682,8 +682,22 @@ export default function BookReturn() {
       try {
         const response = await apiRequest('POST', '/api/create-payment-intent', {
           amount: pricing.total,
+          pickupAddress: {
+            line1: formData.streetAddress,
+            city: formData.city,
+            state: formData.state,
+            postalCode: formData.zipCode,
+            country: 'US'
+          },
+          isDonation: formData.isDonation || false,
         });
         setClientSecret(response.clientSecret);
+        
+        // Store tax details for display
+        if (response.taxDetails) {
+          console.log('💵 Tax calculated:', response.taxDetails);
+        }
+        
         setPage(4);
       } catch (error: any) {
         toast({
