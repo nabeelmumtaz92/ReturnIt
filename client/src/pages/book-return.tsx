@@ -1337,7 +1337,7 @@ export default function BookReturn() {
                               </p>
                             )}
                             <p className="text-xs text-red-700 font-medium">
-                              📋 This return may be rejected at the store. Consider choosing a store that accepts third-party returns (Target, Kohl's, JCPenney, Macy's, Nordstrom, Home Depot, Lowe's).
+                              📋 This return may be rejected at the store. Consider choosing a store that accepts third-party returns (Target, Kohl's, JCPenney, Macy's, Nordstrom, Lowe's, REI, IKEA).
                             </p>
                           </div>
                         </div>
