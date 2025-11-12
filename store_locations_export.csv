@@ -1,0 +1,79 @@
+Store ID,Retailer Name,Store Name,Store Number,Street Address,City,State,ZIP Code,Formatted Address,Phone Number,Website,Latitude,Longitude,Category,Is Active,Accepts Returns,Has Pickup Service,Special Instructions,Store Hours (JSON)
+8,Adidas,Adidas Outlet,,5555 St. Louis Mills Blvd,Hazelwood,MO,63042,,,,,,,TRUE,TRUE,FALSE,,{}
+7,Adidas,Adidas West County,,249 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+9,Amazon,Amazon Returns - Whole Foods,,1601 S Brentwood Blvd,St. Louis,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+12,Apple,Apple Chesterfield,,230 Chesterfield Mall,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+11,Apple,Apple Galleria,,1155 St. Louis Galleria,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+10,Apple,Apple West County,,249 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+13,Authorized Appliance,Authorized Appliance,,5641 S Lindbergh Blvd,St. Louis,MO,63123,,,,,,,TRUE,TRUE,FALSE,,{}
+14,Barnes & Noble,Barnes & Noble Chesterfield,,1600 Clarkson Rd,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+15,Barnes & Noble,Barnes & Noble Creve Coeur,,11500 Olive Blvd,Creve Coeur,MO,63141,,,,,,,TRUE,TRUE,FALSE,,{}
+16,Best Buy,Best Buy Chesterfield,,1830 Clarkson Rd,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+5,Best Buy,Best Buy Brentwood,#830,8350 Eager Rd,Saint Louis,MO,63144,,,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""10:00"",""close"":""21:00""},""tuesday"":{""open"":""10:00"",""close"":""21:00""},""wednesday"":{""open"":""10:00"",""close"":""21:00""},""thursday"":{""open"":""10:00"",""close"":""21:00""},""friday"":{""open"":""10:00"",""close"":""21:00""},""saturday"":{""open"":""10:00"",""close"":""21:00""},""sunday"":{""open"":""11:00"",""close"":""20:00""}}"
+4,Best Buy,Best Buy South County,#833,7017 S Lindbergh Blvd,Saint Louis,MO,63125,,,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""10:00"",""close"":""21:00""},""tuesday"":{""open"":""10:00"",""close"":""21:00""},""wednesday"":{""open"":""10:00"",""close"":""21:00""},""thursday"":{""open"":""10:00"",""close"":""21:00""},""friday"":{""open"":""10:00"",""close"":""21:00""},""saturday"":{""open"":""10:00"",""close"":""21:00""},""sunday"":{""open"":""11:00"",""close"":""20:00""}}"
+60,Blush Boutique,Blush Boutique Kirkwood,,143 W Argonne Dr,Kirkwood,MO,63122,,,,,,,TRUE,TRUE,FALSE,,{}
+61,Catholic Supply of St. Louis,Catholic Supply,,6759 Chippewa St,St. Louis,MO,63109,,,,,,,TRUE,TRUE,FALSE,,{}
+62,Cato Fashions,Cato Fashions Arnold,,3926 Vogel Rd,Arnold,MO,63010,,,,,,,TRUE,TRUE,FALSE,,{}
+63,Cha Boutique,Cha Boutique Ladue,,9666 Clayton Rd,Ladue,MO,63124,,,,,,,TRUE,TRUE,FALSE,,{}
+64,Clayton Claire Boutique,Clayton Claire Boutique,,8008 Maryland Ave,Clayton,MO,63105,,,,,,,TRUE,TRUE,FALSE,,{}
+17,Costco,Costco Richmond Heights,,7130 Lansdowne Ave,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+18,Costco,Costco Town and Country,,13550 S Outer Forty Rd,Town and Country,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+65,DNA Boutique,DNA Boutique Downtown,,1311 Washington Ave,St. Louis,MO,63103,,,,,,,TRUE,TRUE,FALSE,,{}
+66,Designer Resale Boutique,Designer Resale Boutique,,3800 Mexico Rd,St. Peters,MO,63376,,,,,,,TRUE,TRUE,FALSE,,{}
+20,Dierbergs Markets,Dierbergs Chesterfield,,17701 Chesterfield Airport Rd,Chesterfield,MO,63005,,,,,,,TRUE,TRUE,FALSE,,{}
+21,Dierbergs Markets,Dierbergs Kirkwood,,10233 Manchester Rd,Kirkwood,MO,63122,,,,,,,TRUE,TRUE,FALSE,,{}
+19,Dierbergs Markets,Dierbergs Clayton,,6700 Clayton Rd,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+67,East • West,East West Central West End,,4660 Maryland Ave,St. Louis,MO,63108,,,,,,,TRUE,TRUE,FALSE,,{}
+24,Gap,Gap Chesterfield,,230 Chesterfield Mall,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+23,Gap,Gap Galleria,,1155 St. Louis Galleria,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+22,Gap,Gap West County,,249 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+68,Golden Gems,Golden Gems City Foundry,,3108 Locust St,St. Louis,MO,63103,,,,,,,TRUE,TRUE,FALSE,,{}
+25,H&M,H&M Galleria,,1155 St. Louis Galleria,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+26,H&M,H&M West County,,221 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+27,Home Depot,Home Depot Brentwood,,2720 S Brentwood Blvd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+29,Home Depot,Home Depot Chesterfield,,17050 North Outer 40 Rd,Chesterfield,MO,63005,,,,,,,TRUE,TRUE,FALSE,,{}
+28,Home Depot,Home Depot South City,,5901 Arsenal St,St. Louis,MO,63139,,,,,,,TRUE,TRUE,FALSE,,{}
+30,IKEA,IKEA St. Louis,,1 IKEA Way,St. Louis,MO,63123,,,,,,,TRUE,TRUE,FALSE,,{}
+33,JCPenney,JCPenney Chesterfield,,291 Chesterfield Mall,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+32,JCPenney,JCPenney South County,,96 South County Center,St. Louis,MO,63125,,,,,,,TRUE,TRUE,FALSE,,{}
+31,JCPenney,JCPenney West County,,154 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+35,Kohl's,Kohl's Brentwood,,2625 S Brentwood Blvd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+36,Kohl's,Kohl's Chesterfield,,1730 Clarkson Rd,Chesterfield,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+34,Kohl's,Kohl's South County,,5820 S Lindbergh Blvd,St. Louis,MO,63123,,,,,,,TRUE,TRUE,FALSE,,{}
+78,L.L.Bean,L.L.Bean,,1701 S Lindbergh Blvd,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+69,Levine Hat Company,Levine Hat Company,,1416 Washington Ave,St. Louis,MO,63103,,,,,,,TRUE,TRUE,FALSE,,{}
+39,Lowe's,Lowe's Brentwood,,2759 S Brentwood Blvd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+38,Lowe's,Lowe's Chesterfield,,17011 North Outer 40 Rd,Chesterfield,MO,63005,,,,,,,TRUE,TRUE,FALSE,,{}
+37,Lowe's,Lowe's South County,,4733 Lemay Ferry Rd,St. Louis,MO,63129,,,,,,,TRUE,TRUE,FALSE,,{}
+73,MOD Boutique,MOD Boutique Ellisville,,15706 Manchester Rd,Ellisville,MO,63011,,,,,,,TRUE,TRUE,FALSE,,{}
+71,MOD Boutique,MOD Boutique Kirkwood,,143 W Argonne Dr,Kirkwood,MO,63122,,,,,,,TRUE,TRUE,FALSE,,{}
+70,MOD Boutique,MOD Boutique Ladue,,9666 Clayton Rd,Ladue,MO,63124,,,,,,,TRUE,TRUE,FALSE,,{}
+72,MOD Boutique,MOD Boutique St. Charles,,2855 Hwy K,O'Fallon,MO,63368,,,,,,,TRUE,TRUE,FALSE,,{}
+6,Macy's,Macy's West County Center,568931,2 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""10:00"",""close"":""20:00""},""tuesday"":{""open"":""10:00"",""close"":""20:00""},""wednesday"":{""open"":""10:00"",""close"":""20:00""},""thursday"":{""open"":""10:00"",""close"":""21:00""},""friday"":{""open"":""10:00"",""close"":""21:30""},""saturday"":{""open"":""10:00"",""close"":""22:00""},""sunday"":{""open"":""11:00"",""close"":""19:00""}}"
+74,Marta's Boutique,Marta's Boutique Ellisville,,9208 Clayton Rd,Ellisville,MO,63011,,,,,,,TRUE,TRUE,FALSE,,{}
+40,Micro Center,Micro Center Brentwood,,11500 Olive Blvd,Creve Coeur,MO,63141,,,,,,,TRUE,TRUE,FALSE,,{}
+41,Nike,Nike St. Louis Galleria,,1155 St. Louis Galleria,St. Louis,MO,63117,,,,,,,TRUE,TRUE,FALSE,,{}
+42,Nordstrom,Nordstrom Plaza Frontenac,,1701 S Lindbergh Blvd,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+75,Paperdolls Boutique,Paperdolls Boutique,,15706 Manchester Rd,Ellisville,MO,63011,,,,,,,TRUE,TRUE,FALSE,,{}
+43,REI,REI Brentwood,,2235 Brentwood Blvd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+45,Sam's Club,Sam's Club Bridgeton,,3460 Pennridge Dr,Bridgeton,MO,63044,,,,,,,TRUE,TRUE,FALSE,,{}
+44,Sam's Club,Sam's Club St. Louis,,5801 S Lindbergh Blvd,St. Louis,MO,63123,,,,,,,TRUE,TRUE,FALSE,,{}
+46,Schnucks,Schnucks Clayton,,8867 Ladue Rd,St. Louis,MO,63124,,,,,,,TRUE,TRUE,FALSE,,{}
+48,Schnucks,Schnucks Hampton Village,,4550 Hampton Ave,St. Louis,MO,63109,,,,,,,TRUE,TRUE,FALSE,,{}
+47,Schnucks,Schnucks South Grand,,3820 S Grand Blvd,St. Louis,MO,63118,,,,,,,TRUE,TRUE,FALSE,,{}
+49,Sephora,Sephora Plaza Frontenac,,1701 S Lindbergh Blvd,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+50,Sephora,Sephora West County,,249 West County Center,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
+1,Target,Target Hampton Village,T-2841,4255 Hampton Ave,Saint Louis,MO,63109,,,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""07:00"",""close"":""23:00""},""tuesday"":{""open"":""07:00"",""close"":""23:00""},""wednesday"":{""open"":""07:00"",""close"":""23:00""},""thursday"":{""open"":""07:00"",""close"":""23:00""},""friday"":{""open"":""07:00"",""close"":""23:00""},""saturday"":{""open"":""07:00"",""close"":""23:00""},""sunday"":{""open"":""07:00"",""close"":""23:00""}}"
+2,Target,Target South County,T-1509,4250 Rusty Rd,Saint Louis,MO,63128,(314) 892-6336,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""08:00"",""close"":""23:00""},""tuesday"":{""open"":""08:00"",""close"":""23:00""},""wednesday"":{""open"":""08:00"",""close"":""23:00""},""thursday"":{""open"":""08:00"",""close"":""23:00""},""friday"":{""open"":""08:00"",""close"":""23:00""},""saturday"":{""open"":""08:00"",""close"":""23:00""},""sunday"":{""open"":""08:00"",""close"":""23:00""}}"
+3,Target,Target Grand Boulevard,T-2956,900 S Grand Blvd,St. Louis,MO,63103,,,,,,,TRUE,TRUE,FALSE,,"{""monday"":{""open"":""07:00"",""close"":""21:00""},""tuesday"":{""open"":""07:00"",""close"":""21:00""},""wednesday"":{""open"":""07:00"",""close"":""21:00""},""thursday"":{""open"":""07:00"",""close"":""21:00""},""friday"":{""open"":""07:00"",""close"":""21:00""},""saturday"":{""open"":""07:00"",""close"":""21:00""},""sunday"":{""open"":""07:00"",""close"":""21:00""}}"
+76,Two Pink Elephants,Two Pink Elephants,,4255 Keaton Crossing Blvd,O'Fallon,MO,63368,,,,,,,TRUE,TRUE,FALSE,,{}
+51,Ulta,Ulta Brentwood,,2626 S Brentwood Blvd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+52,Ulta,Ulta Chesterfield,,17017 North Outer 40 Rd,Chesterfield,MO,63005,,,,,,,TRUE,TRUE,FALSE,,{}
+53,Ulta,Ulta South County,,4550 Lemay Ferry Rd,St. Louis,MO,63129,,,,,,,TRUE,TRUE,FALSE,,{}
+77,Urban Matter,Urban Matter,,3179 S Grand Blvd,St. Louis,MO,63118,,,,,,,TRUE,TRUE,FALSE,,{}
+54,Walmart,Walmart Supercenter Brentwood,,8445 Eager Rd,Brentwood,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+56,Walmart,Walmart Supercenter Chesterfield,,300 THF Blvd,Chesterfield,MO,63005,,,,,,,TRUE,TRUE,FALSE,,{}
+55,Walmart,Walmart Supercenter Lemay,,3460 Union Rd,St. Louis,MO,63125,,,,,,,TRUE,TRUE,FALSE,,{}
+57,Whole Foods,Whole Foods Brentwood,,1601 S Brentwood Blvd,St. Louis,MO,63144,,,,,,,TRUE,TRUE,FALSE,,{}
+58,Whole Foods,Whole Foods Town and Country,,224 N Woods Mill Rd,Town and Country,MO,63017,,,,,,,TRUE,TRUE,FALSE,,{}
+59,Zara,Zara Plaza Frontenac,,1701 S Lindbergh Blvd,St. Louis,MO,63131,,,,,,,TRUE,TRUE,FALSE,,{}
