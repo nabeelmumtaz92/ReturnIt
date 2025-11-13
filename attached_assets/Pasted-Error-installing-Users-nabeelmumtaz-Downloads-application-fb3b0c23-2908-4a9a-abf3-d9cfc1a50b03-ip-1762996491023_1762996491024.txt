@@ -1,0 +1,18 @@
+Error installing  '/Users/nabeelmumtaz/Downloads/application-fb3b0c23-2908-4a9a-abf3-d9cfc1a50b03.ipa', ERROR: CoreDeviceError(errorCode: 3002, errorUserInfo: ["NSUnderlyingError": Error Domain=IXUserPresentableErrorDomain Code=14 "Unable to Install “ReturnIt”" UserInfo={NSUnderlyingError=0xb1acd9140 {Error Domain=MIInstallerErrorDomain Code=13 "Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.)" UserInfo={FunctionName=-[MIInstallableBundle _installEmbeddedProfilesWithError:], LegacyErrorString=ApplicationVerificationFailed, SourceFileLine=330, LibMISErrorNumber=-402620385, NSLocalizedDescription=Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.)}}, NSLocalizedDescription=Unable to Install “ReturnIt”, NSLocalizedRecoverySuggestion=Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.), NSLocalizedFailureReason=This app cannot be installed because its integrity could not be verified.}, "NSURL": file:///Users/nabeelmumtaz/Downloads/application-fb3b0c23-2908-4a9a-abf3-d9cfc1a50b03.ipa, "NSLocalizedDescription": Failed to install the app on the device.])
+Domain: com.apple.dt.DVTCoreDevice
+Code: -1
+User Info: {
+    DVTErrorCreationDateKey = "2025-11-13 01:14:35 +0000";
+}
+--
+Error installing  '/Users/nabeelmumtaz/Downloads/application-fb3b0c23-2908-4a9a-abf3-d9cfc1a50b03.ipa', ERROR: CoreDeviceError(errorCode: 3002, errorUserInfo: ["NSUnderlyingError": Error Domain=IXUserPresentableErrorDomain Code=14 "Unable to Install “ReturnIt”" UserInfo={NSUnderlyingError=0xb1acd9140 {Error Domain=MIInstallerErrorDomain Code=13 "Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.)" UserInfo={FunctionName=-[MIInstallableBundle _installEmbeddedProfilesWithError:], LegacyErrorString=ApplicationVerificationFailed, SourceFileLine=330, LibMISErrorNumber=-402620385, NSLocalizedDescription=Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.)}}, NSLocalizedDescription=Unable to Install “ReturnIt”, NSLocalizedRecoverySuggestion=Failed to install embedded profile for com.returnit.customer : 0xe800801f (Attempted to install a Beta profile without the proper entitlement.), NSLocalizedFailureReason=This app cannot be installed because its integrity could not be verified.}, "NSURL": file:///Users/nabeelmumtaz/Downloads/application-fb3b0c23-2908-4a9a-abf3-d9cfc1a50b03.ipa, "NSLocalizedDescription": Failed to install the app on the device.])
+Domain: com.apple.dt.DVTCoreDevice
+Code: -1
+--
+
+
+System Information
+
+macOS Version 26.0.1 (Build 25A362)
+Xcode 26.1 (24454) (Build 17B55)
+Timestamp: 2025-11-12T19:14:35-06:00
